@@ -35,11 +35,13 @@ class ImageDataTest: public TestSuite::Tester {
 
         void moveConstructor();
         void moveAssignment();
+        void toReference();
 };
 
 ImageDataTest::ImageDataTest() {
     addTests({&ImageDataTest::moveConstructor,
-              &ImageDataTest::moveAssignment});
+              &ImageDataTest::moveAssignment,
+              &ImageDataTest::toReference});
 }
 
 void ImageDataTest::moveConstructor() {
@@ -65,6 +67,17 @@ void ImageDataTest::moveAssignment() {
     CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_VERIFY(b.data() == data);
+}
+
+void ImageDataTest::toReference() {
+    unsigned char* data = new unsigned char[3];
+    Trade::ImageData2D a({1, 3}, ImageFormat::Red, ImageType::UnsignedByte, data);
+
+    ImageReference2D b = a;
+    CORRADE_COMPARE(b.format(), ImageFormat::Red);
+    CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(b.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(b.data(), data);
 }
 
 }}}

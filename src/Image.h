@@ -28,9 +28,7 @@
  * @brief Class Magnum::Image, typedef Magnum::Image1D, Magnum::Image2D, Magnum::Image3D
  */
 
-#include "Math/Vector3.h"
-#include "AbstractImage.h"
-#include "DimensionTraits.h"
+#include "ImageReference.h"
 
 namespace Magnum {
 
@@ -82,6 +80,13 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         /** @brief Destructor */
         ~Image() { delete[] _data; }
 
+        /**
+         * @brief Conversion to reference
+         *
+         * @todo GCC 4.8: don't allow this on rvalue-ref
+         */
+        /*implicit*/ operator ImageReference<dimensions>() const;
+
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
@@ -125,6 +130,10 @@ template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::op
     std::swap(_size, other._size);
     std::swap(_data, other._data);
     return *this;
+}
+
+template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageReference<dimensions>() const {
+    return ImageReference<dimensions>(_size, this->format(), this->type(), _data);
 }
 
 }
