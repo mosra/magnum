@@ -949,31 +949,31 @@ void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vec
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
-template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLint level, Image<dimensions>* image) {
+template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLint level, Image<dimensions>& image) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(this, target, level);
-    const std::size_t dataSize = size.product()*image->pixelSize();
+    const std::size_t dataSize = size.product()*image.pixelSize();
     char* data = new char[dataSize];
-    (this->*getImageImplementation)(target, level, image->format(), image->type(), dataSize, data);
-    image->setData(size, image->format(), image->type(), data);
+    (this->*getImageImplementation)(target, level, image.format(), image.type(), dataSize, data);
+    image.setData(size, image.format(), image.type(), data);
 }
 
-template void AbstractTexture::image<1>(GLenum, GLint, Image<1>*);
-template void AbstractTexture::image<2>(GLenum, GLint, Image<2>*);
-template void AbstractTexture::image<3>(GLenum, GLint, Image<3>*);
+template void AbstractTexture::image<1>(GLenum, GLint, Image<1>&);
+template void AbstractTexture::image<2>(GLenum, GLint, Image<2>&);
+template void AbstractTexture::image<3>(GLenum, GLint, Image<3>&);
 
-template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLint level, BufferImage<dimensions>* image, Buffer::Usage usage) {
+template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLint level, BufferImage<dimensions>& image, Buffer::Usage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(this, target, level);
-    const std::size_t dataSize = size.product()*image->pixelSize();
-    if(image->size() != size)
-        image->setData(size, image->format(), image->type(), nullptr, usage);
+    const std::size_t dataSize = size.product()*image.pixelSize();
+    if(image.size() != size)
+        image.setData(size, image.format(), image.type(), nullptr, usage);
 
-    image->buffer()->bind(Buffer::Target::PixelPack);
-    (this->*getImageImplementation)(target, level, image->format(), image->type(), dataSize, nullptr);
+    image.buffer()->bind(Buffer::Target::PixelPack);
+    (this->*getImageImplementation)(target, level, image.format(), image.type(), dataSize, nullptr);
 }
 
-template void AbstractTexture::image<1>(GLenum, GLint, BufferImage<1>*, Buffer::Usage);
-template void AbstractTexture::image<2>(GLenum, GLint, BufferImage<2>*, Buffer::Usage);
-template void AbstractTexture::image<3>(GLenum, GLint, BufferImage<3>*, Buffer::Usage);
+template void AbstractTexture::image<1>(GLenum, GLint, BufferImage<1>&, Buffer::Usage);
+template void AbstractTexture::image<2>(GLenum, GLint, BufferImage<2>&, Buffer::Usage);
+template void AbstractTexture::image<3>(GLenum, GLint, BufferImage<3>&, Buffer::Usage);
 #endif
 #endif
 

@@ -271,8 +271,8 @@ class MAGNUM_EXPORT AbstractTexture {
         void MAGNUM_LOCAL bindInternal();
 
         #ifndef MAGNUM_TARGET_GLES
-        template<UnsignedInt dimensions> void image(GLenum target, GLint level, Image<dimensions>* image);
-        template<UnsignedInt dimensions> void image(GLenum target, GLint level, BufferImage<dimensions>* image, Buffer::Usage usage);
+        template<UnsignedInt dimensions> void image(GLenum target, GLint level, Image<dimensions>& image);
+        template<UnsignedInt dimensions> void image(GLenum target, GLint level, BufferImage<dimensions>& image, Buffer::Usage usage);
         #endif
 
         GLenum _target;

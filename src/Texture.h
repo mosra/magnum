@@ -324,7 +324,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      then @fn_gl{GetTexImage}, @fn_gl_extension{GetTextureImage,EXT,direct_state_access}
          *      or @fn_gl_extension{GetnTexImage,ARB,robustness}
          */
-        void image(Int level, Image<dimensions>* image) {
+        void image(Int level, Image<dimensions>& image) {
             AbstractTexture::image<dimensions>(_target, level, image);
         }
 
@@ -334,10 +334,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * See image(Int, Image*) for more information.
+         * See image(Int, Image&) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        void image(Int level, BufferImage<dimensions>* image, Buffer::Usage usage) {
+        void image(Int level, BufferImage<dimensions>& image, Buffer::Usage usage) {
             AbstractTexture::image<dimensions>(_target, level, image, usage);
         }
         #endif
