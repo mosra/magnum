@@ -246,6 +246,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual AbstractLayouter* doLayout(const GlyphCache* cache, Float size, const std::string& text) = 0;
 };
 
+CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
+
 /**
 @brief Base for text layouters
 
