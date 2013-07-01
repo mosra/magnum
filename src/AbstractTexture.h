@@ -95,9 +95,6 @@ do nothing.
 class MAGNUM_EXPORT AbstractTexture {
     friend class Context;
 
-    AbstractTexture(const AbstractTexture&) = delete;
-    AbstractTexture& operator=(const AbstractTexture&) = delete;
-
     public:
         /**
          * @brief Max supported layer count
@@ -124,8 +121,14 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         virtual ~AbstractTexture() = 0;
 
+        /** @brief Copying is not allowed */
+        AbstractTexture(const AbstractTexture&) = delete;
+
         /** @brief Move constructor */
         AbstractTexture(AbstractTexture&& other);
+
+        /** @brief Copying is not allowed */
+        AbstractTexture& operator=(const AbstractTexture&) = delete;
 
         /** @brief Move assignment */
         AbstractTexture& operator=(AbstractTexture&& other);
