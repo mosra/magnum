@@ -77,7 +77,7 @@ void GlyphCache::insert(const UnsignedInt glyph, Vector2i position, Rectanglei r
     glyphs.insert({glyph, {position, rectangle}});
 }
 
-void GlyphCache::setImage(const Vector2i& offset, Image2D* const image) {
+void GlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
     _texture.setSubImage(0, offset, image);
 }
 

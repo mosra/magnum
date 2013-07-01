@@ -978,19 +978,6 @@ template void AbstractTexture::image<3>(GLenum, GLint, BufferImage<3>&, Buffer::
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_TARGET_GLES2
-namespace Implementation {
-    template<UnsignedInt dimensions> const GLvoid* ImageHelper<BufferImage<dimensions>>::dataOrPixelUnpackBuffer(BufferImage<dimensions>* image) {
-        image->buffer()->bind(Buffer::Target::PixelUnpack);
-        return nullptr;
-    }
-
-    template struct ImageHelper<BufferImage1D>;
-    template struct ImageHelper<BufferImage2D>;
-    template struct ImageHelper<BufferImage3D>;
-}
-#endif
-
 #ifndef MAGNUM_TARGET_GLES
 Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture* texture, GLenum target, GLint level) {
     Math::Vector<1, GLint> value;
@@ -1011,6 +998,84 @@ Vector3i AbstractTexture::DataHelper<3>::imageSize(AbstractTexture* texture, GLe
     (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_HEIGHT, &value[1]);
     (texture->*getLevelParameterivImplementation)(target, level, GL_TEXTURE_DEPTH, &value[2]);
     return value;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::DataHelper<1>::setImage(AbstractTexture* const texture, const GLenum target, const GLint level, const TextureFormat internalFormat, const ImageReference1D& image) {
+    Buffer::unbind(Buffer::Target::PixelUnpack);
+    (texture->*image1DImplementation)(target, level, internalFormat, image.size(), image.format(), image.type(), image.data());
+}
+
+void AbstractTexture::DataHelper<1>::setImage(AbstractTexture* const texture, const GLenum target, const GLint level, const TextureFormat internalFormat, BufferImage1D& image) {
+    image.buffer()->bind(Buffer::Target::PixelUnpack);
+    (texture->*image1DImplementation)(target, level, internalFormat, image.size(), image.format(), image.type(), nullptr);
+}
+
+void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture* const texture, const GLenum target, const GLint level, const Math::Vector<1, GLint>& offset, const ImageReference1D& image) {
+    Buffer::unbind(Buffer::Target::PixelUnpack);
+    (texture->*subImage1DImplementation)(target, level, offset, image.size(), image.format(), image.type(), image.data());
+}
+
+void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture* const texture, const GLenum target, const GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image) {
+    image.buffer()->bind(Buffer::Target::PixelUnpack);
+    (texture->*subImage1DImplementation)(target, level, offset, image.size(), image.format(), image.type(), nullptr);
+}
+#endif
+
+void AbstractTexture::DataHelper<2>::setImage(AbstractTexture* const texture, const GLenum target, const GLint level, const TextureFormat internalFormat, const ImageReference2D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbind(Buffer::Target::PixelUnpack);
+    #endif
+    (texture->*image2DImplementation)(target, level, internalFormat, image.size(), image.format(), image.type(), image.data());
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::DataHelper<2>::setImage(AbstractTexture* const texture, const GLenum target, const GLint level, const TextureFormat internalFormat, BufferImage2D& image) {
+    image.buffer()->bind(Buffer::Target::PixelUnpack);
+    (texture->*image2DImplementation)(target, level, internalFormat, image.size(), image.format(), image.type(), nullptr);
+}
+#endif
+
+void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture* const texture, const GLenum target, const GLint level, const Vector2i& offset, const ImageReference2D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbind(Buffer::Target::PixelUnpack);
+    #endif
+    (texture->*subImage2DImplementation)(target, level, offset, image.size(), image.format(), image.type(), image.data());
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture* const texture, const GLenum target, const GLint level, const Vector2i& offset, BufferImage2D& image) {
+    image.buffer()->bind(Buffer::Target::PixelUnpack);
+    (texture->*subImage2DImplementation)(target, level, offset, image.size(), image.format(), image.type(), nullptr);
+}
+#endif
+
+void AbstractTexture::DataHelper<3>::setImage(AbstractTexture* const texture, const GLenum target, const GLint level, const TextureFormat internalFormat, const ImageReference3D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbind(Buffer::Target::PixelUnpack);
+    #endif
+    (texture->*image3DImplementation)(target, level, internalFormat, image.size(), image.format(), image.type(), image.data());
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::DataHelper<3>::setImage(AbstractTexture* const texture, const GLenum target, const GLint level, const TextureFormat internalFormat, BufferImage3D& image) {
+    image.buffer()->bind(Buffer::Target::PixelUnpack);
+    (texture->*image3DImplementation)(target, level, internalFormat, image.size(), image.format(), image.type(), nullptr);
+}
+#endif
+
+void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture* const texture, const GLenum target, const GLint level, const Vector3i& offset, const ImageReference3D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbind(Buffer::Target::PixelUnpack);
+    #endif
+    (texture->*subImage3DImplementation)(target, level, offset, image.size(), image.format(), image.type(), image.data());
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture* const texture, const GLenum target, const GLint level, const Vector3i& offset, BufferImage3D& image) {
+    image.buffer()->bind(Buffer::Target::PixelUnpack);
+    (texture->*subImage3DImplementation)(target, level, offset, image.size(), image.format(), image.type(), nullptr);
 }
 #endif
 

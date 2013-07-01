@@ -346,11 +346,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             Image, ImageReference, BufferImage or
-         *      Trade::ImageData of the same dimension count
+         * @param image             %Image
          * @return Pointer to self (for method chaining)
-         *
-         * The image is not deleted afterwards.
          *
          * For better performance when generating mipmaps using
          * generateMipmap() or calling setImage() more than once use
@@ -364,27 +361,25 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
-        template<class Image> Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, Image* image) {
+        Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
             DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
             return this;
         }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @overload */
+        Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>& image) {
+            DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
+            return this;
+        }
+        #endif
 
         /**
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             Image, ImageReference, BufferImage or
-         *      Trade::ImageData of the same or one less dimension count
+         * @param image             %Image
          * @return Pointer to self (for method chaining)
-         *
-         * The image is not deleted afterwards. The image can have either the
-         * same dimension count or have one dimension less, but at least one
-         * dimension.
-         *
-         * If the image has one dimension less than the texture, the image is
-         * taken as if it had the last dimension equal to 1. It can be used
-         * for e.g. updating 3D texture with multiple 2D images or for filling
-         * 1D texture array (which is two-dimensional) with 1D images.
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
@@ -394,10 +389,18 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        template<class Image> Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, Image* image) {
+        Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const ImageReference<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
             return this;
         }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @overload */
+        Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
+            DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
+            return this;
+        }
+        #endif
 
         /**
          * @brief Invalidate texture subimage

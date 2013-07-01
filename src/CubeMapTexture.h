@@ -165,32 +165,46 @@ class CubeMapTexture: public AbstractTexture {
          * @param coordinate        Coordinate
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             Image, ImageReference, BufferImage or
-         *      Trade::ImageData of the same dimension count
+         * @param image             %Image
          * @return Pointer to self (for method chaining)
          *
          * See Texture::setImage() for more information.
          */
-        template<class Image> CubeMapTexture* setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, Image* image) {
+        CubeMapTexture* setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
             DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
             return this;
         }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @overload */
+        CubeMapTexture* setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
+            DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
+            return this;
+        }
+        #endif
 
         /**
          * @brief Set image subdata
          * @param coordinate        Coordinate
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             Image, ImageReference, BufferImage or
-         *      Trade::ImageData of the same or one less dimension count
+         * @param image             %Image
          * @return Pointer to self (for method chaining)
          *
          * See Texture::setSubImage() for more information.
          */
-        template<class Image> CubeMapTexture* setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const Image* image) {
+        CubeMapTexture* setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image) {
             DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
             return this;
         }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @overload */
+        CubeMapTexture* setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
+            DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
+            return this;
+        }
+        #endif
 
         /**
          * @brief Invalidate texture subimage

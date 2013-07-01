@@ -419,25 +419,8 @@ class MAGNUM_EXPORT AbstractTexture {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-namespace Implementation {
-    template<class Image> struct ImageHelper {
-        static const GLvoid* dataOrPixelUnpackBuffer(Image* image) {
-            #ifndef MAGNUM_TARGET_GLES2
-            Buffer::unbind(Buffer::Target::PixelUnpack);
-            #endif
-            return image->data();
-        }
-    };
-
-    #ifndef MAGNUM_TARGET_GLES2
-    template<UnsignedInt dimensions> struct MAGNUM_EXPORT ImageHelper<BufferImage<dimensions>> {
-        static const GLvoid* dataOrPixelUnpackBuffer(BufferImage<dimensions>* image);
-    };
-    #endif
-}
-
 #ifndef MAGNUM_TARGET_GLES
-template<> struct AbstractTexture::DataHelper<1> {
+template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
     enum class Target: GLenum {
         Texture1D = GL_TEXTURE_1D
     };
@@ -454,13 +437,11 @@ template<> struct AbstractTexture::DataHelper<1> {
         (texture->*storage1DImplementation)(target, levels, internalFormat, size);
     }
 
-    template<class Image> static typename std::enable_if<Image::Dimensions == 1, void>::type setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, Image* image) {
-        (texture->*image1DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
+    static void setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference1D& image);
+    static void setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage1D& image);
 
-    template<class Image> static typename std::enable_if<Image::Dimensions == 1, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, Image* image) {
-        (texture->*subImage1DImplementation)(target, level, offset, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
+    static void setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const ImageReference1D& image);
+    static void setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image);
 
     static void invalidateSubImage(AbstractTexture* texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size) {
         (texture->*invalidateSubImageImplementation)(level, {offset[0], 0, 0}, {size[0], 1, 1});
@@ -489,17 +470,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
         (texture->*storage2DImplementation)(target, levels, internalFormat, size);
     }
 
-    template<class Image> static typename std::enable_if<Image::Dimensions == 2, void>::type setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, Image* image) {
-        (texture->*image2DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
+    static void setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference2D& image);
+    #ifndef MAGNUM_TARGET_GLES2
+    static void setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage2D& image);
+    #endif
 
-    template<class Image> static typename std::enable_if<Image::Dimensions == 2, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, Image* image) {
-        (texture->*subImage2DImplementation)(target, level, offset, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
-
-    template<class Image> static typename std::enable_if<Image::Dimensions == 1, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, Image* image) {
-        (texture->*subImage2DImplementation)(target, level, offset, Vector2i(image->size(), 1), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
+    static void setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, const ImageReference2D& image);
+    #ifndef MAGNUM_TARGET_GLES2
+    static void setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector2i& offset, BufferImage2D& image);
+    #endif
 
     static void invalidateSubImage(AbstractTexture* texture, GLint level, const Vector2i& offset, const Vector2i& size) {
         (texture->*invalidateSubImageImplementation)(level, {offset, 0}, {size, 1});
@@ -530,17 +509,15 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
         (texture->*storage3DImplementation)(target, levels, internalFormat, size);
     }
 
-    template<class Image> static typename std::enable_if<Image::Dimensions == 3, void>::type setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, Image* image) {
-        (texture->*image3DImplementation)(target, level, internalFormat, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
+    static void setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference3D& image);
+    #ifndef MAGNUM_TARGET_GLES2
+    static void setImage(AbstractTexture* texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage3D& image);
+    #endif
 
-    template<class Image> static typename std::enable_if<Image::Dimensions == 3, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, Image* image) {
-        (texture->*subImage3DImplementation)(target, level, offset, image->size(), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
-
-    template<class Image> static typename std::enable_if<Image::Dimensions == 2, void>::type setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, Image* image) {
-        (texture->*subImage3DImplementation)(target, level, offset, Vector3i(image->size(), 1), image->format(), image->type(), Implementation::ImageHelper<Image>::dataOrPixelUnpackBuffer(image));
-    }
+    static void setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, const ImageReference3D& image);
+    #ifndef MAGNUM_TARGET_GLES2
+    static void setSubImage(AbstractTexture* texture, GLenum target, GLint level, const Vector3i& offset, BufferImage3D& image);
+    #endif
 
     static void invalidateSubImage(AbstractTexture* texture, GLint level, const Vector3i& offset, const Vector3i& size) {
         (texture->*invalidateSubImageImplementation)(level, offset, size);

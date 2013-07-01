@@ -135,7 +135,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * Uploads image for one or more glyphs to given offset in cache
          * texture.
          */
-        virtual void setImage(const Vector2i& offset, Image2D* image);
+        virtual void setImage(const Vector2i& offset, const ImageReference2D& image);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

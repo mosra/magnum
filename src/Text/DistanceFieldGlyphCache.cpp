@@ -25,10 +25,10 @@
 #include "DistanceFieldGlyphCache.h"
 
 #include "Extensions.h"
-#include "Image.h"
 #ifndef CORRADE_NO_ASSERT
 #include "ImageFormat.h"
 #endif
+#include "ImageReference.h"
 #include "TextureFormat.h"
 #include "TextureTools/DistanceField.h"
 
@@ -52,25 +52,25 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     initialize(internalFormat, distanceFieldSize);
 }
 
-void DistanceFieldGlyphCache::setImage(const Vector2i& offset, Image2D* const image) {
+void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
     const TextureFormat internalFormat = TextureFormat::R8;
-    CORRADE_ASSERT(image->format() == ImageFormat::Red,
-        "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image->format(), );
+    CORRADE_ASSERT(image.format() == ImageFormat::Red,
+        "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
     #else
     TextureFormat internalFormat;
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
         internalFormat = TextureFormat::Red;
-        CORRADE_ASSERT(image->format() == ImageFormat::Red,
-            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image->format(), );
+        CORRADE_ASSERT(image.format() == ImageFormat::Red,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
     } else {
         internalFormat = TextureFormat::Luminance;
-        CORRADE_ASSERT(image->format() == ImageFormat::Luminance,
-            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Luminance << "but got" << image->format(), );
+        CORRADE_ASSERT(image.format() == ImageFormat::Luminance,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Luminance << "but got" << image.format(), );
     }
     #endif
 
@@ -81,10 +81,10 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, Image2D* const im
         ->setImage(0, internalFormat, image);
 
     /* Create distance field from input texture */
-    TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize(offset*scale, image->size()*scale), radius, image->size());
+    TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize(offset*scale, image.size()*scale), radius, image.size());
 }
 
-void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, Image2D* const image) {
+void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image) {
     _texture.setSubImage(0, offset, image);
 }
 
