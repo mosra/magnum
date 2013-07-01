@@ -141,20 +141,20 @@ void AbstractFramebuffer::clear(FramebufferClearMask mask) {
     glClear(static_cast<GLbitfield>(mask));
 }
 
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D* image) {
+void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
     #else
     bindInternal(readTarget);
     #endif
-    const std::size_t dataSize = image->pixelSize()*size.product();
+    const std::size_t dataSize = image.pixelSize()*size.product();
     char* const data = new char[dataSize];
-    readImplementation(offset, size, image->format(), image->type(), dataSize, data);
-    image->setData(size, image->format(), image->type(), data);
+    readImplementation(offset, size, image.format(), image.type(), dataSize, data);
+    image.setData(size, image.format(), image.type(), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D* image, Buffer::Usage usage) {
+void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, Buffer::Usage usage) {
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
     #else
@@ -162,12 +162,12 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Buf
     #endif
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
-    if(image->size() != size)
-        image->setData(size, image->format(), image->type(), nullptr, usage);
+    if(image.size() != size)
+        image.setData(size, image.format(), image.type(), nullptr, usage);
 
-    image->buffer()->bind(Buffer::Target::PixelPack);
+    image.buffer()->bind(Buffer::Target::PixelPack);
     /** @todo De-duplicate buffer size computation */
-    readImplementation(offset, size, image->format(), image->type(), image->pixelSize()*size.product(), nullptr);
+    readImplementation(offset, size, image.format(), image.type(), image.pixelSize()*size.product(), nullptr);
 }
 #endif
 

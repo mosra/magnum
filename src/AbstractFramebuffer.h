@@ -246,7 +246,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels} or
          *      @fn_gl_extension{ReadnPixels,ARB,robustness}
          */
-        void read(const Vector2i& offset, const Vector2i& size, Image2D* image);
+        void read(const Vector2i& offset, const Vector2i& size, Image2D& image);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -260,7 +260,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
-        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D* image, Buffer::Usage usage);
+        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, Buffer::Usage usage);
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
