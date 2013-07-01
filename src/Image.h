@@ -45,15 +45,15 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
 
         /**
          * @brief Constructor
-         * @param size              %Image size
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
+         * @param size              %Image size
          * @param data              %Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit Image(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        explicit Image(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -96,15 +96,15 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
 
         /**
          * @brief Set image data
-         * @param size              %Image size
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
+         * @param size              %Image size
          * @param data              %Image data
          *
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data);
+        void setData(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data);
 
     private:
         Math::Vector<Dimensions, Int> _size;
@@ -133,7 +133,7 @@ template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::op
 }
 
 template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageReference<dimensions>() const {
-    return ImageReference<dimensions>(_size, this->format(), this->type(), _data);
+    return ImageReference<dimensions>(this->format(), this->type(), _size, _data);
 }
 
 }

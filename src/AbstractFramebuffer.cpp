@@ -150,7 +150,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Ima
     const std::size_t dataSize = image.pixelSize()*size.product();
     char* const data = new char[dataSize];
     readImplementation(offset, size, image.format(), image.type(), dataSize, data);
-    image.setData(size, image.format(), image.type(), data);
+    image.setData(image.format(), image.type(), size, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES2

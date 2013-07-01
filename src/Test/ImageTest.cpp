@@ -46,7 +46,7 @@ ImageTest::ImageTest() {
 
 void ImageTest::moveConstructor() {
     unsigned char* data = new unsigned char[3];
-    Image2D a({1, 3}, ImageFormat::Red, ImageType::UnsignedByte, data);
+    Image2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
 
     Image2D b(std::move(a));
     CORRADE_VERIFY(!a.data());
@@ -58,7 +58,7 @@ void ImageTest::moveConstructor() {
 
 void ImageTest::moveAssignment() {
     unsigned char* data = new unsigned char[3];
-    Image2D a({1, 3}, ImageFormat::Red, ImageType::UnsignedByte, data);
+    Image2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
 
     Image2D b(ImageFormat::Red, ImageType::UnsignedByte);
     b = std::move(a);
@@ -71,7 +71,7 @@ void ImageTest::moveAssignment() {
 
 void ImageTest::toReference() {
     unsigned char* data = new unsigned char[3];
-    Image2D a({1, 3}, ImageFormat::Red, ImageType::UnsignedByte, data);
+    Image2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
 
     ImageReference2D b = a;
     CORRADE_COMPARE(b.format(), ImageFormat::Red);

@@ -954,7 +954,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLin
     const std::size_t dataSize = size.product()*image.pixelSize();
     char* data = new char[dataSize];
     (this->*getImageImplementation)(target, level, image.format(), image.type(), dataSize, data);
-    image.setData(size, image.format(), image.type(), data);
+    image.setData(image.format(), image.type(), size, data);
 }
 
 template void AbstractTexture::image<1>(GLenum, GLint, Image<1>&);
