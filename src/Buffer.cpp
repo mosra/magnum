@@ -24,7 +24,6 @@
 
 #include "Buffer.h"
 
-#include <Containers/Array.h>
 #include <Utility/Debug.h>
 
 #include "Context.h"
@@ -127,18 +126,6 @@ Int Buffer::size() {
     (this->*getParameterImplementation)(GL_BUFFER_SIZE, &size);
     return size;
 }
-
-#ifndef MAGNUM_TARGET_GLES
-Containers::Array<char> Buffer::data() {
-    return subData(0, size());
-}
-
-Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
-    Containers::Array<char> data(size);
-    if(size) (this->*getSubDataImplementation)(offset, size, data);
-    return std::move(data);
-}
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
