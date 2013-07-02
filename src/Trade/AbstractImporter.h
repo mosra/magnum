@@ -98,8 +98,6 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
 
         /**
          * @brief Open raw data
-         * @param data      Data
-         * @param size      Data size
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref Feature "Feature::OpenData" is
@@ -110,7 +108,6 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
 
         /**
          * @brief Open file
-         * @param filename  Filename
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Returns `true` on success, `false` otherwise.
