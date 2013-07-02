@@ -97,8 +97,11 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @param glyph         Glyph ID
          *
          * First tuple element is glyph position relative to point on baseline,
-         * second element is glyph region in texture atlas. If no glyph is
-         * found, glyph on zero index is returned.
+         * second element is glyph region in texture atlas.
+         *
+         * If no glyph is found, glyph `0` is returned, which is by default on
+         * zero position and has zero region in texture atlas. You can reset it
+         * to some meaningful value in insert().
          */
         std::pair<Vector2i, Rectanglei> operator[](UnsignedInt glyph) const {
             auto it = glyphs.find(glyph);
@@ -134,8 +137,11 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @param position      Position relative to point on baseline
          * @param rectangle     Region in texture atlas
          *
-         * You can obtain unused non-overlapping regions with reserve(). See
-         * also setImage() to upload glyph image.
+         * You can obtain unused non-overlapping regions with reserve(). You
+         * can't overwrite already inserted glyph, however you can reset glyph
+         * `0` to some meaningful value.
+         *
+         * See also setImage() to upload glyph image.
          */
         void insert(UnsignedInt glyph, Vector2i position, Rectanglei rectangle);
 

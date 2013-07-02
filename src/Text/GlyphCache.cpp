@@ -55,12 +55,15 @@ GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): _size(siz
 
 GlyphCache::~GlyphCache() = default;
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
 void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& size) {
+    /* Initialize texture */
     _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         ->setMinificationFilter(Sampler::Filter::Linear)
         ->setMagnificationFilter(Sampler::Filter::Linear)
         ->setStorage(1, internalFormat, size);
+
+    /* Default "Not Found" glyph */
+    glyphs.insert({0, {}});
 }
 
 std::vector<Rectanglei> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
@@ -74,7 +77,11 @@ void GlyphCache::insert(const UnsignedInt glyph, Vector2i position, Rectanglei r
     rectangle.bottomLeft() -= _padding;
     rectangle.topRight() += _padding;
 
-    glyphs.insert({glyph, {position, rectangle}});
+    /* Overwriting "Not Found" glyph */
+    if(glyph == 0) glyphs[0] = {position, rectangle};
+
+    /* Inserting new glyph */
+    else CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({glyph, {position, rectangle}}).second);
 }
 
 void GlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
