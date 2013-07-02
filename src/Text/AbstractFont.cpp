@@ -115,12 +115,30 @@ Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
     return doGlyphAdvance(glyph);
 }
 
-void AbstractFont::createGlyphCache(GlyphCache* const cache, const std::string& characters) {
-    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::createGlyphCache(): no font opened", );
-    CORRADE_ASSERT(!characters.empty() || features() & Feature::Enumerable,
-        "Text::AbstractFont::createGlyphCache(): the font is not enumerable, can't create cache from all characters", );
+void AbstractFont::fillGlyphCache(GlyphCache* const cache, const std::string& characters) {
+    CORRADE_ASSERT(isOpened(),
+        "Text::AbstractFont::createGlyphCache(): no font opened", );
+    CORRADE_ASSERT(!(features() & Feature::PreparedGlyphCache),
+        "Text::AbstractFont::fillGlyphCache(): feature not supported", );
 
-    doCreateGlyphCache(cache, Utility::Unicode::utf32(characters));
+    doFillGlyphCache(cache, Utility::Unicode::utf32(characters));
+}
+
+void AbstractFont::doFillGlyphCache(GlyphCache*, const std::u32string&) {
+    CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
+}
+
+GlyphCache* AbstractFont::createGlyphCache() {
+    CORRADE_ASSERT(isOpened(),
+        "Text::AbstractFont::createGlyphCache(): no font opened", nullptr);
+    CORRADE_ASSERT(features() & Feature::PreparedGlyphCache,
+        "Text::AbstractFont::createGlyphCache(): feature not supported", nullptr);
+
+    return doCreateGlyphCache();
+}
+
+GlyphCache* AbstractFont::doCreateGlyphCache() {
+    CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
 }
 
 AbstractLayouter* AbstractFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {

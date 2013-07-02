@@ -57,8 +57,6 @@ class SingleDataFont: public Text::AbstractFont {
             opened = (data.size() == 1 && data[0] == 0xa5);
         }
 
-        void doCreateGlyphCache(GlyphCache*, const std::u32string&) override {}
-
         UnsignedInt doGlyphId(char32_t) override { return 0; }
 
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }

@@ -84,10 +84,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
             MultiFile = 1 << 1,
 
             /**
-             * The font is enumerable, i.e. it is possible to loop over all
-             * characters in the font.
+             * The font contains prepared glyph cache.
+             *
+             * @see fillGlyphCache(), createGlyphCache()
              */
-            Enumerable = 1 << 2
+            PreparedGlyphCache = 1 << 2
         };
 
         /** @brief Set of features supported by this importer */
@@ -166,15 +167,25 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         Vector2 glyphAdvance(UnsignedInt glyph);
 
         /**
-         * @brief Create glyph cache for given character set
+         * @brief Fill glyph cache with given character set
          * @param cache         Glyph cache instance
          * @param characters    UTF-8 characters to render
          *
-         * Fills the cache with given characters. If @ref Feature "Feature::Enumerable"
-         * is supported, @p characters can be empty and all glyphs from given
-         * font will be added to the cache.
+         * Fills the cache with given characters. Fonts having
+         * @ref Feature "Feature::PreparedGlyphCache" do not support partial
+         * glyph cache filling, use createGlyphCache() instead.
          */
-        void createGlyphCache(GlyphCache* cache, const std::string& characters);
+        void fillGlyphCache(GlyphCache* cache, const std::string& characters);
+
+        /**
+         * @brief Create glyph cache
+         *
+         * Configures and fills glyph cache with the contents of whole font.
+         * Available only if @ref Feature "Feature::PreparedGlyphCache" is
+         * supported. Other fonts support only partial glyph cache filling,
+         * see fillGlyphCache().
+         */
+        GlyphCache* createGlyphCache();
 
         /**
          * @brief Layout the text using font's own layouter
@@ -182,7 +193,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size      Font size
          * @param text      %Text to layout
          *
-         * @see createGlyphCache()
+         * @see fillGlyphCache(), createGlyphCache()
          */
         AbstractLayouter* layout(const GlyphCache* cache, Float size, const std::string& text);
 
@@ -240,7 +251,12 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * The string is converted from UTF-8 to UTF-32, unique characters are
          * *not* removed.
          */
-        virtual void doCreateGlyphCache(GlyphCache* cache, const std::u32string& characters) = 0;
+        virtual void doFillGlyphCache(GlyphCache* cache, const std::u32string& characters);
+
+        /**
+         * @brief Implementation for createGlyphCache()
+         */
+        virtual GlyphCache* doCreateGlyphCache();
 
         /** @brief Implementation for layout() */
         virtual AbstractLayouter* doLayout(const GlyphCache* cache, Float size, const std::string& text) = 0;
