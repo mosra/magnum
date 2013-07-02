@@ -32,4 +32,5 @@ corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp LIB
 
 if(BUILD_GL_TESTS)
     corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText ${GL_TEST_LIBRARIES})
+    corrade_add_test(TextRendererGLTest TextRendererGLTest.cpp LIBRARIES MagnumText ${GL_TEST_LIBRARIES})
 endif()

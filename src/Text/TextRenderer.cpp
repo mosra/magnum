@@ -37,11 +37,11 @@ namespace {
 template<class T> void createIndices(void* output, const UnsignedInt glyphCount) {
     T* const out = reinterpret_cast<T*>(output);
     for(UnsignedInt i = 0; i != glyphCount; ++i) {
-        /* 0---2 2
-           |  / /|
-           | / / |
-           |/ /  |
-           1 1---3 */
+        /* 0---2 0---2 5
+           |   | |  / /|
+           |   | | / / |
+           |   | |/ /  |
+           1---3 1 3---4 */
 
         const T vertex = i*4;
         const T pos = i*6;
@@ -69,6 +69,9 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     positions.reserve(vertexCount);
     texcoords.reserve(vertexCount);
 
+    /* Rendered rectangle */
+    Rectangle rectangle;
+
     /* Render all glyphs */
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
@@ -76,6 +79,12 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
         Rectangle quadPosition, textureCoordinates;
         Vector2 advance;
         std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(cursorPosition, i);
+
+        /* 0---2
+           |   |
+           |   |
+           |   |
+           1---3 */
 
         positions.insert(positions.end(), {
             quadPosition.topLeft(),
@@ -90,6 +99,10 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
             textureCoordinates.bottomRight()
         });
 
+        /* Extend rectangle with current quad bounds */
+        rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), quadPosition.bottomLeft());
+        rectangle.topRight() = Math::max(rectangle.topRight(), quadPosition.topRight());
+
         /* Advance cursor position to next character */
         cursorPosition += advance;
     }
@@ -97,10 +110,6 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     /* Create indices */
     std::vector<UnsignedInt> indices(layouter->glyphCount()*6);
     createIndices<UnsignedInt>(indices.data(), layouter->glyphCount());
-
-    /* Rendered rectangle */
-    Rectangle rectangle;
-    if(layouter->glyphCount()) rectangle = {positions[1], positions[positions.size()-2]};
 
     delete layouter;
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
@@ -116,6 +125,9 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const fon
     std::vector<Vertex> vertices;
     vertices.reserve(vertexCount);
 
+    /* Rendered rectangle */
+    Rectangle rectangle;
+
     /* Render all glyphs */
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
@@ -130,6 +142,10 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const fon
             {quadPosition.topRight(), textureCoordinates.topRight()},
             {quadPosition.bottomRight(), textureCoordinates.bottomRight()}
         });
+
+        /* Extend rectangle with current quad bounds */
+        rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), quadPosition.bottomLeft());
+        rectangle.topRight() = Math::max(rectangle.topRight(), quadPosition.topRight());
 
         /* Advance cursor position to next character */
         cursorPosition += advance;
@@ -159,10 +175,6 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const fon
     indexBuffer->setData(indicesSize, indices, usage);
     delete indices;
 
-    /* Rendered rectangle */
-    Rectangle rectangle;
-    if(layouter->glyphCount()) rectangle = {vertices[1].position, vertices[vertices.size()-2].position};
-
     /* Configure mesh except for vertex buffer (depends on dimension count, done
        in subclass) */
     Mesh mesh;
@@ -185,7 +197,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     return std::move(r);
 }
 
-AbstractTextRenderer::AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size): vertexBuffer(Buffer::Target::Array), indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
+AbstractTextRenderer::AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #else
@@ -202,7 +214,7 @@ AbstractTextRenderer::~AbstractTextRenderer() {}
 
 template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont* const font, const GlyphCache* const cache, const Float size): AbstractTextRenderer(font, cache, size) {
     /* Finalize mesh configuration */
-    _mesh.addInterleavedVertexBuffer(&vertexBuffer, 0,
+    _mesh.addInterleavedVertexBuffer(&_vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(Shaders::AbstractVector<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
 }
@@ -214,7 +226,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
     const UnsignedInt indexCount = glyphCount*6;
 
     /* Allocate vertex buffer, reset vertex count */
-    vertexBuffer.setData(vertexCount*sizeof(Vertex), nullptr, vertexBufferUsage);
+    _vertexBuffer.setData(vertexCount*sizeof(Vertex), nullptr, vertexBufferUsage);
     _mesh.setVertexCount(0);
 
     /* Allocate index buffer, reset index count and reconfigure buffer binding */
@@ -230,28 +242,32 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
         indexType = Mesh::IndexType::UnsignedInt;
         indicesSize = indexCount*sizeof(UnsignedInt);
     }
-    indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
+    _indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
     _mesh.setIndexCount(0)
-        ->setIndexBuffer(&indexBuffer, 0, indexType, 0, vertexCount);
+        ->setIndexBuffer(&_indexBuffer, 0, indexType, 0, vertexCount);
 
     /* Prefill index buffer */
-    void* indices = indexBuffer.map(0, indicesSize, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
+    void* indices = _indexBuffer.map(0, indicesSize, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
     if(vertexCount < 255)
         createIndices<UnsignedByte>(indices, glyphCount);
     else if(vertexCount < 65535)
         createIndices<UnsignedShort>(indices, glyphCount);
     else
         createIndices<UnsignedInt>(indices, glyphCount);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(indexBuffer.unmap());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_indexBuffer.unmap());
 }
 
 void AbstractTextRenderer::render(const std::string& text) {
     AbstractLayouter* layouter = font->layout(cache, size, text);
 
-    CORRADE_ASSERT(layouter->glyphCount() <= _capacity, "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );
+    CORRADE_ASSERT(layouter->glyphCount() <= _capacity,
+        "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );
+
+    /* Reset rendered rectangle */
+    _rectangle = {};
 
     /* Render all glyphs */
-    Vertex* const vertices = static_cast<Vertex*>(vertexBuffer.map(0, layouter->glyphCount()*4*sizeof(Vertex),
+    Vertex* const vertices = static_cast<Vertex*>(_vertexBuffer.map(0, layouter->glyphCount()*4*sizeof(Vertex),
         Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write));
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
@@ -260,10 +276,9 @@ void AbstractTextRenderer::render(const std::string& text) {
         Vector2 advance;
         std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(cursorPosition, i);
 
-        if(i == 0)
-            _rectangle.bottomLeft() = quadPosition.bottomLeft();
-        else if(i == layouter->glyphCount()-1)
-            _rectangle.topRight() = quadPosition.topRight();
+        /* Extend rectangle with current quad bounds */
+        _rectangle.bottomLeft() = Math::min(_rectangle.bottomLeft(), quadPosition.bottomLeft());
+        _rectangle.topRight() = Math::max(_rectangle.topRight(), quadPosition.topRight());
 
         const std::size_t vertex = i*4;
         vertices[vertex]   = {quadPosition.topLeft(), textureCoordinates.topLeft()};
@@ -274,7 +289,7 @@ void AbstractTextRenderer::render(const std::string& text) {
         /* Advance cursor position to next character */
         cursorPosition += advance;
     }
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vertexBuffer.unmap());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_vertexBuffer.unmap());
 
     /* Update index count */
     _mesh.setIndexCount(layouter->glyphCount()*6);
