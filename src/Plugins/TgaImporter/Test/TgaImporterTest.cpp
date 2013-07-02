@@ -33,7 +33,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace TgaImporter { namespace Test {
+namespace Magnum { namespace Trade { namespace Test {
 
 class TgaImporterTest: public TestSuite::Tester {
     public:
@@ -238,6 +238,6 @@ void TgaImporterTest::file() {
                     std::string(reinterpret_cast<const char*>(data) + 18, 2*3));
 }
 
-}}}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Trade::TgaImporter::Test::TgaImporterTest)
+CORRADE_TEST_MAIN(Magnum::Trade::Test::TgaImporterTest)

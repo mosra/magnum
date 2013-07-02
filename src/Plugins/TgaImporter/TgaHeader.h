@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_TgaImporter_TgaHeader_h
-#define Magnum_Trade_TgaImporter_TgaHeader_h
+#ifndef Magnum_Trade_TgaHeader_h
+#define Magnum_Trade_TgaHeader_h
 /*
     This file is part of Magnum.
 
@@ -25,12 +25,12 @@
 */
 
 /** @file
- * @brief Struct Magnum::Trade::TgaImporter::TgaHeader
+ * @brief Struct Magnum::Trade::TgaHeader
  */
 
 #include <Magnum.h>
 
-namespace Magnum { namespace Trade { namespace TgaImporter {
+namespace Magnum { namespace Trade {
 
 #pragma pack(1)
 /** @brief TGA file header */
@@ -53,6 +53,6 @@ struct TgaHeader {
 
 static_assert(sizeof(TgaHeader) == 18, "TgaHeader size is not 18 bytes");
 
-}}}
+}}
 
 #endif

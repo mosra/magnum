@@ -35,7 +35,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace TgaImageConverter { namespace Test {
+namespace Magnum { namespace Trade { namespace Test {
 
 class TgaImageConverterTest: public TestSuite::Tester {
     public:
@@ -92,7 +92,7 @@ void TgaImageConverterTest::wrongType() {
 void TgaImageConverterTest::data() {
     const auto data = TgaImageConverter().exportToData(&original);
 
-    TgaImporter::TgaImporter importer;
+    TgaImporter importer;
     CORRADE_VERIFY(importer.openData(data));
     Trade::ImageData2D* converted = importer.image2D(0);
     CORRADE_VERIFY(converted);
@@ -108,6 +108,6 @@ void TgaImageConverterTest::data() {
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
 }
 
-}}}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Trade::TgaImageConverter::Test::TgaImageConverterTest)
+CORRADE_TEST_MAIN(Magnum::Trade::Test::TgaImageConverterTest)

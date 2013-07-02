@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_TgaImporter_TgaImporter_h
-#define Magnum_Trade_TgaImporter_TgaImporter_h
+#ifndef Magnum_Trade_TgaImporter_h
+#define Magnum_Trade_TgaImporter_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TgaImporter::TgaImporter
+ * @brief Class Magnum::Trade::TgaImporter
  */
 
 #include <Utility/Visibility.h>
@@ -38,7 +38,7 @@
 #endif
 #define MAGNUM_TGAIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
 
-namespace Magnum { namespace Trade { namespace TgaImporter {
+namespace Magnum { namespace Trade {
 
 /**
 @brief TGA image importer
@@ -67,6 +67,6 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         std::istream* in;
 };
 
-}}}
+}}
 
 #endif

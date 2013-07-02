@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_TgaImageConverter_TgaImageConverter_h
-#define Magnum_Trade_TgaImageConverter_TgaImageConverter_h
+#ifndef Magnum_Trade_TgaImageConverter_h
+#define Magnum_Trade_TgaImageConverter_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TgaImageConverter::TgaImageConverter
+ * @brief Class Magnum::Trade::TgaImageConverter
  */
 
 #include <Trade/AbstractImageConverter.h>
@@ -37,7 +37,7 @@
 #endif
 #define MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL CORRADE_VISIBILITY_LOCAL
 
-namespace Magnum { namespace Trade { namespace TgaImageConverter {
+namespace Magnum { namespace Trade {
 
 /**
 @brief TGA image converter
@@ -59,6 +59,6 @@ class MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractIm
         Containers::Array<unsigned char> MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL doExportToData(const Image2D* const image) const override;
 };
 
-}}}
+}}
 
 #endif

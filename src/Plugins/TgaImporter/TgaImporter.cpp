@@ -38,7 +38,7 @@
 
 #include "TgaHeader.h"
 
-namespace Magnum { namespace Trade { namespace TgaImporter {
+namespace Magnum { namespace Trade {
 
 TgaImporter::TgaImporter(): in(nullptr) {}
 
@@ -150,4 +150,4 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     return new ImageData2D(dimensions, format, ImageType::UnsignedByte, buffer);
 }
 
-}}}
+}}

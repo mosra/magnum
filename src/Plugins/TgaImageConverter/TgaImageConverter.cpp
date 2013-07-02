@@ -38,7 +38,7 @@
 
 #include "TgaImporter/TgaHeader.h"
 
-namespace Magnum { namespace Trade { namespace TgaImageConverter {
+namespace Magnum { namespace Trade {
 
 TgaImageConverter::TgaImageConverter() = default;
 
@@ -68,25 +68,25 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const Image2D
 
     /* Initialize data buffer */
     const UnsignedByte pixelSize = image->pixelSize();
-    auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaImporter::TgaHeader) + pixelSize*image->size().product());
+    auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image->size().product());
 
     /* Fill header */
-    auto header = reinterpret_cast<TgaImporter::TgaHeader*>(data.begin());
+    auto header = reinterpret_cast<TgaHeader*>(data.begin());
     header->imageType = image->format() == ImageFormat::Red ? 3 : 2;
     header->bpp = pixelSize*8;
     header->width = Utility::Endianness::littleEndian(image->size().x());
     header->height = Utility::Endianness::littleEndian(image->size().y());
 
     /* Fill data */
-    std::copy(image->data(), image->data()+pixelSize*image->size().product(), data.begin()+sizeof(TgaImporter::TgaHeader));
+    std::copy(image->data(), image->data()+pixelSize*image->size().product(), data.begin()+sizeof(TgaHeader));
 
     #ifdef MAGNUM_TARGET_GLES
     if(image->format() == ImageFormat::RGB) {
-        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaImporter::TgaHeader));
+        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image->size().product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
     } else if(image->format() == ImageFormat::RGBA) {
-        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaImporter::TgaHeader));
+        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image->size().product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
@@ -95,4 +95,4 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const Image2D
     return std::move(data);
 }
 
-}}}
+}}

@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "TgaImageConverter.h"
+#include "TgaImageConverter/TgaImageConverter.h"
 
-CORRADE_PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter::TgaImageConverter,
+CORRADE_PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter,
     "cz.mosra.magnum.Trade.AbstractImageConverter/0.2")
