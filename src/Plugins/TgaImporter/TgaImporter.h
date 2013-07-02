@@ -32,11 +32,11 @@
 #include <Trade/AbstractImporter.h>
 
 #ifdef TgaImporter_EXPORTS
-    #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
-    #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
 #endif
-#define MAGNUM_TGAIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#define MAGNUM_TRADE_TGAIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
 
 namespace Magnum { namespace Trade {
 
@@ -45,7 +45,7 @@ namespace Magnum { namespace Trade {
 
 Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
 */
-class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
+class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
         explicit TgaImporter();
@@ -56,13 +56,13 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         virtual ~TgaImporter();
 
     private:
-        Features MAGNUM_TGAIMPORTER_LOCAL doFeatures() const override;
-        bool MAGNUM_TGAIMPORTER_LOCAL doIsOpened() const override;
-        void MAGNUM_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayReference<const unsigned char> data) override;
-        void MAGNUM_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
-        void MAGNUM_TGAIMPORTER_LOCAL doClose() override;
-        UnsignedInt MAGNUM_TGAIMPORTER_LOCAL doImage2DCount() const override;
-        ImageData2D MAGNUM_TGAIMPORTER_LOCAL * doImage2D(UnsignedInt id) override;
+        Features MAGNUM_TRADE_TGAIMPORTER_LOCAL doFeatures() const override;
+        bool MAGNUM_TRADE_TGAIMPORTER_LOCAL doIsOpened() const override;
+        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayReference<const unsigned char> data) override;
+        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
+        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doClose() override;
+        UnsignedInt MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2DCount() const override;
+        ImageData2D MAGNUM_TRADE_TGAIMPORTER_LOCAL * doImage2D(UnsignedInt id) override;
 
         std::istream* in;
 };
