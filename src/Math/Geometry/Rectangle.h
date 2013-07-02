@@ -163,7 +163,7 @@ template<class T> struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<T>
     /** @brief Reads elements separated with whitespace */
     static Magnum::Math::Geometry::Rectangle<T> fromString(const std::string& stringValue, const ConfigurationValueFlags flags) {
         const auto vec = ConfigurationValue<Magnum::Math::Vector<4, T>>::fromString(stringValue, flags);
-        return reinterpret_cast<const Magnum::Math::Geometry::Rectangle<T>&>(vec);
+        return {{vec[0], vec[1]}, {vec[2], vec[3]}};
     }
 };
 
