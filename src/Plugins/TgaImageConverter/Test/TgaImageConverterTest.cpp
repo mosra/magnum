@@ -49,9 +49,9 @@ class TgaImageConverterTest: public TestSuite::Tester {
 
 namespace {
     #ifndef MAGNUM_TARGET_GLES
-    const Image2D original({2, 3}, ImageFormat::BGR, ImageType::UnsignedByte, new char[18]
+    const Image2D original(ImageFormat::BGR, ImageType::UnsignedByte, {2, 3}, new char[18]
     #else
-    const Image2D original({2, 3}, ImageFormat::RGB, ImageType::UnsignedByte, new char[18]
+    const Image2D original(ImageFormat::RGB, ImageType::UnsignedByte, {2, 3}, new char[18]
     #endif
     {
         1, 2, 3, 2, 3, 4,
@@ -68,7 +68,7 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    Image2D image({}, ImageFormat::RG, ImageType::UnsignedByte, nullptr);
+    Image2D image(ImageFormat::RG, ImageType::UnsignedByte, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
@@ -79,7 +79,7 @@ void TgaImageConverterTest::wrongFormat() {
 }
 
 void TgaImageConverterTest::wrongType() {
-    Image2D image({}, ImageFormat::Red, ImageType::Float, nullptr);
+    Image2D image(ImageFormat::Red, ImageType::Float, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);

@@ -129,11 +129,11 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
         return nullptr;
     }
 
-    std::size_t size = header.width*header.height*header.bpp/8;
-    char* buffer = new char[size];
-    in->read(buffer, size);
+    const std::size_t dataSize = header.width*header.height*header.bpp/8;
+    char* const data = new char[dataSize];
+    in->read(data, dataSize);
 
-    Vector2i dimensions(header.width, header.height);
+    Vector2i size(header.width, header.height);
 
     #ifdef MAGNUM_TARGET_GLES
     if(format == ImageFormat::RGB) {
@@ -147,7 +147,7 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     }
     #endif
 
-    return new ImageData2D(dimensions, format, ImageType::UnsignedByte, buffer);
+    return new ImageData2D(format, ImageType::UnsignedByte, size, data);
 }
 
 }}
