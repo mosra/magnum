@@ -469,7 +469,7 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
 
     /* Insert it, if not already here */
     } else if(it == _data.end())
-        it = _data.insert(std::make_pair(key, Data())).first;
+        it = _data.emplace(key, Data()).first;
 
     /* Replace previous data */
     delete it->second.data;

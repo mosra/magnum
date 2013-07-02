@@ -337,7 +337,7 @@ Context::Context() {
     std::unordered_map<std::string, Extension> futureExtensions;
     for(std::size_t i = future; i != versions.size(); ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))
-            futureExtensions.insert(std::make_pair(extension._string, extension));
+            futureExtensions.emplace(extension._string, extension);
 
     /* Check for presence of extensions in future versions */
     #ifndef MAGNUM_TARGET_GLES2
