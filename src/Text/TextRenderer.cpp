@@ -78,7 +78,11 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
         /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
         Vector2 advance;
-        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(cursorPosition, i);
+        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(i);
+
+        /* Move the quad to cursor */
+        quadPosition.bottomLeft() += cursorPosition;
+        quadPosition.topRight() += cursorPosition;
 
         /* 0---2
            |   |
@@ -134,7 +138,11 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const fon
         /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
         Vector2 advance;
-        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(cursorPosition, i);
+        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(i);
+
+        /* Move the quad to cursor */
+        quadPosition.bottomLeft() += cursorPosition;
+        quadPosition.topRight() += cursorPosition;
 
         vertices.insert(vertices.end(), {
             {quadPosition.topLeft(), textureCoordinates.topLeft()},
@@ -274,7 +282,11 @@ void AbstractTextRenderer::render(const std::string& text) {
         /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
         Vector2 advance;
-        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(cursorPosition, i);
+        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(i);
+
+        /* Move the quad to cursor */
+        quadPosition.bottomLeft() += cursorPosition;
+        quadPosition.topRight() += cursorPosition;
 
         /* Extend rectangle with current quad bounds */
         _rectangle.bottomLeft() = Math::min(_rectangle.bottomLeft(), quadPosition.bottomLeft());

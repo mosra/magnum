@@ -51,10 +51,10 @@ class TestLayouter: public Text::AbstractLayouter {
             _glyphCount = glyphCount;
         }
 
-        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, UnsignedInt i) override {
+        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) override {
             return std::make_tuple(
-                Rectangle(cursorPosition, cursorPosition+Vector2(3.0f, 2.0f)*((i+1)*_size)),
-                Rectangle({i*6.0f, 0.0f}, {(i+1)*6.0f, 10.0f}),
+                Rectangle({}, Vector2(3.0f, 2.0f)*((i+1)*_size)),
+                Rectangle::fromSize({i*6.0f, 0.0f}, {6.0f, 10.0f}),
                 (Vector2::xAxis((i+1)*3.0f)+Vector2(1.0f, -1.0f))*_size
             );
         }

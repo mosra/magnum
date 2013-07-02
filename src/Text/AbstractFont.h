@@ -271,12 +271,11 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
         /**
          * @brief Render glyph
          * @param i                 Glyph index
-         * @param cursorPosition    Cursor position
          *
          * Returns quad position, texture coordinates and advance to next
          * glyph.
          */
-        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, UnsignedInt i) = 0;
+        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
