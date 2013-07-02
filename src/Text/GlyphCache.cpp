@@ -31,7 +31,15 @@
 
 namespace Magnum { namespace Text {
 
-GlyphCache::GlyphCache(const Vector2i& size): _size(size) {
+GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
+    initialize(internalFormat, size);
+}
+
+GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): _size(size), _padding(padding) {
+    initialize(internalFormat, size);
+}
+
+GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): _size(size), _padding(padding) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
     #endif
@@ -46,12 +54,6 @@ GlyphCache::GlyphCache(const Vector2i& size): _size(size) {
 
     initialize(internalFormat, size);
 }
-
-GlyphCache::GlyphCache(const Vector2i& size, const TextureFormat internalFormat): _size(size) {
-    initialize(internalFormat, size);
-}
-
-GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): _size(size), _padding(padding) {}
 
 GlyphCache::~GlyphCache() = default;
 

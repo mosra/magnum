@@ -34,22 +34,23 @@
 
 namespace Magnum { namespace Text {
 
-DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& distanceFieldSize, UnsignedInt radius): GlyphCache(originalSize, Vector2i(radius)), scale(Vector2(distanceFieldSize)/originalSize), radius(radius) {
+DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, const UnsignedInt radius):
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    GlyphCache(TextureFormat::R8, originalSize, size, Vector2i(radius)),
+    #else
+    GlyphCache(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
+        TextureFormat::Red : TextureFormat::RGB, originalSize, size, Vector2i(radius)),
+    #endif
+    scale(Vector2(size)/originalSize), radius(radius)
+{
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
     #endif
 
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
-    const TextureFormat internalFormat = TextureFormat::R8;
-    #else
-    const TextureFormat internalFormat =
-        Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
-        TextureFormat::Red : TextureFormat::RGB;
-    if(internalFormat == TextureFormat::RGB)
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>())
         Warning() << "Text::DistanceFieldGlyphCache:" << Extensions::GL::EXT::texture_rg::string() << "not supported, using inefficient RGB format for glyph cache texture";
     #endif
-
-    initialize(internalFormat, distanceFieldSize);
 }
 
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
@@ -81,11 +82,11 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageRefere
         ->setImage(0, internalFormat, image);
 
     /* Create distance field from input texture */
-    TextureTools::distanceField(&input, &_texture, Rectanglei::fromSize(offset*scale, image.size()*scale), radius, image.size());
+    TextureTools::distanceField(&input, texture(), Rectanglei::fromSize(offset*scale, image.size()*scale), radius, image.size());
 }
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image) {
-    _texture.setSubImage(0, offset, image);
+    texture()->setSubImage(0, offset, image);
 }
 
 }}
