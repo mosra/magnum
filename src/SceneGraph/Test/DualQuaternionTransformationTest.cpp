@@ -30,8 +30,8 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-typedef Object<DualQuaternionTransformation<>> Object3D;
-typedef Scene<DualQuaternionTransformation<>> Scene3D;
+typedef Object<DualQuaternionTransformation> Object3D;
+typedef Scene<DualQuaternionTransformation> Scene3D;
 
 class DualQuaternionTransformationTest: public TestSuite::Tester {
     public:
@@ -67,24 +67,24 @@ DualQuaternionTransformationTest::DualQuaternionTransformationTest() {
 void DualQuaternionTransformationTest::fromMatrix() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation<>::fromMatrix(m), q);
+    CORRADE_COMPARE(DualQuaternionTransformation::fromMatrix(m), q);
 }
 
 void DualQuaternionTransformationTest::toMatrix() {
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation<>::toMatrix(q), m);
+    CORRADE_COMPARE(DualQuaternionTransformation::toMatrix(q), m);
 }
 
 void DualQuaternionTransformationTest::compose() {
     DualQuaternion parent = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis());
     DualQuaternion child = DualQuaternion::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation<>::compose(parent, child), parent*child);
+    CORRADE_COMPARE(DualQuaternionTransformation::compose(parent, child), parent*child);
 }
 
 void DualQuaternionTransformationTest::inverted() {
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation<>::inverted(q)*q, DualQuaternion());
+    CORRADE_COMPARE(DualQuaternionTransformation::inverted(q)*q, DualQuaternion());
 }
 
 void DualQuaternionTransformationTest::setTransformation() {

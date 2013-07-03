@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::DualQuaternionTransformation
+ * @brief Class Magnum::SceneGraph::BasicDualQuaternionTransformation, typedef Magnum::SceneGraph::DualQuaternionTransformation
  */
 
 #include "Math/DualQuaternion.h"
@@ -39,14 +39,9 @@ namespace Magnum { namespace SceneGraph {
 
 This class allows only rigid transformation (i.e. only rotation and
 translation).
-@see @ref scenegraph, Math::DualQuaternion, DualComplexTransformation
+@see @ref DualQuaternionTransformation @ref scenegraph, Math::DualQuaternion, @ref BasicDualComplexTransformation
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
+template<class T> class BasicDualQuaternionTransformation: public AbstractBasicTranslationRotation3D<T> {
     public:
         /** @brief Underlying transformation type */
         typedef Math::DualQuaternion<T> DataType;
@@ -83,9 +78,9 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * the object subsequently.
          * @see DualQuaternion::normalized()
          */
-        Object<DualQuaternionTransformation<T>>* normalizeRotation() {
+        Object<BasicDualQuaternionTransformation<T>>* normalizeRotation() {
             setTransformation(_transformation.normalized());
-            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this);
         }
 
         /**
@@ -95,18 +90,18 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * Expects that the dual quaternion is normalized.
          * @see DualQuaternion::isNormalized()
          */
-        Object<DualQuaternionTransformation<T>>* setTransformation(const Math::DualQuaternion<T>& transformation) {
+        Object<BasicDualQuaternionTransformation<T>>* setTransformation(const Math::DualQuaternion<T>& transformation) {
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized",
-                static_cast<Object<DualQuaternionTransformation<T>>*>(this));
+                static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this));
             setTransformationInternal(transformation);
-            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this);
         }
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
-        Object<DualQuaternionTransformation<T>>* resetTransformation() {
+        Object<BasicDualQuaternionTransformation<T>>* resetTransformation() {
             setTransformation({});
-            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this);
         }
 
         /**
@@ -118,21 +113,21 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * Expects that the dual quaternion is normalized.
          * @see DualQuaternion::isNormalized()
          */
-        Object<DualQuaternionTransformation<T>>* transform(const Math::DualQuaternion<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>* transform(const Math::DualQuaternion<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized",
-                static_cast<Object<DualQuaternionTransformation<T>>*>(this));
+                static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this));
             transformInternal(transformation, type);
-            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::translate()
          * Same as calling transform() with DualQuaternion::translation().
          */
-        Object<DualQuaternionTransformation<T>>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             transformInternal(Math::DualQuaternion<T>::translation(vector), type);
-            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this);
         }
 
         /**
@@ -146,27 +141,27 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
          * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
          *      normalizeRotation()
          */
-        Object<DualQuaternionTransformation<T>>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);
-            return static_cast<Object<DualQuaternionTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Object<DualQuaternionTransformation<T>>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return rotate(angle, Math::Vector3<T>::xAxis(), type);
         }
-        Object<DualQuaternionTransformation<T>>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return rotate(angle, Math::Vector3<T>::yAxis(), type);
         }
-        Object<DualQuaternionTransformation<T>>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return rotate(angle, Math::Vector3<T>::zAxis(), type);
         }
         #endif
 
     protected:
         /* Allow construction only from Object */
-        explicit DualQuaternionTransformation() = default;
+        explicit BasicDualQuaternionTransformation() = default;
 
     private:
         void doResetTransformation() override final { resetTransformation(); }
@@ -184,9 +179,9 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
-            if(!static_cast<Object<DualQuaternionTransformation<T>>*>(this)->isScene()) {
+            if(!static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this)->isScene()) {
                 _transformation = transformation;
-                static_cast<Object<DualQuaternionTransformation<T>>*>(this)->setDirty();
+                static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this)->setDirty();
             }
         }
 
@@ -198,6 +193,13 @@ class DualQuaternionTransformation: public AbstractTranslationRotation3D<T> {
 
         Math::DualQuaternion<T> _transformation;
 };
+
+/**
+@brief Three-dimensional transformation for float scenes implemented using dual quaternions
+
+@see @ref DualComplexTransformation
+*/
+typedef BasicDualQuaternionTransformation<Float> DualQuaternionTransformation;
 
 }}
 

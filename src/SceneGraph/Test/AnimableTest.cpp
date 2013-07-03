@@ -45,7 +45,7 @@ class AnimableTest: public TestSuite::Tester {
         void debug();
 };
 
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
 AnimableTest::AnimableTest() {
     addTests({&AnimableTest::state,

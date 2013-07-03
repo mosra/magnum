@@ -39,8 +39,8 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class AbstractBasicObject<2, Float>;
 template class AbstractBasicObject<3, Float>;
-template class AbstractTransformation<2, Float>;
-template class AbstractTransformation<3, Float>;
+template class AbstractBasicTransformation<2, Float>;
+template class AbstractBasicTransformation<3, Float>;
 
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeature<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeature<3, Float>;
@@ -52,12 +52,12 @@ template class AbstractBasicCamera<3, Float>;
 template class BasicCamera2D<Float>;
 template class BasicCamera3D<Float>;
 
-template class MAGNUM_SCENEGRAPH_EXPORT Object<DualComplexTransformation<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<DualQuaternionTransformation<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<MatrixTransformation2D<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<MatrixTransformation3D<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<RigidMatrixTransformation2D<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<RigidMatrixTransformation3D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualComplexTransformation<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualQuaternionTransformation<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation2D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation3D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation2D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation3D<Float>>;
 #endif
 
 }}

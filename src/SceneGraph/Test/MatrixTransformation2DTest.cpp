@@ -29,8 +29,8 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-typedef Object<MatrixTransformation2D<>> Object2D;
-typedef Scene<MatrixTransformation2D<>> Scene2D;
+typedef Object<MatrixTransformation2D> Object2D;
+typedef Scene<MatrixTransformation2D> Scene2D;
 
 class MatrixTransformation2DTest: public TestSuite::Tester {
     public:
@@ -67,23 +67,23 @@ MatrixTransformation2DTest::MatrixTransformation2DTest() {
 
 void MatrixTransformation2DTest::fromMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(MatrixTransformation2D<>::fromMatrix(m), m);
+    CORRADE_COMPARE(MatrixTransformation2D::fromMatrix(m), m);
 }
 
 void MatrixTransformation2DTest::toMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(MatrixTransformation2D<>::toMatrix(m), m);
+    CORRADE_COMPARE(MatrixTransformation2D::toMatrix(m), m);
 }
 
 void MatrixTransformation2DTest::compose() {
     Matrix3 parent = Matrix3::rotation(Deg(17.0f));
     Matrix3 child = Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(MatrixTransformation2D<>::compose(parent, child), parent*child);
+    CORRADE_COMPARE(MatrixTransformation2D::compose(parent, child), parent*child);
 }
 
 void MatrixTransformation2DTest::inverted() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(MatrixTransformation2D<>::inverted(m)*m, Matrix3());
+    CORRADE_COMPARE(MatrixTransformation2D::inverted(m)*m, Matrix3());
 }
 
 void MatrixTransformation2DTest::setTransformation() {

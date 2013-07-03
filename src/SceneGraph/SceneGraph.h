@@ -64,16 +64,19 @@ typedef AbstractBasicObject<3, Float> AbstractObject3D;
 
 enum class TransformationType: UnsignedByte;
 
-template<UnsignedInt dimensions, class T = Float> class AbstractTransformation;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractTransformation2D = AbstractTransformation<2, T>;
-template<class T = Float> using AbstractTransformation3D = AbstractTransformation<3, T>;
-#endif
+template<UnsignedInt dimensions, class> class AbstractBasicTransformation;
+typedef AbstractBasicTransformation<2, Float> AbstractTransformation2D;
+typedef AbstractBasicTransformation<3, Float> AbstractTransformation3D;
 
-template<class T = Float> class AbstractTranslationRotation2D;
-template<class T = Float> class AbstractTranslationRotation3D;
-template<class T = Float> class AbstractTranslationRotationScaling2D;
-template<class T = Float> class AbstractTranslationRotationScaling3D;
+template<class> class AbstractBasicTranslationRotation2D;
+template<class> class AbstractBasicTranslationRotation3D;
+typedef AbstractBasicTranslationRotation2D<Float> AbstractTranslationRotation2D;
+typedef AbstractBasicTranslationRotation3D<Float> AbstractTranslationRotation3D;
+
+template<class> class AbstractBasicTranslationRotationScaling2D;
+template<class> class AbstractBasicTranslationRotationScaling3D;
+typedef AbstractBasicTranslationRotationScaling2D<Float> AbstractTranslationRotationScaling2D;
+typedef AbstractBasicTranslationRotationScaling3D<Float> AbstractTranslationRotationScaling3D;
 
 template<UnsignedInt, class> class BasicAnimable;
 typedef BasicAnimable<2, Float> Animable2D;
@@ -94,8 +97,10 @@ template<UnsignedInt, class> class BasicDrawable;
 typedef BasicDrawable<2, Float> Drawable2D;
 typedef BasicDrawable<3, Float> Drawable3D;
 
-template<class T = Float> class DualComplexTransformation;
-template<class T = Float> class DualQuaternionTransformation;
+template<class> class BasicDualComplexTransformation;
+template<class> class BasicDualQuaternionTransformation;
+typedef BasicDualComplexTransformation<Float> DualComplexTransformation;
+typedef BasicDualQuaternionTransformation<Float> DualQuaternionTransformation;
 
 template<UnsignedInt dimensions, class Feature, class T> class BasicFeatureGroup;
 #ifndef CORRADE_GCC46_COMPATIBILITY
@@ -111,13 +116,17 @@ template<UnsignedInt, class> class BasicDrawableGroup;
 typedef BasicDrawableGroup<2, Float> DrawableGroup2D;
 typedef BasicDrawableGroup<3, Float> DrawableGroup3D;
 
-template<class T = Float> class MatrixTransformation2D;
-template<class T = Float> class MatrixTransformation3D;
+template<class> class BasicMatrixTransformation2D;
+template<class> class BasicMatrixTransformation3D;
+typedef BasicMatrixTransformation2D<Float> MatrixTransformation2D;
+typedef BasicMatrixTransformation3D<Float> MatrixTransformation3D;
 
 template<class Transformation> class Object;
 
-template<class T = Float> class RigidMatrixTransformation2D;
-template<class T = Float> class RigidMatrixTransformation3D;
+template<class> class BasicRigidMatrixTransformation2D;
+template<class> class BasicRigidMatrixTransformation3D;
+typedef BasicRigidMatrixTransformation2D<Float> RigidMatrixTransformation2D;
+typedef BasicRigidMatrixTransformation3D<Float> RigidMatrixTransformation3D;
 
 template<class Transformation> class Scene;
 #endif

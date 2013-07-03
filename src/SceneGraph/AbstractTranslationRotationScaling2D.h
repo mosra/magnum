@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractTranslationRotationScaling2D
+ * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotationScaling2D, typedef Magnum::SceneGraph::AbstractTranslationRotationScaling2D
  */
 
 #include "AbstractTranslationRotation2D.h"
@@ -33,18 +33,13 @@
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief Base for two-dimensional transformations supporting translation, rotation and scaling
+@brief Base transformation for two-dimensional scenes supporting translation, rotation and scaling
 
-@see @ref scenegraph, AbstractTranslationRotationScaling2D
+@see @ref AbstractTranslationRotationScaling2D, @ref scenegraph, @ref AbstractBasicTranslationRotationScaling2D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class AbstractTranslationRotationScaling2D: public AbstractTranslationRotation2D<T> {
+template<class T> class AbstractBasicTranslationRotationScaling2D: public AbstractBasicTranslationRotation2D<T> {
     public:
-        explicit AbstractTranslationRotationScaling2D() = default;
+        explicit AbstractBasicTranslationRotationScaling2D() = default;
 
         /**
          * @brief Scale object
@@ -54,23 +49,23 @@ class AbstractTranslationRotationScaling2D: public AbstractTranslationRotation2D
          *
          * @see Vector2::xScale(), Vector2::yScale()
          */
-        AbstractTranslationRotationScaling2D<T>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling2D<T>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             doScale(vector, type);
             return this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractTranslationRotationScaling2D<T>* resetTransformation() {
-            AbstractTranslationRotation2D<T>::resetTransformation();
+        AbstractBasicTranslationRotationScaling2D<T>* resetTransformation() {
+            AbstractBasicTranslationRotation2D<T>::resetTransformation();
             return this;
         }
-        AbstractTranslationRotationScaling2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            AbstractTranslationRotation2D<T>::translate(vector, type);
+        AbstractBasicTranslationRotationScaling2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+            AbstractBasicTranslationRotation2D<T>::translate(vector, type);
             return this;
         }
-        AbstractTranslationRotationScaling2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            AbstractTranslationRotation2D<T>::rotate(angle, type);
+        AbstractBasicTranslationRotationScaling2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractBasicTranslationRotation2D<T>::rotate(angle, type);
             return this;
         }
         #endif
@@ -83,6 +78,13 @@ class AbstractTranslationRotationScaling2D: public AbstractTranslationRotation2D
         /** @brief Polymorphic implementation for scale() */
         virtual void doScale(const Math::Vector2<T>& vector, TransformationType type) = 0;
 };
+
+/**
+@brief Base transformation for two-dimensional float scenes supporting translation, rotation and scaling
+
+@see @ref AbstractTranslationRotationScaling3D
+*/
+typedef AbstractBasicTranslationRotationScaling2D<Float> AbstractTranslationRotationScaling2D;
 
 }}
 

@@ -30,8 +30,8 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-typedef Object<RigidMatrixTransformation2D<>> Object2D;
-typedef Scene<RigidMatrixTransformation2D<>> Scene2D;
+typedef Object<RigidMatrixTransformation2D> Object2D;
+typedef Scene<RigidMatrixTransformation2D> Scene2D;
 
 class RigidMatrixTransformation2DTest: public TestSuite::Tester {
     public:
@@ -69,27 +69,27 @@ RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
 void RigidMatrixTransformation2DTest::fromMatrix() {
     std::ostringstream o;
     Error::setOutput(&o);
-    RigidMatrixTransformation2D<>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
+    RigidMatrixTransformation2D::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
     CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation2D::fromMatrix(): the matrix doesn't represent rigid transformation\n");
 
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation2D<>::fromMatrix(m), m);
+    CORRADE_COMPARE(RigidMatrixTransformation2D::fromMatrix(m), m);
 }
 
 void RigidMatrixTransformation2DTest::toMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation2D<>::toMatrix(m), m);
+    CORRADE_COMPARE(RigidMatrixTransformation2D::toMatrix(m), m);
 }
 
 void RigidMatrixTransformation2DTest::compose() {
     Matrix3 parent = Matrix3::rotation(Deg(17.0f));
     Matrix3 child = Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation2D<>::compose(parent, child), parent*child);
+    CORRADE_COMPARE(RigidMatrixTransformation2D::compose(parent, child), parent*child);
 }
 
 void RigidMatrixTransformation2DTest::inverted() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation2D<>::inverted(m)*m, Matrix3());
+    CORRADE_COMPARE(RigidMatrixTransformation2D::inverted(m)*m, Matrix3());
 }
 
 void RigidMatrixTransformation2DTest::setTransformation() {

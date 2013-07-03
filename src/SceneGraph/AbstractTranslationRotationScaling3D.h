@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractTranslationRotationScaling3D
+ * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotationScaling3D, typedef Magnum::SceneGraph::AbstractTranslationRotationScaling3D
  */
 
 #include "AbstractTranslationRotation3D.h"
@@ -35,16 +35,11 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for three-dimensional transformations supporting translation, rotation and scaling
 
-@see @ref scenegraph, AbstractTranslationRotationScaling2D
+@see @ref AbstractTranslationRotationScaling3D, @ref scenegraph, @ref AbstractBasicTranslationRotationScaling2D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D<T> {
+template<class T> class AbstractBasicTranslationRotationScaling3D: public AbstractBasicTranslationRotation3D<T> {
     public:
-        explicit AbstractTranslationRotationScaling3D() = default;
+        explicit AbstractBasicTranslationRotationScaling3D() = default;
 
         /**
          * @brief Scale object
@@ -54,35 +49,35 @@ class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D
          *
          * @see Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
-        AbstractTranslationRotationScaling3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             doScale(vector, type);
             return this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractTranslationRotationScaling3D<T>* resetTransformation() {
-            AbstractTranslationRotation3D<T>::resetTransformation();
+        AbstractBasicTranslationRotationScaling3D<T>* resetTransformation() {
+            AbstractBasicTranslationRotation3D<T>::resetTransformation();
             return this;
         }
-        AbstractTranslationRotationScaling3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
-            AbstractTranslationRotation3D<T>::translate(vector, type);
+        AbstractBasicTranslationRotationScaling3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+            AbstractBasicTranslationRotation3D<T>::translate(vector, type);
             return this;
         }
-        AbstractTranslationRotationScaling3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
-            AbstractTranslationRotation3D<T>::rotate(angle, normalizedAxis, type);
+        AbstractBasicTranslationRotationScaling3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+            AbstractBasicTranslationRotation3D<T>::rotate(angle, normalizedAxis, type);
             return this;
         }
-        AbstractTranslationRotationScaling3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            AbstractTranslationRotation3D<T>::rotateX(angle, type);
+        AbstractBasicTranslationRotationScaling3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractBasicTranslationRotation3D<T>::rotateX(angle, type);
             return this;
         }
-        AbstractTranslationRotationScaling3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            AbstractTranslationRotation3D<T>::rotateY(angle, type);
+        AbstractBasicTranslationRotationScaling3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractBasicTranslationRotation3D<T>::rotateY(angle, type);
             return this;
         }
-        AbstractTranslationRotationScaling3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            AbstractTranslationRotation3D<T>::rotateZ(angle, type);
+        AbstractBasicTranslationRotationScaling3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+            AbstractBasicTranslationRotation3D<T>::rotateZ(angle, type);
             return this;
         }
         #endif
@@ -95,6 +90,13 @@ class AbstractTranslationRotationScaling3D: public AbstractTranslationRotation3D
         /** @brief Polymorphic implementation for scale() */
         virtual void doScale(const Math::Vector3<T>& vector, TransformationType type) = 0;
 };
+
+/**
+@brief Base transformation for three-dimensional float scenes supporting translation, rotation and scaling
+
+@see @ref AbstractTranslationRotationScaling2D
+*/
+typedef AbstractBasicTranslationRotationScaling3D<Float> AbstractTranslationRotationScaling3D;
 
 }}
 
