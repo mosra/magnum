@@ -168,6 +168,8 @@ void TextRendererGLTest::renderMesh() {
     std::tie(mesh, bounds) = Text::TextRenderer3D::render(&font, nullptr, 0.25f, "abc", &vertexBuffer, &indexBuffer, Buffer::Usage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to verify this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     /* Vertex buffer contents */
     Containers::Array<Float> vertices = vertexBuffer.data<Float>();
     CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
@@ -193,6 +195,7 @@ void TextRendererGLTest::renderMesh() {
         4,  5,  6,  5,  7,  6,
         8,  9, 10,  9, 11, 10
     }));
+    #endif
 
     /* Bounds */
     CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
@@ -209,6 +212,8 @@ void TextRendererGLTest::mutableText() {
     renderer.reserve(4, Buffer::Usage::StaticDraw, Buffer::Usage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 4);
+    /** @todo How to verify this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     Containers::Array<UnsignedByte> indices = renderer.indexBuffer()->data<UnsignedByte>();
     CORRADE_COMPARE(std::vector<UnsignedByte>(indices.begin(), indices.end()), (std::vector<UnsignedByte>{
          0,  1,  2,  1,  3,  2,
@@ -216,10 +221,13 @@ void TextRendererGLTest::mutableText() {
          8,  9, 10,  9, 11, 10,
         12, 13, 14, 13, 15, 14
     }));
+    #endif
 
     /* Render text */
     renderer.render("abc");
     MAGNUM_VERIFY_NO_ERROR();
+    /** @todo How to verify this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     Containers::Array<Float> vertices = renderer.vertexBuffer()->subData<Float>(0, 48);
     CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
         0.0f,  0.5f, 0.0f, 10.0f,
@@ -237,6 +245,7 @@ void TextRendererGLTest::mutableText() {
         5.0f,   1.0f, 18.0f, 10.0f,
         5.0f,  -0.5f, 18.0f,  0.0f
     }));
+    #endif
 
     /* Updated bounds */
     CORRADE_COMPARE(renderer.rectangle(), Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));

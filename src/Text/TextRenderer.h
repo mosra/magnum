@@ -197,9 +197,10 @@ renderer.mesh().draw();
 
 @section TextRenderer-extensions Required OpenGL functionality
 
-Mutable text rendering requires @extension{ARB,map_buffer_range} (also part of
-OpenGL ES 3.0 or available as @es_extension{EXT,map_buffer_range} in ES 2.0)
-for asynchronous buffer updates.
+Mutable text rendering requires @extension{ARB,map_buffer_range} on desktop
+OpenGL (also part of OpenGL ES 3.0). If @es_extension{EXT,map_buffer_range} is
+not available in ES 2.0, at least @es_extension{OES,mapbuffer} must be
+supported for asynchronous buffer updates.
 
 @see TextRenderer2D, TextRenderer3D, Font, Shaders::AbstractVectorShader
 */
