@@ -30,8 +30,8 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-typedef Object<DualComplexTransformation<>> Object2D;
-typedef Scene<DualComplexTransformation<>> Scene2D;
+typedef Object<DualComplexTransformation> Object2D;
+typedef Scene<DualComplexTransformation> Scene2D;
 
 class DualComplexTransformationTest: public TestSuite::Tester {
     public:
@@ -67,24 +67,24 @@ DualComplexTransformationTest::DualComplexTransformationTest() {
 void DualComplexTransformationTest::fromMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
     DualComplex c = DualComplex::rotation(Deg(17.0f))*DualComplex::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(DualComplexTransformation<>::fromMatrix(m), c);
+    CORRADE_COMPARE(DualComplexTransformation::fromMatrix(m), c);
 }
 
 void DualComplexTransformationTest::toMatrix() {
     DualComplex c = DualComplex::rotation(Deg(17.0f))*DualComplex::translation({1.0f, -0.3f});
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(DualComplexTransformation<>::toMatrix(c), m);
+    CORRADE_COMPARE(DualComplexTransformation::toMatrix(c), m);
 }
 
 void DualComplexTransformationTest::compose() {
     DualComplex parent = DualComplex::rotation(Deg(17.0f));
     DualComplex child = DualComplex::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(DualComplexTransformation<>::compose(parent, child), parent*child);
+    CORRADE_COMPARE(DualComplexTransformation::compose(parent, child), parent*child);
 }
 
 void DualComplexTransformationTest::inverted() {
     DualComplex c = DualComplex::rotation(Deg(17.0f))*DualComplex::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(DualComplexTransformation<>::inverted(c)*c, DualComplex());
+    CORRADE_COMPARE(DualComplexTransformation::inverted(c)*c, DualComplex());
 }
 
 void DualComplexTransformationTest::setTransformation() {

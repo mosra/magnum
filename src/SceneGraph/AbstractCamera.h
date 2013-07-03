@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractCamera, enum Magnum::SceneGraph::AspectRatioPolicy, alias Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
+ * @brief Class Magnum::SceneGraph::AbstractBasicCamera, enum Magnum::SceneGraph::AspectRatioPolicy, typedef Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
  */
 
 #include "Math/Matrix3.h"
@@ -39,7 +39,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera aspect ratio policy
 
-@see AbstractCamera::setAspectRatioPolicy()
+@see AbstractBasicCamera::setAspectRatioPolicy()
 */
 enum class AspectRatioPolicy: UnsignedByte {
     NotPreserved,   /**< Don't preserve aspect ratio (default) */
@@ -67,25 +67,20 @@ relevant sections in
 @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractCamera "AbstractCamera<2, Float>"
- - @ref AbstractCamera "AbstractCamera<3, Float>"
+ - @ref AbstractBasicCamera "AbstractBasicCamera<2, Float>"
+ - @ref AbstractBasicCamera "AbstractBasicCamera<3, Float>"
 
-@see @ref scenegraph, Drawable, DrawableGroup, AbstractCamera2D, AbstractCamera3D
+@see AbstractCamera2D, AbstractCamera3D, @ref scenegraph, Drawable, DrawableGroup
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T>
-#else
-template<UnsignedInt dimensions, class T = Float>
-#endif
-class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicCamera: public AbstractBasicFeature<dimensions, T> {
     public:
         /**
          * @brief Constructor
          * @param object        Object holding the camera
          */
-        explicit AbstractCamera(AbstractObject<dimensions, T>* object);
+        explicit AbstractBasicCamera(AbstractBasicObject<dimensions, T>* object);
 
-        virtual ~AbstractCamera() = 0;
+        virtual ~AbstractBasicCamera() = 0;
 
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
@@ -94,7 +89,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * @brief Set aspect ratio policy
          * @return Pointer to self (for method chaining)
          */
-        AbstractCamera<dimensions, T>* setAspectRatioPolicy(AspectRatioPolicy policy);
+        AbstractBasicCamera<dimensions, T>* setAspectRatioPolicy(AspectRatioPolicy policy);
 
         /**
          * @brief Camera matrix
@@ -103,7 +98,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          * applied as first.
          */
         typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
-            AbstractFeature<dimensions, T>::object()->setClean();
+            AbstractBasicFeature<dimensions, T>::object()->setClean();
             return _cameraMatrix;
         }
 
@@ -143,7 +138,7 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
          *
          * Draws given group of drawables.
          */
-        virtual void draw(DrawableGroup<dimensions, T>& group);
+        virtual void draw(BasicDrawableGroup<dimensions, T>& group);
 
     protected:
         /** Recalculates camera matrix */
@@ -167,37 +162,19 @@ class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions
         Vector2i _viewport;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Base for two-dimensional cameras
+@brief Base camera for two-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See AbstractCamera
-for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see AbstractCamera3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AbstractCamera2D = AbstractCamera<2, T>;
+typedef AbstractBasicCamera<2, Float> AbstractCamera2D;
 
 /**
-@brief Base for three-dimensional cameras
+@brief Base camera for three-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See AbstractCamera
-for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
-@see AbstractCamera2D
+@see AbstractBasicCamera2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AbstractCamera3D = AbstractCamera<3, T>;
-#endif
+typedef AbstractBasicCamera<3, Float> AbstractCamera3D;
 
 }}
 

@@ -83,7 +83,7 @@ class ShapeRendererOptions {
         }
 
         /** @brief Color of rendered shape */
-        constexpr Color4<> color() const { return _color; }
+        constexpr Color4 color() const { return _color; }
 
         /**
          * @brief Set color of rendered shape
@@ -91,7 +91,7 @@ class ShapeRendererOptions {
          *
          * Default is 100% opaque white.
          */
-        ShapeRendererOptions* setColor(const Color4<>& color) {
+        ShapeRendererOptions* setColor(const Color4& color) {
             _color = color;
             return this;
         }
@@ -112,7 +112,7 @@ class ShapeRendererOptions {
         }
 
     private:
-        Color4<> _color;
+        Color4 _color;
         Float _pointSize;
         RenderMode _renderMode;
 };
@@ -138,7 +138,7 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 
 @see ShapeRenderer2D, ShapeRenderer3D
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::BasicDrawable<dimensions, Float> {
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, const Shapes::Implementation::AbstractShape<dimensions>*);
 
     public:
@@ -154,13 +154,13 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
          * @p shape must be available for the whole lifetime of the renderer
          * and if it is group, it must not change its internal structure.
          */
-        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
+        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
 
         ~ShapeRenderer();
 
     protected:
         /** @todoc Remove Float when Doxygen properly treats this as override */
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;
 
     private:
         Resource<ShapeRendererOptions> options;

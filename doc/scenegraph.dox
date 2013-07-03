@@ -45,13 +45,11 @@ main components:
 @section scenegraph-transformation Transformations
 
 Transformation handles object position, rotation etc. and its basic property
-is dimension count (2D or 3D) and underlying floating-point type (by default
-@ref Float type is used everywhere, but you can use @ref Double too).
+is dimension count (2D or 3D) and underlying floating-point type.
 
-@note All classes in SceneGraph have Float as default underlying floating-point
-    type, which means that you can omit that template parameter and write just
-    <tt>%AbstractObject<2></tt> or <tt>%MatrixTransformation3D<></tt> instead of
-    <tt>%AbstractObject<2, Float></tt> and <tt>%MatrixTransformation3D&lt;Float&gt;</tt>.
+@note All classes in SceneGraph are templated on underlying type. However, in
+    most cases Float is used and thus nearly all classes have convenience
+    aliases so you don't have to explicitly specify it.
 
 %Scene graph has implementation of transformations in both 2D and 3D, using
 either matrices or combination of position and rotation. Each implementation
@@ -74,8 +72,8 @@ in 2D and part in 3D just wouldn't make sense). Common usage is to typedef
 %Scene and %Object with desired transformation type to save unnecessary typing
 later:
 @code
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 @endcode
 
 Then you can start building the hierarchy by *parenting* one object to another.
@@ -149,9 +147,9 @@ implement needed functions in your own Object subclass without having to
 subclass each feature individually (and making the code overly verbose).
 Simplified example:
 @code
-class Bomb: public Object3D, SceneGraph::Drawable3D<>, SceneGraph:.Animable3D<> {
+class Bomb: public Object3D, SceneGraph::Drawable3D, SceneGraph:.Animable3D {
     public:
-        Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D<>(this), SceneGraph::Animable3D<>(this) {}
+        Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D(this), SceneGraph::Animable3D(this) {}
 
     protected:
         // drawing implementation for Drawable feature
@@ -195,9 +193,9 @@ it first, because by default the caching is disabled. You can enable it using
 AbstractFeature::setCachedTransformations() and then implement corresponding
 cleaning function(s):
 @code
-class CachingObject: public Object3D, SceneGraph::AbstractFeature3D<> {
+class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
     public:
-        CachingObject(Object3D* parent): SceneGraph::AbstractFeature3D<>(this) {
+        CachingObject(Object3D* parent): SceneGraph::AbstractFeature3D(this) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 

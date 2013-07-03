@@ -44,10 +44,10 @@ class ShapeTest: public TestSuite::Tester {
         void shapeGroup();
 };
 
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D<>> Scene2D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D> Scene2D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
 ShapeTest::ShapeTest() {
     addTests({&ShapeTest::clean,

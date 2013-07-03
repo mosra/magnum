@@ -163,7 +163,7 @@ std::tie(mesh, rectangle) = Text::TextRenderer2D::render(font, cache, 0.15f,
 
 // Draw white text centered on the screen
 shader->setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
-    ->setColor(Color3<>(1.0f));
+    ->setColor(Color3(1.0f));
     ->use();
 glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 mesh.draw();
@@ -189,7 +189,7 @@ renderer.render("Hello World Countdown: 10");
 
 // Draw the text centered on the screen
 shader->setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
-    ->setColor(Color3<>(1.0f));
+    ->setColor(Color3(1.0f));
     ->use();
 glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 renderer.mesh().draw();

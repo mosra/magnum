@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractFeature, alias Magnum::SceneGraph::AbstractFeature2D, Magnum::SceneGraph::AbstractFeature3D, enum Magnum::SceneGraph::CachedTransformation, enum set Magnum::SceneGraph::CachedTransformations
+ * @brief Class Magnum::SceneGraph::AbstractBasicFeature, typedef Magnum::SceneGraph::AbstractFeature2D, Magnum::SceneGraph::AbstractFeature3D, enum Magnum::SceneGraph::CachedTransformation, enum set Magnum::SceneGraph::CachedTransformations
  */
 
 #include <Containers/EnumSet.h>
@@ -40,8 +40,8 @@ namespace Magnum { namespace SceneGraph {
 @brief Which transformation to cache in given feature
 
 @see @ref scenegraph-caching, CachedTransformations,
-    AbstractFeature::setCachedTransformations(), AbstractFeature::clean(),
-    AbstractFeature::cleanInverted()
+    AbstractBasicFeature::setCachedTransformations(), AbstractBasicFeature::clean(),
+    AbstractBasicFeature::cleanInverted()
 @todo Provide also simpler representations from which could benefit
     other transformation implementations, as they won't need to
     e.g. create transformation matrix from quaternion?
@@ -65,8 +65,8 @@ enum class CachedTransformation: UnsignedByte {
 /**
 @brief Which transformations to cache in this feature
 
-@see @ref scenegraph-caching, AbstractFeature::setCachedTransformations(),
-    AbstractFeature::clean(), AbstractFeature::cleanInverted()
+@see @ref scenegraph-caching, AbstractBasicFeature::setCachedTransformations(),
+    AbstractBasicFeature::clean(), AbstractBasicFeature::cleanInverted()
 */
 typedef Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
 
@@ -98,9 +98,9 @@ caching is disabled. You can enable it using setCachedTransformations() and
 then implement corresponding cleaning function(s) -- either clean(),
 cleanInverted() or both. Example:
 @code
-class CachingFeature: public SceneGraph::AbstractFeature3D<> {
+class CachingFeature: public SceneGraph::AbstractFeature3D {
     public:
-        CachingFeature(SceneGraph::AbstractObject3D<>* object): SceneGraph::AbstractFeature3D<>(object) {
+        CachingFeature(SceneGraph::AbstractObject3D* object): SceneGraph::AbstractFeature3D(object) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
@@ -131,21 +131,20 @@ transformation implementations. Using small trick we are able to get pointer
 to both AbstractObject and needed transformation from one constructor
 parameter:
 @code
-class TransformingFeature: public SceneGraph::AbstractFeature3D<> {
+class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
         template<class T> TransformingFeature(SceneGraph::Object<T>* object):
-            SceneGraph::AbstractFeature3D<>(object), transformation(object) {}
+            SceneGraph::AbstractFeature3D(object), transformation(object) {}
 
     private:
-        SceneGraph::AbstractTranslationRotation3D<>* transformation;
+        SceneGraph::AbstractTranslationRotation3D* transformation;
 };
 @endcode
-If we take for example @ref Object "Object<MatrixTransformation3D<>>", it is
-derived from @ref AbstractObject "AbstractObject3D<>" and
-@ref MatrixTransformation3D "MatrixTransformation3D<>", which is derived from
-@ref AbstractTranslationRotationScaling3D "AbstractTranslationRotationScaling3D<>",
-which is derived from
-@ref AbstractTranslationRotation3D "AbstractTranslationRotation3D<>",
+If we take for example @ref Object "Object<MatrixTransformation3D>", it is
+derived from @ref AbstractBasicObject "AbstractObject3D" and
+@ref BasicMatrixTransformation3D "MatrixTransformation3D", which is derived
+from @ref BasicAbstractTranslationRotationScaling3D "AbstractTranslationRotationScaling3D",
+which is derived from @ref BasicAbstractTranslationRotation3D "AbstractTranslationRotation3D",
 which is automatically extracted from the pointer in our constructor.
 
 @section AbstractFeature-explicit-specializations Explicit template specializations
@@ -155,19 +154,18 @@ For other specializations (e.g. using Double type) you have to use
 AbstractFeature.hpp implementation file to avoid linker errors. See also
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractFeature "AbstractFeature<2, Float>"
- - @ref AbstractFeature "AbstractFeature<3, Float>"
+ - @ref AbstractBasicFeature "AbstractBasicFeature<2, Float>"
+ - @ref AbstractBasicFeature "AbstractBasicFeature<3, Float>"
 
-@see AbstractFeature2D, AbstractFeature3D
+@see @ref AbstractFeature2D, @ref AbstractFeature3D
 */
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeature
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature: private Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
-#else
-template<UnsignedInt dimensions, class T = Float> class AbstractFeature
+: private Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>
 #endif
 {
-    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend class Containers::LinkedList<AbstractBasicFeature<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>;
     template<class Transformation> friend class Object;
 
     public:
@@ -175,38 +173,38 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit AbstractFeature(AbstractObject<dimensions, T>* object);
+        explicit AbstractBasicFeature(AbstractBasicObject<dimensions, T>* object);
 
-        virtual ~AbstractFeature() = 0;
+        virtual ~AbstractBasicFeature() = 0;
 
         /** @brief %Object holding this feature */
-        AbstractObject<dimensions, T>* object() {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        AbstractBasicObject<dimensions, T>* object() {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::list();
         }
 
         /** @overload */
-        const AbstractObject<dimensions, T>* object() const {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        const AbstractBasicObject<dimensions, T>* object() const {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::list();
         }
 
         /** @brief Previous feature or `nullptr`, if this is first feature */
-        AbstractFeature<dimensions, T>* previousFeature() {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+        AbstractBasicFeature<dimensions, T>* previousFeature() {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::previous();
         }
 
         /** @overload */
-        const AbstractFeature<dimensions, T>* previousFeature() const {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+        const AbstractBasicFeature<dimensions, T>* previousFeature() const {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::previous();
         }
 
         /** @brief Next feature or `nullptr`, if this is last feature */
-        AbstractFeature<dimensions, T>* nextFeature() {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+        AbstractBasicFeature<dimensions, T>* nextFeature() {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::next();
         }
 
         /** @overload */
-        const AbstractFeature<dimensions, T>* nextFeature() const {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+        const AbstractBasicFeature<dimensions, T>* nextFeature() const {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::next();
         }
 
         /**
@@ -284,37 +282,19 @@ template<UnsignedInt dimensions, class T = Float> class AbstractFeature
         CachedTransformations _cachedTransformations;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Base for two-dimensional features
+@brief Base feature for two-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractFeature<2, T></tt>. See AbstractFeature
-for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractFeature<2, T></tt> instead.
-@see AbstractFeature3D
+@see @ref AbstractFeature3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AbstractFeature2D = AbstractFeature<2, T>;
+typedef AbstractBasicFeature<2, Float> AbstractFeature2D;
 
 /**
-@brief Base for three-dimensional features
+@brief Base feature for three-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See AbstractFeature
-for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
-@see AbstractFeature2D
+@see @ref AbstractFeature2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AbstractFeature3D = AbstractFeature<3, T>;
-#endif
+typedef AbstractBasicFeature<3, Float> AbstractFeature3D;
 
 }}
 

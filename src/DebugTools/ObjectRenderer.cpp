@@ -43,7 +43,7 @@ template<> struct Renderer<2> {
     static ResourceKey mesh() { return {"object2d"}; }
 
     static const std::array<Vector2, 8> positions;
-    static const std::array<Color3<>, 8> colors;
+    static const std::array<Color3, 8> colors;
     static const std::array<UnsignedByte, 12> indices;
 };
 
@@ -59,7 +59,7 @@ const std::array<Vector2, 8> Renderer<2>::positions{{
     {-0.1f,  0.9f}
 }};
 
-const std::array<Color3<>, 8> Renderer<2>::colors{{
+const std::array<Color3, 8> Renderer<2>::colors{{
     {1.0f, 0.0f, 0.0f},
     {1.0f, 0.0f, 0.0f}, /* X axis */
     {1.0f, 0.0f, 0.0f},
@@ -88,7 +88,7 @@ template<> struct Renderer<3> {
     static ResourceKey mesh() { return {"object3d"}; }
 
     static const std::array<Vector3, 12> positions;
-    static const std::array<Color3<>, 12> colors;
+    static const std::array<Color3, 12> colors;
     static const std::array<uint8_t, 18> indices;
 };
 
@@ -109,7 +109,7 @@ const std::array<Vector3, 12> Renderer<3>::positions{{
     {-0.1f,  0.0f,  0.9f}
 }};
 
-const std::array<Color3<>, 12> Renderer<3>::colors{{
+const std::array<Color3, 12> Renderer<3>::colors{{
     {1.0f, 0.0f, 0.0f},
     {1.0f, 0.0f, 0.0f}, /* X axis */
     {1.0f, 0.0f, 0.0f},
@@ -142,7 +142,7 @@ const std::array<UnsignedByte, 18> Renderer<3>::indices{{
 
 }
 
-template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractBasicObject<dimensions, Float>* object, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
     /* Shader */
     shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
     if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColor<dimensions>);
@@ -173,7 +173,7 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) {
+template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
     shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix*DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(options->size())))
         ->use();
 

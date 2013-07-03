@@ -49,7 +49,7 @@ This class is not directly instantiable, see Shape instead. See @ref shapes for
 brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>> {
+template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractBasicGroupedFeature<dimensions, AbstractShape<dimensions>, Float> {
     friend const Implementation::AbstractShape<dimensions>* Implementation::getAbstractShape<>(const AbstractShape<dimensions>*);
 
     public:
@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
          * @param object    Object holding this feature
          * @param group     Group this shape belongs to
          */
-        explicit AbstractShape(SceneGraph::AbstractObject<dimensions>* object, ShapeGroup<dimensions>* group = nullptr);
+        explicit AbstractShape(SceneGraph::AbstractBasicObject<dimensions, Float>* object, ShapeGroup<dimensions>* group = nullptr);
 
         /**
          * @brief Shape group containing this shape

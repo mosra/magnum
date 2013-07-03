@@ -160,7 +160,7 @@ achieve that, you can specify gaps between the attributes:
 @code
 std::vector<Vector4> positions;
 std::vector<GLushort> weights;
-std::vector<Color3<GLubyte>> vertexColors;
+std::vector<BasicColor3<GLubyte>> vertexColors;
 std::size_t attributeCount;
 std::size_t stride;
 char* data;

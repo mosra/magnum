@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractTranslationRotation3D
+ * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotation3D, typedef Magnum::SceneGraph::AbstractTranslationRotation3D
  */
 
 #include "AbstractTransformation.h"
@@ -34,18 +34,13 @@
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief Base for three-dimensional transformations supporting translation and rotation
+@brief Base translation for three-dimensional scenes supporting translation and rotation
 
-@see @ref scenegraph, AbstractTranslationRotation2D
+@see @ref AbstractTranslationRotation3D @ref scenegraph, @ref AbstractBasicTranslationRotation2D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
+template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasicTransformation<3, T> {
     public:
-        explicit AbstractTranslationRotation3D();
+        explicit AbstractBasicTranslationRotation3D();
 
         /**
          * @brief Translate object
@@ -55,7 +50,7 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          *
          * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
-        AbstractTranslationRotation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             doTranslate(vector, type);
             return this;
         }
@@ -70,7 +65,7 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis()
          */
-        AbstractTranslationRotation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             doRotate(angle, normalizedAxis, type);
             return this;
         }
@@ -84,7 +79,7 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * In some implementations faster than calling
          * `rotate(angle, Vector3::xAxis())`.
          */
-        AbstractTranslationRotation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateX(angle, type);
             return this;
         }
@@ -98,7 +93,7 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * In some implementations faster than calling
          * `rotate(angle, Vector3::yAxis())`.
          */
-        AbstractTranslationRotation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateX(angle, type);
             return this;
         }
@@ -112,15 +107,15 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
          * In some implementations faster than calling
          * `rotate(angle, Vector3::zAxis())`.
          */
-        AbstractTranslationRotation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateZ(angle, type);
             return this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractTranslationRotation3D<T>* resetTransformation() {
-            AbstractTransformation<3, T>::resetTransformation();
+        AbstractBasicTranslationRotation3D<T>* resetTransformation() {
+            AbstractBasicTransformation<3, T>::resetTransformation();
             return this;
         }
         #endif
@@ -164,7 +159,14 @@ class AbstractTranslationRotation3D: public AbstractTransformation<3, T> {
         }
 };
 
-template<class T> inline AbstractTranslationRotation3D<T>::AbstractTranslationRotation3D() = default;
+template<class T> inline AbstractBasicTranslationRotation3D<T>::AbstractBasicTranslationRotation3D() = default;
+
+/**
+@brief Base transformation for three-dimensional float scenes supporting translation and rotation
+
+@see @ref AbstractTranslationRotation2D
+*/
+typedef AbstractBasicTranslationRotation3D<Float> AbstractTranslationRotation3D;
 
 }}
 

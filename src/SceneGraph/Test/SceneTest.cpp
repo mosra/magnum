@@ -37,8 +37,8 @@ class SceneTest: public TestSuite::Tester {
         void parent();
 };
 
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<Float>> Scene3D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<Float>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
 SceneTest::SceneTest() {
     addTests({&SceneTest::transformation,

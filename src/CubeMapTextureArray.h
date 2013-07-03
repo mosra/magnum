@@ -243,7 +243,7 @@ class CubeMapTextureArray: public AbstractTexture {
             return this;
         }
         #ifndef MAGNUM_TARGET_GLES3
-        CubeMapTextureArray* setBorderColor(const Color4<>& color) {
+        CubeMapTextureArray* setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }

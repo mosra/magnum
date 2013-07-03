@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::MatrixTransformation3D
+ * @brief Class Magnum::SceneGraph::BasicMatrixTransformation3D, typedef Magnum::SceneGraph::MatrixTransformation3D
  */
 
 #include "Math/Matrix4.h"
@@ -38,14 +38,9 @@ namespace Magnum { namespace SceneGraph {
 @brief Three-dimensional transformation implemented using matrices
 
 Uses Math::Matrix4 as underlying type.
-@see @ref scenegraph, RigidMatrixTransformation3D, MatrixTransformation2D
+@see @ref MatrixTransformation3D, @ref scenegraph, @ref BasicRigidMatrixTransformation3D, @ref BasicMatrixTransformation2D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
+template<class T> class BasicMatrixTransformation3D: public AbstractBasicTranslationRotationScaling3D<T> {
     public:
         /** @brief Underlying transformation type */
         typedef Math::Matrix4<T> DataType;
@@ -76,22 +71,22 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          * @brief Set transformation
          * @return Pointer to self (for method chaining)
          */
-        Object<MatrixTransformation3D<T>>* setTransformation(const Math::Matrix4<T>& transformation) {
+        Object<BasicMatrixTransformation3D<T>>* setTransformation(const Math::Matrix4<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
-            if(!static_cast<Object<MatrixTransformation3D<T>>*>(this)->isScene()) {
+            if(!static_cast<Object<BasicMatrixTransformation3D<T>>*>(this)->isScene()) {
                 _transformation = transformation;
-                static_cast<Object<MatrixTransformation3D<T>>*>(this)->setDirty();
+                static_cast<Object<BasicMatrixTransformation3D<T>>*>(this)->setDirty();
             }
 
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
-        Object<MatrixTransformation3D<T>>* resetTransformation() {
+        Object<BasicMatrixTransformation3D<T>>* resetTransformation() {
             setTransformation({});
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
@@ -100,28 +95,28 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          */
-        Object<MatrixTransformation3D<T>>* transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
             setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::translate()
          * Same as calling transform() with Matrix4::translation().
          */
-        Object<MatrixTransformation3D<T>>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::translation(vector), type);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::rotate()
          * Same as calling transform() with Matrix4::rotation().
          */
-        Object<MatrixTransformation3D<T>>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
@@ -132,9 +127,9 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          *
          * Same as calling transform() with Matrix4::rotationX().
          */
-        Object<MatrixTransformation3D<T>>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::rotationX(angle), type);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
@@ -145,9 +140,9 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          *
          * Same as calling transform() with Matrix4::rotationY().
          */
-        Object<MatrixTransformation3D<T>>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::rotationY(angle), type);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
@@ -158,18 +153,18 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          *
          * Same as calling transform() with Matrix4::rotationZ().
          */
-        Object<MatrixTransformation3D<T>>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::rotationZ(angle), type);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::scale()
          * Same as calling transform() with Matrix4::scaling().
          */
-        Object<MatrixTransformation3D<T>>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::scaling(vector), type);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
         /**
@@ -181,14 +176,14 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
          *
          * Same as calling transform() with Matrix4::reflection().
          */
-        Object<MatrixTransformation3D<T>>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation3D<T>>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix4<T>::reflection(normal), type);
-            return static_cast<Object<MatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation3D<T>>*>(this);
         }
 
     protected:
         /* Allow construction only from Object */
-        explicit MatrixTransformation3D();
+        explicit BasicMatrixTransformation3D();
 
     private:
         void doResetTransformation() override final { resetTransformation(); }
@@ -220,7 +215,14 @@ class MatrixTransformation3D: public AbstractTranslationRotationScaling3D<T> {
         Math::Matrix4<T> _transformation;
 };
 
-template<class T> inline MatrixTransformation3D<T>::MatrixTransformation3D() = default;
+template<class T> inline BasicMatrixTransformation3D<T>::BasicMatrixTransformation3D() = default;
+
+/**
+@brief Three-dimensional transformation for float scenes implemented using matrices
+
+@see @ref MatrixTransformation2D
+*/
+typedef BasicMatrixTransformation3D<Float> MatrixTransformation3D;
 
 }}
 

@@ -1457,8 +1457,8 @@ template<std::size_t size_> struct Attribute<Math::Vector<size_, Double>>: Doubl
 template<class T> struct Attribute<Math::Vector2<T>>: Attribute<Math::Vector<2, T>> {};
 template<class T> struct Attribute<Math::Vector3<T>>: Attribute<Math::Vector<3, T>> {};
 template<class T> struct Attribute<Math::Vector4<T>>: Attribute<Math::Vector<4, T>> {};
-template<class T> struct Attribute<Color3<T>>: Attribute<Math::Vector3<T>> {};
-template<class T> struct Attribute<Color4<T>>: Attribute<Math::Vector4<T>> {};
+template<class T> struct Attribute<BasicColor3<T>>: Attribute<Math::Vector3<T>> {};
+template<class T> struct Attribute<BasicColor4<T>>: Attribute<Math::Vector4<T>> {};
 
 /* Common float and double rectangular matrix attributes */
 template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, Float>>: FloatAttribute, SizedAttribute<cols, rows> {};

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractGroupedFeature, alias Magnum::SceneGraph::AbstractGroupedFeature2D, Magnum::SceneGraph::AbstractGroupedFeature3D
+ * @brief Class Magnum::SceneGraph::AbstractBasicGroupedFeature, alias Magnum::SceneGraph::AbstractGroupedFeature2D, Magnum::SceneGraph::AbstractGroupedFeature3D
  */
 
 #include <vector>
@@ -38,12 +38,12 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for grouped features
 
-Used together with FeatureGroup.
+Used together with BasicFeatureGroup.
 
 @section AbstractGroupedFeature-subclassing Subclassing
 
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
-and typedef'ing FeatureGroup to accept only given type, e.g.:
+and typedef'ing BasicFeatureGroup to accept only given type, e.g.:
 @code
 class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
     // ...
@@ -59,19 +59,15 @@ For other specializations (e.g. using Double type) you have to use
 AbstractGroupedFeature.hpp implementation file to avoid linker errors. See also
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractFeatureGroup "AbstractFeatureGroup<2, Float>"
- - @ref AbstractFeatureGroup "AbstractFeatureGroup<3, Float>"
+ - @ref AbstractBasicFeatureGroup "AbstractBasicFeatureGroup<2, Float>"
+ - @ref AbstractBasicFeatureGroup "AbstractBasicFeatureGroup<3, Float>"
 
-@see @ref scenegraph, AbstractGroupedFeature2D, AbstractGroupedFeature3D,
-    FeatureGroup, FeatureGroup2D, FeatureGroup3D
+@see @ref AbstractGroupedFeature2D, @ref AbstractGroupedFeature3D,
+    @ref scenegraph, @ref BasicFeatureGroup, @ref FeatureGroup2D,
+    @ref FeatureGroup3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class Derived, class T>
-#else
-template<UnsignedInt dimensions, class Derived, class T = Float>
-#endif
-class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
-    friend class FeatureGroup<dimensions, Derived, T>;
+template<UnsignedInt dimensions, class Derived, class T> class AbstractBasicGroupedFeature: public AbstractBasicFeature<dimensions, T> {
+    friend class BasicFeatureGroup<dimensions, Derived, T>;
 
     public:
         /**
@@ -82,7 +78,7 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
          * Adds the feature to the object and to group, if specified.
          * @see FeatureGroup::add()
          */
-        explicit AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
+        explicit AbstractBasicGroupedFeature(AbstractBasicObject<dimensions, T>* object, BasicFeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractBasicFeature<dimensions, T>(object), _group(nullptr) {
             if(group) group->add(static_cast<Derived*>(this));
         }
 
@@ -92,56 +88,44 @@ class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
          * Removes the feature from object and from group, if it belongs to
          * any.
          */
-        ~AbstractGroupedFeature() {
+        ~AbstractBasicGroupedFeature() {
             if(_group) _group->remove(static_cast<Derived*>(this));
         }
 
         /** @brief Group this feature belongs to */
-        FeatureGroup<dimensions, Derived, T>* group() {
+        BasicFeatureGroup<dimensions, Derived, T>* group() {
             return _group;
         }
 
         /** @overload */
-        const FeatureGroup<dimensions, Derived, T>* group() const {
+        const BasicFeatureGroup<dimensions, Derived, T>* group() const {
             return _group;
         }
 
     private:
-        FeatureGroup<dimensions, Derived, T>* _group;
+        BasicFeatureGroup<dimensions, Derived, T>* _group;
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Base for two-dimensional grouped features
+@brief Base grouped feature for two-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractGroupedFeature<2, Derived, T></tt>. See
-AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<2, Derived, T></tt>
+Convenience alternative to <tt>%AbstractBasicGroupedFeature<2, Derived, Float></tt>.
+@note Not available on GCC < 4.7. Use <tt>%AbstractBasicGroupedFeature<2, Derived, Float></tt>
     instead.
-@see AbstractGroupedFeature3D
+@see @ref AbstractGroupedFeature3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Derived, class T = Float>
-#else
-template<class Derived, class T>
-#endif
-using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
+template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFeature<2, Derived, Float>;
 
 /**
 @brief Base for three-dimensional grouped features
 
-Convenience alternative to <tt>%AbstractGroupedFeature<3, Derived, T></tt>. See
-AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<3, Derived, T></tt>
+Convenience alternative to <tt>%AbstractBasicGroupedFeature<3, Derived, Float></tt>.
+@note Not available on GCC < 4.7. Use <tt>%AbstractBasicGroupedFeature<3, Derived, Float></tt>
     instead.
-@see AbstractGroupedFeature2D
+@see @ref AbstractGroupedFeature2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Derived, class T = Float>
-#else
-template<class Derived, class T>
-#endif
-using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
+template<class Derived> using AbstractGroupedFeature3D = AbstractBasicGroupedFeature<3, Derived, Float>;
 #endif
 
 }}

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractObject, alias Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
+ * @brief Class Magnum::SceneGraph::AbstractBasicObject, alias Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
  */
 
 #include <vector>
@@ -54,61 +54,60 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 }
 @endcode
 
-@see AbstractObject2D, AbstractObject3D
+@see @ref AbstractObject2D, @ref AbstractObject3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T = Float> class AbstractObject
-#else
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Containers::LinkedList<AbstractFeature<dimensions, T>>
-#endif
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicObject
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    : private Containers::LinkedList<AbstractBasicFeature<dimensions, T>>
+    #endif
 {
-    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
-    friend class AbstractFeature<dimensions, T>;
+    friend class Containers::LinkedList<AbstractBasicFeature<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>;
+    friend class AbstractBasicFeature<dimensions, T>;
 
     public:
         /** @brief Matrix type */
         typedef typename DimensionTraits<dimensions, T>::MatrixType MatrixType;
 
         /** @brief Feature object type */
-        typedef AbstractFeature<dimensions, T> FeatureType;
+        typedef AbstractBasicFeature<dimensions, T> FeatureType;
 
-        explicit AbstractObject();
-        virtual ~AbstractObject();
+        explicit AbstractBasicObject();
+        virtual ~AbstractBasicObject();
 
         /** @brief Whether this object has features */
         bool hasFeatures() const {
-            return !Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
+            return !Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::isEmpty();
         }
 
         /** @brief First object feature or `nullptr`, if this object has no features */
         FeatureType* firstFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::first();
         }
 
         /** @overload */
         const FeatureType* firstFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::first();
         }
 
         /** @brief Last object feature or `nullptr`, if this object has no features */
         FeatureType* lastFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::last();
         }
 
         /** @overload */
         const FeatureType* lastFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::last();
         }
 
         /**
          * @brief %Scene
          * @return %Scene or `nullptr`, if the object is not part of any scene.
          */
-        AbstractObject<dimensions, T>* scene() { return doScene(); }
+        AbstractBasicObject<dimensions, T>* scene() { return doScene(); }
 
         /** @overload */
-        const AbstractObject<dimensions, T>* scene() const { return doScene(); }
+        const AbstractBasicObject<dimensions, T>* scene() const { return doScene(); }
 
         /** @{ @name Object transformation */
 
@@ -139,7 +138,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *      Object type, use typesafe Object::transformationMatrices() when
          *      possible.
          */
-        std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
+        std::vector<MatrixType> transformationMatrices(const std::vector<AbstractBasicObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
             return doTransformationMatrices(objects, initialTransformationMatrix);
         }
 
@@ -158,7 +157,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @warning This function cannot check if all objects are of the same
          *      Object type, use typesafe Object::setClean() when possible.
          */
-        static void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
+        static void setClean(const std::vector<AbstractBasicObject<dimensions, T>*>& objects) {
             if(objects.empty()) return;
             objects.front()->doSetClean(objects);
         }
@@ -204,50 +203,32 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /*@}*/
 
     private:
-        virtual AbstractObject<dimensions, T>* doScene() = 0;
-        virtual const AbstractObject<dimensions, T>* doScene() const = 0;
+        virtual AbstractBasicObject<dimensions, T>* doScene() = 0;
+        virtual const AbstractBasicObject<dimensions, T>* doScene() const = 0;
 
         virtual MatrixType doTransformationMatrix() const = 0;
         virtual MatrixType doAbsoluteTransformationMatrix() const = 0;
-        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const = 0;
+        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractBasicObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const = 0;
 
         virtual bool doIsDirty() const = 0;
         virtual void doSetDirty() = 0;
         virtual void doSetClean() = 0;
-        virtual void doSetClean(const std::vector<AbstractObject<dimensions, T>*>& objects) = 0;
+        virtual void doSetClean(const std::vector<AbstractBasicObject<dimensions, T>*>& objects) = 0;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Base for two-dimensional objects
+@brief Base object for two-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractObject<2, T></tt>. See AbstractObject
-for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
-@see AbstractObject3D
+@see @ref AbstractObject3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AbstractObject2D = AbstractObject<2, T>;
+typedef AbstractBasicObject<2, Float> AbstractObject2D;
 
 /**
-@brief Base for three-dimensional objects
+@brief Base object for three-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractObject<3, T></tt>. See AbstractObject
-for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
-@see AbstractObject2D
+@see @ref AbstractObject2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AbstractObject3D = AbstractObject<3, T>;
-#endif
+typedef AbstractBasicObject<3, Float> AbstractObject3D;
 
 }}
 

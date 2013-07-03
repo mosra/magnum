@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::MatrixTransformation2D
+ * @brief Class Magnum::SceneGraph::BasicMatrixTransformation2D, typedef Magnum::SceneGraph::MatrixTransformation2D
  */
 
 #include "Math/Matrix3.h"
@@ -38,14 +38,9 @@ namespace Magnum { namespace SceneGraph {
 @brief Two-dimensional transformation implemented using matrices
 
 Uses Math::Matrix3 as underlying type.
-@see @ref scenegraph, RigidMatrixTransformation2D, MatrixTransformation3D
+@see @ref MatrixTransformation2D, @ref scenegraph, @ref RigidBasicMatrixTransformation2D, @ref BasicMatrixTransformation3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
+template<class T> class BasicMatrixTransformation2D: public AbstractBasicTranslationRotationScaling2D<T> {
     public:
         /** @brief Underlying transformation type */
         typedef Math::Matrix3<T> DataType;
@@ -76,16 +71,16 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
          * @brief Set transformation
          * @return Pointer to self (for method chaining)
          */
-        Object<MatrixTransformation2D<T>>* setTransformation(const Math::Matrix3<T>& transformation) {
+        Object<BasicMatrixTransformation2D<T>>* setTransformation(const Math::Matrix3<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
-            if(!static_cast<Object<MatrixTransformation2D<T>>*>(this)->isScene()) {
+            if(!static_cast<Object<BasicMatrixTransformation2D<T>>*>(this)->isScene()) {
                 _transformation = transformation;
-                static_cast<Object<MatrixTransformation2D<T>>*>(this)->setDirty();
+                static_cast<Object<BasicMatrixTransformation2D<T>>*>(this)->setDirty();
             }
 
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
         /**
@@ -94,43 +89,43 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
          * @param type              Transformation type
          * @return Pointer to self (for method chaining)
          */
-        Object<MatrixTransformation2D<T>>* transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation2D<T>>* transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
             setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
-        Object<MatrixTransformation2D<T>>* resetTransformation() {
+        Object<BasicMatrixTransformation2D<T>>* resetTransformation() {
             setTransformation({});
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
          * Same as calling transform() with Matrix3::translation().
          */
-        Object<MatrixTransformation2D<T>>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation2D<T>>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix3<T>::translation(vector), type);
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::rotate()
          * Same as calling transform() with Matrix3::rotation().
          */
-        Object<MatrixTransformation2D<T>>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation2D<T>>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix3<T>::rotation(angle), type);
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::scale()
          * Same as calling transform() with Matrix3::scaling().
          */
-        Object<MatrixTransformation2D<T>>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation2D<T>>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix3<T>::scaling(vector), type);
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
         /**
@@ -142,9 +137,9 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
          *
          * Same as calling transform() with Matrix3::reflection().
          */
-        Object<MatrixTransformation2D<T>>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
+        Object<BasicMatrixTransformation2D<T>>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
             transform(Math::Matrix3<T>::reflection(normal), type);
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
         /**
@@ -153,14 +148,14 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
          *      if you want to move it above all.
          * @return Pointer to self (for method chaining)
          */
-        Object<MatrixTransformation2D<T>>* move(Object<MatrixTransformation2D<T>>* under) {
-            static_cast<Object<MatrixTransformation2D>*>(this)->Containers::template LinkedList<Object<MatrixTransformation2D<T>>>::move(this, under);
-            return static_cast<Object<MatrixTransformation2D<T>>*>(this);
+        Object<BasicMatrixTransformation2D<T>>* move(Object<BasicMatrixTransformation2D<T>>* under) {
+            static_cast<Object<BasicMatrixTransformation2D>*>(this)->Containers::template LinkedList<Object<BasicMatrixTransformation2D<T>>>::move(this, under);
+            return static_cast<Object<BasicMatrixTransformation2D<T>>*>(this);
         }
 
     protected:
         /* Allow construction only from Object */
-        explicit MatrixTransformation2D();
+        explicit BasicMatrixTransformation2D();
 
     private:
         void doResetTransformation() override final { resetTransformation(); }
@@ -180,7 +175,7 @@ class MatrixTransformation2D: public AbstractTranslationRotationScaling2D<T> {
         Math::Matrix3<T> _transformation;
 };
 
-template<class T> inline MatrixTransformation2D<T>::MatrixTransformation2D() = default;
+template<class T> inline BasicMatrixTransformation2D<T>::BasicMatrixTransformation2D() = default;
 
 }}
 

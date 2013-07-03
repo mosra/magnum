@@ -50,7 +50,7 @@ void Renderer::setHint(const Hint target, const HintMode mode) {
     glHint(GLenum(target), GLenum(mode));
 }
 
-void Renderer::setClearColor(const Color4<>& color) {
+void Renderer::setClearColor(const Color4& color) {
     glClearColor(color.r(), color.g(), color.b(), color.a());
 }
 
@@ -152,7 +152,7 @@ void Renderer::setBlendFunction(const BlendFunction sourceRgb, const BlendFuncti
     glBlendFuncSeparate(GLenum(sourceRgb), GLenum(destinationRgb), GLenum(sourceAlpha), GLenum(destinationAlpha));
 }
 
-void Renderer::setBlendColor(const Color4<>& color) {
+void Renderer::setBlendColor(const Color4& color) {
     glBlendColor(color.r(), color.g(), color.b(), color.a());
 }
 

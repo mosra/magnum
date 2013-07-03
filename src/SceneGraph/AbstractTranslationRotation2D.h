@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractTranslationRotation2D
+ * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotation2D, typedef Magnum::SceneGraph::AbstractTranslationRotation2D
  */
 
 #include "AbstractTransformation.h"
@@ -33,18 +33,13 @@
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief Base for two-dimensional transformations supporting translation and rotation
+@brief Base translation for two-dimensional scenes supporting translation and rotation
 
-@see @ref scenegraph, AbstractTranslationRotation3D
+@see @ref AbstractTranslationRotation2D, @ref scenegraph, @ref AbstractBasicTranslationRotation3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
+template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasicTransformation<2, T> {
     public:
-        explicit AbstractTranslationRotation2D();
+        explicit AbstractBasicTranslationRotation2D();
 
         /**
          * @brief Translate object
@@ -54,7 +49,7 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
          *
          * @see Vector2::xAxis(), Vector2::yAxis()
          */
-        AbstractTranslationRotation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             doTranslate(vector, type);
             return this;
         }
@@ -65,15 +60,15 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
          * @param type      Transformation type
          * @return Pointer to self (for method chaining)
          */
-        AbstractTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotate(angle, type);
             return this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractTranslationRotation2D<T>* resetTransformation() {
-            AbstractTransformation<2, T>::resetTransformation();
+        AbstractBasicTranslationRotation2D<T>* resetTransformation() {
+            AbstractBasicTransformation<2, T>::resetTransformation();
             return this;
         }
         #endif
@@ -90,7 +85,14 @@ class AbstractTranslationRotation2D: public AbstractTransformation<2, T> {
         virtual void doRotate(Math::Rad<T> angle, TransformationType type) = 0;
 };
 
-template<class T> inline AbstractTranslationRotation2D<T>::AbstractTranslationRotation2D() = default;
+template<class T> inline AbstractBasicTranslationRotation2D<T>::AbstractBasicTranslationRotation2D() = default;
+
+/**
+@brief Base transformation for two-dimensional float scenes supporting translation and rotation
+
+@see @ref AbstractTranslationRotation3D
+*/
+typedef AbstractBasicTranslationRotation2D<Float> AbstractTranslationRotation2D;
 
 }}
 

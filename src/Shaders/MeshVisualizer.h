@@ -138,7 +138,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          *
          * Initial value is fully opaque white.
          */
-        MeshVisualizer* setColor(const Color4<>& color) {
+        MeshVisualizer* setColor(const Color4& color) {
             setUniform(colorUniform, color);
             return this;
         }
@@ -150,7 +150,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * Initial value is fully opaque black. Has effect only if
          * @ref Flag "Flag::Wireframe" is enabled.
          */
-        MeshVisualizer* setWireframeColor(const Color4<>& color) {
+        MeshVisualizer* setWireframeColor(const Color4& color) {
             if(flags & Flag::Wireframe) setUniform(wireframeColorUniform, color);
             return this;
         }

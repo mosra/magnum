@@ -47,10 +47,10 @@ namespace Implementation {
     template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
     template<class T> struct TypeForSize<3, T> { typedef Math::Vector3<typename T::Type> Type; };
     template<class T> struct TypeForSize<4, T> { typedef Math::Vector4<typename T::Type> Type; };
-    template<class T> struct TypeForSize<3, Color3<T>> { typedef Color3<T> Type; };
-    template<class T> struct TypeForSize<3, Color4<T>> { typedef Color3<T> Type; };
-    template<class T> struct TypeForSize<4, Color3<T>> { typedef Color4<T> Type; };
-    template<class T> struct TypeForSize<4, Color4<T>> { typedef Color4<T> Type; };
+    template<class T> struct TypeForSize<3, BasicColor3<T>> { typedef BasicColor3<T> Type; };
+    template<class T> struct TypeForSize<3, BasicColor4<T>> { typedef BasicColor3<T> Type; };
+    template<class T> struct TypeForSize<4, BasicColor3<T>> { typedef BasicColor4<T> Type; };
+    template<class T> struct TypeForSize<4, BasicColor4<T>> { typedef BasicColor4<T> Type; };
 }
 
 /**

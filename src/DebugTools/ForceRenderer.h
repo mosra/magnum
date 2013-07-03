@@ -47,7 +47,7 @@ class ForceRendererOptions {
         constexpr ForceRendererOptions(): _color(1.0f), _size(1.0f) {}
 
         /** @brief Color of rendered arrow */
-        constexpr Color4<> color() const { return _color; }
+        constexpr Color4 color() const { return _color; }
 
         /**
          * @brief Set color of rendered arrow
@@ -55,7 +55,7 @@ class ForceRendererOptions {
          *
          * Default is 100% opaque white.
          */
-        ForceRendererOptions* setColor(const Color4<>& color) {
+        ForceRendererOptions* setColor(const Color4& color) {
             _color = color;
             return this;
         }
@@ -75,7 +75,7 @@ class ForceRendererOptions {
         }
 
     private:
-        Color4<> _color;
+        Color4 _color;
         Float _size;
 };
 
@@ -91,7 +91,7 @@ Example code:
 @code
 // Create some options
 DebugTools::ResourceManager::instance()->set("my", (new DebugTools::ForceRendererOptions)
-    ->setScale(5.0f)->setColor(Color3<>::fromHSV(120.0_degf, 1.0f, 0.7f)));
+    ->setScale(5.0f)->setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f)));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;
@@ -101,7 +101,7 @@ new DebugTools::ForceRenderer2D(object, {0.3f, 1.5f, -0.7f}, &force, "my", debug
 
 @see ForceRenderer2D, ForceRenderer3D
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::Drawable<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::BasicDrawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor
@@ -117,11 +117,10 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          * saved as reference to original vector and thus it must be available
          * for the whole lifetime of the renderer.
          */
-        explicit ForceRenderer(SceneGraph::AbstractObject<dimensions>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
+        explicit ForceRenderer(SceneGraph::AbstractBasicObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
 
     protected:
-        /** @todoc Remove Float when Doxygen properly treats this as override */
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;
 
     private:
         const typename DimensionTraits<dimensions, Float>::VectorType forcePosition;

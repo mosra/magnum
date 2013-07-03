@@ -40,102 +40,99 @@ namespace Magnum { namespace SceneGraph {
 enum class AspectRatioPolicy: UnsignedByte;
 #endif
 
-template<UnsignedInt dimensions, class T = Float> class AbstractCamera;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractCamera2D = AbstractCamera<2, T>;
-template<class T = Float> using AbstractCamera3D = AbstractCamera<3, T>;
-#endif
+template<UnsignedInt, class> class AbstractBasicCamera;
+typedef AbstractBasicCamera<2, Float> AbstractCamera2D;
+typedef AbstractBasicCamera<3, Float> AbstractCamera3D;
 
 /* Enum CachedTransformation and CachedTransformations used only directly */
 
-template<UnsignedInt dimensions, class T = Float> class AbstractFeature;
+template<UnsignedInt, class> class AbstractBasicFeature;
+typedef AbstractBasicFeature<2, Float> AbstractFeature2D;
+typedef AbstractBasicFeature<3, Float> AbstractFeature3D;
+
+template<UnsignedInt, class> class AbstractBasicFeatureGroup;
+typedef AbstractBasicFeatureGroup<2, Float> AbstractFeatureGroup2D;
+typedef AbstractBasicFeatureGroup<3, Float> AbstractFeatureGroup3D;
+
+template<UnsignedInt dimensions, class Derived, class T> class AbstractBasicGroupedFeature;
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractFeature2D = AbstractFeature<2, T>;
-template<class T = Float> using AbstractFeature3D = AbstractFeature<3, T>;
+template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFeature<2, Derived, Float>;
+template<class Derived> using AbstractGroupedFeature3D = AbstractBasicGroupedFeature<3, Derived, Float>;
 #endif
 
-template<UnsignedInt dimensions, class T = Float> class AbstractFeatureGroup;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractFeatureGroup2D = AbstractFeatureGroup<2, T>;
-template<class T = Float> using AbstractFeatureGroup3D = AbstractFeatureGroup<3, T>;
-#endif
-
-template<UnsignedInt dimensions, class Derived, class T = Float> class AbstractGroupedFeature;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class Derived, class T = Float> using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
-template<class Derived, class T = Float> using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
-#endif
-
-template<UnsignedInt dimensions, class T = Float> class AbstractObject;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractObject2D = AbstractObject<2, T>;
-template<class T = Float> using AbstractObject3D = AbstractObject<3, T>;
-#endif
+template<UnsignedInt dimensions, class> class AbstractBasicObject;
+typedef AbstractBasicObject<2, Float> AbstractObject2D;
+typedef AbstractBasicObject<3, Float> AbstractObject3D;
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class TransformationType: UnsignedByte;
 #endif
 
-template<UnsignedInt dimensions, class T = Float> class AbstractTransformation;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractTransformation2D = AbstractTransformation<2, T>;
-template<class T = Float> using AbstractTransformation3D = AbstractTransformation<3, T>;
-#endif
+template<UnsignedInt dimensions, class> class AbstractBasicTransformation;
+typedef AbstractBasicTransformation<2, Float> AbstractTransformation2D;
+typedef AbstractBasicTransformation<3, Float> AbstractTransformation3D;
 
-template<class T = Float> class AbstractTranslationRotation2D;
-template<class T = Float> class AbstractTranslationRotation3D;
-template<class T = Float> class AbstractTranslationRotationScaling2D;
-template<class T = Float> class AbstractTranslationRotationScaling3D;
+template<class> class AbstractBasicTranslationRotation2D;
+template<class> class AbstractBasicTranslationRotation3D;
+typedef AbstractBasicTranslationRotation2D<Float> AbstractTranslationRotation2D;
+typedef AbstractBasicTranslationRotation3D<Float> AbstractTranslationRotation3D;
 
-template<UnsignedInt dimensions, class T = Float> class Animable;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using Animable2D = Animable<2, T>;
-template<class T = Float> using Animable3D = Animable<3, T>;
-#endif
+template<class> class AbstractBasicTranslationRotationScaling2D;
+template<class> class AbstractBasicTranslationRotationScaling3D;
+typedef AbstractBasicTranslationRotationScaling2D<Float> AbstractTranslationRotationScaling2D;
+typedef AbstractBasicTranslationRotationScaling3D<Float> AbstractTranslationRotationScaling3D;
+
+template<UnsignedInt, class> class BasicAnimable;
+typedef BasicAnimable<2, Float> Animable2D;
+typedef BasicAnimable<3, Float> Animable3D;
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class AnimationState: UnsignedByte;
 #endif
 
-template<UnsignedInt dimensions, class T = Float> class AnimableGroup;
+template<UnsignedInt, class> class BasicAnimableGroup;
+typedef BasicAnimableGroup<2, Float> AnimableGroup2D;
+typedef BasicAnimableGroup<3, Float> AnimableGroup3D;
+
+template<class> class BasicCamera2D;
+template<class> class BasicCamera3D;
+typedef BasicCamera2D<Float> Camera2D;
+typedef BasicCamera3D<Float> Camera3D;
+
+template<UnsignedInt, class> class BasicDrawable;
+typedef BasicDrawable<2, Float> Drawable2D;
+typedef BasicDrawable<3, Float> Drawable3D;
+
+template<class> class BasicDualComplexTransformation;
+template<class> class BasicDualQuaternionTransformation;
+typedef BasicDualComplexTransformation<Float> DualComplexTransformation;
+typedef BasicDualQuaternionTransformation<Float> DualQuaternionTransformation;
+
+template<UnsignedInt dimensions, class Feature, class T> class BasicFeatureGroup;
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AnimableGroup2D = AnimableGroup<2, T>;
-template<class T = Float> using AnimableGroup3D = AnimableGroup<3, T>;
+template<class Feature> using BasicFeatureGroup2D = BasicFeatureGroup<2, Feature, Float>;
+template<class Feature> using BasicFeatureGroup3D = BasicFeatureGroup<3, Feature, Float>;
 #endif
 
-template<class T = Float> class Camera2D;
-template<class T = Float> class Camera3D;
-
-template<UnsignedInt dimensions, class T = Float> class Drawable;
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using Drawable2D = Drawable<2, T>;
-template<class T = Float> using Drawable3D = Drawable<3, T>;
-#endif
-
-template<class T = Float> class DualComplexTransformation;
-template<class T = Float> class DualQuaternionTransformation;
-
-template<UnsignedInt dimensions, class Feature, class T = Float> class FeatureGroup;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class Feature, class T = Float> using FeatureGroup2D = FeatureGroup<2, Feature, T>;
-template<class Feature, class T = Float> using FeatureGroup3D = FeatureGroup<3, Feature, T>;
-#endif
-
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<UnsignedInt dimensions, class T = Float> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
-template<class T = Float> using DrawableGroup2D = DrawableGroup<2, T>;
-template<class T = Float> using DrawableGroup3D = DrawableGroup<3, T>;
+template<UnsignedInt dimensions, class T> using BasicDrawableGroup = BasicFeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
 #else
-template<UnsignedInt dimensions, class T = Float> class DrawableGroup;
+template<UnsignedInt, class> class BasicDrawableGroup;
 #endif
+typedef BasicDrawableGroup<2, Float> DrawableGroup2D;
+typedef BasicDrawableGroup<3, Float> DrawableGroup3D;
 
-template<class T = Float> class MatrixTransformation2D;
-template<class T = Float> class MatrixTransformation3D;
+template<class> class BasicMatrixTransformation2D;
+template<class> class BasicMatrixTransformation3D;
+typedef BasicMatrixTransformation2D<Float> MatrixTransformation2D;
+typedef BasicMatrixTransformation3D<Float> MatrixTransformation3D;
 
 template<class Transformation> class Object;
 
-template<class T = Float> class RigidMatrixTransformation2D;
-template<class T = Float> class RigidMatrixTransformation3D;
+template<class> class BasicRigidMatrixTransformation2D;
+template<class> class BasicRigidMatrixTransformation3D;
+typedef BasicRigidMatrixTransformation2D<Float> RigidMatrixTransformation2D;
+typedef BasicRigidMatrixTransformation3D<Float> RigidMatrixTransformation3D;
 
 template<class Transformation> class Scene;
 #endif

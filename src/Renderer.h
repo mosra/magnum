@@ -238,7 +238,7 @@ class MAGNUM_EXPORT Renderer {
          * Initial value is fully opaque black.
          * @see @fn_gl{ClearColor}
          */
-        static void setClearColor(const Color4<>& color);
+        static void setClearColor(const Color4& color);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -809,7 +809,7 @@ class MAGNUM_EXPORT Renderer {
          * @see @ref Feature "Feature::Blending", setBlendEquation(),
          *      setBlendFunction(), @fn_gl{BlendColor}
          */
-        static void setBlendColor(const Color4<>& color);
+        static void setBlendColor(const Color4& color);
 
         /*@}*/
 

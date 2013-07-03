@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Drawable, Magnum::SceneGraph::DrawableGroup, alias Magnum::SceneGraph::Drawable2D, Magnum::SceneGraph::Drawable3D, Magnum::SceneGraph::DrawableGroup2D, Magnum::SceneGraph::DrawableGroup3D
+ * @brief Class Magnum::SceneGraph::BasicDrawable, Magnum::SceneGraph::BasicDrawableGroup, typedef Magnum::SceneGraph::Drawable2D, Magnum::SceneGraph::Drawable3D, Magnum::SceneGraph::DrawableGroup2D, Magnum::SceneGraph::DrawableGroup3D
  */
 
 #include "AbstractGroupedFeature.h"
@@ -35,7 +35,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Drawable
 
-Adds drawing function to the object. Each %Drawable is part of some DrawableGroup
+Adds drawing function to the object. Each Drawable is part of some DrawableGroup
 and the whole group is drawn with particular camera using AbstractCamera::draw().
 
 @section Drawable-usage Usage
@@ -44,27 +44,27 @@ First thing is add Drawable feature to some object and implement draw(). You
 can do it conveniently using multiple inheritance (see @ref scenegraph-features
 for introduction). Example:
 @code
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class DrawableObject: public Object3D, SceneGraph::Drawable3D<> {
+class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        DrawableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D<>* group = nullptr): Object3D(parent), SceneGraph::Drawable3D<>(this, group) {
+        DrawableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Drawable3D(this, group) {
             // ...
         }
 
-        void draw(const Matrix4& transformationMatrix, AbstractCamera3D<>* camera) override {
+        void draw(const Matrix4& transformationMatrix, AbstractCamera3D* camera) override {
             // ...
         }
 }
 @endcode
 
 Then you add these objects to your scene and some drawable group and transform
-them as you like. You can also use DrawableGroup::add() and
-DrawableGroup::remove().
+them as you like. You can also use BasicDrawableGroup::add() and
+BasicDrawableGroup::remove().
 @code
 Scene3D scene;
-SceneGraph::DrawableGroup3D<> drawables;
+SceneGraph::DrawableGroup3D drawables;
 
 (new DrawableObject(&scene, &drawables))
     ->translate(Vector3::yAxis(-0.3f))
@@ -97,7 +97,7 @@ parameters once for whole group instead of setting them again in each draw()
 implementation. Example:
 @code
 Shaders::PhongShader* shader;
-SceneGraph::DrawableGroup3D<> phongObjects, transparentObjects;
+SceneGraph::DrawableGroup3D phongObjects, transparentObjects;
 
 void MyApplication::drawEvent() {
     shader->setProjectionMatrix(camera->projectionMatrix())
@@ -114,14 +114,9 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-@see @ref scenegraph, Drawable2D, Drawable3D, DrawableGroup2D, DrawableGroup3D
+@see Drawable2D, Drawable3D, @ref scenegraph, DrawableGroup2D, DrawableGroup3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T>
-#else
-template<UnsignedInt dimensions, class T = Float>
-#endif
-class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
+template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractBasicGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T> {
     public:
         /**
          * @brief Constructor
@@ -129,9 +124,9 @@ class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T
          * @param drawables Group this drawable belongs to
          *
          * Adds the feature to the object and also to the group, if specified.
-         * Otherwise you can use DrawableGroup::add().
+         * Otherwise you can use BasicDrawableGroup::add().
          */
-        explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
+        explicit BasicDrawable(AbstractBasicObject<dimensions, T>* object, BasicDrawableGroup<dimensions, T>* drawables = nullptr): AbstractBasicGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera
@@ -141,40 +136,22 @@ class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T
          *
          * Projection matrix can be retrieved from AbstractCamera::projectionMatrix().
          */
-        virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>* camera) = 0;
+        virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractBasicCamera<dimensions, T>* camera) = 0;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Two-dimensional drawable
+@brief Two-dimensional drawable for float scenes
 
-Convenience alternative to <tt>%Drawable<2, T></tt>. See Drawable for more
-information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see Drawable3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using Drawable2D = Drawable<2, T>;
+typedef BasicDrawable<2, Float> Drawable2D;
 
 /**
-@brief Three-dimensional drawable
+@brief Three-dimensional drawable for float scenes
 
-Convenience alternative to <tt>%Drawable<3, T></tt>. See Drawable for more
-information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see Drawable2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using Drawable3D = Drawable<3, T>;
-#endif
+typedef BasicDrawable<3, Float> Drawable3D;
 
 /**
 @brief Group of drawables
@@ -183,52 +160,24 @@ See Drawable for more information.
 @see @ref scenegraph, DrawableGroup2D, DrawableGroup3D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T = Float>
+template<UnsignedInt dimensions, class T> using BasicDrawableGroup = BasicFeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
 #else
-template<UnsignedInt dimensions, class T>
-#endif
-using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
-#else
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T = Float>
-#else
-template<UnsignedInt dimensions, class T>
-#endif
-class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
+template<UnsignedInt dimensions, class T> class BasicDrawableGroup: public BasicFeatureGroup<dimensions, BasicDrawable<dimensions, T>, T> {};
 #endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Group of two-dimensional drawables
+@brief Group of two-dimensional drawables for float scenes
 
-Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See Drawable for
-more information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see DrawableGroup3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using DrawableGroup2D = DrawableGroup<2, T>;
+typedef BasicDrawableGroup<2, Float> DrawableGroup2D;
 
 /**
-@brief Group of three-dimensional drawables
+@brief Group of three-dimensional drawables for float scenes
 
-Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See Drawable for
-more information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see DrawableGroup2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using DrawableGroup3D = DrawableGroup<3, T>;
-#endif
+typedef BasicDrawableGroup<3, Float> DrawableGroup3D;
 
 }}
 
