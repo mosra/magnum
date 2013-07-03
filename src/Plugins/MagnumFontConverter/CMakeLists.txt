@@ -33,7 +33,7 @@ set(MagnumFontConverter_HEADERS
 add_library(MagnumFontConverterObjects OBJECT ${MagnumFontConverter_SOURCES})
 set_target_properties(MagnumFontConverterObjects PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
 
-corrade_add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR}
+add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR}
     MagnumFontConverter.conf
     $<TARGET_OBJECTS:MagnumFontConverterObjects>
     pluginRegistrationMagnumFontConverter.cpp)
