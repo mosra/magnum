@@ -115,9 +115,9 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setColor(Color3<>(1.0f));
+    setColor(Color3(1.0f));
     if(flags & Flag::Wireframe) {
-        setWireframeColor(Color3<>(0.0f));
+        setWireframeColor(Color3(0.0f));
         setWireframeWidth(1.0f);
         setSmoothness(2.0f);
     }

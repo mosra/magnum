@@ -47,7 +47,7 @@ class ForceRendererOptions {
         constexpr ForceRendererOptions(): _color(1.0f), _size(1.0f) {}
 
         /** @brief Color of rendered arrow */
-        constexpr Color4<> color() const { return _color; }
+        constexpr Color4 color() const { return _color; }
 
         /**
          * @brief Set color of rendered arrow
@@ -55,7 +55,7 @@ class ForceRendererOptions {
          *
          * Default is 100% opaque white.
          */
-        ForceRendererOptions* setColor(const Color4<>& color) {
+        ForceRendererOptions* setColor(const Color4& color) {
             _color = color;
             return this;
         }
@@ -75,7 +75,7 @@ class ForceRendererOptions {
         }
 
     private:
-        Color4<> _color;
+        Color4 _color;
         Float _size;
 };
 
@@ -91,7 +91,7 @@ Example code:
 @code
 // Create some options
 DebugTools::ResourceManager::instance()->set("my", (new DebugTools::ForceRendererOptions)
-    ->setScale(5.0f)->setColor(Color3<>::fromHSV(120.0_degf, 1.0f, 0.7f)));
+    ->setScale(5.0f)->setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f)));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;

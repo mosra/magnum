@@ -55,7 +55,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
          */
-        Phong* setAmbientColor(const Color3<>& color) {
+        Phong* setAmbientColor(const Color3& color) {
             setUniform(ambientColorUniform, color);
             return this;
         }
@@ -64,7 +64,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Pointer to self (for method chaining)
          */
-        Phong* setDiffuseColor(const Color3<>& color) {
+        Phong* setDiffuseColor(const Color3& color) {
             setUniform(diffuseColorUniform, color);
             return this;
         }
@@ -75,7 +75,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        Phong* setSpecularColor(const Color3<>& color) {
+        Phong* setSpecularColor(const Color3& color) {
             setUniform(specularColorUniform, color);
             return this;
         }
@@ -126,7 +126,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        Phong* setLightColor(const Color3<>& color) {
+        Phong* setLightColor(const Color3& color) {
             setUniform(lightColorUniform, color);
             return this;
         }

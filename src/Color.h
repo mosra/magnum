@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Color3, Magnum::Color4
+ * @brief Class Magnum::BasicColor3, Magnum::BasicColor4, typedef Magnum::Color3, Magnum::Color4
  */
 
 #include <tuple>
@@ -39,7 +39,7 @@ namespace Magnum {
 namespace Implementation {
 
 /* Convert color from HSV */
-template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
+template<class T> typename std::enable_if<std::is_floating_point<T>::value, BasicColor3<T>>::type fromHSV(typename BasicColor3<T>::HSV hsv) {
     Math::Deg<T> hue;
     T saturation, value;
     std::tie(hue, saturation, value) = hsv;
@@ -65,12 +65,12 @@ template<class T> typename std::enable_if<std::is_floating_point<T>::value, Colo
         default: CORRADE_ASSERT_UNREACHABLE();
     }
 }
-template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
-    return Math::denormalize<Color3<T>>(fromHSV<typename Color3<T>::FloatingPointType>(hsv));
+template<class T> inline typename std::enable_if<std::is_integral<T>::value, BasicColor3<T>>::type fromHSV(typename BasicColor3<T>::HSV hsv) {
+    return Math::denormalize<BasicColor3<T>>(fromHSV<typename BasicColor3<T>::FloatingPointType>(hsv));
 }
 
 /* Internal hue computing function */
-template<class T> Math::Deg<T> hue(const Color3<T>& color, T max, T delta) {
+template<class T> Math::Deg<T> hue(const BasicColor3<T>& color, T max, T delta) {
     T deltaInv60 = T(60)/delta;
 
     T hue(0);
@@ -87,40 +87,40 @@ template<class T> Math::Deg<T> hue(const Color3<T>& color, T max, T delta) {
 }
 
 /* Hue, saturation, value for floating-point types */
-template<class T> inline Math::Deg<T> hue(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
+template<class T> inline Math::Deg<T> hue(typename std::enable_if<std::is_floating_point<T>::value, const BasicColor3<T>&>::type color) {
     T max = color.max();
     T delta = max - color.min();
     return hue(color, max, delta);
 }
-template<class T> inline T saturation(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
+template<class T> inline T saturation(typename std::enable_if<std::is_floating_point<T>::value, const BasicColor3<T>&>::type color) {
     T max = color.max();
     T delta = max - color.min();
     return max != T(0) ? delta/max : T(0);
 }
-template<class T> inline T value(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
+template<class T> inline T value(typename std::enable_if<std::is_floating_point<T>::value, const BasicColor3<T>&>::type color) {
     return color.max();
 }
 
 /* Hue, saturation, value for integral types */
-template<class T> inline Math::Deg<typename Color3<T>::FloatingPointType> hue(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return hue<typename Color3<T>::FloatingPointType>(Math::normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
+template<class T> inline Math::Deg<typename BasicColor3<T>::FloatingPointType> hue(typename std::enable_if<std::is_integral<T>::value, const BasicColor3<T>&>::type color) {
+    return hue<typename BasicColor3<T>::FloatingPointType>(Math::normalize<BasicColor3<typename BasicColor3<T>::FloatingPointType>>(color));
 }
-template<class T> inline typename Color3<T>::FloatingPointType saturation(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type& color) {
-    return saturation<typename Color3<T>::FloatingPointType>(Math::normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
+template<class T> inline typename BasicColor3<T>::FloatingPointType saturation(typename std::enable_if<std::is_integral<T>::value, const BasicColor3<T>&>::type& color) {
+    return saturation<typename BasicColor3<T>::FloatingPointType>(Math::normalize<BasicColor3<typename BasicColor3<T>::FloatingPointType>>(color));
 }
-template<class T> inline typename Color3<T>::FloatingPointType value(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return Math::normalize<typename Color3<T>::FloatingPointType>(color.max());
+template<class T> inline typename BasicColor3<T>::FloatingPointType value(typename std::enable_if<std::is_integral<T>::value, const BasicColor3<T>&>::type color) {
+    return Math::normalize<typename BasicColor3<T>::FloatingPointType>(color.max());
 }
 
 /* Convert color to HSV */
-template<class T> inline typename Color3<T>::HSV toHSV(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
+template<class T> inline typename BasicColor3<T>::HSV toHSV(typename std::enable_if<std::is_floating_point<T>::value, const BasicColor3<T>&>::type color) {
     T max = color.max();
     T delta = max - color.min();
 
-    return typename Color3<T>::HSV(hue<typename Color3<T>::FloatingPointType>(color, max, delta), max != T(0) ? delta/max : T(0), max);
+    return typename BasicColor3<T>::HSV(hue<typename BasicColor3<T>::FloatingPointType>(color, max, delta), max != T(0) ? delta/max : T(0), max);
 }
-template<class T> inline typename Color3<T>::HSV toHSV(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return toHSV<typename Color3<T>::FloatingPointType>(Math::normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
+template<class T> inline typename BasicColor3<T>::HSV toHSV(typename std::enable_if<std::is_integral<T>::value, const BasicColor3<T>&>::type color) {
+    return toHSV<typename BasicColor3<T>::FloatingPointType>(Math::normalize<BasicColor3<typename BasicColor3<T>::FloatingPointType>>(color));
 }
 
 /* Default alpha value */
@@ -144,16 +144,11 @@ Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
 range @f$ [0.0, 1.0] @f$.
 
-@see Color4
+@see @ref Color3, @ref BasicColor4
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class Color3: public Math::Vector3<T> {
+template<class T> class BasicColor3: public Math::Vector3<T> {
     public:
         /** @brief Corresponding floating-point type for HSV computation */
         typedef typename Math::TypeTraits<T>::FloatingPointType FloatingPointType;
@@ -172,11 +167,11 @@ class Color3: public Math::Vector3<T> {
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
          */
-        constexpr static Color3<T> fromHSV(HSV hsv) {
+        constexpr static BasicColor3<T> fromHSV(HSV hsv) {
             return Implementation::fromHSV<T>(hsv);
         }
         /** @overload */
-        constexpr static Color3<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
+        constexpr static BasicColor3<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
             return fromHSV(std::make_tuple(hue, saturation, value));
         }
 
@@ -185,13 +180,13 @@ class Color3: public Math::Vector3<T> {
          *
          * All components are set to zero.
          */
-        constexpr /*implicit*/ Color3() {}
+        constexpr /*implicit*/ BasicColor3() {}
 
         /**
          * @brief Gray constructor
          * @param rgb   RGB value
          */
-        constexpr explicit Color3(T rgb): Math::Vector3<T>(rgb) {}
+        constexpr explicit BasicColor3(T rgb): Math::Vector3<T>(rgb) {}
 
         /**
          * @brief Constructor
@@ -199,13 +194,13 @@ class Color3: public Math::Vector3<T> {
          * @param g     G value
          * @param b     B value
          */
-        constexpr /*implicit*/ Color3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
+        constexpr /*implicit*/ BasicColor3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
         /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
-        template<class U> constexpr explicit Color3(const Math::Vector<3, U>& other): Math::Vector3<T>(other) {}
+        template<class U> constexpr explicit BasicColor3(const Math::Vector<3, U>& other): Math::Vector3<T>(other) {}
 
         /** @brief Copy constructor */
-        constexpr Color3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
+        constexpr BasicColor3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
 
         T& r() { return Math::Vector3<T>::x(); }                /**< @brief R component */
         constexpr T r() const { return Math::Vector3<T>::x(); } /**< @overload */
@@ -259,15 +254,19 @@ class Color3: public Math::Vector3<T> {
             return Implementation::value<T>(*this);
         }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Color3, 3)
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(BasicColor3, 3)
 };
 
-MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color3, 3)
+/** @brief Three-component (RGB) float color */
+typedef BasicColor3<Float> Color3;
+
+MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(BasicColor3, 3)
 
 /**
 @brief Four-component (RGBA) color
 
-See Color3 for more information.
+See @ref BasicColor3 for more information.
+@see @ref Color4
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -276,24 +275,24 @@ template<class T>
 #else
 template<class T = Float>
 #endif
-class Color4: public Math::Vector4<T> {
+class BasicColor4: public Math::Vector4<T> {
     public:
-        /** @copydoc Color3::FloatingPointType */
-        typedef typename Color3<T>::FloatingPointType FloatingPointType;
+        /** @copydoc BasicColor3::FloatingPointType */
+        typedef typename BasicColor3<T>::FloatingPointType FloatingPointType;
 
-        /** @copydoc Color3::HSV */
-        typedef typename Color3<T>::HSV HSV;
+        /** @copydoc BasicColor3::HSV */
+        typedef typename BasicColor3<T>::HSV HSV;
 
         /**
-         * @copydoc Color3::fromHSV()
+         * @copydoc BasicColor3::fromHSV()
          * @param a     Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr static Color4<T> fromHSV(HSV hsv, T a = Implementation::defaultAlpha<T>()) {
-            return Color4<T>(Implementation::fromHSV<T>(hsv), a);
+        constexpr static BasicColor4<T> fromHSV(HSV hsv, T a = Implementation::defaultAlpha<T>()) {
+            return BasicColor4<T>(Implementation::fromHSV<T>(hsv), a);
         }
         /** @overload */
-        constexpr static Color4<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha) {
+        constexpr static BasicColor4<T> fromHSV(Math::Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha) {
             return fromHSV(std::make_tuple(hue, saturation, value), alpha);
         }
 
@@ -303,14 +302,14 @@ class Color4: public Math::Vector4<T> {
          * RGB components are set to zero, A component is set to 1.0 for
          * floating-point types and maximum positive value for integral types.
          */
-        constexpr /*implicit*/ Color4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
+        constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
 
         /**
-         * @copydoc Color3::Color3(T)
+         * @copydoc BasicColor3::BasicColor3(T)
          * @param alpha Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr explicit Color4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
+        constexpr explicit BasicColor4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
 
         /**
          * @brief Constructor
@@ -320,22 +319,22 @@ class Color4: public Math::Vector4<T> {
          * @param a     A value, defaults to 1.0 for floating-point types and
          *      maximum positive value for integral types.
          */
-        constexpr /*implicit*/ Color4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
+        constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
 
         /**
          * @brief Constructor
          * @param rgb   Three-component color
          * @param a     A value
          */
-        /* Not marked as explicit, because conversion from Color3 to Color4
+        /* Not marked as explicit, because conversion from BasicColor3 to BasicColor4
            is fairly common, nearly always with A set to 1 */
-        constexpr /*implicit*/ Color4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
         /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
-        template<class U> constexpr explicit Color4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
+        template<class U> constexpr explicit BasicColor4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
 
         /** @brief Copy constructor */
-        constexpr Color4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}
+        constexpr BasicColor4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}
 
         T& r() { return Math::Vector4<T>::x(); }                /**< @brief R component */
         constexpr T r() const { return Math::Vector4<T>::x(); } /**< @overload */
@@ -352,52 +351,55 @@ class Color4: public Math::Vector4<T> {
          *
          * @see swizzle()
          */
-        Color3<T>& rgb() { return Color3<T>::from(Math::Vector4<T>::data()); }
-        constexpr Color3<T> rgb() const { return Color3<T>::from(Math::Vector4<T>::data()); } /**< @overload */
+        BasicColor3<T>& rgb() { return BasicColor3<T>::from(Math::Vector4<T>::data()); }
+        constexpr BasicColor3<T> rgb() const { return BasicColor3<T>::from(Math::Vector4<T>::data()); } /**< @overload */
 
-        /** @copydoc Color3::toHSV() */
+        /** @copydoc BasicColor3::toHSV() */
         constexpr HSV toHSV() const {
             return Implementation::toHSV<T>(rgb());
         }
 
-        /** @copydoc Color3::hue() */
+        /** @copydoc BasicColor3::hue() */
         constexpr Math::Deg<FloatingPointType> hue() const {
             return Implementation::hue<T>(rgb());
         }
 
-        /** @copydoc Color3::saturation() */
+        /** @copydoc BasicColor3::saturation() */
         constexpr FloatingPointType saturation() const {
             return Implementation::saturation<T>(rgb());
         }
 
-        /** @copydoc Color3::value() */
+        /** @copydoc BasicColor3::value() */
         constexpr FloatingPointType value() const {
             return Implementation::value<T>(rgb());
         }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Color4, 4)
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(BasicColor4, 4)
 };
 
-MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Color4, 4)
+/** @brief Four-component (RGBA) float color */
+typedef BasicColor4<Float> Color4;
 
-/** @debugoperator{Magnum::Color3} */
-template<class T> inline Debug operator<<(Debug debug, const Color3<T>& value) {
+MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(BasicColor4, 4)
+
+/** @debugoperator{Magnum::BasicColor3} */
+template<class T> inline Debug operator<<(Debug debug, const BasicColor3<T>& value) {
     return debug << static_cast<const Math::Vector3<T>&>(value);
 }
 
-/** @debugoperator{Magnum::Color4} */
-template<class T> inline Debug operator<<(Debug debug, const Color4<T>& value) {
+/** @debugoperator{Magnum::BasicColor4} */
+template<class T> inline Debug operator<<(Debug debug, const BasicColor4<T>& value) {
     return debug << static_cast<const Math::Vector4<T>&>(value);
 }
 
 }
 
 namespace Corrade { namespace Utility {
-    /** @configurationvalue{Magnum::Color3} */
-    template<class T> struct ConfigurationValue<Magnum::Color3<T>>: public ConfigurationValue<Magnum::Math::Vector<3, T>> {};
+    /** @configurationvalue{Magnum::BasicColor3} */
+    template<class T> struct ConfigurationValue<Magnum::BasicColor3<T>>: public ConfigurationValue<Magnum::Math::Vector<3, T>> {};
 
-    /** @configurationvalue{Magnum::Color4} */
-    template<class T> struct ConfigurationValue<Magnum::Color4<T>>: public ConfigurationValue<Magnum::Math::Vector<4, T>> {};
+    /** @configurationvalue{Magnum::BasicColor4} */
+    template<class T> struct ConfigurationValue<Magnum::BasicColor4<T>>: public ConfigurationValue<Magnum::Math::Vector<4, T>> {};
 }}
 
 #endif

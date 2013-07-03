@@ -63,7 +63,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineColor()
          */
-        DistanceFieldVector* setColor(const Color4<>& color) {
+        DistanceFieldVector* setColor(const Color4& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
             return this;
         }
@@ -74,7 +74,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineRange(), setColor()
          */
-        DistanceFieldVector* setOutlineColor(const Color4<>& color) {
+        DistanceFieldVector* setOutlineColor(const Color4& color) {
             AbstractShaderProgram::setUniform(outlineColorUniform, color);
             return this;
         }

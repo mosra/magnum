@@ -427,7 +427,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return this;
         }
         #ifndef MAGNUM_TARGET_GLES3
-        Texture<Dimensions>* setBorderColor(const Color4<>& color) {
+        Texture<Dimensions>* setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }

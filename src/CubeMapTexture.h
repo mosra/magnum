@@ -233,7 +233,7 @@ class CubeMapTexture: public AbstractTexture {
             return this;
         }
         #ifndef MAGNUM_TARGET_GLES3
-        CubeMapTexture* setBorderColor(const Color4<>& color) {
+        CubeMapTexture* setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return this;
         }

@@ -203,7 +203,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *      with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
          */
-        AbstractTexture* setBorderColor(const Color4<>& color) {
+        AbstractTexture* setBorderColor(const Color4& color) {
             #ifndef MAGNUM_TARGET_GLES
             (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
             #else

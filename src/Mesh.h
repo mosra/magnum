@@ -173,7 +173,7 @@ mesh->setPrimitive(plane.primitive())
 class MyShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position;
-        typedef Attribute<1, Color4<>> Color;
+        typedef Attribute<1, Color4> Color;
 
     // ...
 };

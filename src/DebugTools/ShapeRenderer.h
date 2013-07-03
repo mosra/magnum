@@ -83,7 +83,7 @@ class ShapeRendererOptions {
         }
 
         /** @brief Color of rendered shape */
-        constexpr Color4<> color() const { return _color; }
+        constexpr Color4 color() const { return _color; }
 
         /**
          * @brief Set color of rendered shape
@@ -91,7 +91,7 @@ class ShapeRendererOptions {
          *
          * Default is 100% opaque white.
          */
-        ShapeRendererOptions* setColor(const Color4<>& color) {
+        ShapeRendererOptions* setColor(const Color4& color) {
             _color = color;
             return this;
         }
@@ -112,7 +112,7 @@ class ShapeRendererOptions {
         }
 
     private:
-        Color4<> _color;
+        Color4 _color;
         Float _pointSize;
         RenderMode _renderMode;
 };

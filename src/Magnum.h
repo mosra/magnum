@@ -352,8 +352,10 @@ class BufferTexture;
 enum class BufferTextureFormat: GLenum;
 #endif
 
-template<class T = Float> class Color3;
-template<class T = Float> class Color4;
+template<class> class BasicColor3;
+template<class> class BasicColor4;
+typedef BasicColor3<Float> Color3;
+typedef BasicColor4<Float> Color4;
 
 enum class Version: Int;
 class Context;
