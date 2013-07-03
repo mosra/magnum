@@ -34,14 +34,14 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::AbstractFeatureGroup() = default;
-template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::~AbstractFeatureGroup() = default;
+template<UnsignedInt dimensions, class T> AbstractBasicFeatureGroup<dimensions, T>::AbstractBasicFeatureGroup() = default;
+template<UnsignedInt dimensions, class T> AbstractBasicFeatureGroup<dimensions, T>::~AbstractBasicFeatureGroup() = default;
 
-template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::add(AbstractFeature<dimensions, T>* feature) {
+template<UnsignedInt dimensions, class T> void AbstractBasicFeatureGroup<dimensions, T>::add(AbstractBasicFeature<dimensions, T>* feature) {
     features.push_back(feature);
 }
 
-template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::remove(AbstractFeature<dimensions, T>* feature) {
+template<UnsignedInt dimensions, class T> void AbstractBasicFeatureGroup<dimensions, T>::remove(AbstractBasicFeature<dimensions, T>* feature) {
     features.erase(std::find(features.begin(), features.end(), feature));
 }
 

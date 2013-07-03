@@ -44,22 +44,18 @@ typedef AbstractBasicCamera<3, Float> AbstractCamera3D;
 
 /* Enum CachedTransformation and CachedTransformations used only directly */
 
-template<UnsignedInt dimensions, class T = Float> class AbstractFeature;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractFeature2D = AbstractFeature<2, T>;
-template<class T = Float> using AbstractFeature3D = AbstractFeature<3, T>;
-#endif
+template<UnsignedInt, class> class AbstractBasicFeature;
+typedef AbstractBasicFeature<2, Float> AbstractFeature2D;
+typedef AbstractBasicFeature<3, Float> AbstractFeature3D;
 
-template<UnsignedInt dimensions, class T = Float> class AbstractFeatureGroup;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractFeatureGroup2D = AbstractFeatureGroup<2, T>;
-template<class T = Float> using AbstractFeatureGroup3D = AbstractFeatureGroup<3, T>;
-#endif
+template<UnsignedInt, class> class AbstractBasicFeatureGroup;
+typedef AbstractBasicFeatureGroup<2, Float> AbstractFeatureGroup2D;
+typedef AbstractBasicFeatureGroup<3, Float> AbstractFeatureGroup3D;
 
-template<UnsignedInt dimensions, class Derived, class T = Float> class AbstractGroupedFeature;
+template<UnsignedInt dimensions, class Derived, class T> class AbstractBasicGroupedFeature;
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<class Derived, class T = Float> using AbstractGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
-template<class Derived, class T = Float> using AbstractGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
+template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFeature<2, Derived, Float>;
+template<class Derived> using AbstractGroupedFeature3D = AbstractBasicGroupedFeature<3, Derived, Float>;
 #endif
 
 template<UnsignedInt dimensions, class T = Float> class AbstractObject;
@@ -107,14 +103,14 @@ typedef BasicDrawable<3, Float> Drawable3D;
 template<class T = Float> class DualComplexTransformation;
 template<class T = Float> class DualQuaternionTransformation;
 
-template<UnsignedInt dimensions, class Feature, class T = Float> class FeatureGroup;
+template<UnsignedInt dimensions, class Feature, class T> class BasicFeatureGroup;
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<class Feature, class T = Float> using FeatureGroup2D = FeatureGroup<2, Feature, T>;
-template<class Feature, class T = Float> using FeatureGroup3D = FeatureGroup<3, Feature, T>;
+template<class Feature> using BasicFeatureGroup2D = BasicFeatureGroup<2, Feature, Float>;
+template<class Feature> using BasicFeatureGroup3D = BasicFeatureGroup<3, Feature, Float>;
 #endif
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<UnsignedInt dimensions, class T> using BasicDrawableGroup = FeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
+template<UnsignedInt dimensions, class T> using BasicDrawableGroup = BasicFeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
 #else
 template<UnsignedInt, class> class BasicDrawableGroup;
 #endif

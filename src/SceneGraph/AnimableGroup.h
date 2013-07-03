@@ -45,7 +45,7 @@ template<UnsignedInt dimensions, class T>
 #else
 template<UnsignedInt dimensions, class T = Float>
 #endif
-class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public FeatureGroup<dimensions, Animable<dimensions, T>, T> {
+class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public BasicFeatureGroup<dimensions, Animable<dimensions, T>, T> {
     friend class Animable<dimensions, T>;
 
     public:

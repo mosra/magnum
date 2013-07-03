@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::FeatureGroup, alias Magnum::SceneGraph::FeatureGroup2D, Magnum::SceneGraph::FeatureGroup3D
+ * @brief Class Magnum::SceneGraph::AbstractBasicFeatureGroup, Magnum::SceneGraph::BasicFeatureGroup, alias Magnum::SceneGraph::FeatureGroup2D, Magnum::SceneGraph::FeatureGroup3D
  */
 
 #include <vector>
@@ -39,48 +39,38 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for group of features
 
-See FeatureGroup.
+See BasicFeatureGroup.
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T>
-#else
-template<UnsignedInt dimensions, class T = Float>
-#endif
-class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup {
-    template<UnsignedInt, class, class> friend class FeatureGroup;
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeatureGroup {
+    template<UnsignedInt, class, class> friend class BasicFeatureGroup;
 
-    explicit AbstractFeatureGroup();
-    virtual ~AbstractFeatureGroup();
+    explicit AbstractBasicFeatureGroup();
+    virtual ~AbstractBasicFeatureGroup();
 
-    void add(AbstractFeature<dimensions, T>* feature);
-    void remove(AbstractFeature<dimensions, T>* feature);
+    void add(AbstractBasicFeature<dimensions, T>* feature);
+    void remove(AbstractBasicFeature<dimensions, T>* feature);
 
-    std::vector<AbstractFeature<dimensions, T>*> features;
+    std::vector<AbstractBasicFeature<dimensions, T>*> features;
 };
 
 /**
 @brief Group of features
 
-See AbstractGroupedFeature for more information.
-@see @ref scenegraph, FeatureGroup2D, FeatureGroup3D
+See AbstractBasicGroupedFeature for more information.
+@see @ref FeatureGroup2D, @ref FeatureGroup3D, @ref scenegraph
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class Feature, class T>
-#else
-template<UnsignedInt dimensions, class Feature, class T = Float>
-#endif
-class FeatureGroup: public AbstractFeatureGroup<dimensions, T> {
-    friend class AbstractGroupedFeature<dimensions, Feature, T>;
+template<UnsignedInt dimensions, class Feature, class T> class BasicFeatureGroup: public AbstractBasicFeatureGroup<dimensions, T> {
+    friend class AbstractBasicGroupedFeature<dimensions, Feature, T>;
 
     public:
-        explicit FeatureGroup() = default;
+        explicit BasicFeatureGroup() = default;
 
         /**
          * @brief Destructor
          *
          * Removes all features belonging to this group, but not deletes them.
          */
-        ~FeatureGroup();
+        ~BasicFeatureGroup();
 
         /** @brief Whether the group is empty */
         bool isEmpty() const { return this->features.empty(); }
@@ -103,9 +93,9 @@ class FeatureGroup: public AbstractFeatureGroup<dimensions, T> {
          * @return Pointer to self (for method chaining)
          *
          * If the features is part of another group, it is removed from it.
-         * @see remove(), AbstractGroupedFeature::AbstractGroupedFeature()
+         * @see remove(), AbstractBasicGroupedFeature::AbstractBasicGroupedFeature()
          */
-        FeatureGroup<dimensions, Feature, T>* add(Feature* feature);
+        BasicFeatureGroup<dimensions, Feature, T>* add(Feature* feature);
 
         /**
          * @brief Remove feature from the group
@@ -114,63 +104,51 @@ class FeatureGroup: public AbstractFeatureGroup<dimensions, T> {
          * The feature must be part of the group.
          * @see add()
          */
-        FeatureGroup<dimensions, Feature, T>* remove(Feature* feature);
+        BasicFeatureGroup<dimensions, Feature, T>* remove(Feature* feature);
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Base for two-dimensional object features
+@brief Base feature for two-dimensional float scenes
 
-Convenience alternative to <tt>%FeatureGroup<2, Feature, T></tt>. See
-AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<2, Feature, T></tt>
+Convenience alternative to <tt>%BasicFeatureGroup<2, Feature, Float></tt>.
+@note Not available on GCC < 4.7. Use <tt>%BasicFeatureGroup<2, Feature, Float></tt>
     instead.
-@see FeatureGroup3D
+@see @ref FeatureGroup3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Feature, class T = Float>
-#else
-template<class Feature, class T>
-#endif
-using FeatureGroup2D = FeatureGroup<2, Feature, T>;
+template<class Feature> using FeatureGroup2D = BasicFeatureGroup<2, Feature, Float>;
 
 /**
-@brief Base for three-dimensional object features
+@brief Base feature for three-dimensional float scenes
 
-Convenience alternative to <tt>%FeatureGroup<3, Feature, T></tt>. See
-AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<3, Feature, T></tt>
+Convenience alternative to <tt>%BasicFeatureGroup<3, Feature, Float></tt>.
+@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<3, Feature, Float></tt>
     instead.
-@see FeatureGroup2D
+@see @ref FeatureGroup2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class Feature, class T = Float>
-#else
-template<class Feature, class T>
-#endif
-using FeatureGroup3D = FeatureGroup<3, Feature, T>;
+template<class Feature> using FeatureGroup3D = BasicFeatureGroup<3, Feature, Float>;
 #endif
 
-template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>::~FeatureGroup() {
+template<UnsignedInt dimensions, class Feature, class T> BasicFeatureGroup<dimensions, Feature, T>::~BasicFeatureGroup() {
     for(auto i: this->features) static_cast<Feature*>(i)->_group = nullptr;
 }
 
-template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>* FeatureGroup<dimensions, Feature, T>::add(Feature* feature) {
+template<UnsignedInt dimensions, class Feature, class T> BasicFeatureGroup<dimensions, Feature, T>* BasicFeatureGroup<dimensions, Feature, T>::add(Feature* feature) {
     /* Remove from previous group */
     if(feature->_group)
         feature->_group->remove(feature);
 
     /* Crossreference the feature and group together */
-    AbstractFeatureGroup<dimensions, T>::add(feature);
+    AbstractBasicFeatureGroup<dimensions, T>::add(feature);
     feature->_group = this;
     return this;
 }
 
-template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>* FeatureGroup<dimensions, Feature, T>::remove(Feature* feature) {
+template<UnsignedInt dimensions, class Feature, class T> BasicFeatureGroup<dimensions, Feature, T>* BasicFeatureGroup<dimensions, Feature, T>::remove(Feature* feature) {
     CORRADE_ASSERT(feature->_group == this,
-        "SceneGraph::AbstractFeatureGroup::remove(): feature is not part of this group", this);
+        "SceneGraph::AbstractBasicFeatureGroup::remove(): feature is not part of this group", this);
 
-    AbstractFeatureGroup<dimensions, T>::remove(feature);
+    AbstractBasicFeatureGroup<dimensions, T>::remove(feature);
     feature->_group = nullptr;
     return this;
 }

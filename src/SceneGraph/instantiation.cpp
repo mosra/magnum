@@ -42,10 +42,10 @@ template class AbstractObject<3, Float>;
 template class AbstractTransformation<2, Float>;
 template class AbstractTransformation<3, Float>;
 
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
-template class AbstractFeatureGroup<2, Float>;
-template class AbstractFeatureGroup<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeature<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeature<3, Float>;
+template class AbstractBasicFeatureGroup<2, Float>;
+template class AbstractBasicFeatureGroup<3, Float>;
 
 template class AbstractBasicCamera<2, Float>;
 template class AbstractBasicCamera<3, Float>;

@@ -113,7 +113,7 @@ template<class Transformation> void Object<Transformation>::setDirty() {
     Object<Transformation>* self = static_cast<Object<Transformation>*>(this);
 
     /* Make all features dirty */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = self->firstFeature(); i; i = i->nextFeature())
+    for(AbstractBasicFeature<Transformation::Dimensions, typename Transformation::Type>* i = self->firstFeature(); i; i = i->nextFeature())
         i->markDirty();
 
     /* Make all children dirty */
@@ -377,7 +377,7 @@ template<class Transformation> void Object<Transformation>::setClean(const typen
     MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {
+    for(AbstractBasicFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {
         /* Cached absolute transformation, compute it if it wasn't
             computed already */
         if(i->cachedTransformations() & CachedTransformation::Absolute) {

@@ -43,7 +43,7 @@ namespace Magnum { namespace Shapes {
 See Shape for more information. See @ref shapes for brief introduction.
 @see @ref scenegraph, ShapeGroup2D, ShapeGroup3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::FeatureGroup<dimensions, AbstractShape<dimensions>> {
+template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::BasicFeatureGroup<dimensions, AbstractShape<dimensions>, Float> {
     friend class AbstractShape<dimensions>;
 
     public:

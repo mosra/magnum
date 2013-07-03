@@ -50,9 +50,9 @@ class ObjectTest: public TestSuite::Tester {
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
-class CachingObject: public Object3D, AbstractFeature<3> {
+class CachingObject: public Object3D, AbstractFeature3D {
     public:
-        CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature<3>(this) {
+        CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature3D(this) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
@@ -269,9 +269,9 @@ void ObjectTest::transformationsDuplicate() {
 void ObjectTest::setClean() {
     Scene3D scene;
 
-    class CachingFeature: public AbstractFeature<3> {
+    class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject<3>* object): AbstractFeature<3>(object) {
+            CachingFeature(AbstractObject<3>* object): AbstractFeature3D(object) {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -282,9 +282,9 @@ void ObjectTest::setClean() {
             }
     };
 
-    class CachingInvertedFeature: public AbstractFeature<3> {
+    class CachingInvertedFeature: public AbstractFeature3D {
         public:
-            CachingInvertedFeature(AbstractObject<3>* object): AbstractFeature<3>(object) {
+            CachingInvertedFeature(AbstractObject<3>* object): AbstractFeature3D(object) {
                 setCachedTransformations(CachedTransformation::InvertedAbsolute);
             }
 
@@ -367,9 +367,9 @@ void ObjectTest::setClean() {
 void ObjectTest::setCleanListHierarchy() {
     Scene3D scene;
 
-    class CachingFeature: public AbstractFeature<3> {
+    class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject<3>* object): AbstractFeature<3>(object) {
+            CachingFeature(AbstractObject<3>* object): AbstractFeature3D(object) {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 

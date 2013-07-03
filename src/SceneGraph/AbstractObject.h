@@ -59,46 +59,46 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T = Float> class AbstractObject
 #else
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Containers::LinkedList<AbstractFeature<dimensions, T>>
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject: private Containers::LinkedList<AbstractBasicFeature<dimensions, T>>
 #endif
 {
-    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
-    friend class AbstractFeature<dimensions, T>;
+    friend class Containers::LinkedList<AbstractBasicFeature<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend class AbstractBasicFeature<dimensions, T>;
 
     public:
         /** @brief Matrix type */
         typedef typename DimensionTraits<dimensions, T>::MatrixType MatrixType;
 
         /** @brief Feature object type */
-        typedef AbstractFeature<dimensions, T> FeatureType;
+        typedef AbstractBasicFeature<dimensions, T> FeatureType;
 
         explicit AbstractObject();
         virtual ~AbstractObject();
 
         /** @brief Whether this object has features */
         bool hasFeatures() const {
-            return !Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
+            return !Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::isEmpty();
         }
 
         /** @brief First object feature or `nullptr`, if this object has no features */
         FeatureType* firstFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::first();
         }
 
         /** @overload */
         const FeatureType* firstFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::first();
         }
 
         /** @brief Last object feature or `nullptr`, if this object has no features */
         FeatureType* lastFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::last();
         }
 
         /** @overload */
         const FeatureType* lastFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+            return Containers::LinkedList<AbstractBasicFeature<dimensions, T>>::last();
         }
 
         /**
