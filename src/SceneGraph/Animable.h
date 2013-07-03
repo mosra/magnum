@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Animable, enum Magnum::SceneGraph::AnimationState
+ * @brief Class Magnum::SceneGraph::BasicAnimable, typedef Magnum::SceneGraph::Animable2D, Magnum::SceneGraph::Animable3D, enum Magnum::SceneGraph::AnimationState
  */
 
 #include "AbstractGroupedFeature.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Animation state
 
-@see Animable::setState()
+@see BasicAnimable::setState()
 */
 enum class AnimationState: UnsignedByte {
     /**
@@ -56,7 +56,7 @@ enum class AnimationState: UnsignedByte {
     Running
 };
 
-/** @debugoperator{Magnum::SceneGraph::Animable} */
+/** @debugoperator{Magnum::SceneGraph::BasicAnimable} */
 Debug MAGNUM_SCENEGRAPH_EXPORT operator<<(Debug debug, AnimationState value);
 
 /**
@@ -76,9 +76,9 @@ time and time delta. Example:
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
-class AnimableObject: public Object3D, SceneGraph::Animable3D<> {
+class AnimableObject: public Object3D, SceneGraph::Animable3D {
     public:
-        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D<>* group = nullptr): Object3D(parent), SceneGraph::Animable3D<>(this, group) {
+        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D<>* group = nullptr): Object3D(parent), SceneGraph::Animable3D(this, group) {
             setDuration(10.0f);
             // ...
         }
@@ -90,22 +90,23 @@ class AnimableObject: public Object3D, SceneGraph::Animable3D<> {
 @endcode
 
 Then add the object to your scene and some animation group. You can also use
-AnimableGroup::add() and AnimableGroup::remove() instead of passing the group
-in the constructor. The animation is initially in stopped state and without
-repeat, see setState(), setRepeated() and setRepeatCount() for more information.
+BasicAnimableGroup::add() and BasicAnimableGroup::remove() instead of passing
+the group in the constructor. The animation is initially in stopped state and
+without repeat, see setState(), setRepeated() and setRepeatCount() for more
+information.
 @code
 Scene3D scene;
-SceneGraph::AnimableGroup3D<> animables;
+SceneGraph::AnimableGroup3D animables;
 
 (new AnimableObject(&scene, &animables))
     ->setState(SceneGraph::AnimationState::Running);
 // ...
 @endcode
 
-Animation step is performed by calling AnimableGroup::step() in your draw event
-implementation. The function expects absolute time from relative to some fixed
-point in the past and time delta (i.e. duration of the frame). You can use
-Timeline for that, see its documentation for more information.
+Animation step is performed by calling BasicAnimableGroup::step() in your draw
+event implementation. The function expects absolute time from relative to some
+fixed point in the past and time delta (i.e. duration of the frame). You can
+use Timeline for that, see its documentation for more information.
 @code
 Timeline timeline;
 timeline.start();
@@ -121,11 +122,11 @@ void MyApplication::drawEvent() {
 
 @section Animable-performance Using animable groups to improve performance
 
-AnimableGroup is optimized for case when no animation is running - it just
+Animable group is optimized for case when no animation is running - it just
 puts itself to rest and waits until some animation changes its state to
 @ref AnimationState "AnimationState::Running" again. If you put animations
 which are not pernamently running to separate group, they will not be always
-traversed when calling AnimableGroup::step(), saving precious frame time.
+traversed when calling BasicAnimableGroup::step(), saving precious frame time.
 
 @section Animable-explicit-specializations Explicit template specializations
 
@@ -134,18 +135,14 @@ For other specializations (e.g. using Double type) you have to use
 Animable.hpp implementation file to avoid linker errors. See also
 @ref compilation-speedup-hpp for more information.
 
- - @ref Animable "Animable<2, Float>", @ref AnimableGroup "AnimableGroup<2, Float>"
- - @ref Animable "Animable<3, Float>", @ref AnimableGroup "AnimableGroup<3, Float>"
+ - @ref BasicAnimable "BasicAnimable<2, Float>", @ref BasicAnimableGroup "BasicAnimableGroup<2, Float>"
+ - @ref BasicAnimable "BasicAnimable<3, Float>", @ref BasicAnimableGroup "BasicAnimableGroup<3, Float>"
 
-@see @ref scenegraph, Animable2D, Animable3D, AnimableGroup2D, AnimableGroup3D
+@see @ref Animable2D, @ref Animable3D, @ref scenegraph, @ref AnimableGroup2D,
+    @ref AnimableGroup3D
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T>
-#else
-template<UnsignedInt dimensions, class T = Float>
-#endif
-class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dimensions, Animable<dimensions, T>, T> {
-    friend class AnimableGroup<dimensions, T>;
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT BasicAnimable: public AbstractBasicGroupedFeature<dimensions, BasicAnimable<dimensions, T>, T> {
+    friend class BasicAnimableGroup<dimensions, T>;
 
     public:
         /**
@@ -155,11 +152,11 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
          *
          * Creates stopped non-repeating animation with infinite duration,
          * adds the feature to the object and also to group, if specified.
-         * @see setDuration(), setState(), setRepeated(), AnimableGroup::add()
+         * @see setDuration(), setState(), setRepeated(), BasicAnimableGroup::add()
          */
-        explicit Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group = nullptr);
+        explicit BasicAnimable(AbstractObject<dimensions, T>* object, BasicAnimableGroup<dimensions, T>* group = nullptr);
 
-        ~Animable();
+        ~BasicAnimable();
 
         /** @brief Animation duration */
         Float duration() const { return _duration; }
@@ -178,7 +175,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
          * @see animationStarted(), animationPaused(), animationResumed(),
          *      animationStopped()
          */
-        Animable<dimensions, T>* setState(AnimationState state);
+        BasicAnimable<dimensions, T>* setState(AnimationState state);
 
         /**
          * @brief Whether the animation is repeated
@@ -194,7 +191,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
          * Default is `false`.
          * @see setRepeatCount()
          */
-        Animable<dimensions, T>* setRepeated(bool repeated) {
+        BasicAnimable<dimensions, T>* setRepeated(bool repeated) {
             _repeated = repeated;
             return this;
         }
@@ -214,7 +211,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
          * infinitely repeated animation. Default is `0`.
          * @see setRepeated()
          */
-        Animable<dimensions, T>* setRepeatCount(UnsignedShort count) {
+        BasicAnimable<dimensions, T>* setRepeatCount(UnsignedShort count) {
             _repeatCount = count;
             return this;
         }
@@ -224,8 +221,8 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
          *
          * If the animable doesn't belong to any group, returns `nullptr`.
          */
-        AnimableGroup<dimensions, T>* group();
-        const AnimableGroup<dimensions, T>* group() const; /**< @overload */
+        BasicAnimableGroup<dimensions, T>* group();
+        const BasicAnimableGroup<dimensions, T>* group() const; /**< @overload */
 
     protected:
         /**
@@ -236,7 +233,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
          * infinite non-repeating animation. Default is `0.0f`.
          */
         /* Protected so only animation implementer can change it */
-        Animable<dimensions, T>* setDuration(Float duration) {
+        BasicAnimable<dimensions, T>* setDuration(Float duration) {
             _duration = duration;
             return this;
         }
@@ -246,8 +243,8 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
          * @param time      Time from start of the animation
          * @param delta     Time delta for current frame
          *
-         * This function is periodically called from AnimableGroup::step() if
-         * the animation state is set to @ref AnimationState "AnimationState::Running".
+         * This function is periodically called from BasicAnimableGroup::step()
+         * if the animation state is set to @ref AnimationState "AnimationState::Running".
          * After animation duration is exceeded and repeat is not enabled or
          * repeat count is exceeded, the animation state is set to
          * @ref AnimationState "AnimationState::Stopped".
@@ -265,7 +262,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
         /**
          * @brief Action on animation start
          *
-         * Called from AnimableGroup::step() when state is changed from
+         * Called from BasicAnimableGroup::step() when state is changed from
          * @ref AnimationState "AnimationState::Stopped" to
          * @ref AnimationState "AnimationState::Running" and before first
          * animationStep() is called.
@@ -279,7 +276,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
         /**
          * @brief Action on animation pause
          *
-         * Called from AnimableGroup::step() when state changes from
+         * Called from BasicAnimableGroup::step() when state changes from
          * @ref AnimationState "AnimationState::Running" to
          * @ref AnimationState "AnimationState::Paused" and after last
          * animationStep() is called.
@@ -293,7 +290,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
         /**
          * @brief Action on animation resume
          *
-         * Called from AnimableGroup::step() when state changes from
+         * Called from BasicAnimableGroup::step() when state changes from
          * @ref AnimationState "AnimationState::Paused" to
          * @ref AnimationState "AnimationState::Running" and before first
          * animationStep() is called.
@@ -307,7 +304,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
         /**
          * @brief Action on animation stop
          *
-         * Called from AnimableGroup::step() when state changes from either
+         * Called from BasicAnimableGroup::step() when state changes from either
          * @ref AnimationState "AnimationState::Running" or
          * @ref AnimationState "AnimationState::Paused" to
          * @ref AnimationState "AnimationState::Stopped" and after last
@@ -331,37 +328,19 @@ class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractBasicGroupedFeature<dime
         UnsignedShort repeats;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Two-dimensional drawable
+@brief Animable for two-dimensional float scenes
 
-Convenience alternative to <tt>%Animable<2, T></tt>. See Animable for more
-information.
-@note Not available on GCC < 4.7. Use <tt>%Animable<2, T></tt> instead.
-@see Animable3D
+@see @ref Animable3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using Animable2D = Animable<2, T>;
+typedef BasicAnimable<2, Float> Animable2D;
 
 /**
-@brief Three-dimensional animable
+@brief Animable for three-dimensional float scenes
 
-Convenience alternative to <tt>%Animable<3, T></tt>. See Animable for more
-information.
-@note Not available on GCC < 4.7. Use <tt>%Animable<3, T></tt> instead.
-@see Animable2D
+@see @ref Animable2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using Animable3D = Animable<3, T>;
-#endif
+typedef BasicAnimable<3, Float> Animable3D;
 
 }}
 

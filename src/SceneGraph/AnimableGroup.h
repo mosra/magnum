@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AnimableGroup
+ * @brief Class Magnum::SceneGraph::BasicAnimableGroup, typedef Magnum::SceneGraph::AnimableGroup2D, Magnum::SceneGraph::AnimableGroup3D
  */
 
 #include "FeatureGroup.h"
@@ -37,22 +37,17 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Group of animables
 
-See Animable for more information.
-@see @ref scenegraph, AnimableGroup2D, AnimableGroup3D
+See BasicAnimable for more information.
+@see @ref AnimableGroup2D, @ref AnimableGroup3D, @ref scenegraph
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt dimensions, class T>
-#else
-template<UnsignedInt dimensions, class T = Float>
-#endif
-class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public BasicFeatureGroup<dimensions, Animable<dimensions, T>, T> {
-    friend class Animable<dimensions, T>;
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT BasicAnimableGroup: public BasicFeatureGroup<dimensions, BasicAnimable<dimensions, T>, T> {
+    friend class BasicAnimable<dimensions, T>;
 
     public:
         /**
          * @brief Constructor
          */
-        explicit AnimableGroup(): _runningCount(0), wakeUp(false) {}
+        explicit BasicAnimableGroup(): _runningCount(0), wakeUp(false) {}
 
         /**
          * @brief Count of running animations
@@ -76,37 +71,19 @@ class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public BasicFeatureGroup<dimension
         bool wakeUp;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Two-dimensional drawable
+@brief Animable group for two-dimensional float scenes
 
-Convenience alternative to <tt>%AnimableGroup<2, T></tt>. See Animable for
-more information.
-@note Not available on GCC < 4.7. Use <tt>%AnimableGroup<2, T></tt> instead.
-@see AnimableGroup3D
+@see @ref AnimableGroup3D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AnimableGroup2D = AnimableGroup<2, T>;
+typedef BasicAnimableGroup<2, Float> AnimableGroup2D;
 
 /**
-@brief Three-dimensional animable
+@brief Animable group for three-dimensional float scenes
 
-Convenience alternative to <tt>%AnimableGroup<3, T></tt>. See Animable for
-more information.
-@note Not available on GCC < 4.7. Use <tt>%AnimableGroup<3, T></tt> instead.
-@see AnimableGroup2D
+@see @ref AnimableGroup2D
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T = Float>
-#else
-template<class T>
-#endif
-using AnimableGroup3D = AnimableGroup<3, T>;
-#endif
+typedef BasicAnimableGroup<3, Float> AnimableGroup3D;
 
 }}
 

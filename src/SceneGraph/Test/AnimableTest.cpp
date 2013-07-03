@@ -59,9 +59,9 @@ AnimableTest::AnimableTest() {
 }
 
 void AnimableTest::state() {
-    class StateTrackingAnimable: public SceneGraph::Animable<3> {
+    class StateTrackingAnimable: public SceneGraph::Animable3D {
         public:
-            StateTrackingAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group) {
+            StateTrackingAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group) {
                 setDuration(1.0f);
             }
 
@@ -77,7 +77,7 @@ void AnimableTest::state() {
     };
 
     Object3D object;
-    AnimableGroup<3> group;
+    AnimableGroup3D group;
     CORRADE_COMPARE(group.runningCount(), 0);
 
     /* Verify initial state */
@@ -149,9 +149,9 @@ void AnimableTest::state() {
     CORRADE_COMPARE(group.runningCount(), 2);
 }
 
-class OneShotAnimable: public SceneGraph::Animable<3> {
+class OneShotAnimable: public SceneGraph::Animable3D {
     public:
-        OneShotAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group), time(-1.0f) {
+        OneShotAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
             setDuration(10.0f);
             setState(AnimationState::Running);
         }
@@ -174,9 +174,9 @@ class OneShotAnimable: public SceneGraph::Animable<3> {
 };
 
 void AnimableTest::step() {
-    class InifiniteAnimable: public SceneGraph::Animable<3> {
+    class InifiniteAnimable: public SceneGraph::Animable3D {
         public:
-            InifiniteAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group), time(-1.0f), delta(0.0f) {}
+            InifiniteAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f), delta(0.0f) {}
 
             Float time, delta;
 
@@ -188,7 +188,7 @@ void AnimableTest::step() {
     };
 
     Object3D object;
-    AnimableGroup<3> group;
+    AnimableGroup3D group;
     InifiniteAnimable animable(&object, &group);
 
     /* Calling step() if no object is running should do nothing */
@@ -213,7 +213,7 @@ void AnimableTest::step() {
 
 void AnimableTest::duration() {
     Object3D object;
-    AnimableGroup<3> group;
+    AnimableGroup3D group;
     OneShotAnimable animable(&object, &group);
     CORRADE_VERIFY(!animable.isRepeated());
 
@@ -233,9 +233,9 @@ void AnimableTest::duration() {
 }
 
 void AnimableTest::repeat() {
-    class RepeatingAnimable: public SceneGraph::Animable<3> {
+    class RepeatingAnimable: public SceneGraph::Animable3D {
         public:
-            RepeatingAnimable(AbstractObject<3>* object, AnimableGroup<3>* group = nullptr): SceneGraph::Animable<3>(object, group), time(-1.0f) {
+            RepeatingAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
                 setDuration(10.0f);
                 setState(AnimationState::Running);
                 setRepeated(true);
@@ -250,7 +250,7 @@ void AnimableTest::repeat() {
     };
 
     Object3D object;
-    AnimableGroup<3> group;
+    AnimableGroup3D group;
     RepeatingAnimable animable(&object, &group);
     CORRADE_COMPARE(animable.repeatCount(), 0);
 
@@ -295,7 +295,7 @@ void AnimableTest::repeat() {
 
 void AnimableTest::stop() {
     Object3D object;
-    AnimableGroup<3> group;
+    AnimableGroup3D group;
     OneShotAnimable animable(&object, &group);
     CORRADE_COMPARE(animable.repeatCount(), 0);
 
@@ -320,7 +320,7 @@ void AnimableTest::stop() {
 
 void AnimableTest::pause() {
     Object3D object;
-    AnimableGroup<3> group;
+    AnimableGroup3D group;
     OneShotAnimable animable(&object, &group);
 
     /* First two steps, animation is running */
