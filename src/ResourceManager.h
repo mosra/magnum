@@ -469,7 +469,11 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
 
     /* Insert it, if not already here */
     } else if(it == _data.end())
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         it = _data.emplace(key, Data()).first;
+        #else
+        it = _data.insert({key, Data()}).first;
+        #endif
 
     /* Replace previous data */
     delete it->second.data;
