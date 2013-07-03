@@ -1,0 +1,106 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "MagnumFontConverter.h"
+
+#include <sstream>
+#include <Containers/Array.h>
+#include <Utility/Directory.h>
+#include <Image.h>
+#include <ImageFormat.h>
+#include <Text/GlyphCache.h>
+#include <Text/AbstractFont.h>
+#include <TgaImageConverter/TgaImageConverter.h>
+
+namespace Magnum { namespace Text {
+
+MagnumFontConverter::MagnumFontConverter() = default;
+
+MagnumFontConverter::MagnumFontConverter(PluginManager::AbstractManager* manager, std::string plugin): AbstractFontConverter(manager, std::move(plugin)) {}
+
+auto MagnumFontConverter::doFeatures() const -> Features {
+    return Feature::ExportFont|Feature::ConvertData|Feature::MultiFile;
+}
+
+std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFontConverter::doExportFontToData(AbstractFont* font, GlyphCache* cache, const std::string& filename, const std::u32string& characters) const {
+    Utility::Configuration configuration;
+
+    configuration.setValue("image", Utility::Directory::filename(filename) + ".tga");
+    configuration.setValue("originalImageSize", cache->textureSize());
+    configuration.setValue("padding", cache->padding());
+    configuration.setValue("fontSize", font->size());
+
+    /* Compress glyph IDs so the glyphs are in consecutive array, glyph 0
+       should stay at position 0 */
+    std::unordered_map<UnsignedInt, UnsignedInt> glyphIdMap;
+    glyphIdMap.reserve(cache->glyphCount());
+    glyphIdMap.emplace(0, 0);
+    for(const std::pair<UnsignedInt, std::pair<Vector2i, Rectanglei>>& glyph: *cache)
+        glyphIdMap.emplace(glyph.first, glyphIdMap.size());
+
+    /** @todo Save only glyphs contained in @p characters */
+
+    /* Inverse map from new glyph IDs to old ones */
+    std::vector<UnsignedInt> inverseGlyphIdMap(glyphIdMap.size());
+    for(const std::pair<UnsignedInt, UnsignedInt>& map: glyphIdMap)
+        inverseGlyphIdMap[map.second] = map.first;
+
+    /* Save character properties, map glyph IDs to new ones */
+    for(const char32_t c: characters) {
+        Utility::ConfigurationGroup* group = configuration.addGroup("char");
+        const UnsignedInt glyphId = font->glyphId(c);
+        group->setValue("unicode", c);
+        group->setValue("advance", font->glyphAdvance(glyphId));
+
+        /* Map old glyph ID to new, if not found, map to glyph 0 */
+        auto found = glyphIdMap.find(glyphId);
+        group->setValue("glyph", found == glyphIdMap.end() ? 0 : glyphIdMap.at(glyphId));
+    }
+
+    /* Save glyph properties in order which preserves their IDs */
+    for(UnsignedInt oldGlyphId: inverseGlyphIdMap) {
+        std::pair<Vector2i, Rectanglei> glyph = (*cache)[oldGlyphId];
+        Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
+        group->setValue("position", glyph.first);
+        group->setValue("rectangle", glyph.second);
+    }
+
+    std::ostringstream confOut;
+    configuration.save(confOut);
+    std::string confStr = confOut.str();
+    Containers::Array<unsigned char> confData{confStr.size()};
+    std::copy(confStr.begin(), confStr.end(), confData.begin());
+
+    /* Save cache image */
+    Image2D image(ImageFormat::Red, ImageType::UnsignedByte);
+    cache->texture()->image(0, image);
+    auto tgaData = Trade::TgaImageConverter().exportToData(&image);
+
+    std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;
+    out.emplace_back(filename + ".conf", std::move(confData));
+    out.emplace_back(filename + ".tga", std::move(tgaData));
+    return std::move(out);
+}
+
+}}
