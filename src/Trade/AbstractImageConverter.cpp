@@ -70,7 +70,7 @@ bool AbstractImageConverter::exportToFile(const Image2D* const image, const std:
 }
 
 bool AbstractImageConverter::doExportToFile(const Image2D* const image, const std::string& filename) const {
-    CORRADE_ASSERT(features() & Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): not implemented", nullptr);
+    CORRADE_ASSERT(features() & Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): not implemented", false);
 
     auto data = doExportToData(image);
     if(!data) return false;
