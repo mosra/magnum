@@ -44,7 +44,8 @@ Provides functionality for converting arbitrary font to different format.
 @section AbstractFontConverter-subclassing Subclassing
 
 Plugin implements doFeatures() and one or more of `exportTo*()` / `importFrom*()`
-functions based on what features are supported.
+functions based on what features are supported. Characters passed to font
+exporting functions are converted to list of unique UTF-32 characters.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
@@ -304,6 +305,9 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * with its contents.
          */
         virtual GlyphCache* doImportGlyphCacheFromFile(const std::string& filename) const;
+
+    private:
+        MAGNUM_TEXT_LOCAL static std::u32string uniqueUnicode(const std::string& characters);
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFontConverter::Features)

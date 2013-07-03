@@ -22,12 +22,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "AbstractFontConverter.h"
+
+#include <algorithm>
 #include <fstream>
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
 #include <Utility/Unicode.h>
-
-#include "AbstractFontConverter.h"
 
 namespace Magnum { namespace Text {
 
@@ -39,7 +40,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFo
     CORRADE_ASSERT(features() >= (Feature::ExportFont|Feature::ConvertData),
         "Text::AbstractFontConverter::exportFontToData(): feature not supported", {});
 
-    return doExportFontToData(font, cache, filename, Utility::Unicode::utf32(characters));
+    return doExportFontToData(font, cache, filename, uniqueUnicode(characters));
 }
 
 std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont* const font, GlyphCache* const cache, const std::string& filename, const std::u32string& characters) const {
@@ -57,7 +58,7 @@ Containers::Array<unsigned char> AbstractFontConverter::exportFontToSingleData(A
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFontConverter::exportFontToSingleData(): the format is not single-file", nullptr);
 
-    return doExportFontToSingleData(font, cache, Utility::Unicode::utf32(characters));
+    return doExportFontToSingleData(font, cache, uniqueUnicode(characters));
 }
 
 Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont*, GlyphCache*, const std::u32string&) const {
@@ -69,7 +70,7 @@ bool AbstractFontConverter::exportFontToFile(AbstractFont* const font, GlyphCach
     CORRADE_ASSERT(features() & Feature::ExportFont,
         "Text::AbstractFontConverter::exportFontToFile(): feature not supported", false);
 
-    return doExportFontToFile(font, cache, filename, Utility::Unicode::utf32(characters));
+    return doExportFontToFile(font, cache, filename, uniqueUnicode(characters));
 }
 
 bool AbstractFontConverter::doExportFontToFile(AbstractFont* const font, GlyphCache* const cache, const std::string& filename, const std::u32string& characters) const {
@@ -211,6 +212,17 @@ GlyphCache* AbstractFontConverter::doImportGlyphCacheFromFile(const std::string&
     in.close();
 
     return doImportGlyphCacheFromSingleData(data);
+}
+
+std::u32string AbstractFontConverter::uniqueUnicode(const std::string& characters) {
+    /* Convert UTF-8 to UTF-32 */
+    std::u32string result = Utility::Unicode::utf32(characters);
+
+    /* Remove duplicate glyphs */
+    std::sort(result.begin(), result.end());
+    result.erase(std::unique(result.begin(), result.end()), result.end());
+
+    return std::move(result);
 }
 
 }}

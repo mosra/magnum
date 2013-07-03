@@ -37,6 +37,8 @@ class AbstractFontConverterTest: public TestSuite::Tester {
     public:
         explicit AbstractFontConverterTest();
 
+        void convertGlyphs();
+
         void exportFontToSingleData();
         void exportFontToFile();
 
@@ -48,7 +50,9 @@ class AbstractFontConverterTest: public TestSuite::Tester {
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {
-    addTests({&AbstractFontConverterTest::exportFontToSingleData,
+    addTests({&AbstractFontConverterTest::convertGlyphs,
+
+              &AbstractFontConverterTest::exportFontToSingleData,
               &AbstractFontConverterTest::exportFontToFile,
 
               &AbstractFontConverterTest::exportGlyphCacheToSingleData,
@@ -56,6 +60,29 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
 
               &AbstractFontConverterTest::importGlyphCacheFromSingleData,
               &AbstractFontConverterTest::importGlyphCacheFromFile});
+}
+
+void AbstractFontConverterTest::convertGlyphs() {
+    class GlyphExporter: public AbstractFontConverter {
+        public:
+            GlyphExporter(std::u32string& characters): characters(characters) {}
+
+        private:
+            Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
+
+            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont*, GlyphCache*, const std::u32string& characters) const override {
+                this->characters = characters;
+                return {};
+            }
+
+            std::u32string& characters;
+    };
+
+    std::u32string characters;
+    GlyphExporter exporter(characters);
+    exporter.exportFontToSingleData(nullptr, nullptr, "abC01a0 ");
+    CORRADE_COMPARE(characters, (std::u32string{
+            U' ', U'0', U'1', U'C', U'a', U'b'}));
 }
 
 void AbstractFontConverterTest::exportFontToSingleData() {
