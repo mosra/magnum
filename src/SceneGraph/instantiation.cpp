@@ -47,10 +47,10 @@ template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
 template class AbstractFeatureGroup<2, Float>;
 template class AbstractFeatureGroup<3, Float>;
 
-template class AbstractCamera<2, Float>;
-template class AbstractCamera<3, Float>;
-template class Camera2D<Float>;
-template class Camera3D<Float>;
+template class AbstractBasicCamera<2, Float>;
+template class AbstractBasicCamera<3, Float>;
+template class BasicCamera2D<Float>;
+template class BasicCamera3D<Float>;
 
 template class MAGNUM_SCENEGRAPH_EXPORT Object<DualComplexTransformation<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<DualQuaternionTransformation<Float>>;

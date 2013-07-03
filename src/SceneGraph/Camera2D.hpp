@@ -35,12 +35,12 @@ using namespace std;
 
 namespace Magnum { namespace SceneGraph {
 
-template<class T> Camera2D<T>::Camera2D(AbstractObject<2, T>* object): AbstractCamera<2, T>(object) {}
+template<class T> BasicCamera2D<T>::BasicCamera2D(AbstractObject<2, T>* object): AbstractBasicCamera<2, T>(object) {}
 
-template<class T> Camera2D<T>* Camera2D<T>::setProjection(const Math::Vector2<T>& size) {
-    AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);
+template<class T> BasicCamera2D<T>* BasicCamera2D<T>::setProjection(const Math::Vector2<T>& size) {
+    AbstractBasicCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);
 
-    AbstractCamera<2, T>::fixAspectRatio();
+    AbstractBasicCamera<2, T>::fixAspectRatio();
     return this;
 }
 

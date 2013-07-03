@@ -142,7 +142,7 @@ const std::array<UnsignedByte, 18> Renderer<3>::indices{{
 
 }
 
-template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
     /* Shader */
     shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
     if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColor<dimensions>);
@@ -173,7 +173,7 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions>* camera) {
+template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
     shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix*DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(options->size())))
         ->use();
 

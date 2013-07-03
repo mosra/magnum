@@ -84,7 +84,7 @@ new DebugTools::ObjectRenderer2D(object, "my", debugDrawables);
 
 @see ObjectRenderer2D, ObjectRenderer3D
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: public SceneGraph::Drawable<dimensions> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: public SceneGraph::BasicDrawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor
@@ -96,11 +96,10 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
          *
          * The renderer is automatically added to object's features.
          */
-        explicit ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions>* drawables = nullptr);
+        explicit ObjectRenderer(SceneGraph::AbstractObject<dimensions>* object, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
 
     protected:
-        /** @todoc Remove Float when Doxygen properly treats this as override */
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;
 
     private:
         Resource<ObjectRendererOptions> options;

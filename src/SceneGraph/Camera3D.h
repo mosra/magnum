@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Camera3D
+ * @brief Class Magnum::SceneGraph::BasicCamera3D, typedef Magnum::SceneGraph::Camera3D
  */
 
 #include "AbstractCamera.h"
@@ -44,7 +44,7 @@ See Drawable documentation for introduction. The camera by default displays
 OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` with orthographic projection and
 doesn't do any aspect ratio correction. Common setup example:
 @code
-SceneGraph::Camera3D<>* camera = new SceneGraph::Camera3D<>(&cameraObject);
+SceneGraph::BasicCamera3D<>* camera = new SceneGraph::BasicCamera3D<>(&cameraObject);
 camera->setPerspective({}, 0.001f, 100.0f)
       ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
@@ -53,25 +53,20 @@ camera->setPerspective({}, 0.001f, 100.0f)
 
 The following specialization are explicitly compiled into SceneGraph library.
 For other specializations (e.g. using Double type) you have to use
-Camera3D.hpp implementation file to avoid linker errors. See
+BasicCamera3D.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.
 
- - @ref Camera3D "Camera3D<Float>"
+ - @ref BasicCamera3D "BasicCamera3D<Float>"
 
-@see @ref scenegraph, Camera2D, Drawable, DrawableGroup
+@see @ref Camera3D, @ref scenegraph, @ref BasicCamera2D, @ref BasicDrawable, @ref BasicDrawableGroup
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T>
-#else
-template<class T = Float>
-#endif
-class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
+template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractBasicCamera<3, T> {
     public:
         /**
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit Camera3D(AbstractObject<3, T>* object);
+        explicit BasicCamera3D(AbstractObject<3, T>* object);
 
         /**
          * @brief Set orthographic projection
@@ -82,7 +77,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
          *
          * @see setPerspective(), Matrix4::orthographicProjection()
          */
-        Camera3D<T>* setOrthographic(const Math::Vector2<T>& size, T near, T far);
+        BasicCamera3D<T>* setOrthographic(const Math::Vector2<T>& size, T near, T far);
 
         /**
          * @brief Set perspective projection
@@ -93,7 +88,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
          *
          * @see setOrthographic(), Matrix4::perspectiveProjection()
          */
-        Camera3D<T>* setPerspective(const Math::Vector2<T>& size, T near, T far);
+        BasicCamera3D<T>* setPerspective(const Math::Vector2<T>& size, T near, T far);
 
         /**
          * @brief Set perspective projection
@@ -105,7 +100,7 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
          *
          * @see setOrthographic(), Matrix4::perspectiveProjection()
          */
-        Camera3D<T>* setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far);
+        BasicCamera3D<T>* setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far);
 
         /** @brief Near clipping plane */
         T near() const { return _near; }
@@ -115,8 +110,8 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Camera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractCamera<3, T>::setAspectRatioPolicy(policy);
+        BasicCamera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
+            AbstractBasicCamera<3, T>::setAspectRatioPolicy(policy);
             return this;
         }
         #endif
@@ -124,6 +119,13 @@ class MAGNUM_SCENEGRAPH_EXPORT Camera3D: public AbstractCamera<3, T> {
     private:
         T _near, _far;
 };
+
+/**
+@brief Camera for three-dimensional float scenes
+
+@see @ref Camera2D
+*/
+typedef BasicCamera3D<Float> Camera3D;
 
 }}
 

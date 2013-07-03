@@ -38,11 +38,9 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 enum class AspectRatioPolicy: UnsignedByte;
 
-template<UnsignedInt dimensions, class T = Float> class AbstractCamera;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractCamera2D = AbstractCamera<2, T>;
-template<class T = Float> using AbstractCamera3D = AbstractCamera<3, T>;
-#endif
+template<UnsignedInt, class> class AbstractBasicCamera;
+typedef AbstractBasicCamera<2, Float> AbstractCamera2D;
+typedef AbstractBasicCamera<3, Float> AbstractCamera3D;
 
 /* Enum CachedTransformation and CachedTransformations used only directly */
 
@@ -97,14 +95,14 @@ template<class T = Float> using AnimableGroup2D = AnimableGroup<2, T>;
 template<class T = Float> using AnimableGroup3D = AnimableGroup<3, T>;
 #endif
 
-template<class T = Float> class Camera2D;
-template<class T = Float> class Camera3D;
+template<class> class BasicCamera2D;
+template<class> class BasicCamera3D;
+typedef BasicCamera2D<Float> Camera2D;
+typedef BasicCamera3D<Float> Camera3D;
 
-template<UnsignedInt dimensions, class T = Float> class Drawable;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using Drawable2D = Drawable<2, T>;
-template<class T = Float> using Drawable3D = Drawable<3, T>;
-#endif
+template<UnsignedInt, class> class BasicDrawable;
+typedef BasicDrawable<2, Float> Drawable2D;
+typedef BasicDrawable<3, Float> Drawable3D;
 
 template<class T = Float> class DualComplexTransformation;
 template<class T = Float> class DualQuaternionTransformation;
@@ -116,12 +114,12 @@ template<class Feature, class T = Float> using FeatureGroup3D = FeatureGroup<3, 
 #endif
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<UnsignedInt dimensions, class T = Float> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
-template<class T = Float> using DrawableGroup2D = DrawableGroup<2, T>;
-template<class T = Float> using DrawableGroup3D = DrawableGroup<3, T>;
+template<UnsignedInt dimensions, class T> using BasicDrawableGroup = FeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
 #else
-template<UnsignedInt dimensions, class T = Float> class DrawableGroup;
+template<UnsignedInt, class> class BasicDrawableGroup;
 #endif
+typedef BasicDrawableGroup<2, Float> DrawableGroup2D;
+typedef BasicDrawableGroup<3, Float> DrawableGroup3D;
 
 template<class T = Float> class MatrixTransformation2D;
 template<class T = Float> class MatrixTransformation3D;

@@ -51,8 +51,6 @@ class CameraTest: public TestSuite::Tester {
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
-typedef SceneGraph::Camera2D<> Camera2D;
-typedef SceneGraph::Camera3D<> Camera3D;
 
 CameraTest::CameraTest() {
     addTests({&CameraTest::fixAspectRatio,
@@ -158,12 +156,12 @@ void CameraTest::projectionSizeViewport() {
 }
 
 void CameraTest::draw() {
-    class Drawable: public SceneGraph::Drawable<3> {
+    class Drawable: public SceneGraph::Drawable3D {
         public:
-            Drawable(AbstractObject<3>* object, DrawableGroup<3>* group, Matrix4& result): SceneGraph::Drawable<3>(object, group), result(result) {}
+            Drawable(AbstractObject<3>* object, DrawableGroup3D* group, Matrix4& result): SceneGraph::Drawable3D(object, group), result(result) {}
 
         protected:
-            void draw(const Matrix4& transformationMatrix, AbstractCamera<3>*) {
+            void draw(const Matrix4& transformationMatrix, AbstractCamera3D*) {
                 result = transformationMatrix;
             }
 
@@ -171,7 +169,7 @@ void CameraTest::draw() {
             Matrix4& result;
     };
 
-    DrawableGroup<3> group;
+    DrawableGroup3D group;
     Scene3D scene;
 
     Object3D first(&scene);

@@ -94,7 +94,7 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, const Shapes::Implem
 
 }
 
-template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions>* drawables): SceneGraph::Drawable<dimensions>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
+template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
     Implementation::createDebugMesh(this, Shapes::Implementation::getAbstractShape(shape));
 }
 
@@ -102,7 +102,7 @@ template<UnsignedInt dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
     for(auto i: renderers) delete i;
 }
 
-template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType&, SceneGraph::AbstractCamera<dimensions>* camera) {
+template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType&, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
     typename DimensionTraits<dimensions>::MatrixType projectionMatrix = camera->projectionMatrix()*camera->cameraMatrix();
     for(auto i: renderers) i->draw(options, projectionMatrix);
 }
