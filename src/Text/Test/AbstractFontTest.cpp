@@ -49,6 +49,8 @@ namespace {
 
 class SingleDataFont: public Text::AbstractFont {
     public:
+        explicit SingleDataFont(): opened(false) {}
+
         Features doFeatures() const override { return Feature::OpenData; }
         bool doIsOpened() const override { return opened; }
         void doClose() override {}
@@ -65,7 +67,7 @@ class SingleDataFont: public Text::AbstractFont {
             return nullptr;
         }
 
-        bool opened = false;
+        bool opened;
 };
 
 }
