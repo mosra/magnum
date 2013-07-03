@@ -77,7 +77,7 @@ void AbstractFontTest::openSingleData() {
     SingleDataFont font;
     const unsigned char data[] = {0xa5};
     CORRADE_VERIFY(!font.isOpened());
-    font.openData({{{}, data}}, 3.0f);
+    font.openData(std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>{{{}, data}}, 3.0f);
     CORRADE_VERIFY(font.isOpened());
 }
 

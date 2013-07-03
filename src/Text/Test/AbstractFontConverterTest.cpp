@@ -213,7 +213,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     /* doImportFromData() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
     const unsigned char data[] = {0xa5};
-    GlyphCache* cache = importer.importGlyphCacheFromData({{{}, data}});
+    GlyphCache* cache = importer.importGlyphCacheFromData(std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>{{{}, data}});
     CORRADE_COMPARE(cache, reinterpret_cast<GlyphCache*>(0xdeadbeef));
 }
 
