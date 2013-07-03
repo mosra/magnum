@@ -33,11 +33,13 @@ class GlyphCacheGLTest: public Magnum::Test::AbstractOpenGLTester {
 
         void initialize();
         void access();
+        void reserve();
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {
     addTests({&GlyphCacheGLTest::initialize,
-              &GlyphCacheGLTest::access});
+              &GlyphCacheGLTest::access,
+              &GlyphCacheGLTest::reserve});
 }
 
 void GlyphCacheGLTest::initialize() {
@@ -76,6 +78,13 @@ void GlyphCacheGLTest::access() {
     std::tie(position, rectangle) = cache[42];
     CORRADE_COMPARE(position, Vector2i(3, 5));
     CORRADE_COMPARE(rectangle, Rectanglei({10, 10}, {23, 45}));
+}
+
+void GlyphCacheGLTest::reserve() {
+    Text::GlyphCache cache(Vector2i(236));
+
+    /* Verify that this works for "empty" cache */
+    CORRADE_VERIFY(!cache.reserve({{5, 3}}).empty());
 }
 
 }}}
