@@ -100,7 +100,7 @@ cleanInverted() or both. Example:
 @code
 class CachingFeature: public SceneGraph::AbstractFeature3D {
     public:
-        CachingFeature(SceneGraph::AbstractObject3D<>* object): SceneGraph::AbstractFeature3D(object) {
+        CachingFeature(SceneGraph::AbstractObject3D* object): SceneGraph::AbstractFeature3D(object) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
@@ -134,18 +134,17 @@ parameter:
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
         template<class T> TransformingFeature(SceneGraph::Object<T>* object):
-            SceneGraph::AbstractFeature3D<>(object), transformation(object) {}
+            SceneGraph::AbstractFeature3D(object), transformation(object) {}
 
     private:
-        SceneGraph::AbstractTranslationRotation3D<>* transformation;
+        SceneGraph::AbstractTranslationRotation3D* transformation;
 };
 @endcode
-If we take for example @ref Object "Object<MatrixTransformation3D<>>", it is
-derived from @ref AbstractObject "AbstractObject3D<>" and
-@ref MatrixTransformation3D "MatrixTransformation3D<>", which is derived from
-@ref AbstractTranslationRotationScaling3D "AbstractTranslationRotationScaling3D<>",
-which is derived from
-@ref AbstractTranslationRotation3D "AbstractTranslationRotation3D<>",
+If we take for example @ref Object "Object<MatrixTransformation3D>", it is
+derived from @ref AbstractBasicObject "AbstractObject3D" and
+@ref BasicMatrixTransformation3D "MatrixTransformation3D", which is derived
+from @ref BasicAbstractTranslationRotationScaling3D "AbstractTranslationRotationScaling3D",
+which is derived from @ref BasicAbstractTranslationRotation3D "AbstractTranslationRotation3D",
 which is automatically extracted from the pointer in our constructor.
 
 @section AbstractFeature-explicit-specializations Explicit template specializations

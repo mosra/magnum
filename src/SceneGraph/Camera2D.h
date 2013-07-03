@@ -39,7 +39,7 @@ See Drawable documentation for introduction. The camera by default displays
 OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect ratio
 correction. Common setup example:
 @code
-SceneGraph::BasicCamera2D<>* camera = new SceneGraph::BasicCamera2D<>(&cameraObject);
+SceneGraph::BasicCamera2D* camera = new SceneGraph::BasicCamera2D(&cameraObject);
 camera->setProjection({4.0f/3.0f, 1.0f})
       ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode

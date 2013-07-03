@@ -73,12 +73,12 @@ animationStep(). You can do it conveniently using multiple inheritance (see
 implement your animation, the function provides both absolute animation
 time and time delta. Example:
 @code
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class AnimableObject: public Object3D, SceneGraph::Animable3D {
     public:
-        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D<>* group = nullptr): Object3D(parent), SceneGraph::Animable3D(this, group) {
+        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Animable3D(this, group) {
             setDuration(10.0f);
             // ...
         }

@@ -44,8 +44,8 @@ First thing is add Drawable feature to some object and implement draw(). You
 can do it conveniently using multiple inheritance (see @ref scenegraph-features
 for introduction). Example:
 @code
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:

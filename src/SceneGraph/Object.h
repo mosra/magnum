@@ -59,8 +59,8 @@ for introduction.
 Common usage is to typedef Object with desired transformation type to save
 unnecessary typing later, along with Scene and possibly other types, e.g.:
 @code
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 @endcode
 
 Uses Corrade::Containers::LinkedList for parent/children relationship.
