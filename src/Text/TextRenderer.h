@@ -82,7 +82,13 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
         /** @brief Rectangle spanning the rendered text */
         Rectangle rectangle() const { return _rectangle; }
 
-        /** @brief Text mesh */
+        /** @brief Vertex buffer */
+        Buffer* vertexBuffer() { return &_vertexBuffer; }
+
+        /** @brief Index buffer */
+        Buffer* indexBuffer() { return &_indexBuffer; }
+
+        /** @brief Mesh */
         Mesh* mesh() { return &_mesh; }
 
         /**
@@ -120,7 +126,7 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
         static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont* font, const GlyphCache* cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
 
         Mesh _mesh;
-        Buffer vertexBuffer, indexBuffer;
+        Buffer _vertexBuffer, _indexBuffer;
 
     private:
         AbstractFont* const font;

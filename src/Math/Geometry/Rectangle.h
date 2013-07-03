@@ -148,4 +148,34 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 
 }}}
 
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Geometry::Rectangle} */
+template<class T> struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<T>> {
+    ConfigurationValue() = delete;
+
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Geometry::Rectangle<T>& value, const ConfigurationValueFlags flags) {
+        return ConfigurationValue<Magnum::Math::Vector<4, T>>::toString(
+            reinterpret_cast<const Magnum::Math::Vector<4, T>&>(value), flags);
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Geometry::Rectangle<T> fromString(const std::string& stringValue, const ConfigurationValueFlags flags) {
+        const auto vec = ConfigurationValue<Magnum::Math::Vector<4, T>>::fromString(stringValue, flags);
+        return {{vec[0], vec[1]}, {vec[2], vec[3]}};
+    }
+};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Int>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::UnsignedInt>>;
+#ifndef MAGNUM_TARGET_GLES
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Double>>;
+#endif
+#endif
+
+}}
+
 #endif

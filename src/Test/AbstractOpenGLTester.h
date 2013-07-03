@@ -1,3 +1,5 @@
+#ifndef Magnum_Test_AbstractOpenGLTester_h
+#define Magnum_Test_AbstractOpenGLTester_h
 /*
     This file is part of Magnum.
 
@@ -22,22 +24,33 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Image.h"
+#include <TestSuite/Tester.h>
 
-namespace Magnum {
+#include "Renderer.h"
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data) {
-    delete[] _data;
-    _format = format;
-    _type = type;
-    _size = size;
-    _data = reinterpret_cast<unsigned char*>(data);
-}
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_EXPORT Image<1>;
-template class MAGNUM_EXPORT Image<2>;
-template class MAGNUM_EXPORT Image<3>;
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
+#include "Platform/WindowlessGlxApplication.h"
+#else
+#error Cannot run OpenGL tests on this platform
 #endif
 
-}
+namespace Magnum { namespace Test {
+
+class AbstractOpenGLTester: public TestSuite::Tester, public Platform::WindowlessApplication {
+    public:
+        explicit AbstractOpenGLTester(): Platform::WindowlessApplication({zero, nullptr}) {}
+
+        using TestSuite::Tester::exec;
+        int exec() override { return TestSuite::Tester::exec(); }
+
+    private:
+        static int zero;
+};
+
+int AbstractOpenGLTester::zero = 0;
+
+#define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Renderer::error(), Renderer::Error::NoError)
+
+}}
+
+#endif

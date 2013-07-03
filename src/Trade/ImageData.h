@@ -28,9 +28,7 @@
  * @brief Class Magnum::Trade::ImageData
  */
 
-#include "Math/Vector3.h"
-#include "AbstractImage.h"
-#include "DimensionTraits.h"
+#include "ImageReference.h"
 
 namespace Magnum { namespace Trade {
 
@@ -38,7 +36,7 @@ namespace Magnum { namespace Trade {
 @brief %Image data
 
 Access to image data provided by AbstractImporter subclasses. Interchangeable
-with Image, ImageWrapper or BufferImage.
+with Image, ImageReference or BufferImage.
 @see ImageData1D, ImageData2D, ImageData3D
 */
 template<UnsignedInt dimensions> class ImageData: public AbstractImage {
@@ -47,18 +45,37 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
 
         /**
          * @brief Constructor
-         * @param size              %Image size
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
+         * @param size              %Image size
          * @param data              %Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        explicit ImageData(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+
+        /** @brief Copying is not allowed */
+        ImageData(const ImageData<dimensions>&& other) = delete;
+
+        /** @brief Move constructor */
+        ImageData(ImageData<dimensions>&& other) noexcept;
+
+        /** @brief Copying is not allowed */
+        ImageData<dimensions>& operator=(const ImageData<dimensions>&& other) = delete;
+
+        /** @brief Move assignment */
+        ImageData<dimensions>& operator=(ImageData<dimensions>&& other) noexcept;
 
         /** @brief Destructor */
         ~ImageData() { delete[] _data; }
+
+        /**
+         * @brief Conversion to reference
+         *
+         * @todo GCC 4.8: don't allow this on rvalue-ref
+         */
+        /*implicit*/ operator ImageReference<dimensions>() const;
 
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
@@ -80,6 +97,22 @@ typedef ImageData<2> ImageData2D;
 
 /** @brief Three-dimensional image */
 typedef ImageData<3> ImageData3D;
+
+template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: AbstractImage(std::move(other)), _size(std::move(other._size)), _data(std::move(other._data)) {
+    other._size = {};
+    other._data = nullptr;
+}
+
+template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
+    AbstractImage::operator=(std::move(other));
+    std::swap(_size, other._size);
+    std::swap(_data, other._data);
+    return *this;
+}
+
+template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>() const {
+    return ImageReference<dimensions>(this->format(), this->type(), _size, _data);
+}
 
 }}
 

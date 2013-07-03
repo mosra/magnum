@@ -22,22 +22,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Image.h"
+#include "Math/Geometry/Rectangle.h"
 
-namespace Magnum {
-
-template<UnsignedInt dimensions> void Image<dimensions>::setData(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data) {
-    delete[] _data;
-    _format = format;
-    _type = type;
-    _size = size;
-    _data = reinterpret_cast<unsigned char*>(data);
-}
+namespace Corrade { namespace Utility {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_EXPORT Image<1>;
-template class MAGNUM_EXPORT Image<2>;
-template class MAGNUM_EXPORT Image<3>;
+template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Int>>;
+template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::UnsignedInt>>;
+#ifndef MAGNUM_TARGET_GLES
+template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Double>>;
+#endif
 #endif
 
-}
+}}

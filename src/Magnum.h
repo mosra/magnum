@@ -28,7 +28,7 @@
  * @brief Forward declarations for Magnum namespace
  */
 
-#include <corradeCompatibility.h>
+#include <Utility/Utility.h>
 
 #include "Math/Math.h"
 #include "Types.h"
@@ -37,14 +37,6 @@
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
-
-namespace Corrade {
-    namespace Utility {
-        class Debug;
-        class Warning;
-        class Error;
-    }
-}
 
 namespace Magnum {
 
@@ -392,10 +384,10 @@ enum class ImageFormat: GLenum;
 enum class ImageType: GLenum;
 #endif
 
-template<UnsignedInt> class ImageWrapper;
-typedef ImageWrapper<1> ImageWrapper1D;
-typedef ImageWrapper<2> ImageWrapper2D;
-typedef ImageWrapper<3> ImageWrapper3D;
+template<UnsignedInt> class ImageReference;
+typedef ImageReference<1> ImageReference1D;
+typedef ImageReference<2> ImageReference2D;
+typedef ImageReference<3> ImageReference3D;
 
 class Mesh;
 

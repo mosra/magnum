@@ -129,7 +129,11 @@ template<class Vertex, std::size_t vertexSize> void RemoveDuplicates<Vertex, ver
                exists, change vertex pointer of the face to already
                existing vertex */
             HashedVertex v(*it, table.size());
-            auto result = table.insert(std::pair<Math::Vector<vertexSize, std::size_t>, HashedVertex>(Math::Vector<vertexSize, std::size_t>::from(index), v));
+            #ifndef CORRADE_GCC46_COMPATIBILITY
+            auto result = table.emplace(Math::Vector<vertexSize, std::size_t>::from(index), v);
+            #else
+            auto result = table.insert({Math::Vector<vertexSize, std::size_t>::from(index), v});
+            #endif
             *it = result.first->second.newIndex;
         }
 

@@ -27,8 +27,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testConfigure.h.cmake
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES Magnum)
+corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp LIBRARIES Magnum MagnumText)
+corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp LIBRARIES Magnum MagnumText)
+
+if(BUILD_GL_TESTS)
+    corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText ${GL_TEST_LIBRARIES})
+    corrade_add_test(TextRendererGLTest TextRendererGLTest.cpp LIBRARIES MagnumText ${GL_TEST_LIBRARIES})
+endif()

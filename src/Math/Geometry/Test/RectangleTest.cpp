@@ -24,6 +24,7 @@
 
 #include <sstream>
 #include <TestSuite/Tester.h>
+#include <Utility/Configuration.h>
 
 #include "Math/Geometry/Rectangle.h"
 
@@ -44,6 +45,7 @@ class RectangleTest: public Corrade::TestSuite::Tester {
         void size();
 
         void debug();
+        void configuration();
 };
 
 typedef Geometry::Rectangle<Float> Rectangle;
@@ -61,7 +63,8 @@ RectangleTest::RectangleTest() {
               &RectangleTest::compare,
               &RectangleTest::size,
 
-              &RectangleTest::debug});
+              &RectangleTest::debug,
+              &RectangleTest::configuration});
 }
 
 void RectangleTest::construct() {
@@ -146,6 +149,17 @@ void RectangleTest::debug() {
     Debug(&o) << Rectanglei({34, 23}, {47, 30});
 
     CORRADE_COMPARE(o.str(), "Rectangle({34, 23}, {47, 30})\n");
+}
+
+void RectangleTest::configuration() {
+    Corrade::Utility::Configuration c;
+
+    Rectangle rect({3.0f, 3.125f}, {9.0f, 9.55f});
+    std::string value("3 3.125 9 9.55");
+
+    c.setValue("rectangle", rect);
+    CORRADE_COMPARE(c.value("rectangle"), value);
+    CORRADE_COMPARE(c.value<Rectangle>("rectangle"), rect);
 }
 
 }}}}

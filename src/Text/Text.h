@@ -35,6 +35,7 @@
 namespace Magnum { namespace Text {
 
 class AbstractFont;
+class AbstractFontConverter;
 class AbstractLayouter;
 class DistanceFieldGlyphCache;
 class GlyphCache;

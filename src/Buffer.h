@@ -31,8 +31,9 @@
 #include <cstddef>
 #include <array>
 #include <vector>
-#include <Containers/Containers.h>
+#include <Containers/Array.h>
 #include <Containers/EnumSet.h>
+#include <Utility/Assert.h>
 
 #include "Magnum.h"
 #include "OpenGL.h"
@@ -546,12 +547,12 @@ class MAGNUM_EXPORT Buffer {
          * @requires_gl %Buffer data queries are not available in OpenGL ES.
          *      Use @ref Magnum::Buffer::map() "map()" instead.
          */
-        Containers::Array<char> data();
+        template<class T> Containers::Array<T> data();
 
         /**
          * @brief %Buffer subdata
-         * @param offset    Offset in the buffer
-         * @param size      Data size
+         * @param offset    Byte offset in the buffer
+         * @param size      Data size (count of @p T values)
          *
          * Returns data of given buffer portion. If @extension{EXT,direct_state_access}
          * is not available and the buffer is not already bound somewhere, it
@@ -561,7 +562,7 @@ class MAGNUM_EXPORT Buffer {
          * @requires_gl %Buffer data queries are not available in OpenGL ES.
          *      Use @ref Magnum::Buffer::map() "map()" instead.
          */
-        Containers::Array<char> subData(GLintptr offset, GLsizeiptr size);
+        template<class T> Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
         #endif
 
         /**
@@ -814,7 +815,7 @@ class MAGNUM_EXPORT Buffer {
         typedef void(Buffer::*GetSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
         void MAGNUM_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
         void MAGNUM_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
-        static MAGNUM_LOCAL GetSubDataImplementation getSubDataImplementation;
+        static GetSubDataImplementation getSubDataImplementation;
         #endif
 
         typedef void(Buffer::*DataImplementation)(GLsizeiptr, const GLvoid*, Usage);
@@ -883,6 +884,20 @@ CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 
 /** @debugoperator{Magnum::Buffer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
+
+#ifndef MAGNUM_TARGET_GLES
+template<class T> Containers::Array<T> inline Buffer::data() {
+    const Int bufferSize = size();
+    CORRADE_ASSERT(bufferSize%sizeof(T) == 0, "Buffer::data(): the buffer size is" << bufferSize << "bytes, which can't be expressed as array of types with size" << sizeof(T), {});
+    return subData<T>(0, bufferSize/sizeof(T));
+}
+
+template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
+    Containers::Array<T> data(size);
+    if(size) (this->*getSubDataImplementation)(offset, size*sizeof(T), data);
+    return std::move(data);
+}
+#endif
 
 }
 

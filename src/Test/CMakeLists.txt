@@ -28,9 +28,19 @@ corrade_add_test(ArrayTest ArrayTest.cpp)
 corrade_add_test(ColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(DefaultFramebufferTest DefaultFramebufferTest.cpp LIBRARIES Magnum)
 corrade_add_test(FramebufferTest FramebufferTest.cpp LIBRARIES Magnum)
+corrade_add_test(ImageTest ImageTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshTest MeshTest.cpp LIBRARIES Magnum)
 corrade_add_test(RendererTest RendererTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(SwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
 
+if(BUILD_GL_TESTS)
+    corrade_add_test(BufferGLTest BufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+endif()
+
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+
+# Install bootstrap header for GL tests to be used in dependent projects
+if(BUILD_GL_TESTS)
+    install(FILES AbstractOpenGLTester.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)
+endif()

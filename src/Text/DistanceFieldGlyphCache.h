@@ -57,8 +57,8 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
     public:
         /**
          * @brief Constructor
-         * @param originalSize      Original cache texture size
-         * @param distanceFieldSize Size of computed distance field texture
+         * @param originalSize      Unscaled glyph cache texture size
+         * @param size              Actual glyph cache texture size
          * @param radius            Distance field computation radius
          *
          * See TextureTools::distanceField() for more information about the
@@ -70,7 +70,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          *      possible to convert the RGB texture to Luminance after it has
          *      been rendered when blitting is not supported to save memory?
          */
-        explicit DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& distanceFieldSize, UnsignedInt radius);
+        explicit DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, UnsignedInt radius);
 
         /**
          * @brief Set cache image
@@ -78,7 +78,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * Uploads image for one or more glyphs to given offset in original
          * cache texture. The texture is then converted to distance field.
          */
-        void setImage(const Vector2i& offset, Image2D* image) override;
+        void setImage(const Vector2i& offset, const ImageReference2D& image) override;
 
         /**
          * @brief Set distance field cache image
@@ -86,7 +86,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * Uploads already computed distance field image to given offset in
          * distance field texture.
          */
-        void setDistanceFieldImage(const Vector2i& offset, Image2D* image);
+        void setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image);
 
     private:
         const Vector2 scale;

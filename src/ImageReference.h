@@ -1,5 +1,5 @@
-#ifndef Magnum_ImageWrapper_h
-#define Magnum_ImageWrapper_h
+#ifndef Magnum_ImageReference_h
+#define Magnum_ImageReference_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::ImageWrapper
+ * @brief Class Magnum::ImageReference
  */
 
 #include "Math/Vector3.h"
@@ -35,7 +35,7 @@
 namespace Magnum {
 
 /**
-@brief %Image wrapper
+@brief %Image reference
 
 Adds information about dimensions, color components and component type to some
 data in memory.
@@ -47,40 +47,41 @@ same properties for each frame, such as video stream. Thus it is not possible
 to change image properties, only data pointer.
 
 Interchangeable with Image, BufferImage or Trade::ImageData.
-@see ImageWrapper1D, ImageWrapper2D, ImageWrapper3D
+@see ImageReference1D, ImageReference2D, ImageReference3D
 */
-template<UnsignedInt dimensions> class ImageWrapper: public AbstractImage {
+template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
     public:
         const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+
         /**
          * @brief Constructor
-         * @param size              %Image size
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
+         * @param size              %Image size
          * @param data              %Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        constexpr explicit ImageReference(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
-         * @param size              %Image size
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
+         * @param size              %Image size
          *
          * Data pointer is set to zero, call setData() to fill the image with
          * data.
          */
-        explicit ImageWrapper(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ImageFormat format, ImageType type): AbstractImage(format, type), _size(size), _data(nullptr) {}
+        constexpr explicit ImageReference(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
-        typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
+        constexpr typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
         unsigned char* data() { return _data; }
-        const unsigned char* data() const { return _data; } /**< @overload */
+        constexpr const unsigned char* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Set image data
@@ -100,13 +101,13 @@ template<UnsignedInt dimensions> class ImageWrapper: public AbstractImage {
 };
 
 /** @brief One-dimensional image wrapper */
-typedef ImageWrapper<1> ImageWrapper1D;
+typedef ImageReference<1> ImageReference1D;
 
 /** @brief Two-dimensional image wrapper */
-typedef ImageWrapper<2> ImageWrapper2D;
+typedef ImageReference<2> ImageReference2D;
 
 /** @brief Three-dimensional image wrapper */
-typedef ImageWrapper<3> ImageWrapper3D;
+typedef ImageReference<3> ImageReference3D;
 
 }
 

@@ -338,7 +338,11 @@ Context::Context() {
     for(std::size_t i = future; i != versions.size(); ++i) {
         const std::vector<Extension>& extensions = Extension::extensions(versions[i]);
         for(auto it = extensions.begin(); it != extensions.end(); ++it)
-            futureExtensions.insert(std::make_pair(it->_string, *it));
+            #ifndef CORRADE_GCC46_COMPATIBILITY
+            futureExtensions.emplace(it->_string, *it);
+            #else
+            futureExtensions.insert({it->_string, *it});
+            #endif
     }
 
     /* Check for presence of extensions in future versions */

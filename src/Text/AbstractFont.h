@@ -50,17 +50,84 @@ information. See TextRenderer for information about text rendering.
 
 @section AbstractFont-subclassing Subclassing
 
-Plugin implements functions open(), close(), createGlyphCache() and layout().
+Plugin implements doFeatures(), doClose(), doCreateGlyphCache(), doLayout() and
+one or more of `doOpen*()` functions.
+
+You don't need to do most of the redundant sanity checks, these things are
+checked by the implementation:
+
+-   Functions doOpenData(), doOpenSingleData() and doOpenFile() are called
+    after the previous file was closed, function doClose() is called only if
+    there is any file opened.
+-   Functions doOpenData() and doOpenSingleData() are called only if
+    @ref Feature "Feature::OpenData" is supported.
+-   All `do*()` implementations working on opened file are called only if
+    there is any file opened.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2")
 
     public:
+        /**
+         * @brief Features supported by this importer
+         *
+         * @see Features, features()
+         */
+        enum class Feature: UnsignedByte {
+            /** Opening fonts from raw data using openData() */
+            OpenData = 1 << 0,
+
+            /**
+             * The format is multi-file, thus openSingleData() convenience
+             * function cannot be used.
+             */
+            MultiFile = 1 << 1,
+
+            /**
+             * The font contains prepared glyph cache.
+             *
+             * @see fillGlyphCache(), createGlyphCache()
+             */
+            PreparedGlyphCache = 1 << 2
+        };
+
+        /** @brief Set of features supported by this importer */
+        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
+
         /** @brief Default constructor */
         explicit AbstractFont();
 
         /** @brief Plugin manager constructor */
         explicit AbstractFont(PluginManager::AbstractManager* manager, std::string plugin);
+
+        /** @brief Features supported by this font */
+        Features features() const { return doFeatures(); }
+
+        /** @brief Whether any file is opened */
+        bool isOpened() const { return doIsOpened(); }
+
+        /**
+         * @brief Open font from raw data
+         * @param data          Pairs of filename and file data
+         * @param size          Font size
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Available only if @ref Feature "Feature::OpenData" is
+         * supported. Returns `true` on success, `false` otherwise.
+         */
+        bool openData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
+
+        /**
+         * @brief Open font from single data
+         * @param data          File data
+         * @param size          Font size
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * file. Available only if @ref Feature "Feature::OpenData" is
+         * supported and the plugin doesn't have @ref Feature "Feature::MultiFile".
+         * Returns `true` on success, `false` otherwise.
+         */
+        bool openSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
 
         /**
          * @brief Open font from file
@@ -68,45 +135,67 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Returns `true` on success, `false` otherwise.
+         * file. If the plugin has @ref Feature "Feature::MultiFile", the
+         * function will use additional files in given path, all sharing common
+         * basename derived from @p filename. Returns `true` on success,
+         * `false` otherwise.
          */
-        virtual bool open(const std::string& filename, Float size) = 0;
-
-        /**
-         * @brief Open font from memory
-         * @param data          Font data
-         * @param dataSize      Font data size
-         * @param size          Font size
-         *
-         * Closes previous file, if it was opened, and tries to open given
-         * file. Returns `true` on success, `false` otherwise.
-         */
-        virtual bool open(const unsigned char* data, std::size_t dataSize, Float size) = 0;
+        bool openFile(const std::string& filename, Float size);
 
         /** @brief Close font */
-        virtual void close() = 0;
+        void close();
 
         /** @brief Font size */
         Float size() const { return _size; }
 
         /**
-         * @brief Create glyph cache for given character set
+         * @brief Glyph ID for given character
+         *
+         * @note This function is not meant to be used in performance-critical
+         *      code, only for font observations and conversions.
+         */
+        UnsignedInt glyphId(char32_t character);
+
+        /**
+         * @brief Glyph advance
+         * @param glyph     Glyph ID
+         *
+         * @note This function is not meant to be used in performance-critical
+         *      code, only for font observations and conversions.
+         * @see glyphId()
+         */
+        Vector2 glyphAdvance(UnsignedInt glyph);
+
+        /**
+         * @brief Fill glyph cache with given character set
          * @param cache         Glyph cache instance
          * @param characters    UTF-8 characters to render
          *
-         * Fills the cache with given characters.
+         * Fills the cache with given characters. Fonts having
+         * @ref Feature "Feature::PreparedGlyphCache" do not support partial
+         * glyph cache filling, use createGlyphCache() instead.
          */
-        virtual void createGlyphCache(GlyphCache* cache, const std::string& characters) = 0;
+        void fillGlyphCache(GlyphCache* cache, const std::string& characters);
 
         /**
-         * @brief Layout the text using font own layouter
+         * @brief Create glyph cache
+         *
+         * Configures and fills glyph cache with the contents of whole font.
+         * Available only if @ref Feature "Feature::PreparedGlyphCache" is
+         * supported. Other fonts support only partial glyph cache filling,
+         * see fillGlyphCache().
+         */
+        GlyphCache* createGlyphCache();
+
+        /**
+         * @brief Layout the text using font's own layouter
          * @param cache     Glyph cache
          * @param size      Font size
          * @param text      %Text to layout
          *
-         * @see createGlyphCache()
+         * @see fillGlyphCache(), createGlyphCache()
          */
-        virtual AbstractLayouter* layout(const GlyphCache* cache, Float size, const std::string& text) = 0;
+        AbstractLayouter* layout(const GlyphCache* cache, Float size, const std::string& text);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -114,7 +203,66 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     protected:
     #endif
         Float _size;
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @brief Implementation for features() */
+        virtual Features doFeatures() const = 0;
+
+        /** @brief Implementation for isOpened() */
+        virtual bool doIsOpened() const = 0;
+
+        /**
+         * @brief Implementation for openData()
+         *
+         * If the plugin doesn't have @ref Feature "Feature::MultiFile",
+         * default implementation calls doOpenSingleData().
+         */
+        virtual void doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
+
+        /** @brief Implementation for openSingleData() */
+        virtual void doOpenSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
+
+        /**
+         * @brief Implementation for openFile()
+         *
+         * If @ref Feature "Feature::OpenData" is supported and the plugin
+         * doesn't have @ref Feature "Feature::MultiFile", default
+         * implementation opens the file and calls doOpenSingleData() with its
+         * contents.
+         */
+        virtual void doOpenFile(const std::string& filename, Float size);
+
+        /** @brief Implementation for close() */
+        virtual void doClose() = 0;
+
+        /** @brief Implementation for glyphId() */
+        virtual UnsignedInt doGlyphId(char32_t character) = 0;
+
+        /** @brief Implementation for glyphAdvance() */
+        virtual Vector2 doGlyphAdvance(UnsignedInt glyph) = 0;
+
+        /**
+         * @brief Implementation for createGlyphCache()
+         *
+         * The string is converted from UTF-8 to UTF-32, unique characters are
+         * *not* removed.
+         */
+        virtual void doFillGlyphCache(GlyphCache* cache, const std::u32string& characters);
+
+        /**
+         * @brief Implementation for createGlyphCache()
+         */
+        virtual GlyphCache* doCreateGlyphCache();
+
+        /** @brief Implementation for layout() */
+        virtual AbstractLayouter* doLayout(const GlyphCache* cache, Float size, const std::string& text) = 0;
 };
+
+CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
 
 /**
 @brief Base for text layouters
@@ -139,12 +287,11 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
         /**
          * @brief Render glyph
          * @param i                 Glyph index
-         * @param cursorPosition    Cursor position
          *
          * Returns quad position, texture coordinates and advance to next
          * glyph.
          */
-        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(const Vector2& cursorPosition, UnsignedInt i) = 0;
+        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

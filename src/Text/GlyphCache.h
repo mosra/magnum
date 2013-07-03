@@ -61,21 +61,33 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
     public:
         /**
          * @brief Constructor
-         * @param size              Glyph cache texture size
          * @param internalFormat    Internal texture format
+         * @param originalSize      Unscaled glyph cache texture size
+         * @param size              Actual glyph cache texture size
+         * @param padding           Padding around every glyph
+         *
+         * All glyphs parameters are saved relative to @p originalSize,
+         * although the actual glyph cache texture has @p size. Glyph
+         * @p padding can be used to account for e.g. glyph shadows.
          */
-        explicit GlyphCache(const Vector2i& size, TextureFormat internalFormat);
+        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
 
         /**
          * @brief Constructor
-         * @param size              Glyph cache texture size
+         *
+         * Same as calling the above with @p originalSize and @p size the same.
+         */
+        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = Vector2i());
+
+        /**
+         * @brief Constructor
          *
          * Sets internal texture format to red channel only. On desktop OpenGL
          * requires @extension{ARB,texture_rg} (also part of OpenGL ES 3.0), in
          * ES2 uses @es_extension{EXT,texture_rg}, if available, or
          * @ref TextureFormat "TextureFormat::Luminance" as fallback.
          */
-        explicit GlyphCache(const Vector2i& size);
+        explicit GlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i());
 
         virtual ~GlyphCache();
 
@@ -85,6 +97,9 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * Size of unscaled glyph cache texture.
          */
         Vector2i textureSize() const { return _size; }
+
+        /** @brief Glyph padding */
+        Vector2i padding() const { return _padding; }
 
         /** @brief Count of glyphs in the cache */
         std::size_t glyphCount() const { return glyphs.size(); }
@@ -97,12 +112,28 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @param glyph         Glyph ID
          *
          * First tuple element is glyph position relative to point on baseline,
-         * second element is glyph region in texture atlas. If no glyph is
-         * found, glyph on zero index is returned.
+         * second element is glyph region in texture atlas.
+         *
+         * Returned values include padding.
+         *
+         * If no glyph is found, glyph `0` is returned, which is by default on
+         * zero position and has zero region in texture atlas. You can reset it
+         * to some meaningful value in insert().
+         * @see padding()
          */
         std::pair<Vector2i, Rectanglei> operator[](UnsignedInt glyph) const {
             auto it = glyphs.find(glyph);
             return it == glyphs.end() ? glyphs.at(0) : it->second;
+        }
+
+        /** @brief Iterator access to cache data */
+        std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>>::const_iterator begin() const {
+            return glyphs.begin();
+        }
+
+        /** @brief Iterator access to cache data */
+        std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>>::const_iterator end() const {
+            return glyphs.end();
         }
 
         /**
@@ -113,8 +144,11 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * was stored there, use insert() to store actual glyph on given
          * position and setImage() to upload glyph image.
          *
+         * Glyph @p sizes are expected to be without padding.
+         *
          * @attention Cache size must be large enough to contain all rendered
          *      glyphs.
+         * @see padding()
          */
         std::vector<Rectanglei> reserve(const std::vector<Vector2i>& sizes);
 
@@ -124,8 +158,14 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @param position      Position relative to point on baseline
          * @param rectangle     Region in texture atlas
          *
-         * You can obtain unused non-overlapping regions with reserve(). See
-         * also setImage() to upload glyph image.
+         * You can obtain unused non-overlapping regions with reserve(). You
+         * can't overwrite already inserted glyph, however you can reset glyph
+         * `0` to some meaningful value.
+         *
+         * Glyph parameters are expected to be without padding.
+         *
+         * See also setImage() to upload glyph image.
+         * @see padding()
          */
         void insert(UnsignedInt glyph, Vector2i position, Rectanglei rectangle);
 
@@ -135,23 +175,14 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * Uploads image for one or more glyphs to given offset in cache
          * texture.
          */
-        virtual void setImage(const Vector2i& offset, Image2D* image);
+        virtual void setImage(const Vector2i& offset, const ImageReference2D& image);
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
-    #else
-    protected:
-    #endif
-        /* Used from DistanceFieldGlyphCache */
-        explicit MAGNUM_LOCAL GlyphCache(const Vector2i& size, const Vector2i& padding);
-
         void MAGNUM_LOCAL initialize(TextureFormat internalFormat, const Vector2i& size);
 
-        const Vector2i _size;
+        Vector2i _size, _padding;
         Texture2D _texture;
 
-    private:
-        const Vector2i _padding;
         std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>> glyphs;
 };
 

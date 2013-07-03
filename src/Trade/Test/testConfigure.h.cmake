@@ -22,22 +22,5 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Image.h"
-
-namespace Magnum {
-
-template<UnsignedInt dimensions> void Image<dimensions>::setData(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data) {
-    delete[] _data;
-    _format = format;
-    _type = type;
-    _size = size;
-    _data = reinterpret_cast<unsigned char*>(data);
-}
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_EXPORT Image<1>;
-template class MAGNUM_EXPORT Image<2>;
-template class MAGNUM_EXPORT Image<3>;
-#endif
-
-}
+#define TRADE_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
+#define TRADE_TEST_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"

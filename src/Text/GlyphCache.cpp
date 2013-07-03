@@ -31,7 +31,15 @@
 
 namespace Magnum { namespace Text {
 
-GlyphCache::GlyphCache(const Vector2i& size): _size(size) {
+GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
+    initialize(internalFormat, size);
+}
+
+GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): _size(size), _padding(padding) {
+    initialize(internalFormat, size);
+}
+
+GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): _size(size), _padding(padding) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
     #endif
@@ -47,24 +55,22 @@ GlyphCache::GlyphCache(const Vector2i& size): _size(size) {
     initialize(internalFormat, size);
 }
 
-GlyphCache::GlyphCache(const Vector2i& size, const TextureFormat internalFormat): _size(size) {
-    initialize(internalFormat, size);
-}
-
-GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): _size(size), _padding(padding) {}
-
 GlyphCache::~GlyphCache() = default;
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
 void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& size) {
+    /* Initialize texture */
     _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         ->setMinificationFilter(Sampler::Filter::Linear)
         ->setMagnificationFilter(Sampler::Filter::Linear)
         ->setStorage(1, internalFormat, size);
+
+    /* Default "Not Found" glyph */
+    glyphs.insert({0, {}});
 }
 
 std::vector<Rectanglei> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
-    CORRADE_ASSERT(glyphs.empty(), "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
+    CORRADE_ASSERT((glyphs.size() == 1 && glyphs.at(0) == std::pair<Vector2i, Rectanglei>()),
+        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
     #ifndef CORRADE_GCC44_COMPATIBILITY
     glyphs.reserve(glyphs.size() + sizes.size());
     #endif
@@ -76,10 +82,14 @@ void GlyphCache::insert(const UnsignedInt glyph, Vector2i position, Rectanglei r
     rectangle.bottomLeft() -= _padding;
     rectangle.topRight() += _padding;
 
-    glyphs.insert({glyph, {position, rectangle}});
+    /* Overwriting "Not Found" glyph */
+    if(glyph == 0) glyphs[0] = {position, rectangle};
+
+    /* Inserting new glyph */
+    else CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({glyph, {position, rectangle}}).second);
 }
 
-void GlyphCache::setImage(const Vector2i& offset, Image2D* const image) {
+void GlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
     _texture.setSubImage(0, offset, image);
 }
 

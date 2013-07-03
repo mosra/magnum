@@ -138,10 +138,10 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param level             Mip level
          * @param image             %Image where to put the data
          *
-         * See Texture::image(Int, Image*) for more information.
+         * See Texture::image(Int, Image&) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        void image(Coordinate coordinate, Int level, Image3D* image) {
+        void image(Coordinate coordinate, Int level, Image3D& image) {
             AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(coordinate), level, image);
         }
 
@@ -152,11 +152,11 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * See Texture::image(Int, BufferImage*, Buffer::Usage) for more
+         * See Texture::image(Int, BufferImage&, Buffer::Usage) for more
          * information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        void image(Coordinate coordinate, Int level, BufferImage3D* image, Buffer::Usage usage) {
+        void image(Coordinate coordinate, Int level, BufferImage3D& image, Buffer::Usage usage) {
             AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(coordinate), level, image, usage);
         }
         #endif
@@ -165,7 +165,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             Image, ImageWrapper, BufferImage or
+         * @param image             Image, ImageReference, BufferImage or
          *      Trade::ImageData of the same dimension count
          * @return Pointer to self (for method chaining)
          *
@@ -175,7 +175,13 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See Texture::setImage() for more information.
          */
-        template<class T> CubeMapTextureArray* setImage(Int level, TextureFormat internalFormat, T* image) {
+        CubeMapTextureArray* setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
+            DataHelper<3>::setImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
+            return this;
+        }
+
+        /** @overload */
+        CubeMapTextureArray* setImage(Int level, TextureFormat internalFormat, BufferImage3D& image) {
             DataHelper<3>::setImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
             return this;
         }
@@ -184,7 +190,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set texture image 3D subdata
          * @param level         Mip level
          * @param offset        Offset where to put data in the texture
-         * @param image         Image3D, ImageWrapper3D, BufferImage3D or
+         * @param image         Image3D, ImageReference3D, BufferImage3D or
          *      Trade::ImageData3D
          * @return Pointer to self (for method chaining)
          *
@@ -199,27 +205,14 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * @see setSubImage(Int, Coordinate, Int, const Math::Vector<2, Int>&, const Image*)
          */
-        template<class Image> CubeMapTextureArray* setSubImage(Int level, const Vector3i& offset, const Image* image) {
-            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image, Vector3i(Math::Vector<Image::Dimensions, GLsizei>()));
+        CubeMapTextureArray* setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image) {
+            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
             return this;
         }
 
-        /**
-         * @brief Set texture image 2D subdata
-         * @param layer         Array layer
-         * @param coordinate    Coordinate
-         * @param level         Mip level
-         * @param offset        Offset where to put data in the texture
-         * @param image         Image2D, ImageWrapper2D, BufferImage2D or
-         *      Trade::ImageData2D
-         * @return Pointer to self (for method chaining)
-         *
-         * See Texture::setSubImage() for more information.
-         *
-         * @see setSubImage(Int, const Math::Vector<3, Int>&, const Image*)
-         */
-        template<class Image> CubeMapTextureArray* setSubImage(Int layer, Coordinate coordinate, Int level, const Vector2i& offset, const Image* image) {
-            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, Vector3i(offset, layer*6+static_cast<GLsizei>(coordinate)), image, Vector2i(Math::Vector<Image::Dimensions, GLsizei>()));
+        /** @overload */
+        CubeMapTextureArray* setSubImage(Int level, const Vector3i& offset, BufferImage3D& image) {
+            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
             return this;
         }
 

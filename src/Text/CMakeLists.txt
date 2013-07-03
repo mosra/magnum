@@ -24,11 +24,13 @@
 
 set(MagnumText_SRCS
     AbstractFont.cpp
+    AbstractFontConverter.cpp
     DistanceFieldGlyphCache.cpp
     GlyphCache.cpp
     TextRenderer.cpp)
 set(MagnumText_HEADERS
     AbstractFont.h
+    AbstractFontConverter.h
     DistanceFieldGlyphCache.h
     GlyphCache.h
     Text.h
@@ -45,3 +47,7 @@ target_link_libraries(MagnumText Magnum MagnumTextureTools)
 
 install(TARGETS MagnumText DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)
+
+if(BUILD_TESTS)
+    add_subdirectory(Test)
+endif()
