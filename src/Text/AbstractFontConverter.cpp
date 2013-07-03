@@ -91,7 +91,9 @@ bool AbstractFontConverter::doExportFontToFile(AbstractFont* const font, GlyphCa
 
     /* Export all data */
     const auto data = doExportFontToData(font, cache, filename, characters);
-    for(const auto& d: data) {
+    for(auto it = data.begin(); it != data.end(); ++it) {
+        const auto& d = *it;
+
         /* Open file */
         std::ofstream out(d.first.data(), std::ios::binary);
         if(!out.good()) {
@@ -161,7 +163,9 @@ bool AbstractFontConverter::doExportGlyphCacheToFile(GlyphCache* cache, const st
 
     /* Export all data */
     const auto data = doExportGlyphCacheToData(cache, filename);
-    for(const auto& d: data) {
+    for(auto it = data.begin(); it != data.end(); ++it) {
+        const auto& d = *it;
+
         /* Open file */
         std::ofstream out(d.first.data(), std::ios::binary);
         if(!out.good()) {
