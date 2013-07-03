@@ -67,7 +67,7 @@ void WindowlessNaClApplication::createContext(Configuration* configuration) {
     } else delete configuration;
 }
 
-bool WindowlessNaClApplication::tryCreateContext(Configuration* configuration) {
+bool WindowlessNaClApplication::tryCreateContext(Configuration*) {
     CORRADE_ASSERT(!c, "Platform::WindowlessNaClApplication::tryCreateContext(): context already created", false);
 
     const std::int32_t attributes[] = {

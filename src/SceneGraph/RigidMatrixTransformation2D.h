@@ -210,6 +210,13 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
 
 template<class T> inline BasicRigidMatrixTransformation2D<T>::BasicRigidMatrixTransformation2D() = default;
 
+/**
+@brief Two-dimensional rigid transformation for float scenes implemented using matrices
+
+@see @ref RigidMatrixTransformation3D
+*/
+typedef BasicRigidMatrixTransformation2D<Float> RigidMatrixTransformation2D;
+
 }}
 
 #endif

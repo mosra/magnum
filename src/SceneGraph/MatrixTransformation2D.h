@@ -177,6 +177,13 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
 
 template<class T> inline BasicMatrixTransformation2D<T>::BasicMatrixTransformation2D() = default;
 
+/**
+@brief Two-dimensional transformation for float scenes implemented using matrices
+
+@see @ref MatrixTransformation3D
+*/
+typedef BasicMatrixTransformation2D<Float> MatrixTransformation2D;
+
 }}
 
 #endif
