@@ -175,7 +175,12 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         Math::Matrix3<T> _transformation;
 };
 
+/**
+@brief Two-dimensional transformation for float scenes implemented using matrices
 
+@see @ref MatrixTransformation3D
+*/
+typedef BasicMatrixTransformation2D<Float> MatrixTransformation2D;
 
 }}
 
