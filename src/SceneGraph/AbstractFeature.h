@@ -162,11 +162,11 @@ AbstractFeature.hpp implementation file to avoid linker errors. See also
 */
 template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeature
 #ifndef DOXYGEN_GENERATING_OUTPUT
-: private Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>
+: private Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>
 #endif
 {
     friend class Containers::LinkedList<AbstractBasicFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>;
     template<class Transformation> friend class Object;
 
     public:
@@ -174,38 +174,38 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit AbstractBasicFeature(AbstractObject<dimensions, T>* object);
+        explicit AbstractBasicFeature(AbstractBasicObject<dimensions, T>* object);
 
         virtual ~AbstractBasicFeature() = 0;
 
         /** @brief %Object holding this feature */
-        AbstractObject<dimensions, T>* object() {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        AbstractBasicObject<dimensions, T>* object() {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::list();
         }
 
         /** @overload */
-        const AbstractObject<dimensions, T>* object() const {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        const AbstractBasicObject<dimensions, T>* object() const {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::list();
         }
 
         /** @brief Previous feature or `nullptr`, if this is first feature */
         AbstractBasicFeature<dimensions, T>* previousFeature() {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::previous();
         }
 
         /** @overload */
         const AbstractBasicFeature<dimensions, T>* previousFeature() const {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::previous();
         }
 
         /** @brief Next feature or `nullptr`, if this is last feature */
         AbstractBasicFeature<dimensions, T>* nextFeature() {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::next();
         }
 
         /** @overload */
         const AbstractBasicFeature<dimensions, T>* nextFeature() const {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::next();
         }
 
         /**

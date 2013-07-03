@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> BasicAnimable<dimensions, T>::BasicAnimable(AbstractObject<dimensions, T>* object, BasicAnimableGroup<dimensions, T>* group): AbstractBasicGroupedFeature<dimensions, BasicAnimable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<Float>::infinity()), pauseTime(-std::numeric_limits<Float>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
+template<UnsignedInt dimensions, class T> BasicAnimable<dimensions, T>::BasicAnimable(AbstractBasicObject<dimensions, T>* object, BasicAnimableGroup<dimensions, T>* group): AbstractBasicGroupedFeature<dimensions, BasicAnimable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<Float>::infinity()), pauseTime(-std::numeric_limits<Float>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
 
 template<UnsignedInt dimensions, class T> BasicAnimable<dimensions, T>::~BasicAnimable() {}
 

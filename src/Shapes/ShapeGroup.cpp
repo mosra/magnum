@@ -31,11 +31,11 @@ namespace Magnum { namespace Shapes {
 template<UnsignedInt dimensions> void ShapeGroup<dimensions>::setClean() {
     /* Clean all objects */
     if(!this->isEmpty()) {
-        std::vector<SceneGraph::AbstractObject<dimensions>*> objects(this->size());
+        std::vector<SceneGraph::AbstractBasicObject<dimensions, Float>*> objects(this->size());
         for(std::size_t i = 0; i != this->size(); ++i)
             objects[i] = (*this)[i]->object();
 
-        SceneGraph::AbstractObject<dimensions>::setClean(objects);
+        SceneGraph::AbstractBasicObject<dimensions, Float>::setClean(objects);
     }
 
     dirty = false;

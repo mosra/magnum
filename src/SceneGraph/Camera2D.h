@@ -64,7 +64,7 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractB
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setProjection()
          */
-        explicit BasicCamera2D(AbstractObject<2, T>* object);
+        explicit BasicCamera2D(AbstractBasicObject<2, T>* object);
 
         /**
          * @brief Set projection

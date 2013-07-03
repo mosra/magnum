@@ -61,7 +61,7 @@ AnimableTest::AnimableTest() {
 void AnimableTest::state() {
     class StateTrackingAnimable: public SceneGraph::Animable3D {
         public:
-            StateTrackingAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group) {
+            StateTrackingAnimable(AbstractObject3D* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group) {
                 setDuration(1.0f);
             }
 
@@ -151,7 +151,7 @@ void AnimableTest::state() {
 
 class OneShotAnimable: public SceneGraph::Animable3D {
     public:
-        OneShotAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
+        OneShotAnimable(AbstractObject3D* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
             setDuration(10.0f);
             setState(AnimationState::Running);
         }
@@ -176,7 +176,7 @@ class OneShotAnimable: public SceneGraph::Animable3D {
 void AnimableTest::step() {
     class InifiniteAnimable: public SceneGraph::Animable3D {
         public:
-            InifiniteAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f), delta(0.0f) {}
+            InifiniteAnimable(AbstractObject3D* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f), delta(0.0f) {}
 
             Float time, delta;
 
@@ -235,7 +235,7 @@ void AnimableTest::duration() {
 void AnimableTest::repeat() {
     class RepeatingAnimable: public SceneGraph::Animable3D {
         public:
-            RepeatingAnimable(AbstractObject<3>* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
+            RepeatingAnimable(AbstractObject3D* object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
                 setDuration(10.0f);
                 setState(AnimationState::Running);
                 setRepeated(true);

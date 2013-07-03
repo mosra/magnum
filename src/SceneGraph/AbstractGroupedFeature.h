@@ -78,7 +78,7 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractBasicGrou
          * Adds the feature to the object and to group, if specified.
          * @see FeatureGroup::add()
          */
-        explicit AbstractBasicGroupedFeature(AbstractObject<dimensions, T>* object, BasicFeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractBasicFeature<dimensions, T>(object), _group(nullptr) {
+        explicit AbstractBasicGroupedFeature(AbstractBasicObject<dimensions, T>* object, BasicFeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractBasicFeature<dimensions, T>(object), _group(nullptr) {
             if(group) group->add(static_cast<Derived*>(this));
         }
 

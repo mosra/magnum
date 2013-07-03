@@ -66,7 +66,7 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractB
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit BasicCamera3D(AbstractObject<3, T>* object);
+        explicit BasicCamera3D(AbstractBasicObject<3, T>* object);
 
         /**
          * @brief Set orthographic projection

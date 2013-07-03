@@ -64,7 +64,7 @@ const std::array<UnsignedByte, 6> indices{{
 
 }
 
-template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractObject<dimensions>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(object, drawables), forcePosition(forcePosition), force(force), options(ResourceManager::instance()->get<ForceRendererOptions>(options)) {
+template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractBasicObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(object, drawables), forcePosition(forcePosition), force(force), options(ResourceManager::instance()->get<ForceRendererOptions>(options)) {
     /* Shader */
     shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
     if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::Flat<dimensions>);

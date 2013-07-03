@@ -88,7 +88,7 @@ See @ref compilation-speedup-hpp for more information.
 
 @see Scene, AbstractFeature, AbstractTransformation, DebugTools::ObjectRenderer
 */
-template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
+template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractBasicObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
     , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif
@@ -298,14 +298,14 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
             return absoluteTransformationMatrix();
         }
 
-        std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const override final;
+        std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractBasicObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const override final;
 
         typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
 
         bool MAGNUM_SCENEGRAPH_LOCAL doIsDirty() const override final { return isDirty(); }
         void MAGNUM_SCENEGRAPH_LOCAL doSetDirty() override final { setDirty(); }
         void MAGNUM_SCENEGRAPH_LOCAL doSetClean() override final { setClean(); }
-        void doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) override final;
+        void doSetClean(const std::vector<AbstractBasicObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) override final;
 
         void MAGNUM_SCENEGRAPH_LOCAL setClean(const typename Transformation::DataType& absoluteTransformation);
 

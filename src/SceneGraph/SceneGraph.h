@@ -58,11 +58,9 @@ template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFea
 template<class Derived> using AbstractGroupedFeature3D = AbstractBasicGroupedFeature<3, Derived, Float>;
 #endif
 
-template<UnsignedInt dimensions, class T = Float> class AbstractObject;
-#ifndef CORRADE_GCC46_COMPATIBILITY
-template<class T = Float> using AbstractObject2D = AbstractObject<2, T>;
-template<class T = Float> using AbstractObject3D = AbstractObject<3, T>;
-#endif
+template<UnsignedInt dimensions, class> class AbstractBasicObject;
+typedef AbstractBasicObject<2, Float> AbstractObject2D;
+typedef AbstractBasicObject<3, Float> AbstractObject3D;
 
 enum class TransformationType: UnsignedByte;
 

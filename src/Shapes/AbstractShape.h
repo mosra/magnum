@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
          * @param object    Object holding this feature
          * @param group     Group this shape belongs to
          */
-        explicit AbstractShape(SceneGraph::AbstractObject<dimensions>* object, ShapeGroup<dimensions>* group = nullptr);
+        explicit AbstractShape(SceneGraph::AbstractBasicObject<dimensions, Float>* object, ShapeGroup<dimensions>* group = nullptr);
 
         /**
          * @brief Shape group containing this shape

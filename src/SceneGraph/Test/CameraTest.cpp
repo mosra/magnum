@@ -158,7 +158,7 @@ void CameraTest::projectionSizeViewport() {
 void CameraTest::draw() {
     class Drawable: public SceneGraph::Drawable3D {
         public:
-            Drawable(AbstractObject<3>* object, DrawableGroup3D* group, Matrix4& result): SceneGraph::Drawable3D(object, group), result(result) {}
+            Drawable(AbstractObject3D* object, DrawableGroup3D* group, Matrix4& result): SceneGraph::Drawable3D(object, group), result(result) {}
 
         protected:
             void draw(const Matrix4& transformationMatrix, AbstractCamera3D*) {

@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> AbstractBasicFeature<dimensions, T>::AbstractBasicFeature(AbstractObject<dimensions, T>* object) {
+template<UnsignedInt dimensions, class T> AbstractBasicFeature<dimensions, T>::AbstractBasicFeature(AbstractBasicObject<dimensions, T>* object) {
     object->Containers::template LinkedList<AbstractBasicFeature<dimensions, T>>::insert(this);
 }
 
