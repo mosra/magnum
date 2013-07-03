@@ -31,12 +31,14 @@
 #include <Utility/Visibility.h>
 #include <Trade/AbstractImporter.h>
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifdef TgaImporter_EXPORTS
     #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
     #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
 #endif
 #define MAGNUM_TRADE_TGAIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
 
 namespace Magnum { namespace Trade {
 
