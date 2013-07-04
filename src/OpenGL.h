@@ -40,6 +40,10 @@
    to NaCl's gl2ext.h we are including our own to prevent undeclared symbol
    errors with some recent extensions. */
 #elif defined(CORRADE_TARGET_NACL)
+
+/* Enable function prototypes (the supported ones shouldn't fail at link time) */
+#define GL_GLEXT_PROTOTYPES
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #undef __gl2ext_h_

@@ -78,6 +78,14 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
     #endif
 }
 
+Buffer::Buffer(Buffer::Target targetHint): _targetHint(targetHint)
+    #ifdef CORRADE_TARGET_NACL
+    , _mappedBuffer(nullptr)
+    #endif
+{
+    glGenBuffers(1, &_id);
+}
+
 Buffer::~Buffer() {
     GLuint* bindings = Context::current()->state()->buffer->bindings;
 
@@ -126,6 +134,31 @@ Int Buffer::size() {
     (this->*getParameterImplementation)(GL_BUFFER_SIZE, &size);
     return size;
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAccess access) {
+    /** @todo Enable also in Emscripten (?) when extension wrangler is available */
+    #ifdef CORRADE_TARGET_NACL
+    CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
+    return _mappedBuffer = glMapBufferSubDataCHROMIUM(static_cast<GLenum>(bindInternal(_targetHint)), offset, length, GLenum(access));
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(offset);
+    static_cast<void>(length);
+    static_cast<void>(access);
+    #endif
+}
+
+void Buffer::unmapSub() {
+    #ifdef CORRADE_TARGET_NACL
+    CORRADE_ASSERT(_mappedBuffer, "Buffer::unmapSub(): the buffer is not mapped", );
+    glUnmapBufferSubDataCHROMIUM(_mappedBuffer);
+    _mappedBuffer = nullptr;
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    #endif
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
