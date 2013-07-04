@@ -134,6 +134,25 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
         Float size;
         UnsignedInt _capacity;
         Rectangle _rectangle;
+
+        #ifdef MAGNUM_TARGET_GLES2
+        typedef void*(*BufferMapImplementation)(Buffer&, GLsizeiptr);
+        static MAGNUM_TEXT_LOCAL void* bufferMapImplementationFull(Buffer& buffer, GLsizeiptr length);
+        static MAGNUM_TEXT_LOCAL void* bufferMapImplementationSub(Buffer& buffer, GLsizeiptr length);
+        static MAGNUM_TEXT_LOCAL void* bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length);
+        static BufferMapImplementation bufferMapImplementation;
+        #else
+        static void* bufferMapImplementation(Buffer& buffer, GLsizeiptr length);
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES2
+        typedef void(*BufferUnmapImplementation)(Buffer&);
+        static MAGNUM_TEXT_LOCAL void bufferUnmapImplementationDefault(Buffer& buffer);
+        static MAGNUM_TEXT_LOCAL void bufferUnmapImplementationSub(Buffer& buffer);
+        static MAGNUM_TEXT_LOCAL BufferUnmapImplementation bufferUnmapImplementation;
+        #else
+        static void bufferUnmapImplementation(Buffer& buffer);
+        #endif
 };
 
 /**
@@ -198,9 +217,9 @@ renderer.mesh().draw();
 @section TextRenderer-extensions Required OpenGL functionality
 
 Mutable text rendering requires @extension{ARB,map_buffer_range} on desktop
-OpenGL (also part of OpenGL ES 3.0). If @es_extension{EXT,map_buffer_range} is
-not available in ES 2.0, at least @es_extension{OES,mapbuffer} must be
-supported for asynchronous buffer updates.
+OpenGL (also part of OpenGL ES 3.0). If neither @es_extension{EXT,map_buffer_range}
+nor @es_extension{CHROMIUM,map_sub} is not available in ES 2.0, at least
+@es_extension{OES,mapbuffer} must be supported for asynchronous buffer updates.
 
 @see TextRenderer2D, TextRenderer3D, Font, Shaders::AbstractVectorShader
 */
