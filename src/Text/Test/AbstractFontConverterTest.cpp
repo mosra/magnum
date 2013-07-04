@@ -72,7 +72,7 @@ void AbstractFontConverterTest::convertGlyphs() {
 
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont*, GlyphCache*, const std::u32string& characters) const override {
                 this->characters = characters;
-                return {};
+                return nullptr;
             }
 
             std::u32string& characters;

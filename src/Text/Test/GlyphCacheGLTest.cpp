@@ -46,7 +46,9 @@ void GlyphCacheGLTest::initialize() {
     Text::GlyphCache cache({1024, 2048});
     MAGNUM_VERIFY_NO_ERROR();
 
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture()->imageSize(0), Vector2i(1024, 2048));
+    #endif
 }
 
 void GlyphCacheGLTest::access() {

@@ -27,6 +27,7 @@ cmake_minimum_required(VERSION 2.8)
 project(Magnum)
 
 # Find Corrade first so we can check on the target
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 find_package(Corrade REQUIRED)
 
 include(CMakeDependentOption)
@@ -65,8 +66,6 @@ cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code." OFF "B
 if(BUILD_TESTS)
     enable_testing()
 endif()
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 
 if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_LESS 2.8.8)
     set(CMAKE_NO_OBJECT_TARGET 1)

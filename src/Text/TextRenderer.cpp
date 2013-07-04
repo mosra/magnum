@@ -208,10 +208,13 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
 AbstractTextRenderer::AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
-    #else
-    #ifdef MAGNUM_TARGET_GLES2
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::map_buffer_range);
-    #endif
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
+        MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::mapbuffer);
+        Warning() << "Text::TextRenderer:" << Extensions::GL::EXT::map_buffer_range::string()
+                  << "is not supported, using less efficient" << Extensions::GL::OES::mapbuffer::string()
+                  << "instead";
+    }
     #endif
 
     /* Vertex buffer configuration depends on dimension count, done in subclass */
@@ -254,8 +257,18 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
     _mesh.setIndexCount(0)
         ->setIndexBuffer(&_indexBuffer, 0, indexType, 0, vertexCount);
 
+    /* Map buffer for filling */
+    void* indices;
+    #ifdef MAGNUM_TARGET_GLES2
+    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
+    #endif
+        CORRADE_INTERNAL_ASSERT_OUTPUT(indices = _indexBuffer.map(0, indicesSize,
+            Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write));
+    #ifdef MAGNUM_TARGET_GLES2
+    else CORRADE_INTERNAL_ASSERT_OUTPUT(indices = _indexBuffer.map(Buffer::MapAccess::WriteOnly));
+    #endif
+
     /* Prefill index buffer */
-    void* indices = _indexBuffer.map(0, indicesSize, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
     if(vertexCount < 255)
         createIndices<UnsignedByte>(indices, glyphCount);
     else if(vertexCount < 65535)
@@ -274,9 +287,20 @@ void AbstractTextRenderer::render(const std::string& text) {
     /* Reset rendered rectangle */
     _rectangle = {};
 
+    /* Map buffer for rendering */
+    Vertex* vertices;
+    #ifdef MAGNUM_TARGET_GLES2
+    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
+    #endif
+        CORRADE_INTERNAL_ASSERT_OUTPUT(vertices = static_cast<Vertex*>(_vertexBuffer.map(0,
+            layouter->glyphCount()*4*sizeof(Vertex),
+            Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write)));
+    #ifdef MAGNUM_TARGET_GLES2
+    else CORRADE_INTERNAL_ASSERT_OUTPUT(vertices =
+        static_cast<Vertex*>(_vertexBuffer.map(Buffer::MapAccess::WriteOnly)));
+    #endif
+
     /* Render all glyphs */
-    Vertex* const vertices = static_cast<Vertex*>(_vertexBuffer.map(0, layouter->glyphCount()*4*sizeof(Vertex),
-        Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write));
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
         /* Position of the texture in the resulting glyph, texture coordinates */

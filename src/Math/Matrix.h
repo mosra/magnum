@@ -258,14 +258,14 @@ template<std::size_t size, class T> T MatrixDeterminant<size, T>::operator()(con
 
 template<class T> class MatrixDeterminant<2, T> {
     public:
-        constexpr T operator()(const Matrix<2, T>& m) {
+        constexpr T operator()(const Matrix<2, T>& m) const {
             return m[0][0]*m[1][1] - m[1][0]*m[0][1];
         }
 };
 
 template<class T> class MatrixDeterminant<1, T> {
     public:
-        constexpr T operator()(const Matrix<1, T>& m) {
+        constexpr T operator()(const Matrix<1, T>& m) const {
             return m[0][0];
         }
 };
