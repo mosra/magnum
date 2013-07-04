@@ -324,9 +324,10 @@ class MAGNUM_EXPORT Buffer {
          *
          * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
-         * @see map(MapAccess)
-         * @requires_es_extension %Extension @es_extension{OES,mapbuffer} in
-         *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @see map(MapAccess), mapSub()
+         * @requires_es_extension %Extension @es_extension{OES,mapbuffer} or
+         *      @es_extension{CHROMIUM,map_sub} in OpenGL ES 2.0, use
+         *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      in OpenGL ES 3.0 instead.
          */
         enum class MapAccess: GLenum {
@@ -471,9 +472,7 @@ class MAGNUM_EXPORT Buffer {
          * Generates new OpenGL buffer.
          * @see @fn_gl{GenBuffers}
          */
-        explicit Buffer(Target targetHint = Target::Array): _targetHint(targetHint) {
-            glGenBuffers(1, &_id);
-        }
+        explicit Buffer(Target targetHint = Target::Array);
 
         /**
          * @brief Destructor
@@ -728,6 +727,27 @@ class MAGNUM_EXPORT Buffer {
         }
         #endif
 
+        #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Map portion of buffer to client memory
+         * @param offset    Offset into the buffer
+         * @param length    Length of the mapped memory
+         * @param access    Access
+         * @return Pointer to buffer data
+         *
+         * If the buffer is not already bound somewhere, it is bound to hinted
+         * target before the operation.
+         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead, as it has more complete set of features.
+         * @see unmapSub(), setTargetHint(), @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
+         * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+         *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead.
+         * @requires_es_extension %Extension @es_extension{CHROMIUM,map_sub}
+         */
+        void* mapSub(GLintptr offset, GLsizeiptr length, MapAccess access);
+        #endif
+
         /**
          * @brief Map buffer to client memory
          * @param offset    Offset into the buffer
@@ -788,6 +808,21 @@ class MAGNUM_EXPORT Buffer {
         bool unmap() {
             return (this->*unmapImplementation)();
         }
+
+        #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Unmap portion of buffer
+         *
+         * Unmaps portion of buffer previously mapped with mapSub(),
+         * invalidating the pointer returned by the function.
+         * @see @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub}
+         * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
+         *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead.
+         * @requires_es_extension %Extension @es_extension{CHROMIUM,map_sub}
+         */
+        void unmapSub();
+        #endif
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
@@ -878,6 +913,9 @@ class MAGNUM_EXPORT Buffer {
 
         GLuint _id;
         Target _targetHint;
+        #ifdef CORRADE_TARGET_NACL
+        void* _mappedBuffer;
+        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)

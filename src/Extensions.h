@@ -193,6 +193,8 @@ namespace GL {
         _extension(GL,APPLE,texture_format_BGRA8888, GLES200,   None) // #79
     } namespace ARM {
         _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82
+    } namespace CHROMIUM {
+        _extension(GL,CHROMIUM,map_sub,             GLES200,    None)
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic, GLES200,  None) // #41
         _extension(GL,EXT,texture_type_2_10_10_10_REV, GLES200, GLES300) // #42

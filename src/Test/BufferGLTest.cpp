@@ -38,6 +38,9 @@ class BufferGLTest: public AbstractOpenGLTester {
         void construct();
         void data();
         void map();
+        #ifdef MAGNUM_TARGET_GLES2
+        void mapSub();
+        #endif
         void mapRange();
         void mapRangeExplicitFlush();
         #ifndef MAGNUM_TARGET_GLES2
@@ -52,6 +55,9 @@ BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
               &BufferGLTest::data,
               &BufferGLTest::map,
+              #ifdef MAGNUM_TARGET_GLES2
+              &BufferGLTest::mapSub,
+              #endif
               &BufferGLTest::mapRange,
               &BufferGLTest::mapRangeExplicitFlush,
               #ifndef MAGNUM_TARGET_GLES2
@@ -144,6 +150,29 @@ void BufferGLTest::map() {
     CORRADE_COMPARE(changedContents.size(), 5);
     CORRADE_COMPARE(changedContents[3], 107);
     #endif
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GLES2
+void BufferGLTest::mapSub() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>())
+        CORRADE_SKIP(Extensions::GL::CHROMIUM::map_sub::string() + std::string(" is not supported"));
+
+    Buffer buffer;
+
+    constexpr char data[] = {2, 7, 5, 13, 25};
+    buffer.setData(data, Buffer::Usage::StaticDraw);
+
+    char* contents = reinterpret_cast<char*>(buffer.mapSub(1, 4, Buffer::MapAccess::WriteOnly));
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_VERIFY(contents);
+    contents[3] = 107;
+
+    buffer.unmapSub();
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /** @todo How to verify the contents in ES? */
 }
 #endif
 

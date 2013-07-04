@@ -205,14 +205,55 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     return std::move(r);
 }
 
+#ifdef MAGNUM_TARGET_GLES2
+AbstractTextRenderer::BufferMapImplementation AbstractTextRenderer::bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationFull;
+AbstractTextRenderer::BufferUnmapImplementation AbstractTextRenderer::bufferUnmapImplementation = &AbstractTextRenderer::bufferUnmapImplementationDefault;
+
+void* AbstractTextRenderer::bufferMapImplementationFull(Buffer& buffer, GLsizeiptr) {
+    return buffer.map(Buffer::MapAccess::WriteOnly);
+}
+
+void* AbstractTextRenderer::bufferMapImplementationSub(Buffer& buffer, GLsizeiptr length) {
+    return buffer.mapSub(0, length, Buffer::MapAccess::WriteOnly);
+}
+
+void AbstractTextRenderer::bufferUnmapImplementationSub(Buffer& buffer) {
+    buffer.unmap();
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+inline void* AbstractTextRenderer::bufferMapImplementation(Buffer& buffer, GLsizeiptr length)
+#else
+void* AbstractTextRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length)
+#endif
+{
+    return buffer.map(0, length, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+inline void AbstractTextRenderer::bufferUnmapImplementation(Buffer& buffer)
+#else
+void AbstractTextRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
+#endif
+{
+    buffer.unmap();
+}
+
 AbstractTextRenderer::AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
+    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
+        bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationRange;
+    } else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
+        bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationSub;
+        bufferUnmapImplementation = &AbstractTextRenderer::bufferUnmapImplementationSub;
+    } else {
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::mapbuffer);
-        Warning() << "Text::TextRenderer:" << Extensions::GL::EXT::map_buffer_range::string()
-                  << "is not supported, using less efficient" << Extensions::GL::OES::mapbuffer::string()
+        Warning() << "Text::TextRenderer: neither" << Extensions::GL::EXT::map_buffer_range::string()
+                  << "nor" << Extensions::GL::CHROMIUM::map_sub::string()
+                  << "is supported, using inefficient" << Extensions::GL::OES::mapbuffer::string()
                   << "instead";
     }
     #endif
@@ -258,15 +299,8 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
         ->setIndexBuffer(&_indexBuffer, 0, indexType, 0, vertexCount);
 
     /* Map buffer for filling */
-    void* indices;
-    #ifdef MAGNUM_TARGET_GLES2
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
-    #endif
-        CORRADE_INTERNAL_ASSERT_OUTPUT(indices = _indexBuffer.map(0, indicesSize,
-            Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write));
-    #ifdef MAGNUM_TARGET_GLES2
-    else CORRADE_INTERNAL_ASSERT_OUTPUT(indices = _indexBuffer.map(Buffer::MapAccess::WriteOnly));
-    #endif
+    void* const indices = bufferMapImplementation(_indexBuffer, indicesSize);
+    CORRADE_INTERNAL_ASSERT(indices);
 
     /* Prefill index buffer */
     if(vertexCount < 255)
@@ -275,7 +309,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
         createIndices<UnsignedShort>(indices, glyphCount);
     else
         createIndices<UnsignedInt>(indices, glyphCount);
-    CORRADE_INTERNAL_ASSERT_OUTPUT(_indexBuffer.unmap());
+    bufferUnmapImplementation(_indexBuffer);
 }
 
 void AbstractTextRenderer::render(const std::string& text) {
@@ -288,17 +322,9 @@ void AbstractTextRenderer::render(const std::string& text) {
     _rectangle = {};
 
     /* Map buffer for rendering */
-    Vertex* vertices;
-    #ifdef MAGNUM_TARGET_GLES2
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
-    #endif
-        CORRADE_INTERNAL_ASSERT_OUTPUT(vertices = static_cast<Vertex*>(_vertexBuffer.map(0,
-            layouter->glyphCount()*4*sizeof(Vertex),
-            Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write)));
-    #ifdef MAGNUM_TARGET_GLES2
-    else CORRADE_INTERNAL_ASSERT_OUTPUT(vertices =
-        static_cast<Vertex*>(_vertexBuffer.map(Buffer::MapAccess::WriteOnly)));
-    #endif
+    Vertex* const vertices = static_cast<Vertex*>(bufferMapImplementation(_vertexBuffer,
+        layouter->glyphCount()*4*sizeof(Vertex)));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vertices);
 
     /* Render all glyphs */
     Vector2 cursorPosition;
@@ -325,7 +351,7 @@ void AbstractTextRenderer::render(const std::string& text) {
         /* Advance cursor position to next character */
         cursorPosition += advance;
     }
-    CORRADE_INTERNAL_ASSERT_OUTPUT(_vertexBuffer.unmap());
+    bufferUnmapImplementation(_vertexBuffer);
 
     /* Update index count */
     _mesh.setIndexCount(layouter->glyphCount()*6);
