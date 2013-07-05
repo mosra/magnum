@@ -138,7 +138,8 @@ void MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&
 
     /* Fill character->glyph map */
     const std::vector<Utility::ConfigurationGroup*> chars = _opened->conf.groups("char");
-    for(const Utility::ConfigurationGroup* const c: chars) {
+    for(auto it = chars.begin(); it != chars.end(); ++it) {
+        const Utility::ConfigurationGroup* const c = *it;
         const UnsignedInt glyphId = c->value<UnsignedInt>("glyph");
         CORRADE_INTERNAL_ASSERT(glyphId < _opened->glyphAdvance.size());
         _opened->glyphId.emplace(c->value<char32_t>("unicode"), glyphId);
