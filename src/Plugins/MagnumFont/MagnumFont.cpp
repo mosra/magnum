@@ -28,7 +28,7 @@
 #include <Containers/Array.h>
 #include <Utility/Directory.h>
 #include <Utility/Unicode.h>
-#include <Text/DistanceFieldGlyphCache.h>
+#include <Text/GlyphCache.h>
 #include <Trade/ImageData.h>
 
 #include "TgaImporter/TgaImporter.h"
@@ -162,11 +162,11 @@ Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
 
 GlyphCache* MagnumFont::doCreateGlyphCache() {
     /* Set cache image */
-    auto cache = new Text::DistanceFieldGlyphCache(
+    auto cache = new Text::GlyphCache(
         _opened->conf.value<Vector2i>("originalImageSize"),
         _opened->image.size(),
-        _opened->conf.value<Vector2i>("padding").min());
-    cache->setDistanceFieldImage({}, _opened->image);
+        _opened->conf.value<Vector2i>("padding"));
+    cache->setImage({}, _opened->image);
 
     /* Fill glyph map */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
