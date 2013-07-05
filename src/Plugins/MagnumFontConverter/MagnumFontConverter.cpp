@@ -78,12 +78,15 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
         group->setValue("glyph", found == glyphIdMap.end() ? 0 : glyphIdMap.at(glyphId));
     }
 
-    /* Save glyph properties in order which preserves their IDs */
+    /* Save glyph properties in order which preserves their IDs, remove padding
+       from the values so they aren't added twice when using the font later */
+    /** @todo Some better way to handle this padding stuff */
     for(UnsignedInt oldGlyphId: inverseGlyphIdMap) {
         std::pair<Vector2i, Rectanglei> glyph = (*cache)[oldGlyphId];
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
-        group->setValue("position", glyph.first);
-        group->setValue("rectangle", glyph.second);
+        group->setValue("position", glyph.first+cache->padding());
+        group->setValue("rectangle", Rectanglei(glyph.second.bottomLeft()+cache->padding(),
+                                                glyph.second.topRight()-cache->padding()));
     }
 
     std::ostringstream confOut;
