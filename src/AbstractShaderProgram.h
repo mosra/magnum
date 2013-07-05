@@ -282,6 +282,9 @@ setUniform() documentation for more information.
 
 To achieve least state changes, set all uniforms in one run -- method chaining
 comes in handy.
+
+@todo Compiling and linking more than one shader in parallel, then checking
+    status, should be faster -- https://twitter.com/g_truc/status/352778836657700866
  */
 class MAGNUM_EXPORT AbstractShaderProgram {
     friend class Context;

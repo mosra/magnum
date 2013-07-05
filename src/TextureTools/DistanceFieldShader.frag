@@ -36,10 +36,14 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0) uniform int radius;
 layout(location = 1) uniform vec2 scaling;
-layout(binding = 8) uniform sampler2D textureData;
 #else
 uniform lowp int radius;
 uniform mediump vec2 scaling;
+#endif
+
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 8) uniform sampler2D textureData;
+#else
 uniform lowp sampler2D textureData;
 #endif
 

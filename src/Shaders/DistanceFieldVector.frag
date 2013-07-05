@@ -68,7 +68,7 @@ void main() {
     /* Outline */
     if(outlineRange.x > outlineRange.y) {
         lowp float mid = (outlineRange.x + outlineRange.y)/2.0;
-        lowp float half = (outlineRange.x - outlineRange.y)/2.0;
-        fragmentColor += smoothstep(half+smoothness, half-smoothness, distance(mid, intensity))*outlineColor;
+        lowp float halfRange = (outlineRange.x - outlineRange.y)/2.0;
+        fragmentColor += smoothstep(halfRange+smoothness, halfRange-smoothness, distance(mid, intensity))*outlineColor;
     }
 }

@@ -71,11 +71,12 @@ If no other application header is included this class is also aliased to
 @section WindowlessNaClApplication-html HTML markup and NMF file
 
 You need to provide HTML markup containing `&lt;embed&gt;` pointing to `*.nmf`
-file describing the application.
+file describing the application. See @ref NaClApplication for more information.
+You may want to hide the `&lt;embed&gt;` (for example using CSS
+`visibility: hidden;`), as it probably won't display anything to default
+framebuffer.
 
-@todoc Document this better, add "bootstrap" examples
-
-@subsection WindowlessNaClApplication-html-console Redirecting output to Chrome's JavaScript console
+@section WindowlessNaClApplication-console Redirecting output to Chrome's JavaScript console
 
 The application redirects @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"

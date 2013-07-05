@@ -38,6 +38,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
     GlyphCache(TextureFormat::R8, originalSize, size, Vector2i(radius)),
     #else
+    /* Luminance is not renderable in most cases */
     GlyphCache(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
         TextureFormat::Red : TextureFormat::RGB, originalSize, size, Vector2i(radius)),
     #endif
@@ -48,16 +49,13 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     #endif
 
     #ifdef MAGNUM_TARGET_GLES2
+    /* Luminance is not renderable in most cases */
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>())
         Warning() << "Text::DistanceFieldGlyphCache:" << Extensions::GL::EXT::texture_rg::string() << "not supported, using inefficient RGB format for glyph cache texture";
     #endif
 }
 
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
-    #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
-    #endif
-
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
     const TextureFormat internalFormat = TextureFormat::R8;
     CORRADE_ASSERT(image.format() == ImageFormat::Red,
@@ -86,6 +84,19 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageRefere
 }
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image) {
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    CORRADE_ASSERT(image.format() == ImageFormat::Red,
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
+    #else
+    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>())
+        CORRADE_ASSERT(image.format() == ImageFormat::Red,
+            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
+
+    /* Luminance is not renderable in most cases */
+    else CORRADE_ASSERT(image.format() == ImageFormat::RGB,
+            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ImageFormat::RGB << "but got" << image.format(), );
+    #endif
+
     texture()->setSubImage(0, offset, image);
 }
 

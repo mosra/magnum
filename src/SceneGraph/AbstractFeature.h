@@ -143,8 +143,8 @@ class TransformingFeature: public SceneGraph::AbstractFeature3D {
 If we take for example @ref Object "Object<MatrixTransformation3D>", it is
 derived from @ref AbstractBasicObject "AbstractObject3D" and
 @ref BasicMatrixTransformation3D "MatrixTransformation3D", which is derived
-from @ref BasicAbstractTranslationRotationScaling3D "AbstractTranslationRotationScaling3D",
-which is derived from @ref BasicAbstractTranslationRotation3D "AbstractTranslationRotation3D",
+from @ref AbstractBasicTranslationRotationScaling3D "AbstractTranslationRotationScaling3D",
+which is derived from @ref AbstractBasicTranslationRotation3D "AbstractTranslationRotation3D",
 which is automatically extracted from the pointer in our constructor.
 
 @section AbstractFeature-explicit-specializations Explicit template specializations

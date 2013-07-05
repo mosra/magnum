@@ -79,6 +79,7 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
 
     Shader vert(v, Shader::Type::Vertex);
     vert.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("FullScreenTriangle.glsl"))
         .addSource(rs.get("DistanceFieldShader.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);

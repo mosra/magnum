@@ -118,6 +118,11 @@ Mesh& Mesh::operator=(Mesh&& other) {
 }
 
 Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
+    #ifdef CORRADE_TARGET_NACL
+    CORRADE_ASSERT(buffer->targetHint() == Buffer::Target::ElementArray,
+        "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer->targetHint(), this);
+    #endif
+
     indexOffset = offset;
     indexType = type;
     #ifndef MAGNUM_TARGET_GLES2
@@ -235,10 +240,20 @@ void Mesh::destroyImplementationVAO() {
 }
 
 void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
+    #ifdef CORRADE_TARGET_NACL
+    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::Target::Array,
+        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
+    #endif
+
     attributes.push_back(attribute);
 }
 
 void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
+    #ifdef CORRADE_TARGET_NACL
+    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::Target::Array,
+        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
+    #endif
+
     bindVAO(vao);
     vertexAttribPointer(attribute);
 }

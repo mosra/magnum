@@ -57,10 +57,13 @@ information.
 
 As noted in the above link, buffers in NaCl implementation need to be bound
 only to one unique target, i.e., Buffer bound to @ref Buffer::Target "Target::Array"
-cannot be later rebound to @ref Buffer::Target "Target::Element". However,
+cannot be later rebound to @ref Buffer::Target "Target::ElementArray". However,
 %Magnum by default uses any sufficient target when binding the buffer
 internally (e.g. for setting data or copying). To avoid this, set target hint
 to desired target, either in constructor or using Buffer::setTargetHint().
+
+To ease up the development, @ref Mesh checks proper target hint when adding
+vertex and index buffers.
 
 @subsection best-practices-powervr PowerVR hardware
 

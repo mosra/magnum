@@ -84,6 +84,11 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
     install(TARGETS MagnumWindowlessNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
+# JavaScript stuff for NaCl
+if(WITH_NACLAPPLICATION OR WITH_WINDOWLESSNACLAPPLICATION)
+    install(FILES NaClApplication.js DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+endif()
+
 # GLX application
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
@@ -162,10 +167,11 @@ if(WITH_MAGNUMINFO)
 
     add_executable(magnum-info magnum-info.cpp)
     if(UNIX AND NOT CORRADE_TARGET_NACL)
-        target_link_libraries(magnum-info Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+        target_link_libraries(magnum-info MagnumWindowlessGlxApplication ${X11_LIBRARIES})
     elseif(CORRADE_TARGET_NACL)
-        target_link_libraries(magnum-info Magnum MagnumWindowlessNaClApplication ppapi_cpp ppapi)
+        target_link_libraries(magnum-info MagnumWindowlessNaClApplication ppapi_cpp ppapi)
     endif()
+    target_link_libraries(magnum-info Magnum)
 
     install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
     if(CORRADE_TARGET_NACL)

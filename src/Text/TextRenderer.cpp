@@ -218,7 +218,7 @@ void* AbstractTextRenderer::bufferMapImplementationSub(Buffer& buffer, GLsizeipt
 }
 
 void AbstractTextRenderer::bufferUnmapImplementationSub(Buffer& buffer) {
-    buffer.unmap();
+    buffer.unmapSub();
 }
 #endif
 
