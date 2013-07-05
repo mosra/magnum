@@ -77,7 +77,7 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
     }
 
     /* Open the configuration file */
-    std::istringstream in({reinterpret_cast<const char*>(data[0].second.begin()), data[0].second.size()});
+    std::istringstream in(std::string(reinterpret_cast<const char*>(data[0].second.begin()), data[0].second.size()));
     Utility::Configuration conf(in, Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
         Error() << "Magnum::Text::MagnumFont::openData(): cannot open file" << data[0].first << conf.isValid();
