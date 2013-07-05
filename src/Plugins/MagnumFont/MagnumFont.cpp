@@ -142,7 +142,11 @@ void MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&
         const Utility::ConfigurationGroup* const c = *it;
         const UnsignedInt glyphId = c->value<UnsignedInt>("glyph");
         CORRADE_INTERNAL_ASSERT(glyphId < _opened->glyphAdvance.size());
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         _opened->glyphId.emplace(c->value<char32_t>("unicode"), glyphId);
+        #else
+        _opened->glyphId.insert({c->value<char32_t>("unicode"), glyphId});
+        #endif
         _opened->glyphAdvance[glyphId] = c->value<Vector2>("advance");
     }
 }
