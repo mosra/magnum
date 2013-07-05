@@ -98,6 +98,7 @@ void GlyphCache::insert(const UnsignedInt glyph, Vector2i position, Rectanglei r
 }
 
 void GlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
+    /** @todo some internalformat/format checking also here (if querying internal format is not slow) */
     _texture.setSubImage(0, offset, image);
 }
 
