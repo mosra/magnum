@@ -73,12 +73,53 @@ to simplify porting.
 
 @section NaClApplication-html HTML markup and NMF file
 
-You need to provide HTML markup containing `&lt;embed&gt;` pointing to `*.nmf`
-file describing the application.
+You need to provide HTML markup for your application. Template one is below,
+you can modify it to your liking. The markup references two files,
+`NaClApplication.js` and `NaClApplication.css`, both are in `Platform/`
+directory in the source tree and are also installed into `share/magnum/` inside
+your NaCl toolchain.
+@code
+<!DOCTYPE html>
+<html>
+<head>
+<title>Magnum NaCl Application</title>
+<link rel="stylesheet" href="NaClApplication.css" />
+</head>
+<body>
+<h1>Magnum NaCl Application</h1>
+<div id="listener">
+<script type="text/javascript" src="NaClApplication.js"></script>
+<embed name="nacl" id="module" type="application/x-nacl" src="application.nmf" />
+<div id="status">Initialization...</div>
+<div id="statusDescription"></div>
+</div>
+</body>
+</html>
+@endcode
 
-@todoc Document this better, add "bootstrap" examples
+You can modify all the files to your liking, but the HTML file must contain at
+least the `&lt;embed&gt;` enclosed in listener `&lt;div&gt;`. The JavaScript
+file contains event listeners which print loading status on the page. The
+status displayed in the remaining two `&lt;div&gt;`s, if they are available.
+The CSS file contains rudimentary style to avoid eye bleeding.
 
-@subsection NaClApplication-html-console Redirecting output to Chrome's JavaScript console
+The `&lt;embed&gt;` file references NMF file which you need to provide too. If
+you target @ref CORRADE_TARGET_NACL_NEWLIB_ "newlib", the file is pretty
+simple, for example:
+@code
+{
+    "program": {
+        "x86-32": {"url": "application-x86-32.nexe"},
+        "x86-64": {"url": "application-x86-64.nexe"}
+    }
+}
+@endcode
+
+If you target @ref CORRADE_TARGET_NACL_GLIBC_ "glibc", you need to specify also
+all additional dependencies. See [Native Client](https://developers.google.com/native-client/)
+documentation for more information.
+
+@section NaClApplication-console Redirecting output to Chrome's JavaScript console
 
 The application redirects @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
