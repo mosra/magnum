@@ -46,6 +46,16 @@ namespace Magnum { namespace Trade {
 @brief TGA image importer
 
 Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
+
+The images are imported with @ref ImageType "ImageType::UnsignedByte" and
+@ref ImageFormat "ImageFormat::BGR", @ref ImageFormat "ImageFormat::BGRA" or
+@ref ImageFormat "ImageFormat::Red" respectively. Grayscale images require
+extension @extension{ARB,texture_rg}.
+
+In OpenGL ES BGR and BGRA images are converted to @ref ImageFormat "ImageFormat::RGB"
+and @ref ImageFormat "ImageFormat::RGBA". In OpenGL ES 2.0, if @es_extension{EXT,texture_rg}
+is not supported, grayscale images use @ref ImageFormat "ImageFormat::Luminance"
+instead of @ref ImageFormat "ImageFormat::Red".
 */
 class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:

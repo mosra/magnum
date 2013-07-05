@@ -33,6 +33,8 @@
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
+#include <Context.h>
+#include <Extensions.h>
 #include <Swizzle.h>
 #endif
 
@@ -117,7 +119,12 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
 
     /* Grayscale */
     } else if(header.imageType == 3) {
+        #ifdef MAGNUM_TARGET_GLES
+        format = Context::current() && Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
+            ImageFormat::Red : ImageFormat::Luminance;
+        #else
         format = ImageFormat::Red;
+        #endif
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
             return nullptr;
