@@ -56,6 +56,8 @@ font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 
 See TextRenderer for information about text rendering.
 @todo Some way for Font to negotiate or check internal texture format
+@todo Default glyph 0 with rect 0 0 0 0 will result in negative dimensions when
+    nonzero padding is removed
 */
 class MAGNUM_TEXT_EXPORT GlyphCache {
     public:
