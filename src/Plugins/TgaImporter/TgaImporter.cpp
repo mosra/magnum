@@ -42,6 +42,16 @@
 
 namespace Magnum { namespace Trade {
 
+namespace {
+    constexpr Math::Vector3<UnsignedByte> bgr(const Math::Vector3<UnsignedByte>& vec) {
+        return swizzle<'b', 'g', 'r'>(vec);
+    }
+
+    constexpr Math::Vector4<UnsignedByte> bgra(const Math::Vector4<UnsignedByte>& vec) {
+        return swizzle<'b', 'g', 'r', 'a'>(vec);
+    }
+}
+
 TgaImporter::TgaImporter(): in(nullptr) {}
 
 TgaImporter::TgaImporter(PluginManager::AbstractManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), in(nullptr) {}
@@ -145,12 +155,10 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     #ifdef MAGNUM_TARGET_GLES
     if(format == ImageFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data);
-        std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
+        std::transform(pixels, pixels + size.product(), pixels, bgr);
     } else if(format == ImageFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data);
-        std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
+        std::transform(pixels, pixels + size.product(), pixels, bgra);
     }
     #endif
 
