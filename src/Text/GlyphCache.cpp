@@ -31,6 +31,8 @@
 
 namespace Magnum { namespace Text {
 
+/** @todo Do this using delegating constructors when support for GCC 4.6 is dropped */
+
 GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
     initialize(internalFormat, size);
 }
@@ -39,7 +41,17 @@ GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& size,
     initialize(internalFormat, size);
 }
 
+GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
+    initialize(size);
+}
+
 GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): _size(size), _padding(padding) {
+    initialize(size);
+}
+
+GlyphCache::~GlyphCache() = default;
+
+void GlyphCache::initialize(const Vector2i& size) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
     #endif
@@ -54,8 +66,6 @@ GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): _size(siz
 
     initialize(internalFormat, size);
 }
-
-GlyphCache::~GlyphCache() = default;
 
 void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& size) {
     /* Initialize texture */
