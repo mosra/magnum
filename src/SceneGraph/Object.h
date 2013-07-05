@@ -129,7 +129,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * See @ref scenegraph-hierarchy for more information.
          */
 
-        /** @copydoc AbstractObject::scene() */
+        /** @copydoc AbstractBasicObject::scene() */
         Scene<Transformation>* scene();
         const Scene<Transformation>* scene() const; /**< @overload */
 
@@ -271,13 +271,13 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
         /* `objects` passed by copy intentionally (to avoid copy internally) */
         static void setClean(std::vector<Object<Transformation>*> objects);
 
-        /** @copydoc AbstractObject::isDirty() */
+        /** @copydoc AbstractBasicObject::isDirty() */
         bool isDirty() const { return !!(flags & Flag::Dirty); }
 
-        /** @copydoc AbstractObject::setDirty() */
+        /** @copydoc AbstractBasicObject::setDirty() */
         void setDirty();
 
-        /** @copydoc AbstractObject::setClean() */
+        /** @copydoc AbstractBasicObject::setClean() */
         void setClean();
 
         /*@}*/
