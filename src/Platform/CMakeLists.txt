@@ -84,9 +84,9 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
     install(TARGETS MagnumWindowlessNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
-# JavaScript stuff for NaCl
+# JavaScript and CSS stuff for NaCl
 if(WITH_NACLAPPLICATION OR WITH_WINDOWLESSNACLAPPLICATION)
-    install(FILES NaClApplication.js DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+    install(FILES NaClApplication.js NaClApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
 # GLX application
