@@ -90,25 +90,17 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
 
         class Configuration;
 
-        /**
-         * @brief Default constructor
-         * @param arguments     Application arguments
-         *
-         * Creates application with default configuration. See Configuration
-         * for more information.
-         */
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
+        explicit WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration);
         explicit WindowlessNaClApplication(const Arguments& arguments);
+        #endif
 
-        /**
-         * @brief Constructor
-         * @param arguments     Application arguments
-         * @param configuration Configuration
-         *
-         * The @p configuration is deleted afterwards. If `nullptr` is passed
-         * as @p configuration, the context is not created and must be created
-         * with createContext().
-         */
-        explicit WindowlessNaClApplication(const Arguments& arguments, Configuration* configuration);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        explicit WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t);
 
         /**
          * @brief Execute application
@@ -122,10 +114,10 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         ~WindowlessNaClApplication();
 
         /** @copydoc GlutApplication::createContext() */
-        void createContext(Configuration* configuration);
+        void createContext(const Configuration& configuration);
 
         /** @copydoc GlutApplication::tryCreateContext() */
-        bool tryCreateContext(Configuration* configuration);
+        bool tryCreateContext(const Configuration& configuration);
 
     private:
         struct ConsoleDebugOutput;

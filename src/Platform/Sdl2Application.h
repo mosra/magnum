@@ -80,11 +80,17 @@ class Sdl2Application {
         class MouseEvent;
         class MouseMoveEvent;
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
+        explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration);
         explicit Sdl2Application(const Arguments& arguments);
+        #endif
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
-        explicit Sdl2Application(const Arguments& arguments, Configuration* configuration);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        explicit Sdl2Application(const Arguments& arguments, std::nullptr_t);
 
         /** @copydoc GlutApplication::exec() */
         int exec();
@@ -98,10 +104,10 @@ class Sdl2Application {
         virtual ~Sdl2Application();
 
         /** @copydoc GlutApplication::createContext() */
-        void createContext(Configuration* configuration);
+        void createContext(const Configuration& configuration);
 
         /** @copydoc GlutApplication::tryCreateContext() */
-        bool tryCreateContext(Configuration* configuration);
+        bool tryCreateContext(const Configuration& configuration);
 
         /** @{ @name Drawing functions */
 
@@ -231,13 +237,13 @@ class Sdl2Application::Configuration {
 
         /**
          * @brief Set window title
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `"Magnum SDL2 Application"`.
          */
-        Configuration* setTitle(std::string title) {
+        Configuration& setTitle(std::string title) {
             _title = std::move(title);
-            return this;
+            return *this;
         }
 
         /** @brief Window size */
@@ -245,13 +251,13 @@ class Sdl2Application::Configuration {
 
         /**
          * @brief Set window size
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `{800, 600}`.
          */
-        Configuration* setSize(const Vector2i& size) {
+        Configuration& setSize(const Vector2i& size) {
             _size = size;
-            return this;
+            return *this;
         }
 
         /** @brief Window flags */
@@ -259,13 +265,13 @@ class Sdl2Application::Configuration {
 
         /**
          * @brief Set window flags
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is @ref Flag "Flag::Resizable".
          */
-        Configuration* setFlags(const Flags flags) {
+        Configuration& setFlags(const Flags flags) {
             _flags = flags;
-            return this;
+            return *this;
         }
 
         /** @brief Sample count */
@@ -273,14 +279,14 @@ class Sdl2Application::Configuration {
 
         /**
          * @brief Set sample count
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `0`, thus no multisampling. See also
          * @ref Renderer::Feature "Renderer::Feature::Multisampling".
          */
-        Configuration* setSampleCount(Int count) {
+        Configuration& setSampleCount(Int count) {
             _sampleCount = count;
-            return this;
+            return *this;
         }
 
     private:

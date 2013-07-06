@@ -73,10 +73,17 @@ class AbstractXApplication {
          * @param contextHandler OpenGL context handler
          * @param arguments     Application arguments
          *
-         * Creates application with default configuration. See Configuration
-         * for more information.
+         * Creates application with default or user-specified configuration.
+         * See Configuration for more information. The program exits if the
+         * context cannot be created, see below for an alternative.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
         explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
+        #endif
 
         /**
          * @brief Constructor
@@ -84,11 +91,10 @@ class AbstractXApplication {
          * @param arguments     Application arguments
          * @param configuration Configuration
          *
-         * The @p configuration is deleted afterwards. If `nullptr` is passed
-         * as @p configuration, the context is not created and must be created
-         * with createContext().
+         * Unlike above, the context is not created and must be created later
+         * with createContext() or tryCreateContext().
          */
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, Configuration* configuration);
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
 
         /**
          * @brief Execute main loop
@@ -110,7 +116,7 @@ class AbstractXApplication {
         ~AbstractXApplication();
 
         /** @copydoc GlutApplication::createContext() */
-        void createContext(Configuration* configuration);
+        void createContext(const Configuration& configuration);
 
         /** @{ @name Drawing functions */
 
@@ -202,9 +208,9 @@ class AbstractXApplication::Configuration {
          *
          * Default is `"Magnum X Application"`.
          */
-        Configuration* setTitle(std::string title) {
+        Configuration& setTitle(std::string title) {
             _title = std::move(title);
-            return this;
+            return *this;
         }
 
         /** @brief Window size */
@@ -216,9 +222,9 @@ class AbstractXApplication::Configuration {
          *
          * Default is `{800, 600}`.
          */
-        Configuration* setSize(const Vector2i& size) {
+        Configuration& setSize(const Vector2i& size) {
             _size = size;
-            return this;
+            return *this;
         }
 
     private:

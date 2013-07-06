@@ -33,15 +33,19 @@
 
 namespace Magnum { namespace Platform {
 
+/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, const Configuration& configuration): c(nullptr) {
+    createContext(configuration);
+}
+
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&): c(nullptr) {
-    createContext(new Configuration);
+    createContext({});
 }
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, Configuration* configuration): c(nullptr) {
-    if(configuration) createContext(configuration);
-}
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t): c(nullptr) {}
 
-void WindowlessGlxApplication::createContext(Configuration* configuration) {
+void WindowlessGlxApplication::createContext(const Configuration&) {
     CORRADE_ASSERT(!c, "WindowlessGlxApplication::createContext(): context already created", );
 
     display = XOpenDisplay(nullptr);
@@ -100,7 +104,6 @@ void WindowlessGlxApplication::createContext(Configuration* configuration) {
     ExtensionWrangler::initialize(ExtensionWrangler::ExperimentalFeatures::Enable);
 
     c = new Context;
-    delete configuration;
 }
 
 WindowlessGlxApplication::~WindowlessGlxApplication() {

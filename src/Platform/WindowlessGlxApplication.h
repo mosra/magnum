@@ -73,11 +73,17 @@ class WindowlessGlxApplication {
 
         class Configuration;
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
+        explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration);
         explicit WindowlessGlxApplication(const Arguments& arguments);
+        #endif
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
-        explicit WindowlessGlxApplication(const Arguments& arguments, Configuration* configuration);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        explicit WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t);
 
         /**
          * @brief Execute application
@@ -91,7 +97,7 @@ class WindowlessGlxApplication {
         ~WindowlessGlxApplication();
 
         /** @copydoc GlutApplication::createContext() */
-        void createContext(Configuration* configuration);
+        void createContext(const Configuration& configuration);
 
     private:
         Display* display;

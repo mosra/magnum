@@ -137,25 +137,17 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         class MouseEvent;
         class MouseMoveEvent;
 
-        /**
-         * @brief Default constructor
-         * @param arguments     Application arguments
-         *
-         * Creates application with default configuration. See Configuration
-         * for more information.
-         */
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit NaClApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
+        explicit NaClApplication(const Arguments& arguments, const Configuration& configuration);
         explicit NaClApplication(const Arguments& arguments);
+        #endif
 
-        /**
-         * @brief Constructor
-         * @param arguments     Application arguments
-         * @param configuration Configuration
-         *
-         * The @p configuration is deleted afterwards. If `nullptr` is passed
-         * as @p configuration, the context is not created and must be created
-         * with createContext().
-         */
-        explicit NaClApplication(const Arguments& arguments, Configuration* configuration);
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        explicit NaClApplication(const Arguments& arguments, std::nullptr_t);
 
         /** @brief Whether the application runs fullscreen */
         bool isFullscreen();
@@ -176,10 +168,10 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         ~NaClApplication();
 
         /** @copydoc GlutApplication::createContext() */
-        void createContext(Configuration* configuration);
+        void createContext(const Configuration& configuration);
 
         /** @copydoc GlutApplication::tryCreateContext() */
-        bool tryCreateContext(Configuration* configuration);
+        bool tryCreateContext(const Configuration& configuration);
 
         /** @{ @name Drawing functions */
 
@@ -323,13 +315,13 @@ class NaClApplication::Configuration {
 
         /**
          * @brief Set window size
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `{640, 480}`.
          */
-        Configuration* setSize(const Vector2i& size) {
+        Configuration& setSize(const Vector2i& size) {
             _size = size;
-            return this;
+            return *this;
         }
 
         /** @brief Sample count */
@@ -337,14 +329,14 @@ class NaClApplication::Configuration {
 
         /**
          * @brief Set sample count
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `0`, thus no multisampling. See also
          * @ref Renderer::Feature "Renderer::Feature::Multisampling".
          */
-        Configuration* setSampleCount(Int count) {
+        Configuration& setSampleCount(Int count) {
             _sampleCount = count;
-            return this;
+            return *this;
         }
 
     private:

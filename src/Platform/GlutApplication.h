@@ -82,24 +82,28 @@ class GlutApplication {
         /**
          * @brief Default constructor
          * @param arguments     Application arguments
+         * @param configuration %Configuration
          *
-         * Creates application with default configuration. See Configuration
-         * for more information. The program exits if the context cannot be
-         * created, see tryCreateContext() for an alternative.
+         * Creates application with default or user-specified configuration.
+         * See Configuration for more information. The program exits if the
+         * context cannot be created, see below for an alternative.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit GlutApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
+        explicit GlutApplication(const Arguments& arguments, const Configuration& configuration);
         explicit GlutApplication(const Arguments& arguments);
+        #endif
 
         /**
          * @brief Constructor
          * @param arguments     Application arguments
-         * @param configuration Configuration
          *
-         * The @p configuration is deleted afterwards. If `nullptr` is passed
-         * as @p configuration, the context is not created and must be created
-         * with createContext(). The program exits if the context cannot be
-         * created, see tryCreateContext() for an alternative.
+         * Unlike above, the context is not created and must be created later
+         * with createContext() or tryCreateContext().
          */
-        explicit GlutApplication(const Arguments& arguments, Configuration* configuration);
+        explicit GlutApplication(const Arguments& arguments, std::nullptr_t);
 
         /**
          * @brief Execute main loop
@@ -118,21 +122,19 @@ class GlutApplication {
         /**
          * @brief Create context with given configuration
          *
-         * The @p configuration is deleted afterwards. Must be called if and
-         * only if the context wasn't created by the constructor itself. The
-         * program exits if the context cannot be created, see tryCreateContext()
-         * for an alternative.
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself. The program exits if the context cannot be
+         * created, see tryCreateContext() for an alternative.
          */
-        void createContext(Configuration* configuration);
+        void createContext(const Configuration& configuration);
 
         /**
          * @brief Try to create context with given configuration
          *
-         * Unlike createContext() the @p configuration is *not* deleted
-         * afterwards. Returns `false` if the context cannot be created, `true`
-         * otherwise.
+         * Unlike createContext() returns `false` if the context cannot be
+         * created, `true` otherwise.
          */
-        bool tryCreateContext(Configuration* configuration);
+        bool tryCreateContext(const Configuration& configuration);
 
         /** @{ @name Drawing functions */
 
@@ -288,13 +290,13 @@ class GlutApplication::Configuration {
 
         /**
          * @brief Set window title
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `"Magnum GLUT Application"`.
          */
-        Configuration* setTitle(std::string title) {
+        Configuration& setTitle(std::string title) {
             _title = std::move(title);
-            return this;
+            return *this;
         }
 
         /** @brief Window size */
@@ -302,13 +304,13 @@ class GlutApplication::Configuration {
 
         /**
          * @brief Set window size
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `{800, 600}`.
          */
-        Configuration* setSize(const Vector2i& size) {
+        Configuration& setSize(const Vector2i& size) {
             _size = size;
-            return this;
+            return *this;
         }
 
         /** @brief Sample count */
@@ -316,15 +318,15 @@ class GlutApplication::Configuration {
 
         /**
          * @brief Set sample count
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `0`, thus no multisampling. The actual sample count is
          * ignored, GLUT either enables it or disables. See also
          * @ref Renderer::Feature "Renderer::Feature::Multisampling".
          */
-        Configuration* setSampleCount(Int count) {
+        Configuration& setSampleCount(Int count) {
             _sampleCount = count;
-            return this;
+            return *this;
         }
 
     private:

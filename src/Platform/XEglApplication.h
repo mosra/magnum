@@ -56,11 +56,11 @@ to simplify porting.
 */
 class XEglApplication: public AbstractXApplication {
     public:
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
-        explicit XEglApplication(const Arguments& arguments): AbstractXApplication(new EglContextHandler, arguments) {}
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        explicit XEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration()): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
-        explicit XEglApplication(const Arguments& arguments, Configuration* configuration): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        explicit XEglApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new EglContextHandler, nullptr) {}
 
     protected:
         /* Nobody will need to have (and delete) XEglApplication*, thus this is

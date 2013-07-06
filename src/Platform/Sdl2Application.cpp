@@ -47,14 +47,20 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
+/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+
+Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configuration): context(nullptr), flags(Flag::Redraw) {
     initialize();
-    createContext(new Configuration);
+    createContext(configuration);
 }
 
-Sdl2Application::Sdl2Application(const Arguments&, Configuration* configuration): context(nullptr), flags(Flag::Redraw) {
+Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
     initialize();
-    if(configuration) createContext(configuration);
+    createContext({});
+}
+
+Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): context(nullptr), flags(Flag::Redraw) {
+    initialize();
 }
 
 void Sdl2Application::initialize() {
@@ -64,16 +70,14 @@ void Sdl2Application::initialize() {
     }
 }
 
-void Sdl2Application::createContext(Configuration* configuration) {
+void Sdl2Application::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) {
         Error() << "Platform::Sdl2Application::createContext(): cannot create context:" << SDL_GetError();
-        delete configuration;
         std::exit(1);
-
-    } else delete configuration;
+    }
 }
 
-bool Sdl2Application::tryCreateContext(Configuration* configuration) {
+bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(!context, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
 
     /* Enable double buffering and 24bt depth buffer */
@@ -81,16 +85,16 @@ bool Sdl2Application::tryCreateContext(Configuration* configuration) {
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
     /* Multisampling */
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, configuration->sampleCount() > 1 ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration->sampleCount());
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, configuration.sampleCount() > 1 ? 1 : 0);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration.sampleCount());
 
     /* Flags: if not hidden, set as shown */
-    Uint32 flags(configuration->flags());
-    if(!(configuration->flags() & Configuration::Flag::Hidden)) flags |= SDL_WINDOW_SHOWN;
+    Uint32 flags(configuration.flags());
+    if(!(configuration.flags() & Configuration::Flag::Hidden)) flags |= SDL_WINDOW_SHOWN;
 
-    if(!(window = SDL_CreateWindow(configuration->title().c_str(),
+    if(!(window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-            configuration->size().x(), configuration->size().y(),
+            configuration.size().x(), configuration.size().y(),
             SDL_WINDOW_OPENGL|flags)))
         return false;
 
@@ -108,8 +112,8 @@ bool Sdl2Application::tryCreateContext(Configuration* configuration) {
     SDL_Event* sizeEvent = new SDL_Event;
     sizeEvent->type = SDL_WINDOWEVENT;
     sizeEvent->window.event = SDL_WINDOWEVENT_RESIZED;
-    sizeEvent->window.data1 = configuration->size().x();
-    sizeEvent->window.data2 = configuration->size().y();
+    sizeEvent->window.data1 = configuration.size().x();
+    sizeEvent->window.data2 = configuration.size().y();
     SDL_PushEvent(sizeEvent);
 
     c = new Context;
