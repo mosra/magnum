@@ -24,13 +24,14 @@
 
 #include "UVSphere.h"
 
-#include "Math/Angle.h"
-#include "Implementation/Spheroid.h"
+#include "Math/Vector3.h"
+#include "Primitives/Implementation/Spheroid.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords) {
-    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, nullptr, {}, {}, {}));
+    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, {}, {}, {}, {}));
 
     Implementation::Spheroid sphere(segments, textureCoords == TextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
@@ -53,7 +54,7 @@ Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, Textu
     sphere.faceRings(rings-2);
     sphere.topFaceRing();
 
-    return std::move(sphere);
+    return sphere.finalize();
 }
 
 }}

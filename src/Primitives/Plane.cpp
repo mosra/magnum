@@ -30,12 +30,12 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Plane::solid() {
-    return Trade::MeshData3D(Mesh::Primitive::TriangleStrip, nullptr, {new std::vector<Vector3>{
+    return Trade::MeshData3D(Mesh::Primitive::TriangleStrip, {}, {{
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {-1.0f, -1.0f, 0.0f},
         {-1.0f, 1.0f, 0.0f}
-    }}, {new std::vector<Vector3>{
+    }}, {{
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f},
@@ -44,7 +44,7 @@ Trade::MeshData3D Plane::solid() {
 }
 
 Trade::MeshData3D Plane::wireframe() {
-    return Trade::MeshData3D(Mesh::Primitive::LineLoop, nullptr, {new std::vector<Vector3>{
+    return Trade::MeshData3D(Mesh::Primitive::LineLoop, {}, {{
         {-1.0f, -1.0f, 0.0f},
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},

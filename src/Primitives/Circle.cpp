@@ -32,39 +32,39 @@ namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Circle::solid(UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::solid(): segments must be >= 3",
-        Trade::MeshData2D(Mesh::Primitive::TriangleFan, nullptr, {}, {}));
+        Trade::MeshData2D(Mesh::Primitive::TriangleFan, {}, {}, {}));
 
-    auto positions = new std::vector<Vector2>;
-    positions->reserve(segments+1);
+    std::vector<Vector2> positions;
+    positions.reserve(segments+1);
 
     /* Central point */
-    positions->emplace_back();
+    positions.emplace_back();
 
     /* Points on circle */
     const Rad angleIncrement(2*Constants::pi()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(i*angleIncrement);
-        positions->emplace_back(Math::cos(angle), Math::sin(angle));
+        positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(Mesh::Primitive::TriangleFan, nullptr, {positions}, {});
+    return Trade::MeshData2D(Mesh::Primitive::TriangleFan, {}, {std::move(positions)}, {});
 }
 
 Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::wireframe(): segments must be >= 3",
-        Trade::MeshData2D(Mesh::Primitive::LineLoop, nullptr, {}, {}));
+        Trade::MeshData2D(Mesh::Primitive::LineLoop, {}, {}, {}));
 
-    auto positions = new std::vector<Vector2>;
-    positions->reserve(segments);
+    std::vector<Vector2> positions;
+    positions.reserve(segments);
 
     /* Points on circle */
     const Rad angleIncrement(2*Constants::pi()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(i*angleIncrement);
-        positions->emplace_back(Math::cos(angle), Math::sin(angle));
+        positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(Mesh::Primitive::LineLoop, nullptr, {positions}, {});
+    return Trade::MeshData2D(Mesh::Primitive::LineLoop, {}, {std::move(positions)}, {});
 }
 
 }}

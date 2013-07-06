@@ -26,11 +26,12 @@
 
 #include "Math/Vector3.h"
 #include "Primitives/Implementation/Spheroid.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Cylinder::solid(UnsignedInt rings, UnsignedInt segments, Float length, Cylinder::Flags flags) {
-    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Primitives::Cylinder::solid(): cylinder must have at least one ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, nullptr, {}, {}, {}));
+    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Primitives::Cylinder::solid(): cylinder must have at least one ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, {}, {}, {}, {}));
 
     Implementation::Spheroid cylinder(segments, flags & Flag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate);
 
@@ -57,7 +58,7 @@ Trade::MeshData3D Cylinder::solid(UnsignedInt rings, UnsignedInt segments, Float
     cylinder.faceRings(rings, flags & Flag::CapEnds ? 1 : 0);
     if(flags & Flag::CapEnds) cylinder.topFaceRing();
 
-    return std::move(cylinder);
+    return cylinder.finalize();
 }
 
 }}

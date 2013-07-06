@@ -46,7 +46,7 @@ CircleTest::CircleTest() {
 void CircleTest::solid() {
     Trade::MeshData2D circle = Primitives::Circle::solid(8);
 
-    CORRADE_COMPARE(*circle.positions(0), (std::vector<Vector2>{
+    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector2>{
         { 0.0f,  0.0f},
         { 1.0f,  0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         { 0.0f,  1.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
@@ -58,7 +58,7 @@ void CircleTest::solid() {
 void CircleTest::wireframe() {
     Trade::MeshData2D circle = Primitives::Circle::wireframe(8);
 
-    CORRADE_COMPARE(*circle.positions(0), (std::vector<Vector2>{
+    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector2>{
         { 1.0f,  0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         { 0.0f,  1.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         {-1.0f,  0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},

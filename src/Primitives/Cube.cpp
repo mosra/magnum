@@ -30,14 +30,14 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Cube::solid() {
-    return Trade::MeshData3D(Mesh::Primitive::Triangles, new std::vector<UnsignedInt>{
+    return Trade::MeshData3D(Mesh::Primitive::Triangles, {
          0,  1,  2,  0,  2,  3, /* +Z */
          4,  5,  6,  4,  6,  7, /* +X */
          8,  9, 10,  8, 10, 11, /* +Y */
         12, 13, 14, 12, 14, 15, /* -Z */
         16, 17, 18, 16, 18, 19, /* -Y */
         20, 21, 22, 20, 22, 23  /* -X */
-    }, {new std::vector<Vector3>{
+    }, {{
         {-1.0f, -1.0f,  1.0f},
         { 1.0f, -1.0f,  1.0f},
         { 1.0f,  1.0f,  1.0f}, /* +Z */
@@ -67,7 +67,7 @@ Trade::MeshData3D Cube::solid() {
         {-1.0f, -1.0f,  1.0f},
         {-1.0f,  1.0f,  1.0f}, /* -X */
         {-1.0f,  1.0f, -1.0f}
-    }}, {new std::vector<Vector3>{
+    }}, {{
         { 0.0f,  0.0f,  1.0f},
         { 0.0f,  0.0f,  1.0f},
         { 0.0f,  0.0f,  1.0f}, /* +Z */
@@ -101,12 +101,12 @@ Trade::MeshData3D Cube::solid() {
 }
 
 Trade::MeshData3D Cube::wireframe() {
-    return Trade::MeshData3D(Mesh::Primitive::Lines, new std::vector<UnsignedInt>{
+    return Trade::MeshData3D(Mesh::Primitive::Lines, {
         0, 1, 1, 2, 2, 3, 3, 0, /* +Z */
         4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
         1, 5, 2, 6,             /* +X */
         0, 4, 3, 7              /* -X */
-    }, {new std::vector<Vector3>{
+    }, {{
         {-1.0f, -1.0f,  1.0f},
         { 1.0f, -1.0f,  1.0f},
         { 1.0f,  1.0f,  1.0f},

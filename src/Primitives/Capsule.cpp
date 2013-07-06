@@ -24,13 +24,14 @@
 
 #include "Capsule.h"
 
-#include "Math/Angle.h"
+#include "Math/Vector3.h"
 #include "Primitives/Implementation/Spheroid.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float length, TextureCoords textureCoords) {
-    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, nullptr, {}, {}, {}));
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, {}, {}, {}, {}));
 
     Implementation::Spheroid capsule(segments, textureCoords == TextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
@@ -60,7 +61,7 @@ Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylind
     capsule.faceRings(hemisphereRings*2-2+cylinderRings);
     capsule.topFaceRing();
 
-    return std::move(capsule);
+    return capsule.finalize();
 }
 
 }}
