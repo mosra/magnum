@@ -56,7 +56,7 @@ checked by the implementation:
     is supported.
 */
 class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.2")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")
 
     public:
         /**
@@ -95,7 +95,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * Returns converted image on success, `nullptr` otherwise.
          * @see features(), exportToData(), exportToFile()
          */
-        Image2D* exportToImage(const Image2D* image) const;
+        Image2D* exportToImage(const ImageReference2D& image) const;
 
         /**
          * @brief Export image to raw data
@@ -104,7 +104,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * Returns data on success, zero-sized array otherwise.
          * @see features(), exportToImage(), exportToFile()
          */
-        Containers::Array<unsigned char> exportToData(const Image2D* image) const;
+        Containers::Array<unsigned char> exportToData(const ImageReference2D& image) const;
 
         /**
          * @brief Export image to file
@@ -112,7 +112,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * Returns `true` on success, `false` otherwise.
          * @see features(), exportToImage(), exportToData()
          */
-        bool exportToFile(const Image2D* image, const std::string& filename) const;
+        bool exportToFile(const ImageReference2D& image, const std::string& filename) const;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -123,10 +123,10 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         virtual Features doFeatures() const = 0;
 
         /** @brief Implementation of exportToImage() */
-        virtual Image2D* doExportToImage(const Image2D* image) const;
+        virtual Image2D* doExportToImage(const ImageReference2D& image) const;
 
         /** @brief Implementation of exportToData() */
-        virtual Containers::Array<unsigned char> doExportToData(const Image2D* image) const;
+        virtual Containers::Array<unsigned char> doExportToData(const ImageReference2D& image) const;
 
         /**
          * @brief Implementation of exportToFile()
@@ -135,7 +135,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * implementation calls doExportToData() and saves the result to given
          * file.
          */
-        virtual bool doExportToFile(const Image2D* image, const std::string& filename) const;
+        virtual bool doExportToFile(const ImageReference2D& image, const std::string& filename) const;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImageConverter::Features)
