@@ -52,11 +52,11 @@ template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const 
     if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
 }
 
-template<UnsignedInt dimensions> void PointRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
+template<UnsignedInt dimensions> void PointRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     /* Half scale, because the point is 2x2(x2) */
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation(point.position())*
-        DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(options->pointSize()/2)))
+        DimensionTraits<dimensions, Float>::MatrixType::translation(point.position())*
+        DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->pointSize()/2)))
         ->setColor(options->color())
         ->use();
     this->wireframeMesh->draw();

@@ -125,7 +125,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         Composition<dimensions>& operator=(Composition<dimensions>&& other);
 
         /** @brief Transformed shape */
-        Composition<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
+        Composition<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
 
         /** @brief Count of shapes in the hierarchy */
         std::size_t size() const { return _shapeCount; }

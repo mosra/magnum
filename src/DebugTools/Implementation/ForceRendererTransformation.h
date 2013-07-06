@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> typename DimensionTraits<dimensions>::MatrixType forceRendererTransformation(const typename DimensionTraits<dimensions>::VectorType& forcePosition, const typename DimensionTraits<dimensions>::VectorType& force);
+template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Float>::MatrixType forceRendererTransformation(const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType& force);
 
 template<> inline Matrix3 forceRendererTransformation<2>(const Vector2& forcePosition, const Vector2& force) {
     return Matrix3::from({force, Vector2(-force.y(), force.x())}, forcePosition);

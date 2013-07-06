@@ -33,8 +33,8 @@
 
 namespace Magnum {
 
-/** @brief Matrix, point and vector specializations for given dimension count */
-template<UnsignedInt dimensions, class T = Float> struct DimensionTraits {
+/** @brief Matrix and vector specializations for given dimension count */
+template<UnsignedInt dimensions, class T> struct DimensionTraits {
     DimensionTraits() = delete;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT

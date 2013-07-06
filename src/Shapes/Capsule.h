@@ -58,28 +58,28 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
         constexpr /*implicit*/ Capsule(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Capsule(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
+        constexpr /*implicit*/ Capsule(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
 
         /** @brief Transformed shape */
-        Capsule<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
+        Capsule<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
 
         /** @brief Start point */
-        constexpr typename DimensionTraits<dimensions>::VectorType a() const {
+        constexpr typename DimensionTraits<dimensions, Float>::VectorType a() const {
             return _a;
         }
 
         /** @brief Set start point */
-        void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
+        void setA(const typename DimensionTraits<dimensions, Float>::VectorType& a) {
             _a = a;
         }
 
         /** @brief End point */
-        constexpr typename DimensionTraits<dimensions>::VectorType b() const {
+        constexpr typename DimensionTraits<dimensions, Float>::VectorType b() const {
             return _b;
         }
 
         /** @brief Set end point */
-        void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
+        void setB(const typename DimensionTraits<dimensions, Float>::VectorType& b) {
             _b = b;
         }
 
@@ -96,7 +96,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions>::VectorType _a, _b;
+        typename DimensionTraits<dimensions, Float>::VectorType _a, _b;
         Float _radius;
 };
 

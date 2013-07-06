@@ -107,7 +107,7 @@ template<class T> class MAGNUM_SHAPES_EXPORT Shape: public AbstractShape<T::Dime
 
     protected:
         /** Applies transformation to associated shape. */
-        void clean(const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) override;
+        void clean(const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) override;
 
     private:
         const Implementation::AbstractShape<T::Dimensions>* abstractTransformedShape() const override {
@@ -128,7 +128,7 @@ template<class T> inline const T& Shape<T>::transformedShape() {
     return _transformedShape.shape;
 }
 
-template<class T> void Shape<T>::clean(const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) {
+template<class T> void Shape<T>::clean(const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) {
     Implementation::ShapeHelper<T>::transform(*this, absoluteTransformationMatrix);
 }
 
@@ -138,7 +138,7 @@ namespace Implementation {
             shape._shape.shape = s;
         }
 
-        static void transform(Shapes::Shape<T>& shape, const typename DimensionTraits<T::Dimensions>::MatrixType& absoluteTransformationMatrix) {
+        static void transform(Shapes::Shape<T>& shape, const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) {
             shape._transformedShape.shape = shape._shape.shape.transformed(absoluteTransformationMatrix);
         }
     };
@@ -147,7 +147,7 @@ namespace Implementation {
         static void set(Shapes::Shape<Composition<dimensions>>& shape, const Composition<dimensions>& composition);
         static void set(Shapes::Shape<Composition<dimensions>>& shape, Composition<dimensions>&& composition);
 
-        static void transform(Shapes::Shape<Composition<dimensions>>& shape, const typename DimensionTraits<dimensions>::MatrixType& absoluteTransformationMatrix);
+        static void transform(Shapes::Shape<Composition<dimensions>>& shape, const typename DimensionTraits<dimensions, Float>::MatrixType& absoluteTransformationMatrix);
     };
 }
 

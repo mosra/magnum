@@ -47,7 +47,7 @@ Draws whole mesh with one color.
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
 
         explicit Flat();
 
@@ -55,7 +55,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @brief Set transformation and projection matrix
          * @return Pointer to self (for method chaining)
          */
-        Flat<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+        Flat<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }
