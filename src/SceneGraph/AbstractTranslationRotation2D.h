@@ -73,6 +73,9 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         }
         #endif
 
+    protected:
+        ~AbstractBasicTranslationRotation2D() = default;
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
