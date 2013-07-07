@@ -49,38 +49,42 @@ NaClApplication::ConsoleDebugOutput::ConsoleDebugOutput(pp::Instance* instance):
     Error::setOutput(&errorOutput);
 }
 
+/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+
+NaClApplication::NaClApplication(const Arguments& arguments, const Configuration& configuration): Instance(arguments), Graphics3DClient(this), MouseLock(this), graphics(nullptr), fullscreen(nullptr), c(nullptr) {
+    debugOutput = new ConsoleDebugOutput(this);
+    createContext(configuration);
+}
+
 NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
-    createContext(new Configuration);
+    createContext({});
 }
 
-NaClApplication::NaClApplication(const Arguments& arguments, Configuration* configuration): Instance(arguments), Graphics3DClient(this), MouseLock(this), graphics(nullptr), fullscreen(nullptr), c(nullptr) {
+NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr)  {
     debugOutput = new ConsoleDebugOutput(this);
-    if(configuration) createContext(configuration);
 }
 
-void NaClApplication::createContext(Configuration* configuration) {
+void NaClApplication::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) {
         Error() << "Platform::NaClApplication::createContext(): cannot create context";
-        delete configuration;
         std::exit(1);
-
-    } else delete configuration;
+    }
 }
 
-bool NaClApplication::tryCreateContext(Configuration* configuration) {
+bool NaClApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(!c, "Platform::NaClApplication::tryCreateContext(): context already created", false);
 
-    viewportSize = configuration->size();
+    viewportSize = configuration.size();
 
     const std::int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
         PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
         PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
-        PP_GRAPHICS3DATTRIB_SAMPLES, configuration->sampleCount(),
-        PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, configuration->sampleCount() > 1? 1 : 0,
-        PP_GRAPHICS3DATTRIB_WIDTH, configuration->size().x(),
-        PP_GRAPHICS3DATTRIB_HEIGHT, configuration->size().y(),
+        PP_GRAPHICS3DATTRIB_SAMPLES, configuration.sampleCount(),
+        PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS, configuration.sampleCount() > 1 ? 1 : 0,
+        PP_GRAPHICS3DATTRIB_WIDTH, configuration.size().x(),
+        PP_GRAPHICS3DATTRIB_HEIGHT, configuration.size().y(),
         PP_GRAPHICS3DATTRIB_NONE
     };
 

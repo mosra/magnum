@@ -39,10 +39,10 @@ AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("s
 
 template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>* sphere): sphere(static_cast<const Shapes::Implementation::Shape<Shapes::Sphere<dimensions>>*>(sphere)->shape) {}
 
-template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
+template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions>::MatrixType::translation(sphere.position())*
-        DimensionTraits<dimensions>::MatrixType::scaling(typename DimensionTraits<dimensions>::VectorType(sphere.radius())))
+        DimensionTraits<dimensions, Float>::MatrixType::translation(sphere.position())*
+        DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(sphere.radius())))
         ->setColor(options->color())
         ->use();
     this->wireframeMesh->draw();

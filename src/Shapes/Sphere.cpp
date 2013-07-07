@@ -37,7 +37,7 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Shapes {
 
 namespace {
-    template<UnsignedInt dimensions> static typename DimensionTraits<dimensions>::VectorType unitVector();
+    template<UnsignedInt dimensions> static typename DimensionTraits<dimensions, Float>::VectorType unitVector();
 
     template<> inline Vector2 unitVector<2>() {
         return Vector2(1/Constants::sqrt2());
@@ -48,7 +48,7 @@ namespace {
     }
 }
 
-template<UnsignedInt dimensions> Sphere<dimensions> Sphere<dimensions>::transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Sphere<dimensions> Sphere<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
     return Sphere<dimensions>(matrix.transformPoint(_position),
         (matrix.rotationScaling()*unitVector<dimensions>()).length()*_radius);
 }

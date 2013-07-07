@@ -36,7 +36,7 @@ template<UnsignedInt dimensions> class LineSegmentRenderer: public AbstractShape
     public:
         LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>* line);
 
-        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
+        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 
     private:
         const Shapes::LineSegment<dimensions>& line;

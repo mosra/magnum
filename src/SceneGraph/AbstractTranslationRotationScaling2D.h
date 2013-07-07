@@ -70,6 +70,9 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         }
         #endif
 
+    protected:
+        ~AbstractBasicTranslationRotationScaling2D() = default;
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else

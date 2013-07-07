@@ -41,33 +41,37 @@ struct WindowlessNaClApplication::ConsoleDebugOutput {
 
 WindowlessNaClApplication::ConsoleDebugOutput::ConsoleDebugOutput(pp::Instance* instance): debugBuffer(instance, Utility::NaClConsoleStreamBuffer::LogLevel::Log), warningBuffer(instance, Utility::NaClConsoleStreamBuffer::LogLevel::Warning), errorBuffer(instance, Utility::NaClConsoleStreamBuffer::LogLevel::Error), debugOutput(&debugBuffer), warningOutput(&warningBuffer), errorOutput(&errorBuffer) {
     /* Inform about this change on standard output */
-    Debug() << "Platform::NaClApplication: redirecting Debug, Warning and Error output to JavaScript console";
+    Debug() << "Platform::WindowlessNaClApplication: redirecting Debug, Warning and Error output to JavaScript console";
 
     Debug::setOutput(&debugOutput);
     Warning::setOutput(&warningOutput);
     Error::setOutput(&errorOutput);
 }
 
+/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
+    debugOutput = new ConsoleDebugOutput(this);
+    createContext(configuration);
+}
+
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
-    createContext(new Configuration);
+    createContext({});
 }
 
-WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, Configuration* configuration): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
-    if(configuration) createContext(configuration);
 }
 
-void WindowlessNaClApplication::createContext(Configuration* configuration) {
+void WindowlessNaClApplication::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) {
         Error() << "Platform::WindowlessNaClApplication::createContext(): cannot create context";
-        delete configuration;
         std::exit(1);
-
-    } else delete configuration;
+    }
 }
 
-bool WindowlessNaClApplication::tryCreateContext(Configuration*) {
+bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
     CORRADE_ASSERT(!c, "Platform::WindowlessNaClApplication::tryCreateContext(): context already created", false);
 
     const std::int32_t attributes[] = {

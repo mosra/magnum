@@ -58,18 +58,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         constexpr /*implicit*/ Sphere(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Sphere(const typename DimensionTraits<dimensions>::VectorType& position, Float radius): _position(position), _radius(radius) {}
+        constexpr /*implicit*/ Sphere(const typename DimensionTraits<dimensions, Float>::VectorType& position, Float radius): _position(position), _radius(radius) {}
 
         /** @brief Transformed shape */
-        Sphere<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
+        Sphere<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
 
         /** @brief Position */
-        constexpr typename DimensionTraits<dimensions>::VectorType position() const {
+        constexpr typename DimensionTraits<dimensions, Float>::VectorType position() const {
             return _position;
         }
 
         /** @brief Set position */
-        void setPosition(const typename DimensionTraits<dimensions>::VectorType& position) {
+        void setPosition(const typename DimensionTraits<dimensions, Float>::VectorType& position) {
             _position = position;
         }
 
@@ -92,7 +92,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions>::VectorType _position;
+        typename DimensionTraits<dimensions, Float>::VectorType _position;
         Float _radius;
 };
 

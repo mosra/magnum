@@ -54,7 +54,7 @@ template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRen
     if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
 }
 
-template<UnsignedInt dimensions> void LineSegmentRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) {
+template<UnsignedInt dimensions> void LineSegmentRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         Implementation::lineSegmentRendererTransformation<dimensions>(line.a(), line.b()))
         ->setColor(options->color())

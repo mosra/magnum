@@ -24,11 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Trade/MeshData3D.h"
+#include <vector>
+
+#include "Magnum.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
 
-class Spheroid: public Trade::MeshData3D {
+class Spheroid {
     public:
         enum class TextureCoords: UnsignedByte {
             DontGenerate,
@@ -45,8 +48,16 @@ class Spheroid: public Trade::MeshData3D {
         void topFaceRing();
         void capVertexRing(Float y, Float textureCoordsV, const Vector3& normal);
 
+        Trade::MeshData3D finalize();
+
         UnsignedInt segments;
         TextureCoords textureCoords;
+
+    private:
+        std::vector<UnsignedInt> indices;
+        std::vector<Vector3> positions;
+        std::vector<Vector3> normals;
+        std::vector<Vector2> textureCoords2D;
 };
 
 }}}

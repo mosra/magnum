@@ -42,7 +42,6 @@ template<UnsignedInt dimensions, class T> AbstractBasicObject<dimensions, T>::Ab
 template<UnsignedInt dimensions, class T> AbstractBasicObject<dimensions, T>::~AbstractBasicObject() {}
 
 template<UnsignedInt dimensions, class T> AbstractBasicTransformation<dimensions, T>::AbstractBasicTransformation() {}
-template<UnsignedInt dimensions, class T> AbstractBasicTransformation<dimensions, T>::~AbstractBasicTransformation() {}
 
 /* `= default` causes linker errors in GCC 4.4 */
 template<class Transformation> Object<Transformation>::~Object() {}

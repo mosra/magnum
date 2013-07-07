@@ -27,8 +27,8 @@
 #include <TestSuite/Compare/FileToString.h>
 #include <Utility/Directory.h>
 
-#include "Image.h"
 #include "ImageFormat.h"
+#include "ImageReference.h"
 #include "Trade/AbstractImageConverter.h"
 
 #include "testConfigure.h"
@@ -51,10 +51,10 @@ void AbstractImageConverterTest::exportToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData; }
 
-            Containers::Array<unsigned char> doExportToData(const Image2D* image) const override {
+            Containers::Array<unsigned char> doExportToData(const ImageReference2D& image) const override {
                 Containers::Array<unsigned char> out(2);
-                out[0] = image->size().x();
-                out[1] = image->size().y();
+                out[0] = image.size().x();
+                out[1] = image.size().y();
                 return out;
             };
     };
@@ -64,8 +64,8 @@ void AbstractImageConverterTest::exportToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    Image2D image(ImageFormat::RGBA, ImageType::UnsignedByte, {0xfe, 0xed}, nullptr);
-    CORRADE_VERIFY(exporter.exportToFile(&image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+    ImageReference2D image(ImageFormat::RGBA, ImageType::UnsignedByte, {0xfe, 0xed}, nullptr);
+    CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "\xFE\xED", TestSuite::Compare::FileToString);
 }

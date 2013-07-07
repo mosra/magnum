@@ -36,7 +36,7 @@ template<UnsignedInt dimensions> class AxisAlignedBoxRenderer: public AbstractBo
     public:
         AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* axisAlignedBox);
 
-        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
+        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 
     private:
         const Shapes::AxisAlignedBox<dimensions>& axisAlignedBox;

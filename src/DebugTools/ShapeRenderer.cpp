@@ -103,8 +103,8 @@ template<UnsignedInt dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
         delete *it;
 }
 
-template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions>::MatrixType&, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
-    typename DimensionTraits<dimensions>::MatrixType projectionMatrix = camera->projectionMatrix()*camera->cameraMatrix();
+template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType&, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
+    typename DimensionTraits<dimensions, Float>::MatrixType projectionMatrix = camera->projectionMatrix()*camera->cameraMatrix();
     for(auto it = renderers.begin(); it != renderers.end(); ++it)
         (*it)->draw(options, projectionMatrix);
 }

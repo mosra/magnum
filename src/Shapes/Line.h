@@ -55,33 +55,33 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Line {
         constexpr /*implicit*/ Line() {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Line(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b): _a(a), _b(b) {}
+        constexpr /*implicit*/ Line(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b): _a(a), _b(b) {}
 
         /** @brief Transformed shape */
-        Line<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
+        Line<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
 
         /** @brief First point */
-        constexpr typename DimensionTraits<dimensions>::VectorType a() const {
+        constexpr typename DimensionTraits<dimensions, Float>::VectorType a() const {
             return _a;
         }
 
         /** @brief Set first point */
-        void setA(const typename DimensionTraits<dimensions>::VectorType& a) {
+        void setA(const typename DimensionTraits<dimensions, Float>::VectorType& a) {
             _a = a;
         }
 
         /** @brief Second point */
-        constexpr typename DimensionTraits<dimensions>::VectorType b() const {
+        constexpr typename DimensionTraits<dimensions, Float>::VectorType b() const {
             return _b;
         }
 
         /** @brief Set second point */
-        void setB(const typename DimensionTraits<dimensions>::VectorType& b) {
+        void setB(const typename DimensionTraits<dimensions, Float>::VectorType& b) {
             _b = b;
         }
 
     private:
-        typename DimensionTraits<dimensions>::VectorType _a, _b;
+        typename DimensionTraits<dimensions, Float>::VectorType _a, _b;
 };
 
 /** @brief Infinite two-dimensional line */

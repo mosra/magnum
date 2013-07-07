@@ -56,11 +56,11 @@ to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&) */
-        explicit GlxApplication(const Arguments& arguments): AbstractXApplication(new GlxContextHandler, arguments) {}
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration()): AbstractXApplication(new GlxContextHandler, arguments, configuration) {}
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, Configuration*) */
-        explicit GlxApplication(const Arguments& arguments, Configuration* configuration): AbstractXApplication(new GlxContextHandler, arguments, configuration) {}
+        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        explicit GlxApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new GlxContextHandler, arguments, nullptr) {}
 
     protected:
         /* Nobody will need to have (and delete) GlxApplication*, thus this is

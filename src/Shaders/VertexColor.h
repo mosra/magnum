@@ -47,7 +47,7 @@ Draws vertex-colored mesh.
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
 
         /** @brief Vertex color */
         typedef Attribute<1, Color3> Color;
@@ -60,7 +60,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          *
          * Default is identity matrix.
          */
-        VertexColor<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions>::MatrixType& matrix) {
+        VertexColor<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return this;
         }

@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Primitives {
 
-Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, new std::vector<UnsignedInt>{
+Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, {
     1, 2, 6,
     1, 7, 2,
     3, 4, 5,
@@ -49,7 +49,7 @@ Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, new std::vecto
     7, 1, 0,
     3, 9, 8,
     4, 8, 0
-}, {new std::vector<Vector3>}, {new std::vector<Vector3>{
+}, {}, {{
     {0.0f, -0.525731f, 0.850651f},
     {0.850651f, 0.0f, 0.525731f},
     {0.850651f, 0.0f, -0.525731f},
@@ -63,7 +63,7 @@ Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, new std::vecto
     {0.0f, 0.525731f, -0.850651f},
     {0.0f, 0.525731f, 0.850651f}
 }}, {}) {
-    positions(0)->assign(normals(0)->begin(), normals(0)->end());
+    positions(0).assign(normals(0).begin(), normals(0).end());
 }
 
 }}

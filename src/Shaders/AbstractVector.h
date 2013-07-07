@@ -42,7 +42,7 @@ namespace Magnum { namespace Shaders {
 template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions>::VectorType> Position;
+        typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
 
         /** @brief Texture coordinates */
         typedef Attribute<1, Vector2> TextureCoordinates;

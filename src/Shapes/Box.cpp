@@ -26,7 +26,7 @@
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> Box<dimensions> Box<dimensions>::transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Box<dimensions> Box<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
     return Box<dimensions>(matrix*_transformation);
 }
 

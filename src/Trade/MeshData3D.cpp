@@ -28,26 +28,54 @@
 
 namespace Magnum { namespace Trade {
 
-MeshData3D::MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt>* indices, std::vector<std::vector<Vector3>*> positions, std::vector<std::vector<Vector3>*> normals, std::vector<std::vector<Vector2>*> textureCoords2D): _primitive(primitive), _indices(indices), _positions(std::move(positions)), _normals(std::move(normals)), _textureCoords2D(std::move(textureCoords2D)) {}
-
-MeshData3D::MeshData3D(MeshData3D&& other): _primitive(other._primitive), _indices(other._indices), _positions(std::move(other._positions)), _normals(std::move(other._normals)), _textureCoords2D(std::move(other._textureCoords2D)) {
-    other._indices = nullptr;
+MeshData3D::MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D): _primitive(primitive), _indices(std::move(indices)), _positions(std::move(positions)), _normals(std::move(normals)), _textureCoords2D(std::move(textureCoords2D)) {
+    CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData3D: no position array specified", );
 }
 
-MeshData3D& MeshData3D::operator=(MeshData3D&& other) {
-    _primitive = other._primitive;
-    std::swap(_indices, other._indices);
-    std::swap(_positions, other._positions);
-    std::swap(_normals, other._normals);
-    std::swap(_textureCoords2D, other._textureCoords2D);
-    return *this;
+MeshData3D::MeshData3D(MeshData3D&&) = default;
+
+MeshData3D::~MeshData3D() = default;
+
+MeshData3D& MeshData3D::operator=(MeshData3D&&) = default;
+
+std::vector<UnsignedInt>& MeshData3D::indices() {
+    CORRADE_ASSERT(isIndexed(), "Trade::MeshData3D::indices(): the mesh is not indexed", _indices);
+    return _indices;
 }
 
-MeshData3D::~MeshData3D() {
-    delete _indices;
-    for(auto it = _positions.begin(); it != _positions.end(); ++it) delete *it;
-    for(auto it = _normals.begin(); it != _normals.end(); ++it) delete *it;
-    for(auto it = _textureCoords2D.begin(); it != _textureCoords2D.end(); ++it) delete *it;
+const std::vector<UnsignedInt>& MeshData3D::indices() const {
+    CORRADE_ASSERT(isIndexed(), "Trade::MeshData3D::indices(): the mesh is not indexed", _indices);
+    return _indices;
+}
+
+std::vector<Vector3>& MeshData3D::positions(const UnsignedInt id) {
+    CORRADE_ASSERT(id < positionArrayCount(), "Trade::MeshData3D::positions(): index out of range", _positions[id]);
+    return _positions[id];
+}
+
+const std::vector<Vector3>& MeshData3D::positions(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < positionArrayCount(), "Trade::MeshData3D::positions(): index out of range", _positions[id]);
+    return _positions[id];
+}
+
+std::vector<Vector3>& MeshData3D::normals(const UnsignedInt id) {
+    CORRADE_ASSERT(id < normalArrayCount(), "Trade::MeshData3D::normals(): index out of range", _normals[id]);
+    return _normals[id];
+}
+
+const std::vector<Vector3>& MeshData3D::normals(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < normalArrayCount(), "Trade::MeshData3D::normals(): index out of range", _normals[id]);
+    return _normals[id];
+}
+
+std::vector<Vector2>& MeshData3D::textureCoords2D(const UnsignedInt id) {
+    CORRADE_ASSERT(id < textureCoords2DArrayCount(), "Trade::MeshData3D::textureCoords2D(): index out of range", _textureCoords2D[id]);
+    return _textureCoords2D[id];
+}
+
+const std::vector<Vector2>& MeshData3D::textureCoords2D(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < textureCoords2DArrayCount(), "Trade::MeshData3D::textureCoords2D(): index out of range", _textureCoords2D[id]);
+    return _textureCoords2D[id];
 }
 
 }}

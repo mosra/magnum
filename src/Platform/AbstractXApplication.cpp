@@ -36,18 +36,22 @@
 
 namespace Magnum { namespace Platform {
 
+/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
+    createContext(configuration);
+}
+
 AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
-    createContext(new Configuration);
+    createContext({});
 }
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, Configuration* configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
-    if(configuration) createContext(configuration);
-}
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
-void AbstractXApplication::createContext(AbstractXApplication::Configuration* configuration) {
+void AbstractXApplication::createContext(const Configuration& configuration) {
     CORRADE_ASSERT(!c, "AbstractXApplication::createContext(): context already created", );
 
-    viewportSize = configuration->size();
+    viewportSize = configuration.size();
 
     /* Get default X display */
     display = XOpenDisplay(nullptr);
@@ -73,8 +77,8 @@ void AbstractXApplication::createContext(AbstractXApplication::Configuration* co
     attr.colormap = XCreateColormap(display, root, visInfo->visual, AllocNone);
     attr.event_mask = 0;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
-    window = XCreateWindow(display, root, 20, 20, configuration->size().x(), configuration->size().y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
-    XSetStandardProperties(display, window, configuration->title().c_str(), nullptr, None, nullptr, 0, nullptr);
+    window = XCreateWindow(display, root, 20, 20, configuration.size().x(), configuration.size().y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
+    XSetStandardProperties(display, window, configuration.title().data(), nullptr, None, nullptr, 0, nullptr);
     XFree(visInfo);
 
     /* Be notified about closing the window */
@@ -94,7 +98,6 @@ void AbstractXApplication::createContext(AbstractXApplication::Configuration* co
     ExtensionWrangler::initialize(contextHandler->experimentalExtensionWranglerFeatures());
 
     c = new Context;
-    delete configuration;
 }
 
 AbstractXApplication::~AbstractXApplication() {

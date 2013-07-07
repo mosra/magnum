@@ -28,8 +28,8 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> typename DimensionTraits<dimensions>::MatrixType lineSegmentRendererTransformation(const typename DimensionTraits<dimensions>::VectorType& a, const typename DimensionTraits<dimensions>::VectorType& b) {
-    auto transformation = DimensionTraits<dimensions>::MatrixType::translation(a);
+template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Float>::MatrixType lineSegmentRendererTransformation(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b) {
+    auto transformation = DimensionTraits<dimensions, Float>::MatrixType::translation(a);
     transformation.right() = b - a;
     return transformation;
 }

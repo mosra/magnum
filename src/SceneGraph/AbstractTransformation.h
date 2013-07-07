@@ -62,7 +62,6 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         static const UnsignedInt Dimensions = dimensions;
 
         explicit AbstractBasicTransformation();
-        virtual ~AbstractBasicTransformation() = 0;
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -142,6 +141,9 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
             doResetTransformation();
             return this;
         }
+
+    protected:
+        ~AbstractBasicTransformation() = default;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:

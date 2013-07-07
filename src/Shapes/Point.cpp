@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> Point<dimensions> Point<dimensions>::transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Point<dimensions> Point<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
     return Point<dimensions>(matrix.transformPoint(_position));
 }
 

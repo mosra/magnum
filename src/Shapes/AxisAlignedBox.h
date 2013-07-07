@@ -56,28 +56,28 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AxisAlignedBox {
         constexpr /*implicit*/ AxisAlignedBox() {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ AxisAlignedBox(const typename DimensionTraits<dimensions>::VectorType& min, const typename DimensionTraits<dimensions>::VectorType& max): _min(min), _max(max) {}
+        constexpr /*implicit*/ AxisAlignedBox(const typename DimensionTraits<dimensions, Float>::VectorType& min, const typename DimensionTraits<dimensions, Float>::VectorType& max): _min(min), _max(max) {}
 
         /** @brief Transformed shape */
-        AxisAlignedBox<dimensions> transformed(const typename DimensionTraits<dimensions>::MatrixType& matrix) const;
+        AxisAlignedBox<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
 
         /** @brief Minimal coordinates */
-        constexpr typename DimensionTraits<dimensions>::VectorType min() const {
+        constexpr typename DimensionTraits<dimensions, Float>::VectorType min() const {
             return _min;
         }
 
         /** @brief Set minimal coordinates */
-        void setMin(const typename DimensionTraits<dimensions>::VectorType& min) {
+        void setMin(const typename DimensionTraits<dimensions, Float>::VectorType& min) {
             _min = min;
         }
 
         /** @brief Maximal coordinates */
-        constexpr typename DimensionTraits<dimensions>::VectorType max() const {
+        constexpr typename DimensionTraits<dimensions, Float>::VectorType max() const {
             return _max;
         }
 
         /** @brief Set maximal coordinates */
-        void setMax(const typename DimensionTraits<dimensions>::VectorType& max) {
+        void setMax(const typename DimensionTraits<dimensions, Float>::VectorType& max) {
             _max = max;
         }
 
@@ -85,7 +85,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AxisAlignedBox {
         bool operator%(const Point<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions>::VectorType _min, _max;
+        typename DimensionTraits<dimensions, Float>::VectorType _min, _max;
 };
 
 /** @brief Two-dimensional axis-aligned box */

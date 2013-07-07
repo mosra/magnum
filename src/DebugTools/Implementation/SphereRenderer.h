@@ -43,7 +43,7 @@ template<UnsignedInt dimensions> class SphereRenderer: public AbstractSphereRend
     public:
         SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>* sphere);
 
-        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions>::MatrixType& projectionMatrix) override;
+        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 
     private:
         const Shapes::Sphere<dimensions>& sphere;

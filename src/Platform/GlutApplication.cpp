@@ -31,14 +31,20 @@ namespace Magnum { namespace Platform {
 
 GlutApplication* GlutApplication::instance = nullptr;
 
-GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
+/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+
+GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): c(nullptr) {
     initialize(arguments.argc, arguments.argv);
-    createContext(new Configuration);
+    createContext(configuration);
 }
 
-GlutApplication::GlutApplication(const Arguments& arguments, Configuration* configuration): c(nullptr) {
+GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
     initialize(arguments.argc, arguments.argv);
-    if(configuration) createContext(configuration);
+    createContext({});
+}
+
+GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t): c(nullptr) {
+    initialize(arguments.argc, arguments.argv);
 }
 
 void GlutApplication::initialize(int& argc, char** argv) {
@@ -50,26 +56,24 @@ void GlutApplication::initialize(int& argc, char** argv) {
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 }
 
-void GlutApplication::createContext(Configuration* configuration) {
+void GlutApplication::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) {
         Error() << "Platform::GlutApplication::createContext(): cannot create context";
-        delete configuration;
         std::exit(1);
-
-    } else delete configuration;
+    }
 }
 
-bool GlutApplication::tryCreateContext(Configuration* configuration) {
+bool GlutApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(!c, "Platform::GlutApplication::tryCreateContext(): context already created", false);
 
     unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 
     /* Multisampling */
-    if(configuration->sampleCount()) flags |= GLUT_MULTISAMPLE;
+    if(configuration.sampleCount()) flags |= GLUT_MULTISAMPLE;
 
     glutInitDisplayMode(flags);
-    glutInitWindowSize(configuration->size().x(), configuration->size().y());
-    if(!glutCreateWindow(configuration->title().c_str()))
+    glutInitWindowSize(configuration.size().x(), configuration.size().y());
+    if(!glutCreateWindow(configuration.title().data()))
         return false;
     glutReshapeFunc(staticViewportEvent);
     glutSpecialFunc(staticKeyEvent);
