@@ -77,17 +77,17 @@ void MagnumFontTest::layout() {
     CORRADE_COMPARE(textureCoordinates, Rectangle({0, 0.03125f}, {0.0625f, 0.5f}));
     CORRADE_COMPARE(advance, Vector2(0.71875f, 0.0f));
 
-    /* 'a' (not in cache) */
+    /* 'a' (not found) */
     std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(1);
     CORRADE_COMPARE(position, Rectangle());
     CORRADE_COMPARE(textureCoordinates, Rectangle());
-    CORRADE_COMPARE(advance, Vector2(0.34375f, 0.0f));
+    CORRADE_COMPARE(advance, Vector2(0.25f, 0.0f));
 
-    /* 'v' (not in cache) */
+    /* 'v' (not found) */
     std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(2);
     CORRADE_COMPARE(position, Rectangle());
     CORRADE_COMPARE(textureCoordinates, Rectangle());
-    CORRADE_COMPARE(advance, Vector2(0.34375f, 0.0f));
+    CORRADE_COMPARE(advance, Vector2(0.25f, 0.0f));
 
     /* 'e' */
     std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(3);
