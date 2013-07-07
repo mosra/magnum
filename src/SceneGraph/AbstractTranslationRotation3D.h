@@ -121,7 +121,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #endif
 
     protected:
-        ~AbstractBasicTranslationRotation3D() = default;
+        ~AbstractBasicTranslationRotation3D();
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -163,6 +163,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
 };
 
 template<class T> inline AbstractBasicTranslationRotation3D<T>::AbstractBasicTranslationRotation3D() = default;
+template<class T> inline AbstractBasicTranslationRotation3D<T>::~AbstractBasicTranslationRotation3D() = default;
 
 /**
 @brief Base transformation for three-dimensional float scenes supporting translation and rotation

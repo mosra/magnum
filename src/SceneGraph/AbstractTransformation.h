@@ -143,7 +143,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         }
 
     protected:
-        ~AbstractBasicTransformation() = default;
+        ~AbstractBasicTransformation();
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -153,6 +153,8 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /** @brief Polymorphic implementation for resetTransformation() */
         virtual void doResetTransformation() = 0;
 };
+
+template<UnsignedInt dimensions, class T> AbstractBasicTransformation<dimensions, T>::~AbstractBasicTransformation() = default;
 
 /** @brief Transformation type */
 enum class TransformationType: UnsignedByte {

@@ -83,7 +83,7 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #endif
 
     protected:
-        ~AbstractBasicTranslationRotationScaling3D() = default;
+        ~AbstractBasicTranslationRotationScaling3D();
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -95,6 +95,7 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
 };
 
 template<class T> inline AbstractBasicTranslationRotationScaling3D<T>::AbstractBasicTranslationRotationScaling3D() = default;
+template<class T> inline AbstractBasicTranslationRotationScaling3D<T>::~AbstractBasicTranslationRotationScaling3D() = default;
 
 /**
 @brief Base transformation for three-dimensional float scenes supporting translation, rotation and scaling

@@ -71,7 +71,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         #endif
 
     protected:
-        ~AbstractBasicTranslationRotationScaling2D() = default;
+        ~AbstractBasicTranslationRotationScaling2D();
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -83,6 +83,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
 };
 
 template<class T> inline AbstractBasicTranslationRotationScaling2D<T>::AbstractBasicTranslationRotationScaling2D() = default;
+template<class T> inline AbstractBasicTranslationRotationScaling2D<T>::~AbstractBasicTranslationRotationScaling2D() = default;
 
 /**
 @brief Base transformation for two-dimensional float scenes supporting translation, rotation and scaling
