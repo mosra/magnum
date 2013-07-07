@@ -30,7 +30,7 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Square::solid() {
-    return Trade::MeshData2D(Mesh::Primitive::TriangleStrip, {}, {{
+    return Trade::MeshData2D(Mesh::Primitive::TriangleStrip, {}, {std::vector<Vector2>{
         {1.0f, -1.0f},
         {1.0f, 1.0f},
         {-1.0f, -1.0f},
@@ -39,7 +39,7 @@ Trade::MeshData2D Square::solid() {
 }
 
 Trade::MeshData2D Square::wireframe() {
-    return Trade::MeshData2D(Mesh::Primitive::LineLoop, {}, {{
+    return Trade::MeshData2D(Mesh::Primitive::LineLoop, {}, {std::vector<Vector2>{
         {-1.0f, -1.0f},
         {1.0f, -1.0f},
         {1.0f, 1.0f},

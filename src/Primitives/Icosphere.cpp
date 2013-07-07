@@ -49,7 +49,7 @@ Icosphere<0>::Icosphere(): MeshData3D(Mesh::Primitive::Triangles, {
     7, 1, 0,
     3, 9, 8,
     4, 8, 0
-}, {}, {{
+}, {}, {std::vector<Vector3>{
     {0.0f, -0.525731f, 0.850651f},
     {0.850651f, 0.0f, 0.525731f},
     {0.850651f, 0.0f, -0.525731f},

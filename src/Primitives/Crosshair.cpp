@@ -31,14 +31,14 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Crosshair2D::wireframe() {
-    return Trade::MeshData2D(Mesh::Primitive::Lines, {}, {{
+    return Trade::MeshData2D(Mesh::Primitive::Lines, {}, {std::vector<Vector2>{
         {-1.0f,  0.0f}, {1.0f, 0.0f},
         { 0.0f, -1.0f}, {0.0f, 1.0f}
     }}, {});
 }
 
 Trade::MeshData3D Crosshair3D::wireframe() {
-    return Trade::MeshData3D(Mesh::Primitive::Lines, {}, {{
+    return Trade::MeshData3D(Mesh::Primitive::Lines, {}, {std::vector<Vector3>{
         {-1.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f},
         { 0.0f, -1.0f,  0.0f}, {0.0f, 1.0f, 0.0f},
         { 0.0f,  0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}
