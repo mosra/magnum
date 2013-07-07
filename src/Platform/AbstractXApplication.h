@@ -196,7 +196,7 @@ class AbstractXApplication::Configuration {
     Configuration& operator=(Configuration&&) = delete;
 
     public:
-        explicit Configuration();
+        /*implicit*/ Configuration();
         ~Configuration();
 
         /** @brief Window title */

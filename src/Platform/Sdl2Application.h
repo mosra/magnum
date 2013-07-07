@@ -229,7 +229,7 @@ class Sdl2Application::Configuration {
             SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
             SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> Flags;
 
-        explicit Configuration();
+        /*implicit*/ Configuration();
         ~Configuration();
 
         /** @brief Window title */

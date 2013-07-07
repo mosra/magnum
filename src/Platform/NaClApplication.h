@@ -308,7 +308,7 @@ class NaClApplication::Configuration {
     Configuration& operator=(Configuration&&) = delete;
 
     public:
-        constexpr explicit Configuration(): _size(640, 480), _sampleCount(0) {}
+        constexpr /*implicit*/ Configuration(): _size(640, 480), _sampleCount(0) {}
 
         /** @brief Window size */
         Vector2i size() const { return _size; }
