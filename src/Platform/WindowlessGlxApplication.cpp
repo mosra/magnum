@@ -39,9 +39,11 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, const Confi
     createContext(configuration);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&): c(nullptr) {
     createContext({});
 }
+#endif
 
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t): c(nullptr) {}
 

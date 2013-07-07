@@ -55,10 +55,12 @@ WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments,
     createContext(configuration);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
     createContext({});
 }
+#endif
 
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);

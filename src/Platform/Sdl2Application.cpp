@@ -54,10 +54,12 @@ Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configur
     createContext(configuration);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
     initialize();
     createContext({});
 }
+#endif
 
 Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): context(nullptr), flags(Flag::Redraw) {
     initialize();

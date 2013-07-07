@@ -38,10 +38,12 @@ GlutApplication::GlutApplication(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
     initialize(arguments.argc, arguments.argv);
     createContext({});
 }
+#endif
 
 GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t): c(nullptr) {
     initialize(arguments.argc, arguments.argv);
