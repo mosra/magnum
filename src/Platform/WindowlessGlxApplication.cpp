@@ -40,7 +40,8 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, const Confi
 }
 
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&): c(nullptr) {
-    createContext({});
+    /* GCC 4.5 can't handle {} here (wtf) */
+    createContext(Configuration());
 }
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
