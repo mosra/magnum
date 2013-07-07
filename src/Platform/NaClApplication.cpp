@@ -56,10 +56,12 @@ NaClApplication::NaClApplication(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
     createContext({});
 }
+#endif
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t)

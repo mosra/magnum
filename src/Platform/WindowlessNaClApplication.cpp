@@ -55,10 +55,12 @@ WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments,
     createContext(configuration);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
     createContext({});
 }
+#endif
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t)

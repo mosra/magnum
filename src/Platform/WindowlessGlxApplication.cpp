@@ -39,10 +39,12 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, const Confi
     createContext(configuration);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&): c(nullptr) {
     /* GCC 4.5 can't handle {} here (wtf) */
     createContext(Configuration());
 }
+#endif
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t)

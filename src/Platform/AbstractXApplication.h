@@ -72,6 +72,7 @@ class AbstractXApplication {
          * @brief Default constructor
          * @param contextHandler OpenGL context handler
          * @param arguments     Application arguments
+         * @param configuration %Configuration
          *
          * Creates application with default or user-specified configuration.
          * See Configuration for more information. The program exits if the
@@ -89,7 +90,6 @@ class AbstractXApplication {
          * @brief Constructor
          * @param contextHandler OpenGL context handler
          * @param arguments     Application arguments
-         * @param configuration Configuration
          *
          * Unlike above, the context is not created and must be created later
          * with createContext() or tryCreateContext().
@@ -200,7 +200,7 @@ class AbstractXApplication::Configuration {
     Configuration& operator=(Configuration&&) = delete;
 
     public:
-        explicit Configuration();
+        /*implicit*/ Configuration();
         ~Configuration();
 
         /** @brief Window title */
