@@ -84,6 +84,13 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
         return;
     }
 
+    /* Check version */
+    if(conf.value<UnsignedInt>("version") != 1) {
+        Error() << "Magnum::Text::MagnumFont::openData(): unsupported file version, expected 1 but got"
+                << conf.value<UnsignedInt>("version");
+        return;
+    }
+
     /* Check that we have also the image file */
     if(conf.value("image") != data[1].first) {
         Error() << "Magnum::Text::MagnumFont::openData(): expected file"
@@ -115,6 +122,13 @@ void MagnumFont::doOpenFile(const std::string& filename, Float) {
         return;
     }
 
+    /* Check version */
+    if(conf.value<UnsignedInt>("version") != 1) {
+        Error() << "Magnum::Text::MagnumFont::openFile(): unsupported file version, expected 1 but got"
+                << conf.value<UnsignedInt>("version");
+        return;
+    }
+
     /* Open and load image file */
     const std::string imageFilename = Utility::Directory::join(Utility::Directory::path(filename), conf.value("image"));
     Trade::TgaImporter importer;
@@ -137,8 +151,11 @@ void MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&
     _opened = new Data{std::move(conf), std::move(image), {}, {}};
     _size = _opened->conf.value<Float>("fontSize");
 
-    /* Set glyph advance array to proper size */
-    _opened->glyphAdvance.resize(_opened->conf.groupCount("glyph"));
+    /* Glyph advances */
+    const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
+    _opened->glyphAdvance.reserve(glyphs.size());
+    for(const Utility::ConfigurationGroup* const g: glyphs)
+        _opened->glyphAdvance.push_back(g->value<Vector2>("advance"));
 
     /* Fill character->glyph map */
     const std::vector<Utility::ConfigurationGroup*> chars = _opened->conf.groups("char");
@@ -151,7 +168,6 @@ void MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&
         #else
         _opened->glyphId.insert({c->value<char32_t>("unicode"), glyphId});
         #endif
-        _opened->glyphAdvance[glyphId] = c->value<Vector2>("advance");
     }
 }
 

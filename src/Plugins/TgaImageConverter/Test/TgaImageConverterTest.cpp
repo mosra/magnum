@@ -68,29 +68,29 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    Image2D image(ImageFormat::RG, ImageType::UnsignedByte, {}, nullptr);
+    ImageReference2D image(ImageFormat::RG, ImageType::UnsignedByte, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
 
-    const auto data = TgaImageConverter().exportToData(&image);
+    const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format ImageFormat::RG\n");
 }
 
 void TgaImageConverterTest::wrongType() {
-    Image2D image(ImageFormat::Red, ImageType::Float, {}, nullptr);
+    ImageReference2D image(ImageFormat::Red, ImageType::Float, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
 
-    const auto data = TgaImageConverter().exportToData(&image);
+    const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type ImageType::Float\n");
 }
 
 void TgaImageConverterTest::data() {
-    const auto data = TgaImageConverter().exportToData(&original);
+    const auto data = TgaImageConverter().exportToData(original);
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.openData(data));
