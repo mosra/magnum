@@ -277,7 +277,14 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
         /* All not-already cleaned objects (...duplicate occurences) should
            have joint mark */
         CORRADE_INTERNAL_ASSERT((*it)->counter = 0xFFFFu || (*it)->flags & Flag::Joint);
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         (*it)->flags &= ~Flag::Joint;
+        #else
+        /* Miscompiled in Release build, causes ICE in Debug build:
+           internal compiler error: in make_decl_rtl, at varasm.c:1318
+           http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43880 */
+        (*it)->flags = (*it)->flags & ~Flag::Joint;
+        #endif
         (*it)->counter = 0xFFFFu;
     }
 
@@ -300,7 +307,13 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
     for(;;) {
         /* Clean visited mark */
         CORRADE_INTERNAL_ASSERT(o->flags & Flag::Visited);
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         o->flags &= ~Flag::Visited;
+        #else
+        /* Miscompiled (the above assertion is triggered later), see above for
+           more information */
+        o->flags = o->flags & ~Flag::Visited;
+        #endif
 
         Object<Transformation>* parent = o->parent();
 
@@ -355,7 +368,13 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 
     /* Cleanup all marks */
     for(auto it = objects.begin(); it != objects.end(); ++it)
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         (*it)->flags &= ~Flag::Visited;
+        #else
+        /* Miscompiled (not all objects are cleaned), see above for more
+           information */
+        (*it)->flags = (*it)->flags & ~Flag::Visited;
+        #endif
 
     /* Compute absolute transformations */
     Scene<Transformation>* scene = objects[0]->scene();
@@ -403,7 +422,13 @@ template<class Transformation> void Object<Transformation>::setClean(const typen
     }
 
     /* Mark object as clean */
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     flags &= ~Flag::Dirty;
+    #else
+    /* Miscompiled (not all objects are cleaned), see above for more
+       information */
+    flags = flags & ~Flag::Dirty;
+    #endif
 }
 
 }}
