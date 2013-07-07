@@ -81,7 +81,13 @@ class MAGNUM_EXPORT AbstractImage {
         std::size_t pixelSize() const { return pixelSize(_format, _type); }
 
     protected:
+        /* GCC > 4.5 needs to have `= default` in class body, otherwise can't
+           use constexpr */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
+        ~AbstractImage() = default;
+        #else
         ~AbstractImage();
+        #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -92,8 +98,10 @@ class MAGNUM_EXPORT AbstractImage {
         ImageType _type;
 };
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
 /* GCC 4.5 doesn't take `= default` as inline */
 inline AbstractImage::~AbstractImage() = default;
+#endif
 
 }
 
