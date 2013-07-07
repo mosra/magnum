@@ -59,7 +59,7 @@ class MAGNUM_EXPORT MeshData2D {
         MeshData2D(const MeshData2D&) = delete;
 
         /** @brief Move constructor */
-        MeshData2D(MeshData2D&& other);
+        MeshData2D(MeshData2D&&);
 
         ~MeshData2D();
 
@@ -67,7 +67,7 @@ class MAGNUM_EXPORT MeshData2D {
         MeshData2D& operator=(const MeshData2D&) = delete;
 
         /** @brief Move assignment */
-        MeshData2D& operator=(MeshData2D&& other);
+        MeshData2D& operator=(MeshData2D&&);
 
         /** @brief Primitive */
         Mesh::Primitive primitive() const { return _primitive; }
