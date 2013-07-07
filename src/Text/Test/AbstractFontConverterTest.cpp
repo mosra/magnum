@@ -72,7 +72,11 @@ void AbstractFontConverterTest::convertGlyphs() {
 
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont*, GlyphCache*, const std::u32string& characters) const override {
                 this->characters = characters;
+                #ifndef CORRADE_GCC45_COMPATIBILITY
                 return nullptr;
+                #else
+                return {};
+                #endif
             }
 
             std::u32string& characters;
