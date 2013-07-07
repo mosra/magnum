@@ -32,7 +32,8 @@ MeshData3D::MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt> indic
     CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData3D: no position array specified", );
 }
 
-MeshData3D::MeshData3D(MeshData3D&&) = default;
+/* GCC 4.4 doesn't like it defaulted */
+MeshData3D::MeshData3D(MeshData3D&& other): _primitive(other._primitive), _indices(std::move(other._indices)), _positions(std::move(other._positions)), _normals(std::move(other._normals)), _textureCoords2D(std::move(other._textureCoords2D)) {}
 
 MeshData3D::~MeshData3D() = default;
 
