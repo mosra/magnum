@@ -98,7 +98,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     /* Save cache image */
     Image2D image(ImageFormat::Red, ImageType::UnsignedByte);
     cache->texture()->image(0, image);
-    auto tgaData = Trade::TgaImageConverter().exportToData(&image);
+    auto tgaData = Trade::TgaImageConverter().exportToData(image);
 
     std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;
     out.emplace_back(filename + ".conf", std::move(confData));

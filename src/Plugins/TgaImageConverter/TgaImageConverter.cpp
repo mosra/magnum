@@ -46,48 +46,48 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager* manager, st
 
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
-Containers::Array<unsigned char> TgaImageConverter::doExportToData(const Image2D* const image) const {
+Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
     #ifndef MAGNUM_TARGET_GLES
-    if(image->format() != ImageFormat::BGR &&
-       image->format() != ImageFormat::BGRA &&
-       image->format() != ImageFormat::Red)
+    if(image.format() != ImageFormat::BGR &&
+       image.format() != ImageFormat::BGRA &&
+       image.format() != ImageFormat::Red)
     #else
-    if(image->format() != ImageFormat::RGB &&
-       image->format() != ImageFormat::RGBA &&
-       image->format() != ImageFormat::Red)
+    if(image.format() != ImageFormat::RGB &&
+       image.format() != ImageFormat::RGBA &&
+       image.format() != ImageFormat::Red)
     #endif
     {
-        Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format" << image->format();
+        Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image format" << image.format();
         return nullptr;
     }
 
-    if(image->type() != ImageType::UnsignedByte) {
-        Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type" << image->type();
+    if(image.type() != ImageType::UnsignedByte) {
+        Error() << "Trade::TgaImageConverter::TgaImageConverter::convertToData(): unsupported image type" << image.type();
         return nullptr;
     }
 
     /* Initialize data buffer */
-    const UnsignedByte pixelSize = image->pixelSize();
-    auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image->size().product());
+    const UnsignedByte pixelSize = image.pixelSize();
+    auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image.size().product());
 
     /* Fill header */
     auto header = reinterpret_cast<TgaHeader*>(data.begin());
-    header->imageType = image->format() == ImageFormat::Red ? 3 : 2;
+    header->imageType = image.format() == ImageFormat::Red ? 3 : 2;
     header->bpp = pixelSize*8;
-    header->width = Utility::Endianness::littleEndian(image->size().x());
-    header->height = Utility::Endianness::littleEndian(image->size().y());
+    header->width = Utility::Endianness::littleEndian(image.size().x());
+    header->height = Utility::Endianness::littleEndian(image.size().y());
 
     /* Fill data */
-    std::copy(image->data(), image->data()+pixelSize*image->size().product(), data.begin()+sizeof(TgaHeader));
+    std::copy(image.data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));
 
     #ifdef MAGNUM_TARGET_GLES
     if(image->format() == ImageFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
-        std::transform(pixels, pixels + image->size().product(), pixels,
+        std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
-    } else if(image->format() == ImageFormat::RGBA) {
+    } else if(image.format() == ImageFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
-        std::transform(pixels, pixels + image->size().product(), pixels,
+        std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
     #endif
