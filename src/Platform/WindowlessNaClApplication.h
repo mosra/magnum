@@ -145,7 +145,7 @@ class WindowlessNaClApplication::Configuration {
     Configuration& operator=(Configuration&&) = delete;
 
     public:
-        constexpr explicit Configuration() {}
+        constexpr /*implicit*/ Configuration() {}
 };
 
 namespace Implementation {
