@@ -94,7 +94,11 @@ class AbstractXApplication {
          * Unlike above, the context is not created and must be created later
          * with createContext() or tryCreateContext().
          */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
+        #else
+        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, void*);
+        #endif
 
         /**
          * @brief Execute main loop

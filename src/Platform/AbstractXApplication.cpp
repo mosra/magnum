@@ -46,7 +46,12 @@ AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, Visu
     createContext({});
 }
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
+#ifndef CORRADE_GCC45_COMPATIBILITY
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t)
+#else
+AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, void*)
+#endif
+    : contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
 void AbstractXApplication::createContext(const Configuration& configuration) {
     CORRADE_ASSERT(!c, "AbstractXApplication::createContext(): context already created", );

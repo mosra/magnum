@@ -61,7 +61,13 @@ NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments
     createContext({});
 }
 
-NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr)  {
+#ifndef CORRADE_GCC45_COMPATIBILITY
+NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t)
+#else
+NaClApplication::NaClApplication(const Arguments& arguments, void*)
+#endif
+    : Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr)
+{
     debugOutput = new ConsoleDebugOutput(this);
 }
 

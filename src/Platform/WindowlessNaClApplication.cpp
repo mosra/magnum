@@ -60,7 +60,13 @@ WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments)
     createContext({});
 }
 
-WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
+#ifndef CORRADE_GCC45_COMPATIBILITY
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t)
+#else
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, void*)
+#endif
+    : Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr)
+{
     debugOutput = new ConsoleDebugOutput(this);
 }
 

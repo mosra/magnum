@@ -100,7 +100,11 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         #endif
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t);
+        #else
+        explicit WindowlessNaClApplication(const Arguments& arguments, void*);
+        #endif
 
         /**
          * @brief Execute application

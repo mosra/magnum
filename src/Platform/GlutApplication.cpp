@@ -43,7 +43,13 @@ GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
     createContext({});
 }
 
-GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t): c(nullptr) {
+#ifndef CORRADE_GCC45_COMPATIBILITY
+GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t)
+#else
+GlutApplication::GlutApplication(const Arguments& arguments, void*)
+#endif
+    : c(nullptr)
+{
     initialize(arguments.argc, arguments.argv);
 }
 

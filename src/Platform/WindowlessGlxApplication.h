@@ -83,7 +83,11 @@ class WindowlessGlxApplication {
         #endif
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t);
+        #else
+        explicit WindowlessGlxApplication(const Arguments& arguments, void*);
+        #endif
 
         /**
          * @brief Execute application

@@ -60,7 +60,12 @@ class XEglApplication: public AbstractXApplication {
         explicit XEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration()): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
-        explicit XEglApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new EglContextHandler, nullptr) {}
+        #ifndef CORRADE_GCC45_COMPATIBILITY
+        explicit XEglApplication(const Arguments& arguments, std::nullptr_t)
+        #else
+        explicit XEglApplication(const Arguments& arguments, void*)
+        #endif
+            : AbstractXApplication(new EglContextHandler, nullptr) {}
 
     protected:
         /* Nobody will need to have (and delete) XEglApplication*, thus this is

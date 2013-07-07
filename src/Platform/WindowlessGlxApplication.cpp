@@ -43,7 +43,12 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&): c(nullptr)
     createContext({});
 }
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t): c(nullptr) {}
+#ifndef CORRADE_GCC45_COMPATIBILITY
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t)
+#else
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, void*)
+#endif
+    : c(nullptr) {}
 
 void WindowlessGlxApplication::createContext(const Configuration&) {
     CORRADE_ASSERT(!c, "WindowlessGlxApplication::createContext(): context already created", );

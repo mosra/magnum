@@ -147,7 +147,11 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         #endif
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit NaClApplication(const Arguments& arguments, std::nullptr_t);
+        #else
+        explicit NaClApplication(const Arguments& arguments, void*);
+        #endif
 
         /** @brief Whether the application runs fullscreen */
         bool isFullscreen();

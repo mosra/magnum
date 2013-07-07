@@ -103,7 +103,11 @@ class GlutApplication {
          * Unlike above, the context is not created and must be created later
          * with createContext() or tryCreateContext().
          */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit GlutApplication(const Arguments& arguments, std::nullptr_t);
+        #else
+        explicit GlutApplication(const Arguments& arguments, void*);
+        #endif
 
         /**
          * @brief Execute main loop

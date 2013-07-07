@@ -90,7 +90,11 @@ class Sdl2Application {
         #endif
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit Sdl2Application(const Arguments& arguments, std::nullptr_t);
+        #else
+        explicit Sdl2Application(const Arguments& arguments, void*);
+        #endif
 
         /** @copydoc GlutApplication::exec() */
         int exec();

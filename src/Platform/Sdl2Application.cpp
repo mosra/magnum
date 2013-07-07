@@ -59,7 +59,13 @@ Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag
     createContext({});
 }
 
-Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): context(nullptr), flags(Flag::Redraw) {
+#ifndef CORRADE_GCC45_COMPATIBILITY
+Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t)
+#else
+Sdl2Application::Sdl2Application(const Arguments&, void*)
+#endif
+    : context(nullptr), flags(Flag::Redraw)
+{
     initialize();
 }
 
