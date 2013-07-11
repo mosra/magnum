@@ -139,6 +139,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      |\hat q|^2 = |\hat q| = 1 + \epsilon 0
          * @f]
          * @see lengthSquared(), normalized()
+         * @todoc Improve the equation as in Quaternion::isNormalized()
          */
         bool isNormalized() const {
             /* Comparing dual part classically, as comparing sqrt() of it would

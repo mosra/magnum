@@ -224,7 +224,7 @@ template<std::size_t size, class T> class Vector {
          * @brief Whether the vector is normalized
          *
          * The vector is normalized if it has unit length: @f[
-         *      |\boldsymbol a|^2 = |\boldsymbol a| = 1
+         *      |\boldsymbol a \cdot \boldsymbol a - 1| < 2 \epsilon + \epsilon^2 \cong 2 \epsilon
          * @f]
          * @see dot(), normalized()
          */

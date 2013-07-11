@@ -133,6 +133,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      |c_0|^2 = |c_0| = 1
          * @f]
          * @see Complex::dot(), normalized()
+         * @todoc Improve the equation as in Complex::isNormalized()
          */
         bool isNormalized() const {
             return Implementation::isNormalizedSquared(lengthSquared());
