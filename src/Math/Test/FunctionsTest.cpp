@@ -166,6 +166,9 @@ void FunctionsTest::lerp() {
     Vector3ub c(0, 128, 64);
     Vector3ub d(16, 0, 32);
     CORRADE_COMPARE(Math::lerp(c, d, 0.25f), Vector3ub(4, 96, 56));
+
+    /* Vector as interpolation phase */
+    CORRADE_COMPARE(Math::lerp(a, b, Vector3(0.25f, 0.5f, 0.75f)), Vector3(0.0f, 0.0f, 9.0f));
 }
 
 void FunctionsTest::fma() {
