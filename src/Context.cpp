@@ -288,7 +288,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         #endif
     }
 
-    return empty;
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 Context* Context::_current = nullptr;
