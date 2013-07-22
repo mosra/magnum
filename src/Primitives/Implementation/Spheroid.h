@@ -1,5 +1,5 @@
-#ifndef Magnum_Primitives_Spheroid_h
-#define Magnum_Primitives_Spheroid_h
+#ifndef Magnum_Primitives_Implementation_Spheroid_h
+#define Magnum_Primitives_Implementation_Spheroid_h
 /*
     This file is part of Magnum.
 
