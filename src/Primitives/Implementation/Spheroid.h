@@ -50,10 +50,10 @@ class Spheroid {
 
         Trade::MeshData3D finalize();
 
+    private:
         UnsignedInt segments;
         TextureCoords textureCoords;
 
-    private:
         std::vector<UnsignedInt> indices;
         std::vector<Vector3> positions;
         std::vector<Vector3> normals;
