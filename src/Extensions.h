@@ -189,7 +189,7 @@ namespace GL {
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346
         /* NV_draw_texture not supported */                           // #430
     }
-    /* IMPORTANT: if this line is > 194 (67 + size), don't forget to update array size in Context.h */
+    /* IMPORTANT: if this line is > 226 (66 + size), don't forget to update array size in Context.h */
     #else
     #line 1
     namespace ANGLE {

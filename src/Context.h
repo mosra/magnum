@@ -366,7 +366,7 @@ class MAGNUM_EXPORT Context {
         Int _minorVersion;
         Flags _flags;
 
-        std::bitset<128> extensionStatus;
+        std::bitset<160> extensionStatus;
         std::vector<Extension> _supportedExtensions;
 
         Implementation::State* _state;
