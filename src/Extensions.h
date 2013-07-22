@@ -161,10 +161,13 @@ namespace GL {
         _extension(GL,ARB,texture_mirror_clamp_to_edge, GL210, GL440) // #149
         _extension(GL,ARB,texture_stencil8,             GL210, GL440) // #150
         _extension(GL,ARB,vertex_type_10f_11f_11f_rev,  GL300, GL440) // #151
+    } namespace ATI {
+        _extension(GL,ATI,texture_mirror_once,          GL210,  None) // #221
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic,   GL210,  None) // #187
         /* EXT_framebuffer_object, EXT_packed_depth_stencil, EXT_framebuffer_blit,
            EXT_framebuffer_multisample replaced with ARB_framebuffer_object */
+        _extension(GL,EXT,texture_mirror_clamp,         GL210,  None) // #298
         _extension(GL,EXT,gpu_shader4,                  GL210, GL300) // #326
         _extension(GL,EXT,packed_float,                 GL210, GL300) // #328
         _extension(GL,EXT,texture_array,                GL210, GL300) // #329

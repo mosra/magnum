@@ -82,7 +82,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,AMD,vertex_shader_layer),             // done
         _extension(GL,AMD,shader_trinary_minmax),           // done
         _extension(GL,ARB,robustness),                      // done
+        _extension(GL,ATI,texture_mirror_once),
         _extension(GL,EXT,texture_filter_anisotropic),      // done
+        _extension(GL,EXT,texture_mirror_clamp),
         _extension(GL,EXT,direct_state_access),
         _extension(GL,GREMEDY,string_marker)};              // done
     static const std::vector<Extension> extensions300{
