@@ -26,6 +26,7 @@
 
 #include "Math/Vector3.h"
 #include "Primitives/Implementation/Spheroid.h"
+#include "Primitives/Implementation/WireframeSpheroid.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
@@ -53,6 +54,19 @@ Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, Textu
     sphere.bottomFaceRing();
     sphere.faceRings(rings-2);
     sphere.topFaceRing();
+
+    return sphere.finalize();
+}
+
+Trade::MeshData3D UVSphere::wireframe(const UnsignedInt rings, const UnsignedInt segments) {
+    CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%2 == 0, "Primitives::UVSphere::wireframe(): improper parameters", Trade::MeshData3D(Mesh::Primitive::Lines, {}, {}, {}, {}));
+
+    Implementation::WireframeSpheroid sphere(segments/4);
+
+    /* Make sphere */
+    sphere.bottomHemisphere(0.0f, rings/2);
+    sphere.ring(0.0f);
+    sphere.topHemisphere(0.0f, rings/2);
 
     return sphere.finalize();
 }

@@ -34,7 +34,8 @@ set(MagnumPrimitives_SRCS
     Square.cpp
     UVSphere.cpp
 
-    Implementation/Spheroid.cpp)
+    Implementation/Spheroid.cpp
+    Implementation/WireframeSpheroid.cpp)
 
 set(MagnumPrimitives_HEADERS
     Capsule.h
