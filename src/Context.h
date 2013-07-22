@@ -59,6 +59,7 @@ enum class Version: Int {
     GL410 = 410,                    /**< @brief OpenGL 4.1, GLSL 4.10 */
     GL420 = 420,                    /**< @brief OpenGL 4.2, GLSL 4.20 */
     GL430 = 430,                    /**< @brief OpenGL 4.3, GLSL 4.30 */
+    GL440 = 440,                    /**< @brief OpenGL 4.4, GLSL 4.40 */
     #endif
 
     /**

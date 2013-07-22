@@ -71,6 +71,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GL410: sources.push_back("#version 410\n"); return;
         case Version::GL420: sources.push_back("#version 420\n"); return;
         case Version::GL430: sources.push_back("#version 430\n"); return;
+        case Version::GL440: sources.push_back("#version 440\n"); return;
         #else
         case Version::GLES200: sources.push_back("#version 100\n"); return;
         case Version::GLES300: sources.push_back("#version 300\n"); return;

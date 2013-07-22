@@ -119,7 +119,7 @@ OpenGL in order to preserve the data. If running on OpenGL ES or extension
 @extension{ARB,invalidate_subdata} is not available, these functions do
 nothing.
 
-@todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
+@todo Support for AMD/ARB's query buffer (@extension{AMD,query_buffer_object}, @extension{ARB,query_buffer_object})
 @todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
  */
 class MAGNUM_EXPORT Buffer {

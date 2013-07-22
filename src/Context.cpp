@@ -61,6 +61,7 @@ Debug operator<<(Debug debug, Version value) {
         _c(GL410, "OpenGL 4.1")
         _c(GL420, "OpenGL 4.2")
         _c(GL430, "OpenGL 4.3")
+        _c(GL440, "OpenGL 4.4")
         #else
         _c(GLES200, "OpenGL ES 2.0")
         _c(GLES300, "OpenGL ES 3.0")
@@ -195,6 +196,15 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_storage_multisample),
         _extension(GL,ARB,texture_view),
         _extension(GL,ARB,vertex_attrib_binding)};
+    static const std::vector<Extension> extensions440{
+        _extension(GL,ARB,buffer_storage),
+        _extension(GL,ARB,clear_texture),
+        _extension(GL,ARB,enhanced_layouts),
+        _extension(GL,ARB,multi_bind),
+        _extension(GL,ARB,query_buffer_object),
+        _extension(GL,ARB,texture_mirror_clamp_to_edge),
+        _extension(GL,ARB,texture_stencil8),
+        _extension(GL,ARB,vertex_type_10f_11f_11f_rev)};
     #undef _extension
     #else
     static const std::vector<Extension> extensions{
@@ -271,6 +281,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         case Version::GL420: return extensions420;
         /* case Version::GLES300: */
         case Version::GL430: return extensions430;
+        case Version::GL440: return extensions440;
         #else
         case Version::GLES200: return empty;
         case Version::GLES300: return extensionsES300;
@@ -322,6 +333,7 @@ Context::Context() {
         Version::GL410,
         Version::GL420,
         Version::GL430,
+        Version::GL440,
         #else
         Version::GLES200,
         Version::GLES300,
