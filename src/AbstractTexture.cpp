@@ -423,6 +423,11 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
             return ImageFormat::DepthComponent;
 
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::StencilIndex8:
+            return ImageFormat::StencilIndex;
+        #endif
+
         case TextureFormat::DepthStencil:
         case TextureFormat::Depth24Stencil8:
         #ifndef MAGNUM_TARGET_GLES2
@@ -603,6 +608,11 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::DepthComponent32F:
             return ImageType::Float;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        case TextureFormat::StencilIndex8:
+            return ImageType::UnsignedByte;
         #endif
 
         case TextureFormat::DepthStencil:

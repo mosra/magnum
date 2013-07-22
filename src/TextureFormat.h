@@ -809,6 +809,15 @@ enum class TextureFormat: GLenum {
     DepthComponent32F = GL_DEPTH_COMPONENT32F,
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * Stencil index, 8bit.
+     * @requires_gl44 %Extension @extension{ARB,texture_stencil8}
+     * @requires_gl Only available as renderbuffer format in OpenGL ES.
+     */
+    StencilIndex8 = GL_STENCIL_INDEX8,
+    #endif
+
     /**
      * Depth and stencil component, size implementation-dependent.
      * @deprecated Prefer to use exactly specified version of this format, e.g.
