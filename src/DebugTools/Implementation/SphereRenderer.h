@@ -39,6 +39,11 @@ template<> class AbstractSphereRenderer<2>: public AbstractShapeRenderer<2> {
         AbstractSphereRenderer();
 };
 
+template<> class AbstractSphereRenderer<3>: public AbstractShapeRenderer<3> {
+    public:
+        AbstractSphereRenderer();
+};
+
 template<UnsignedInt dimensions> class SphereRenderer: public AbstractSphereRenderer<dimensions> {
     public:
         SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>* sphere);

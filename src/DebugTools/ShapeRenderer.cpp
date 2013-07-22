@@ -53,15 +53,15 @@ template<> void createDebugMesh(ShapeRenderer<2>* renderer, const Shapes::Implem
         case Shapes::AbstractShape2D::Type::Point:
             renderer->renderers.push_back(new Implementation::PointRenderer<2>(shape));
             break;
+        case Shapes::AbstractShape2D::Type::Sphere:
+            renderer->renderers.push_back(new Implementation::SphereRenderer<2>(shape));
+            break;
         case Shapes::AbstractShape2D::Type::Composition: {
             const Shapes::Composition2D& composition =
                 static_cast<const Shapes::Implementation::Shape<Shapes::Composition2D>*>(shape)->shape;
             for(std::size_t i = 0; i != composition.size(); ++i)
                 createDebugMesh(renderer, Shapes::Implementation::getAbstractShape(composition, i));
         } break;
-        case Shapes::AbstractShape2D::Type::Sphere:
-            renderer->renderers.push_back(new Implementation::SphereRenderer<2>(shape));
-            break;
         default:
             Warning() << "DebugTools::ShapeRenderer2D::createShapeRenderer(): type" << shape->type() << "not implemented";
     }
@@ -80,6 +80,9 @@ template<> void createDebugMesh(ShapeRenderer<3>* renderer, const Shapes::Implem
             break;
         case Shapes::AbstractShape3D::Type::Point:
             renderer->renderers.push_back(new Implementation::PointRenderer<3>(shape));
+            break;
+        case Shapes::AbstractShape3D::Type::Sphere:
+            renderer->renderers.push_back(new Implementation::SphereRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::Composition: {
             const Shapes::Composition3D& composition =
