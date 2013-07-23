@@ -154,8 +154,8 @@ void MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&
     /* Glyph advances */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
     _opened->glyphAdvance.reserve(glyphs.size());
-    for(const Utility::ConfigurationGroup* const g: glyphs)
-        _opened->glyphAdvance.push_back(g->value<Vector2>("advance"));
+    for(auto it = glyphs.begin(); it != glyphs.end(); ++it)
+        _opened->glyphAdvance.push_back((*it)->value<Vector2>("advance"));
 
     /* Fill character->glyph map */
     const std::vector<Utility::ConfigurationGroup*> chars = _opened->conf.groups("char");
