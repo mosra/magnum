@@ -41,6 +41,10 @@ target_link_libraries(MagnumFont
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_TEXT_LIBRARIES})
 
+if(WIN32)
+    target_link_libraries(MagnumFont TgaImporter)
+endif()
+
 install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
 
 if(BUILD_GL_TESTS)
@@ -49,5 +53,6 @@ if(BUILD_GL_TESTS)
         ${MAGNUM_LIBRARIES}
         ${MAGNUM_TEXT_LIBRARIES}
         TgaImporterTestLib)
+
     add_subdirectory(Test)
 endif()

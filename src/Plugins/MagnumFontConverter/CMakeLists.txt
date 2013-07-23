@@ -41,6 +41,10 @@ target_link_libraries(MagnumFontConverter
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_TEXT_LIBRARIES})
 
+if(WIN32)
+    target_link_libraries(MagnumFontConverter TgaImageConverter)
+endif()
+
 install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
 
 if(BUILD_GL_TESTS)
