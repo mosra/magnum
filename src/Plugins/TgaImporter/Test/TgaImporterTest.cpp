@@ -76,7 +76,7 @@ void TgaImporterTest::openInexistent() {
 
     TgaImporter importer;
     CORRADE_VERIFY(!importer.openFile("inexistent.file"));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::openFile(): cannot open file inexistent.file\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::openFile(): cannot open file inexistent.file\n");
 }
 
 void TgaImporterTest::openShort() {
@@ -87,7 +87,7 @@ void TgaImporterTest::openShort() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): the file is too short: 17 bytes\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): the file is too short: 17 bytes\n");
 }
 
 void TgaImporterTest::paletted() {
@@ -98,7 +98,7 @@ void TgaImporterTest::paletted() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): paletted files are not supported\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): paletted files are not supported\n");
 }
 
 void TgaImporterTest::compressed() {
@@ -109,7 +109,7 @@ void TgaImporterTest::compressed() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): unsupported (compressed?) image type: 9\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported (compressed?) image type: 9\n");
 }
 
 void TgaImporterTest::colorBits16() {
@@ -120,7 +120,7 @@ void TgaImporterTest::colorBits16() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): unsupported color bits-per-pixel: 16\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel: 16\n");
 }
 
 void TgaImporterTest::colorBits24() {
@@ -216,7 +216,7 @@ void TgaImporterTest::grayscaleBits16() {
     std::ostringstream debug;
     Error::setOutput(&debug);
     CORRADE_VERIFY(!importer.image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::TgaImporter::image2D(): unsupported grayscale bits-per-pixel: 16\n");
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel: 16\n");
 }
 
 void TgaImporterTest::file() {
