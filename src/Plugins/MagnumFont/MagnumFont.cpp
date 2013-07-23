@@ -68,7 +68,7 @@ bool MagnumFont::doIsOpened() const { return _opened; }
 void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float) {
     /* We need just the configuration file and image file */
     if(data.size() != 2) {
-        Error() << "Magnum::Text::MagnumFont::openData(): wanted two files, got" << data.size();
+        Error() << "Text::MagnumFont::openData(): wanted two files, got" << data.size();
         return;
     }
 
@@ -76,20 +76,20 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
     std::istringstream in({reinterpret_cast<const char*>(data[0].second.begin()), data[0].second.size()});
     Utility::Configuration conf(in, Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
-        Error() << "Magnum::Text::MagnumFont::openData(): cannot open file" << data[0].first << conf.isValid();
+        Error() << "Text::MagnumFont::openData(): cannot open file" << data[0].first << conf.isValid();
         return;
     }
 
     /* Check version */
     if(conf.value<UnsignedInt>("version") != 1) {
-        Error() << "Magnum::Text::MagnumFont::openData(): unsupported file version, expected 1 but got"
+        Error() << "Text::MagnumFont::openData(): unsupported file version, expected 1 but got"
                 << conf.value<UnsignedInt>("version");
         return;
     }
 
     /* Check that we have also the image file */
     if(conf.value("image") != data[1].first) {
-        Error() << "Magnum::Text::MagnumFont::openData(): expected file"
+        Error() << "Text::MagnumFont::openData(): expected file"
                 << conf.value("image") << "but got" << data[1].first;
         return;
     }
@@ -97,12 +97,12 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
     /* Open and load image file */
     Trade::TgaImporter importer;
     if(!importer.openData(data[1].second)) {
-        Error() << "Magnum::Text::MagnumFont::openData(): cannot open image file";
+        Error() << "Text::MagnumFont::openData(): cannot open image file";
         return;
     }
     Trade::ImageData2D* image = importer.image2D(0);
     if(!image) {
-        Error() << "Magnum::Text::MagnumFont::openData(): cannot load image file";
+        Error() << "Text::MagnumFont::openData(): cannot load image file";
         return;
     }
 
@@ -114,13 +114,13 @@ void MagnumFont::doOpenFile(const std::string& filename, Float) {
     /* Open the configuration file */
     Utility::Configuration conf(filename, Utility::Configuration::Flag::ReadOnly|Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): cannot open file" << filename << conf.isValid();
+        Error() << "Text::MagnumFont::openFile(): cannot open file" << filename << conf.isValid();
         return;
     }
 
     /* Check version */
     if(conf.value<UnsignedInt>("version") != 1) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): unsupported file version, expected 1 but got"
+        Error() << "Text::MagnumFont::openFile(): unsupported file version, expected 1 but got"
                 << conf.value<UnsignedInt>("version");
         return;
     }
@@ -129,12 +129,12 @@ void MagnumFont::doOpenFile(const std::string& filename, Float) {
     const std::string imageFilename = Utility::Directory::join(Utility::Directory::path(filename), conf.value("image"));
     Trade::TgaImporter importer;
     if(!importer.openFile(imageFilename)) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): cannot open image file" << imageFilename;
+        Error() << "Text::MagnumFont::openFile(): cannot open image file" << imageFilename;
         return;
     }
     Trade::ImageData2D* image = importer.image2D(0);
     if(!image) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): cannot load image file";
+        Error() << "Text::MagnumFont::openFile(): cannot load image file";
         return;
     }
 
