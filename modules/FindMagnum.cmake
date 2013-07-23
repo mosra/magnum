@@ -19,6 +19,7 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
+#  Audio            - Audio library (depends on OpenAL library)
 #  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
 #                     SceneGraph, Shaders and Shapes components)
 #  MeshTools        - MeshTools library
@@ -216,6 +217,19 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
+        endif()
+    endif()
+
+    # Audio library
+    if(${component} STREQUAL Audio)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Audio.h)
+
+        find_package(OpenAL)
+        if(OPENAL_FOUND)
+            set(_MAGNUM_${_COMPONENT}_LIBRARIES ${OPENAL_LIBRARY})
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${OPENAL_INCLUDE_DIR})
+        else()
+            unset(MAGNUM_${_COMPONENT}_LIBRARY)
         endif()
     endif()
 

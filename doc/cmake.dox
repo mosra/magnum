@@ -51,6 +51,7 @@ components. The base library depends on %Corrade, OpenGL and GLEW libraries (or
 OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 
+- `%Audio` -- Audio library (depends on OpenAL library)
 - `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
   `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
 - `%MeshTools` -- MeshTools library

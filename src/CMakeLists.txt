@@ -191,6 +191,10 @@ add_subdirectory(Math)
 add_subdirectory(Platform)
 add_subdirectory(Trade)
 
+if(WITH_AUDIO)
+    add_subdirectory(Audio)
+endif()
+
 if(WITH_DEBUGTOOLS)
     add_subdirectory(DebugTools)
 endif()

@@ -96,6 +96,7 @@ By default the engine is built with everything except application libraries (see
 below). Using `WITH_*` CMake parameters you can specify which parts will be built
 and which not:
 
+ - `WITH_AUDIO` - Audio library. Requires **OpenAL** library.
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
    Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
