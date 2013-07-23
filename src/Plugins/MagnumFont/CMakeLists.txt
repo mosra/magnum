@@ -31,7 +31,7 @@ set(MagnumFont_HEADERS
     MagnumFont.h)
 
 add_library(MagnumFontObjects OBJECT ${MagnumFont_SOURCES})
-set_target_properties(MagnumFontObjects PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+set_target_properties(MagnumFontObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_INSTALL_DIR}
     MagnumFont.conf
