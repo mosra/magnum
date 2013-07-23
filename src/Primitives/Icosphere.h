@@ -68,11 +68,11 @@ template<std::size_t subdivisions> class Icosphere {
         /** @brief Constructor */
         explicit Icosphere() {
             for(std::size_t i = 0; i != subdivisions; ++i)
-                MeshTools::subdivide(*indices(), *normals(0), [](const Vector3& a, const Vector3& b) {
+                MeshTools::subdivide(indices(), normals(0), [](const Vector3& a, const Vector3& b) {
                     return (a+b).normalized();
                 });
 
-            MeshTools::removeDuplicates(*indices(), *normals(0));
+            MeshTools::removeDuplicates(indices(), normals(0));
             positions(0)->assign(normals(0)->begin(), normals(0)->end());
         }
 };
