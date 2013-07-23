@@ -27,7 +27,7 @@
 #include <fstream>
 #include <Utility/Assert.h>
 
-#ifdef CORRADE_TARGET_NACL_NEWLIB
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
 #include <sstream>
 #endif
 
@@ -106,7 +106,7 @@ Shader& Shader::operator=(Shader&& other) {
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        #ifdef CORRADE_TARGET_NACL_NEWLIB
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
         std::ostringstream converter;
         converter << (sources.size()+1)/2;
         #endif
@@ -114,7 +114,7 @@ Shader& Shader::addSource(std::string source) {
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
         sources.push_back("#line 1 " +
-            #ifndef CORRADE_TARGET_NACL_NEWLIB
+            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(_WIN32)
             std::to_string((sources.size()+1)/2) +
             #else
             converter.str() +
