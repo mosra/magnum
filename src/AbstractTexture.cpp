@@ -967,9 +967,9 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLin
     image.setData(image.format(), image.type(), size, data);
 }
 
-template void AbstractTexture::image<1>(GLenum, GLint, Image<1>&);
-template void AbstractTexture::image<2>(GLenum, GLint, Image<2>&);
-template void AbstractTexture::image<3>(GLenum, GLint, Image<3>&);
+template void MAGNUM_EXPORT AbstractTexture::image<1>(GLenum, GLint, Image<1>&);
+template void MAGNUM_EXPORT AbstractTexture::image<2>(GLenum, GLint, Image<2>&);
+template void MAGNUM_EXPORT AbstractTexture::image<3>(GLenum, GLint, Image<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLint level, BufferImage<dimensions>& image, Buffer::Usage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(this, target, level);
@@ -981,9 +981,9 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLin
     (this->*getImageImplementation)(target, level, image.format(), image.type(), dataSize, nullptr);
 }
 
-template void AbstractTexture::image<1>(GLenum, GLint, BufferImage<1>&, Buffer::Usage);
-template void AbstractTexture::image<2>(GLenum, GLint, BufferImage<2>&, Buffer::Usage);
-template void AbstractTexture::image<3>(GLenum, GLint, BufferImage<3>&, Buffer::Usage);
+template void MAGNUM_EXPORT AbstractTexture::image<1>(GLenum, GLint, BufferImage<1>&, Buffer::Usage);
+template void MAGNUM_EXPORT AbstractTexture::image<2>(GLenum, GLint, BufferImage<2>&, Buffer::Usage);
+template void MAGNUM_EXPORT AbstractTexture::image<3>(GLenum, GLint, BufferImage<3>&, Buffer::Usage);
 #endif
 #endif
 
