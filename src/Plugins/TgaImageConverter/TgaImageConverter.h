@@ -31,7 +31,7 @@
 #include <Trade/AbstractImageConverter.h>
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifdef TgaImageConverter_EXPORTS
+#if defined(TgaImageConverter_EXPORTS) || defined(TgaImageConverterObjects_EXPORTS)
     #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
     #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_IMPORT

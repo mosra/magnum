@@ -30,7 +30,7 @@ set(TgaImporter_HEADERS
     TgaImporter.h)
 
 add_library(TgaImporterObjects OBJECT ${TgaImporter_SRCS})
-set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR}
     TgaImporter.conf
