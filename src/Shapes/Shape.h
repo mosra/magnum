@@ -65,7 +65,7 @@ Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
 @see @ref scenegraph, ShapeGroup2D, ShapeGroup3D,
     DebugTools::ShapeRenderer
 */
-template<class T> class MAGNUM_SHAPES_EXPORT Shape: public AbstractShape<T::Dimensions> {
+template<class T> class Shape: public AbstractShape<T::Dimensions> {
     friend struct Implementation::ShapeHelper<T>;
 
     public:
