@@ -52,19 +52,31 @@ template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum:
 template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Double>>;
 #endif
 
+/* For some reason mingw's GCC instantiates ConfigurationValue<Magnum::Math::Geometry::Rectangle<...>>
+   (which depends on ConfigurationValue<Magnum::Math::Vector<4, ...>) before
+   these and then loudly complains about multiple definitions. WTF. */
+
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
+#ifndef _WIN32
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
+#endif
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
+#ifndef _WIN32
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
+#endif
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
+#ifndef _WIN32
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
+#endif
 #ifndef MAGNUM_TARGET_GLES
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
+#ifndef _WIN32
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
+#endif
 #endif
 #endif
 
