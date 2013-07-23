@@ -65,7 +65,7 @@ class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         /** @brief Plugin manager constructor */
         explicit TgaImporter(PluginManager::AbstractManager* manager, std::string plugin);
 
-        virtual ~TgaImporter();
+        ~TgaImporter();
 
     private:
         Features MAGNUM_TRADE_TGAIMPORTER_LOCAL doFeatures() const override;
