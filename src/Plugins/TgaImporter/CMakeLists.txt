@@ -41,7 +41,7 @@ target_link_libraries(TgaImporter ${MAGNUM_LIBRARIES})
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
 
 if(BUILD_TESTS)
-    add_library(TgaImporterTestLib $<TARGET_OBJECTS:TgaImporterObjects>)
+    add_library(TgaImporterTestLib SHARED $<TARGET_OBJECTS:TgaImporterObjects>)
     target_link_libraries(TgaImporterTestLib ${MAGNUM_LIBRARIES})
     add_subdirectory(Test)
 endif()

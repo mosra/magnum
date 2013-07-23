@@ -40,7 +40,7 @@ target_link_libraries(TgaImageConverter ${MAGNUM_LIBRARIES})
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 
 if(BUILD_TESTS)
-    add_library(TgaImageConverterTestLib $<TARGET_OBJECTS:TgaImageConverterObjects>)
+    add_library(TgaImageConverterTestLib SHARED $<TARGET_OBJECTS:TgaImageConverterObjects>)
     target_link_libraries(TgaImageConverterTestLib ${MAGNUM_LIBRARIES})
     add_subdirectory(Test)
 endif()

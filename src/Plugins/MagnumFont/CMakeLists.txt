@@ -44,7 +44,7 @@ target_link_libraries(MagnumFont
 install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
 
 if(BUILD_GL_TESTS)
-    add_library(MagnumFontTestLib $<TARGET_OBJECTS:MagnumFontObjects>)
+    add_library(MagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
     target_link_libraries(MagnumFontTestLib
         ${MAGNUM_LIBRARIES}
         ${MAGNUM_TEXT_LIBRARIES}
