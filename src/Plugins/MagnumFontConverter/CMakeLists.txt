@@ -47,6 +47,7 @@ if(BUILD_GL_TESTS)
     add_library(MagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
     target_link_libraries(MagnumFontConverterTestLib
         ${MAGNUM_LIBRARIES}
-        ${MAGNUM_TEXT_LIBRARIES})
+        ${MAGNUM_TEXT_LIBRARIES}
+        TgaImageConverterTestLib)
     add_subdirectory(Test)
 endif()

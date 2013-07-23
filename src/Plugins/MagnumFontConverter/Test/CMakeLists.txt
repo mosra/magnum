@@ -32,6 +32,5 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../FreeTypeFont/Test/
 corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp LIBRARIES
     MagnumFontConverterTestLib
     FreeTypeFontTestLib
-    TgaImageConverterTestLib
     TgaImporterTestLib
     ${GL_TEST_LIBRARIES})
