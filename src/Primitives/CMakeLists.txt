@@ -54,7 +54,7 @@ set(MagnumPrimitives_HEADERS
 add_library(MagnumPrimitives ${SHARED_OR_STATIC} ${MagnumPrimitives_SRCS})
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 target_link_libraries(MagnumPrimitives Magnum)
 

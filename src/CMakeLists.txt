@@ -164,7 +164,7 @@ add_library(Magnum ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 set(Magnum_LIBS
     ${CORRADE_UTILITY_LIBRARY}
