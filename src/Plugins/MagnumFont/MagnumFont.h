@@ -99,6 +99,8 @@ class MagnumFont: public AbstractFont {
         /** @brief Plugin manager constructor */
         explicit MagnumFont(PluginManager::AbstractManager* manager, std::string plugin);
 
+        ~MagnumFont();
+
     private:
         class Data;
 

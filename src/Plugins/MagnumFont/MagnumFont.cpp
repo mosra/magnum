@@ -61,6 +61,8 @@ MagnumFont::MagnumFont(): _opened(nullptr) {}
 
 MagnumFont::MagnumFont(PluginManager::AbstractManager* const manager, std::string plugin): AbstractFont(manager, std::move(plugin)), _opened(nullptr) {}
 
+MagnumFont::~MagnumFont() { close(); }
+
 auto MagnumFont::doFeatures() const -> Features { return Feature::OpenData|Feature::MultiFile|Feature::PreparedGlyphCache; }
 
 bool MagnumFont::doIsOpened() const { return _opened; }
