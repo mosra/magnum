@@ -26,6 +26,6 @@
 
 namespace Magnum { namespace Trade {
 
-PhongMaterialData::PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, Float shininess): AbstractMaterialData(Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
+PhongMaterialData::PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, Float shininess): AbstractMaterialData(Type::Phong), _ambientColor(ambientColor), _diffuseColor(diffuseColor), _specularColor(specularColor), _shininess(shininess) {}
 
 }}

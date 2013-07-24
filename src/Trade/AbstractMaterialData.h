@@ -29,6 +29,7 @@
  */
 
 #include "magnumVisibility.h"
+#include "Types.h"
 
 namespace Magnum { namespace Trade {
 
@@ -45,7 +46,7 @@ class MAGNUM_EXPORT AbstractMaterialData {
 
     public:
         /** @brief Material type */
-        enum Type {
+        enum class Type: UnsignedByte {
             Phong       /**< Phong shading */
         };
 

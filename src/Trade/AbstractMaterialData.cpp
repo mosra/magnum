@@ -26,7 +26,7 @@
 
 namespace Magnum { namespace Trade {
 
-AbstractMaterialData::AbstractMaterialData(AbstractMaterialData::Type type): _type(type) {}
+AbstractMaterialData::AbstractMaterialData(Type type): _type(type) {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
 
