@@ -78,7 +78,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Constructor
          * @param object        Object holding the camera
          */
-        explicit AbstractBasicCamera(AbstractBasicObject<dimensions, T>* object);
+        explicit AbstractBasicCamera(AbstractObject<dimensions, T>* object);
 
         virtual ~AbstractBasicCamera() = 0;
 

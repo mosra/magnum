@@ -154,7 +154,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT BasicAn
          * adds the feature to the object and also to group, if specified.
          * @see setDuration(), setState(), setRepeated(), BasicAnimableGroup::add()
          */
-        explicit BasicAnimable(AbstractBasicObject<dimensions, T>* object, BasicAnimableGroup<dimensions, T>* group = nullptr);
+        explicit BasicAnimable(AbstractObject<dimensions, T>* object, BasicAnimableGroup<dimensions, T>* group = nullptr);
 
         ~BasicAnimable();
 

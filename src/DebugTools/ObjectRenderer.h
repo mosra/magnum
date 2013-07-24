@@ -96,7 +96,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
          *
          * The renderer is automatically added to object's features.
          */
-        explicit ObjectRenderer(SceneGraph::AbstractBasicObject<dimensions, Float>* object, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>* object, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
 
     protected:
         void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;

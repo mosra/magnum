@@ -75,17 +75,17 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
          * @param shape     Shape
          * @param group     Group this shape belongs to
          */
-        explicit Shape(SceneGraph::AbstractBasicObject<T::Dimensions, Float>* object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>* object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
             Implementation::ShapeHelper<T>::set(*this, shape);
         }
 
         /** @overload */
-        explicit Shape(SceneGraph::AbstractBasicObject<T::Dimensions, Float>* object, T&& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>* object, T&& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
             Implementation::ShapeHelper<T>::set(*this, std::move(shape));
         }
 
         /** @overload */
-        explicit Shape(SceneGraph::AbstractBasicObject<T::Dimensions, Float>* object, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {}
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>* object, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {}
 
         /** @brief Shape */
         const T& shape() const { return _shape.shape; }

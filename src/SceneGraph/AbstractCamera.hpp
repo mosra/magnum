@@ -70,7 +70,7 @@ template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T
 
 }
 
-template<UnsignedInt dimensions, class T> AbstractBasicCamera<dimensions, T>::AbstractBasicCamera(AbstractBasicObject<dimensions, T>* object): AbstractBasicFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
+template<UnsignedInt dimensions, class T> AbstractBasicCamera<dimensions, T>::AbstractBasicCamera(AbstractObject<dimensions, T>* object): AbstractBasicFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
     AbstractBasicFeature<dimensions, T>::setCachedTransformations(CachedTransformation::InvertedAbsolute);
 }
 
@@ -88,14 +88,14 @@ template<UnsignedInt dimensions, class T> void AbstractBasicCamera<dimensions, T
 }
 
 template<UnsignedInt dimensions, class T> void AbstractBasicCamera<dimensions, T>::draw(BasicDrawableGroup<dimensions, T>& group) {
-    AbstractBasicObject<dimensions, T>* scene = AbstractBasicFeature<dimensions, T>::object()->scene();
+    AbstractObject<dimensions, T>* scene = AbstractBasicFeature<dimensions, T>::object()->scene();
     CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", );
 
     /* Compute camera matrix */
     AbstractBasicFeature<dimensions, T>::object()->setClean();
 
     /* Compute transformations of all objects in the group relative to the camera */
-    std::vector<AbstractBasicObject<dimensions, T>*> objects(group.size());
+    std::vector<AbstractObject<dimensions, T>*> objects(group.size());
     for(std::size_t i = 0; i != group.size(); ++i)
         objects[i] = group[i]->object();
     std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformations =

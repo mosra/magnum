@@ -126,7 +126,7 @@ template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractBa
          * Adds the feature to the object and also to the group, if specified.
          * Otherwise you can use BasicDrawableGroup::add().
          */
-        explicit BasicDrawable(AbstractBasicObject<dimensions, T>* object, BasicDrawableGroup<dimensions, T>* drawables = nullptr): AbstractBasicGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T>(object, drawables) {}
+        explicit BasicDrawable(AbstractObject<dimensions, T>* object, BasicDrawableGroup<dimensions, T>* drawables = nullptr): AbstractBasicGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera

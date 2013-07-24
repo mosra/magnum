@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractBasicObject, alias Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
+ * @brief Class Magnum::SceneGraph::AbstractObject, alias Magnum::SceneGraph::AbstractBasicObject2D, Magnum::SceneGraph::AbstractBasicObject3D, typedef Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
  */
 
 #include <vector>
@@ -54,15 +54,16 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 }
 @endcode
 
-@see @ref AbstractObject2D, @ref AbstractObject3D
+@see @ref AbstractBasicObject2D, @ref AbstractBasicObject3D,
+    @ref AbstractObject2D, @ref AbstractObject3D
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicObject
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject
     #ifndef DOXYGEN_GENERATING_OUTPUT
     : private Containers::LinkedList<AbstractBasicFeature<dimensions, T>>
     #endif
 {
     friend class Containers::LinkedList<AbstractBasicFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>;
     friend class AbstractBasicFeature<dimensions, T>;
 
     public:
@@ -72,8 +73,8 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /** @brief Feature object type */
         typedef AbstractBasicFeature<dimensions, T> FeatureType;
 
-        explicit AbstractBasicObject();
-        virtual ~AbstractBasicObject();
+        explicit AbstractObject();
+        virtual ~AbstractObject();
 
         /** @brief Whether this object has features */
         bool hasFeatures() const {
@@ -104,10 +105,10 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief %Scene
          * @return %Scene or `nullptr`, if the object is not part of any scene.
          */
-        AbstractBasicObject<dimensions, T>* scene() { return doScene(); }
+        AbstractObject<dimensions, T>* scene() { return doScene(); }
 
         /** @overload */
-        const AbstractBasicObject<dimensions, T>* scene() const { return doScene(); }
+        const AbstractObject<dimensions, T>* scene() const { return doScene(); }
 
         /** @{ @name Object transformation */
 
@@ -138,7 +139,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *      Object type, use typesafe Object::transformationMatrices() when
          *      possible.
          */
-        std::vector<MatrixType> transformationMatrices(const std::vector<AbstractBasicObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
+        std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
             return doTransformationMatrices(objects, initialTransformationMatrix);
         }
 
@@ -157,7 +158,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @warning This function cannot check if all objects are of the same
          *      Object type, use typesafe Object::setClean() when possible.
          */
-        static void setClean(const std::vector<AbstractBasicObject<dimensions, T>*>& objects) {
+        static void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
             if(objects.empty()) return;
             objects.front()->doSetClean(objects);
         }
@@ -203,32 +204,64 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /*@}*/
 
     private:
-        virtual AbstractBasicObject<dimensions, T>* doScene() = 0;
-        virtual const AbstractBasicObject<dimensions, T>* doScene() const = 0;
+        virtual AbstractObject<dimensions, T>* doScene() = 0;
+        virtual const AbstractObject<dimensions, T>* doScene() const = 0;
 
         virtual MatrixType doTransformationMatrix() const = 0;
         virtual MatrixType doAbsoluteTransformationMatrix() const = 0;
-        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractBasicObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const = 0;
+        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const = 0;
 
         virtual bool doIsDirty() const = 0;
         virtual void doSetDirty() = 0;
         virtual void doSetClean() = 0;
-        virtual void doSetClean(const std::vector<AbstractBasicObject<dimensions, T>*>& objects) = 0;
+        virtual void doSetClean(const std::vector<AbstractObject<dimensions, T>*>& objects) = 0;
 };
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Base object for two-dimensional scenes
+
+Convenience alternative to <tt>%AbstractObject<2, T></tt>. See AbstractObject
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
+@see @ref AbstractObject2D, @ref AbstractBasicObject3D
+*/
+template<class T> using AbstractBasicObject2D = AbstractObject<2, T>;
+#endif
 
 /**
 @brief Base object for two-dimensional float scenes
 
 @see @ref AbstractObject3D
 */
-typedef AbstractBasicObject<2, Float> AbstractObject2D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef AbstractBasicObject2D<Float> AbstractObject2D;
+#else
+typedef AbstractObject<2, Float> AbstractObject2D;
+#endif
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Base object for three-dimensional scenes
+
+Convenience alternative to <tt>%AbstractObject<3, T></tt>. See AbstractObject
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
+@see AbstractObject2D
+*/
+template<class T> using AbstractBasicObject3D = AbstractObject<3, T>;
+#endif
 
 /**
 @brief Base object for three-dimensional float scenes
 
 @see @ref AbstractObject2D
 */
-typedef AbstractBasicObject<3, Float> AbstractObject3D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef AbstractBasicObject3D<Float> AbstractObject3D;
+#else
+typedef AbstractObject<3, Float> AbstractObject3D;
+#endif
 
 }}
 

@@ -141,7 +141,7 @@ class TransformingFeature: public SceneGraph::AbstractFeature3D {
 };
 @endcode
 If we take for example @ref Object "Object<MatrixTransformation3D>", it is
-derived from @ref AbstractBasicObject "AbstractObject3D" and
+derived from @ref AbstractObject "AbstractObject3D" and
 @ref BasicMatrixTransformation3D "MatrixTransformation3D", which is derived
 from @ref AbstractBasicTranslationRotationScaling3D "AbstractTranslationRotationScaling3D",
 which is derived from @ref AbstractBasicTranslationRotation3D "AbstractTranslationRotation3D",
@@ -161,11 +161,11 @@ AbstractFeature.hpp implementation file to avoid linker errors. See also
 */
 template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicFeature
 #ifndef DOXYGEN_GENERATING_OUTPUT
-: private Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>
+: private Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>
 #endif
 {
     friend class Containers::LinkedList<AbstractBasicFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>;
     template<class Transformation> friend class Object;
 
     public:
@@ -173,38 +173,38 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit AbstractBasicFeature(AbstractBasicObject<dimensions, T>* object);
+        explicit AbstractBasicFeature(AbstractObject<dimensions, T>* object);
 
         virtual ~AbstractBasicFeature() = 0;
 
         /** @brief %Object holding this feature */
-        AbstractBasicObject<dimensions, T>* object() {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::list();
+        AbstractObject<dimensions, T>* object() {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @overload */
-        const AbstractBasicObject<dimensions, T>* object() const {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::list();
+        const AbstractObject<dimensions, T>* object() const {
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @brief Previous feature or `nullptr`, if this is first feature */
         AbstractBasicFeature<dimensions, T>* previousFeature() {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::previous();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @overload */
         const AbstractBasicFeature<dimensions, T>* previousFeature() const {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::previous();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::previous();
         }
 
         /** @brief Next feature or `nullptr`, if this is last feature */
         AbstractBasicFeature<dimensions, T>* nextFeature() {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::next();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
         /** @overload */
         const AbstractBasicFeature<dimensions, T>* nextFeature() const {
-            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractBasicObject<dimensions, T>>::next();
+            return Containers::LinkedListItem<AbstractBasicFeature<dimensions, T>, AbstractObject<dimensions, T>>::next();
         }
 
         /**

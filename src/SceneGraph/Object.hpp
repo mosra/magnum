@@ -38,8 +38,8 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> AbstractBasicObject<dimensions, T>::AbstractBasicObject() {}
-template<UnsignedInt dimensions, class T> AbstractBasicObject<dimensions, T>::~AbstractBasicObject() {}
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
 
 template<UnsignedInt dimensions, class T> AbstractBasicTransformation<dimensions, T>::AbstractBasicTransformation() {}
 
@@ -160,7 +160,7 @@ template<class Transformation> void Object<Transformation>::setClean() {
     }
 }
 
-template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractBasicObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */
@@ -322,7 +322,7 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
     }
 }
 
-template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<AbstractBasicObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) {
+template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */
