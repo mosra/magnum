@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicAnimableGroup, typedef Magnum::SceneGraph::AnimableGroup2D, Magnum::SceneGraph::AnimableGroup3D
+ * @brief Class Magnum::SceneGraph::AnimableGroup, alias Magnum::SceneGraph::BasicAnimableGroup2D, Magnum::SceneGraph::BasicAnimableGroup3D, typedef Magnum::SceneGraph::AnimableGroup2D, Magnum::SceneGraph::AnimableGroup3D
  */
 
 #include "FeatureGroup.h"
@@ -37,17 +37,18 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Group of animables
 
-See BasicAnimable for more information.
-@see @ref AnimableGroup2D, @ref AnimableGroup3D, @ref scenegraph
+See Animable for more information.
+@see @ref scenegraph, @ref BasicAnimableGroup2D, @ref BasicAnimableGroup3D,
+    @ref AnimableGroup2D, @ref AnimableGroup3D
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT BasicAnimableGroup: public BasicFeatureGroup<dimensions, BasicAnimable<dimensions, T>, T> {
-    friend class BasicAnimable<dimensions, T>;
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public BasicFeatureGroup<dimensions, Animable<dimensions, T>, T> {
+    friend class Animable<dimensions, T>;
 
     public:
         /**
          * @brief Constructor
          */
-        explicit BasicAnimableGroup(): _runningCount(0), wakeUp(false) {}
+        explicit AnimableGroup(): _runningCount(0), wakeUp(false) {}
 
         /**
          * @brief Count of running animations
@@ -71,19 +72,51 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT BasicAn
         bool wakeUp;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Animable group for two-dimensional float scenes
+@brief %Animable group for two-dimensional scenes
+
+Convenience alternative to <tt>%AnimableGroup<2, T></tt>. See Animable for
+more information.
+@note Not available on GCC < 4.7. Use <tt>%AnimableGroup<2, T></tt> instead.
+@see @ref AnimableGroup2D, @ref BasicAnimableGroup3D
+*/
+template<class T> using BasicAnimableGroup2D = AnimableGroup<2, T>;
+#endif
+
+/**
+@brief %Animable group for two-dimensional float scenes
 
 @see @ref AnimableGroup3D
 */
-typedef BasicAnimableGroup<2, Float> AnimableGroup2D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef BasicAnimableGroup2D<Float> AnimableGroup2D;
+#else
+typedef AnimableGroup<2, Float> AnimableGroup2D;
+#endif
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief %Animable group for three-dimensional scenes
+
+Convenience alternative to <tt>%AnimableGroup<3, T></tt>. See Animable for
+more information.
+@note Not available on GCC < 4.7. Use <tt>%AnimableGroup<3, T></tt> instead.
+@see @ref AnimableGroup3D, @ref BasicAnimableGroup2D
+*/
+template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
+#endif
 
 /**
-@brief Animable group for three-dimensional float scenes
+@brief %Animable group for three-dimensional float scenes
 
 @see @ref AnimableGroup2D
 */
-typedef BasicAnimableGroup<3, Float> AnimableGroup3D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef BasicAnimableGroup3D<Float> AnimableGroup3D;
+#else
+typedef AnimableGroup<3, Float> AnimableGroup3D;
+#endif
 
 }}
 

@@ -35,11 +35,11 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> BasicAnimable<dimensions, T>::BasicAnimable(AbstractObject<dimensions, T>* object, BasicAnimableGroup<dimensions, T>* group): AbstractBasicGroupedFeature<dimensions, BasicAnimable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<Float>::infinity()), pauseTime(-std::numeric_limits<Float>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
+template<UnsignedInt dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group): AbstractBasicGroupedFeature<dimensions, Animable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<Float>::infinity()), pauseTime(-std::numeric_limits<Float>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
 
-template<UnsignedInt dimensions, class T> BasicAnimable<dimensions, T>::~BasicAnimable() {}
+template<UnsignedInt dimensions, class T> Animable<dimensions, T>::~Animable() {}
 
-template<UnsignedInt dimensions, class T> BasicAnimable<dimensions, T>* BasicAnimable<dimensions, T>::setState(AnimationState state) {
+template<UnsignedInt dimensions, class T> Animable<dimensions, T>* Animable<dimensions, T>::setState(AnimationState state) {
     if(currentState == state) return this;
 
     /* Not allowed (for sanity) */
@@ -52,20 +52,20 @@ template<UnsignedInt dimensions, class T> BasicAnimable<dimensions, T>* BasicAni
     return this;
 }
 
-template<UnsignedInt dimensions, class T> BasicAnimableGroup<dimensions, T>* BasicAnimable<dimensions, T>::group() {
-    return static_cast<BasicAnimableGroup<dimensions, T>*>(AbstractBasicGroupedFeature<dimensions, BasicAnimable<dimensions, T>, T>::group());
+template<UnsignedInt dimensions, class T> AnimableGroup<dimensions, T>* Animable<dimensions, T>::group() {
+    return static_cast<AnimableGroup<dimensions, T>*>(AbstractBasicGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
 }
 
-template<UnsignedInt dimensions, class T> const BasicAnimableGroup<dimensions, T>* BasicAnimable<dimensions, T>::group() const {
-    return static_cast<const BasicAnimableGroup<dimensions, T>*>(AbstractBasicGroupedFeature<dimensions, BasicAnimable<dimensions, T>, T>::group());
+template<UnsignedInt dimensions, class T> const AnimableGroup<dimensions, T>* Animable<dimensions, T>::group() const {
+    return static_cast<const AnimableGroup<dimensions, T>*>(AbstractBasicGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
 }
 
-template<UnsignedInt dimensions, class T> void BasicAnimableGroup<dimensions, T>::step(const Float time, const Float delta) {
+template<UnsignedInt dimensions, class T> void AnimableGroup<dimensions, T>::step(const Float time, const Float delta) {
     if(!_runningCount && !wakeUp) return;
     wakeUp = false;
 
     for(std::size_t i = 0; i != this->size(); ++i) {
-        BasicAnimable<dimensions, T>* animable = (*this)[i];
+        Animable<dimensions, T>* animable = (*this)[i];
 
         /* The animation was stopped recently, just decrease count of running
            animations if the animation was running before */
@@ -126,9 +126,9 @@ template<UnsignedInt dimensions, class T> void BasicAnimableGroup<dimensions, T>
 
         /* Animation is still running, perform animation step */
         CORRADE_ASSERT(time-animable->startTime >= 0.0f,
-            "SceneGraph::BasicAnimableGroup::step(): animation was started in future - probably wrong time passed", );
+            "SceneGraph::AnimableGroup::step(): animation was started in future - probably wrong time passed", );
         CORRADE_ASSERT(delta >= 0.0f,
-            "SceneGraph::BasicAnimableGroup::step(): negative delta passed", );
+            "SceneGraph::AnimableGroup::step(): negative delta passed", );
         animable->animationStep(time - animable->startTime, delta);
     }
 

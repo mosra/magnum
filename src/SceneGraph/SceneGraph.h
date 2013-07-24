@@ -85,15 +85,29 @@ template<class> class AbstractBasicTranslationRotationScaling3D;
 typedef AbstractBasicTranslationRotationScaling2D<Float> AbstractTranslationRotationScaling2D;
 typedef AbstractBasicTranslationRotationScaling3D<Float> AbstractTranslationRotationScaling3D;
 
-template<UnsignedInt, class> class BasicAnimable;
-typedef BasicAnimable<2, Float> Animable2D;
-typedef BasicAnimable<3, Float> Animable3D;
+template<UnsignedInt, class> class Animable;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T> using BasicAnimable2D = Animable<2, T>;
+template<class T> using BasicAnimable3D = Animable<3, T>;
+typedef BasicAnimable2D<Float> Animable2D;
+typedef BasicAnimable3D<Float> Animable3D;
+#else
+typedef Animable<2, Float> Animable2D;
+typedef Animable<3, Float> Animable3D;
+#endif
 
 enum class AnimationState: UnsignedByte;
 
-template<UnsignedInt, class> class BasicAnimableGroup;
-typedef BasicAnimableGroup<2, Float> AnimableGroup2D;
-typedef BasicAnimableGroup<3, Float> AnimableGroup3D;
+template<UnsignedInt, class> class AnimableGroup;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T> using BasicAnimableGroup2D = AnimableGroup<2, T>;
+template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
+typedef BasicAnimableGroup2D<Float> AnimableGroup2D;
+typedef BasicAnimableGroup3D<Float> AnimableGroup3D;
+#else
+typedef AnimableGroup<2, Float> AnimableGroup2D;
+typedef AnimableGroup<3, Float> AnimableGroup3D;
+#endif
 
 template<class> class BasicCamera2D;
 template<class> class BasicCamera3D;
