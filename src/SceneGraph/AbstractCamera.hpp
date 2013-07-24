@@ -72,7 +72,7 @@ template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::Abstrac
     AbstractFeature<dimensions, T>::setCachedTransformations(CachedTransformation::InvertedAbsolute);
 }
 
-template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() {}
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() = default;
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>* AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;

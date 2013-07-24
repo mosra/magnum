@@ -76,14 +76,6 @@ relevant sections in
 */
 template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
-        /**
-         * @brief Constructor
-         * @param object        Object holding the camera
-         */
-        explicit AbstractCamera(AbstractObject<dimensions, T>* object);
-
-        virtual ~AbstractCamera() = 0;
-
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
 
@@ -143,6 +135,14 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         virtual void draw(DrawableGroup<dimensions, T>& group);
 
     protected:
+        /**
+         * @brief Constructor
+         * @param object        Object holding the camera
+         */
+        explicit AbstractCamera(AbstractObject<dimensions, T>* object);
+
+        ~AbstractCamera();
+
         /** Recalculates camera matrix */
         void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix) override {
             _cameraMatrix = invertedAbsoluteTransformationMatrix;
