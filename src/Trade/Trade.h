@@ -52,8 +52,8 @@ class MeshObjectData3D;
 class ObjectData2D;
 class ObjectData3D;
 class PhongMaterialData;
-class SceneData;
 class TextureData;
+class SceneData;
 #endif
 
 }}
