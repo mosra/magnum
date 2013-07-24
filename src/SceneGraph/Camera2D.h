@@ -1,5 +1,5 @@
-#ifndef Magnum_SceneGraph_BasicCamera2D_h
-#define Magnum_SceneGraph_BasicCamera2D_h
+#ifndef Magnum_SceneGraph_Camera2D_h
+#define Magnum_SceneGraph_Camera2D_h
 /*
     This file is part of Magnum.
 
@@ -39,7 +39,7 @@ See Drawable documentation for introduction. The camera by default displays
 OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect ratio
 correction. Common setup example:
 @code
-SceneGraph::BasicCamera2D* camera = new SceneGraph::BasicCamera2D(&cameraObject);
+SceneGraph::Camera2D* camera = new SceneGraph::Camera2D(&cameraObject);
 camera->setProjection({4.0f/3.0f, 1.0f})
       ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
@@ -47,15 +47,16 @@ camera->setProjection({4.0f/3.0f, 1.0f})
 @section Camera2D-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using Double type) you have to use
-BasicCamera2D.hpp implementation file to avoid linker errors. See
-@ref compilation-speedup-hpp for more information.
+For other specializations (e.g. using Double type) you have to use Camera2D.hpp
+implementation file to avoid linker errors. See @ref compilation-speedup-hpp
+for more information.
 
  - @ref BasicCamera2D "BasicCamera2D<Float>"
 
-@see @ref Camera2D, @ref scenegraph, @ref BasicCamera3D, @ref BasicDrawable, @ref BasicDrawableGroup
+@see @ref scenegraph, @ref Camera2D, @ref BasicCamera3D, @ref Drawable,
+    @ref DrawableGroup
 */
-template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractBasicCamera<2, T> {
+template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractCamera<2, T> {
     public:
         /**
          * @brief Constructor
@@ -78,7 +79,7 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractB
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         BasicCamera2D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractBasicCamera<2, T>::setAspectRatioPolicy(policy);
+            AbstractCamera<2, T>::setAspectRatioPolicy(policy);
             return this;
         }
         #endif

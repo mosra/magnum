@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicDrawable, Magnum::SceneGraph::BasicDrawableGroup, typedef Magnum::SceneGraph::Drawable2D, Magnum::SceneGraph::Drawable3D, Magnum::SceneGraph::DrawableGroup2D, Magnum::SceneGraph::DrawableGroup3D
+ * @brief Class Magnum::SceneGraph::Drawable, Magnum::SceneGraph::DrawableGroup, alias Magnum::SceneGraph::BasicDrawable2D, Magnum::SceneGraph::BasicDrawable3D, Magnum::SceneGraph::BasicDrawableGroup2D, Magnum::SceneGraph::BasicDrawableGroup3D, typedef Magnum::SceneGraph::Drawable2D, Magnum::SceneGraph::Drawable3D, Magnum::SceneGraph::DrawableGroup2D, Magnum::SceneGraph::DrawableGroup3D
  */
 
 #include "AbstractGroupedFeature.h"
@@ -35,7 +35,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Drawable
 
-Adds drawing function to the object. Each Drawable is part of some DrawableGroup
+Adds drawing function to the object. Each %Drawable is part of some DrawableGroup
 and the whole group is drawn with particular camera using AbstractCamera::draw().
 
 @section Drawable-usage Usage
@@ -60,8 +60,8 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
 @endcode
 
 Then you add these objects to your scene and some drawable group and transform
-them as you like. You can also use BasicDrawableGroup::add() and
-BasicDrawableGroup::remove().
+them as you like. You can also use DrawableGroup::add() and
+DrawableGroup::remove().
 @code
 Scene3D scene;
 SceneGraph::DrawableGroup3D drawables;
@@ -78,7 +78,7 @@ The last thing you need is Camera attached to some object (thus using its
 transformation) and with it you can perform drawing in your draw event
 implementation. See Camera2D and Camera3D documentation for more information.
 @code
-Camera3D<> camera(&cameraObject);
+Camera3D camera(&cameraObject);
 
 void MyApplication::drawEvent() {
     camera.draw(drawables);
@@ -114,9 +114,10 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-@see Drawable2D, Drawable3D, @ref scenegraph, DrawableGroup2D, DrawableGroup3D
+@see @ref scenegraph, @ref BasicDrawable2D, @ref BasicDrawable3D,
+    @ref Drawable2D, @ref Drawable3D, @ref DrawableGroup
 */
-template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T> {
+template<UnsignedInt dimensions, class T> class Drawable: public AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T> {
     public:
         /**
          * @brief Constructor
@@ -124,9 +125,9 @@ template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractGr
          * @param drawables Group this drawable belongs to
          *
          * Adds the feature to the object and also to the group, if specified.
-         * Otherwise you can use BasicDrawableGroup::add().
+         * Otherwise you can use DrawableGroup::add().
          */
-        explicit BasicDrawable(AbstractObject<dimensions, T>* object, BasicDrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T>(object, drawables) {}
+        explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera
@@ -136,48 +137,113 @@ template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractGr
          *
          * Projection matrix can be retrieved from AbstractCamera::projectionMatrix().
          */
-        virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractBasicCamera<dimensions, T>* camera) = 0;
+        virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>* camera) = 0;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Two-dimensional drawable for float scenes
+@brief %Drawable for two-dimensional scenes
 
-@see Drawable3D
+Convenience alternative to <tt>%Drawable<2, T></tt>. See Drawable for more
+information.
+@note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
+@see @ref Drawable2D, @ref BasicDrawable3D
 */
-typedef BasicDrawable<2, Float> Drawable2D;
+template<class T> using BasicDrawable2D = Drawable<2, T>;
+#endif
 
 /**
-@brief Three-dimensional drawable for float scenes
+@brief %Drawable for two-dimensional float scenes
 
-@see Drawable2D
+@see @ref Drawable3D
 */
-typedef BasicDrawable<3, Float> Drawable3D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef BasicDrawable2D<Float> Drawable2D;
+#else
+typedef Drawable<2, Float> Drawable2D;
+#endif
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief %Drawable for three-dimensional scenes
+
+Convenience alternative to <tt>%Drawable<3, T></tt>. See Drawable for more
+information.
+@note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
+@see @ref Drawable3D, @ref BasicDrawable3D
+*/
+template<class T> using BasicDrawable3D = Drawable<3, T>;
+#endif
+
+/**
+@brief %Drawable for three-dimensional float scenes
+
+@see @ref Drawable2D
+*/
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef BasicDrawable3D<Float> Drawable3D;
+#else
+typedef Drawable<3, Float> Drawable3D;
+#endif
 
 /**
 @brief Group of drawables
 
-See Drawable for more information.
-@see @ref scenegraph, DrawableGroup2D, DrawableGroup3D
+See @ref Drawable for more information.
+@see @ref scenegraph, @ref BasicDrawableGroup2D, @ref BasicDrawableGroup3D,
+    @ref DrawableGroup2D, @ref DrawableGroup3D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<UnsignedInt dimensions, class T> using BasicDrawableGroup = FeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
+template<UnsignedInt dimensions, class T> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
 #else
-template<UnsignedInt dimensions, class T> class BasicDrawableGroup: public FeatureGroup<dimensions, BasicDrawable<dimensions, T>, T> {};
+template<UnsignedInt dimensions, class T> class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
+#endif
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Group of drawables for two-dimensional scenes
+
+Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See Drawable for
+more information.
+@note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
+@see @ref DrawableGroup2D, @ref BasicDrawableGroup3D
+*/
+template<class T> using BasicDrawableGroup2D = DrawableGroup<2, T>;
 #endif
 
 /**
-@brief Group of two-dimensional drawables for float scenes
+@brief Group of drawables for two-dimensional float scenes
 
-@see DrawableGroup3D
+@see @ref DrawableGroup3D
 */
-typedef BasicDrawableGroup<2, Float> DrawableGroup2D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef BasicDrawableGroup2D<Float> DrawableGroup2D;
+#else
+typedef DrawableGroup<2, Float> DrawableGroup2D;
+#endif
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Group of drawables for three-dimensional scenes
+
+Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See Drawable for
+more information.
+@note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
+@see @ref DrawableGroup3D, @ref BasicDrawableGroup2D
+*/
+template<class T> using BasicDrawableGroup3D = DrawableGroup<3, T>;
+#endif
 
 /**
-@brief Group of three-dimensional drawables for float scenes
+@brief Group of drawables for three-dimensional float scenes
 
-@see DrawableGroup2D
+@see @ref DrawableGroup2D
 */
-typedef BasicDrawableGroup<3, Float> DrawableGroup3D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef BasicDrawableGroup3D<Float> DrawableGroup3D;
+#else
+typedef DrawableGroup<3, Float> DrawableGroup3D;
+#endif
 
 }}
 

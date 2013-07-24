@@ -47,8 +47,8 @@ template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<3, Float>;
 
-template class AbstractBasicCamera<2, Float>;
-template class AbstractBasicCamera<3, Float>;
+template class AbstractCamera<2, Float>;
+template class AbstractCamera<3, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D<Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D<Float>;
 

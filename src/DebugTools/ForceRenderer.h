@@ -101,7 +101,7 @@ new DebugTools::ForceRenderer2D(object, {0.3f, 1.5f, -0.7f}, &force, "my", debug
 
 @see ForceRenderer2D, ForceRenderer3D
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::BasicDrawable<dimensions, Float> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor
@@ -117,10 +117,10 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          * saved as reference to original vector and thus it must be available
          * for the whole lifetime of the renderer.
          */
-        explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 
     protected:
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
 
     private:
         const typename DimensionTraits<dimensions, Float>::VectorType forcePosition;

@@ -70,24 +70,24 @@ template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T
 
 }
 
-template<UnsignedInt dimensions, class T> AbstractBasicCamera<dimensions, T>::AbstractBasicCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::AbstractCamera(AbstractObject<dimensions, T>* object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
     AbstractFeature<dimensions, T>::setCachedTransformations(CachedTransformation::InvertedAbsolute);
 }
 
-template<UnsignedInt dimensions, class T> AbstractBasicCamera<dimensions, T>::~AbstractBasicCamera() {}
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() {}
 
-template<UnsignedInt dimensions, class T> AbstractBasicCamera<dimensions, T>* AbstractBasicCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>* AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;
     fixAspectRatio();
     return this;
 }
 
-template<UnsignedInt dimensions, class T> void AbstractBasicCamera<dimensions, T>::setViewport(const Vector2i& size) {
+template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::setViewport(const Vector2i& size) {
     _viewport = size;
     fixAspectRatio();
 }
 
-template<UnsignedInt dimensions, class T> void AbstractBasicCamera<dimensions, T>::draw(BasicDrawableGroup<dimensions, T>& group) {
+template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::draw(DrawableGroup<dimensions, T>& group) {
     AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object()->scene();
     CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", );
 

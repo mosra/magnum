@@ -38,9 +38,16 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 enum class AspectRatioPolicy: UnsignedByte;
 
-template<UnsignedInt, class> class AbstractBasicCamera;
-typedef AbstractBasicCamera<2, Float> AbstractCamera2D;
-typedef AbstractBasicCamera<3, Float> AbstractCamera3D;
+template<UnsignedInt, class> class AbstractCamera;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T> using AbstractBasicCamera2D = AbstractCamera<2, T>;
+template<class T> using AbstractBasicCamera3D = AbstractCamera<3, T>;
+typedef AbstractBasicCamera2D<Float> AbstractCamera2D;
+typedef AbstractBasicCamera3D<Float> AbstractCamera3D;
+#else
+typedef AbstractCamera<2, Float> AbstractCamera2D;
+typedef AbstractCamera<3, Float> AbstractCamera3D;
+#endif
 
 /* Enum CachedTransformation and CachedTransformations used only directly */
 
@@ -128,9 +135,13 @@ template<class> class BasicCamera3D;
 typedef BasicCamera2D<Float> Camera2D;
 typedef BasicCamera3D<Float> Camera3D;
 
-template<UnsignedInt, class> class BasicDrawable;
-typedef BasicDrawable<2, Float> Drawable2D;
-typedef BasicDrawable<3, Float> Drawable3D;
+template<UnsignedInt, class> class Drawable;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T> using BasicDrawable2D = Drawable<2, T>;
+template<class T> using BasicDrawable3D = Drawable<3, T>;
+typedef BasicDrawable2D<Float> Drawable2D;
+typedef BasicDrawable3D<Float> Drawable3D;
+#endif
 
 template<class> class BasicDualComplexTransformation;
 template<class> class BasicDualQuaternionTransformation;
@@ -146,12 +157,16 @@ template<class Feature> using FeatureGroup3D = BasicFeatureGroup3D<Feature, Floa
 #endif
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<UnsignedInt dimensions, class T> using BasicDrawableGroup = FeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
+template<UnsignedInt dimensions, class T> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
+template<class T> using BasicDrawableGroup2D = DrawableGroup<2, T>;
+template<class T> using BasicDrawableGroup3D = DrawableGroup<3, T>;
+typedef BasicDrawableGroup2D<Float> DrawableGroup2D;
+typedef BasicDrawableGroup3D<Float> DrawableGroup3D;
 #else
-template<UnsignedInt, class> class BasicDrawableGroup;
+template<UnsignedInt, class> class DrawableGroup;
+typedef DrawableGroup<2, Float> DrawableGroup2D;
+typedef DrawableGroup<3, Float> DrawableGroup3D;
 #endif
-typedef BasicDrawableGroup<2, Float> DrawableGroup2D;
-typedef BasicDrawableGroup<3, Float> DrawableGroup3D;
 
 template<class> class BasicMatrixTransformation2D;
 template<class> class BasicMatrixTransformation3D;

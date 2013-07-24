@@ -44,7 +44,7 @@ See Drawable documentation for introduction. The camera by default displays
 OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` with orthographic projection and
 doesn't do any aspect ratio correction. Common setup example:
 @code
-SceneGraph::BasicCamera3D* camera = new SceneGraph::BasicCamera3D(&cameraObject);
+SceneGraph::Camera3D* camera = new SceneGraph::Camera3D(&cameraObject);
 camera->setPerspective({}, 0.001f, 100.0f)
       ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
@@ -52,15 +52,16 @@ camera->setPerspective({}, 0.001f, 100.0f)
 @section Camera3D-explicit-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using Double type) you have to use
-BasicCamera3D.hpp implementation file to avoid linker errors. See
-@ref compilation-speedup-hpp for more information.
+For other specializations (e.g. using Double type) you have to use Camera3D.hpp
+implementation file to avoid linker errors. See @ref compilation-speedup-hpp
+for more information.
 
  - @ref BasicCamera3D "BasicCamera3D<Float>"
 
-@see @ref Camera3D, @ref scenegraph, @ref BasicCamera2D, @ref BasicDrawable, @ref BasicDrawableGroup
+@see @ref scenegraph, @ref Camera3D, @ref BasicCamera2D, @ref Drawable,
+    @ref DrawableGroup
 */
-template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractBasicCamera<3, T> {
+template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractCamera<3, T> {
     public:
         /**
          * @brief Constructor
@@ -111,7 +112,7 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractB
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         BasicCamera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractBasicCamera<3, T>::setAspectRatioPolicy(policy);
+            AbstractCamera<3, T>::setAspectRatioPolicy(policy);
             return this;
         }
         #endif

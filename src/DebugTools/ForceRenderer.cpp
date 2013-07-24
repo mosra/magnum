@@ -64,7 +64,7 @@ const std::array<UnsignedByte, 6> indices{{
 
 }
 
-template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(object, drawables), forcePosition(forcePosition), force(force), options(ResourceManager::instance()->get<ForceRendererOptions>(options)) {
+template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), forcePosition(forcePosition), force(force), options(ResourceManager::instance()->get<ForceRendererOptions>(options)) {
     /* Shader */
     shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
     if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::Flat<dimensions>);
@@ -94,7 +94,7 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
+template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) {
     shader->setTransformationProjectionMatrix(camera->projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), *force)*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->scale())))
         ->setColor(options->color())
         ->use();

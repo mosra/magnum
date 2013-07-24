@@ -138,7 +138,7 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 
 @see ShapeRenderer2D, ShapeRenderer3D
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::BasicDrawable<dimensions, Float> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions, Float> {
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, const Shapes::Implementation::AbstractShape<dimensions>*);
 
     public:
@@ -154,13 +154,13 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
          * @p shape must be available for the whole lifetime of the renderer
          * and if it is group, it must not change its internal structure.
          */
-        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 
         ~ShapeRenderer();
 
     protected:
         /** @todoc Remove Float when Doxygen properly treats this as override */
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
 
     private:
         Resource<ShapeRendererOptions> options;

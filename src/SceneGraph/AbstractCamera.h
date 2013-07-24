@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractBasicCamera, enum Magnum::SceneGraph::AspectRatioPolicy, typedef Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
+ * @brief Class Magnum::SceneGraph::AbstractCamera, enum Magnum::SceneGraph::AspectRatioPolicy, alias Magnum::SceneGraph::AbstractBasicCamera2D, Magnum::SceneGraph::AbstractBasicCamera3D, typedef Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
  */
 
 #include "Math/Matrix3.h"
@@ -39,7 +39,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera aspect ratio policy
 
-@see AbstractBasicCamera::setAspectRatioPolicy()
+@see AbstractCamera::setAspectRatioPolicy()
 */
 enum class AspectRatioPolicy: UnsignedByte {
     NotPreserved,   /**< Don't preserve aspect ratio (default) */
@@ -55,7 +55,8 @@ namespace Implementation {
 @brief Base for cameras
 
 See Drawable documentation for more information. This class is not directly
-instantiatable, use Camera2D or Camera3D subclasses instead.
+instantiatable, use @ref BasicCamera2D or @ref BasicCamera3D subclasses
+instead.
 
 @section AbstractCamera-explicit-specializations Explicit template specializations
 
@@ -67,20 +68,21 @@ relevant sections in
 @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractBasicCamera "AbstractBasicCamera<2, Float>"
- - @ref AbstractBasicCamera "AbstractBasicCamera<3, Float>"
+ - @ref AbstractCamera "AbstractCamera<2, Float>"
+ - @ref AbstractCamera "AbstractCamera<3, Float>"
 
-@see AbstractCamera2D, AbstractCamera3D, @ref scenegraph, Drawable, DrawableGroup
+@see @ref scenegraph, @ref AbstractBasicCamera2D, @ref AbstractBasicCamera3D,
+    @ref Drawable, @ref DrawableGroup
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicCamera: public AbstractFeature<dimensions, T> {
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
         /**
          * @brief Constructor
          * @param object        Object holding the camera
          */
-        explicit AbstractBasicCamera(AbstractObject<dimensions, T>* object);
+        explicit AbstractCamera(AbstractObject<dimensions, T>* object);
 
-        virtual ~AbstractBasicCamera() = 0;
+        virtual ~AbstractCamera() = 0;
 
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
@@ -89,7 +91,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Set aspect ratio policy
          * @return Pointer to self (for method chaining)
          */
-        AbstractBasicCamera<dimensions, T>* setAspectRatioPolicy(AspectRatioPolicy policy);
+        AbstractCamera<dimensions, T>* setAspectRatioPolicy(AspectRatioPolicy policy);
 
         /**
          * @brief Camera matrix
@@ -138,7 +140,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *
          * Draws given group of drawables.
          */
-        virtual void draw(BasicDrawableGroup<dimensions, T>& group);
+        virtual void draw(DrawableGroup<dimensions, T>& group);
 
     protected:
         /** Recalculates camera matrix */
@@ -162,19 +164,51 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         Vector2i _viewport;
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Base camera for two-dimensional scenes
+
+Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See AbstractCamera
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
+@see @ref AbstractCamera2D, @ref AbstractBasicCamera3D
+*/
+template<class T> using AbstractBasicCamera2D = AbstractCamera<2, T>;
+#endif
+
 /**
 @brief Base camera for two-dimensional float scenes
 
-@see AbstractCamera3D
+@see @ref AbstractCamera3D
 */
-typedef AbstractBasicCamera<2, Float> AbstractCamera2D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef AbstractBasicCamera2D<Float> AbstractCamera2D;
+#else
+typedef AbstractCamera<2, Float> AbstractCamera2D;
+#endif
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Base camera for three-dimensional scenes
+
+Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See AbstractCamera
+for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
+@see @ref AbstractCamera3D, @ref AbstractBasicCamera2D
+*/
+template<class T> using AbstractBasicCamera3D = AbstractCamera<3, T>;
+#endif
 
 /**
 @brief Base camera for three-dimensional float scenes
 
-@see AbstractBasicCamera2D
+@see @ref AbstractCamera2D
 */
-typedef AbstractBasicCamera<3, Float> AbstractCamera3D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef AbstractBasicCamera3D<Float> AbstractCamera3D;
+#else
+typedef AbstractCamera<3, Float> AbstractCamera3D;
+#endif
 
 }}
 
