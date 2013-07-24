@@ -107,20 +107,6 @@ class MAGNUM_EXPORT AbstractTexture {
          */
         static Int maxSupportedLayerCount();
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        explicit AbstractTexture(GLenum target): _target(target) {
-            glGenTextures(1, &_id);
-        }
-        #endif
-
-        /**
-         * @brief Destructor
-         *
-         * Deletes assigned OpenGL texture.
-         * @see @fn_gl{DeleteTextures}
-         */
-        virtual ~AbstractTexture() = 0;
-
         /** @brief Copying is not allowed */
         AbstractTexture(const AbstractTexture&) = delete;
 
@@ -259,6 +245,23 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
          */
         AbstractTexture* generateMipmap();
+
+    protected:
+        /**
+         * @brief Constructor
+         *
+         * Creates new OpenGL texture.
+         * @see @fn_gl{GenTextures}
+         */
+        explicit AbstractTexture(GLenum target);
+
+        /**
+         * @brief Destructor
+         *
+         * Deletes assigned OpenGL texture.
+         * @see @fn_gl{DeleteTextures}
+         */
+        ~AbstractTexture();
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

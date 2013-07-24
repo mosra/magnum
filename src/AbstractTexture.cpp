@@ -99,6 +99,10 @@ void AbstractTexture::move() {
     _id = 0;
 }
 
+AbstractTexture::AbstractTexture(GLenum target): _target(target) {
+    glGenTextures(1, &_id);
+}
+
 AbstractTexture::~AbstractTexture() { destroy(); }
 
 AbstractTexture::AbstractTexture(AbstractTexture&& other): _target(other._target), _id(other._id) {
