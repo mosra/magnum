@@ -480,7 +480,7 @@ class MAGNUM_EXPORT Buffer {
          * Deletes associated OpenGL buffer.
          * @see @fn_gl{DeleteBuffers}
          */
-        virtual ~Buffer();
+        ~Buffer();
 
         /** @brief OpenGL buffer ID */
         GLuint id() const { return _id; }
