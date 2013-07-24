@@ -78,9 +78,16 @@ typedef AbstractObject<3, Float> AbstractObject3D;
 
 enum class TransformationType: UnsignedByte;
 
-template<UnsignedInt dimensions, class> class AbstractBasicTransformation;
-typedef AbstractBasicTransformation<2, Float> AbstractTransformation2D;
-typedef AbstractBasicTransformation<3, Float> AbstractTransformation3D;
+template<UnsignedInt, class> class AbstractTransformation;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T> using AbstractBasicTransformation2D = AbstractTransformation<2, T>;
+template<class T> using AbstractBasicTransformation3D = AbstractTransformation<3, T>;
+typedef AbstractBasicTransformation2D<Float> AbstractTransformation2D;
+typedef AbstractBasicTransformation3D<Float> AbstractTransformation3D;
+#else
+typedef AbstractTransformation<2, Float> AbstractTransformation2D;
+typedef AbstractTransformation<3, Float> AbstractTransformation3D;
+#endif
 
 template<class> class AbstractBasicTranslationRotation2D;
 template<class> class AbstractBasicTranslationRotation3D;

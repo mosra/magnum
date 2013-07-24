@@ -39,8 +39,8 @@ namespace Magnum { namespace SceneGraph {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractObject<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractObject<3, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicTransformation<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicTransformation<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<3, Float>;
 
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;

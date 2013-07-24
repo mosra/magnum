@@ -37,8 +37,9 @@ namespace Magnum { namespace SceneGraph {
 @brief Base translation for three-dimensional scenes supporting translation and rotation
 
 @see @ref AbstractTranslationRotation3D @ref scenegraph, @ref AbstractBasicTranslationRotation2D
+@todo Use AbstractBasicTransformation3D<T> when support for GCC 4.6 is dropped
 */
-template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasicTransformation<3, T> {
+template<class T> class AbstractBasicTranslationRotation3D: public AbstractTransformation<3, T> {
     public:
         explicit AbstractBasicTranslationRotation3D() = default;
 
@@ -115,7 +116,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         AbstractBasicTranslationRotation3D<T>* resetTransformation() {
-            AbstractBasicTransformation<3, T>::resetTransformation();
+            AbstractTransformation<3, T>::resetTransformation();
             return this;
         }
         #endif

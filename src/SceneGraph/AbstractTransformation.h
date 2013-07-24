@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractBasicTransformation, enum Magnum::SceneGraph::TransformationType, typedef Magnum::SceneGraph::AbstractTransformation2D, Magnum::SceneGraph::AbstractTransformation3D
+ * @brief Class Magnum::SceneGraph::AbstractTransformation, alias Magnum::SceneGraph::AbstractBasicTransformation2D, Magnum::SceneGraph::AbstractBasicTransformation3D, typedef Magnum::SceneGraph::AbstractTransformation2D, Magnum::SceneGraph::AbstractTransformation3D, enum Magnum::SceneGraph::TransformationType
  */
 
 #include <vector>
@@ -50,10 +50,11 @@ When subclassing, you have to:
 - Implement all members listed in **Subclass implementation** group above
 - Provide implicit (parameterless) constructor
 
-@see @ref AbstractTransformation2D, @ref AbstractTransformation3D,
-    @ref scenegraph
+@see @ref scenegraph, @ref AbstractBasicTransformation2D,
+    @ref AbstractBasicTransformation3D, @ref AbstractTransformation2D,
+    @ref AbstractTransformation3D
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicTransformation {
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
     public:
         /** @brief Underlying floating-point type */
         typedef T Type;
@@ -61,7 +62,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /** @brief Dimension count */
         static const UnsignedInt Dimensions = dimensions;
 
-        explicit AbstractBasicTransformation();
+        explicit AbstractTransformation();
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -137,13 +138,13 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Reset object transformation
          * @return Pointer to self (for method chaining)
          */
-        AbstractBasicTransformation<dimensions, T>* resetTransformation() {
+        AbstractTransformation<dimensions, T>* resetTransformation() {
             doResetTransformation();
             return this;
         }
 
     protected:
-        ~AbstractBasicTransformation() = default;
+        ~AbstractTransformation() = default;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -163,19 +164,53 @@ enum class TransformationType: UnsignedByte {
     Local = 0x01
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Base transformation for two-dimensional scenes
+
+Convenience alternative to <tt>%AbstractTransformation<2, T></tt>. See
+AbstractTransformation for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<2, T></tt>
+    instead.
+@see @ref AbstractTransformation2D, @ref AbstractBasicTransformation3D
+*/
+template<class T> using AbstractBasicTransformation2D = AbstractTransformation<2, T>;
+#endif
+
 /**
 @brief Base transformation for two-dimensional float scenes
 
 @see @ref AbstractTransformation3D
 */
-typedef AbstractBasicTransformation<2, Float> AbstractTransformation2D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef AbstractBasicTransformation2D<Float> AbstractTransformation2D;
+#else
+typedef AbstractTransformation<2, Float> AbstractTransformation2D;
+#endif
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Base transformation for three-dimensional scenes
+
+Convenience alternative to <tt>%AbstractTransformation<3, T></tt>. See
+AbstractTransformation for more information.
+@note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
+    instead.
+@see @ref AbstractTransformation3D, @ref AbstractBasicTransformation3D
+*/
+template<class T> using AbstractBasicTransformation3D = AbstractTransformation<3, T>;
+#endif
 
 /**
 @brief Base transformation for three-dimensional float scenes
 
 @see @ref AbstractTransformation2D
 */
-typedef AbstractBasicTransformation<3, Float> AbstractTransformation3D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef AbstractBasicTransformation3D<Float> AbstractTransformation3D;
+#else
+typedef AbstractTransformation<3, Float> AbstractTransformation3D;
+#endif
 
 }}
 
