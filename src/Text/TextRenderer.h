@@ -63,16 +63,6 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
         static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont* font, const GlyphCache* cache, Float size, const std::string& text);
 
         /**
-         * @brief Constructor
-         * @param font          Font
-         * @param cache         Glyph cache
-         * @param size          Font size
-         */
-        explicit AbstractTextRenderer(AbstractFont* font, const GlyphCache* cache, Float size);
-
-        virtual ~AbstractTextRenderer() = 0;
-
-        /**
          * @brief Capacity for rendered glyphs
          *
          * @see reserve()
@@ -117,6 +107,17 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          *      see reserve() for more information.
          */
         void render(const std::string& text);
+
+    protected:
+        /**
+         * @brief Constructor
+         * @param font          Font
+         * @param cache         Glyph cache
+         * @param size          Font size
+         */
+        explicit AbstractTextRenderer(AbstractFont* font, const GlyphCache* cache, Float size);
+
+        ~AbstractTextRenderer();
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
