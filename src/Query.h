@@ -47,24 +47,6 @@ information.
 */
 class MAGNUM_EXPORT AbstractQuery {
     public:
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        /**
-         * @brief Constructor
-         *
-         * Generates one OpenGL query.
-         * @see @fn_gl{GenQueries}
-         */
-        explicit AbstractQuery();
-
-        /**
-         * @brief Destructor
-         *
-         * Deletes assigned OpenGL query.
-         * @see @fn_gl{DeleteQueries}
-         */
-        ~AbstractQuery();
-        #endif
-
         /** @brief OpenGL query ID */
         GLuint id() const { return _id; }
 
@@ -101,10 +83,21 @@ class MAGNUM_EXPORT AbstractQuery {
         void end();
 
     protected:
-        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Constructor
+         *
+         * Generates one OpenGL query.
+         * @see @fn_gl{GenQueries}
+         */
         explicit AbstractQuery();
+
+        /**
+         * @brief Destructor
+         *
+         * Deletes assigned OpenGL query.
+         * @see @fn_gl{DeleteQueries}
+         */
         ~AbstractQuery();
-        #endif
 
         void begin(GLenum target);
 
