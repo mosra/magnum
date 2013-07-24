@@ -73,6 +73,8 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /** @brief Feature object type */
         typedef AbstractFeature<dimensions, T> FeatureType;
 
+        /* This isn't protected because having virtual destructor here is
+           better than having it duplicated in all Object specializations */
         explicit AbstractObject();
         virtual ~AbstractObject();
 
