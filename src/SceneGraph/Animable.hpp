@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group): AbstractBasicGroupedFeature<dimensions, Animable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<Float>::infinity()), pauseTime(-std::numeric_limits<Float>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
+template<UnsignedInt dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group): AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<Float>::infinity()), pauseTime(-std::numeric_limits<Float>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
 
 template<UnsignedInt dimensions, class T> Animable<dimensions, T>::~Animable() {}
 
@@ -53,11 +53,11 @@ template<UnsignedInt dimensions, class T> Animable<dimensions, T>* Animable<dime
 }
 
 template<UnsignedInt dimensions, class T> AnimableGroup<dimensions, T>* Animable<dimensions, T>::group() {
-    return static_cast<AnimableGroup<dimensions, T>*>(AbstractBasicGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
+    return static_cast<AnimableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
 }
 
 template<UnsignedInt dimensions, class T> const AnimableGroup<dimensions, T>* Animable<dimensions, T>::group() const {
-    return static_cast<const AnimableGroup<dimensions, T>*>(AbstractBasicGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
+    return static_cast<const AnimableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
 }
 
 template<UnsignedInt dimensions, class T> void AnimableGroup<dimensions, T>::step(const Float time, const Float delta) {

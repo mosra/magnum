@@ -116,7 +116,7 @@ void MyApplication::drawEvent() {
 
 @see Drawable2D, Drawable3D, @ref scenegraph, DrawableGroup2D, DrawableGroup3D
 */
-template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractBasicGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T> {
+template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T> {
     public:
         /**
          * @brief Constructor
@@ -126,7 +126,7 @@ template<UnsignedInt dimensions, class T> class BasicDrawable: public AbstractBa
          * Adds the feature to the object and also to the group, if specified.
          * Otherwise you can use BasicDrawableGroup::add().
          */
-        explicit BasicDrawable(AbstractObject<dimensions, T>* object, BasicDrawableGroup<dimensions, T>* drawables = nullptr): AbstractBasicGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T>(object, drawables) {}
+        explicit BasicDrawable(AbstractObject<dimensions, T>* object, BasicDrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, BasicDrawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera
@@ -160,9 +160,9 @@ See Drawable for more information.
 @see @ref scenegraph, DrawableGroup2D, DrawableGroup3D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
-template<UnsignedInt dimensions, class T> using BasicDrawableGroup = BasicFeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
+template<UnsignedInt dimensions, class T> using BasicDrawableGroup = FeatureGroup<dimensions, BasicDrawable<dimensions, T>, T>;
 #else
-template<UnsignedInt dimensions, class T> class BasicDrawableGroup: public BasicFeatureGroup<dimensions, BasicDrawable<dimensions, T>, T> {};
+template<UnsignedInt dimensions, class T> class BasicDrawableGroup: public FeatureGroup<dimensions, BasicDrawable<dimensions, T>, T> {};
 #endif
 
 /**

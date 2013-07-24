@@ -72,7 +72,7 @@ relevant sections in
 
 @see AbstractCamera2D, AbstractCamera3D, @ref scenegraph, Drawable, DrawableGroup
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicCamera: public AbstractBasicFeature<dimensions, T> {
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractBasicCamera: public AbstractFeature<dimensions, T> {
     public:
         /**
          * @brief Constructor
@@ -98,7 +98,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * applied as first.
          */
         typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
-            AbstractBasicFeature<dimensions, T>::object()->setClean();
+            AbstractFeature<dimensions, T>::object()->setClean();
             return _cameraMatrix;
         }
 

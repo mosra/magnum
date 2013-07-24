@@ -41,7 +41,7 @@ See Animable for more information.
 @see @ref scenegraph, @ref BasicAnimableGroup2D, @ref BasicAnimableGroup3D,
     @ref AnimableGroup2D, @ref AnimableGroup3D
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public BasicFeatureGroup<dimensions, Animable<dimensions, T>, T> {
+template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup: public FeatureGroup<dimensions, Animable<dimensions, T>, T> {
     friend class Animable<dimensions, T>;
 
     public:
