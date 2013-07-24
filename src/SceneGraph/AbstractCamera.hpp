@@ -32,8 +32,6 @@
 
 #include "Drawable.h"
 
-using namespace std;
-
 namespace Magnum { namespace SceneGraph {
 
 namespace Implementation {

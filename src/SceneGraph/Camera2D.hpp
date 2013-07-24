@@ -31,8 +31,6 @@
 #include "AbstractCamera.hpp"
 #include "Camera2D.h"
 
-using namespace std;
-
 /** @todo Use AbstractBasicCamera2D<T> when support for GCC 4.6 is dropped (also in header) */
 
 namespace Magnum { namespace SceneGraph {
