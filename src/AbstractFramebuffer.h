@@ -189,8 +189,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
         }
 
-        explicit AbstractFramebuffer() = default;
-
         /**
          * @brief Bind framebuffer for rendering
          *
@@ -268,6 +266,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     #else
     protected:
     #endif
+        explicit AbstractFramebuffer() = default;
         ~AbstractFramebuffer() = default;
 
         void MAGNUM_LOCAL bindInternal(FramebufferTarget target);
