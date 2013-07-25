@@ -46,28 +46,47 @@ class MAGNUM_EXPORT MeshObjectData2D: public ObjectData2D {
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
          * @param material          Material ID
+         * @param textureCoordinate2DBindings 2D texture coordinate bindings
          *
          * Creates object with mesh instance type.
          */
-        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, UnsignedInt material);
+        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, UnsignedInt material, std::vector<std::pair<UnsignedInt, UnsignedInt>> textureCoordinate2DBindings);
 
         /** @brief Copying is not allowed */
         MeshObjectData2D(const MeshObjectData2D&) = delete;
 
         /** @brief Move constructor */
-        MeshObjectData2D(MeshObjectData2D&&) = default;
+        MeshObjectData2D(MeshObjectData2D&&);
+
+        ~MeshObjectData2D();
 
         /** @brief Copying is not allowed */
         MeshObjectData2D& operator=(const MeshObjectData2D&) = delete;
 
         /** @brief Move assignment */
-        MeshObjectData2D& operator=(MeshObjectData2D&&) = default;
+        MeshObjectData2D& operator=(MeshObjectData2D&&);
 
         /** @brief Material ID */
         UnsignedInt material() const { return _material; }
 
+        /**
+         * @brief 2D texture coordinate bindings
+         *
+         * First item of the pair is 2D texture coodinate ID, second is
+         * material texture ID (e.g. @ref PhongMaterialData "PhongMaterialData::DiffuseTextureID").
+         */
+        std::vector<std::pair<UnsignedInt, UnsignedInt>>& textureCoordinate2DBindings() {
+            return _textureCoordinate2DBindings;
+        }
+
+        /** @overload */
+        const std::vector<std::pair<UnsignedInt, UnsignedInt>>& textureCoordinate2DBindings() const {
+            return _textureCoordinate2DBindings;
+        }
+
     private:
         UnsignedInt _material;
+        std::vector<std::pair<UnsignedInt, UnsignedInt>> _textureCoordinate2DBindings;
 };
 
 }}

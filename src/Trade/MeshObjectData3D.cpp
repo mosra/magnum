@@ -26,6 +26,12 @@
 
 namespace Magnum { namespace Trade {
 
-MeshObjectData3D::MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, UnsignedInt material): ObjectData3D(std::move(children), transformation, InstanceType::Mesh, instance), _material(material) {}
+MeshObjectData3D::MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, UnsignedInt material, std::vector<std::pair<UnsignedInt, UnsignedInt>> textureCoordinate2DBindings): ObjectData3D(std::move(children), transformation, InstanceType::Mesh, instance), _material(material), _textureCoordinate2DBindings(std::move(textureCoordinate2DBindings)) {}
+
+MeshObjectData3D::MeshObjectData3D(MeshObjectData3D&&) = default;
+
+MeshObjectData3D::~MeshObjectData3D() = default;
+
+MeshObjectData3D& MeshObjectData3D::operator=(MeshObjectData3D&&) = default;
 
 }}
