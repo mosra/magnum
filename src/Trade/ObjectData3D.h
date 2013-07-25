@@ -45,7 +45,7 @@ MeshObjectData3D, which is specialized for objects with mesh instance type.
 class MAGNUM_EXPORT ObjectData3D {
     public:
         /** @brief Instance type */
-        enum class InstanceType {
+        enum class InstanceType: UnsignedByte {
             Camera,     /**< Camera instance (see CameraData) */
             Light,      /**< Light instance (see LightData) */
             Mesh,       /**< Three-dimensional mesh instance (see MeshData3D) */
