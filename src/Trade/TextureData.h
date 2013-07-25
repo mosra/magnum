@@ -33,11 +33,19 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Texture data
 */
-class MAGNUM_EXPORT TextureData {
-    TextureData(const TextureData&) = delete;
-    TextureData(TextureData&&) = delete;
-    TextureData& operator=(const TextureData&) = delete;
-    TextureData& operator=(TextureData&&) = delete;
+class TextureData {
+    public:
+        /** @brief Copying is not allowed */
+        TextureData(const TextureData&) = delete;
+
+        /** @brief Move constructor */
+        TextureData(TextureData&&) = default;
+
+        /** @brief Copying is not allowed */
+        TextureData& operator=(const TextureData&) = delete;
+
+        /** @brief Move assignment */
+        TextureData& operator=(TextureData&&) = default;
 };
 
 }}

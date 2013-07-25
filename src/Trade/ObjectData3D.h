@@ -43,11 +43,6 @@ MeshObjectData3D, which is specialized for objects with mesh instance type.
 @see ObjectData2D
 */
 class MAGNUM_EXPORT ObjectData3D {
-    ObjectData3D(const ObjectData3D&) = delete;
-    ObjectData3D(ObjectData3D&&) = delete;
-    ObjectData3D& operator=(const ObjectData3D&) = delete;
-    ObjectData3D& operator=(ObjectData3D&&) = delete;
-
     public:
         /** @brief Instance type */
         enum class InstanceType {
@@ -73,8 +68,20 @@ class MAGNUM_EXPORT ObjectData3D {
          */
         explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation);
 
+        /** @brief Copying is not allowed */
+        ObjectData3D(const ObjectData3D&) = delete;
+
+        /** @brief Move constructor */
+        ObjectData3D(ObjectData3D&&);
+
         /** @brief Destructor */
         virtual ~ObjectData3D() {}
+
+        /** @brief Copying is not allowed */
+        ObjectData3D& operator=(const ObjectData3D&) = delete;
+
+        /** @brief Move assignment */
+        ObjectData3D& operator=(ObjectData3D&&);
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }

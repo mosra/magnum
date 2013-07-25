@@ -39,11 +39,6 @@ namespace Magnum { namespace Trade {
 Subclasses provide access to parameters for given material type.
 */
 class MAGNUM_EXPORT AbstractMaterialData {
-    AbstractMaterialData(const AbstractMaterialData&) = delete;
-    AbstractMaterialData(AbstractMaterialData&&) = delete;
-    AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
-    AbstractMaterialData& operator=(AbstractMaterialData&&) = delete;
-
     public:
         /** @brief Material type */
         enum class Type: UnsignedByte {
@@ -58,6 +53,18 @@ class MAGNUM_EXPORT AbstractMaterialData {
 
         /** @brief Destructor */
         virtual ~AbstractMaterialData() = 0;
+
+        /** @brief Copying is not allowed */
+        AbstractMaterialData(const AbstractMaterialData&) = delete;
+
+        /** @brief Move constructor */
+        AbstractMaterialData(AbstractMaterialData&&) = default;
+
+        /** @brief Copying is not allowed */
+        AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
+
+        /** @brief Move assignment */
+        AbstractMaterialData& operator=(AbstractMaterialData&&) = default;
 
         /** @brief Material type */
         Type type() const { return _type; }

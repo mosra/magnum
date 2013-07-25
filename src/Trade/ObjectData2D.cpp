@@ -30,7 +30,11 @@ ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& tra
 
 ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
+ObjectData2D::ObjectData2D(ObjectData2D&&) = default;
+
 ObjectData2D::~ObjectData2D() = default;
+
+ObjectData2D& ObjectData2D::operator=(ObjectData2D&&) = default;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, ObjectData2D::InstanceType value) {

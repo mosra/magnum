@@ -40,11 +40,6 @@ namespace Magnum { namespace Trade {
 @brief %Scene data
 */
 class MAGNUM_EXPORT SceneData {
-    SceneData(const SceneData&) = delete;
-    SceneData(SceneData&&) = delete;
-    SceneData& operator=(const SceneData&) = delete;
-    SceneData& operator=(SceneData&&) = delete;
-
     public:
         /**
          * @brief Constructor
@@ -52,6 +47,18 @@ class MAGNUM_EXPORT SceneData {
          * @param children3D    Three-dimensional child objects
          */
         explicit SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D);
+
+        /** @brief Copying is not allowed */
+        SceneData(const SceneData&) = delete;
+
+        /** @brief Move constructor */
+        SceneData(SceneData&&);
+
+        /** @brief Copying is not allowed */
+        SceneData& operator=(const SceneData&) = delete;
+
+        /** @brief Move assignment */
+        SceneData& operator=(SceneData&&);
 
         /** @brief Two-dimensional child objects */
         const std::vector<UnsignedInt>& children2D() const { return _children2D; }

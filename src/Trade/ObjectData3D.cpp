@@ -30,6 +30,10 @@ ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& tra
 
 ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation): _children(std::move(children)), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
 
+ObjectData3D::ObjectData3D(ObjectData3D&&) = default;
+
+ObjectData3D& ObjectData3D::operator=(ObjectData3D&&) = default;
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, ObjectData3D::InstanceType value) {
     switch(value) {
