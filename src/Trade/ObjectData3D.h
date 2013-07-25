@@ -75,7 +75,7 @@ class MAGNUM_EXPORT ObjectData3D {
         ObjectData3D(ObjectData3D&&);
 
         /** @brief Destructor */
-        virtual ~ObjectData3D() {}
+        virtual ~ObjectData3D();
 
         /** @brief Copying is not allowed */
         ObjectData3D& operator=(const ObjectData3D&) = delete;
