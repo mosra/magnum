@@ -29,7 +29,7 @@
  */
 
 #include "magnumVisibility.h"
-#include "Types.h"
+#include "Magnum.h"
 
 namespace Magnum { namespace Trade {
 
@@ -72,6 +72,9 @@ class MAGNUM_EXPORT AbstractMaterialData {
     private:
         Type _type;
 };
+
+/** @debugoperator{Magnum::Trade::AbstractMaterialData} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, AbstractMaterialData::Type value);
 
 }}
 

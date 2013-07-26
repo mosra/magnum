@@ -22,24 +22,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "AbstractMaterialData.h"
+#include <sstream>
+#include <TestSuite/Tester.h>
 
-#include <Utility/Debug.h>
+#include "Trade/AbstractMaterialData.h"
 
-namespace Magnum { namespace Trade {
+namespace Magnum { namespace Trade { namespace Test {
 
-AbstractMaterialData::AbstractMaterialData(Type type): _type(type) {}
+class AbstractMaterialDataTest: public TestSuite::Tester {
+    public:
+        explicit AbstractMaterialDataTest();
 
-AbstractMaterialData::~AbstractMaterialData() {}
+        void debug();
+};
 
-Debug operator<<(Debug debug, const AbstractMaterialData::Type value) {
-    switch(value) {
-        #define _c(value) case AbstractMaterialData::Type::value: return debug << "Trade::AbstractMaterialData::Type::" #value;
-        _c(Phong)
-        #undef _c
-    }
-
-    return debug << "Trade::AbstractMaterialData::Type::(unknown)";
+AbstractMaterialDataTest::AbstractMaterialDataTest() {
+    addTests({&AbstractMaterialDataTest::debug});
 }
 
-}}
+void AbstractMaterialDataTest::debug() {
+    std::ostringstream out;
+
+    Debug(&out) << AbstractMaterialData::Type::Phong;
+    CORRADE_COMPARE(out.str(), "Trade::AbstractMaterialData::Type::Phong\n");
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Trade::Test::AbstractMaterialDataTest)
