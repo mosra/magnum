@@ -30,6 +30,7 @@
 
 #include "Array.h"
 #include "Sampler.h"
+#include "magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 
@@ -106,6 +107,9 @@ class TextureData {
         Array3D<Sampler::Wrapping> _wrapping;
         UnsignedInt _image;
 };
+
+/** @debugoperator{Magnum::Trade::TextureData} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, TextureData::Type value);
 
 }}
 

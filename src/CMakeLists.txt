@@ -81,7 +81,8 @@ set(Magnum_SRCS
     Trade/ObjectData2D.cpp
     Trade/ObjectData3D.cpp
     Trade/PhongMaterialData.cpp
-    Trade/SceneData.cpp)
+    Trade/SceneData.cpp
+    Trade/TextureData.cpp)
 
 # Desktop-only code
 if(NOT TARGET_GLES)
