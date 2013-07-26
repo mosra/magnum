@@ -28,8 +28,9 @@
  * @brief Class Magnum::Sampler
  */
 
-#include "Types.h"
+#include "Magnum.h"
 #include "OpenGL.h"
+#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -146,6 +147,15 @@ class Sampler {
         static Float maxSupportedAnisotropy();
         #endif
 };
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Filter value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Mipmap value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Wrapping value);
 
 }
 
