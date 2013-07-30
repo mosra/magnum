@@ -168,7 +168,7 @@ void ResourceManagerTest::basic() {
 void ResourceManagerTest::residentPolicy() {
     ResourceManager* rm = new ResourceManager;
 
-    rm->set("blah", new Data(), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm->set("blah", new Data, ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(Data::count, 1);
 
     rm->free();
@@ -210,7 +210,7 @@ void ResourceManagerTest::manualPolicy() {
 
     /* Manual free */
     {
-        rm.set(dataKey, new Data(), ResourceDataState::Mutable, ResourcePolicy::Manual);
+        rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
         Resource<Data> data = rm.get<Data>(dataKey);
         rm.free();
     }
@@ -221,7 +221,7 @@ void ResourceManagerTest::manualPolicy() {
     CORRADE_COMPARE(rm.count<Data>(), 0);
     CORRADE_COMPARE(Data::count, 0);
 
-    rm.set(dataKey, new Data(), ResourceDataState::Mutable, ResourcePolicy::Manual);
+    rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     CORRADE_COMPARE(Data::count, 1);
 }
