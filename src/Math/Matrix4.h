@@ -227,8 +227,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Upper-left 3x3 part of the matrix.
          * @see from(const Matrix<3, T>&, const Vector3&), rotation() const,
-         *      rotation(T, const Vector3&), Matrix3::rotationScaling() const
-         * @todo extract rotation with assert for no scaling
+         *      rotationNormalized(), rotation(T, const Vector3&),
+         *      Matrix3::rotationScaling() const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         constexpr Matrix<3, T> rotationScaling() const {
@@ -238,11 +238,28 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /**
+         * @brief 3D rotation part of the matrix assuming there is no scaling
+         *
+         * Similar to @ref rotationScaling(), but additionally checks that the
+         * base vectors are normalized.
+         * @see rotation() const, @ref Matrix3::rotationNormalized()
+         * @todo assert also orthogonality or this is good enough?
+         */
+        /* Not Matrix3, because it is for affine 2D transformations */
+        Matrix<3, T> rotationNormalized() const {
+            CORRADE_ASSERT((*this)[0].xyz().isNormalized() && (*this)[1].xyz().isNormalized() && (*this)[2].xyz().isNormalized(),
+                           "Math::Matrix4::rotationNormalized(): the rotation part is not normalized", {});
+            return {(*this)[0].xyz(),
+                    (*this)[1].xyz(),
+                    (*this)[2].xyz()};
+        }
+
+        /**
          * @brief 3D rotation part of the matrix
          *
          * Normalized upper-left 3x3 part of the matrix.
-         * @see rotationScaling() const, rotation(T, const Vector3&),
-         *      Matrix3::rotation() const
+         * @see rotationNormalized(), rotationScaling() const,
+         *      rotation(T, const Vector3&), Matrix3::rotation() const
          * @todo assert uniform scaling (otherwise this would be garbage)
          */
         /* Not Matrix3, because it is for affine 2D transformations */
