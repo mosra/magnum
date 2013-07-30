@@ -726,7 +726,7 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
             levelSize = Math::max(Vector2i(1), levelSize/2);
         }
 
-    /* Cube map additionaly needs to specify all faces */
+    /* Cube map additionally needs to specify all faces */
     } else if(target == GL_TEXTURE_CUBE_MAP) {
         Vector2i levelSize = size;
         for(GLsizei level = 0; level != levels; ++level) {
