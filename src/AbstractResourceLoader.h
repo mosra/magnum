@@ -162,6 +162,16 @@ template<class T> class AbstractResourceLoader {
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
 
         /**
+         * @brief Set loaded resource to resource manager
+         *
+         * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
+         * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
+         */
+        void set(ResourceKey key, T* data) {
+            set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+        }
+
+        /**
          * @brief Mark resource as not found
          *
          * Also increments count of not found resources. See
