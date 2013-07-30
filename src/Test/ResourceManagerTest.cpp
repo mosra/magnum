@@ -237,6 +237,11 @@ void ResourceManagerTest::loader() {
 
         private:
             void doLoad(ResourceKey) override {}
+
+            std::string doName(ResourceKey key) const override {
+                if(key == ResourceKey("hello")) return "hello";
+                return "";
+            }
     };
 
     auto rm = new ResourceManager;
@@ -250,10 +255,19 @@ void ResourceManagerTest::loader() {
     CORRADE_COMPARE(hello.state(), ResourceState::Loading);
     CORRADE_COMPARE(world.state(), ResourceState::Loading);
 
+    CORRADE_COMPARE(loader->requestedCount(), 2);
+    CORRADE_COMPARE(loader->loadedCount(), 0);
+    CORRADE_COMPARE(loader->notFoundCount(), 0);
+    CORRADE_COMPARE(loader->name(ResourceKey("hello")), "hello");
+
     loader->load();
     CORRADE_COMPARE(hello.state(), ResourceState::Final);
     CORRADE_COMPARE(*hello, 773);
     CORRADE_COMPARE(world.state(), ResourceState::NotFound);
+
+    CORRADE_COMPARE(loader->requestedCount(), 2);
+    CORRADE_COMPARE(loader->loadedCount(), 1);
+    CORRADE_COMPARE(loader->notFoundCount(), 1);
 }
 
 }}
