@@ -76,7 +76,7 @@ class Interleave {
         }
 
         template<class T, class ...U> static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type attributeCount(const T& first, const U&... next) {
-            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size() || attributeCount(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, nothing done.", 0);
+            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size() || attributeCount(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << attributeCount(next...), 0);
 
             return first.size();
         }
