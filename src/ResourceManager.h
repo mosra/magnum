@@ -313,8 +313,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
          */
         template<class T> ResourceManager<Types...>* set(ResourceKey key, T* data) {
-            this->Implementation::ResourceManagerData<T>::set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
-            return this;
+            return set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
         }
 
         /** @brief Fallback for not found resources */
