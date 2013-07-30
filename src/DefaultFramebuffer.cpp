@@ -44,6 +44,7 @@ DefaultFramebuffer* DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
         if(attachment.first > max) max = attachment.first;
 
     /* Create linear array from associative */
+    /** @todo C++14: use VLA to avoid heap allocation */
     GLenum* _attachments = new GLenum[max+1];
     std::fill_n(_attachments, max, GL_NONE);
     for(const auto& attachment: attachments)
@@ -56,6 +57,7 @@ DefaultFramebuffer* DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
 #endif
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
+    /** @todo C++14: use VLA to avoid heap allocation */
     GLenum* _attachments = new GLenum[attachments.size()];
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
@@ -66,6 +68,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 }
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
+    /** @todo C++14: use VLA to avoid heap allocation */
     GLenum* _attachments = new GLenum[attachments.size()];
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
