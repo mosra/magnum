@@ -60,6 +60,7 @@ Float Sampler::maxSupportedAnisotropy() {
 }
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, const Sampler::Filter value) {
     switch(value) {
         #define _c(value) case Sampler::Filter::value: return debug << "Sampler::Filter::" #value;
@@ -100,5 +101,6 @@ Debug operator<<(Debug debug, const Sampler::Wrapping value) {
 
     return debug << "Sampler::Wrapping::(invalid)";
 }
+#endif
 
 }
