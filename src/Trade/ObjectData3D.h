@@ -57,9 +57,9 @@ class MAGNUM_EXPORT ObjectData3D {
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
-         * @param instanceId        Instance ID
+         * @param instance          Instance ID
          */
-        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, InstanceType instanceType, UnsignedInt instanceId);
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, InstanceType instanceType, UnsignedInt instance);
 
         /**
          * @brief Constructor for empty instance
@@ -103,13 +103,13 @@ class MAGNUM_EXPORT ObjectData3D {
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        Int instanceId() const { return _instanceId; }
+        Int instance() const { return _instance; }
 
     private:
         std::vector<UnsignedInt> _children;
         Matrix4 _transformation;
         InstanceType _instanceType;
-        Int _instanceId;
+        Int _instance;
 };
 
 /** @debugoperator{Magnum::Trade::ObjectData3D} */

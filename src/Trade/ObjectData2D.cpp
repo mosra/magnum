@@ -26,9 +26,9 @@
 
 namespace Magnum { namespace Trade {
 
-ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectData2D::InstanceType instanceType, UnsignedInt instanceId): _children(std::move(children)), _transformation(transformation), _instanceType(instanceType), _instanceId(instanceId) {}
+ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectData2D::InstanceType instanceType, UnsignedInt instance): _children(std::move(children)), _transformation(transformation), _instanceType(instanceType), _instance(instance) {}
 
-ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instanceId(-1) {}
+ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instance(-1) {}
 
 ObjectData2D::ObjectData2D(ObjectData2D&&) = default;
 
