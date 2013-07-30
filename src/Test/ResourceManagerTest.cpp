@@ -229,6 +229,7 @@ void ResourceManagerTest::manualPolicy() {
 void ResourceManagerTest::loader() {
     class IntResourceLoader: public AbstractResourceLoader<Int> {
         public:
+            IntResourceLoader(): resource(ResourceManager::instance()->get<Data>("data")) {}
 
             void load() {
                 set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
@@ -242,32 +243,45 @@ void ResourceManagerTest::loader() {
                 if(key == ResourceKey("hello")) return "hello";
                 return "";
             }
+
+            /* To verify that the loader is destroyed before unloading
+               _all types of_ resources */
+            Resource<Data> resource;
     };
 
     auto rm = new ResourceManager;
     auto loader = new IntResourceLoader;
     rm->setLoader(loader);
 
-    Resource<Data> data = rm->get<Data>("data");
-    Resource<Int> hello = rm->get<Int>("hello");
-    Resource<Int> world = rm->get<Int>("world");
-    CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
-    CORRADE_COMPARE(hello.state(), ResourceState::Loading);
-    CORRADE_COMPARE(world.state(), ResourceState::Loading);
+    {
+        Resource<Data> data = rm->get<Data>("data");
+        Resource<Int> hello = rm->get<Int>("hello");
+        Resource<Int> world = rm->get<Int>("world");
+        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
+        CORRADE_COMPARE(hello.state(), ResourceState::Loading);
+        CORRADE_COMPARE(world.state(), ResourceState::Loading);
 
-    CORRADE_COMPARE(loader->requestedCount(), 2);
-    CORRADE_COMPARE(loader->loadedCount(), 0);
-    CORRADE_COMPARE(loader->notFoundCount(), 0);
-    CORRADE_COMPARE(loader->name(ResourceKey("hello")), "hello");
+        CORRADE_COMPARE(loader->requestedCount(), 2);
+        CORRADE_COMPARE(loader->loadedCount(), 0);
+        CORRADE_COMPARE(loader->notFoundCount(), 0);
+        CORRADE_COMPARE(loader->name(ResourceKey("hello")), "hello");
 
-    loader->load();
-    CORRADE_COMPARE(hello.state(), ResourceState::Final);
-    CORRADE_COMPARE(*hello, 773);
-    CORRADE_COMPARE(world.state(), ResourceState::NotFound);
+        loader->load();
+        CORRADE_COMPARE(hello.state(), ResourceState::Final);
+        CORRADE_COMPARE(*hello, 773);
+        CORRADE_COMPARE(world.state(), ResourceState::NotFound);
 
-    CORRADE_COMPARE(loader->requestedCount(), 2);
-    CORRADE_COMPARE(loader->loadedCount(), 1);
-    CORRADE_COMPARE(loader->notFoundCount(), 1);
+        CORRADE_COMPARE(loader->requestedCount(), 2);
+        CORRADE_COMPARE(loader->loadedCount(), 1);
+        CORRADE_COMPARE(loader->notFoundCount(), 1);
+
+        /* Verify that the loader is deleted at proper time */
+        rm->set("data", new Data);
+        CORRADE_COMPARE(Data::count, 1);
+    }
+
+    delete rm;
+    CORRADE_COMPARE(Data::count, 0);
 }
 
 }}

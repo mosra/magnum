@@ -125,6 +125,8 @@ template<class T> class ResourceManagerData {
         AbstractResourceLoader<T>* loader() { return _loader; }
         const AbstractResourceLoader<T>* loader() const { return _loader; }
 
+        void freeLoader();
+
         void setLoader(AbstractResourceLoader<T>* loader);
 
     protected:
@@ -367,6 +369,8 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @return Pointer to self (for method chaining)
          *
          * See AbstractResourceLoader documentation for more information.
+         * @attention The loader is deleted on destruction before unloading
+         *      all resources.
          */
         template<class T> ResourceManager<Types...>* setLoader(AbstractResourceLoader<T>* loader) {
             this->Implementation::ResourceManagerData<T>::setLoader(loader);
@@ -379,6 +383,12 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             freeInternal<NextTypes...>();
         }
         template<class...> void freeInternal() const {}
+
+        template<class FirstType, class ...NextTypes> void freeLoaders() {
+            Implementation::ResourceManagerData<FirstType>::freeLoader();
+            freeLoaders<NextTypes...>();
+        }
+        template<class...> void freeLoaders() const {}
 
         static ResourceManager<Types...>*& internalInstance();
 };
@@ -393,12 +403,8 @@ template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::
 namespace Implementation {
 
 template<class T> ResourceManagerData<T>::~ResourceManagerData() {
+    /* Loaders are already deleted via freeLoaders() from ResourceManager */
     delete _fallback;
-
-    if(_loader) {
-        _loader->manager = nullptr;
-        delete _loader;
-    }
 }
 
 template<class T> std::size_t ResourceManagerData<T>::referenceCount(const ResourceKey key) const {
@@ -499,6 +505,13 @@ template<class T> void ResourceManagerData<T>::setLoader(AbstractResourceLoader<
     if((_loader = loader)) _loader->manager = this;
 }
 
+template<class T> void ResourceManagerData<T>::freeLoader() {
+    if(!_loader) return;
+
+    _loader->manager = nullptr;
+    delete _loader;
+}
+
 template<class T> void ResourceManagerData<T>::decrementReferenceCount(ResourceKey key) {
     auto it = _data.find(key);
 
@@ -546,6 +559,7 @@ template<class ...Types> ResourceManager<Types...>::ResourceManager() {
 }
 
 template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
+    freeLoaders<Types...>();
     CORRADE_INTERNAL_ASSERT(internalInstance() == this);
     internalInstance() = nullptr;
 }

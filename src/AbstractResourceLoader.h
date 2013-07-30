@@ -78,7 +78,12 @@ class MeshResourceLoader: public AbstractResourceLoader<Mesh> {
 };
 @endcode
 
-You can then add it to resource manager instance like this:
+You can then add it to resource manager instance like this. Note that the
+manager automatically deletes the all loaders on destruction before unloading
+all resources. It allows you to use resources in the loader itself without
+having to delete the loader explicitly to ensure proper resource unloading. In
+the following code, however, the loader destroys itself (and removes itself
+from the manager) before the manager is destroyed.
 @code
 MyResourceManager manager;
 MeshResourceLoader loader;
