@@ -277,6 +277,17 @@ template<class T, class U> void Resource<T, U>::acquire() {
 
 }
 
+namespace std {
+    /** @brief `std::hash` specialization for @ref Magnum::ResourceKey */
+    template<> struct hash<Magnum::ResourceKey> {
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        std::size_t operator()(Magnum::ResourceKey key) const {
+            return *reinterpret_cast<const std::size_t*>(key.byteArray());
+        }
+        #endif
+    };
+}
+
 /* Make the definition complete */
 #include "ResourceManager.h"
 

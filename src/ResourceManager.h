@@ -91,12 +91,6 @@ template<class> class AbstractResourceLoader;
 
 namespace Implementation {
 
-struct ResourceKeyHash {
-    std::size_t operator()(ResourceKey key) const {
-        return *reinterpret_cast<const std::size_t*>(key.byteArray());
-    }
-};
-
 template<class T> class ResourceManagerData {
     template<class, class> friend class Magnum::Resource;
     friend class AbstractResourceLoader<T>;
@@ -147,7 +141,7 @@ template<class T> class ResourceManagerData {
 
         void decrementReferenceCount(ResourceKey key);
 
-        std::unordered_map<ResourceKey, Data, ResourceKeyHash> _data;
+        std::unordered_map<ResourceKey, Data> _data;
         T* _fallback;
         AbstractResourceLoader<T>* _loader;
         std::size_t _lastChange;
