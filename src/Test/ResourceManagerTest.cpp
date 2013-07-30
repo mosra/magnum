@@ -43,6 +43,8 @@ class ResourceManagerTest: public TestSuite::Tester {
         void residentPolicy();
         void referenceCountedPolicy();
         void manualPolicy();
+        void clear();
+        void clearWhileReferenced();
         void loader();
 };
 
@@ -66,6 +68,8 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::residentPolicy,
               &ResourceManagerTest::referenceCountedPolicy,
               &ResourceManagerTest::manualPolicy,
+              &ResourceManagerTest::clear,
+              &ResourceManagerTest::clearWhileReferenced,
               &ResourceManagerTest::loader});
 }
 
@@ -224,6 +228,35 @@ void ResourceManagerTest::manualPolicy() {
     rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     CORRADE_COMPARE(Data::count, 1);
+}
+
+void ResourceManagerTest::clear() {
+    ResourceManager rm;
+
+    rm.set("blah", new Data);
+    CORRADE_COMPARE(Data::count, 1);
+
+    rm.free();
+    CORRADE_COMPARE(Data::count, 1);
+
+    rm.clear();
+    CORRADE_COMPARE(Data::count, 0);
+}
+
+void ResourceManagerTest::clearWhileReferenced() {
+    /* Should cover also the destruction case */
+
+    std::ostringstream out;
+    Error::setOutput(&out);
+
+    ResourceManager rm;
+    rm.set("blah", new Int);
+    /** @todo this will leak, is there any better solution without hitting
+        assertion in decrementReferenceCount()? */
+    new Resource<Int>(rm.get<Int>("blah"));
+
+    rm.clear();
+    CORRADE_COMPARE(out.str(), "ResourceManager: cleared/destroyed while data are still referenced\n");
 }
 
 void ResourceManagerTest::loader() {

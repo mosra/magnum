@@ -122,6 +122,8 @@ template<class T> class ResourceManagerData {
 
         void free();
 
+        void clear() { _data.clear(); }
+
         AbstractResourceLoader<T>* loader() { return _loader; }
         const AbstractResourceLoader<T>* loader() const { return _loader; }
 
@@ -353,6 +355,28 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             return this;
         }
 
+        /**
+         * @brief Clear all resources of given type
+         * @return Pointer to self (for method chaining)
+         *
+         * Unlike free() this function assumes that no resource is referenced.
+         */
+        template<class T> ResourceManager<Types...>* clear() {
+            this->Implementation::ResourceManagerData<T>::clear();
+            return this;
+        }
+
+        /**
+         * @brief Clear all resources
+         * @return Pointer to self (for method chaining)
+         *
+         * Unlike free() this function assumes that no resource is referenced.
+         */
+        ResourceManager<Types...>* clear() {
+            clearInternal<Types...>();
+            return this;
+        }
+
         /** @brief Loader for given type of resources */
         template<class T> AbstractResourceLoader<T>* loader() {
             return this->Implementation::ResourceManagerData<T>::loader();
@@ -382,6 +406,12 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             freeInternal<NextTypes...>();
         }
         template<class...> void freeInternal() const {}
+
+        template<class FirstType, class ...NextTypes> void clearInternal() {
+            clear<FirstType>();
+            clearInternal<NextTypes...>();
+        }
+        template<class...> void clearInternal() const {}
 
         template<class FirstType, class ...NextTypes> void freeLoaders() {
             Implementation::ResourceManagerData<FirstType>::freeLoader();
@@ -513,6 +543,7 @@ template<class T> void ResourceManagerData<T>::freeLoader() {
 
 template<class T> void ResourceManagerData<T>::decrementReferenceCount(ResourceKey key) {
     auto it = _data.find(key);
+    CORRADE_INTERNAL_ASSERT(it != _data.end());
 
     /* Free the resource if it is reference counted */
     if(--it->second.referenceCount == 0 && it->second.policy == ResourcePolicy::ReferenceCounted)
@@ -541,7 +572,7 @@ template<class T> struct ResourceManagerData<T>::Data {
 
 template<class T> inline ResourceManagerData<T>::Data::~Data() {
     CORRADE_ASSERT(referenceCount == 0,
-        "ResourceManager::~ResourceManager(): destroyed while data are still referenced", );
+        "ResourceManager: cleared/destroyed while data are still referenced", );
     delete data;
 }
 
