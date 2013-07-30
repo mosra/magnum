@@ -55,7 +55,7 @@ Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
         4, 8, 0
     };
 
-    std::vector<Vector3> vertices{
+    std::vector<Vector3> positions{
         {0.0f, -0.525731f, 0.850651f},
         {0.850651f, 0.0f, 0.525731f},
         {0.850651f, 0.0f, -0.525731f},
@@ -71,12 +71,14 @@ Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
     };
 
     for(std::size_t i = 0; i != subdivisions; ++i)
-        MeshTools::subdivide(indices, vertices, [](const Vector3& a, const Vector3& b) {
+        MeshTools::subdivide(indices, positions, [](const Vector3& a, const Vector3& b) {
             return (a+b).normalized();
         });
 
-    MeshTools::removeDuplicates(indices, vertices);
-    return Trade::MeshData3D(Mesh::Primitive::Triangles, std::move(indices), {vertices}, {std::move(vertices)}, {});
+    MeshTools::removeDuplicates(indices, positions);
+
+    std::vector<Vector3> normals(positions);
+    return Trade::MeshData3D(Mesh::Primitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)}, {});
 }
 
 }}
