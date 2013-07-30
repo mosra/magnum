@@ -56,18 +56,6 @@ class Data {
 
 typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 
-class IntResourceLoader: public AbstractResourceLoader<Int> {
-    public:
-        void load(ResourceKey key) override {
-            AbstractResourceLoader<Int>::load(key);
-        }
-
-        void load() {
-            set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
-            setNotFound("world");
-        }
-};
-
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
@@ -239,18 +227,30 @@ void ResourceManagerTest::manualPolicy() {
 }
 
 void ResourceManagerTest::loader() {
-    ResourceManager rm;
-    IntResourceLoader loader;
-    rm.setLoader(&loader);
+    class IntResourceLoader: public AbstractResourceLoader<Int> {
+        public:
 
-    Resource<Data> data = rm.get<Data>("data");
-    Resource<Int> hello = rm.get<Int>("hello");
-    Resource<Int> world = rm.get<Int>("world");
+            void load() {
+                set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
+                setNotFound("world");
+            }
+
+        private:
+            void doLoad(ResourceKey) override {}
+    };
+
+    auto rm = new ResourceManager;
+    auto loader = new IntResourceLoader;
+    rm->setLoader(loader);
+
+    Resource<Data> data = rm->get<Data>("data");
+    Resource<Int> hello = rm->get<Int>("hello");
+    Resource<Int> world = rm->get<Int>("world");
     CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
     CORRADE_COMPARE(hello.state(), ResourceState::Loading);
     CORRADE_COMPARE(world.state(), ResourceState::Loading);
 
-    loader.load();
+    loader->load();
     CORRADE_COMPARE(hello.state(), ResourceState::Final);
     CORRADE_COMPARE(*hello, 773);
     CORRADE_COMPARE(world.state(), ResourceState::NotFound);
