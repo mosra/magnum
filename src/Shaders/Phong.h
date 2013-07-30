@@ -93,12 +93,20 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Set transformation and normal matrix
+         * @brief Set transformation matrix
          * @return Pointer to self (for method chaining)
          */
         Phong* setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
-            setUniform(normalMatrixUniform, matrix.rotation());
+            return this;
+        }
+
+        /**
+         * @brief Set normal matrix
+         * @return Pointer to self (for method chaining)
+         */
+        Phong* setNormalMatrix(const Math::Matrix<3, Float>& matrix) {
+            setUniform(normalMatrixUniform, matrix);
             return this;
         }
 
