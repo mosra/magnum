@@ -88,11 +88,14 @@ You can then add it to resource manager instance like this:
 MyResourceManager manager;
 MeshResourceLoader loader;
 
-manager->setLoader(loader);
+manager->setLoader(&loader);
 
 // This will now automatically request the mesh from loader by calling load()
 Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
 @endcode
+
+@todoc How about working with resources of different data types (i.e. mesh
+    buffers), should that be allowed?
 */
 template<class T> class AbstractResourceLoader {
     friend class Implementation::ResourceManagerData<T>;
