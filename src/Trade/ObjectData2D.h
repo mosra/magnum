@@ -38,16 +38,21 @@ namespace Magnum { namespace Trade {
 /**
 @brief Two-dimensional object data
 
-Provides access to object transformation and hierarchy. See also
-MeshObjectData2D, which is specialized for objects with mesh instance type.
-@see ObjectData3D
+Provides access to object transformation and hierarchy.
+@see MeshObjectData2D, ObjectData3D
 */
 class MAGNUM_EXPORT ObjectData2D {
     public:
-        /** @brief Instance type */
+        /** @brief Type of instance held by this object */
         enum class InstanceType: UnsignedByte {
             Camera,     /**< Camera instance (see CameraData) */
-            Mesh,       /**< Three-dimensional mesh instance (see MeshData2D) */
+
+            /**
+             * Three-dimensional mesh instance. The data can be cast to
+             * MeshObjectData2D to provide more information.
+             */
+            Mesh,
+
             Empty       /**< Empty */
         };
 
@@ -90,10 +95,8 @@ class MAGNUM_EXPORT ObjectData2D {
 
         /**
          * @brief Instance type
-         * @return Type of instance held by this object
          *
-         * If the instance is of type InstanceType::Mesh, the instance can be
-         * casted to MeshObjectData2D and provide more information.
+         * @see instance()
          */
         InstanceType instanceType() const { return _instanceType; }
 
