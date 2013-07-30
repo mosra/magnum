@@ -348,7 +348,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @return Pointer to self (for method chaining)
          */
         ResourceManager<Types...>* free() {
-            freeInternal(std::common_type<Types>()...);
+            freeInternal<Types...>();
             return this;
         }
 
@@ -374,11 +374,11 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         }
 
     private:
-        template<class FirstType, class ...NextTypes> void freeInternal(std::common_type<FirstType>, std::common_type<NextTypes>... t) {
+        template<class FirstType, class ...NextTypes> void freeInternal() {
             free<FirstType>();
-            freeInternal(t...);
+            freeInternal<NextTypes...>();
         }
-        void freeInternal() const {}
+        template<class...> void freeInternal() const {}
 
         static ResourceManager<Types...>*& internalInstance();
 };
