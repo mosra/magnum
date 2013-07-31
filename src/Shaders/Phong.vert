@@ -47,6 +47,15 @@ in highp vec4 position;
 in mediump vec3 normal;
 #endif
 
+#ifdef TEXTURED
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = 2) in mediump vec2 textureCoords;
+#else
+in mediump vec2 textureCoords;
+#endif
+out mediump vec2 interpolatedTextureCoords;
+#endif
+
 out mediump vec3 transformedNormal;
 out highp vec3 lightDirection;
 out highp vec3 cameraDirection;
@@ -67,4 +76,9 @@ void main() {
 
     /* Transform the position */
     gl_Position = projectionMatrix*transformedPosition4;
+
+    #ifdef TEXTURED
+    /* Texture coordinates, if needed */
+    interpolatedTextureCoords = textureCoords;
+    #endif
 }

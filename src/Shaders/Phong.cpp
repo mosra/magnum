@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Shaders {
 
-Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8) {
+Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8), _flags(flags) {
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -41,13 +41,17 @@ Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), norm
     #endif
 
     Shader vert(v, Shader::Type::Vertex);
-    vert.addSource(rs.get("compatibility.glsl"))
+    vert.addSource(flags ? "#define TEXTURED\n" : "")
+        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Phong.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
     Shader frag(v, Shader::Type::Fragment);
-    frag.addSource(rs.get("compatibility.glsl"))
+    frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
+        .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
+        .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
+        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Phong.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
@@ -61,6 +65,7 @@ Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), norm
     {
         bindAttributeLocation(Position::Location, "position");
         bindAttributeLocation(Normal::Location, "normal");
+        if(flags) bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
     }
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
@@ -73,11 +78,20 @@ Phong::Phong(): transformationMatrixUniform(0), projectionMatrixUniform(1), norm
         projectionMatrixUniform = uniformLocation("projectionMatrix");
         normalMatrixUniform = uniformLocation("normalMatrix");
         lightUniform = uniformLocation("light");
-        diffuseColorUniform = uniformLocation("diffuseColor");
-        ambientColorUniform = uniformLocation("ambientColor");
-        specularColorUniform = uniformLocation("specularColor");
+        if(!(flags & Flag::AmbientTexture)) ambientColorUniform = uniformLocation("ambientColor");
+        if(!(flags & Flag::DiffuseTexture)) diffuseColorUniform = uniformLocation("diffuseColor");
+        if(!(flags & Flag::SpecularTexture)) specularColorUniform = uniformLocation("specularColor");
         lightColorUniform = uniformLocation("lightColor");
         shininessUniform = uniformLocation("shininess");
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(flags && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+    #endif
+    {
+        if(flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureLayer);
+        if(flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
+        if(flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
