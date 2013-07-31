@@ -29,8 +29,8 @@
  */
 
 #include <type_traits>
-#include <Utility/Debug.h>
 
+#include "Math/BoolVector.h" /* for Math::Implementation::Sequence */
 #include "Magnum.h"
 
 namespace Magnum {
@@ -62,23 +62,24 @@ template<UnsignedInt dimensions, class T> class Array {
          * @param first     First value
          * @param next      Next values
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> constexpr /*implicit*/ Array(T first, T second, U... next): _data{first, second, next...} {
-            static_assert(sizeof...(next)+2 == dimensions, "Improper number of arguments passed to Array constructor");
-        }
-        template<class U = T> constexpr /*implicit*/ Array(typename std::enable_if<std::is_same<T, U>::value && dimensions == 1, U>::type first): _data{first} {}
-        #else
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> constexpr /*implicit*/ Array(T first, U... next);
+        #else
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == dimensions, T>::type> constexpr /*implicit*/ Array(T first, U... next): _data{first, next...} {}
         #endif
 
-        /**
-         * @brief Constructor
-         * @param value Value for all fields
-         */
-        template<class U, class = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, U>::type> /*implicit*/ Array(U value) {
-            for(UnsignedInt i = 0; i != dimensions; ++i)
-                _data[i] = value;
+        /** @brief Construct array with one value for all fields */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        constexpr /*implicit*/ Array(T value);
+        #else
+        #ifndef CORRADE_GCC46_COMPATIBILITY
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type> constexpr /*implicit*/ Array(U value): Array(typename Math::Implementation::GenerateSequence<dimensions>::Type(), value) {}
+        #else
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type> /*implicit*/ Array(U value) {
+            *this = Array(typename Math::Implementation::GenerateSequence<dimensions>::Type(), value);
         }
+        #endif
+        #endif
 
         /** @brief Equality */
         bool operator==(const Array<dimensions, T>& other) const {
@@ -104,6 +105,10 @@ template<UnsignedInt dimensions, class T> class Array {
         constexpr const T* data() const { return _data; } /**< @overload */
 
     private:
+
+        /* Implementation for Array<dimensions, T>::Array(U) */
+        template<std::size_t ...sequence> constexpr explicit Array(Math::Implementation::Sequence<sequence...>, T value): _data{Math::Implementation::repeat(value, sequence)...} {}
+
         T _data[dimensions];
 };
 
