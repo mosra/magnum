@@ -96,13 +96,13 @@ mesh->setPrimitive(Mesh::Primitive::Triangles)
 
 @code
 // Non-indexed primitive with positions and normals
-Primitives::Plane plane;
+Trade::MeshData3D plane = Primitives::Plane::solid();
 Mesh* mesh;
 Buffer* vertexBuffer;
 
 // Fill vertex buffer with interleaved position and normal data
 MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
-    *plane.positions(0), *plane.normals(0));
+    plane.positions(0), plane.normals(0));
 
 // Set primitive and specify layout of interleaved vertex buffer, vertex count
 // has been already set by MeshTools::interleave()
@@ -146,17 +146,17 @@ mesh->setPrimitive(Mesh::Primitive::Triangles)
 
 @code
 // Indexed primitive
-Primitives::Cube cube;
+Trade::MeshData3D cube = Primitives::Cube::solid();
 Buffer *vertexBuffer, *indexBuffer;
 Mesh* mesh;
 
 // Fill vertex buffer with interleaved position and normal data
 MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
-    *cube.positions(0), *cube.normals(0));
+    cube.positions(0), cube.normals(0));
 
 // Fill index buffer with compressed index data
 MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw,
-    *cube.indices());
+    cube.indices());
 
 // Set primitive and specify layout of interleaved vertex buffer. Index count
 // and index buffer has been already specified by MeshTools::compressIndices().

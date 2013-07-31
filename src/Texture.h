@@ -89,7 +89,7 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
 for(std::size_t i = 0; i != 16; ++i) {
     void* data = ...;
     Image2D image({64, 64}, ImageFormat::RGBA, ImageType::UnsignedByte, image);
-    texture->setSubImage(0, Vector3i::zAxis(i), image);
+    texture.setSubImage(0, Vector3i::zAxis(i), image);
 }
 
 // ...

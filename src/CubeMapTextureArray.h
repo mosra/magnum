@@ -59,8 +59,8 @@ for(std::size_t i = 0; i != 16; ++i) {
     void* dataPositiveX = ...;
     Image2D imagePositiveX({64, 64}, ImageFormat::RGBA, ImageType::UnsignedByte, imagePositiveX);
     // ...
-    texture->setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, {}, imagePositiveX);
-    texture->setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, {}, imageNegativeX);
+    texture.setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, {}, imagePositiveX);
+    texture.setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, {}, imageNegativeX);
     // ...
 }
 
