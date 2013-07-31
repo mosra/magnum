@@ -201,9 +201,9 @@ template<class T> class AbstractResourceLoader {
 
     private:
         Implementation::ResourceManagerData<T>* manager;
-        std::size_t _requestedCount;
-        std::size_t _loadedCount;
-        std::size_t _notFoundCount;
+        std::size_t _requestedCount,
+            _loadedCount,
+            _notFoundCount;
 };
 
 template<class T> AbstractResourceLoader<T>::~AbstractResourceLoader() {
