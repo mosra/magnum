@@ -50,7 +50,7 @@ Image2D image({4096, 4096}, ImageFormat::RGBA, ImageType::UnsignedByte, data);
 
 Texture2D texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
-    ->setMinificationFilter(Sampler::Filter::Linear, Texture2D::Mipmap::Linear)
+    ->setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
     ->setWrapping(Sampler::Wrapping::ClampToEdge)
     ->setMaxAnisotropy(Sampler::maxSupportedAnisotropy())
     ->setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
