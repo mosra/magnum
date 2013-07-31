@@ -48,12 +48,12 @@ Math::Vector this class has non-explicit constructor from one value.
 template<UnsignedInt dimensions, class T> class Array {
     public:
         typedef T Type;                                     /**< @brief Data type */
-        const static UnsignedInt Dimensions = dimensions;  /**< @brief Dimension count */
+        const static UnsignedInt Dimensions = dimensions;   /**< @brief Dimension count */
 
         /**
          * @brief Default constructor
          *
-         * Sets all components to their default-constructed values
+         * Sets all components to their default-constructed values.
          */
         constexpr /*implicit*/ Array(): _data() {}
 

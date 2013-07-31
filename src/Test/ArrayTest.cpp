@@ -37,9 +37,9 @@ class ArrayTest: public TestSuite::Tester {
         void access();
 };
 
-typedef Magnum::Array1D<int> Array1D;
-typedef Magnum::Array2D<int> Array2D;
-typedef Magnum::Array3D<int> Array3D;
+typedef Magnum::Array1D<Int> Array1D;
+typedef Magnum::Array2D<Int> Array2D;
+typedef Magnum::Array3D<Int> Array3D;
 
 ArrayTest::ArrayTest() {
     addTests({&ArrayTest::construct,
@@ -71,8 +71,8 @@ void ArrayTest::construct() {
 }
 
 void ArrayTest::equality() {
-    CORRADE_VERIFY((Array<3, int>(5, 6, 7) == Array<3, int>(5, 6, 7)));
-    CORRADE_VERIFY((Array<3, int>(5, 6, 7) != Array<3, int>(5, 6, 8)));
+    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) == Array<3, Int>(5, 6, 7)));
+    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) != Array<3, Int>(5, 6, 8)));
 }
 
 void ArrayTest::access() {
