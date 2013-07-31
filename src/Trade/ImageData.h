@@ -111,7 +111,7 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensi
 }
 
 template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>() const {
-    return ImageReference<dimensions>(this->format(), this->type(), _size, _data);
+    return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
 }
 
 }}

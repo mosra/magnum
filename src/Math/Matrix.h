@@ -121,7 +121,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * tr(A) = \sum_{i=1}^n a_{i,i}
          * @f]
          */
-        T trace() const { return this->diagonal().sum(); }
+        T trace() const { return RectangularMatrix<size, size, T>::diagonal().sum(); }
 
         /** @brief %Matrix without given column and row */
         Matrix<size-1, T> ij(std::size_t skipCol, std::size_t skipRow) const;
@@ -162,7 +162,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         Matrix<size, T> invertedOrthogonal() const {
             CORRADE_ASSERT(isOrthogonal(),
                 "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal", {});
-            return this->transposed();
+            return RectangularMatrix<size, size, T>::transposed();
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT

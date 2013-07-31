@@ -102,7 +102,7 @@ template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::AbstractShap
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
 
 template<UnsignedInt dimensions> void AbstractShapeRenderer<dimensions>::createResources(typename MeshData<dimensions>::Type data) {
-    create<dimensions>(data, this->wireframeMesh, this->vertexBuffer, this->indexBuffer);
+    create<dimensions>(data, wireframeMesh, vertexBuffer, indexBuffer);
 }
 
 template class AbstractShapeRenderer<2>;

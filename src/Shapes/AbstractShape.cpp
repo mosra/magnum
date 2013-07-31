@@ -32,7 +32,7 @@
 namespace Magnum { namespace Shapes {
 
 template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape(SceneGraph::AbstractObject<dimensions, Float>* object, ShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float>(object, group) {
-    this->setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
+    SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
 }
 
 template<UnsignedInt dimensions> ShapeGroup<dimensions>* AbstractShape<dimensions>::group() {

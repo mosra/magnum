@@ -74,19 +74,23 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
         ~FeatureGroup();
 
         /** @brief Whether the group is empty */
-        bool isEmpty() const { return this->features.empty(); }
+        bool isEmpty() const {
+            return AbstractFeatureGroup<dimensions, T>::features.empty();
+        }
 
         /** @brief Count of features in the group */
-        std::size_t size() const { return this->features.size(); }
+        std::size_t size() const {
+            return AbstractFeatureGroup<dimensions, T>::features.size();
+        }
 
         /** @brief Feature at given index */
         Feature* operator[](std::size_t index) {
-            return static_cast<Feature*>(this->features[index]);
+            return static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
         }
 
         /** @overload */
         const Feature* operator[](std::size_t index) const {
-            return static_cast<Feature*>(this->features[index]);
+            return static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
         }
 
         /**
@@ -155,7 +159,7 @@ template<class Feature> using FeatureGroup3D = BasicFeatureGroup3D<Feature, Floa
 #endif
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>::~FeatureGroup() {
-    for(auto i: this->features) static_cast<Feature*>(i)->_group = nullptr;
+    for(auto i: AbstractFeatureGroup<dimensions, T>::features) static_cast<Feature*>(i)->_group = nullptr;
 }
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::add(Feature* feature) {

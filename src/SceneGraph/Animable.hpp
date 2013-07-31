@@ -64,7 +64,7 @@ template<UnsignedInt dimensions, class T> void AnimableGroup<dimensions, T>::ste
     if(!_runningCount && !wakeUp) return;
     wakeUp = false;
 
-    for(std::size_t i = 0; i != this->size(); ++i) {
+    for(std::size_t i = 0; i != AnimableGroup<dimensions, T>::size(); ++i) {
         Animable<dimensions, T>* animable = (*this)[i];
 
         /* The animation was stopped recently, just decrease count of running
@@ -132,7 +132,7 @@ template<UnsignedInt dimensions, class T> void AnimableGroup<dimensions, T>::ste
         animable->animationStep(time - animable->startTime, delta);
     }
 
-    CORRADE_INTERNAL_ASSERT(_runningCount <= this->size());
+    CORRADE_INTERNAL_ASSERT(_runningCount <= AnimableGroup<dimensions, T>::size());
 }
 
 }}

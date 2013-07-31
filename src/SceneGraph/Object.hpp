@@ -94,7 +94,7 @@ template<class Transformation> Object<Transformation>& Object<Transformation>::s
     const auto transformation = Transformation::compose(
         Transformation::inverted(parent->absoluteTransformation()), absoluteTransformation());
     setParent(parent);
-    this->setTransformation(transformation);
+    Transformation::setTransformation(transformation);
 
     return *this;
 }

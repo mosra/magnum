@@ -155,7 +155,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see Quaternion::angle(), Quaternion::axis()
          */
         constexpr Quaternion<T> rotation() const {
-            return this->real();
+            return Dual<Quaternion<T>>::real();
         }
 
         /**
@@ -167,7 +167,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see translation(const Vector3&)
          */
         Vector3<T> translation() const {
-            return (this->dual()*this->real().conjugated()).vector()*T(2);
+            return (Dual<Quaternion<T>>::dual()*Dual<Quaternion<T>>::real().conjugated()).vector()*T(2);
         }
 
         /**
@@ -176,7 +176,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see fromMatrix(), Quaternion::toMatrix()
          */
         Matrix4<T> toMatrix() const {
-            return Matrix4<T>::from(this->real().toMatrix(), translation());
+            return Matrix4<T>::from(Dual<Quaternion<T>>::real().toMatrix(), translation());
         }
 
         /**
@@ -188,7 +188,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see dualConjugated(), conjugated(), Quaternion::conjugated()
          */
         DualQuaternion<T> quaternionConjugated() const {
-            return {this->real().conjugated(), this->dual().conjugated()};
+            return {Dual<Quaternion<T>>::real().conjugated(), Dual<Quaternion<T>>::dual().conjugated()};
         }
 
         /**
@@ -213,7 +213,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      Dual::conjugated()
          */
         DualQuaternion<T> conjugated() const {
-            return {this->real().conjugated(), {this->dual().vector(), -this->dual().scalar()}};
+            return {Dual<Quaternion<T>>::real().conjugated(), {Dual<Quaternion<T>>::dual().vector(), -Dual<Quaternion<T>>::dual().scalar()}};
         }
 
         /**
@@ -225,7 +225,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          */
         Dual<T> lengthSquared() const {
-            return {this->real().dot(), T(2)*Quaternion<T>::dot(this->real(), this->dual())};
+            return {Dual<Quaternion<T>>::real().dot(), T(2)*Quaternion<T>::dot(Dual<Quaternion<T>>::real(), Dual<Quaternion<T>>::dual())};
         }
 
         /**

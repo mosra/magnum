@@ -133,7 +133,7 @@ template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::op
 }
 
 template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageReference<dimensions>() const {
-    return ImageReference<dimensions>(this->format(), this->type(), _size, _data);
+    return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
 }
 
 }

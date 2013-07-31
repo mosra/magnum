@@ -49,17 +49,17 @@ namespace {
 }
 
 template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>* point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(static_cast<const Shapes::Implementation::Shape<Shapes::Point<dimensions>>*>(point)->shape) {
-    if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
+    if(!AbstractShapeRenderer<dimensions>::wireframeMesh) AbstractShapeRenderer<dimensions>::createResources(meshData<dimensions>());
 }
 
 template<UnsignedInt dimensions> void PointRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     /* Half scale, because the point is 2x2(x2) */
-    this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
+    AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions, Float>::MatrixType::translation(point.position())*
         DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->pointSize()/2)))
         .setColor(options->color())
         .use();
-    this->wireframeMesh->draw();
+    AbstractShapeRenderer<dimensions>::wireframeMesh->draw();
 }
 
 template class PointRenderer<2>;

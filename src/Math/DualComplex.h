@@ -145,7 +145,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see Complex::angle()
          */
         constexpr Complex<T> rotation() const {
-            return this->real();
+            return Dual<Complex<T>>::real();
         }
 
         /**
@@ -157,7 +157,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see translation(const Vector2&)
          */
         Vector2<T> translation() const {
-            return Vector2<T>(this->dual());
+            return Vector2<T>(Dual<Complex<T>>::dual());
         }
 
         /**
@@ -166,7 +166,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see fromMatrix(), Complex::toMatrix()
          */
         Matrix3<T> toMatrix() const {
-            return Matrix3<T>::from(this->real().toMatrix(), translation());
+            return Matrix3<T>::from(Dual<Complex<T>>::real().toMatrix(), translation());
         }
 
         /**
@@ -178,7 +178,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todo can this be done similarly to dual quaternions?
          */
         DualComplex<T> operator*(const DualComplex<T>& other) const {
-            return {this->real()*other.real(), this->real()*other.dual() + this->dual()};
+            return {Dual<Complex<T>>::real()*other.real(), Dual<Complex<T>>::real()*other.dual() + Dual<Complex<T>>::dual()};
         }
 
         /**
@@ -190,7 +190,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see dualConjugated(), conjugated(), Complex::conjugated()
          */
         DualComplex<T> complexConjugated() const {
-            return {this->real().conjugated(), this->dual().conjugated()};
+            return {Dual<Complex<T>>::real().conjugated(), Dual<Complex<T>>::dual().conjugated()};
         }
 
         /**
@@ -215,7 +215,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      Dual::conjugated()
          */
         DualComplex<T> conjugated() const {
-            return {this->real().conjugated(), {-this->dual().real(), this->dual().imaginary()}};
+            return {Dual<Complex<T>>::real().conjugated(), {-Dual<Complex<T>>::dual().real(), Dual<Complex<T>>::dual().imaginary()}};
         }
 
         /**
@@ -228,7 +228,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todo Can this be done similarly to dual quaternins?
          */
         T lengthSquared() const {
-            return this->real().dot();
+            return Dual<Complex<T>>::real().dot();
         }
 
         /**
@@ -241,7 +241,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todo can this be done similarly to dual quaternions?
          */
         T length() const {
-            return this->real().length();
+            return Dual<Complex<T>>::real().length();
         }
 
         /**
@@ -254,7 +254,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todo can this be done similarly to dual quaternions?
          */
         DualComplex<T> normalized() const {
-            return {this->real()/length(), this->dual()};
+            return {Dual<Complex<T>>::real()/length(), Dual<Complex<T>>::dual()};
         }
 
         /**
@@ -267,7 +267,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todo can this be done similarly to dual quaternions?
          */
         DualComplex<T> inverted() const {
-            return DualComplex<T>(this->real().inverted(), {{}, {}})*DualComplex<T>({}, -this->dual());
+            return DualComplex<T>(Dual<Complex<T>>::real().inverted(), {{}, {}})*DualComplex<T>({}, -Dual<Complex<T>>::dual());
         }
 
         /**
@@ -280,7 +280,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @todo can this be done similarly to dual quaternions?
          */
         DualComplex<T> invertedNormalized() const {
-            return DualComplex<T>(this->real().invertedNormalized(), {{}, {}})*DualComplex<T>({}, -this->dual());
+            return DualComplex<T>(Dual<Complex<T>>::real().invertedNormalized(), {{}, {}})*DualComplex<T>({}, -Dual<Complex<T>>::dual());
         }
 
         /**
