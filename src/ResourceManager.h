@@ -91,6 +91,8 @@ template<class> class AbstractResourceLoader;
 
 namespace Implementation {
 
+/** @todo Print either resource key or name string based on loader capabilities */
+
 template<class T> class ResourceManagerData {
     template<class, class> friend class Magnum::Resource;
     friend class AbstractResourceLoader<T>;
