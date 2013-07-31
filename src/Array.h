@@ -191,6 +191,13 @@ template<class T> class Array3D: public Array<3, T> {
         constexpr T y() const { return (*this)[1]; }   /**< @overload */
         T& z() { return (*this)[2]; }                  /**< @brief Z component */
         constexpr T z() const { return (*this)[2]; }   /**< @overload */
+
+        /**
+         * @brief XY part of the array
+         * @return First two components of the array
+         */
+        Array2D<T>& xy() { return reinterpret_cast<Array2D<T>&>(*this); }
+        constexpr Array2D<T> xy() const { return {(*this)[0], (*this)[1]}; } /**< @overload */
 };
 
 /** @debugoperator{Magnum::Array} */

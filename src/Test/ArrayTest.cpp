@@ -104,6 +104,9 @@ void ArrayTest::access() {
     CORRADE_COMPARE(cc.x(), -5);
     CORRADE_COMPARE(cc.y(), 6);
     CORRADE_COMPARE(cc.z(), 7);
+
+    CORRADE_COMPARE(c.xy(), Array2D(-5, 6));
+    CORRADE_COMPARE(cc.xy(), Array2D(-5, 6));
 }
 
 }}
