@@ -56,13 +56,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
 
         /**
          * @brief Set transformation and projection matrix
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is identity matrix.
          */
-        VertexColor<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
+        VertexColor<dimensions>& setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
     private:

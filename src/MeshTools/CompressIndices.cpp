@@ -80,7 +80,7 @@ void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std:
     std::tie(indexCount, indexType, data) = compressIndicesInternal(indices, *minmax.second);
 
     mesh->setIndexCount(indices.size())
-        ->setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
+        .setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
     buffer->setData(indexCount*Mesh::indexSize(indexType), data, usage);
 
     delete[] data;

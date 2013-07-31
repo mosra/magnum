@@ -207,14 +207,14 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Set viewport
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Saves the viewport to be used at later time in bind(). If the
          * framebuffer is currently bound, updates the viewport to given
          * rectangle.
          * @see @fn_gl{Viewport}
          */
-        AbstractFramebuffer* setViewport(const Rectanglei& rectangle);
+        AbstractFramebuffer& setViewport(const Rectanglei& rectangle);
 
         /**
          * @brief Clear specified buffers in framebuffer

@@ -490,7 +490,7 @@ class MAGNUM_EXPORT Buffer {
 
         /**
          * @brief Set target hint
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the buffer
          * must be internally bound to some target before any operation. You
@@ -503,9 +503,9 @@ class MAGNUM_EXPORT Buffer {
          *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
          *      ... damned GL state
          */
-        Buffer* setTargetHint(Target hint) {
+        Buffer& setTargetHint(Target hint) {
             _targetHint = hint;
-            return this;
+            return *this;
         }
 
         /**
@@ -569,7 +569,7 @@ class MAGNUM_EXPORT Buffer {
          * @param size      Data size
          * @param data      Pointer to data
          * @param usage     %Buffer usage
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
@@ -577,25 +577,25 @@ class MAGNUM_EXPORT Buffer {
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData} or
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
-        Buffer* setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
+        Buffer& setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
             (this->*dataImplementation)(size, data, usage);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set buffer data
          * @param data      Fixed-size array with data
          * @param usage     %Buffer usage
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setData(GLsizeiptr, const GLvoid*, Usage).
          */
         #ifdef CORRADE_GCC46_COMPATIBILITY
         #define size size_ /* With GCC 4.6 it conflicts with size(). WTF. */
         #endif
-        template<std::size_t size, class T> Buffer* setData(const T(&data)[size], Usage usage) {
+        template<std::size_t size, class T> Buffer& setData(const T(&data)[size], Usage usage) {
             setData(size*sizeof(T), data, usage);
-            return this;
+            return *this;
         }
         #ifdef CORRADE_GCC46_COMPATIBILITY
         #undef size
@@ -605,18 +605,19 @@ class MAGNUM_EXPORT Buffer {
          * @brief Set buffer data
          * @param data      Vector with data
          * @param usage     %Buffer usage
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setData(GLsizeiptr, const GLvoid*, Usage)
          */
-        template<class T> Buffer* setData(const std::vector<T>& data, Usage usage) {
+        template<class T> Buffer& setData(const std::vector<T>& data, Usage usage) {
             setData(data.size()*sizeof(T), data.data(), usage);
-            return this;
+            return *this;
         }
 
         /** @overload */
-        template<std::size_t size, class T> void setData(const std::array<T, size>& data, Usage usage) {
+        template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, Usage usage) {
             setData(data.size()*sizeof(T), data.data(), usage);
+            return *this;
         }
 
         /**
@@ -624,7 +625,7 @@ class MAGNUM_EXPORT Buffer {
          * @param offset    Offset in the buffer
          * @param size      Data size
          * @param data      Pointer to data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
@@ -632,25 +633,25 @@ class MAGNUM_EXPORT Buffer {
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
          *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
-        Buffer* setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+        Buffer& setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             (this->*subDataImplementation)(offset, size, data);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set buffer subdata
          * @param offset    Offset in the buffer
          * @param data      Fixed-size array with data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
         #ifdef CORRADE_GCC46_COMPATIBILITY
         #define size size_ /* With GCC 4.6 it conflicts with size(). WTF. */
         #endif
-        template<std::size_t size, class T> Buffer* setSubData(GLintptr offset, const T(&data)[size]) {
+        template<std::size_t size, class T> Buffer& setSubData(GLintptr offset, const T(&data)[size]) {
             setSubData(offset, size*sizeof(T), data);
-            return this;
+            return *this;
         }
         #ifdef CORRADE_GCC46_COMPATIBILITY
         #undef size
@@ -660,48 +661,48 @@ class MAGNUM_EXPORT Buffer {
          * @brief Set buffer subdata
          * @param offset    Offset in the buffer
          * @param data      Vector with data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
-        template<class T> Buffer* setSubData(GLintptr offset, const std::vector<T>& data) {
+        template<class T> Buffer& setSubData(GLintptr offset, const std::vector<T>& data) {
             setSubData(offset, data.size()*sizeof(T), data.data());
-            return this;
+            return *this;
         }
 
         /** @overload */
-        template<std::size_t size, class T> Buffer* setSubData(GLintptr offset, const std::array<T, size>& data) {
+        template<std::size_t size, class T> Buffer& setSubData(GLintptr offset, const std::array<T, size>& data) {
             setSubData(offset, data.size()*sizeof(T), data.data());
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Invalidate buffer data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
          * is not available, this function does nothing.
          * @see @ref MapFlag "MapFlag::InvalidateBuffer", @fn_gl{InvalidateBufferData}
          */
-        Buffer* invalidateData() {
+        Buffer& invalidateData() {
             (this->*invalidateImplementation)();
-            return this;
+            return *this;
         }
 
         /**
          * @brief Invalidate buffer subdata
          * @param offset    Offset into the buffer
          * @param length    Length of the invalidated range
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
          * is not available, this function does nothing.
          * @see @ref MapFlag "MapFlag::InvalidateRange", @fn_gl{InvalidateBufferData}
          */
-        Buffer* invalidateSubData(GLintptr offset, GLsizeiptr length) {
+        Buffer& invalidateSubData(GLintptr offset, GLsizeiptr length) {
             (this->*invalidateSubImplementation)(offset, length);
-            return this;
+            return *this;
         }
         #endif
 
@@ -772,7 +773,7 @@ class MAGNUM_EXPORT Buffer {
          * @brief Flush mapped range
          * @param offset    Offset relative to start of mapped range
          * @param length    Length of the flushed memory
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Flushes specified subsection of mapped range. Use only if you called
          * map() with @ref MapFlag "MapFlag::FlushExplicit" flag. See
@@ -786,9 +787,9 @@ class MAGNUM_EXPORT Buffer {
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
          */
-        Buffer* flushMappedRange(GLintptr offset, GLsizeiptr length) {
+        Buffer& flushMappedRange(GLintptr offset, GLsizeiptr length) {
             (this->*flushMappedRangeImplementation)(offset, length);
-            return this;
+            return *this;
         }
 
         /**

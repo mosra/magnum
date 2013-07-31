@@ -74,10 +74,10 @@ template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::Abstrac
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() = default;
 
-template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>* AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
+template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>& AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;
     fixAspectRatio();
-    return this;
+    return *this;
 }
 
 template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::setViewport(const Vector2i& size) {

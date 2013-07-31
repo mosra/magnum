@@ -39,17 +39,17 @@ template<UnsignedInt dimensions, class T> Animable<dimensions, T>::Animable(Abst
 
 template<UnsignedInt dimensions, class T> Animable<dimensions, T>::~Animable() {}
 
-template<UnsignedInt dimensions, class T> Animable<dimensions, T>* Animable<dimensions, T>::setState(AnimationState state) {
-    if(currentState == state) return this;
+template<UnsignedInt dimensions, class T> Animable<dimensions, T>& Animable<dimensions, T>::setState(AnimationState state) {
+    if(currentState == state) return *this;
 
     /* Not allowed (for sanity) */
     if(previousState == AnimationState::Stopped && state == AnimationState::Paused)
-        return this;
+        return *this;
 
     /* Wake up the group in case no animations are running */
     group()->wakeUp = true;
     currentState = state;
-    return this;
+    return *this;
 }
 
 template<UnsignedInt dimensions, class T> AnimableGroup<dimensions, T>* Animable<dimensions, T>::group() {

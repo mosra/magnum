@@ -141,7 +141,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @param mipmap        Mipmap filtering. If set to anything else than
          *      BaseMipLevel, make sure textures for all mip levels are set or
          *      call generateMipmap().
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Sets filter used when the object pixel size is smaller than the
          * texture size. If @extension{EXT,direct_state_access} is not
@@ -155,12 +155,12 @@ class MAGNUM_EXPORT AbstractTexture {
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MIN_FILTER}
          */
-        AbstractTexture* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base);
+        AbstractTexture& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base);
 
         /**
          * @brief Set magnification filter
          * @param filter        Filter
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Sets filter used when the object pixel size is larger than largest
          * texture size. If @extension{EXT,direct_state_access} is not
@@ -170,15 +170,15 @@ class MAGNUM_EXPORT AbstractTexture {
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MAG_FILTER}
          */
-        AbstractTexture* setMagnificationFilter(Sampler::Filter filter) {
+        AbstractTexture& setMagnificationFilter(Sampler::Filter filter) {
             (this->*parameteriImplementation)(GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Set border color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Border color when wrapping is set to @ref Sampler::Wrapping "Sampler::Wrapping::ClampToBorder".
          * If @extension{EXT,direct_state_access} is not available, the texture
@@ -189,18 +189,18 @@ class MAGNUM_EXPORT AbstractTexture {
          *      with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
          */
-        AbstractTexture* setBorderColor(const Color4& color) {
+        AbstractTexture& setBorderColor(const Color4& color) {
             #ifndef MAGNUM_TARGET_GLES
             (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
             #else
             (this->*parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR_NV, color.data());
             #endif
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set max anisotropy
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default value is `1.0f`, which means no anisotropy. Set to value
          * greater than `1.0f` for anisotropic filtering. If
@@ -213,9 +213,9 @@ class MAGNUM_EXPORT AbstractTexture {
          * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
-        AbstractTexture* setMaxAnisotropy(Float anisotropy) {
+        AbstractTexture& setMaxAnisotropy(Float anisotropy) {
             (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
-            return this;
+            return *this;
         }
         #endif
 
@@ -234,7 +234,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /**
          * @brief Generate mipmap
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Can not be used for rectangle textures. If
          * @extension{EXT,direct_state_access} is not available, the texture
@@ -244,7 +244,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
          */
-        AbstractTexture* generateMipmap();
+        AbstractTexture& generateMipmap();
 
     protected:
         /**

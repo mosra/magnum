@@ -75,63 +75,63 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
 
         /**
          * @brief Normalize rotation part
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
          * to prevent rounding errors when rotating the object subsequently.
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* normalizeRotation() {
+        Object<BasicRigidMatrixTransformation3D<T>>& normalizeRotation() {
             setTransformation(Math::Matrix4<T>::from(
                 Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
                 _transformation.translation()));
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
          * @brief Set transformation
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Expects that the matrix represents rigid transformation.
          * @see Matrix4::isRigidTransformation()
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* setTransformation(const Math::Matrix4<T>& transformation) {
+        Object<BasicRigidMatrixTransformation3D<T>>& setTransformation(const Math::Matrix4<T>& transformation) {
             CORRADE_ASSERT(transformation.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation",
-                static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this));
+                static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this));
             setTransformationInternal(transformation);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
-        Object<BasicRigidMatrixTransformation3D<T>>* resetTransformation() {
+        Object<BasicRigidMatrixTransformation3D<T>>& resetTransformation() {
             setTransformation({});
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
          * @brief Multiply transformation
          * @param transformation    Transformation
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Expects that the matrix represents rigid transformation.
          * @see Matrix4::isRigidTransformation()
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation3D<T>>& transform(const Math::Matrix4<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation",
-                static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this));
+                static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this));
             transformInternal(transformation, type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::translate()
          * Same as calling transform() with Matrix4::translation().
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation3D<T>>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix4<T>::translation(vector), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
@@ -139,57 +139,57 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::rotation().
          * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis(), normalizeRotation()
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation3D<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
          * @brief Rotate object around X axis
          * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::rotationX().
          * @see normalizeRotation()
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation3D<T>>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix4<T>::rotationX(angle), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
          * @brief Rotate object around Y axis
          * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::rotationY().
          * @see normalizeRotation()
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation3D<T>>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix4<T>::rotationY(angle), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
          * @brief Rotate object around Z axis
          * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::rotationZ().
          * @see normalizeRotation()
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation3D<T>>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix4<T>::rotationZ(angle), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /**
@@ -197,13 +197,13 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @param normal    Normal of the plane through which to reflect
          *      (normalized)
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with Matrix4::reflection().
          */
-        Object<BasicRigidMatrixTransformation3D<T>>* reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation3D<T>>& reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix4<T>::reflection(normal), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
     protected:

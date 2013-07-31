@@ -143,8 +143,11 @@ void AnimableTest::state() {
     CORRADE_COMPARE(group.runningCount(), 0);
 
     /* Verify running count can go past 0/1 */
-    group.add((new StateTrackingAnimable(&object, &group))->setState(AnimationState::Running));
-    group.add((new StateTrackingAnimable(&object, &group))->setState(AnimationState::Running));
+    auto a = new StateTrackingAnimable(&object, &group);
+    auto b = new StateTrackingAnimable(&object, &group);
+    a->setState(AnimationState::Running);
+    b->setState(AnimationState::Running);
+    group.add(a).add(b);
     group.step(1.0f, 1.0f);
     CORRADE_COMPARE(group.runningCount(), 2);
 }

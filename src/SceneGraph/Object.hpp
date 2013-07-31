@@ -65,16 +65,16 @@ template<class Transformation> const Object<Transformation>* Object<Transformati
     return scene();
 }
 
-template<class Transformation> Object<Transformation>* Object<Transformation>::setParent(Object<Transformation>* parent) {
+template<class Transformation> Object<Transformation>& Object<Transformation>::setParent(Object<Transformation>* parent) {
     /* Skip if parent is already parent or this is scene (which cannot have parent) */
     /** @todo Assert for setting parent to scene */
-    if(this->parent() == parent || isScene()) return this;
+    if(this->parent() == parent || isScene()) return *this;
 
     /* Object cannot be parented to its child */
     Object<Transformation>* p = parent;
     while(p) {
         /** @todo Assert for this */
-        if(p == this) return this;
+        if(p == this) return *this;
         p = p->parent();
     }
 
@@ -85,18 +85,18 @@ template<class Transformation> Object<Transformation>* Object<Transformation>::s
     if(parent) parent->Containers::LinkedList<Object<Transformation>>::insert(this);
 
     setDirty();
-    return this;
+    return *this;
 }
 
-template<class Transformation> Object<Transformation>* Object<Transformation>::setParentKeepTransformation(Object<Transformation>* parent) {
-    CORRADE_ASSERT(scene() == parent->scene(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene", this);
+template<class Transformation> Object<Transformation>& Object<Transformation>::setParentKeepTransformation(Object<Transformation>* parent) {
+    CORRADE_ASSERT(scene() == parent->scene(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene", *this);
 
     const auto transformation = Transformation::compose(
         Transformation::inverted(parent->absoluteTransformation()), absoluteTransformation());
     setParent(parent);
     this->setTransformation(transformation);
 
-    return this;
+    return *this;
 }
 
 template<class Transformation> typename Transformation::DataType Object<Transformation>::absoluteTransformation() const {

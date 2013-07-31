@@ -37,8 +37,8 @@ template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(R
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions, Float>::MatrixType::translation((axisAlignedBox.min()+axisAlignedBox.max())/2)*
         DimensionTraits<dimensions, Float>::MatrixType::scaling(axisAlignedBox.max()-axisAlignedBox.min()))
-        ->setColor(options->color())
-        ->use();
+        .setColor(options->color())
+        .use();
     this->wireframeMesh->draw();
 }
 

@@ -45,40 +45,40 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
          * @brief Scale object
          * @param vector    Scaling vector
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
          */
-        AbstractBasicTranslationRotationScaling3D<T>* scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>& scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             doScale(vector, type);
-            return this;
+            return *this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractBasicTranslationRotationScaling3D<T>* resetTransformation() {
+        AbstractBasicTranslationRotationScaling3D<T>& resetTransformation() {
             AbstractBasicTranslationRotation3D<T>::resetTransformation();
-            return this;
+            return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             AbstractBasicTranslationRotation3D<T>::translate(vector, type);
-            return this;
+            return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             AbstractBasicTranslationRotation3D<T>::rotate(angle, normalizedAxis, type);
-            return this;
+            return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             AbstractBasicTranslationRotation3D<T>::rotateX(angle, type);
-            return this;
+            return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             AbstractBasicTranslationRotation3D<T>::rotateY(angle, type);
-            return this;
+            return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             AbstractBasicTranslationRotation3D<T>::rotateZ(angle, type);
-            return this;
+            return *this;
         }
         #endif
 

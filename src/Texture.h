@@ -50,12 +50,12 @@ Image2D image({4096, 4096}, ImageFormat::RGBA, ImageType::UnsignedByte, data);
 
 Texture2D texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
-    ->setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-    ->setWrapping(Sampler::Wrapping::ClampToEdge)
-    ->setMaxAnisotropy(Sampler::maxSupportedAnisotropy())
-    ->setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
-    ->setSubImage(0, {}, &image)
-    ->generateMipmap();
+    .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
+    .setWrapping(Sampler::Wrapping::ClampToEdge)
+    .setMaxAnisotropy(Sampler::maxSupportedAnisotropy())
+    .setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
+    .setSubImage(0, {}, &image)
+    .generateMipmap();
 @endcode
 
 @attention Don't forget to fully configure the texture before use. Note that
@@ -84,7 +84,7 @@ array with 16 layers of 64x64 images:
 Texture3D texture(Texture3D::Target::Texture2DArray);
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
-    ->setStorage(levels, TextureFormat::RGBA8, {64, 64,16});
+    .setStorage(levels, TextureFormat::RGBA8, {64, 64,16});
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* data = ...;
@@ -249,7 +249,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /**
          * @brief Set wrapping
          * @param wrapping          Wrapping type for all texture dimensions
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Sets wrapping type for coordinates out of range (0, 1) for normal
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
@@ -264,9 +264,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
          */
-        Texture<Dimensions>* setWrapping(const Array<Dimensions, Sampler::Wrapping>& wrapping) {
+        Texture<Dimensions>& setWrapping(const Array<Dimensions, Sampler::Wrapping>& wrapping) {
             DataHelper<Dimensions>::setWrapping(this, wrapping);
-            return this;
+            return *this;
         }
 
         /**
@@ -274,7 +274,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param levels            Mip level count
          * @param internalFormat    Internal format
          * @param size              Size of largest mip level
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Specifies entire structure of a texture at once, removing the need
          * for additional consistency checks and memory reallocations when
@@ -296,9 +296,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
          */
-        Texture<Dimensions>* setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
+        Texture<Dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<Dimensions>::setStorage(this, _target, levels, internalFormat, size);
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -347,7 +347,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param level             Mip level
          * @param internalFormat    Internal format
          * @param image             %Image
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * For better performance when generating mipmaps using
          * generateMipmap() or calling setImage() more than once use
@@ -361,16 +361,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
-        Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
+        Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
             DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        Texture<Dimensions>* setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>& image) {
+        Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>& image) {
             DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
-            return this;
+            return *this;
         }
         #endif
 
@@ -379,7 +379,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
          * @param image             %Image
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
@@ -389,16 +389,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const ImageReference<dimensions>& image) {
+        Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const ImageReference<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        Texture<Dimensions>* setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
+        Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
-            return this;
+            return *this;
         }
         #endif
 
@@ -418,27 +418,27 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Texture<Dimensions>* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+        Texture<Dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
-            return this;
+            return *this;
         }
-        Texture<Dimensions>* setMagnificationFilter(Sampler::Filter filter) {
+        Texture<Dimensions>& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
-            return this;
+            return *this;
         }
         #ifndef MAGNUM_TARGET_GLES3
-        Texture<Dimensions>* setBorderColor(const Color4& color) {
+        Texture<Dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
-            return this;
+            return *this;
         }
-        Texture<Dimensions>* setMaxAnisotropy(Float anisotropy) {
+        Texture<Dimensions>& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
-            return this;
+            return *this;
         }
         #endif
-        Texture<Dimensions>* generateMipmap() {
+        Texture<Dimensions>& generateMipmap() {
             AbstractTexture::generateMipmap();
-            return this;
+            return *this;
         }
         #endif
 };

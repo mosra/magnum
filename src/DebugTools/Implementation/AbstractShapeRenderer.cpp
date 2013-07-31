@@ -52,8 +52,8 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     /* Mesh configuration */
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
-        ->setVertexCount(data.positions(0).size())
-        ->addVertexBuffer(buffer, 0, Shaders::Flat2D::Position());
+        .setVertexCount(data.positions(0).size())
+        .addVertexBuffer(buffer, 0, Shaders::Flat2D::Position());
     ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
@@ -74,8 +74,8 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
     /* Mesh configuration */
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
-        ->setVertexCount(data.positions(0).size())
-        ->addVertexBuffer(vertexBuffer, 0, Shaders::Flat3D::Position());
+        .setVertexCount(data.positions(0).size())
+        .addVertexBuffer(vertexBuffer, 0, Shaders::Flat3D::Position());
     ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */

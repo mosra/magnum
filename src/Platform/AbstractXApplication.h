@@ -204,7 +204,7 @@ class AbstractXApplication::Configuration {
 
         /**
          * @brief Set window title
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `"Magnum X Application"`.
          */
@@ -218,7 +218,7 @@ class AbstractXApplication::Configuration {
 
         /**
          * @brief Set window size
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `{800, 600}`.
          */

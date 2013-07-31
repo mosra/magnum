@@ -57,8 +57,8 @@ template<UnsignedInt dimensions> void PointRenderer<dimensions>::draw(Resource<S
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions, Float>::MatrixType::translation(point.position())*
         DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->pointSize()/2)))
-        ->setColor(options->color())
-        ->use();
+        .setColor(options->color())
+        .use();
     this->wireframeMesh->draw();
 }
 

@@ -60,9 +60,9 @@ Image2D positiveX({256, 256}, ImageFormat::RGBA, ImageType::UnsignedByte, dataPo
 CubeMapTexture texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
-    ->setStorage(Math::log2(256)+1, TextureFormat::RGBA8, {256, 256})
-    ->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, &positiveX)
-    ->setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, &negativeX)
+    .setStorage(Math::log2(256)+1, TextureFormat::RGBA8, {256, 256})
+    .setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, &positiveX)
+    .setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, &negativeX)
     // ...
 @endcode
 
@@ -101,9 +101,9 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setWrapping() for more information.
          */
-        CubeMapTexture* setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
+        CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -125,9 +125,9 @@ class CubeMapTexture: public AbstractTexture {
          *
          * See Texture::setStorage() for more information.
          */
-        CubeMapTexture* setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
+        CubeMapTexture& setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
             DataHelper<2>::setStorage(this, _target, levels, internalFormat, size);
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -166,20 +166,20 @@ class CubeMapTexture: public AbstractTexture {
          * @param level             Mip level
          * @param internalFormat    Internal format
          * @param image             %Image
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * See Texture::setImage() for more information.
          */
-        CubeMapTexture* setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
+        CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
             DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        CubeMapTexture* setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
+        CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
             DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
-            return this;
+            return *this;
         }
         #endif
 
@@ -189,20 +189,20 @@ class CubeMapTexture: public AbstractTexture {
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
          * @param image             %Image
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * See Texture::setSubImage() for more information.
          */
-        CubeMapTexture* setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image) {
+        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image) {
             DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
-            return this;
+            return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        CubeMapTexture* setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
+        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
             DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
-            return this;
+            return *this;
         }
         #endif
 
@@ -224,27 +224,27 @@ class CubeMapTexture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        CubeMapTexture* setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+        CubeMapTexture& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
-            return this;
+            return *this;
         }
-        CubeMapTexture* setMagnificationFilter(Sampler::Filter filter) {
+        CubeMapTexture& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
-            return this;
+            return *this;
         }
         #ifndef MAGNUM_TARGET_GLES3
-        CubeMapTexture* setBorderColor(const Color4& color) {
+        CubeMapTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
-            return this;
+            return *this;
         }
-        CubeMapTexture* setMaxAnisotropy(Float anisotropy) {
+        CubeMapTexture& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
-            return this;
+            return *this;
         }
         #endif
-        CubeMapTexture* generateMipmap() {
+        CubeMapTexture& generateMipmap() {
             AbstractTexture::generateMipmap();
-            return this;
+            return *this;
         }
         #endif
 };

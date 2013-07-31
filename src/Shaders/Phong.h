@@ -119,87 +119,87 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
 
         /**
          * @brief Set ambient color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`. Has no effect if
          * @ref Flag "Flag::AmbientTexture" is set.
          */
-        Phong* setAmbientColor(const Color3& color);
+        Phong& setAmbientColor(const Color3& color);
 
         /**
          * @brief Set diffuse color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Has no effect if @ref Flag "Flag::AmbientTexture" is used.
          */
-        Phong* setDiffuseColor(const Color3& color);
+        Phong& setDiffuseColor(const Color3& color);
 
         /**
          * @brief Set specular color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`. Has no effect if
          * @ref Flag "Flag::SpecularTexture" is set.
          */
-        Phong* setSpecularColor(const Color3& color);
+        Phong& setSpecularColor(const Color3& color);
 
         /**
          * @brief Set shininess
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * The larger value, the harder surface (smaller specular highlight).
          * If not set, default value is `80.0f`.
          */
-        Phong* setShininess(Float shininess) {
+        Phong& setShininess(Float shininess) {
             setUniform(shininessUniform, shininess);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set transformation matrix
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Phong* setTransformationMatrix(const Matrix4& matrix) {
+        Phong& setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set normal matrix
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Phong* setNormalMatrix(const Math::Matrix<3, Float>& matrix) {
+        Phong& setNormalMatrix(const Math::Matrix<3, Float>& matrix) {
             setUniform(normalMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set projection matrix
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Phong* setProjectionMatrix(const Matrix4& matrix) {
+        Phong& setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set light position
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Phong* setLightPosition(const Vector3& light) {
+        Phong& setLightPosition(const Vector3& light) {
             setUniform(lightUniform, light);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set light color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        Phong* setLightColor(const Color3& color) {
+        Phong& setLightColor(const Color3& color) {
             setUniform(lightColorUniform, color);
-            return this;
+            return *this;
         }
 
     private:
@@ -218,19 +218,19 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
 
 CORRADE_ENUMSET_OPERATORS(Phong::Flags)
 
-inline Phong* Phong::setAmbientColor(const Color3& color) {
+inline Phong& Phong::setAmbientColor(const Color3& color) {
     if(!(_flags & Flag::AmbientTexture)) setUniform(ambientColorUniform, color);
-    return this;
+    return *this;
 }
 
-inline Phong* Phong::setDiffuseColor(const Color3& color) {
+inline Phong& Phong::setDiffuseColor(const Color3& color) {
     if(!(_flags & Flag::DiffuseTexture)) setUniform(diffuseColorUniform, color);
-    return this;
+    return *this;
 }
 
-inline Phong* Phong::setSpecularColor(const Color3& color) {
+inline Phong& Phong::setSpecularColor(const Color3& color) {
     if(!(_flags & Flag::SpecularTexture)) setUniform(specularColorUniform, color);
-    return this;
+    return *this;
 }
 
 }}

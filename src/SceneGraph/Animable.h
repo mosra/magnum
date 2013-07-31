@@ -165,7 +165,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
 
         /**
          * @brief Set animation state
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Note that changing state from @ref AnimationState "AnimationState::Stopped"
          * to @ref AnimationState "AnimationState::Paused" is ignored and
@@ -174,7 +174,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
          * @see animationStarted(), animationPaused(), animationResumed(),
          *      animationStopped()
          */
-        Animable<dimensions, T>* setState(AnimationState state);
+        Animable<dimensions, T>& setState(AnimationState state);
 
         /**
          * @brief Whether the animation is repeated
@@ -185,14 +185,14 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
 
         /**
          * @brief Enable/disable repeated animation
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `false`.
          * @see setRepeatCount()
          */
-        Animable<dimensions, T>* setRepeated(bool repeated) {
+        Animable<dimensions, T>& setRepeated(bool repeated) {
             _repeated = repeated;
-            return this;
+            return *this;
         }
 
         /**
@@ -204,15 +204,15 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
 
         /**
          * @brief Set repeat count
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Has effect only if repeated animation is enabled. `0` means
          * infinitely repeated animation. Default is `0`.
          * @see setRepeated()
          */
-        Animable<dimensions, T>* setRepeatCount(UnsignedShort count) {
+        Animable<dimensions, T>& setRepeatCount(UnsignedShort count) {
             _repeatCount = count;
-            return this;
+            return *this;
         }
 
         /**
@@ -226,15 +226,15 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
     protected:
         /**
          * @brief Set animation duration
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Sets duration of the animation cycle in seconds. Set to `0.0f` for
          * infinite non-repeating animation. Default is `0.0f`.
          */
         /* Protected so only animation implementer can change it */
-        Animable<dimensions, T>* setDuration(Float duration) {
+        Animable<dimensions, T>& setDuration(Float duration) {
             _duration = duration;
-            return this;
+            return *this;
         }
 
         /**

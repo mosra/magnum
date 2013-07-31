@@ -47,13 +47,13 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @brief Translate object
          * @param vector            Translation vector
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
          */
-        AbstractBasicTranslationRotation3D<T>* translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             doTranslate(vector, type);
-            return this;
+            return *this;
         }
 
         /**
@@ -61,63 +61,63 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
          *      Vector3::yAxis(), Vector3::zAxis()
          */
-        AbstractBasicTranslationRotation3D<T>* rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             doRotate(angle, normalizedAxis, type);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Rotate object around X axis
          * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
          * `rotate(angle, Vector3::xAxis())`.
          */
-        AbstractBasicTranslationRotation3D<T>* rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateX(angle, type);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Rotate object around Y axis
          * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
          * `rotate(angle, Vector3::yAxis())`.
          */
-        AbstractBasicTranslationRotation3D<T>* rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateX(angle, type);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Rotate object around Z axis
          * @param angle             Angle (counterclockwise)
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
          * `rotate(angle, Vector3::zAxis())`.
          */
-        AbstractBasicTranslationRotation3D<T>* rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateZ(angle, type);
-            return this;
+            return *this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractBasicTranslationRotation3D<T>* resetTransformation() {
+        AbstractBasicTranslationRotation3D<T>& resetTransformation() {
             AbstractTransformation<3, T>::resetTransformation();
-            return this;
+            return *this;
         }
         #endif
 

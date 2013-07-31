@@ -190,20 +190,20 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
 
         /**
          * @brief Set parent object
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setParentKeepTransformation()
          */
-        Object<Transformation>* setParent(Object<Transformation>* parent);
+        Object<Transformation>& setParent(Object<Transformation>* parent);
 
         /**
          * @brief Set parent object and keep absolute transformation
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * While setParent() preserves only relative transformation of the
          * object, this funcition preserves absolute transformation.
          */
-        Object<Transformation>* setParentKeepTransformation(Object<Transformation>* parent);
+        Object<Transformation>& setParentKeepTransformation(Object<Transformation>* parent);
 
         /*@}*/
 

@@ -46,31 +46,31 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractTrans
          * @brief Translate object
          * @param vector    Translation vector
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see Vector2::xAxis(), Vector2::yAxis()
          */
-        AbstractBasicTranslationRotation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             doTranslate(vector, type);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Rotate object
          * @param angle     Angle (counterclockwise)
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        AbstractBasicTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotate(angle, type);
-            return this;
+            return *this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractBasicTranslationRotation2D<T>* resetTransformation() {
+        AbstractBasicTranslationRotation2D<T>& resetTransformation() {
             AbstractTransformation<2, T>::resetTransformation();
-            return this;
+            return *this;
         }
         #endif
 

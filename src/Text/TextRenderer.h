@@ -170,10 +170,10 @@ The text can be then drawn by configuring text shader, binding font texture
 and drawing the mesh:
 @code
 Text::AbstractFont* font;
-Text::GlyphCache* cache;
+Text::GlyphCache cache;
 
-Shaders::VectorShader2D* shader;
-Buffer *vertexBuffer, *indexBuffer;
+Shaders::VectorShader2D shader;
+Buffer vertexBuffer, indexBuffer;
 Mesh mesh;
 
 // Render the text
@@ -182,9 +182,9 @@ std::tie(mesh, rectangle) = Text::TextRenderer2D::render(font, cache, 0.15f,
     "Hello World!", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
 
 // Draw white text centered on the screen
-shader->setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
-    ->setColor(Color3(1.0f));
-    ->use();
+shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
+    .setColor(Color3(1.0f));
+    .use();
 glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 mesh.draw();
 @endcode
@@ -197,8 +197,8 @@ mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 @code
 Text::AbstractFont* font;
-Text::GlyphCache* cache;
-Shaders::VectorShader2D* shader;
+Text::GlyphCache cache;
+Shaders::VectorShader2D shader;
 
 // Initialize renderer and reserve memory for enough glyphs
 Text::TextRenderer2D renderer(font, cache, 0.15f);
@@ -208,9 +208,9 @@ renderer.reserve(32, Buffer::Usage::DynamicDraw, Buffer::Usage::StaticDraw);
 renderer.render("Hello World Countdown: 10");
 
 // Draw the text centered on the screen
-shader->setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
-    ->setColor(Color3(1.0f));
-    ->use();
+shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
+    .setColor(Color3(1.0f));
+    .use();
 glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 renderer.mesh().draw();
 @endcode

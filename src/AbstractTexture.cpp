@@ -145,23 +145,23 @@ void AbstractTexture::bindImplementationDSA(GLint layer) {
 }
 #endif
 
-AbstractTexture* AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
+AbstractTexture& AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Sampler::Mipmap::Base, "AbstractTexture: rectangle textures cannot have mipmaps", this);
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Sampler::Mipmap::Base, "AbstractTexture: rectangle textures cannot have mipmaps", *this);
     #endif
 
     (this->*parameteriImplementation)(GL_TEXTURE_MIN_FILTER,
         static_cast<GLint>(filter)|static_cast<GLint>(mipmap));
-    return this;
+    return *this;
 }
 
-AbstractTexture* AbstractTexture::generateMipmap() {
+AbstractTexture& AbstractTexture::generateMipmap() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", this);
+    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", *this);
     #endif
 
     (this->*mipmapImplementation)();
-    return this;
+    return *this;
 }
 
 void AbstractTexture::mipmapImplementationDefault() {

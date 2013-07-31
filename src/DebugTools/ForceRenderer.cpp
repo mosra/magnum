@@ -87,17 +87,17 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
 
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(Mesh::Primitive::Lines)
-        ->setIndexCount(indices.size())
-        ->addVertexBuffer(vertexBuffer, 0,
+        .setIndexCount(indices.size())
+        .addVertexBuffer(vertexBuffer, 0,
             typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))
-        ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, positions.size());
-    ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+        .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, positions.size());
+    ResourceManager::instance()->set(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
 template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) {
     shader->setTransformationProjectionMatrix(camera->projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), *force)*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->scale())))
-        ->setColor(options->color())
-        ->use();
+        .setColor(options->color())
+        .use();
     mesh->draw();
 }
 

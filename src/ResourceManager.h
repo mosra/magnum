@@ -287,7 +287,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set resource data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If @p policy is set to `ResourcePolicy::ReferenceCounted`, there
          * must be already at least one reference to given resource, otherwise
@@ -304,19 +304,19 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *      subsequent updates are not possible.
          * @see referenceCount(), state()
          */
-        template<class T> ResourceManager<Types...>* set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
+        template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set resource data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
          * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
          */
-        template<class T> ResourceManager<Types...>* set(ResourceKey key, T* data) {
+        template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data) {
             return set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
         }
 
@@ -332,51 +332,51 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set fallback for not found resources
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        template<class T> ResourceManager<Types...>* setFallback(T* data) {
+        template<class T> ResourceManager<Types...>& setFallback(T* data) {
             this->Implementation::ResourceManagerData<T>::setFallback(data);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Free all resources of given type which are not referenced
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        template<class T> ResourceManager<Types...>* free() {
+        template<class T> ResourceManager<Types...>& free() {
             this->Implementation::ResourceManagerData<T>::free();
-            return this;
+            return *this;
         }
 
         /**
          * @brief Free all resources which are not referenced
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        ResourceManager<Types...>* free() {
+        ResourceManager<Types...>& free() {
             freeInternal<Types...>();
-            return this;
+            return *this;
         }
 
         /**
          * @brief Clear all resources of given type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Unlike free() this function assumes that no resource is referenced.
          */
-        template<class T> ResourceManager<Types...>* clear() {
+        template<class T> ResourceManager<Types...>& clear() {
             this->Implementation::ResourceManagerData<T>::clear();
-            return this;
+            return *this;
         }
 
         /**
          * @brief Clear all resources
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Unlike free() this function assumes that no resource is referenced.
          */
-        ResourceManager<Types...>* clear() {
+        ResourceManager<Types...>& clear() {
             clearInternal<Types...>();
-            return this;
+            return *this;
         }
 
         /** @brief Loader for given type of resources */
@@ -391,15 +391,15 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set loader for given type of resources
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * See AbstractResourceLoader documentation for more information.
          * @attention The loader is deleted on destruction before unloading
          *      all resources.
          */
-        template<class T> ResourceManager<Types...>* setLoader(AbstractResourceLoader<T>* loader) {
+        template<class T> ResourceManager<Types...>& setLoader(AbstractResourceLoader<T>* loader) {
             this->Implementation::ResourceManagerData<T>::setLoader(loader);
-            return this;
+            return *this;
         }
 
     private:

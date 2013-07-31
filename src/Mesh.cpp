@@ -117,7 +117,7 @@ Mesh& Mesh::operator=(Mesh&& other) {
     return *this;
 }
 
-Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
+Mesh& Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(buffer->targetHint() == Buffer::Target::ElementArray,
         "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer->targetHint(), this);
@@ -133,7 +133,7 @@ Mesh* Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, Unsi
     static_cast<void>(end);
     #endif
     (this->*bindIndexBufferImplementation)(buffer);
-    return this;
+    return *this;
 }
 
 void Mesh::draw() {

@@ -91,21 +91,21 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
 
         /**
          * @brief Add feature to the group
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If the features is part of another group, it is removed from it.
          * @see remove(), AbstractGroupedFeature::AbstractGroupedFeature()
          */
-        FeatureGroup<dimensions, Feature, T>* add(Feature* feature);
+        FeatureGroup<dimensions, Feature, T>& add(Feature* feature);
 
         /**
          * @brief Remove feature from the group
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * The feature must be part of the group.
          * @see add()
          */
-        FeatureGroup<dimensions, Feature, T>* remove(Feature* feature);
+        FeatureGroup<dimensions, Feature, T>& remove(Feature* feature);
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
@@ -158,7 +158,7 @@ template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions
     for(auto i: this->features) static_cast<Feature*>(i)->_group = nullptr;
 }
 
-template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>* FeatureGroup<dimensions, Feature, T>::add(Feature* feature) {
+template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::add(Feature* feature) {
     /* Remove from previous group */
     if(feature->_group)
         feature->_group->remove(feature);
@@ -166,16 +166,16 @@ template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions
     /* Crossreference the feature and group together */
     AbstractFeatureGroup<dimensions, T>::add(feature);
     feature->_group = this;
-    return this;
+    return *this;
 }
 
-template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>* FeatureGroup<dimensions, Feature, T>::remove(Feature* feature) {
+template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::remove(Feature* feature) {
     CORRADE_ASSERT(feature->_group == this,
-        "SceneGraph::AbstractFeatureGroup::remove(): feature is not part of this group", this);
+        "SceneGraph::AbstractFeatureGroup::remove(): feature is not part of this group", *this);
 
     AbstractFeatureGroup<dimensions, T>::remove(feature);
     feature->_group = nullptr;
-    return this;
+    return *this;
 }
 
 }}

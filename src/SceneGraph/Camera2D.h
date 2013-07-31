@@ -39,9 +39,9 @@ See Drawable documentation for introduction. The camera by default displays
 OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect ratio
 correction. Common setup example:
 @code
-SceneGraph::Camera2D* camera = new SceneGraph::Camera2D(&cameraObject);
-camera->setProjection({4.0f/3.0f, 1.0f})
-      ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
+SceneGraph::Camera2D camera(&cameraObject);
+camera.setProjection({4.0f/3.0f, 1.0f})
+      .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
 
 @section Camera2D-explicit-specializations Explicit template specializations
@@ -70,17 +70,17 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractC
         /**
          * @brief Set projection
          * @param size      Size of the view
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see Matrix3::projection()
          */
-        BasicCamera2D<T>* setProjection(const Math::Vector2<T>& size);
+        BasicCamera2D<T>& setProjection(const Math::Vector2<T>& size);
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        BasicCamera2D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
+        BasicCamera2D<T>& setAspectRatioPolicy(AspectRatioPolicy policy) {
             AbstractCamera<2, T>::setAspectRatioPolicy(policy);
-            return this;
+            return *this;
         }
         #endif
 };

@@ -35,8 +35,8 @@ template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(const Shap
 
 template<UnsignedInt dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*box.transformation())
-        ->setColor(options->color())
-        ->use();
+        .setColor(options->color())
+        .use();
     this->wireframeMesh->draw();
 }
 

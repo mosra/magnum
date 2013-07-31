@@ -77,19 +77,19 @@ class MyShader: public AbstractShaderProgram {
 
     // ...
 };
-Mesh* mesh;
-Buffer* vertexBuffer;
+Mesh mesh;
+Buffer vertexBuffer;
 
 // Fill vertex buffer with position data
 static constexpr Vector3 positions[30] = {
     // ...
 };
-vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
+vertexBuffer.setData(positions, Buffer::Usage::StaticDraw);
 
 // Set primitive and vertex count, add the buffer and specify its layout
-mesh->setPrimitive(Mesh::Primitive::Triangles)
-    ->setVertexCount(30)
-    ->addVertexBuffer(vertexBuffer, 0, MyShader::Position());
+mesh.setPrimitive(Mesh::Primitive::Triangles)
+    .setVertexCount(30)
+    .addVertexBuffer(vertexBuffer, 0, MyShader::Position());
 @endcode
 
 @subsubsection Mesh-configuration-examples-nonindexed-phong Interleaved vertex data
@@ -97,8 +97,8 @@ mesh->setPrimitive(Mesh::Primitive::Triangles)
 @code
 // Non-indexed primitive with positions and normals
 Trade::MeshData3D plane = Primitives::Plane::solid();
-Mesh* mesh;
-Buffer* vertexBuffer;
+Mesh mesh;
+Buffer vertexBuffer;
 
 // Fill vertex buffer with interleaved position and normal data
 MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
@@ -106,8 +106,8 @@ MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
 
 // Set primitive and specify layout of interleaved vertex buffer, vertex count
 // has been already set by MeshTools::interleave()
-mesh->setPrimitive(plane.primitive())
-    ->addInterleavedVertexBuffer(buffer, 0,
+mesh.setPrimitive(plane.primitive())
+    .addInterleavedVertexBuffer(buffer, 0,
         Shaders::PhongShader::Position(),
         Shaders::PhongShader::Normal());
 @endcode
@@ -122,33 +122,33 @@ class MyShader: public AbstractShaderProgram {
 
     // ...
 };
-Buffer *vertexBuffer, *indexBuffer;
-Mesh* mesh;
+Buffer vertexBuffer, indexBuffer;
+Mesh mesh;
 
 // Fill vertex buffer with position data
 static constexpr Vector3 positions[300] = {
     // ...
 };
-vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
+vertexBuffer.setData(positions, Buffer::Usage::StaticDraw);
 
 // Fill index buffer with index data
 static constexpr GLubyte indices[75] = {
     // ...
 };
-indexBuffer->setData(indices, Buffer::Usage::StaticDraw);
+indexBuffer.setData(indices, Buffer::Usage::StaticDraw);
 
 // Set primitive, index count, specify the buffers
-mesh->setPrimitive(Mesh::Primitive::Triangles)
-    ->setIndexCount(75)
-    ->addVertexBuffer(vertexBuffer, 0, MyShader::Position())
-    ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
+mesh.setPrimitive(Mesh::Primitive::Triangles)
+    .setIndexCount(75)
+    .addVertexBuffer(vertexBuffer, 0, MyShader::Position())
+    .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
 @endcode
 
 @code
 // Indexed primitive
 Trade::MeshData3D cube = Primitives::Cube::solid();
-Buffer *vertexBuffer, *indexBuffer;
-Mesh* mesh;
+Buffer vertexBuffer, indexBuffer;
+Mesh mesh;
 
 // Fill vertex buffer with interleaved position and normal data
 MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
@@ -160,8 +160,8 @@ MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw,
 
 // Set primitive and specify layout of interleaved vertex buffer. Index count
 // and index buffer has been already specified by MeshTools::compressIndices().
-mesh->setPrimitive(plane.primitive())
-    ->addInterleavedVertexBuffer(vertexBuffer, 0,
+mesh.setPrimitive(plane.primitive())
+    .addInterleavedVertexBuffer(vertexBuffer, 0,
         Shaders::PhongShader::Position(),
         Shaders::PhongShader::Normal());
 @endcode
@@ -366,15 +366,15 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Set primitive type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is @ref Primitive "Primitive::Triangles".
          * @see setVertexCount(), addVertexBuffer(),
          *      addInterleavedVertexBuffer(), addVertexBufferStride()
          */
-        Mesh* setPrimitive(Primitive primitive) {
+        Mesh& setPrimitive(Primitive primitive) {
             _primitive = primitive;
-            return this;
+            return *this;
         }
 
         /** @brief Vertex count */
@@ -382,15 +382,15 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Set vertex count
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is zero.
          * @see setPrimitive(), addVertexBuffer(), addInterleavedVertexBuffer(),
          *      addVertexBufferStride(), MeshTools::interleave()
          */
-        Mesh* setVertexCount(Int vertexCount) {
+        Mesh& setVertexCount(Int vertexCount) {
             _vertexCount = vertexCount;
-            return this;
+            return *this;
         }
 
         /** @brief Index count */
@@ -398,19 +398,19 @@ class MAGNUM_EXPORT Mesh {
 
         /**
          * @brief Set index count
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is zero.
          * @see setIndexBuffer(), MeshTools::compressIndices()
          */
-        Mesh* setIndexCount(Int count) {
+        Mesh& setIndexCount(Int count) {
             _indexCount = count;
-            return this;
+            return *this;
         }
 
         /**
          * @brief Add buffer with non-interleaved vertex attributes for use with given shader
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Attribute list is combination of
          * @ref AbstractShaderProgram::Attribute "attribute definitions"
@@ -425,20 +425,20 @@ class MAGNUM_EXPORT Mesh {
          * but it accepts only position and normal, so you have to skip the
          * texture coordinate array:
          * @code
-         * Mesh* mesh;
-         * Buffer* buffer;
-         * mesh->addVertexBuffer(buffer,
+         * Mesh mesh;
+         * Buffer buffer;
+         * mesh.addVertexBuffer(buffer,
          *     35,                                  // offset of the data
          *     Shaders::PhongShader::Position(),    // position array
-         *     sizeof(Vector2)*mesh->vertexCount(), // skip texture coordinate array
+         *     sizeof(Vector2)*mesh.vertexCount(),  // skip texture coordinate array
          *     Shaders::PhongShader::Normal());     // normal array
          * @endcode
          *
          * Vou can also achieve the same effect by calling this function more
          * times with absolute offsets:
          * @code
-         * mesh->addVertexBuffer(buffer, 35, Shaders::PhongShader::Position());
-         *     ->addVertexBuffer(buffer, 35 + (sizeof(Shaders::PhongShader::Position::Type) + sizeof(Vector2))*
+         * mesh.addVertexBuffer(buffer, 35, Shaders::PhongShader::Position());
+         *     .addVertexBuffer(buffer, 35 + (sizeof(Shaders::PhongShader::Position::Type) + sizeof(Vector2))*
          *          mesh->vertexCount(), Shaders::PhongShader::Normal());
          * @endcode
          *
@@ -457,11 +457,11 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
          */
-        template<class ...T> Mesh* addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes);
+        template<class ...T> Mesh& addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes);
 
         /**
          * @brief Add buffer with interleaved vertex attributes for use with given shader
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Parameter @p offset is offset of the interleaved array from the
          * beginning, attribute list is combination of
@@ -478,9 +478,9 @@ class MAGNUM_EXPORT Mesh {
          * position and normal, so you have to skip weight and texture
          * coordinate in each vertex:
          * @code
-         * Mesh* mesh;
-         * Buffer* buffer;
-         * mesh->addInterleavedVertexBuffer(buffer,
+         * Mesh mesh;
+         * Buffer buffer;
+         * mesh.addInterleavedVertexBuffer(buffer,
          *     35,                                  // skip other data
          *     sizeof(Float),                       // skip vertex weight
          *     Shaders::PhongShader::Position(),    // vertex position
@@ -498,9 +498,9 @@ class MAGNUM_EXPORT Mesh {
          *     sizeof(Vector2) +
          *     sizeof(Shaders::PhongShader::Normal::Type);
          *
-         * mesh->addVertexBufferStride(buffer, 35 + sizeof(Float),
+         * mesh.addVertexBufferStride(buffer, 35 + sizeof(Float),
          *          stride, Shaders::PhongShader::Position());
-         *     ->addVertexBufferStride(buffer, 35 + sizeof(Float) +
+         *     .addVertexBufferStride(buffer, 35 + sizeof(Float) +
          *          sizeof(Shaders::PhongShader::Position::Type) + sizeof(Vector2),
          *          stride, Shaders::PhongShader::Normal());
          * @endcode
@@ -517,20 +517,20 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
          */
-        template<class ...T> inline Mesh* addInterleavedVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
+        template<class ...T> inline Mesh& addInterleavedVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
             addInterleavedVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), attributes...);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Add buffer with interleaved vertex attributes for use with given shader
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * See addInterleavedVertexBuffer() for more information.
          */
-        template<UnsignedInt location, class T> inline Mesh* addVertexBufferStride(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute) {
+        template<UnsignedInt location, class T> inline Mesh& addVertexBufferStride(Buffer* buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute) {
             addInterleavedVertexBufferInternal(buffer, offset, stride, attribute);
-            return this;
+            return *this;
         }
 
         /**
@@ -540,7 +540,7 @@ class MAGNUM_EXPORT Mesh {
          * @param type          Index data type
          * @param start         Minimum array index contained in the buffer
          * @param end           Maximum array index contained in the buffer
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * The smaller range is specified with @p start and @p end the less
          * memory operations are needed (and possibly some optimizations),
@@ -553,14 +553,14 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end);
+        Mesh& setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end);
 
         /**
          * @brief Set index buffer
          * @param buffer        Index buffer
          * @param offset        Offset into the buffer
          * @param type          Index data type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Prefer to use setIndexBuffer(Buffer*, GLintptr, IndexType, UnsignedInt, UnsignedInt)
          * for better performance.
@@ -568,7 +568,7 @@ class MAGNUM_EXPORT Mesh {
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
-        Mesh* setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
+        Mesh& setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type) {
             return setIndexBuffer(buffer, offset, type, 0, 0);
         }
 
@@ -783,12 +783,12 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
 /** @debugoperator{Magnum::Mesh} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
 
-template<class ...T> inline Mesh* Mesh::addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
+template<class ...T> inline Mesh& Mesh::addVertexBuffer(Buffer* buffer, GLintptr offset, const T&... attributes) {
     CORRADE_ASSERT(sizeof...(attributes) == 1 || _vertexCount != 0,
-        "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", this);
+        "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", *this);
 
     addVertexBufferInternal(buffer, offset, attributes...);
-    return this;
+    return *this;
 }
 
 

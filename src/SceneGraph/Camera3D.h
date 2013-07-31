@@ -44,9 +44,9 @@ See Drawable documentation for introduction. The camera by default displays
 OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` with orthographic projection and
 doesn't do any aspect ratio correction. Common setup example:
 @code
-SceneGraph::Camera3D* camera = new SceneGraph::Camera3D(&cameraObject);
-camera->setPerspective({}, 0.001f, 100.0f)
-      ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
+SceneGraph::Camera3D camera(&cameraObject);
+camera.setPerspective({}, 0.001f, 100.0f)
+      .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
 
 @section Camera3D-explicit-specializations Explicit template specializations
@@ -74,22 +74,22 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractC
          * @param size          Size of the view
          * @param near          Near clipping plane
          * @param far           Far clipping plane
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setPerspective(), Matrix4::orthographicProjection()
          */
-        BasicCamera3D<T>* setOrthographic(const Math::Vector2<T>& size, T near, T far);
+        BasicCamera3D<T>& setOrthographic(const Math::Vector2<T>& size, T near, T far);
 
         /**
          * @brief Set perspective projection
          * @param size          Size of near clipping plane
          * @param near          Near clipping plane
          * @param far           Far clipping plane
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setOrthographic(), Matrix4::perspectiveProjection()
          */
-        BasicCamera3D<T>* setPerspective(const Math::Vector2<T>& size, T near, T far);
+        BasicCamera3D<T>& setPerspective(const Math::Vector2<T>& size, T near, T far);
 
         /**
          * @brief Set perspective projection
@@ -97,11 +97,11 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractC
          * @param aspectRatio   Aspect ratio
          * @param near          Near clipping plane
          * @param far           Far clipping plane
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setOrthographic(), Matrix4::perspectiveProjection()
          */
-        BasicCamera3D<T>* setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far);
+        BasicCamera3D<T>& setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far);
 
         /** @brief Near clipping plane */
         T near() const { return _near; }
@@ -111,9 +111,9 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractC
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        BasicCamera3D<T>* setAspectRatioPolicy(AspectRatioPolicy policy) {
+        BasicCamera3D<T>& setAspectRatioPolicy(AspectRatioPolicy policy) {
             AbstractCamera<3, T>::setAspectRatioPolicy(policy);
-            return this;
+            return *this;
         }
         #endif
 

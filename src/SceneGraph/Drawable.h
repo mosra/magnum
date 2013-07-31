@@ -68,7 +68,7 @@ SceneGraph::DrawableGroup3D drawables;
 
 (new DrawableObject(&scene, &drawables))
     ->translate(Vector3::yAxis(-0.3f))
-    ->rotateX(30.0_degf);
+    .rotateX(30.0_degf);
 (new AnotherDrawableObject(&scene, &drawables))
     ->translate(Vector3::zAxis(0.5f));
 // ...
@@ -96,14 +96,14 @@ setup etc into one group, then put all transparent into another and set common
 parameters once for whole group instead of setting them again in each draw()
 implementation. Example:
 @code
-Shaders::PhongShader* shader;
+Shaders::PhongShader shader;
 SceneGraph::DrawableGroup3D phongObjects, transparentObjects;
 
 void MyApplication::drawEvent() {
-    shader->setProjectionMatrix(camera->projectionMatrix())
-          ->setLightPosition(lightPosition)
-          ->setLightColor(lightColor)
-          ->setAmbientColor(ambientColor);
+    shader.setProjectionMatrix(camera->projectionMatrix())
+          .setLightPosition(lightPosition)
+          .setLightColor(lightColor)
+          .setAmbientColor(ambientColor);
     camera.draw(phongObjects);
 
     Renderer::setFeature(Renderer::Feature::Blending, true);

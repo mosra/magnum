@@ -92,11 +92,11 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
 
         /**
          * @brief Set shape
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Marks the feature as dirty.
          */
-        Shape<T>* setShape(const T& shape);
+        Shape<T>& setShape(const T& shape);
 
         /**
          * @brief Transformed shape
@@ -117,10 +117,10 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
         Implementation::Shape<T> _shape, _transformedShape;
 };
 
-template<class T> inline Shape<T>* Shape<T>::setShape(const T& shape) {
+template<class T> inline Shape<T>& Shape<T>::setShape(const T& shape) {
     Implementation::ShapeHelper<T>::set(*this, shape);
     this->object()->setDirty();
-    return this;
+    return *this;
 }
 
 template<class T> inline const T& Shape<T>::transformedShape() {

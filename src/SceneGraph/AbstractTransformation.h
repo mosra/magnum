@@ -136,11 +136,11 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
 
         /**
          * @brief Reset object transformation
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        AbstractTransformation<dimensions, T>* resetTransformation() {
+        AbstractTransformation<dimensions, T>& resetTransformation() {
             doResetTransformation();
-            return this;
+            return *this;
         }
 
     protected:

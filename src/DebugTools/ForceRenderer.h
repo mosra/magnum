@@ -51,13 +51,13 @@ class ForceRendererOptions {
 
         /**
          * @brief Set color of rendered arrow
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is 100% opaque white.
          */
-        ForceRendererOptions* setColor(const Color4& color) {
+        ForceRendererOptions& setColor(const Color4& color) {
             _color = color;
-            return this;
+            return *this;
         }
 
         /** @brief Scale of rendered arrow */
@@ -65,13 +65,13 @@ class ForceRendererOptions {
 
         /**
          * @brief Set scale of rendered arrow
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `1.0f`.
          */
-        ForceRendererOptions* setSize(Float size) {
+        ForceRendererOptions& setSize(Float size) {
             _size = size;
-            return this;
+            return *this;
         }
 
     private:
@@ -89,9 +89,9 @@ See @ref debug-tools-renderers for more information.
 
 Example code:
 @code
-// Create some options
-DebugTools::ResourceManager::instance()->set("my", (new DebugTools::ForceRendererOptions)
-    ->setScale(5.0f)->setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f)));
+DebugTools::ResourceManager::instance()->set("my", DebugTools::ForceRendererOptions()
+    .setScale(5.0f)
+    .setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;

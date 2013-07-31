@@ -37,7 +37,7 @@ DefaultFramebuffer defaultFramebuffer;
 DefaultFramebuffer::DefaultFramebuffer() { _id = 0; }
 
 #ifndef MAGNUM_TARGET_GLES2
-DefaultFramebuffer* DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
+DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
     for(const auto& attachment: attachments)
@@ -52,7 +52,7 @@ DefaultFramebuffer* DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
 
     (this->*drawBuffersImplementation)(max+1, _attachments);
     delete[] _attachments;
-    return this;
+    return *this;
 }
 #endif
 

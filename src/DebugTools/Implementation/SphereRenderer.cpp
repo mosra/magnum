@@ -49,8 +49,8 @@ template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<
     this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions, Float>::MatrixType::translation(sphere.position())*
         DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(sphere.radius())))
-        ->setColor(options->color())
-        ->use();
+        .setColor(options->color())
+        .use();
     this->wireframeMesh->draw();
 }
 

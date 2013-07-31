@@ -47,19 +47,19 @@ class DistanceFieldShader: public AbstractShaderProgram {
 
         explicit DistanceFieldShader();
 
-        DistanceFieldShader* setRadius(Int radius) {
+        DistanceFieldShader& setRadius(Int radius) {
             setUniform(radiusUniform, radius);
-            return this;
+            return *this;
         }
 
-        DistanceFieldShader* setScaling(const Vector2& scaling) {
+        DistanceFieldShader& setScaling(const Vector2& scaling) {
             setUniform(scalingUniform, scaling);
-            return this;
+            return *this;
         }
 
-        DistanceFieldShader* setImageSizeInverted(const Vector2& size) {
+        DistanceFieldShader& setImageSizeInverted(const Vector2& size) {
             setUniform(imageSizeInvertedUniform, size);
-            return this;
+            return *this;
         }
 
     private:
@@ -158,8 +158,8 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
 
     DistanceFieldShader shader;
     shader.setRadius(radius)
-        ->setScaling(Vector2(imageSize)/rectangle.size())
-        ->use();
+        .setScaling(Vector2(imageSize)/rectangle.size())
+        .use();
 
     input->bind(DistanceFieldShader::TextureLayer);
 
@@ -174,7 +174,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
 
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->setVertexCount(3);
+        .setVertexCount(3);
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
     Buffer buffer;

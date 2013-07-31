@@ -73,13 +73,13 @@ class ShapeRendererOptions {
 
         /**
          * @brief Set shape rendering mode
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is @ref RenderMode "RenderMode::Wireframe".
          */
-        ShapeRendererOptions* setRenderMode(RenderMode mode) {
+        ShapeRendererOptions& setRenderMode(RenderMode mode) {
             _renderMode = mode;
-            return this;
+            return *this;
         }
 
         /** @brief Color of rendered shape */
@@ -87,13 +87,13 @@ class ShapeRendererOptions {
 
         /**
          * @brief Set color of rendered shape
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is 100% opaque white.
          */
-        ShapeRendererOptions* setColor(const Color4& color) {
+        ShapeRendererOptions& setColor(const Color4& color) {
             _color = color;
-            return this;
+            return *this;
         }
 
         /** @brief Point size */
@@ -101,14 +101,14 @@ class ShapeRendererOptions {
 
         /**
          * @brief Set point size
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Size of rendered crosshairs, representing Shapes::Point shapes.
          * Default is `0.25f`.
          */
-        ShapeRendererOptions* setPointSize(Float size) {
+        ShapeRendererOptions& setPointSize(Float size) {
             _pointSize = size;
-            return this;
+            return *this;
         }
 
     private:
@@ -128,8 +128,8 @@ Visualizes collision shapes using wireframe primitives. See
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set("red", (new DebugTools::ShapeRendererOptions)
-    ->setColor({1.0f, 0.0f, 0.0f}));
+DebugTools::ResourceManager::instance()->set("red",
+    DebugTools::ShapeRendererOptions().setColor({1.0f, 0.0f, 0.0f}));
 
 // Create debug renderer for given shape, use "red" options for it
 Shapes::AbstractShape2D* shape;

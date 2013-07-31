@@ -50,13 +50,13 @@ class ObjectRendererOptions {
 
         /**
          * @brief Set size of the rendered axes
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `1.0f`.
          */
-        ObjectRendererOptions* setSize(Float size) {
+        ObjectRendererOptions& setSize(Float size) {
             _size = size;
-            return this;
+            return *this;
         }
 
     private:
@@ -74,8 +74,7 @@ Visualizes object position, rotation and scale using colored axes. See
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set("my", (new DebugTools::ObjectRendererOptions)
-    ->setSize(0.3f));
+DebugTools::ResourceManager::instance()->set("my", DebugTools::ObjectRendererOptions().setSize(0.3f));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;

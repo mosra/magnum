@@ -187,8 +187,8 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const fon
        in subclass) */
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->setIndexCount(indexCount)
-        ->setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
+        .setIndexCount(indexCount)
+        .setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
     delete layouter;
     return std::make_tuple(std::move(mesh), rectangle);
@@ -296,7 +296,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
     }
     _indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
     _mesh.setIndexCount(0)
-        ->setIndexBuffer(&_indexBuffer, 0, indexType, 0, vertexCount);
+        .setIndexBuffer(&_indexBuffer, 0, indexType, 0, vertexCount);
 
     /* Map buffer for filling */
     void* const indices = bufferMapImplementation(_indexBuffer, indicesSize);
