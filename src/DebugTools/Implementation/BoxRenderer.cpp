@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* box): box(static_cast<const Shapes::Implementation::Shape<Shapes::Box<dimensions>>*>(box)->shape) {}
+template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& box): box(static_cast<const Shapes::Implementation::Shape<Shapes::Box<dimensions>>&>(box).shape) {}
 
 template<UnsignedInt dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     AbstractBoxRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*box.transformation())

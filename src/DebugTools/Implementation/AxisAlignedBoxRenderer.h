@@ -34,7 +34,8 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class AxisAlignedBoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* axisAlignedBox);
+        explicit AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& axisAlignedBox);
+        AxisAlignedBoxRenderer(Shapes::Implementation::AbstractShape<dimensions>&&) = delete;
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 

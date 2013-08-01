@@ -36,17 +36,18 @@ template<UnsignedInt dimensions> class AbstractSphereRenderer;
 
 template<> class AbstractSphereRenderer<2>: public AbstractShapeRenderer<2> {
     public:
-        AbstractSphereRenderer();
+        explicit AbstractSphereRenderer();
 };
 
 template<> class AbstractSphereRenderer<3>: public AbstractShapeRenderer<3> {
     public:
-        AbstractSphereRenderer();
+        explicit AbstractSphereRenderer();
 };
 
 template<UnsignedInt dimensions> class SphereRenderer: public AbstractSphereRenderer<dimensions> {
     public:
-        SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>* sphere);
+        explicit SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>& sphere);
+        SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>&&) = delete;
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 

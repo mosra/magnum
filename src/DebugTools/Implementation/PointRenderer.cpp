@@ -48,7 +48,7 @@ namespace {
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Crosshair3D::wireframe(); }
 }
 
-template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>* point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(static_cast<const Shapes::Implementation::Shape<Shapes::Point<dimensions>>*>(point)->shape) {
+template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>& point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(static_cast<const Shapes::Implementation::Shape<Shapes::Point<dimensions>>&>(point).shape) {
     if(!AbstractShapeRenderer<dimensions>::wireframeMesh) AbstractShapeRenderer<dimensions>::createResources(meshData<dimensions>());
 }
 

@@ -43,7 +43,7 @@ AbstractSphereRenderer<3>::AbstractSphereRenderer(): AbstractShapeRenderer<3>("s
     if(!wireframeMesh) createResources(Primitives::UVSphere::wireframe(40, 20));
 }
 
-template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>* sphere): sphere(static_cast<const Shapes::Implementation::Shape<Shapes::Sphere<dimensions>>*>(sphere)->shape) {}
+template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>& sphere): sphere(static_cast<const Shapes::Implementation::Shape<Shapes::Sphere<dimensions>>&>(sphere).shape) {}
 
 template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*

@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* axisAlignedBox): axisAlignedBox(static_cast<const Shapes::Implementation::Shape<Shapes::AxisAlignedBox<dimensions>>*>(axisAlignedBox)->shape) {}
+template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& axisAlignedBox): axisAlignedBox(static_cast<const Shapes::Implementation::Shape<Shapes::AxisAlignedBox<dimensions>>&>(axisAlignedBox).shape) {}
 
 template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     AbstractBoxRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*

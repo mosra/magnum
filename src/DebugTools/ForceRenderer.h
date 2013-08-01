@@ -117,14 +117,17 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          * saved as reference to original vector and thus it must be available
          * for the whole lifetime of the renderer.
          */
-        explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+
+        /** @overload */
+        ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const typename DimensionTraits<dimensions, Float>::VectorType&, typename DimensionTraits<dimensions, Float>::VectorType&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
 
     protected:
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 
     private:
         const typename DimensionTraits<dimensions, Float>::VectorType forcePosition;
-        const typename DimensionTraits<dimensions, Float>::VectorType* const force;
+        const typename DimensionTraits<dimensions, Float>::VectorType& force;
 
         Resource<ForceRendererOptions> options;
         Resource<AbstractShaderProgram, Shaders::Flat<dimensions>> shader;

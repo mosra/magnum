@@ -34,7 +34,8 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
-        BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>* box);
+        explicit BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& box);
+        BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>&&) = delete;
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 

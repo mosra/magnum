@@ -142,15 +142,15 @@ const std::array<UnsignedByte, 18> Renderer<3>::indices{{
 
 }
 
-template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>* object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), options(ResourceManager::instance()->get<ObjectRendererOptions>(options)) {
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), options(ResourceManager::instance().get<ObjectRendererOptions>(options)) {
     /* Shader */
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColor<dimensions>);
+    shader = ResourceManager::instance().get<AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
+    if(!shader) ResourceManager::instance().set<AbstractShaderProgram>(shader.key(), new Shaders::VertexColor<dimensions>);
 
     /* Mesh and vertex buffer */
-    mesh = ResourceManager::instance()->get<Mesh>(Renderer<dimensions>::mesh());
-    vertexBuffer = ResourceManager::instance()->get<Buffer>(Renderer<dimensions>::vertexBuffer());
-    indexBuffer = ResourceManager::instance()->get<Buffer>(Renderer<dimensions>::indexBuffer());
+    mesh = ResourceManager::instance().get<Mesh>(Renderer<dimensions>::mesh());
+    vertexBuffer = ResourceManager::instance().get<Buffer>(Renderer<dimensions>::vertexBuffer());
+    indexBuffer = ResourceManager::instance().get<Buffer>(Renderer<dimensions>::indexBuffer());
     if(mesh) return;
 
     /* Create the mesh */
@@ -158,23 +158,23 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
     Mesh* mesh = new Mesh;
 
-    MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw, Renderer<dimensions>::positions, Renderer<dimensions>::colors);
-    ResourceManager::instance()->set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    MeshTools::interleave(*mesh, *vertexBuffer, Buffer::Usage::StaticDraw, Renderer<dimensions>::positions, Renderer<dimensions>::colors);
+    ResourceManager::instance().set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     indexBuffer->setData(Renderer<dimensions>::indices, Buffer::Usage::StaticDraw);
-    ResourceManager::instance()->set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    ResourceManager::instance().set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     mesh->setPrimitive(Mesh::Primitive::Lines)
         .setIndexCount(Renderer<dimensions>::indices.size())
-        .addInterleavedVertexBuffer(vertexBuffer, 0,
+        .addInterleavedVertexBuffer(*vertexBuffer, 0,
             typename Shaders::VertexColor<dimensions>::Position(),
             typename Shaders::VertexColor<dimensions>::Color())
-        .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, Renderer<dimensions>::positions.size());
-    ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+        .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, Renderer<dimensions>::positions.size());
+    ResourceManager::instance().set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>* camera) {
-    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->size())))
+template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
+    shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->size())))
         .use();
 
     mesh->draw();

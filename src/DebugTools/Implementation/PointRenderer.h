@@ -34,7 +34,8 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class PointRenderer: public AbstractShapeRenderer<dimensions> {
     public:
-        PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>* point);
+        explicit PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>& point);
+        PointRenderer(Shapes::Implementation::AbstractShape<dimensions>&&) = delete;
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 

@@ -69,7 +69,7 @@ DebugTools::ResourceManager::instance()->set("my",
 // renderer is automatically added to the object features and also to
 // specified drawable group.
 Object3D* object;
-new DebugTools::ObjectRenderer2D(object, "my", debugDrawables);
+new DebugTools::ObjectRenderer2D(*object, "my", debugDrawables);
 @endcode
 
 See DebugTools::ObjectRenderer and DebugTools::ShapeRenderer for more

@@ -50,7 +50,7 @@ namespace {
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Line3D::wireframe(); }
 }
 
-template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>* line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Shapes::Implementation::Shape<Shapes::LineSegment<dimensions>>*>(line)->shape) {
+template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>& line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Shapes::Implementation::Shape<Shapes::LineSegment<dimensions>>&>(line).shape) {
     if(!AbstractShapeRenderer<dimensions>::wireframeMesh) AbstractShapeRenderer<dimensions>::createResources(meshData<dimensions>());
 }
 
