@@ -178,6 +178,16 @@ class Resource {
         }
 
         /**
+         * @brief Pointer to resource data
+         *
+         * Returns `nullptr` if the resource is not loaded.
+         */
+        operator U*() {
+            acquire();
+            return static_cast<U*>(data);
+        }
+
+        /**
          * @brief Reference to resource data
          *
          * The resource must be loaded before accessing it. Use boolean
