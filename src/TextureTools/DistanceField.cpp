@@ -129,9 +129,9 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
 
 }
 #ifndef MAGNUM_TARGET_GLES
-void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius, const Vector2i&)
+void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i&)
 #else
-void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius, const Vector2i& imageSize)
+void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i& imageSize)
 #endif
 {
     #ifndef MAGNUM_TARGET_GLES
@@ -141,7 +141,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
     /** @todo Disable depth test, blending and then enable it back (if was previously) */
 
     #ifndef MAGNUM_TARGET_GLES
-    Vector2i imageSize = input->imageSize(0);
+    Vector2i imageSize = input.imageSize(0);
     #endif
 
     Framebuffer framebuffer(rectangle);
@@ -161,7 +161,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
         .setScaling(Vector2(imageSize)/rectangle.size())
         .use();
 
-    input->bind(DistanceFieldShader::TextureLayer);
+    input.bind(DistanceFieldShader::TextureLayer);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isVersionSupported(Version::GL300))
@@ -190,7 +190,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
             Vector2( 3.0,  1.0)
         };
         buffer.setData(triangle, Buffer::Usage::StaticDraw);
-        mesh.addVertexBuffer(&buffer, 0, DistanceFieldShader::Position());
+        mesh.addVertexBuffer(buffer, 0, DistanceFieldShader::Position());
     }
 
     /* Draw the mesh */

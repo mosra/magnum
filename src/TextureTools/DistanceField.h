@@ -85,9 +85,9 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
     (jaggies, visible e.g. when rendering outlined fonts)
 */
 #ifndef MAGNUM_TARGET_GLES
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, Int radius, const Vector2i& imageSize = Vector2i());
+void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, Int radius, const Vector2i& imageSize = Vector2i());
 #else
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, Int radius, const Vector2i& imageSize);
+void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, Int radius, const Vector2i& imageSize);
 #endif
 
 }}
