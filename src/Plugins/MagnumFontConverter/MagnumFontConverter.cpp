@@ -43,21 +43,21 @@ auto MagnumFontConverter::doFeatures() const -> Features {
     return Feature::ExportFont|Feature::ConvertData|Feature::MultiFile;
 }
 
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFontConverter::doExportFontToData(AbstractFont* font, GlyphCache* cache, const std::string& filename, const std::u32string& characters) const {
+std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
     Utility::Configuration configuration;
 
     configuration.setValue("version", 1);
     configuration.setValue("image", Utility::Directory::filename(filename) + ".tga");
-    configuration.setValue("originalImageSize", cache->textureSize());
-    configuration.setValue("padding", cache->padding());
-    configuration.setValue("fontSize", font->size());
+    configuration.setValue("originalImageSize", cache.textureSize());
+    configuration.setValue("padding", cache.padding());
+    configuration.setValue("fontSize", font.size());
 
     /* Compress glyph IDs so the glyphs are in consecutive array, glyph 0
        should stay at position 0 */
     std::unordered_map<UnsignedInt, UnsignedInt> glyphIdMap;
-    glyphIdMap.reserve(cache->glyphCount());
+    glyphIdMap.reserve(cache.glyphCount());
     glyphIdMap.emplace(0, 0);
-    for(const std::pair<UnsignedInt, std::pair<Vector2i, Rectanglei>>& glyph: *cache)
+    for(const std::pair<UnsignedInt, std::pair<Vector2i, Rectanglei>>& glyph: cache)
         glyphIdMap.emplace(glyph.first, glyphIdMap.size());
 
     /** @todo Save only glyphs contained in @p characters */
@@ -70,7 +70,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     /* Character->glyph map, map glyph IDs to new ones */
     for(const char32_t c: characters) {
         Utility::ConfigurationGroup* group = configuration.addGroup("char");
-        const UnsignedInt glyphId = font->glyphId(c);
+        const UnsignedInt glyphId = font.glyphId(c);
         group->setValue("unicode", c);
 
         /* Map old glyph ID to new, if not found, map to glyph 0 */
@@ -82,12 +82,12 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
        from the values so they aren't added twice when using the font later */
     /** @todo Some better way to handle this padding stuff */
     for(UnsignedInt oldGlyphId: inverseGlyphIdMap) {
-        std::pair<Vector2i, Rectanglei> glyph = (*cache)[oldGlyphId];
+        std::pair<Vector2i, Rectanglei> glyph = cache[oldGlyphId];
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
-        group->setValue("advance", font->glyphAdvance(oldGlyphId));
-        group->setValue("position", glyph.first+cache->padding());
-        group->setValue("rectangle", Rectanglei(glyph.second.bottomLeft()+cache->padding(),
-                                                glyph.second.topRight()-cache->padding()));
+        group->setValue("advance", font.glyphAdvance(oldGlyphId));
+        group->setValue("position", glyph.first+cache.padding());
+        group->setValue("rectangle", Rectanglei(glyph.second.bottomLeft()+cache.padding(),
+                                                glyph.second.topRight()-cache.padding()));
     }
 
     std::ostringstream confOut;
@@ -98,7 +98,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
 
     /* Save cache image */
     Image2D image(ImageFormat::Red, ImageType::UnsignedByte);
-    cache->texture()->image(0, image);
+    cache.texture().image(0, image);
     auto tgaData = Trade::TgaImageConverter().exportToData(image);
 
     std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;

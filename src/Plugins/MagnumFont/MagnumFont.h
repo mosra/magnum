@@ -120,7 +120,7 @@ class MagnumFont: public AbstractFont {
 
         GlyphCache* doCreateGlyphCache() override;
 
-        AbstractLayouter* doLayout(const GlyphCache* cache, Float size, const std::string& text) override;
+        AbstractLayouter* doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
 
         Data* _opened;
 

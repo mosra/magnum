@@ -48,7 +48,7 @@ class MagnumFontConverter: public Text::AbstractFontConverter {
 
     private:
         Features doFeatures() const override;
-        std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont* font, GlyphCache* cache, const std::string& filename, const std::u32string& characters) const override;
+        std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const override;
 };
 
 }}

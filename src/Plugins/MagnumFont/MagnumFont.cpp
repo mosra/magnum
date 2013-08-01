@@ -45,13 +45,13 @@ struct MagnumFont::Data {
 namespace {
     class MagnumFontLayouter: public AbstractLayouter {
         public:
-            explicit MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache* cache, Float fontSize, Float textSize, const std::string& text);
+            explicit MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, const std::string& text);
 
             std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) override;
 
         private:
             const std::vector<Vector2>& glyphAdvance;
-            const GlyphCache* const cache;
+            const GlyphCache& cache;
             const Float fontSize, textSize;
             std::vector<UnsignedInt> glyphs;
     };
@@ -194,13 +194,13 @@ GlyphCache* MagnumFont::doCreateGlyphCache() {
     return cache;
 }
 
-AbstractLayouter* MagnumFont::doLayout(const GlyphCache* cache, Float size, const std::string& text) {
+AbstractLayouter* MagnumFont::doLayout(const GlyphCache& cache, Float size, const std::string& text) {
     return new MagnumFontLayouter(_opened->glyphId, _opened->glyphAdvance, cache, this->size(), size, text);
 }
 
 namespace {
 
-MagnumFontLayouter::MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache* cache, Float fontSize, Float textSize, const std::string& text): glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize) {
+MagnumFontLayouter::MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, const std::string& text): glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize) {
     /* Get glyph codes from characters */
     glyphs.reserve(text.size());
     for(std::size_t i = 0; i != text.size(); ) {
@@ -216,12 +216,12 @@ std::tuple<Rectangle, Rectangle, Vector2> MagnumFontLayouter::renderGlyph(Unsign
     /* Position of the texture in the resulting glyph, texture coordinates */
     Vector2i position;
     Rectanglei rectangle;
-    std::tie(position, rectangle) = (*cache)[glyphs[i]];
+    std::tie(position, rectangle) = cache[glyphs[i]];
 
     const Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/fontSize,
                                                           Vector2(rectangle.size())/fontSize);
-    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache->textureSize(),
-                                       Vector2(rectangle.topRight())/cache->textureSize());
+    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache.textureSize(),
+                                       Vector2(rectangle.topRight())/cache.textureSize());
 
     /* Absolute quad position, composed from cursor position, glyph offset
        and texture position, denormalized to requested text size */
