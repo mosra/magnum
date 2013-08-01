@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape(SceneGraph::AbstractObject<dimensions, Float>* object, ShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float>(object, group) {
+template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape(SceneGraph::AbstractObject<dimensions, Float>& object, ShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float>(object, group) {
     SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
 }
 
@@ -44,11 +44,11 @@ template<UnsignedInt dimensions> const ShapeGroup<dimensions>* AbstractShape<dim
 }
 
 template<UnsignedInt dimensions> auto AbstractShape<dimensions>::type() const -> Type {
-    return abstractTransformedShape()->type();
+    return abstractTransformedShape().type();
 }
 
-template<UnsignedInt dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape<dimensions>* other) const {
-    return Implementation::collides(abstractTransformedShape(), other->abstractTransformedShape());
+template<UnsignedInt dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape<dimensions>& other) const {
+    return Implementation::collides(abstractTransformedShape(), other.abstractTransformedShape());
 }
 
 template<UnsignedInt dimensions> void AbstractShape<dimensions>::markDirty() {

@@ -86,7 +86,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
          * collisions, returns `nullptr`. Calls setClean() before the
          * operation.
          */
-        AbstractShape<dimensions>* firstCollision(const AbstractShape<dimensions>* shape);
+        AbstractShape<dimensions>* firstCollision(const AbstractShape<dimensions>& shape);
 
     private:
         bool dirty;

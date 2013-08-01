@@ -42,11 +42,11 @@ namespace Magnum { namespace Shapes {
 namespace Implementation {
     template<class> struct ShapeHelper;
 
-    template<UnsignedInt dimensions> inline AbstractShape<dimensions>* getAbstractShape(Composition<dimensions>& group, std::size_t i) {
-        return group._shapes[i];
+    template<UnsignedInt dimensions> inline AbstractShape<dimensions>& getAbstractShape(Composition<dimensions>& group, std::size_t i) {
+        return *group._shapes[i];
     }
-    template<UnsignedInt dimensions> inline const AbstractShape<dimensions>* getAbstractShape(const Composition<dimensions>& group, std::size_t i) {
-        return group._shapes[i];
+    template<UnsignedInt dimensions> inline const AbstractShape<dimensions>& getAbstractShape(const Composition<dimensions>& group, std::size_t i) {
+        return *group._shapes[i];
     }
 }
 
@@ -63,8 +63,8 @@ enum class CompositionOperation: UnsignedByte {
 Result of logical operations on shapes. See @ref shapes for brief introduction.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
-    friend Implementation::AbstractShape<dimensions>* Implementation::getAbstractShape<>(Composition<dimensions>&, std::size_t);
-    friend const Implementation::AbstractShape<dimensions>* Implementation::getAbstractShape<>(const Composition<dimensions>&, std::size_t);
+    friend Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(Composition<dimensions>&, std::size_t);
+    friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const Composition<dimensions>&, std::size_t);
     friend struct Implementation::ShapeHelper<Composition<dimensions>>;
 
     public:
@@ -142,8 +142,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         #else
         template<class T> auto operator%(const T& other) const -> typename std::enable_if<std::is_same<decltype(Implementation::TypeOf<T>::type()), typename Implementation::ShapeDimensionTraits<dimensions>::Type>::value, bool>::type {
         #endif
-            Implementation::Shape<T> a(other);
-            return collides(&a);
+            return collides(Implementation::Shape<T>(other));
         }
 
     private:
@@ -152,11 +151,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
             CompositionOperation operation;
         };
 
-        bool collides(const Implementation::AbstractShape<dimensions>* a) const {
+        bool collides(const Implementation::AbstractShape<dimensions>& a) const {
             return collides(a, 0, 0, _shapeCount);
         }
 
-        bool collides(const Implementation::AbstractShape<dimensions>* a, std::size_t node, std::size_t shapeBegin, std::size_t shapeEnd) const;
+        bool collides(const Implementation::AbstractShape<dimensions>& a, std::size_t node, std::size_t shapeBegin, std::size_t shapeEnd) const;
 
         template<class T> constexpr static std::size_t shapeCount(const T&) {
             return 1;

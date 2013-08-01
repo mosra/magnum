@@ -33,7 +33,7 @@ template<UnsignedInt dimensions> void ShapeGroup<dimensions>::setClean() {
     if(!this->isEmpty()) {
         std::vector<SceneGraph::AbstractObject<dimensions, Float>*> objects(this->size());
         for(std::size_t i = 0; i != this->size(); ++i)
-            objects[i] = (*this)[i]->object();
+            objects[i] = &(*this)[i].object();
 
         SceneGraph::AbstractObject<dimensions, Float>::setClean(objects);
     }
@@ -41,11 +41,11 @@ template<UnsignedInt dimensions> void ShapeGroup<dimensions>::setClean() {
     dirty = false;
 }
 
-template<UnsignedInt dimensions> AbstractShape<dimensions>* ShapeGroup<dimensions>::firstCollision(const AbstractShape<dimensions>* shape) {
+template<UnsignedInt dimensions> AbstractShape<dimensions>* ShapeGroup<dimensions>::firstCollision(const AbstractShape<dimensions>& shape) {
     setClean();
     for(std::size_t i = 0; i != this->size(); ++i)
-        if((*this)[i] != shape && (*this)[i]->collides(shape))
-            return (*this)[i];
+        if(&(*this)[i] != &shape && (*this)[i].collides(shape))
+            return &(*this)[i];
 
     return nullptr;
 }

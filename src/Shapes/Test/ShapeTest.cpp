@@ -60,11 +60,11 @@ void ShapeTest::clean() {
     ShapeGroup3D shapes;
 
     Object3D a(&scene);
-    auto shape = new Shapes::Shape<Shapes::Point3D>(&a, {{1.0f, -2.0f, 3.0f}}, &shapes);
+    auto shape = new Shapes::Shape<Shapes::Point3D>(a, {{1.0f, -2.0f, 3.0f}}, &shapes);
     a.scale(Vector3(-2.0f));
 
     Object3D b(&scene);
-    new Shapes::Shape<Shapes::Point3D>(&b, &shapes);
+    new Shapes::Shape<Shapes::Point3D>(b, &shapes);
 
     /* Everything is dirty at the beginning */
     CORRADE_VERIFY(shapes.isDirty());
@@ -100,13 +100,13 @@ void ShapeTest::firstCollision() {
     ShapeGroup3D shapes;
 
     Object3D a(&scene);
-    auto aShape = new Shape<Shapes::Sphere3D>(&a, {{1.0f, -2.0f, 3.0f}, 1.5f}, &shapes);
+    Shape<Shapes::Sphere3D> aShape(a, {{1.0f, -2.0f, 3.0f}, 1.5f}, &shapes);
 
     Object3D b(&scene);
-    auto bShape = new Shape<Shapes::Point3D>(&b, {{3.0f, -2.0f, 3.0f}}, &shapes);
+    Shape<Shapes::Point3D> bShape(b, {{3.0f, -2.0f, 3.0f}}, &shapes);
 
     Object3D c(&scene);
-    new Shape<Shapes::Composition3D>(&c, &shapes);
+    Shape<Shapes::Composition3D> cShape(c, &shapes);
 
     /* No collisions initially */
     CORRADE_VERIFY(!shapes.firstCollision(aShape));
@@ -118,8 +118,8 @@ void ShapeTest::firstCollision() {
 
     /* Collision */
     CORRADE_VERIFY(shapes.isDirty());
-    CORRADE_VERIFY(shapes.firstCollision(aShape) == bShape);
-    CORRADE_VERIFY(shapes.firstCollision(bShape) == aShape);
+    CORRADE_VERIFY(shapes.firstCollision(aShape) == &bShape);
+    CORRADE_VERIFY(shapes.firstCollision(bShape) == &aShape);
     CORRADE_VERIFY(!shapes.isDirty());
 }
 
@@ -129,7 +129,7 @@ void ShapeTest::shapeGroup() {
 
     /* Verify construction */
     Object2D a(&scene);
-    auto shape = new Shape<Shapes::Composition2D>(&a, Shapes::Sphere2D({}, 0.5f) || Shapes::Point2D({0.25f, -1.0f}));
+    auto shape = new Shape<Shapes::Composition2D>(a, Shapes::Sphere2D({}, 0.5f) || Shapes::Point2D({0.25f, -1.0f}));
     CORRADE_COMPARE(shape->transformedShape().size(), 2);
 
     /* Verify the original shape is updated */

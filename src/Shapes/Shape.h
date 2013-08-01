@@ -56,7 +56,7 @@ islands.
 @code
 Shapes::ShapeGroup3D shapes;
 
-Object3D* object;
+Object3D object;
 auto shape = new Shapes::Shape<Shapes::Sphere3D>(object, {{}, 0.75f}, &shapes);
 
 Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
@@ -75,17 +75,17 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
          * @param shape     Shape
          * @param group     Group this shape belongs to
          */
-        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>* object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
             Implementation::ShapeHelper<T>::set(*this, shape);
         }
 
         /** @overload */
-        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>* object, T&& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, T&& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
             Implementation::ShapeHelper<T>::set(*this, std::move(shape));
         }
 
         /** @overload */
-        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>* object, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {}
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {}
 
         /** @brief Shape */
         const T& shape() const { return _shape.shape; }
@@ -110,8 +110,8 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
         void clean(const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) override;
 
     private:
-        const Implementation::AbstractShape<T::Dimensions>* abstractTransformedShape() const override {
-            return &_transformedShape;
+        const Implementation::AbstractShape<T::Dimensions>& abstractTransformedShape() const override {
+            return _transformedShape;
         }
 
         Implementation::Shape<T> _shape, _transformedShape;
@@ -119,12 +119,12 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
 
 template<class T> inline Shape<T>& Shape<T>::setShape(const T& shape) {
     Implementation::ShapeHelper<T>::set(*this, shape);
-    this->object()->setDirty();
+    this->object().setDirty();
     return *this;
 }
 
 template<class T> inline const T& Shape<T>::transformedShape() {
-    this->object()->setClean();
+    this->object().setClean();
     return _transformedShape.shape;
 }
 
