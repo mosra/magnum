@@ -163,6 +163,7 @@ template<class Transformation> void Object<Transformation>::setClean() {
 template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
+        /* Non-null is checked in transformations() */
         /** @todo Ensure this doesn't crash, somehow */
         castObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
 
@@ -201,6 +202,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Mark all original objects as joints and create initial list of joints
        from them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
+        CORRADE_INTERNAL_ASSERT(objects[i]);
+
         /* Multiple occurences of one object in the array, don't overwrite it
            with different counter */
         if(objects[i]->counter != 0xFFFFu) continue;
