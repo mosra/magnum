@@ -114,7 +114,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
         std::size_t glyphCount() const { return glyphs.size(); }
 
         /** @brief Cache texture */
-        Texture2D* texture() { return &_texture; }
+        Texture2D& texture() { return _texture; }
 
         /**
          * @brief Parameters of given glyph

@@ -60,7 +60,7 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont* font, const GlyphCache* cache, Float size, const std::string& text);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text);
 
         /**
          * @brief Capacity for rendered glyphs
@@ -73,13 +73,13 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
         Rectangle rectangle() const { return _rectangle; }
 
         /** @brief Vertex buffer */
-        Buffer* vertexBuffer() { return &_vertexBuffer; }
+        Buffer& vertexBuffer() { return _vertexBuffer; }
 
         /** @brief Index buffer */
-        Buffer* indexBuffer() { return &_indexBuffer; }
+        Buffer& indexBuffer() { return _indexBuffer; }
 
         /** @brief Mesh */
-        Mesh* mesh() { return &_mesh; }
+        Mesh& mesh() { return _mesh; }
 
         /**
          * @brief Reserve capacity for rendered glyphs
@@ -115,7 +115,8 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
          * @param cache         Glyph cache
          * @param size          Font size
          */
-        explicit AbstractTextRenderer(AbstractFont* font, const GlyphCache* cache, Float size);
+        explicit AbstractTextRenderer(AbstractFont& font, const GlyphCache& cache, Float size);
+        AbstractTextRenderer(AbstractFont&, GlyphCache&&, Float) = delete; /**< @overload */
 
         ~AbstractTextRenderer();
 
@@ -124,14 +125,14 @@ class MAGNUM_TEXT_EXPORT AbstractTextRenderer {
     #else
     private:
     #endif
-        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont* font, const GlyphCache* cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage);
 
         Mesh _mesh;
         Buffer _vertexBuffer, _indexBuffer;
 
     private:
-        AbstractFont* const font;
-        const GlyphCache* const cache;
+        AbstractFont& font;
+        const GlyphCache& cache;
         Float size;
         UnsignedInt _capacity;
         Rectangle _rectangle;
@@ -178,7 +179,7 @@ Mesh mesh;
 
 // Render the text
 Rectangle rectangle;
-std::tie(mesh, rectangle) = Text::TextRenderer2D::render(font, cache, 0.15f,
+std::tie(mesh, rectangle) = Text::TextRenderer2D::render(*font, cache, 0.15f,
     "Hello World!", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
 
 // Draw white text centered on the screen
@@ -201,7 +202,7 @@ Text::GlyphCache cache;
 Shaders::VectorShader2D shader;
 
 // Initialize renderer and reserve memory for enough glyphs
-Text::TextRenderer2D renderer(font, cache, 0.15f);
+Text::TextRenderer2D renderer(*font, cache, 0.15f);
 renderer.reserve(32, Buffer::Usage::DynamicDraw, Buffer::Usage::StaticDraw);
 
 // Update the text occasionally
@@ -239,7 +240,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer: public A
          * Returns mesh prepared for use with Shaders::AbstractVectorShader
          * subclasses and rectangle spanning the rendered text.
          */
-        static std::tuple<Mesh, Rectangle> render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage);
 
         /**
          * @brief Constructor
@@ -247,7 +248,8 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT TextRenderer: public A
          * @param cache         Glyph cache
          * @param size          Font size
          */
-        explicit TextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size);
+        explicit TextRenderer(AbstractFont& font, const GlyphCache& cache, Float size);
+        TextRenderer(AbstractFont&, GlyphCache&&, Float) = delete; /**< @overload */
 
         using AbstractTextRenderer::render;
 };

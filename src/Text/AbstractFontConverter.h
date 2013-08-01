@@ -130,7 +130,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * in that case.
          * @see features(), exportFontToFile(), exportGlyphCacheToData()
          */
-        std::vector<std::pair<std::string, Containers::Array<unsigned char>>> exportFontToData(AbstractFont* font, GlyphCache* cache, const std::string& filename, const std::string& characters) const;
+        std::vector<std::pair<std::string, Containers::Array<unsigned char>>> exportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::string& characters) const;
 
         /**
          * @brief Export font to single raw data
@@ -142,7 +142,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * more information.
          * @see features(), exportFontToFile(), importFromSingleData()
          */
-        Containers::Array<unsigned char> exportFontToSingleData(AbstractFont* font, GlyphCache* cache, const std::string& characters) const;
+        Containers::Array<unsigned char> exportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::string& characters) const;
 
         /**
          * @brief Export font to file
@@ -154,7 +154,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * `false` otherwise. See exportFontToData() for more information.
          * @see features(), exportFontToData(), exportGlyphCacheToFile()
          */
-        bool exportFontToFile(AbstractFont* font, GlyphCache* cache, const std::string& filename, const std::string& characters) const;
+        bool exportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::string& characters) const;
 
         /**
          * @brief Export glyph cache to raw data
@@ -173,7 +173,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * smaller subset, fill the cache with less characters.
          * @see features(), exportGlyphCacheToFile(), exportFontToData()
          */
-        std::vector<std::pair<std::string, Containers::Array<unsigned char>>> exportGlyphCacheToData(GlyphCache* cache, const std::string& filename) const;
+        std::vector<std::pair<std::string, Containers::Array<unsigned char>>> exportGlyphCacheToData(GlyphCache& cache, const std::string& filename) const;
 
         /**
          * @brief Export glyph cache to single raw data
@@ -185,7 +185,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * for more information.
          * @see features(), exportGlyphCacheToFile(), importGlyphCacheFromSingleData()
          */
-        Containers::Array<unsigned char> exportGlyphCacheToSingleData(GlyphCache* cache) const;
+        Containers::Array<unsigned char> exportGlyphCacheToSingleData(GlyphCache& cache) const;
 
         /**
          * @brief Export glyph cache to file
@@ -197,7 +197,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * `false` otherwise.
          * @see features(), exportGlyphCacheToData(), exportFontToFile()
          */
-        bool exportGlyphCacheToFile(GlyphCache* cache, const std::string& filename) const;
+        bool exportGlyphCacheToFile(GlyphCache& cache, const std::string& filename) const;
 
         /**
          * @brief Import glyph cache from raw data
@@ -251,10 +251,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If the plugin doesn't have @ref Feature "Feature::MultiFile",
          * default implementation calls doExportFontToSingleData().
          */
-        virtual std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont* font, GlyphCache* cache, const std::string& filename, const std::u32string& characters) const;
+        virtual std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
 
         /** @brief Implementation for exportFontToSingleData() */
-        virtual Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont* font, GlyphCache* cache, const std::u32string& characters) const;
+        virtual Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::u32string& characters) const;
 
         /**
          * @brief Implementation for exportFontToFile()
@@ -263,7 +263,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * implementation calls doExportFontToData() and saves the result to
          * given file(s).
          */
-        virtual bool doExportFontToFile(AbstractFont* font, GlyphCache* cache, const std::string& filename, const std::u32string& characters) const;
+        virtual bool doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
 
         /**
          * @brief Implementation for exportGlyphCacheToData()
@@ -271,10 +271,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If the plugin doesn't have @ref Feature "Feature::MultiFile",
          * default implementation calls doExportGlyphCacheToSingleData().
          */
-        virtual std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportGlyphCacheToData(GlyphCache* cache, const std::string& filename) const;
+        virtual std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportGlyphCacheToData(GlyphCache& cache, const std::string& filename) const;
 
         /** @brief Implementation for exportGlyphCacheToSingleData() */
-        virtual Containers::Array<unsigned char> doExportGlyphCacheToSingleData(GlyphCache* cache) const;
+        virtual Containers::Array<unsigned char> doExportGlyphCacheToSingleData(GlyphCache& cache) const;
 
         /**
          * @brief Implementation for exportGlyphCacheToFile()
@@ -283,7 +283,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * implementation calls doExportGlyphCacheToData() and saves the result
          * to given file(s).
          */
-        virtual bool doExportGlyphCacheToFile(GlyphCache* cache, const std::string& filename) const;
+        virtual bool doExportGlyphCacheToFile(GlyphCache& cache, const std::string& filename) const;
 
         /**
          * @brief Implementation for importGlyphCacheFromData()

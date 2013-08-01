@@ -73,7 +73,7 @@ class TestFont: public Text::AbstractFont {
         UnsignedInt doGlyphId(char32_t) override { return 0; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-        AbstractLayouter* doLayout(const GlyphCache*, Float size, const std::string& text) override {
+        AbstractLayouter* doLayout(const GlyphCache&, Float size, const std::string& text) override {
             return new TestLayouter(size, text.size());
         }
 };
@@ -86,7 +86,7 @@ void TextRendererGLTest::renderData() {
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
     Rectangle bounds;
-    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractTextRenderer::render(&font, nullptr, 0.25f, "abc");
+    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractTextRenderer::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc");
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
     CORRADE_COMPARE(positions.size(), 12);
@@ -165,7 +165,7 @@ void TextRendererGLTest::renderMesh() {
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
     Rectangle bounds;
-    std::tie(mesh, bounds) = Text::TextRenderer3D::render(&font, nullptr, 0.25f, "abc", &vertexBuffer, &indexBuffer, Buffer::Usage::StaticDraw);
+    std::tie(mesh, bounds) = Text::TextRenderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to verify this on ES? */
@@ -203,7 +203,7 @@ void TextRendererGLTest::renderMesh() {
 
 void TextRendererGLTest::mutableText() {
     TestFont font;
-    Text::TextRenderer2D renderer(&font, nullptr, 0.25f);
+    Text::TextRenderer2D renderer(font, *static_cast<GlyphCache*>(nullptr), 0.25f);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
     CORRADE_COMPARE(renderer.rectangle(), Rectangle());
@@ -214,7 +214,7 @@ void TextRendererGLTest::mutableText() {
     CORRADE_COMPARE(renderer.capacity(), 4);
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<UnsignedByte> indices = renderer.indexBuffer()->data<UnsignedByte>();
+    Containers::Array<UnsignedByte> indices = renderer.indexBuffer().data<UnsignedByte>();
     CORRADE_COMPARE(std::vector<UnsignedByte>(indices.begin(), indices.end()), (std::vector<UnsignedByte>{
          0,  1,  2,  1,  3,  2,
          4,  5,  6,  5,  7,  6,
@@ -228,7 +228,7 @@ void TextRendererGLTest::mutableText() {
     MAGNUM_VERIFY_NO_ERROR();
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<Float> vertices = renderer.vertexBuffer()->subData<Float>(0, 48);
+    Containers::Array<Float> vertices = renderer.vertexBuffer().subData<Float>(0, 48);
     CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
         0.0f,  0.5f, 0.0f, 10.0f,
         0.0f,  0.0f, 0.0f,  0.0f,
