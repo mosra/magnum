@@ -60,19 +60,19 @@ class Interleave {
             return std::make_tuple(_attributeCount, _stride, _data);
         }
 
-        template<class ...T> void operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
+        template<class ...T> void operator()(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const T&... attributes) {
             operator()(attributes...);
 
-            mesh->setVertexCount(_attributeCount);
-            buffer->setData(_attributeCount*_stride, _data, usage);
+            mesh.setVertexCount(_attributeCount);
+            buffer.setData(_attributeCount*_stride, _data, usage);
 
             delete[] _data;
         }
 
         /* Specialization for only one attribute array */
-        template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type operator()(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T& attribute) {
-            mesh->setVertexCount(attribute.size());
-            buffer->setData(attribute, usage);
+        template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type operator()(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const T& attribute) {
+            mesh.setVertexCount(attribute.size());
+            buffer.setData(attribute, usage);
         }
 
         template<class T, class ...U> static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type attributeCount(const T& first, const U&... next) {
@@ -180,7 +180,7 @@ See also interleave(Mesh*, Buffer*, Buffer::Usage, const T&...),
 which writes the interleaved array directly into buffer of given mesh.
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> inline typename std::enable_if<!std::is_convertible<T, Mesh*>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& first, const U&... next) {
+template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& first, const U&... next) {
     return Implementation::Interleave()(first, next...);
 }
 
@@ -207,7 +207,7 @@ mesh->setVertexCount(attribute.size());
 
 @see MeshTools::compressIndices()
 */
-template<class ...T> inline void interleave(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const T&... attributes) {
+template<class ...T> inline void interleave(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);
 }
 
