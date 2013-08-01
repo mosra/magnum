@@ -164,7 +164,7 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
 
 #ifndef MAGNUM_TARGET_GLES3
 Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
-    ResetNotificationStrategy& strategy = Context::current()->state()->renderer->resetNotificationStrategy;
+    ResetNotificationStrategy& strategy = Context::current()->state().renderer->resetNotificationStrategy;
 
     if(strategy == ResetNotificationStrategy()) {
         #ifndef MAGNUM_TARGET_GLES
@@ -178,9 +178,9 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
 }
 #endif
 
-void Renderer::initializeContextBasedFunctionality(Context* context) {
+void Renderer::initializeContextBasedFunctionality(Context& context) {
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>()) {
+    if(context.isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>()) {
         Debug() << "Renderer: using" << Extensions::GL::ARB::ES2_compatibility::string() << "features";
 
         clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
@@ -189,9 +189,9 @@ void Renderer::initializeContextBasedFunctionality(Context* context) {
 
     #ifndef MAGNUM_TARGET_GLES3
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::ARB::robustness>())
+    if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
     #else
-    if(context->isExtensionSupported<Extensions::GL::EXT::robustness>())
+    if(context.isExtensionSupported<Extensions::GL::EXT::robustness>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES

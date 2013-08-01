@@ -61,8 +61,8 @@ CubeMapTexture texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
     .setStorage(Math::log2(256)+1, TextureFormat::RGBA8, {256, 256})
-    .setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, &positiveX)
-    .setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, &negativeX)
+    .setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, positiveX)
+    .setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, negativeX)
     // ...
 @endcode
 

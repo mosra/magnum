@@ -407,19 +407,19 @@ Context::Context() {
     _state = new Implementation::State;
 
     /* Initialize functionality based on current OpenGL version and extensions */
-    AbstractFramebuffer::initializeContextBasedFunctionality(this);
-    AbstractShaderProgram::initializeContextBasedFunctionality(this);
-    AbstractTexture::initializeContextBasedFunctionality(this);
-    Buffer::initializeContextBasedFunctionality(this);
+    AbstractFramebuffer::initializeContextBasedFunctionality(*this);
+    AbstractShaderProgram::initializeContextBasedFunctionality(*this);
+    AbstractTexture::initializeContextBasedFunctionality(*this);
+    Buffer::initializeContextBasedFunctionality(*this);
     #ifndef MAGNUM_TARGET_GLES
-    BufferTexture::initializeContextBasedFunctionality(this);
+    BufferTexture::initializeContextBasedFunctionality(*this);
     #endif
-    DebugMarker::initializeContextBasedFunctionality(this);
-    DefaultFramebuffer::initializeContextBasedFunctionality(this);
-    Framebuffer::initializeContextBasedFunctionality(this);
-    Mesh::initializeContextBasedFunctionality(this);
-    Renderbuffer::initializeContextBasedFunctionality(this);
-    Renderer::initializeContextBasedFunctionality(this);
+    DebugMarker::initializeContextBasedFunctionality(*this);
+    DefaultFramebuffer::initializeContextBasedFunctionality(*this);
+    Framebuffer::initializeContextBasedFunctionality(*this);
+    Mesh::initializeContextBasedFunctionality(*this);
+    Renderbuffer::initializeContextBasedFunctionality(*this);
+    Renderer::initializeContextBasedFunctionality(*this);
 }
 
 Context::~Context() {

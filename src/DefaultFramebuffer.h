@@ -58,7 +58,7 @@ any drawing in your @ref Platform::GlutApplication::drawEvent() "drawEvent()"
 implementation, for example:
 @code
 void drawEvent() {
-    defaultFramebuffer.clear(AbstractFramebuffer::Clear::Color|AbstractFramebuffer::Clear::Depth);
+    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     // ...
 }
@@ -410,7 +410,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 };
 
 /** @brief Default framebuffer instance */

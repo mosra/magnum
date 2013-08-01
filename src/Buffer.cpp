@@ -51,9 +51,9 @@ Buffer::MapRangeImplementation Buffer::mapRangeImplementation = &Buffer::mapRang
 Buffer::FlushMappedRangeImplementation Buffer::flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
 Buffer::UnmapImplementation Buffer::unmapImplementation = &Buffer::unmapImplementationDefault;
 
-void Buffer::initializeContextBasedFunctionality(Context* context) {
+void Buffer::initializeContextBasedFunctionality(Context& context) {
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "Buffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         copyImplementation = &Buffer::copyImplementationDSA;
@@ -67,7 +67,7 @@ void Buffer::initializeContextBasedFunctionality(Context* context) {
         unmapImplementation = &Buffer::unmapImplementationDSA;
     }
 
-    if(context->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
+    if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
         Debug() << "Buffer: using" << Extensions::GL::ARB::invalidate_subdata::string() << "features";
 
         invalidateImplementation = &Buffer::invalidateImplementationARB;
@@ -87,7 +87,7 @@ Buffer::Buffer(Buffer::Target targetHint): _targetHint(targetHint)
 }
 
 Buffer::~Buffer() {
-    GLuint* bindings = Context::current()->state()->buffer->bindings;
+    GLuint* bindings = Context::current()->state().buffer->bindings;
 
     /* Remove all current bindings from the state */
     for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
@@ -97,7 +97,7 @@ Buffer::~Buffer() {
 }
 
 void Buffer::bind(Target target, GLuint id) {
-    GLuint& bound = Context::current()->state()->buffer->bindings[Implementation::BufferState::indexForTarget(target)];
+    GLuint& bound = Context::current()->state().buffer->bindings[Implementation::BufferState::indexForTarget(target)];
 
     /* Already bound, nothing to do */
     if(bound == id) return;
@@ -108,7 +108,7 @@ void Buffer::bind(Target target, GLuint id) {
 }
 
 Buffer::Target Buffer::bindInternal(Target hint) {
-    GLuint* bindings = Context::current()->state()->buffer->bindings;
+    GLuint* bindings = Context::current()->state().buffer->bindings;
     GLuint& hintBinding = bindings[Implementation::BufferState::indexForTarget(hint)];
 
     /* Shortcut - if already bound to hint, return */
@@ -161,13 +161,13 @@ void Buffer::unmapSub() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void Buffer::copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-    glCopyBufferSubData(static_cast<GLenum>(read->bindInternal(Target::CopyRead)), static_cast<GLenum>(write->bindInternal(Target::CopyWrite)), readOffset, writeOffset, size);
+void Buffer::copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+    glCopyBufferSubData(static_cast<GLenum>(read.bindInternal(Target::CopyRead)), static_cast<GLenum>(write.bindInternal(Target::CopyWrite)), readOffset, writeOffset, size);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-    glNamedCopyBufferSubDataEXT(read->_id, write->_id, readOffset, writeOffset, size);
+void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+    glNamedCopyBufferSubDataEXT(read._id, write._id, readOffset, writeOffset, size);
 }
 #endif
 #endif

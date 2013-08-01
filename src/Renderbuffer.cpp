@@ -42,14 +42,14 @@ Renderbuffer::StorageMultisampleImplementation Renderbuffer::storageMultisampleI
 
 Renderbuffer::~Renderbuffer() {
     /* If bound, remove itself from state */
-    GLuint& binding = Context::current()->state()->framebuffer->renderbufferBinding;
+    GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;
     if(binding == _id) binding = 0;
 
     glDeleteRenderbuffers(1, &_id);
 }
 
 void Renderbuffer::bind() {
-    GLuint& binding = Context::current()->state()->framebuffer->renderbufferBinding;
+    GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;
 
     if(binding == _id) return;
 
@@ -57,20 +57,20 @@ void Renderbuffer::bind() {
     glBindRenderbuffer(GL_RENDERBUFFER, _id);
 }
 
-void Renderbuffer::initializeContextBasedFunctionality(Context* context) {
+void Renderbuffer::initializeContextBasedFunctionality(Context& context) {
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "Renderbuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         storageImplementation = &Renderbuffer::storageImplementationDSA;
         storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSA;
     }
     #elif !defined(MAGNUM_TARGET_GLES3)
-    if(context->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>()) {
+    if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>()) {
         Debug() << "Renderbuffer: using" << Extensions::GL::ANGLE::framebuffer_multisample::string() << "features";
 
         storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationANGLE;
-    } else if (context->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>()) {
+    } else if (context.isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>()) {
         Debug() << "Renderbuffer: using" << Extensions::GL::NV::framebuffer_multisample::string() << "features";
 
         storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationNV;

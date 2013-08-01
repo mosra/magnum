@@ -33,10 +33,10 @@ namespace Magnum {
 
 DebugMarker::MarkImplementation DebugMarker::markImplementation = &DebugMarker::markImplementationDefault;
 
-void DebugMarker::initializeContextBasedFunctionality(Context* context) {
+void DebugMarker::initializeContextBasedFunctionality(Context& context) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()) {
+    if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()) {
         Debug() << "DebugMarker: using" << Extensions::GL::GREMEDY::string_marker::string() << "features";
 
         markImplementation = &DebugMarker::markImplementationDebugger;

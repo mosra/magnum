@@ -262,7 +262,7 @@ void ResourceManagerTest::clearWhileReferenced() {
 void ResourceManagerTest::loader() {
     class IntResourceLoader: public AbstractResourceLoader<Int> {
         public:
-            IntResourceLoader(): resource(ResourceManager::instance()->get<Data>("data")) {}
+            IntResourceLoader(): resource(ResourceManager::instance().get<Data>("data")) {}
 
             void load() {
                 set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);

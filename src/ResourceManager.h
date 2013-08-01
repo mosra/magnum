@@ -225,8 +225,12 @@ cube->draw();
    template implementation file. */
 template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
     public:
-        /** @brief Global instance */
-        static ResourceManager<Types...>* instance();
+        /**
+         * @brief Global instance
+         *
+         * Assumes that the instance exists.
+         */
+        static ResourceManager<Types...>& instance();
 
         /**
          * @brief Constructor
@@ -391,6 +395,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set loader for given type of resources
+         * @param loader    Loader or `nullptr` if unsetting previous loader.
          * @return Reference to self (for method chaining)
          *
          * See AbstractResourceLoader documentation for more information.
@@ -580,9 +585,9 @@ template<class T> inline ResourceManagerData<T>::Data::~Data() {
 
 }
 
-template<class ...Types> ResourceManager<Types...>* ResourceManager<Types...>::instance() {
-    CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", nullptr);
-    return internalInstance();
+template<class ...Types> ResourceManager<Types...>& ResourceManager<Types...>::instance() {
+    CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", *internalInstance());
+    return *internalInstance();
 }
 
 template<class ...Types> ResourceManager<Types...>::ResourceManager() {

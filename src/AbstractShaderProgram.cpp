@@ -77,7 +77,7 @@ AbstractShaderProgram::UniformMatrix4x3dvImplementation AbstractShaderProgram::u
 #endif
 
 Int AbstractShaderProgram::maxSupportedVertexAttributeCount() {
-    GLint& value = Context::current()->state()->shaderProgram->maxSupportedVertexAttributeCount;
+    GLint& value = Context::current()->state().shaderProgram->maxSupportedVertexAttributeCount;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -94,7 +94,7 @@ AbstractShaderProgram::AbstractShaderProgram(AbstractShaderProgram&& other) noex
 
 AbstractShaderProgram::~AbstractShaderProgram() {
     /* Remove current usage from the state */
-    GLuint& current = Context::current()->state()->shaderProgram->current;
+    GLuint& current = Context::current()->state().shaderProgram->current;
     if(current == _id) current = 0;
 
     if(_id) glDeleteProgram(_id);
@@ -125,7 +125,7 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
 
 void AbstractShaderProgram::use() {
     /* Use only if the program isn't already in use */
-    GLuint& current = Context::current()->state()->shaderProgram->current;
+    GLuint& current = Context::current()->state().shaderProgram->current;
     if(current != _id) glUseProgram(current = _id);
 }
 
@@ -189,12 +189,12 @@ Int AbstractShaderProgram::uniformLocation(const std::string& name) {
     return location;
 }
 
-void AbstractShaderProgram::initializeContextBasedFunctionality(Context* context) {
+void AbstractShaderProgram::initializeContextBasedFunctionality(Context& context) {
     /** @todo OpenGL ES 2 has extension @es_extension{EXT,separate_shader_objects} for this */
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>() ||
-       context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        Debug() << "AbstractShaderProgram: using" << (context->isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>() ?
+    if(context.isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>() ||
+       context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        Debug() << "AbstractShaderProgram: using" << (context.isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>() ?
             Extensions::GL::ARB::separate_shader_objects::string() : Extensions::GL::EXT::direct_state_access::string()) << "features";
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
         uniform2fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;

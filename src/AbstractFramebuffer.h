@@ -297,7 +297,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         Rectanglei _viewport;
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
         #ifndef MAGNUM_TARGET_GLES

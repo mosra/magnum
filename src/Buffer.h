@@ -459,7 +459,7 @@ class MAGNUM_EXPORT Buffer {
          * @requires_gl31 %Extension @extension{ARB,copy_buffer}
          * @requires_gles30 %Buffer copying is not available in OpenGL ES 2.0.
          */
-        static void copy(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+        static void copy(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
             copyImplementation(read, write, readOffset, writeOffset, size);
         }
         #endif
@@ -826,16 +826,16 @@ class MAGNUM_EXPORT Buffer {
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         static void bind(Target hint, GLuint id);
         Target MAGNUM_LOCAL bindInternal(Target hint);
 
         #ifndef MAGNUM_TARGET_GLES2
-        typedef void(*CopyImplementation)(Buffer*, Buffer*, GLintptr, GLintptr, GLsizeiptr);
-        static void MAGNUM_LOCAL copyImplementationDefault(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        typedef void(*CopyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
+        static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL copyImplementationDSA(Buffer* read, Buffer* write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        static void MAGNUM_LOCAL copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
         static CopyImplementation copyImplementation;
         #endif

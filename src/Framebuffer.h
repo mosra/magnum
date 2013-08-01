@@ -55,9 +55,9 @@ Renderbuffer depthStencil;
 
 // configure the textures and allocate texture memory...
 
-framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), &color);
-framebuffer.attachTexture2D(Framebuffer::ColorAttachment(1), &normal);
-framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, &depthStencil);
+framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), color);
+framebuffer.attachTexture2D(Framebuffer::ColorAttachment(1), normal);
+framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 @endcode
 
 Then you need to map outputs of your shader to color attachments in the
@@ -73,13 +73,13 @@ off-screen framebuffer, then bind the default and render the textures on
 screen:
 @code
 void drawEvent() {
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color)
-    framebuffer.clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth|Framebuffer::Clear::Stencil);
+    defaultFramebuffer.clear(FramebufferClear::Color)
+    framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    framebuffer.bind(Framebuffer::Target::Draw);
+    framebuffer.bind(FramebufferTarget::Draw);
     // ...
 
-    defaultFramebuffer.bind(DefaultFramebuffer::Target::Draw);
+    defaultFramebuffer.bind(Framebuffer::Target::Draw);
     // ...
 }
 @endcode
@@ -405,7 +405,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
          *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
          */
-        Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer* renderbuffer) {
+        Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer& renderbuffer) {
             (this->*renderbufferImplementation)(attachment, renderbuffer);
             return *this;
         }
@@ -425,7 +425,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
-        Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D* texture, Int level) {
+        Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
             (this->*texture1DImplementation)(attachment, texture, level);
             return *this;
         }
@@ -444,7 +444,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D* texture, Int level);
+        Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
 
         /**
          * @brief Attach cube map texture to given buffer
@@ -460,8 +460,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        Framebuffer& attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture* texture, CubeMapTexture::Coordinate coordinate, Int level) {
-            (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture->id(), level);
+        Framebuffer& attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, Int level) {
+            (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture.id(), level);
             return *this;
         }
 
@@ -480,7 +480,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
-        Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D* texture, Int level, Int layer) {
+        Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
             /** @todo Check for texture target compatibility */
             (this->*texture3DImplementation)(attachment, texture, level, layer);
             return *this;
@@ -495,19 +495,19 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
-        typedef void(Framebuffer::*RenderbufferImplementation)(BufferAttachment, Renderbuffer*);
-        void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer* renderbuffer);
+        typedef void(Framebuffer::*RenderbufferImplementation)(BufferAttachment, Renderbuffer&);
+        void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer* renderbuffer);
+        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #endif
         static RenderbufferImplementation renderbufferImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
-        typedef void(Framebuffer::*Texture1DImplementation)(BufferAttachment, Texture1D*, GLint);
-        void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, Texture1D* texture, GLint level);
-        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, Texture1D* texture, GLint level);
+        typedef void(Framebuffer::*Texture1DImplementation)(BufferAttachment, Texture1D&, GLint);
+        void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, Texture1D& texture, GLint level);
+        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, Texture1D& texture, GLint level);
         static Texture1DImplementation texture1DImplementation;
         #endif
 
@@ -518,10 +518,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
         #endif
         static MAGNUM_LOCAL Texture2DImplementation texture2DImplementation;
 
-        typedef void(Framebuffer::*Texture3DImplementation)(BufferAttachment, Texture3D*, GLint, GLint);
-        void MAGNUM_LOCAL texture3DImplementationDefault(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer);
+        typedef void(Framebuffer::*Texture3DImplementation)(BufferAttachment, Texture3D&, GLint, GLint);
+        void MAGNUM_LOCAL texture3DImplementationDefault(BufferAttachment attachment, Texture3D& texture, GLint level, GLint layer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL texture3DImplementationDSA(BufferAttachment attachment, Texture3D* texture, GLint level, GLint layer);
+        void MAGNUM_LOCAL texture3DImplementationDSA(BufferAttachment attachment, Texture3D& texture, GLint level, GLint layer);
         #endif
         static Texture3DImplementation texture3DImplementation;
 };

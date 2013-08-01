@@ -178,15 +178,15 @@ class Resource {
         }
 
         /**
-         * @brief %Resource data
+         * @brief Reference to resource data
          *
          * The resource must be loaded before accessing it. Use boolean
          * conversion operator or state() for testing whether it is loaded.
          */
-        operator U*() {
+        operator U&() {
             acquire();
-            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
-            return static_cast<U*>(data);
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
+            return *static_cast<U*>(data);
         }
 
         /** @overload */

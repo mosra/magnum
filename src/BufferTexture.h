@@ -164,12 +164,13 @@ using setBuffer(), you can fill the buffer at any time using data setting
 functions in Buffer itself.
 
 Note that the buffer is not managed (e.g. deleted on destruction) by the
-texture, so you have to manage it on your own. On the other hand it allows you
-to use one buffer for more textures or store more than one data in it.
+texture, so you have to manage it on your own and ensure that it is available
+for whole texture lifetime. On the other hand it allows you to use one buffer
+for more textures or store more than one data in it.
 
 Example usage:
 @code
-Buffer* buffer;
+Buffer buffer;
 BufferTexture texture;
 texture.setBuffer(BufferTextureFormat::RGB32F, buffer);
 
@@ -221,7 +222,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
          *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer) {
+        void setBuffer(BufferTextureFormat internalFormat, Buffer& buffer) {
             (this->*setBufferImplementation)(internalFormat, buffer);
         }
 
@@ -239,21 +240,21 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
          *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size) {
+        void setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
             (this->*setBufferRangeImplementation)(internalFormat, buffer, offset, size);
         }
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
-        typedef void(BufferTexture::*SetBufferImplementation)(BufferTextureFormat, Buffer*);
-        void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer);
-        void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer);
+        typedef void(BufferTexture::*SetBufferImplementation)(BufferTextureFormat, Buffer&);
+        void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
+        void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
         static SetBufferImplementation setBufferImplementation;
 
-        typedef void(BufferTexture::*SetBufferRangeImplementation)(BufferTextureFormat, Buffer*, GLintptr, GLsizeiptr);
-        void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
-        void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer, GLintptr offset, GLsizeiptr size);
+        typedef void(BufferTexture::*SetBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
+        void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         static SetBufferRangeImplementation setBufferRangeImplementation;
 };
 

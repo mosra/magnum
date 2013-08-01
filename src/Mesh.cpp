@@ -69,7 +69,7 @@ Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexC
 
 Mesh::~Mesh() {
     /* Remove current vao from the state */
-    GLuint& current = Context::current()->state()->mesh->currentVAO;
+    GLuint& current = Context::current()->state().mesh->currentVAO;
     if(current == vao) current = 0;
 
     (this->*destroyImplementation)();
@@ -117,10 +117,10 @@ Mesh& Mesh::operator=(Mesh&& other) {
     return *this;
 }
 
-Mesh& Mesh::setIndexBuffer(Buffer* buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
+Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
     #ifdef CORRADE_TARGET_NACL
-    CORRADE_ASSERT(buffer->targetHint() == Buffer::Target::ElementArray,
-        "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer->targetHint(), this);
+    CORRADE_ASSERT(buffer.targetHint() == Buffer::Target::ElementArray,
+        "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer.targetHint(), this);
     #endif
 
     indexOffset = offset;
@@ -162,7 +162,7 @@ void Mesh::draw() {
 void Mesh::bindVAO(GLuint vao) {
     /** @todo Get some extension wrangler instead to avoid linker errors to glBindVertexArray() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    GLuint& current = Context::current()->state()->mesh->currentVAO;
+    GLuint& current = Context::current()->state().mesh->currentVAO;
     if(current != vao) glBindVertexArray(current = vao);
     #else
     static_cast<void>(vao);
@@ -191,16 +191,16 @@ void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
 #endif
 #endif
 
-void Mesh::initializeContextBasedFunctionality(Context* context) {
+void Mesh::initializeContextBasedFunctionality(Context& context) {
     /** @todo VAOs are in ES 3.0 and as extension in ES 2.0, enable them when some extension wrangler is available */
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
+    if(context.isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
         Debug() << "Mesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
 
         createImplementation = &Mesh::createImplementationVAO;
         destroyImplementation = &Mesh::destroyImplementationVAO;
 
-        if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
             Debug() << "Mesh: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
             attributePointerImplementation = &Mesh::attributePointerImplementationDSA;
@@ -299,18 +299,18 @@ void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
 #endif
 #endif
 
-void Mesh::bindIndexBufferImplementationDefault(Buffer* buffer) {
-    indexBuffer = buffer;
+void Mesh::bindIndexBufferImplementationDefault(Buffer& buffer) {
+    indexBuffer = &buffer;
 }
 
-void Mesh::bindIndexBufferImplementationVAO(Buffer* buffer) {
+void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
     bindVAO(vao);
 
     /* Reset ElementArray binding to force explicit glBindBuffer call later */
     /** @todo Do this cleaner way */
-    Context::current()->state()->buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::Target::ElementArray)] = 0;
+    Context::current()->state().buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::Target::ElementArray)] = 0;
 
-    buffer->bind(Buffer::Target::ElementArray);
+    buffer.bind(Buffer::Target::ElementArray);
 }
 
 void Mesh::bindImplementationDefault() {

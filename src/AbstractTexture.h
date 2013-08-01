@@ -281,7 +281,7 @@ class MAGNUM_EXPORT AbstractTexture {
         GLenum _target;
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         typedef void(AbstractTexture::*BindImplementation)(GLint);
         void MAGNUM_LOCAL bindImplementationDefault(GLint layer);

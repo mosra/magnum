@@ -355,7 +355,7 @@ class MAGNUM_EXPORT Context {
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Implementation::State* state() { return _state; }
+        Implementation::State& state() { return *_state; }
         #endif
 
     private:

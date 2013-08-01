@@ -774,7 +774,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         typedef void(AbstractShaderProgram::*Uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
         typedef void(AbstractShaderProgram::*Uniform2fvImplementation)(GLint, GLsizei, const Math::Vector<2, GLfloat>*);
