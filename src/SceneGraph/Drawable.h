@@ -49,11 +49,11 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        DrawableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Drawable3D(this, group) {
+        DrawableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
             // ...
         }
 
-        void draw(const Matrix4& transformationMatrix, AbstractCamera3D* camera) override {
+        void draw(const Matrix4& transformationMatrix, AbstractCamera3D& camera) override {
             // ...
         }
 }
@@ -127,7 +127,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          * Adds the feature to the object and also to the group, if specified.
          * Otherwise you can use DrawableGroup::add().
          */
-        explicit Drawable(AbstractObject<dimensions, T>* object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
+        explicit Drawable(AbstractObject<dimensions, T>& object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
 
         /**
          * @brief Draw the object using given camera
@@ -137,7 +137,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          *
          * Projection matrix can be retrieved from AbstractCamera::projectionMatrix().
          */
-        virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>* camera) = 0;
+        virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>& camera) = 0;
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY

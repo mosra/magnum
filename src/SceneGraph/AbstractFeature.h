@@ -100,7 +100,7 @@ cleanInverted() or both. Example:
 @code
 class CachingFeature: public SceneGraph::AbstractFeature3D {
     public:
-        CachingFeature(SceneGraph::AbstractObject3D* object): SceneGraph::AbstractFeature3D(object) {
+        CachingFeature(SceneGraph::AbstractObject3D& object): SceneGraph::AbstractFeature3D(object) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
@@ -133,11 +133,11 @@ parameter:
 @code
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
-        template<class T> TransformingFeature(SceneGraph::Object<T>* object):
+        template<class T> TransformingFeature(SceneGraph::Object<T>& object):
             SceneGraph::AbstractFeature3D(object), transformation(object) {}
 
     private:
-        SceneGraph::AbstractTranslationRotation3D* transformation;
+        SceneGraph::AbstractTranslationRotation3D& transformation;
 };
 @endcode
 If we take for example @ref Object "Object<MatrixTransformation3D>", it is
@@ -145,7 +145,7 @@ derived from @ref AbstractObject "AbstractObject3D" and
 @ref BasicMatrixTransformation3D "MatrixTransformation3D", which is derived
 from @ref AbstractBasicTranslationRotationScaling3D "AbstractTranslationRotationScaling3D",
 which is derived from @ref AbstractBasicTranslationRotation3D "AbstractTranslationRotation3D",
-which is automatically extracted from the pointer in our constructor.
+which is automatically extracted from the reference in our constructor.
 
 @section AbstractFeature-explicit-specializations Explicit template specializations
 
@@ -174,18 +174,25 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit AbstractFeature(AbstractObject<dimensions, T>* object);
+        explicit AbstractFeature(AbstractObject<dimensions, T>& object);
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* This is here to avoid ambiguity with deleted copy constructor when
+           passing `*this` from class subclassing both AbstractFeature and
+           AbstractObject */
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> AbstractFeature(U& object): AbstractFeature(static_cast<AbstractObject<dimensions, T>&>(object)) {}
+        #endif
 
         virtual ~AbstractFeature() = 0;
 
         /** @brief %Object holding this feature */
-        AbstractObject<dimensions, T>* object() {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        AbstractObject<dimensions, T>& object() {
+            return *Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @overload */
-        const AbstractObject<dimensions, T>* object() const {
-            return Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
+        const AbstractObject<dimensions, T>& object() const {
+            return *Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
 
         /** @brief Previous feature or `nullptr`, if this is first feature */

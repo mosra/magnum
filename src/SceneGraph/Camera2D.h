@@ -65,7 +65,14 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractC
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see setProjection()
          */
-        explicit BasicCamera2D(AbstractObject<2, T>* object);
+        explicit BasicCamera2D(AbstractObject<2, T>& object);
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* This is here to avoid ambiguity with deleted copy constructor when
+           passing `*this` from class subclassing both BasicCamera2D and
+           AbstractObject */
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<2, T>, U>::value>::type> BasicCamera2D(U& object): BasicCamera2D(static_cast<AbstractObject<2, T>&>(object)) {}
+        #endif
 
         /**
          * @brief Set projection

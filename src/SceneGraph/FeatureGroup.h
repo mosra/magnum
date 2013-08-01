@@ -47,8 +47,8 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
     explicit AbstractFeatureGroup();
     virtual ~AbstractFeatureGroup();
 
-    void add(AbstractFeature<dimensions, T>* feature);
-    void remove(AbstractFeature<dimensions, T>* feature);
+    void add(AbstractFeature<dimensions, T>& feature);
+    void remove(AbstractFeature<dimensions, T>& feature);
 
     std::vector<AbstractFeature<dimensions, T>*> features;
 };
@@ -84,13 +84,13 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
         }
 
         /** @brief Feature at given index */
-        Feature* operator[](std::size_t index) {
-            return static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
+        Feature& operator[](std::size_t index) {
+            return *static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
         }
 
         /** @overload */
-        const Feature* operator[](std::size_t index) const {
-            return static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
+        const Feature& operator[](std::size_t index) const {
+            return *static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
         }
 
         /**
@@ -100,7 +100,7 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
          * If the features is part of another group, it is removed from it.
          * @see remove(), AbstractGroupedFeature::AbstractGroupedFeature()
          */
-        FeatureGroup<dimensions, Feature, T>& add(Feature* feature);
+        FeatureGroup<dimensions, Feature, T>& add(Feature& feature);
 
         /**
          * @brief Remove feature from the group
@@ -109,7 +109,7 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
          * The feature must be part of the group.
          * @see add()
          */
-        FeatureGroup<dimensions, Feature, T>& remove(Feature* feature);
+        FeatureGroup<dimensions, Feature, T>& remove(Feature& feature);
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
@@ -162,23 +162,23 @@ template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions
     for(auto i: AbstractFeatureGroup<dimensions, T>::features) static_cast<Feature*>(i)->_group = nullptr;
 }
 
-template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::add(Feature* feature) {
+template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::add(Feature& feature) {
     /* Remove from previous group */
-    if(feature->_group)
-        feature->_group->remove(feature);
+    if(feature._group)
+        feature._group->remove(feature);
 
     /* Crossreference the feature and group together */
     AbstractFeatureGroup<dimensions, T>::add(feature);
-    feature->_group = this;
+    feature._group = this;
     return *this;
 }
 
-template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::remove(Feature* feature) {
-    CORRADE_ASSERT(feature->_group == this,
+template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::remove(Feature& feature) {
+    CORRADE_ASSERT(feature._group == this,
         "SceneGraph::AbstractFeatureGroup::remove(): feature is not part of this group", *this);
 
     AbstractFeatureGroup<dimensions, T>::remove(feature);
-    feature->_group = nullptr;
+    feature._group = nullptr;
     return *this;
 }
 

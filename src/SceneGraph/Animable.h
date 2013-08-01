@@ -78,7 +78,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class AnimableObject: public Object3D, SceneGraph::Animable3D {
     public:
-        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Animable3D(this, group) {
+        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Animable3D(*this, group) {
             setDuration(10.0f);
             // ...
         }
@@ -153,7 +153,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
          * adds the feature to the object and also to group, if specified.
          * @see setDuration(), setState(), setRepeated(), AnimableGroup::add()
          */
-        explicit Animable(AbstractObject<dimensions, T>* object, AnimableGroup<dimensions, T>* group = nullptr);
+        explicit Animable(AbstractObject<dimensions, T>& object, AnimableGroup<dimensions, T>* group = nullptr);
 
         ~Animable();
 

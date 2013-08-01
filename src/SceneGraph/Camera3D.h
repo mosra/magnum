@@ -67,7 +67,14 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D: public AbstractC
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit BasicCamera3D(AbstractObject<3, T>* object);
+        explicit BasicCamera3D(AbstractObject<3, T>& object);
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* This is here to avoid ambiguity with deleted copy constructor when
+           passing `*this` from class subclassing both BasicCamera3D and
+           AbstractObject */
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<3, T>, U>::value>::type> BasicCamera3D(U& object): BasicCamera3D(static_cast<AbstractObject<3, T>&>(object)) {}
+        #endif
 
         /**
          * @brief Set orthographic projection

@@ -107,14 +107,14 @@ void CameraTest::fixAspectRatio() {
 
 void CameraTest::defaultProjection2D() {
     Object2D o;
-    Camera2D camera(&o);
+    Camera2D camera(o);
     CORRADE_COMPARE(camera.projectionMatrix(), Matrix3());
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
 }
 
 void CameraTest::defaultProjection3D() {
     Object3D o;
-    Camera3D camera(&o);
+    Camera3D camera(o);
     CORRADE_COMPARE(camera.projectionMatrix(), Matrix4());
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
 }
@@ -122,7 +122,7 @@ void CameraTest::defaultProjection3D() {
 void CameraTest::projectionSize2D() {
     Vector2 projectionSize(4.0f, 3.0f);
     Object2D o;
-    Camera2D camera(&o);
+    Camera2D camera(o);
     camera.setProjection(projectionSize);
     CORRADE_COMPARE(camera.projectionSize(), projectionSize);
 }
@@ -130,21 +130,21 @@ void CameraTest::projectionSize2D() {
 void CameraTest::projectionSizeOrthographic() {
     Vector2 projectionSizeRectangle(5.0f, 4.0f);
     Object3D o;
-    Camera3D camera(&o);
+    Camera3D camera(o);
     camera.setOrthographic(projectionSizeRectangle, 1, 9);
     CORRADE_COMPARE(camera.projectionSize(), projectionSizeRectangle);
 }
 
 void CameraTest::projectionSizePerspective() {
     Object3D o;
-    Camera3D camera(&o);
+    Camera3D camera(o);
     camera.setPerspective(Deg(27.0f), 2.35f, 32.0f, 100);
     CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f, 0.204322f));
 }
 
 void CameraTest::projectionSizeViewport() {
     Object3D o;
-    Camera3D camera(&o);
+    Camera3D camera(o);
     camera.setViewport({200, 300});
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f, 2.0f));
 
@@ -158,10 +158,10 @@ void CameraTest::projectionSizeViewport() {
 void CameraTest::draw() {
     class Drawable: public SceneGraph::Drawable3D {
         public:
-            Drawable(AbstractObject3D* object, DrawableGroup3D* group, Matrix4& result): SceneGraph::Drawable3D(object, group), result(result) {}
+            Drawable(AbstractObject3D& object, DrawableGroup3D* group, Matrix4& result): SceneGraph::Drawable3D(object, group), result(result) {}
 
         protected:
-            void draw(const Matrix4& transformationMatrix, AbstractCamera3D*) {
+            void draw(const Matrix4& transformationMatrix, AbstractCamera3D&) override {
                 result = transformationMatrix;
             }
 
@@ -175,19 +175,19 @@ void CameraTest::draw() {
     Object3D first(&scene);
     Matrix4 firstTransformation;
     first.scale(Vector3(5.0f));
-    new Drawable(&first, &group, firstTransformation);
+    new Drawable(first, &group, firstTransformation);
 
     Object3D second(&scene);
     Matrix4 secondTransformation;
     second.translate(Vector3::yAxis(3.0f));
-    new Drawable(&second, &group, secondTransformation);
+    new Drawable(second, &group, secondTransformation);
 
     Object3D third(&second);
     Matrix4 thirdTransformation;
     third.translate(Vector3::zAxis(-1.5f));
-    new Drawable(&third, &group, thirdTransformation);
+    new Drawable(third, &group, thirdTransformation);
 
-    Camera3D camera(&third);
+    Camera3D camera(third);
     camera.draw(group);
 
     CORRADE_COMPARE(firstTransformation, Matrix4::translation({0.0f, -3.0f, 1.5f})*Matrix4::scaling(Vector3(5.0f)));

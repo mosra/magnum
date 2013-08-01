@@ -78,8 +78,8 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
          * Adds the feature to the object and to group, if specified.
          * @see FeatureGroup::add()
          */
-        explicit AbstractGroupedFeature(AbstractObject<dimensions, T>* object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
-            if(group) group->add(static_cast<Derived*>(this));
+        explicit AbstractGroupedFeature(AbstractObject<dimensions, T>& object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
+            if(group) group->add(static_cast<Derived&>(*this));
         }
 
         /**
@@ -89,7 +89,7 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
          * any.
          */
         ~AbstractGroupedFeature() {
-            if(_group) _group->remove(static_cast<Derived*>(this));
+            if(_group) _group->remove(static_cast<Derived&>(*this));
         }
 
         /** @brief Group this feature belongs to */

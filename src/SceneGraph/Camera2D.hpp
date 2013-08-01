@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<class T> BasicCamera2D<T>::BasicCamera2D(AbstractObject<2, T>* object): AbstractCamera<2, T>(object) {}
+template<class T> BasicCamera2D<T>::BasicCamera2D(AbstractObject<2, T>& object): AbstractCamera<2, T>(object) {}
 
 template<class T> BasicCamera2D<T>& BasicCamera2D<T>::setProjection(const Math::Vector2<T>& size) {
     AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);

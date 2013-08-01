@@ -92,7 +92,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * applied as first.
          */
         typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
-            AbstractFeature<dimensions, T>::object()->setClean();
+            AbstractFeature<dimensions, T>::object().setClean();
             return _cameraMatrix;
         }
 
@@ -139,7 +139,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Constructor
          * @param object        Object holding the camera
          */
-        explicit AbstractCamera(AbstractObject<dimensions, T>* object);
+        explicit AbstractCamera(AbstractObject<dimensions, T>& object);
 
         ~AbstractCamera();
 
