@@ -119,11 +119,12 @@ The object itself handles only parent/child relationship and transformation.
 To make the object renderable, animatable, add collision shape to it etc., you
 have to add a *feature* to it.
 
-Each feature takes pointer to holder object in constructor, so adding a
-feature to an object might look like this:
+Each feature takes reference to holder object in constructor, so adding a
+feature to an object might look just like this, as in some cases you don't even
+need to keep the pointer to it:
 @code
 Object3D* o;
-auto feature = new MyFeature(o);
+new MyFeature(o);
 @endcode
 
 Features of an object can be accessed using Object::firstFeature() and
