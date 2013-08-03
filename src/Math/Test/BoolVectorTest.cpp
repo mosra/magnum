@@ -33,12 +33,12 @@ class BoolVectorTest: public Corrade::TestSuite::Tester {
     public:
         explicit BoolVectorTest();
 
+        void construct();
         void constructDefault();
         void constructOneValue();
         void constructOneElement();
+        void constructCopy();
         void data();
-
-        void constExpressions();
 
         void compare();
         void compareUndefined();
@@ -59,12 +59,12 @@ static_assert(BoolVector<17>::DataSize == 3, "Improper DataSize");
 typedef Math::BoolVector<19> BoolVector19;
 
 BoolVectorTest::BoolVectorTest() {
-    addTests({&BoolVectorTest::constructDefault,
+    addTests({&BoolVectorTest::construct,
+              &BoolVectorTest::constructDefault,
               &BoolVectorTest::constructOneValue,
               &BoolVectorTest::constructOneElement,
+              &BoolVectorTest::constructCopy,
               &BoolVectorTest::data,
-
-              &BoolVectorTest::constExpressions,
 
               &BoolVectorTest::compare,
               &BoolVectorTest::compareUndefined,
@@ -78,24 +78,49 @@ BoolVectorTest::BoolVectorTest() {
               &BoolVectorTest::debug});
 }
 
+void BoolVectorTest::construct() {
+    constexpr BoolVector19 a = {0xa5, 0x5f, 0x07};
+    CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
+}
+
 void BoolVectorTest::constructDefault() {
-    CORRADE_COMPARE(BoolVector19(), BoolVector19(0x00, 0x00, 0x00));
+    constexpr BoolVector19 a;
+    CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
 }
 
 void BoolVectorTest::constructOneValue() {
-    CORRADE_COMPARE(BoolVector19(false), BoolVector19(0x00, 0x00, 0x00));
-    CORRADE_COMPARE(BoolVector19(true), BoolVector19(0xff, 0xff, 0x07));
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr BoolVector19 a(false);
+    #else
+    BoolVector19 a(false); /* not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
+
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr BoolVector19 b(true);
+    #else
+    BoolVector19 b(true); /* not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(b, BoolVector19(0xff, 0xff, 0x07));
+
+    CORRADE_VERIFY(!(std::is_convertible<bool, BoolVector19>::value));
 }
 
 void BoolVectorTest::constructOneElement() {
     typedef BoolVector<1> BoolVector1;
 
-    BoolVector1 a = 0x01;
+    constexpr BoolVector1 a = 0x01;
     CORRADE_COMPARE(a, BoolVector1(0x01));
 }
 
+void BoolVectorTest::constructCopy() {
+    constexpr BoolVector19 a = {0xa5, 0x5f, 0x07};
+    constexpr BoolVector19 b(a);
+    CORRADE_COMPARE(b, BoolVector19(0xa5, 0x5f, 0x07));
+}
+
 void BoolVectorTest::data() {
-    BoolVector19 a(0x08, 0x03, 0x04);
+    constexpr BoolVector19 a(0x08, 0x03, 0x04);
 
     CORRADE_VERIFY(!a[0] && !a[1] && !a[2]);
     CORRADE_VERIFY(a[3]);
@@ -105,36 +130,16 @@ void BoolVectorTest::data() {
     CORRADE_VERIFY(!a[10] && !a[11] && !a[12] && !a[13] && !a[14] && !a[15] && !a[16] && !a[17]);
     CORRADE_VERIFY(a[18]);
 
-    a.set(15, true);
-    CORRADE_VERIFY(a[15]);
+    constexpr bool b = a[9];
+    CORRADE_COMPARE(b, true);
 
-    CORRADE_COMPARE(a, BoolVector19(0x08, 0x83, 0x04));
-}
+    constexpr UnsignedByte c = *a.data();
+    CORRADE_COMPARE(c, 0x08);
 
-void BoolVectorTest::constExpressions() {
-    /* Default constructor */
-    constexpr BoolVector19 a;
-    CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
-
-    /* Value constructor */
-    constexpr BoolVector19 b(0xa5, 0x5f, 0x07);
-    CORRADE_COMPARE(b, BoolVector19(0xa5, 0x5f, 0x07));
-
-    /* One-value constructor, not constexpr under GCC < 4.7 */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr BoolVector19 c(true);
-    CORRADE_COMPARE(c, BoolVector19(0xff, 0xff, 0x07));
-    #endif
-
-    /* Copy constructor */
-    constexpr BoolVector19 d(b);
-    CORRADE_COMPARE(d, BoolVector19(0xa5, 0x5f, 0x07));
-
-    /* Data access, pointer chasings, i.e. *(b.data()[3]), are not possible */
-    constexpr bool e = b[2];
-    constexpr UnsignedByte f = *b.data();
-    CORRADE_COMPARE(e, true);
-    CORRADE_COMPARE(f, 0xa5);
+    BoolVector19 d(0x08, 0x03, 0x04);
+    d.set(15, true);
+    CORRADE_VERIFY(d[15]);
+    CORRADE_COMPARE(d, BoolVector19(0x08, 0x83, 0x04));
 }
 
 void BoolVectorTest::compare() {
