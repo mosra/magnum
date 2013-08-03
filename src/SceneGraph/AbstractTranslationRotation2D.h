@@ -36,8 +36,9 @@ namespace Magnum { namespace SceneGraph {
 @brief Base translation for two-dimensional scenes supporting translation and rotation
 
 @see @ref AbstractTranslationRotation2D, @ref scenegraph, @ref AbstractBasicTranslationRotation3D
+@todo Use AbstractBasicTransformation2D<T> when support for GCC 4.6 is dropped
 */
-template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasicTransformation<2, T> {
+template<class T> class AbstractBasicTranslationRotation2D: public AbstractTransformation<2, T> {
     public:
         explicit AbstractBasicTranslationRotation2D();
 
@@ -45,31 +46,31 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
          * @brief Translate object
          * @param vector    Translation vector
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see Vector2::xAxis(), Vector2::yAxis()
          */
-        AbstractBasicTranslationRotation2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             doTranslate(vector, type);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Rotate object
          * @param angle     Angle (counterclockwise)
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        AbstractBasicTranslationRotation2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotate(angle, type);
-            return this;
+            return *this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractBasicTranslationRotation2D<T>* resetTransformation() {
-            AbstractBasicTransformation<2, T>::resetTransformation();
-            return this;
+        AbstractBasicTranslationRotation2D<T>& resetTransformation() {
+            AbstractTransformation<2, T>::resetTransformation();
+            return *this;
         }
         #endif
 

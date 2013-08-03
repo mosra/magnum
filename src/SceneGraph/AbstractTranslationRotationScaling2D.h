@@ -45,28 +45,28 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
          * @brief Scale object
          * @param vector    Scaling vector
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see Vector2::xScale(), Vector2::yScale()
          */
-        AbstractBasicTranslationRotationScaling2D<T>* scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling2D<T>& scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             doScale(vector, type);
-            return this;
+            return *this;
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        AbstractBasicTranslationRotationScaling2D<T>* resetTransformation() {
+        AbstractBasicTranslationRotationScaling2D<T>& resetTransformation() {
             AbstractBasicTranslationRotation2D<T>::resetTransformation();
-            return this;
+            return *this;
         }
-        AbstractBasicTranslationRotationScaling2D<T>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             AbstractBasicTranslationRotation2D<T>::translate(vector, type);
-            return this;
+            return *this;
         }
-        AbstractBasicTranslationRotationScaling2D<T>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             AbstractBasicTranslationRotation2D<T>::rotate(angle, type);
-            return this;
+            return *this;
         }
         #endif
 

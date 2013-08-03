@@ -38,16 +38,18 @@ class CapsuleTest: public TestSuite::Tester {
     public:
         CapsuleTest();
 
-        void withoutTextureCoords();
-        void withTextureCoords();
+        void solidWithoutTextureCoords();
+        void solidWithTextureCoords();
+        void wireframe();
 };
 
 CapsuleTest::CapsuleTest() {
-    addTests({&CapsuleTest::withoutTextureCoords,
-              &CapsuleTest::withTextureCoords});
+    addTests({&CapsuleTest::solidWithoutTextureCoords,
+              &CapsuleTest::solidWithTextureCoords,
+              &CapsuleTest::wireframe});
 }
 
-void CapsuleTest::withoutTextureCoords() {
+void CapsuleTest::solidWithoutTextureCoords() {
     Trade::MeshData3D capsule = Capsule::solid(2, 2, 3, 1.0f);
 
     CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
@@ -112,7 +114,7 @@ void CapsuleTest::withoutTextureCoords() {
     }), TestSuite::Compare::Container);
 }
 
-void CapsuleTest::withTextureCoords() {
+void CapsuleTest::solidWithTextureCoords() {
     Trade::MeshData3D capsule = Capsule::solid(2, 2, 3, 1.0f, Capsule::TextureCoords::Generate);
 
     CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
@@ -184,6 +186,74 @@ void CapsuleTest::withTextureCoords() {
         9, 10, 14, 9, 14, 13, 10, 11, 15, 10, 15, 14, 11, 12, 16, 11, 16, 15,
         13, 14, 18, 13, 18, 17, 14, 15, 19, 14, 19, 18, 15, 16, 20, 15, 20, 19,
         17, 18, 21, 18, 19, 21, 19, 20, 21
+    }), TestSuite::Compare::Container);
+}
+
+void CapsuleTest::wireframe() {
+    Trade::MeshData3D capsule = Capsule::wireframe(2, 2, 8, 1.0f);
+
+    CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
+        {0.0f, -1.5f, 0.0f},
+
+        {0.0f, -1.20711f, 0.707107f},
+        {0.707107f, -1.20711f, 0.0f},
+        {0.0f, -1.20711f, -0.707107f},
+        {-0.707107f, -1.20711f, 0.0f},
+
+        {0.0f, -0.5f, 1.0f},
+        {1.0f, -0.5f, 0.0f},
+        {0.0f, -0.5f, -1.0f},
+        {-1.0f, -0.5f, 0.0f},
+        {0.707107f, -0.5f, 0.707107f},
+        {0.707107f, -0.5f, -0.707107f},
+        {-0.707107f, -0.5f, -0.707107f},
+        {-0.707107f, -0.5f, 0.707107f},
+
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, -1.0f},
+        {-1.0f, 0.0f, 0.0f},
+        {0.707107f, 0.0f, 0.707107f},
+        {0.707107f, 0.0f, -0.707107f},
+        {-0.707107f, 0.0f, -0.707107f},
+        {-0.707107f, 0.0f, 0.707107f},
+
+        {0.0f, 0.5f, 1.0f},
+        {1.0f, 0.5f, 0.0f},
+        {0.0f, 0.5f, -1.0f},
+        {-1.0f, 0.5f, 0.0f},
+        {0.707107f, 0.5f, 0.707107f},
+        {0.707107f, 0.5f, -0.707107f},
+        {-0.707107f, 0.5f, -0.707107f},
+        {-0.707107f, 0.5f, 0.707107f},
+
+        {0.0f, 1.20711f, 0.707107f},
+        {0.707107f, 1.20711f, 0.0f},
+        {0.0f, 1.20711f, -0.707107f},
+        {-0.707107f, 1.20711f, 0.0f},
+
+        {0.0f, 1.5f, 0.0f}
+    }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(capsule.normalArrayCount(), 0);
+
+    CORRADE_COMPARE_AS(capsule.indices(), (std::vector<UnsignedInt>{
+        0, 1, 0, 2, 0, 3, 0, 4,
+        1, 5, 2, 6, 3, 7, 4, 8,
+        5, 9, 6, 10, 7, 11, 8, 12,
+        9, 6, 10, 7, 11, 8, 12, 5,
+
+        5, 13, 6, 14, 7, 15, 8, 16,
+
+        13, 17, 14, 18, 15, 19, 16, 20,
+        17, 14, 18, 15, 19, 16, 20, 13,
+
+        13, 21, 14, 22, 15, 23, 16, 24,
+
+        21, 25, 22, 26, 23, 27, 24, 28,
+        25, 22, 26, 23, 27, 24, 28, 21,
+        21, 29, 22, 30, 23, 31, 24, 32,
+        29, 33, 30, 33, 31, 33, 32, 33
     }), TestSuite::Compare::Container);
 }
 

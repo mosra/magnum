@@ -83,6 +83,7 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
         void perspectiveProjectionFov();
         void fromParts();
         void rotationScalingPart();
+        void rotationNormalizedPart();
         void rotationPart();
         void vectorParts();
         void invertedRigid();
@@ -122,6 +123,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::perspectiveProjectionFov,
               &Matrix4Test::fromParts,
               &Matrix4Test::rotationScalingPart,
+              &Matrix4Test::rotationNormalizedPart,
               &Matrix4Test::rotationPart,
               &Matrix4Test::vectorParts,
               &Matrix4Test::invertedRigid,
@@ -371,6 +373,26 @@ void Matrix4Test::rotationScalingPart() {
     CORRADE_COMPARE(b, Matrix3(Vector3(3.0f, 5.0f, 8.0f),
                                Vector3(4.0f, 4.0f, 7.0f),
                                Vector3(7.0f, -1.0f, 8.0f)));
+}
+
+void Matrix4Test::rotationNormalizedPart() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Matrix4 a({0.0f,  0.0f, 1.0f, 4.0f},
+              {1.0f,  0.0f, 0.0f, 3.0f},
+              {0.0f, -1.0f, 0.1f, 0.0f},
+              {9.0f,  4.0f, 5.0f, 9.0f});
+    a.rotationNormalized();
+    CORRADE_COMPARE(o.str(), "Math::Matrix4::rotationNormalized(): the rotation part is not normalized\n");
+
+    Matrix4 b({ 0.35612214f,  -0.80181062f, 0.47987163f, 1.0f},
+              { 0.47987163f,   0.59757638f,  0.6423595f, 3.0f},
+              {-0.80181062f, 0.0015183985f, 0.59757638f, 4.0f},
+              {        0.0f,          0.0f,        0.0f, 1.0f});
+    CORRADE_COMPARE(b.rotationNormalized(), Matrix3(Vector3( 0.35612214f,  -0.80181062f, 0.47987163f),
+                                                    Vector3( 0.47987163f,   0.59757638f,  0.6423595f),
+                                                    Vector3(-0.80181062f, 0.0015183985f, 0.59757638f)));
 }
 
 void Matrix4Test::rotationPart() {

@@ -66,7 +66,7 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief %Image buffer */
-        Buffer* buffer() { return &_buffer; }
+        Buffer& buffer() { return _buffer; }
 
         /**
          * @brief Set image data

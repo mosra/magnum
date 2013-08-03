@@ -39,11 +39,6 @@ Provides access to material information for given mesh instance.
 @see MeshObjectData3D
 */
 class MAGNUM_EXPORT MeshObjectData2D: public ObjectData2D {
-    MeshObjectData2D(const MeshObjectData2D&) = delete;
-    MeshObjectData2D(MeshObjectData2D&&) = delete;
-    MeshObjectData2D& operator=(const MeshObjectData2D&) = delete;
-    MeshObjectData2D& operator=(MeshObjectData2D&&) = delete;
-
     public:
         /**
          * @brief Constructor
@@ -55,6 +50,18 @@ class MAGNUM_EXPORT MeshObjectData2D: public ObjectData2D {
          * Creates object with mesh instance type.
          */
         explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, UnsignedInt material);
+
+        /** @brief Copying is not allowed */
+        MeshObjectData2D(const MeshObjectData2D&) = delete;
+
+        /** @brief Move constructor */
+        MeshObjectData2D(MeshObjectData2D&&) = default;
+
+        /** @brief Copying is not allowed */
+        MeshObjectData2D& operator=(const MeshObjectData2D&) = delete;
+
+        /** @brief Move assignment */
+        MeshObjectData2D& operator=(MeshObjectData2D&&) = default;
 
         /** @brief Material ID */
         UnsignedInt material() const { return _material; }

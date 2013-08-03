@@ -28,57 +28,26 @@
  * @brief Class Magnum::Primitives::Icosphere
  */
 
-#include "Math/Vector3.h"
-#include "MeshTools/RemoveDuplicates.h"
-#include "MeshTools/Subdivide.h"
-#include "Trade/MeshData3D.h"
+#include "Trade/Trade.h"
 
 #include "Primitives/magnumPrimitivesVisibility.h"
 
 namespace Magnum { namespace Primitives {
 
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t subdivisions> class MAGNUM_PRIMITIVES_EXPORT Icosphere;
-#endif
-
-/**
-@brief 3D icosphere primitive with zero subdivisions
-
-Indexed @ref Mesh::Primitive "Triangles" with normals.
-*/
-template<> class Icosphere<0>: public Trade::MeshData3D {
-    public:
-        /** @brief Constructor */
-        explicit Icosphere();
-};
-
 /**
 @brief 3D icosphere primitive
-@tparam subdivisions     Number of subdivisions
 
-Indexed @ref Mesh::Primitive "Triangles" with normals.
+Sphere with radius `1`.
 */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t subdivisions> class Icosphere: public Icosphere<0> {
-#else
-template<std::size_t subdivisions> class Icosphere {
-#endif
+class MAGNUM_PRIMITIVES_EXPORT Icosphere {
     public:
-        /** @brief Constructor */
-        explicit Icosphere() {
-            for(std::size_t i = 0; i != subdivisions; ++i)
-                MeshTools::subdivide(*indices(), *normals(0), interpolator);
-
-            MeshTools::removeDuplicates(*indices(), *normals(0));
-            positions(0)->assign(normals(0)->begin(), normals(0)->end());
-        }
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        static Vector3 interpolator(const Vector3& a, const Vector3& b) {
-            return (a+b).normalized();
-        }
-        #endif
+        /**
+         * @brief Solid icosphere
+         * @param subdivisions      Number of subdivisions
+         *
+         * Indexed @ref Mesh::Primitive "Triangles" with normals.
+         */
+        static Trade::MeshData3D solid(UnsignedInt subdivisions);
 };
 
 }}

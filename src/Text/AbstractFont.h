@@ -175,7 +175,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref Feature "Feature::PreparedGlyphCache" do not support partial
          * glyph cache filling, use createGlyphCache() instead.
          */
-        void fillGlyphCache(GlyphCache* cache, const std::string& characters);
+        void fillGlyphCache(GlyphCache& cache, const std::string& characters);
 
         /**
          * @brief Create glyph cache
@@ -195,7 +195,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * @see fillGlyphCache(), createGlyphCache()
          */
-        AbstractLayouter* layout(const GlyphCache* cache, Float size, const std::string& text);
+        AbstractLayouter* layout(const GlyphCache& cache, Float size, const std::string& text);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -251,7 +251,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * The string is converted from UTF-8 to UTF-32, unique characters are
          * *not* removed.
          */
-        virtual void doFillGlyphCache(GlyphCache* cache, const std::u32string& characters);
+        virtual void doFillGlyphCache(GlyphCache& cache, const std::u32string& characters);
 
         /**
          * @brief Implementation for createGlyphCache()
@@ -259,7 +259,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual GlyphCache* doCreateGlyphCache();
 
         /** @brief Implementation for layout() */
-        virtual AbstractLayouter* doLayout(const GlyphCache* cache, Float size, const std::string& text) = 0;
+        virtual AbstractLayouter* doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)

@@ -33,62 +33,66 @@ class ArrayTest: public TestSuite::Tester {
         ArrayTest();
 
         void construct();
-        void constexprConstruct();
         void equality();
         void access();
 };
 
-typedef Magnum::Array1D<int> Array1D;
-typedef Magnum::Array2D<int> Array2D;
-typedef Magnum::Array3D<int> Array3D;
+typedef Magnum::Array1D<Int> Array1D;
+typedef Magnum::Array2D<Int> Array2D;
+typedef Magnum::Array3D<Int> Array3D;
 
 ArrayTest::ArrayTest() {
     addTests({&ArrayTest::construct,
-              &ArrayTest::constexprConstruct,
               &ArrayTest::equality,
               &ArrayTest::access});
 }
 
 void ArrayTest::construct() {
-    CORRADE_COMPARE(Array1D(5), (Array<1, int>(5)));
-    CORRADE_COMPARE(Array2D(5, 3), (Array<2, int>(5, 3)));
-    CORRADE_COMPARE(Array3D(5, 3, -2), (Array<3, int>(5, 3, -2)));
+    constexpr Array<3, Int> a = {5, 6, 7};
+    CORRADE_COMPARE(a, (Array<3, Int>(5, 6, 7)));
 
-    /* Verify proper expansion */
-    CORRADE_COMPARE((Array<3, int>(5)), (Array<3, int>(5, 5, 5)));
-    CORRADE_COMPARE(Array2D(5), (Array<2, int>(5, 5)));
-    CORRADE_COMPARE(Array3D(5), (Array<3, int>(5, 5, 5)));
-}
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr Array<3, Int> a2 = 5;
+    #else
+    Array<3, Int> a2 = 5; /* Not constexpr under GCC < 4.7 */
+    #endif
+    CORRADE_COMPARE(a2, (Array<3, Int>(5, 5, 5)));
 
-void ArrayTest::constexprConstruct() {
-    /* Verify that all full constructors can be called as constexpr */
-    constexpr Array1D a(5);
-    constexpr Array2D b(5, 3);
-    constexpr Array2D b2(5);
-    constexpr Array3D c(5, 6, 7);
-    constexpr Array3D c2(5);
-    constexpr Array<3, int> d(5, 6, 7);
+    constexpr Array1D b = 5;
+    CORRADE_COMPARE(b, (Array<1, Int>(5)));
 
-    CORRADE_COMPARE(a, Array1D(5));
-    CORRADE_COMPARE(b, Array2D(5, 3));
-    CORRADE_COMPARE(b2, Array2D(5));
-    CORRADE_COMPARE(c, Array3D(5, 6, 7));
-    CORRADE_COMPARE(c2, Array3D(5));
-    CORRADE_COMPARE(d, (Array<3, int>(5, 6, 7)));
+    constexpr Array2D c = {5, 3};
+    CORRADE_COMPARE(c, (Array<2, Int>(5, 3)));
+
+    constexpr Array2D c2 = 5;
+    CORRADE_COMPARE(c2, (Array<2, Int>(5, 5)));
+
+    constexpr Array3D d = {5, 3, -2};
+    CORRADE_COMPARE(d, (Array<3, Int>(5, 3, -2)));
+
+    constexpr Array3D d2 = 5;
+    CORRADE_COMPARE(d2, (Array<3, Int>(5, 5, 5)));
 }
 
 void ArrayTest::equality() {
-    CORRADE_VERIFY((Array<3, int>(5, 6, 7) == Array<3, int>(5, 6, 7)));
-    CORRADE_VERIFY((Array<3, int>(5, 6, 7) != Array<3, int>(5, 6, 8)));
+    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) == Array<3, Int>(5, 6, 7)));
+    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) != Array<3, Int>(5, 6, 8)));
 }
 
 void ArrayTest::access() {
     Array1D a(50);
-    const Array1D ac(50);
+    constexpr Array1D ac(50);
     Array2D b(5, 3);
-    const Array2D bc(5, 3);
+    constexpr Array2D bc(5, 3);
     Array3D c(-5, 6, 7);
-    const Array3D cc(-5, 6, 7);
+    constexpr Array3D cc(-5, 6, 7);
+
+    CORRADE_COMPARE(a[0], 50);
+    CORRADE_COMPARE(ac[0], 50);
+    CORRADE_COMPARE(b[1], 3);
+    CORRADE_COMPARE(bc[1], 3);
+    CORRADE_COMPARE(c[2], 7);
+    CORRADE_COMPARE(cc[2], 7);
 
     CORRADE_COMPARE(a.x(), 50);
     CORRADE_COMPARE(ac.x(), 50);
@@ -104,6 +108,9 @@ void ArrayTest::access() {
     CORRADE_COMPARE(cc.x(), -5);
     CORRADE_COMPARE(cc.y(), 6);
     CORRADE_COMPARE(cc.z(), 7);
+
+    CORRADE_COMPARE(c.xy(), Array2D(-5, 6));
+    CORRADE_COMPARE(cc.xy(), Array2D(-5, 6));
 }
 
 }}

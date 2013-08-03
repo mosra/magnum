@@ -29,6 +29,7 @@
  */
 
 #include "magnumVisibility.h"
+#include "Magnum.h"
 
 namespace Magnum { namespace Trade {
 
@@ -38,14 +39,9 @@ namespace Magnum { namespace Trade {
 Subclasses provide access to parameters for given material type.
 */
 class MAGNUM_EXPORT AbstractMaterialData {
-    AbstractMaterialData(const AbstractMaterialData&) = delete;
-    AbstractMaterialData(AbstractMaterialData&&) = delete;
-    AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
-    AbstractMaterialData& operator=(AbstractMaterialData&&) = delete;
-
     public:
         /** @brief Material type */
-        enum Type {
+        enum class Type: UnsignedByte {
             Phong       /**< Phong shading */
         };
 
@@ -58,12 +54,27 @@ class MAGNUM_EXPORT AbstractMaterialData {
         /** @brief Destructor */
         virtual ~AbstractMaterialData() = 0;
 
+        /** @brief Copying is not allowed */
+        AbstractMaterialData(const AbstractMaterialData&) = delete;
+
+        /** @brief Move constructor */
+        AbstractMaterialData(AbstractMaterialData&&) = default;
+
+        /** @brief Copying is not allowed */
+        AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
+
+        /** @brief Move assignment */
+        AbstractMaterialData& operator=(AbstractMaterialData&&) = default;
+
         /** @brief Material type */
         Type type() const { return _type; }
 
     private:
         Type _type;
 };
+
+/** @debugoperator{Magnum::Trade::AbstractMaterialData} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, AbstractMaterialData::Type value);
 
 }}
 

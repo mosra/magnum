@@ -53,7 +53,7 @@ void AbstractFramebuffer::bind(FramebufferTarget target) {
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
-    Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
+    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
 
     /* If already bound, done, otherwise update tracked state */
     if(target == FramebufferTarget::Read) {
@@ -71,7 +71,7 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
-    Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
+    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
 
     /* Return target to which the framebuffer is already bound */
     if(state->readBinding == _id && state->drawBinding == _id)
@@ -108,18 +108,18 @@ void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer&
     #endif
 }
 
-AbstractFramebuffer* AbstractFramebuffer::setViewport(const Rectanglei& rectangle) {
+AbstractFramebuffer& AbstractFramebuffer::setViewport(const Rectanglei& rectangle) {
     _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
-    if(Context::current()->state()->framebuffer->drawBinding == _id)
+    if(Context::current()->state().framebuffer->drawBinding == _id)
         setViewportInternal();
 
-    return this;
+    return *this;
 }
 
 void AbstractFramebuffer::setViewportInternal() {
-    Implementation::FramebufferState* state = Context::current()->state()->framebuffer;
+    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
 
     CORRADE_INTERNAL_ASSERT(state->drawBinding == _id);
 
@@ -165,7 +165,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Buf
     if(image.size() != size)
         image.setData(size, image.format(), image.type(), nullptr, usage);
 
-    image.buffer()->bind(Buffer::Target::PixelPack);
+    image.buffer().bind(Buffer::Target::PixelPack);
     /** @todo De-duplicate buffer size computation */
     readImplementation(offset, size, image.format(), image.type(), image.pixelSize()*size.product(), nullptr);
 }
@@ -194,9 +194,9 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
     #endif
 }
 
-void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) {
+void AbstractFramebuffer::initializeContextBasedFunctionality(Context& context) {
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
@@ -212,20 +212,20 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
     readTarget = FramebufferTarget::Read;
     drawTarget = FramebufferTarget::Draw;
 
-    if(context->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>())
+    if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::ANGLE::framebuffer_blit::string() << "features";
 
-    else if(context->isExtensionSupported<Extensions::GL::APPLE::framebuffer_multisample>())
+    else if(context.isExtensionSupported<Extensions::GL::APPLE::framebuffer_multisample>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::APPLE::framebuffer_multisample::string() << "features";
 
-    else if(context->isExtensionSupported<Extensions::GL::NV::framebuffer_blit>())
+    else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_blit>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::NV::framebuffer_blit::string() << "features";
 
     /* NV_framebuffer_multisample requires NV_framebuffer_blit, which has these
        enums. However, on my system only NV_framebuffer_multisample is
        supported, but NV_framebuffer_blit isn't. I will hold my breath and
        assume these enums are available. */
-    else if(context->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+    else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::NV::framebuffer_multisample::string() << "features";
 
     /* If no such extension is available, reset back to unified target */
@@ -234,9 +234,9 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context* context) 
 
     #ifndef MAGNUM_TARGET_GLES3
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::ARB::robustness>())
+    if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
     #else
-    if(context->isExtensionSupported<Extensions::GL::EXT::robustness>())
+    if(context.isExtensionSupported<Extensions::GL::EXT::robustness>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES

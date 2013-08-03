@@ -29,7 +29,6 @@
  */
 
 #include <unordered_map>
-#include <Utility/utilities.h>
 
 #include "Resource.h"
 
@@ -92,12 +91,7 @@ template<class> class AbstractResourceLoader;
 
 namespace Implementation {
 
-struct ResourceKeyHash {
-    std::size_t operator()(ResourceKey key) const {
-        /* GCC 4.4 thinks reinterpret_cast will break strict aliasing, doing it with bit cast instead */
-        return Corrade::Utility::bitCast<std::size_t>(key);
-    }
-};
+/** @todo Print either resource key or name string based on loader capabilities */
 
 template<class T> class ResourceManagerData {
     template<class, class> friend class Magnum::Resource;
@@ -130,8 +124,12 @@ template<class T> class ResourceManagerData {
 
         void free();
 
+        void clear() { _data.clear(); }
+
         AbstractResourceLoader<T>* loader() { return _loader; }
         const AbstractResourceLoader<T>* loader() const { return _loader; }
+
+        void freeLoader();
 
         void setLoader(AbstractResourceLoader<T>* loader);
 
@@ -149,7 +147,7 @@ template<class T> class ResourceManagerData {
 
         void decrementReferenceCount(ResourceKey key);
 
-        std::unordered_map<ResourceKey, Data, ResourceKeyHash> _data;
+        std::unordered_map<ResourceKey, Data> _data;
         T* _fallback;
         AbstractResourceLoader<T>* _loader;
         std::size_t _lastChange;
@@ -227,8 +225,12 @@ cube->draw();
    template implementation file. */
 template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
     public:
-        /** @brief Global instance */
-        static ResourceManager<Types...>* instance();
+        /**
+         * @brief Global instance
+         *
+         * Assumes that the instance exists.
+         */
+        static ResourceManager<Types...>& instance();
 
         /**
          * @brief Constructor
@@ -289,7 +291,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set resource data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If @p policy is set to `ResourcePolicy::ReferenceCounted`, there
          * must be already at least one reference to given resource, otherwise
@@ -306,21 +308,20 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *      subsequent updates are not possible.
          * @see referenceCount(), state()
          */
-        template<class T> ResourceManager<Types...>* set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
+        template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set resource data
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
          * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
          */
-        template<class T> ResourceManager<Types...>* set(ResourceKey key, T* data) {
-            this->Implementation::ResourceManagerData<T>::set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
-            return this;
+        template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data) {
+            return set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
         }
 
         /** @brief Fallback for not found resources */
@@ -335,29 +336,51 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set fallback for not found resources
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        template<class T> ResourceManager<Types...>* setFallback(T* data) {
+        template<class T> ResourceManager<Types...>& setFallback(T* data) {
             this->Implementation::ResourceManagerData<T>::setFallback(data);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Free all resources of given type which are not referenced
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        template<class T> ResourceManager<Types...>* free() {
+        template<class T> ResourceManager<Types...>& free() {
             this->Implementation::ResourceManagerData<T>::free();
-            return this;
+            return *this;
         }
 
         /**
          * @brief Free all resources which are not referenced
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        ResourceManager<Types...>* free() {
-            freeInternal(std::common_type<Types>()...);
-            return this;
+        ResourceManager<Types...>& free() {
+            freeInternal<Types...>();
+            return *this;
+        }
+
+        /**
+         * @brief Clear all resources of given type
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike free() this function assumes that no resource is referenced.
+         */
+        template<class T> ResourceManager<Types...>& clear() {
+            this->Implementation::ResourceManagerData<T>::clear();
+            return *this;
+        }
+
+        /**
+         * @brief Clear all resources
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike free() this function assumes that no resource is referenced.
+         */
+        ResourceManager<Types...>& clear() {
+            clearInternal<Types...>();
+            return *this;
         }
 
         /** @brief Loader for given type of resources */
@@ -372,21 +395,36 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set loader for given type of resources
-         * @return Pointer to self (for method chaining)
+         * @param loader    Loader or `nullptr` if unsetting previous loader.
+         * @return Reference to self (for method chaining)
          *
          * See AbstractResourceLoader documentation for more information.
+         * @attention The loader is deleted on destruction before unloading
+         *      all resources.
          */
-        template<class T> ResourceManager<Types...>* setLoader(AbstractResourceLoader<T>* loader) {
+        template<class T> ResourceManager<Types...>& setLoader(AbstractResourceLoader<T>* loader) {
             this->Implementation::ResourceManagerData<T>::setLoader(loader);
-            return this;
+            return *this;
         }
 
     private:
-        template<class FirstType, class ...NextTypes> void freeInternal(std::common_type<FirstType>, std::common_type<NextTypes>... t) {
+        template<class FirstType, class ...NextTypes> void freeInternal() {
             free<FirstType>();
-            freeInternal(t...);
+            freeInternal<NextTypes...>();
         }
-        void freeInternal() const {}
+        template<class...> void freeInternal() const {}
+
+        template<class FirstType, class ...NextTypes> void clearInternal() {
+            clear<FirstType>();
+            clearInternal<NextTypes...>();
+        }
+        template<class...> void clearInternal() const {}
+
+        template<class FirstType, class ...NextTypes> void freeLoaders() {
+            Implementation::ResourceManagerData<FirstType>::freeLoader();
+            freeLoaders<NextTypes...>();
+        }
+        template<class...> void freeLoaders() const {}
 
         static ResourceManager<Types...>*& internalInstance();
 };
@@ -401,12 +439,8 @@ template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::
 namespace Implementation {
 
 template<class T> ResourceManagerData<T>::~ResourceManagerData() {
+    /* Loaders are already deleted via freeLoaders() from ResourceManager */
     delete _fallback;
-
-    if(_loader) {
-        _loader->manager = nullptr;
-        delete _loader;
-    }
 }
 
 template<class T> std::size_t ResourceManagerData<T>::referenceCount(const ResourceKey key) const {
@@ -507,8 +541,16 @@ template<class T> void ResourceManagerData<T>::setLoader(AbstractResourceLoader<
     if((_loader = loader)) _loader->manager = this;
 }
 
+template<class T> void ResourceManagerData<T>::freeLoader() {
+    if(!_loader) return;
+
+    _loader->manager = nullptr;
+    delete _loader;
+}
+
 template<class T> void ResourceManagerData<T>::decrementReferenceCount(ResourceKey key) {
     auto it = _data.find(key);
+    CORRADE_INTERNAL_ASSERT(it != _data.end());
 
     /* Free the resource if it is reference counted */
     if(--it->second.referenceCount == 0 && it->second.policy == ResourcePolicy::ReferenceCounted)
@@ -546,15 +588,15 @@ template<class T> struct ResourceManagerData<T>::Data {
 
 template<class T> inline ResourceManagerData<T>::Data::~Data() {
     CORRADE_ASSERT(referenceCount == 0,
-        "ResourceManager::~ResourceManager(): destroyed while data are still referenced", );
+        "ResourceManager: cleared/destroyed while data are still referenced", );
     delete data;
 }
 
 }
 
-template<class ...Types> ResourceManager<Types...>* ResourceManager<Types...>::instance() {
-    CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", nullptr);
-    return internalInstance();
+template<class ...Types> ResourceManager<Types...>& ResourceManager<Types...>::instance() {
+    CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", *internalInstance());
+    return *internalInstance();
 }
 
 template<class ...Types> ResourceManager<Types...>::ResourceManager() {
@@ -563,6 +605,7 @@ template<class ...Types> ResourceManager<Types...>::ResourceManager() {
 }
 
 template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
+    freeLoaders<Types...>();
     CORRADE_INTERNAL_ASSERT(internalInstance() == this);
     internalInstance() = nullptr;
 }

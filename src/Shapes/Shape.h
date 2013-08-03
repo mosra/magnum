@@ -56,7 +56,7 @@ islands.
 @code
 Shapes::ShapeGroup3D shapes;
 
-Object3D* object;
+Object3D object;
 auto shape = new Shapes::Shape<Shapes::Sphere3D>(object, {{}, 0.75f}, &shapes);
 
 Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
@@ -65,7 +65,7 @@ Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
 @see @ref scenegraph, ShapeGroup2D, ShapeGroup3D,
     DebugTools::ShapeRenderer
 */
-template<class T> class MAGNUM_SHAPES_EXPORT Shape: public AbstractShape<T::Dimensions> {
+template<class T> class Shape: public AbstractShape<T::Dimensions> {
     friend struct Implementation::ShapeHelper<T>;
 
     public:
@@ -75,28 +75,28 @@ template<class T> class MAGNUM_SHAPES_EXPORT Shape: public AbstractShape<T::Dime
          * @param shape     Shape
          * @param group     Group this shape belongs to
          */
-        explicit Shape(SceneGraph::AbstractBasicObject<T::Dimensions, Float>* object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
             Implementation::ShapeHelper<T>::set(*this, shape);
         }
 
         /** @overload */
-        explicit Shape(SceneGraph::AbstractBasicObject<T::Dimensions, Float>* object, T&& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, T&& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
             Implementation::ShapeHelper<T>::set(*this, std::move(shape));
         }
 
         /** @overload */
-        explicit Shape(SceneGraph::AbstractBasicObject<T::Dimensions, Float>* object, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {}
+        explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {}
 
         /** @brief Shape */
         const T& shape() const { return _shape.shape; }
 
         /**
          * @brief Set shape
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Marks the feature as dirty.
          */
-        Shape<T>* setShape(const T& shape);
+        Shape<T>& setShape(const T& shape);
 
         /**
          * @brief Transformed shape
@@ -110,21 +110,21 @@ template<class T> class MAGNUM_SHAPES_EXPORT Shape: public AbstractShape<T::Dime
         void clean(const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) override;
 
     private:
-        const Implementation::AbstractShape<T::Dimensions>* abstractTransformedShape() const override {
-            return &_transformedShape;
+        const Implementation::AbstractShape<T::Dimensions>& abstractTransformedShape() const override {
+            return _transformedShape;
         }
 
         Implementation::Shape<T> _shape, _transformedShape;
 };
 
-template<class T> inline Shape<T>* Shape<T>::setShape(const T& shape) {
+template<class T> inline Shape<T>& Shape<T>::setShape(const T& shape) {
     Implementation::ShapeHelper<T>::set(*this, shape);
-    this->object()->setDirty();
-    return this;
+    this->object().setDirty();
+    return *this;
 }
 
 template<class T> inline const T& Shape<T>::transformedShape() {
-    this->object()->setClean();
+    this->object().setClean();
     return _transformedShape.shape;
 }
 

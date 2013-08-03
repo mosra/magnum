@@ -47,52 +47,55 @@ each call to ResourceManager::get() will call load() implementation unless the
 resource is already loaded (or loading is in progress). Note that resources
 requested before the loader was added are not be affected by the loader.
 
-Subclassing is done by implementing at least load() function. The loading can
+Subclassing is done by implementing at least doLoad() function. The loading can
 be done synchronously or asynchronously (i.e., in another thread). The base
 implementation provides interface to ResourceManager and manages loading
 progress (which is then available through functions requestedCount(),
 loadedCount() and notFoundCount()). You shouldn't access the ResourceManager
 directly when loading the data.
 
-Your load() implementation must call the base implementation at the beginning
-so ResourceManager is informed about loading state. Then, after your resources
-are loaded, call set() to pass them to ResourceManager or call setNotFound()
-to indicate that the resource was not found.
+In your doLoad() implementation, after your resources are loaded, call set() to
+pass them to ResourceManager or call setNotFound() to indicate that the
+resource was not found.
 
 You can also implement name() to provide meaningful names for resource keys.
 
 Example implementation for synchronous mesh loader:
 @code
 class MeshResourceLoader: public AbstractResourceLoader<Mesh> {
-    public:
-        void load(ResourceKey key) {
-            // Indicate that loading has begun
-            AbstractResourceLoader<Mesh>::load(key);
+    void doLoad(ResourceKey key) override {
+        // Load the mesh...
 
-            // Load the mesh...
-
-            // Not found
-            if(!found) {
-                setNotFound(key);
-                return;
-            }
-
-            // Found, pass it to resource manager
-            set(key, mesh, state, policy);
+        // Not found
+        if(!found) {
+            setNotFound(key);
+            return;
         }
+
+        // Found, pass it to resource manager
+        set(key, mesh, state, policy);
+    }
 };
 @endcode
 
-You can then add it to resource manager instance like this:
+You can then add it to resource manager instance like this. Note that the
+manager automatically deletes the all loaders on destruction before unloading
+all resources. It allows you to use resources in the loader itself without
+having to delete the loader explicitly to ensure proper resource unloading. In
+the following code, however, the loader destroys itself (and removes itself
+from the manager) before the manager is destroyed.
 @code
 MyResourceManager manager;
 MeshResourceLoader loader;
 
-manager->setLoader(loader);
+manager->setLoader(&loader);
 
 // This will now automatically request the mesh from loader by calling load()
 Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
 @endcode
+
+@todoc How about working with resources of different data types (i.e. mesh
+    buffers), should that be allowed?
 */
 template<class T> class AbstractResourceLoader {
     friend class Implementation::ResourceManagerData<T>;
@@ -129,9 +132,9 @@ template<class T> class AbstractResourceLoader {
          * @brief %Resource name corresponding to given key
          *
          * If no such resource exists or the resource name is not available,
-         * returns empty string. Default implementation returns empty string.
+         * returns empty string.
          */
-        virtual std::string name(ResourceKey key) const;
+        std::string name(ResourceKey key) const { return doName(key); }
 
         /**
          * @brief Request resource to be loaded
@@ -141,12 +144,10 @@ template<class T> class AbstractResourceLoader {
          * requested features is incremented. Depending on implementation the
          * resource might be loaded synchronously or asynchronously.
          *
-         * See class documentation for reimplementation guide.
-         *
          * @see ResourceManager::state(), requestedCount(), notFoundCount(),
          *      loadedCount()
          */
-        virtual void load(ResourceKey key) = 0;
+        void load(ResourceKey key);
 
     protected:
         /**
@@ -161,6 +162,16 @@ template<class T> class AbstractResourceLoader {
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
 
         /**
+         * @brief Set loaded resource to resource manager
+         *
+         * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
+         * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
+         */
+        void set(ResourceKey key, T* data) {
+            set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+        }
+
+        /**
          * @brief Mark resource as not found
          *
          * Also increments count of not found resources. See
@@ -169,23 +180,44 @@ template<class T> class AbstractResourceLoader {
          */
         void setNotFound(ResourceKey key);
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        /**
+         * @brief Implementation for name()
+         *
+         * Default implementation returns empty string.
+         */
+        virtual std::string doName(ResourceKey key) const;
+
+        /**
+         * @brief Implementation for load()
+         *
+         * See class documentation for reimplementation guide.
+         */
+        virtual void doLoad(ResourceKey key) = 0;
+
     private:
         Implementation::ResourceManagerData<T>* manager;
-        std::size_t _requestedCount;
-        std::size_t _loadedCount;
-        std::size_t _notFoundCount;
+        std::size_t _requestedCount,
+            _loadedCount,
+            _notFoundCount;
 };
 
 template<class T> AbstractResourceLoader<T>::~AbstractResourceLoader() {
     if(manager) manager->_loader = nullptr;
 }
 
-template<class T> std::string AbstractResourceLoader<T>::name(ResourceKey) const { return {}; }
+template<class T> std::string AbstractResourceLoader<T>::doName(ResourceKey) const { return {}; }
 
 template<class T> void AbstractResourceLoader<T>::load(ResourceKey key) {
     ++_requestedCount;
     /** @todo What policy for loading resources? */
     manager->set(key, nullptr, ResourceDataState::Loading, ResourcePolicy::Resident);
+
+    doLoad(key);
 }
 
 template<class T> void AbstractResourceLoader<T>::set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {

@@ -50,16 +50,16 @@ namespace {
     template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Line3D::wireframe(); }
 }
 
-template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>* line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Shapes::Implementation::Shape<Shapes::LineSegment<dimensions>>*>(line)->shape) {
-    if(!this->wireframeMesh) this->createResources(meshData<dimensions>());
+template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>& line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Shapes::Implementation::Shape<Shapes::LineSegment<dimensions>>&>(line).shape) {
+    if(!AbstractShapeRenderer<dimensions>::wireframeMesh) AbstractShapeRenderer<dimensions>::createResources(meshData<dimensions>());
 }
 
 template<UnsignedInt dimensions> void LineSegmentRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
-    this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
+    AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         Implementation::lineSegmentRendererTransformation<dimensions>(line.a(), line.b()))
-        ->setColor(options->color())
-        ->use();
-    this->wireframeMesh->draw();
+        .setColor(options->color())
+        .use();
+    AbstractShapeRenderer<dimensions>::wireframeMesh->draw();
 }
 
 template class LineSegmentRenderer<2>;

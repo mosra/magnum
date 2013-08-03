@@ -69,7 +69,7 @@ std::tuple<std::size_t, Mesh::IndexType, char*> compressIndices(const std::vecto
     return compressIndicesInternal(indices, *std::max_element(indices.begin(), indices.end()));
 }
 
-void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std::vector<UnsignedInt>& indices) {
+void compressIndices(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const std::vector<UnsignedInt>& indices) {
     auto minmax = std::minmax_element(indices.begin(), indices.end());
 
     /** @todo Performance hint when range can be represented by smaller value? */
@@ -79,9 +79,9 @@ void compressIndices(Mesh* mesh, Buffer* buffer, Buffer::Usage usage, const std:
     char* data;
     std::tie(indexCount, indexType, data) = compressIndicesInternal(indices, *minmax.second);
 
-    mesh->setIndexCount(indices.size())
-        ->setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
-    buffer->setData(indexCount*Mesh::indexSize(indexType), data, usage);
+    mesh.setIndexCount(indices.size())
+        .setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
+    buffer.setData(indexCount*Mesh::indexSize(indexType), data, usage);
 
     delete[] data;
 }

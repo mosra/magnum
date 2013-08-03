@@ -60,13 +60,6 @@ class MAGNUM_EXPORT AbstractImage {
          */
         static std::size_t pixelSize(ImageFormat format, ImageType type);
 
-        /**
-         * @brief Constructor
-         * @param format            Format of pixel data
-         * @param type              Data type of pixel data
-         */
-        constexpr explicit AbstractImage(ImageFormat format, ImageType type): _format(format), _type(type) {}
-
         /** @brief Format of pixel data */
         constexpr ImageFormat format() const { return _format; }
 
@@ -81,6 +74,13 @@ class MAGNUM_EXPORT AbstractImage {
         std::size_t pixelSize() const { return pixelSize(_format, _type); }
 
     protected:
+        /**
+         * @brief Constructor
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
+         */
+        constexpr explicit AbstractImage(ImageFormat format, ImageType type): _format(format), _type(type) {}
+
         /* GCC > 4.5 needs to have `= default` in class body, otherwise can't
            use constexpr */
         #ifndef CORRADE_GCC45_COMPATIBILITY

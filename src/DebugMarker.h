@@ -58,7 +58,7 @@ class MAGNUM_EXPORT DebugMarker {
         }
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         typedef void(*MarkImplementation)(const std::string&);
         static MAGNUM_LOCAL void markImplementationDefault(const std::string& string);

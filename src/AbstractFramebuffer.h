@@ -193,8 +193,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
         }
 
-        explicit AbstractFramebuffer();
-
         /**
          * @brief Bind framebuffer for rendering
          *
@@ -213,14 +211,14 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Set viewport
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Saves the viewport to be used at later time in bind(). If the
          * framebuffer is currently bound, updates the viewport to given
          * rectangle.
          * @see @fn_gl{Viewport}
          */
-        AbstractFramebuffer* setViewport(const Rectanglei& rectangle);
+        AbstractFramebuffer& setViewport(const Rectanglei& rectangle);
 
         /**
          * @brief Clear specified buffers in framebuffer
@@ -272,6 +270,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     #else
     protected:
     #endif
+        explicit AbstractFramebuffer();
         ~AbstractFramebuffer();
 
         void MAGNUM_LOCAL bindInternal(FramebufferTarget target);
@@ -302,7 +301,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         Rectanglei _viewport;
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
         #ifndef MAGNUM_TARGET_GLES

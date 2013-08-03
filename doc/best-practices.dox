@@ -69,5 +69,9 @@ vertex and index buffers.
 
 - [PowerVR Performance Recommendations](http://www.imgtec.com/powervr/insider/docs/PowerVR.Performance%20Recommendations.1.0.28.External.pdf) [PDF]
 
+@subsection best-practices-tegra NVidia Tegra hardware
+
+- [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/data/Optimize_OpenGL_ES_2_0_Performance_for_Tegra.html)
+
 */
 }

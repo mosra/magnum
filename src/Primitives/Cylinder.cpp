@@ -26,6 +26,7 @@
 
 #include "Math/Vector3.h"
 #include "Primitives/Implementation/Spheroid.h"
+#include "Primitives/Implementation/WireframeSpheroid.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
@@ -57,6 +58,21 @@ Trade::MeshData3D Cylinder::solid(UnsignedInt rings, UnsignedInt segments, Float
     if(flags & Flag::CapEnds) cylinder.bottomFaceRing();
     cylinder.faceRings(rings, flags & Flag::CapEnds ? 1 : 0);
     if(flags & Flag::CapEnds) cylinder.topFaceRing();
+
+    return cylinder.finalize();
+}
+
+Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt segments, const Float length) {
+    CORRADE_ASSERT(rings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Cylinder::wireframe(): improper parameters", Trade::MeshData3D(Mesh::Primitive::Lines, {}, {}, {}, {}));
+
+    Implementation::WireframeSpheroid cylinder(segments/4);
+
+    /* Rings */
+    cylinder.ring(-length/2);
+    for(UnsignedInt i = 0; i != rings; ++i) {
+        cylinder.cylinder();
+        cylinder.ring(-length/2 + (i+1)*(length/rings));
+    }
 
     return cylinder.finalize();
 }

@@ -1026,7 +1026,7 @@ class MAGNUM_EXPORT Renderer {
         /*@}*/
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         typedef void(*ClearDepthfImplementation)(GLfloat);
         #ifndef MAGNUM_TARGET_GLES

@@ -39,63 +39,66 @@ namespace Magnum { namespace DebugTools {
 
 namespace Implementation {
 
-template<> void createDebugMesh(ShapeRenderer<2>* renderer, const Shapes::Implementation::AbstractShape<2>* shape) {
-    switch(shape->type()) {
+template<> void createDebugMesh(ShapeRenderer<2>& renderer, const Shapes::Implementation::AbstractShape<2>& shape) {
+    switch(shape.type()) {
         case Shapes::AbstractShape2D::Type::AxisAlignedBox:
-            renderer->renderers.push_back(new Implementation::AxisAlignedBoxRenderer<2>(shape));
+            renderer.renderers.push_back(new Implementation::AxisAlignedBoxRenderer<2>(shape));
             break;
         case Shapes::AbstractShape2D::Type::Box:
-            renderer->renderers.push_back(new Implementation::BoxRenderer<2>(shape));
+            renderer.renderers.push_back(new Implementation::BoxRenderer<2>(shape));
             break;
         case Shapes::AbstractShape2D::Type::LineSegment:
-            renderer->renderers.push_back(new Implementation::LineSegmentRenderer<2>(shape));
+            renderer.renderers.push_back(new Implementation::LineSegmentRenderer<2>(shape));
             break;
         case Shapes::AbstractShape2D::Type::Point:
-            renderer->renderers.push_back(new Implementation::PointRenderer<2>(shape));
+            renderer.renderers.push_back(new Implementation::PointRenderer<2>(shape));
+            break;
+        case Shapes::AbstractShape2D::Type::Sphere:
+            renderer.renderers.push_back(new Implementation::SphereRenderer<2>(shape));
             break;
         case Shapes::AbstractShape2D::Type::Composition: {
             const Shapes::Composition2D& composition =
-                static_cast<const Shapes::Implementation::Shape<Shapes::Composition2D>*>(shape)->shape;
+                static_cast<const Shapes::Implementation::Shape<Shapes::Composition2D>&>(shape).shape;
             for(std::size_t i = 0; i != composition.size(); ++i)
                 createDebugMesh(renderer, Shapes::Implementation::getAbstractShape(composition, i));
         } break;
-        case Shapes::AbstractShape2D::Type::Sphere:
-            renderer->renderers.push_back(new Implementation::SphereRenderer<2>(shape));
-            break;
         default:
-            Warning() << "DebugTools::ShapeRenderer2D::createShapeRenderer(): type" << shape->type() << "not implemented";
+            Warning() << "DebugTools::ShapeRenderer2D::createShapeRenderer(): type" << shape.type() << "not implemented";
     }
 }
 
-template<> void createDebugMesh(ShapeRenderer<3>* renderer, const Shapes::Implementation::AbstractShape<3>* shape) {
-    switch(shape->type()) {
+template<> void createDebugMesh(ShapeRenderer<3>& renderer, const Shapes::Implementation::AbstractShape<3>& shape) {
+    switch(shape.type()) {
         case Shapes::AbstractShape3D::Type::AxisAlignedBox:
-            renderer->renderers.push_back(new Implementation::AxisAlignedBoxRenderer<3>(shape));
+            renderer.renderers.push_back(new Implementation::AxisAlignedBoxRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::Box:
-            renderer->renderers.push_back(new Implementation::BoxRenderer<3>(shape));
+            renderer.renderers.push_back(new Implementation::BoxRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::LineSegment:
-            renderer->renderers.push_back(new Implementation::LineSegmentRenderer<3>(shape));
+            renderer.renderers.push_back(new Implementation::LineSegmentRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::Point:
-            renderer->renderers.push_back(new Implementation::PointRenderer<3>(shape));
+            renderer.renderers.push_back(new Implementation::PointRenderer<3>(shape));
+            break;
+        case Shapes::AbstractShape3D::Type::Sphere:
+            renderer.renderers.push_back(new Implementation::SphereRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::Composition: {
             const Shapes::Composition3D& composition =
-                static_cast<const Shapes::Implementation::Shape<Shapes::Composition3D>*>(shape)->shape;
+                static_cast<const Shapes::Implementation::Shape<Shapes::Composition3D>&>(shape).shape;
             for(std::size_t i = 0; i != composition.size(); ++i)
                 createDebugMesh(renderer, Shapes::Implementation::getAbstractShape(composition, i));
         } break;
         default:
-            Warning() << "DebugTools::ShapeRenderer3D::createShapeRenderer(): type" << shape->type() << "not implemented";
+            Warning() << "DebugTools::ShapeRenderer3D::createShapeRenderer(): type" << shape.type() << "not implemented";
     }
 }
 
 }
 
-template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(shape->object(), drawables), options(ResourceManager::instance()->get<ShapeRendererOptions>(options)) {
-    Implementation::createDebugMesh(this, Shapes::Implementation::getAbstractShape(shape));
+template<UnsignedInt dimensions> ShapeRenderer<dimensions>::ShapeRenderer(Shapes::AbstractShape<dimensions>& shape, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(shape.object(), drawables), options(ResourceManager::instance().get<ShapeRendererOptions>(options)) {
+    Implementation::createDebugMesh(*this, Shapes::Implementation::getAbstractShape(shape));
 }
 
 template<UnsignedInt dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
@@ -103,8 +106,8 @@ template<UnsignedInt dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
         delete *it;
 }
 
-template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType&, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
-    typename DimensionTraits<dimensions, Float>::MatrixType projectionMatrix = camera->projectionMatrix()*camera->cameraMatrix();
+template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType&, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
+    typename DimensionTraits<dimensions, Float>::MatrixType projectionMatrix = camera.projectionMatrix()*camera.cameraMatrix();
     for(auto it = renderers.begin(); it != renderers.end(); ++it)
         (*it)->draw(options, projectionMatrix);
 }

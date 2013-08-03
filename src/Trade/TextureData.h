@@ -28,17 +28,88 @@
  * @brief Class Magnum::Trade::TextureData
  */
 
+#include "Array.h"
+#include "Sampler.h"
+#include "magnumVisibility.h"
+
 namespace Magnum { namespace Trade {
 
 /**
 @brief %Texture data
 */
-class MAGNUM_EXPORT TextureData {
-    TextureData(const TextureData&) = delete;
-    TextureData(TextureData&&) = delete;
-    TextureData& operator=(const TextureData&) = delete;
-    TextureData& operator=(TextureData&&) = delete;
+class TextureData {
+    public:
+        /**
+         * @brief Texture type
+         *
+         * @see type()
+         */
+        enum class Type: UnsignedByte {
+            Texture1D,  /**< One-dimensional texture */
+            Texture2D,  /**< Two-dimensional texture */
+            Texture3D,  /**< Three-dimensional texture */
+            Cube,       /**< Cube map texture */
+        };
+
+        /**
+         * @brief Constructor
+         * @param type                  Texture type
+         * @param minificationFilter    Minification filter
+         * @param magnificationFilter   Magnification filter
+         * @param mipmapFilter          Mipmap filter
+         * @param wrapping              Wrapping
+         * @param image                 Texture image ID
+         */
+        TextureData(Type type, Sampler::Filter minificationFilter, Sampler::Filter magnificationFilter, Sampler::Mipmap mipmapFilter, Array3D<Sampler::Wrapping> wrapping, UnsignedInt image): _type(type), _minificationFilter(minificationFilter), _magnificationFilter(magnificationFilter), _mipmapFilter(mipmapFilter), _wrapping(wrapping), _image(image) {}
+
+        /** @brief Copying is not allowed */
+        TextureData(const TextureData&) = delete;
+
+        /** @brief Move constructor */
+        TextureData(TextureData&&) = default;
+
+        /** @brief Copying is not allowed */
+        TextureData& operator=(const TextureData&) = delete;
+
+        /** @brief Move assignment */
+        TextureData& operator=(TextureData&&) = default;
+
+        /** @brief Texture type */
+        Type type() const { return _type; }
+
+        /** @brief Minification filter */
+        Sampler::Filter minificationFilter() const { return _minificationFilter; }
+
+        /** @brief Magnification filter */
+        Sampler::Filter magnificationFilter() const { return _magnificationFilter; }
+
+        /** @brief Mipmap filter */
+        Sampler::Mipmap mipmapFilter() const { return _mipmapFilter; }
+
+        /** @brief Wrapping */
+        Array3D<Sampler::Wrapping> wrapping() const { return _wrapping; }
+
+        /**
+         * @brief Image ID
+         *
+         * ID of 1D, 2D or 3D image based on texture type. If type is
+         * @ref Type "Type::Cube" the function returns first of six consecutive
+         * IDs of cube map sides, ordered +X, -X, +Y, -Y, +Z, -Z.
+         * @see @ref type(), @ref AbstractImporter::image1D(),
+         *      @ref AbstractImporter::image2D(), @ref AbstractImporter::image3D()
+         */
+        UnsignedInt image() const { return _image; }
+
+    private:
+        Type _type;
+        Sampler::Filter _minificationFilter, _magnificationFilter;
+        Sampler::Mipmap _mipmapFilter;
+        Array3D<Sampler::Wrapping> _wrapping;
+        UnsignedInt _image;
 };
+
+/** @debugoperator{Magnum::Trade::TextureData} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, TextureData::Type value);
 
 }}
 

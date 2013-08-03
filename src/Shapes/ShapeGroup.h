@@ -43,7 +43,7 @@ namespace Magnum { namespace Shapes {
 See Shape for more information. See @ref shapes for brief introduction.
 @see @ref scenegraph, ShapeGroup2D, ShapeGroup3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::BasicFeatureGroup<dimensions, AbstractShape<dimensions>, Float> {
+template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::FeatureGroup<dimensions, AbstractShape<dimensions>, Float> {
     friend class AbstractShape<dimensions>;
 
     public:
@@ -86,7 +86,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
          * collisions, returns `nullptr`. Calls setClean() before the
          * operation.
          */
-        AbstractShape<dimensions>* firstCollision(const AbstractShape<dimensions>* shape);
+        AbstractShape<dimensions>* firstCollision(const AbstractShape<dimensions>& shape);
 
     private:
         bool dirty;

@@ -51,13 +51,13 @@ class ForceRendererOptions {
 
         /**
          * @brief Set color of rendered arrow
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is 100% opaque white.
          */
-        ForceRendererOptions* setColor(const Color4& color) {
+        ForceRendererOptions& setColor(const Color4& color) {
             _color = color;
-            return this;
+            return *this;
         }
 
         /** @brief Scale of rendered arrow */
@@ -65,13 +65,13 @@ class ForceRendererOptions {
 
         /**
          * @brief Set scale of rendered arrow
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is `1.0f`.
          */
-        ForceRendererOptions* setSize(Float size) {
+        ForceRendererOptions& setSize(Float size) {
             _size = size;
-            return this;
+            return *this;
         }
 
     private:
@@ -89,9 +89,9 @@ See @ref debug-tools-renderers for more information.
 
 Example code:
 @code
-// Create some options
-DebugTools::ResourceManager::instance()->set("my", (new DebugTools::ForceRendererOptions)
-    ->setScale(5.0f)->setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f)));
+DebugTools::ResourceManager::instance()->set("my", DebugTools::ForceRendererOptions()
+    .setScale(5.0f)
+    .setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;
@@ -101,7 +101,7 @@ new DebugTools::ForceRenderer2D(object, {0.3f, 1.5f, -0.7f}, &force, "my", debug
 
 @see ForceRenderer2D, ForceRenderer3D
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::BasicDrawable<dimensions, Float> {
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor
@@ -117,14 +117,17 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          * saved as reference to original vector and thus it must be available
          * for the whole lifetime of the renderer.
          */
-        explicit ForceRenderer(SceneGraph::AbstractBasicObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+
+        /** @overload */
+        ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const typename DimensionTraits<dimensions, Float>::VectorType&, typename DimensionTraits<dimensions, Float>::VectorType&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
 
     protected:
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 
     private:
         const typename DimensionTraits<dimensions, Float>::VectorType forcePosition;
-        const typename DimensionTraits<dimensions, Float>::VectorType* const force;
+        const typename DimensionTraits<dimensions, Float>::VectorType& force;
 
         Resource<ForceRendererOptions> options;
         Resource<AbstractShaderProgram, Shaders::Flat<dimensions>> shader;

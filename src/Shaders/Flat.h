@@ -53,20 +53,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
 
         /**
          * @brief Set transformation and projection matrix
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Flat<dimensions>* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
+        Flat<dimensions>& setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Flat<dimensions>* setColor(const Color4& color) {
+        Flat<dimensions>& setColor(const Color4& color) {
             setUniform(colorUniform, color);
-            return this;
+            return *this;
         }
 
     private:

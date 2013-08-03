@@ -37,13 +37,14 @@ DefaultFramebuffer defaultFramebuffer;
 DefaultFramebuffer::DefaultFramebuffer() { _id = 0; }
 
 #ifndef MAGNUM_TARGET_GLES2
-DefaultFramebuffer* DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
+DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
         if(it->first > max) max = it->first;
 
     /* Create linear array from associative */
+    /** @todo C++14: use VLA to avoid heap allocation */
     GLenum* _attachments = new GLenum[max+1];
     std::fill_n(_attachments, max, GL_NONE);
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
@@ -51,11 +52,12 @@ DefaultFramebuffer* DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
 
     (this->*drawBuffersImplementation)(max+1, _attachments);
     delete[] _attachments;
-    return this;
+    return *this;
 }
 #endif
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
+    /** @todo C++14: use VLA to avoid heap allocation */
     GLenum* _attachments = new GLenum[attachments.size()];
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
@@ -66,6 +68,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 }
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
+    /** @todo C++14: use VLA to avoid heap allocation */
     GLenum* _attachments = new GLenum[attachments.size()];
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
@@ -75,8 +78,8 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     delete[] _attachments;
 }
 
-void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
-    Implementation::FramebufferState* state = context->state()->framebuffer;
+void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
+    Implementation::FramebufferState* state = context.state().framebuffer;
 
     /* Initial framebuffer size */
     GLint viewport[4];
@@ -85,7 +88,7 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context* context) {
 
     /* Fake initial glViewport() call for ApiTrace */
     #ifndef MAGNUM_TARGET_GLES
-    if(context->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+    if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
         glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
     #endif
 }

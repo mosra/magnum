@@ -30,6 +30,7 @@
 
 #include <Utility/Assert.h>
 #include <Utility/MurmurHash2.h>
+#include <Utility/utilities.h>
 
 #include "Magnum.h"
 
@@ -178,15 +179,25 @@ class Resource {
         }
 
         /**
-         * @brief %Resource data
+         * @brief Pointer to resource data
+         *
+         * Returns `nullptr` if the resource is not loaded.
+         */
+        operator U*() {
+            acquire();
+            return static_cast<U*>(data);
+        }
+
+        /**
+         * @brief Reference to resource data
          *
          * The resource must be loaded before accessing it. Use boolean
          * conversion operator or state() for testing whether it is loaded.
          */
-        operator U*() {
+        operator U&() {
             acquire();
-            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
-            return static_cast<U*>(data);
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
+            return *static_cast<U*>(data);
         }
 
         /** @overload */
@@ -275,6 +286,22 @@ template<class T, class U> void Resource<T, U>::acquire() {
     }
 }
 
+}
+
+namespace std {
+    /** @brief `std::hash` specialization for @ref Magnum::ResourceKey */
+    template<> struct hash<Magnum::ResourceKey> {
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        std::size_t operator()(Magnum::ResourceKey key) const {
+            #ifndef CORRADE_GCC44_COMPATIBILITY
+            return *reinterpret_cast<const std::size_t*>(key.byteArray());
+            #else
+            /* GCC 4.4 thinks reinterpret_cast will break strict aliasing, doing it with bit cast instead */
+            return Corrade::Utility::bitCast<std::size_t>(key);
+            #endif
+        }
+        #endif
+    };
 }
 
 /* Make the definition complete */

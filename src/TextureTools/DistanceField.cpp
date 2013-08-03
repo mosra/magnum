@@ -47,19 +47,19 @@ class DistanceFieldShader: public AbstractShaderProgram {
 
         explicit DistanceFieldShader();
 
-        DistanceFieldShader* setRadius(Int radius) {
+        DistanceFieldShader& setRadius(Int radius) {
             setUniform(radiusUniform, radius);
-            return this;
+            return *this;
         }
 
-        DistanceFieldShader* setScaling(const Vector2& scaling) {
+        DistanceFieldShader& setScaling(const Vector2& scaling) {
             setUniform(scalingUniform, scaling);
-            return this;
+            return *this;
         }
 
-        DistanceFieldShader* setImageSizeInverted(const Vector2& size) {
+        DistanceFieldShader& setImageSizeInverted(const Vector2& size) {
             setUniform(imageSizeInvertedUniform, size);
-            return this;
+            return *this;
         }
 
     private:
@@ -129,9 +129,9 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
 
 }
 #ifndef MAGNUM_TARGET_GLES
-void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius, const Vector2i&)
+void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i&)
 #else
-void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectangle, const Int radius, const Vector2i& imageSize)
+void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i& imageSize)
 #endif
 {
     #ifndef MAGNUM_TARGET_GLES
@@ -141,7 +141,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
     /** @todo Disable depth test, blending and then enable it back (if was previously) */
 
     #ifndef MAGNUM_TARGET_GLES
-    Vector2i imageSize = input->imageSize(0);
+    Vector2i imageSize = input.imageSize(0);
     #endif
 
     Framebuffer framebuffer(rectangle);
@@ -158,10 +158,10 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
 
     DistanceFieldShader shader;
     shader.setRadius(radius)
-        ->setScaling(Vector2(imageSize)/rectangle.size())
-        ->use();
+        .setScaling(Vector2(imageSize)/rectangle.size())
+        .use();
 
-    input->bind(DistanceFieldShader::TextureLayer);
+    input.bind(DistanceFieldShader::TextureLayer);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isVersionSupported(Version::GL300))
@@ -174,7 +174,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
 
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->setVertexCount(3);
+        .setVertexCount(3);
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
     Buffer buffer;
@@ -190,7 +190,7 @@ void distanceField(Texture2D* input, Texture2D* output, const Rectanglei& rectan
             Vector2( 3.0,  1.0)
         };
         buffer.setData(triangle, Buffer::Usage::StaticDraw);
-        mesh.addVertexBuffer(&buffer, 0, DistanceFieldShader::Position());
+        mesh.addVertexBuffer(buffer, 0, DistanceFieldShader::Position());
     }
 
     /* Draw the mesh */

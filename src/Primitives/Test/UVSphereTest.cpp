@@ -35,16 +35,18 @@ class UVSphereTest: public TestSuite::Tester {
     public:
         UVSphereTest();
 
-        void withoutTextureCoords();
-        void withTextureCoords();
+        void solidWithoutTextureCoords();
+        void solidWithTextureCoords();
+        void wireframe();
 };
 
 UVSphereTest::UVSphereTest() {
-    addTests({&UVSphereTest::withoutTextureCoords,
-              &UVSphereTest::withTextureCoords});
+    addTests({&UVSphereTest::solidWithoutTextureCoords,
+              &UVSphereTest::solidWithTextureCoords,
+              &UVSphereTest::wireframe});
 }
 
-void UVSphereTest::withoutTextureCoords() {
+void UVSphereTest::solidWithoutTextureCoords() {
     Trade::MeshData3D sphere = UVSphere::solid(3, 3);
 
     CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
@@ -82,7 +84,7 @@ void UVSphereTest::withoutTextureCoords() {
     }), TestSuite::Compare::Container);
 }
 
-void UVSphereTest::withTextureCoords() {
+void UVSphereTest::solidWithTextureCoords() {
     Trade::MeshData3D sphere = UVSphere::solid(3, 3, UVSphere::TextureCoords::Generate);
 
     CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
@@ -121,6 +123,48 @@ void UVSphereTest::withTextureCoords() {
         0, 2, 1, 0, 3, 2, 0, 4, 3,
         1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
         5, 6, 9, 6, 7, 9, 7, 8, 9
+    }), TestSuite::Compare::Container);
+}
+
+void UVSphereTest::wireframe() {
+    Trade::MeshData3D sphere = UVSphere::wireframe(4, 8);
+
+    CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
+        {0.0f, -1.0f, 0.0f},
+
+        {0.0f, -0.707107f, 0.707107f},
+        {0.707107f, -0.707107f, 0.0f},
+        {0.0f, -0.707107f, -0.707107f},
+        {-0.707107f, -0.707107f, 0.0f},
+
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, -1.0f},
+        {-1.0f, 0.0f, 0.0f},
+        {0.707107f, 0.0f, 0.707107f},
+        {0.707107f, 0.0f, -0.707107f},
+        {-0.707107f, 0.0f, -0.707107f},
+        {-0.707107f, 0.0f, 0.707107f},
+
+        {0.0f, 0.707107f, 0.707107f},
+        {0.707107f, 0.707107f, 0.0f},
+        {0.0f, 0.707107f, -0.707107f},
+        {-0.707107f, 0.707107f, 0.0f},
+
+        {0.0f, 1.0f, 0.0f}
+    }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(sphere.normalArrayCount(), 0);
+
+    CORRADE_COMPARE_AS(sphere.indices(), (std::vector<UnsignedInt>{
+        0, 1, 0, 2, 0, 3, 0, 4,
+        1, 5, 2, 6, 3, 7, 4, 8,
+
+        5, 9, 6, 10, 7, 11, 8, 12,
+        9, 6, 10, 7, 11, 8, 12, 5,
+
+        5, 13, 6, 14, 7, 15, 8, 16,
+        13, 17, 14, 17, 15, 17, 16, 17
     }), TestSuite::Compare::Container);
 }
 

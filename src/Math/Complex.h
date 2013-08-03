@@ -150,7 +150,7 @@ template<class T> class Complex {
          * @brief Whether the complex number is normalized
          *
          * Complex number is normalized if it has unit length: @f[
-         *      |c|^2 = |c| = 1
+         *      |c \cdot c - 1| < 2 \epsilon + \epsilon^2 \cong 2 \epsilon
          * @f]
          * @see dot(), normalized()
          */

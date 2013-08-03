@@ -82,8 +82,8 @@ Parent object can be either passed in constructor or using Object::setParent().
 @code
 Scene3D scene;
 
-Object3D* first = new Object3D(&scene);
-Object3D* second = new Object3D(first);
+auto first = new Object3D(&scene);
+auto second = new Object3D(first);
 @endcode
 
 %Object children can be accessed using Object::firstChild() and
@@ -107,10 +107,10 @@ The object is derived from the transformation you specified earlier in the
 transformation implementation. %Scene, as a root object, cannot have any
 transformation. For convenience you can use method chaining:
 @code
-Object3D* next = new Object3D;
+auto next = new Object3D;
 next->setParent(another)
-    ->translate(Vector3::yAxis(3.0f))
-    ->rotateY(35.0_degf);
+    .translate(Vector3::yAxis(3.0f))
+    .rotateY(35.0_degf);
 @endcode
 
 @section scenegraph-features Object features
@@ -119,11 +119,12 @@ The object itself handles only parent/child relationship and transformation.
 To make the object renderable, animatable, add collision shape to it etc., you
 have to add a *feature* to it.
 
-Each feature takes pointer to holder object in constructor, so adding a
-feature to an object might look like this:
+Each feature takes reference to holder object in constructor, so adding a
+feature to an object might look just like this, as in some cases you don't even
+need to keep the pointer to it:
 @code
 Object3D* o;
-MyFeature* feature = new MyFeature(o);
+new MyFeature(o);
 @endcode
 
 Features of an object can be accessed using Object::firstFeature() and
@@ -149,7 +150,7 @@ Simplified example:
 @code
 class Bomb: public Object3D, SceneGraph::Drawable3D, SceneGraph:.Animable3D {
     public:
-        Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D(this), SceneGraph::Animable3D(this) {}
+        Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D(*this), SceneGraph::Animable3D(*this) {}
 
     protected:
         // drawing implementation for Drawable feature
@@ -195,8 +196,8 @@ cleaning function(s):
 @code
 class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
     public:
-        CachingObject(Object3D* parent): SceneGraph::AbstractFeature3D(this) {
-            setCachedTransformations(CachedTransformation::Absolute);
+        CachingObject(Object3D* parent): SceneGraph::AbstractFeature3D(*this) {
+            setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
         }
 
     protected:
@@ -258,7 +259,7 @@ inherited after the %Object class:
 @code
 class MyObject: public Object3D, MyFeature {
     public:
-        MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
+        MyObject(Object3D* parent): Object3D(parent), MyFeature(*this) {}
 };
 @endcode
 When constructing MyObject, Object3D constructor is called first and then
@@ -271,7 +272,7 @@ However, if we would inherit MyFeature first, it will cause problems:
 @code
 class MyObject: MyFeature, public Object3D {
     public:
-        MyObject(Object3D* parent): MyFeature(this), Object3D(parent) {} // crash!
+        MyObject(Object3D* parent): MyFeature(*this), Object3D(parent) {} // crash!
 };
 @endcode
 MyFeature tries to add itself to feature list in not-yet-constructed Object3D,

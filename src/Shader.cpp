@@ -27,7 +27,7 @@
 #include <fstream>
 #include <Utility/Assert.h>
 
-#ifdef CORRADE_TARGET_NACL_NEWLIB
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
 #include <sstream>
 #endif
 
@@ -71,6 +71,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GL410: sources.push_back("#version 410\n"); return;
         case Version::GL420: sources.push_back("#version 420\n"); return;
         case Version::GL430: sources.push_back("#version 430\n"); return;
+        case Version::GL440: sources.push_back("#version 440\n"); return;
         #else
         case Version::GLES200: sources.push_back("#version 100\n"); return;
         case Version::GLES300: sources.push_back("#version 300\n"); return;
@@ -105,7 +106,7 @@ Shader& Shader::operator=(Shader&& other) {
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        #ifdef CORRADE_TARGET_NACL_NEWLIB
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
         std::ostringstream converter;
         converter << (sources.size()+1)/2;
         #endif
@@ -114,10 +115,12 @@ Shader& Shader::addSource(std::string source) {
            Source 0 is the #version string added in constructor. */
         sources.push_back("#line 1 " +
             /* This shouldn't be ambiguous. But is. */
+            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(_WIN32)
             #ifndef CORRADE_GCC44_COMPATIBILITY
             std::to_string((sources.size()+1)/2) +
-            #elif !defined(CORRADE_TARGET_NACL_NEWLIB)
+            #else
             std::to_string(static_cast<unsigned long long int>(sources.size()+1)/2) +
+            #endif
             #else
             converter.str() +
             #endif

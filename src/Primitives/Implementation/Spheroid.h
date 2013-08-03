@@ -1,5 +1,5 @@
-#ifndef Magnum_Primitives_Spheroid_h
-#define Magnum_Primitives_Spheroid_h
+#ifndef Magnum_Primitives_Implementation_Spheroid_h
+#define Magnum_Primitives_Implementation_Spheroid_h
 /*
     This file is part of Magnum.
 
@@ -50,10 +50,10 @@ class Spheroid {
 
         Trade::MeshData3D finalize();
 
+    private:
         UnsignedInt segments;
         TextureCoords textureCoords;
 
-    private:
         std::vector<UnsignedInt> indices;
         std::vector<Vector3> positions;
         std::vector<Vector3> normals;

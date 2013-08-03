@@ -47,21 +47,21 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     /* Vertex buffer */
     Buffer* buffer = new Buffer(Buffer::Target::Array);
     buffer->setData(data.positions(0), Buffer::Usage::StaticDraw);
-    ResourceManager::instance()->set(vertexBufferResource.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    ResourceManager::instance().set(vertexBufferResource.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Mesh configuration */
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
-        ->setVertexCount(data.positions(0).size())
-        ->addVertexBuffer(buffer, 0, Shaders::Flat2D::Position());
-    ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+        .setVertexCount(data.positions(0).size())
+        .addVertexBuffer(*buffer, 0, Shaders::Flat2D::Position());
+    ResourceManager::instance().set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data.indices());
-        ResourceManager::instance()->set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+        MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, data.indices());
+        ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 }
 
@@ -69,40 +69,40 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
     /* Vertex buffer */
     Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
     vertexBuffer->setData(data.positions(0), Buffer::Usage::StaticDraw);
-    ResourceManager::instance()->set(vertexBufferResource.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    ResourceManager::instance().set(vertexBufferResource.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Mesh configuration */
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
-        ->setVertexCount(data.positions(0).size())
-        ->addVertexBuffer(vertexBuffer, 0, Shaders::Flat3D::Position());
-    ResourceManager::instance()->set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+        .setVertexCount(data.positions(0).size())
+        .addVertexBuffer(*vertexBuffer, 0, Shaders::Flat3D::Position());
+    ResourceManager::instance().set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data.indices());
-        ResourceManager::instance()->set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+        MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, data.indices());
+        ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 }
 
 }
 
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey meshKey, ResourceKey vertexBufferKey, ResourceKey indexBufferKey) {
-    wireframeShader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
-    wireframeMesh = ResourceManager::instance()->get<Mesh>(meshKey);
-    vertexBuffer = ResourceManager::instance()->get<Buffer>(vertexBufferKey);
-    indexBuffer = ResourceManager::instance()->get<Buffer>(indexBufferKey);
+    wireframeShader = ResourceManager::instance().get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
+    wireframeMesh = ResourceManager::instance().get<Mesh>(meshKey);
+    vertexBuffer = ResourceManager::instance().get<Buffer>(vertexBufferKey);
+    indexBuffer = ResourceManager::instance().get<Buffer>(indexBufferKey);
 
-    if(!wireframeShader) ResourceManager::instance()->set<AbstractShaderProgram>(shaderKey<dimensions>(),
+    if(!wireframeShader) ResourceManager::instance().set<AbstractShaderProgram>(shaderKey<dimensions>(),
         new Shaders::Flat<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
 
 template<UnsignedInt dimensions> void AbstractShapeRenderer<dimensions>::createResources(typename MeshData<dimensions>::Type data) {
-    create<dimensions>(data, this->wireframeMesh, this->vertexBuffer, this->indexBuffer);
+    create<dimensions>(data, wireframeMesh, vertexBuffer, indexBuffer);
 }
 
 template class AbstractShapeRenderer<2>;

@@ -28,8 +28,9 @@
  * @brief Class Magnum::Sampler
  */
 
-#include "Types.h"
+#include "Magnum.h"
 #include "OpenGL.h"
+#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -113,10 +114,23 @@ class Sampler {
              * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
              */
             #ifndef MAGNUM_TARGET_GLES
-            ClampToBorder = GL_CLAMP_TO_BORDER
+            ClampToBorder = GL_CLAMP_TO_BORDER,
             #else
-            ClampToBorder = GL_CLAMP_TO_BORDER_NV
+            ClampToBorder = GL_CLAMP_TO_BORDER_NV,
             #endif
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Mirror the texture once in negative coordinates and clamp to
+             * edge after that.
+             * @requires_gl44 %Extension @extension{ARB,texture_mirror_clamp_to_edge},
+             *      @extension{ATI,texture_mirror_once} or @extension{EXT,texture_mirror_clamp}
+             * @requires_gl Only separate @ref Magnum::Sampler::Wrapping "Wrapping::MirroredRepeat"
+             *      or @ref Magnum::Sampler::Wrapping "Wrapping::ClampToEdge"
+             *      is available in OpenGL ES.
+             */
+            MirrorClampToEdge = GL_MIRROR_CLAMP_TO_EDGE
             #endif
         };
 
@@ -133,6 +147,15 @@ class Sampler {
         static Float maxSupportedAnisotropy();
         #endif
 };
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Filter value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Mipmap value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Wrapping value);
 
 }
 

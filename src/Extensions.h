@@ -153,10 +153,21 @@ namespace GL {
         _extension(GL,ARB,texture_buffer_range,         GL210, GL430) // #139
         _extension(GL,ARB,texture_query_levels,         GL300, GL430) // #140
         _extension(GL,ARB,texture_storage_multisample,  GL210, GL430) // #141
+        _extension(GL,ARB,buffer_storage,         /*?*/ GL430, GL440) // #144
+        _extension(GL,ARB,clear_texture,                GL210, GL440) // #145
+        _extension(GL,ARB,enhanced_layouts,             GL310, GL440) // #146
+        _extension(GL,ARB,multi_bind,                   GL300, GL440) // #147
+        _extension(GL,ARB,query_buffer_object,          GL210, GL440) // #148
+        _extension(GL,ARB,texture_mirror_clamp_to_edge, GL210, GL440) // #149
+        _extension(GL,ARB,texture_stencil8,             GL210, GL440) // #150
+        _extension(GL,ARB,vertex_type_10f_11f_11f_rev,  GL300, GL440) // #151
+    } namespace ATI {
+        _extension(GL,ATI,texture_mirror_once,          GL210,  None) // #221
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic,   GL210,  None) // #187
         /* EXT_framebuffer_object, EXT_packed_depth_stencil, EXT_framebuffer_blit,
            EXT_framebuffer_multisample replaced with ARB_framebuffer_object */
+        _extension(GL,EXT,texture_mirror_clamp,         GL210,  None) // #298
         _extension(GL,EXT,gpu_shader4,                  GL210, GL300) // #326
         _extension(GL,EXT,packed_float,                 GL210, GL300) // #328
         _extension(GL,EXT,texture_array,                GL210, GL300) // #329
@@ -181,7 +192,7 @@ namespace GL {
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346
         /* NV_draw_texture not supported */                           // #430
     }
-    /* IMPORTANT: if this line is > 188 (57 + size), don't forget to update array size in Context.h */
+    /* IMPORTANT: if this line is > 226 (66 + size), don't forget to update array size in Context.h */
     #else
     #line 1
     namespace ANGLE {

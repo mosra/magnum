@@ -46,7 +46,7 @@ template<UnsignedInt> class ShapeRenderer;
 namespace Implementation {
     template<UnsignedInt> class AbstractShapeRenderer;
 
-    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>* renderer, const Shapes::Implementation::AbstractShape<dimensions>* shape);
+    template<UnsignedInt dimensions> void createDebugMesh(ShapeRenderer<dimensions>& renderer, const Shapes::Implementation::AbstractShape<dimensions>& shape);
 }
 
 /**
@@ -73,13 +73,13 @@ class ShapeRendererOptions {
 
         /**
          * @brief Set shape rendering mode
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is @ref RenderMode "RenderMode::Wireframe".
          */
-        ShapeRendererOptions* setRenderMode(RenderMode mode) {
+        ShapeRendererOptions& setRenderMode(RenderMode mode) {
             _renderMode = mode;
-            return this;
+            return *this;
         }
 
         /** @brief Color of rendered shape */
@@ -87,13 +87,13 @@ class ShapeRendererOptions {
 
         /**
          * @brief Set color of rendered shape
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default is 100% opaque white.
          */
-        ShapeRendererOptions* setColor(const Color4& color) {
+        ShapeRendererOptions& setColor(const Color4& color) {
             _color = color;
-            return this;
+            return *this;
         }
 
         /** @brief Point size */
@@ -101,14 +101,14 @@ class ShapeRendererOptions {
 
         /**
          * @brief Set point size
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Size of rendered crosshairs, representing Shapes::Point shapes.
          * Default is `0.25f`.
          */
-        ShapeRendererOptions* setPointSize(Float size) {
+        ShapeRendererOptions& setPointSize(Float size) {
             _pointSize = size;
-            return this;
+            return *this;
         }
 
     private:
@@ -128,8 +128,8 @@ Visualizes collision shapes using wireframe primitives. See
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set("red", (new DebugTools::ShapeRendererOptions)
-    ->setColor({1.0f, 0.0f, 0.0f}));
+DebugTools::ResourceManager::instance()->set("red",
+    DebugTools::ShapeRendererOptions().setColor({1.0f, 0.0f, 0.0f}));
 
 // Create debug renderer for given shape, use "red" options for it
 Shapes::AbstractShape2D* shape;
@@ -138,8 +138,8 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 
 @see ShapeRenderer2D, ShapeRenderer3D
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::BasicDrawable<dimensions, Float> {
-    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>*, const Shapes::Implementation::AbstractShape<dimensions>*);
+template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions, Float> {
+    friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>&, const Shapes::Implementation::AbstractShape<dimensions>&);
 
     public:
         /**
@@ -154,13 +154,13 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
          * @p shape must be available for the whole lifetime of the renderer
          * and if it is group, it must not change its internal structure.
          */
-        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>* shape, ResourceKey options = ResourceKey(), SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ShapeRenderer(Shapes::AbstractShape<dimensions>& shape, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 
         ~ShapeRenderer();
 
     protected:
         /** @todoc Remove Float when Doxygen properly treats this as override */
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) override;
+        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 
     private:
         Resource<ShapeRendererOptions> options;

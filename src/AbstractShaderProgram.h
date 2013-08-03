@@ -101,13 +101,13 @@ MyShader() {
    protected setUniform() functions. For usability purposes you can implement
    also method chaining. Example:
 @code
-MyShader* setTransformation(const Matrix4& matrix) {
+MyShader& setTransformation(const Matrix4& matrix) {
     setUniform(TransformationUniform, matrix);
-    return this;
+    return *this;
 }
-MyShader* setProjection(const Matrix4& matrix) {
+MyShader& setProjection(const Matrix4& matrix) {
     setUniform(ProjectionUniform, matrix);
-    return this;
+    return *this;
 }
 @endcode
 
@@ -219,12 +219,12 @@ specific framebuffer (if needed) and bind required textures to their
 respective layers using AbstractTexture::bind(Int). Then call Mesh::draw().
 Example:
 @code
-shader->setTransformation(transformation)
-    ->setProjection(projection)
-    ->use();
+shader.setTransformation(transformation)
+    .setProjection(projection)
+    .use();
 
-diffuseTexture->bind(MyShader::DiffuseTextureLayer);
-specularTexture->bind(MyShader::SpecularTextureLayer);
+diffuseTexture.bind(MyShader::DiffuseTextureLayer);
+specularTexture.bind(MyShader::SpecularTextureLayer);
 
 mesh.draw();
 @endcode
@@ -774,7 +774,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         typedef void(AbstractShaderProgram::*Uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
         typedef void(AbstractShaderProgram::*Uniform2fvImplementation)(GLint, GLsizei, const Math::Vector<2, GLfloat>*);

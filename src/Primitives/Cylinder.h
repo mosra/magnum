@@ -71,6 +71,18 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          * wrapping.
          */
         static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float length, Flags flags = Flags());
+
+        /**
+         * @brief Wireframe cylinder
+         * @param rings         Number of (line) rings. Must be larger or equal
+         *      to 1.
+         * @param segments      Number of (line) segments. Must be larger or
+         *      equal to 4 and multiple of 4.
+         * @param length        Cylinder length
+         *
+         * Indexed @ref Mesh::Primitive "Lines".
+         */
+        static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments, Float length);
 };
 
 CORRADE_ENUMSET_OPERATORS(Cylinder::Flags)

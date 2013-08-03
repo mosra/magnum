@@ -81,7 +81,8 @@ set(Magnum_SRCS
     Trade/ObjectData2D.cpp
     Trade/ObjectData3D.cpp
     Trade/PhongMaterialData.cpp
-    Trade/SceneData.cpp)
+    Trade/SceneData.cpp
+    Trade/TextureData.cpp)
 
 # Desktop-only code
 if(NOT TARGET_GLES)
@@ -156,7 +157,8 @@ set(MagnumMath_SRCS
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 add_library(MagnumObjects OBJECT ${Magnum_SRCS})
-set_target_properties(MagnumObjects MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
 add_library(Magnum ${SHARED_OR_STATIC}
@@ -164,7 +166,7 @@ add_library(Magnum ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 set(Magnum_LIBS
     ${CORRADE_UTILITY_LIBRARY}

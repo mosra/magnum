@@ -51,10 +51,10 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
             VectorTextureLayer = 16 /**< Layer for vector texture */
         };
 
-        virtual ~AbstractVector() = 0;
+    protected:
+        explicit AbstractVector() = default;
+        ~AbstractVector() = default;
 };
-
-template<UnsignedInt dimensions> inline AbstractVector<dimensions>::~AbstractVector() {}
 
 /** @brief Base for two-dimensional text shaders */
 typedef AbstractVector<2> AbstractVector2D;

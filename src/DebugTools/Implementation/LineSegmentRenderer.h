@@ -34,7 +34,8 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class LineSegmentRenderer: public AbstractShapeRenderer<dimensions> {
     public:
-        LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>* line);
+        explicit LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>& line);
+        LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>&&) = delete;
 
         void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
 

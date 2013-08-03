@@ -132,7 +132,7 @@ template<UnsignedInt dimensions> Composition<dimensions> Composition<dimensions>
     return out;
 }
 
-template<UnsignedInt dimensions> bool Composition<dimensions>::collides(const Implementation::AbstractShape<dimensions>* const a, const std::size_t node, const std::size_t shapeBegin, const std::size_t shapeEnd) const {
+template<UnsignedInt dimensions> bool Composition<dimensions>::collides(const Implementation::AbstractShape<dimensions>& a, const std::size_t node, const std::size_t shapeBegin, const std::size_t shapeEnd) const {
     /* Empty group */
     if(shapeBegin == shapeEnd) return false;
 
@@ -141,7 +141,7 @@ template<UnsignedInt dimensions> bool Composition<dimensions>::collides(const Im
     /* Collision on the left child. If the node is leaf one (no left child
        exists), do it directly, recurse instead. */
     const bool collidesLeft = (_nodes[node].rightNode == 0 || _nodes[node].rightNode == 2) ?
-        Implementation::collides(a, _shapes[shapeBegin]) :
+        Implementation::collides(a, *_shapes[shapeBegin]) :
         collides(a, node+1, shapeBegin, shapeBegin+_nodes[node].rightShape);
 
     /* NOT operation */
@@ -155,7 +155,7 @@ template<UnsignedInt dimensions> bool Composition<dimensions>::collides(const Im
     /* Now the collision result depends only on the right child. Similar to
        collision on the left child. */
     return (_nodes[node].rightNode < 2) ?
-        Implementation::collides(a, _shapes[shapeBegin+_nodes[node].rightShape]) :
+        Implementation::collides(a, *_shapes[shapeBegin+_nodes[node].rightShape]) :
         collides(a, node+_nodes[node].rightNode-1, shapeBegin+_nodes[node].rightShape, shapeEnd);
 }
 

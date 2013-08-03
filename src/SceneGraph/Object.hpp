@@ -38,10 +38,10 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> AbstractBasicObject<dimensions, T>::AbstractBasicObject() {}
-template<UnsignedInt dimensions, class T> AbstractBasicObject<dimensions, T>::~AbstractBasicObject() {}
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
+template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
 
-template<UnsignedInt dimensions, class T> AbstractBasicTransformation<dimensions, T>::AbstractBasicTransformation() {}
+template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 
 /* `= default` causes linker errors in GCC 4.4 */
 template<class Transformation> Object<Transformation>::~Object() {}
@@ -66,16 +66,16 @@ template<class Transformation> const Object<Transformation>* Object<Transformati
     return scene();
 }
 
-template<class Transformation> Object<Transformation>* Object<Transformation>::setParent(Object<Transformation>* parent) {
+template<class Transformation> Object<Transformation>& Object<Transformation>::setParent(Object<Transformation>* parent) {
     /* Skip if parent is already parent or this is scene (which cannot have parent) */
     /** @todo Assert for setting parent to scene */
-    if(this->parent() == parent || isScene()) return this;
+    if(this->parent() == parent || isScene()) return *this;
 
     /* Object cannot be parented to its child */
     Object<Transformation>* p = parent;
     while(p) {
         /** @todo Assert for this */
-        if(p == this) return this;
+        if(p == this) return *this;
         p = p->parent();
     }
 
@@ -86,18 +86,18 @@ template<class Transformation> Object<Transformation>* Object<Transformation>::s
     if(parent) parent->Containers::LinkedList<Object<Transformation>>::insert(this);
 
     setDirty();
-    return this;
+    return *this;
 }
 
-template<class Transformation> Object<Transformation>* Object<Transformation>::setParentKeepTransformation(Object<Transformation>* parent) {
-    CORRADE_ASSERT(scene() == parent->scene(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene", this);
+template<class Transformation> Object<Transformation>& Object<Transformation>::setParentKeepTransformation(Object<Transformation>* parent) {
+    CORRADE_ASSERT(scene() == parent->scene(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene", *this);
 
     const auto transformation = Transformation::compose(
         Transformation::inverted(parent->absoluteTransformation()), absoluteTransformation());
     setParent(parent);
-    this->setTransformation(transformation);
+    Transformation::setTransformation(transformation);
 
-    return this;
+    return *this;
 }
 
 template<class Transformation> typename Transformation::DataType Object<Transformation>::absoluteTransformation() const {
@@ -113,7 +113,7 @@ template<class Transformation> void Object<Transformation>::setDirty() {
     Object<Transformation>* self = static_cast<Object<Transformation>*>(this);
 
     /* Make all features dirty */
-    for(AbstractBasicFeature<Transformation::Dimensions, typename Transformation::Type>* i = self->firstFeature(); i; i = i->nextFeature())
+    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = self->firstFeature(); i; i = i->nextFeature())
         i->markDirty();
 
     /* Make all children dirty */
@@ -161,9 +161,10 @@ template<class Transformation> void Object<Transformation>::setClean() {
     }
 }
 
-template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractBasicObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
+        /* Non-null is checked in transformations() */
         /** @todo Ensure this doesn't crash, somehow */
         castObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
 
@@ -202,6 +203,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Mark all original objects as joints and create initial list of joints
        from them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
+        CORRADE_INTERNAL_ASSERT(objects[i]);
+
         /* Multiple occurences of one object in the array, don't overwrite it
            with different counter */
         if(objects[i]->counter != 0xFFFFu) continue;
@@ -336,7 +339,7 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
     }
 }
 
-template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<AbstractBasicObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) {
+template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) {
     std::vector<Object<Transformation>*> castObjects(objects.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         /** @todo Ensure this doesn't crash, somehow */
@@ -397,7 +400,7 @@ template<class Transformation> void Object<Transformation>::setClean(const typen
     MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
-    for(AbstractBasicFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {
+    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {
         /* Cached absolute transformation, compute it if it wasn't
             computed already */
         if(i->cachedTransformations() & CachedTransformation::Absolute) {

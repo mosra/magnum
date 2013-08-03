@@ -24,10 +24,22 @@
 
 #include "AbstractMaterialData.h"
 
+#include <Utility/Debug.h>
+
 namespace Magnum { namespace Trade {
 
-AbstractMaterialData::AbstractMaterialData(AbstractMaterialData::Type type): _type(type) {}
+AbstractMaterialData::AbstractMaterialData(Type type): _type(type) {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
+
+Debug operator<<(Debug debug, const AbstractMaterialData::Type value) {
+    switch(value) {
+        #define _c(value) case AbstractMaterialData::Type::value: return debug << "Trade::AbstractMaterialData::Type::" #value;
+        _c(Phong)
+        #undef _c
+    }
+
+    return debug << "Trade::AbstractMaterialData::Type::(unknown)";
+}
 
 }}

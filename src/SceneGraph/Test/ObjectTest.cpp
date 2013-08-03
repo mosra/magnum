@@ -52,7 +52,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class CachingObject: public Object3D, AbstractFeature3D {
     public:
-        CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature3D(this) {
+        CachingObject(Object3D* parent = nullptr): Object3D(parent), AbstractFeature3D(*this) {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
@@ -271,7 +271,7 @@ void ObjectTest::setClean() {
 
     class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject3D* object): AbstractFeature3D(object) {
+            CachingFeature(AbstractObject3D& object): AbstractFeature3D(object) {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -284,7 +284,7 @@ void ObjectTest::setClean() {
 
     class CachingInvertedFeature: public AbstractFeature3D {
         public:
-            CachingInvertedFeature(AbstractObject3D* object): AbstractFeature3D(object) {
+            CachingInvertedFeature(AbstractObject3D& object): AbstractFeature3D(object) {
                 setCachedTransformations(CachedTransformation::InvertedAbsolute);
             }
 
@@ -300,8 +300,8 @@ void ObjectTest::setClean() {
 
     CachingObject* childTwo = new CachingObject(childOne);
     childTwo->translate(Vector3::xAxis(1.0f));
-    CachingFeature* childTwoFeature = new CachingFeature(childTwo);
-    CachingInvertedFeature* childTwoFeature2 = new CachingInvertedFeature(childTwo);
+    CachingFeature* childTwoFeature = new CachingFeature(*childTwo);
+    CachingInvertedFeature* childTwoFeature2 = new CachingInvertedFeature(*childTwo);
 
     CachingObject* childThree = new CachingObject(childTwo);
     childThree->rotate(Deg(90.0f), Vector3::yAxis());
@@ -369,7 +369,7 @@ void ObjectTest::setCleanListHierarchy() {
 
     class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject3D* object): AbstractFeature3D(object) {
+            CachingFeature(AbstractObject3D& object): AbstractFeature3D(object) {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -385,7 +385,7 @@ void ObjectTest::setCleanListHierarchy() {
 
     CachingObject* childTwo = new CachingObject(childOne);
     childTwo->translate(Vector3::xAxis(1.0f));
-    CachingFeature* childTwoFeature = new CachingFeature(childTwo);
+    CachingFeature* childTwoFeature = new CachingFeature(*childTwo);
 
     CachingObject* childThree = new CachingObject(childTwo);
     childThree->rotate(Deg(90.0f), Vector3::yAxis());

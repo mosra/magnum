@@ -39,96 +39,167 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Phong shader
 
-If supported, uses GLSL 3.20 and @extension{ARB,explicit_attrib_location},
-otherwise falls back to GLSL 1.20.
+Uses ambient, diffuse and specular color or texture. You need to provide
+@ref Position and @ref Normal attributes in your triangle mesh and call at
+least @ref setTransformationMatrix(), @ref setNormalMatrix(),
+@ref setProjectionMatrix(), @ref setDiffuseColor() and @ref setLightPosition().
+
+If you want to use texture instead of color, you need to provide also
+@ref TextureCoordinates attribute. Pass appropriate flags to constructor and
+then at render time bind the texture to its respective layer instead of setting
+the color. Example:
+@code
+Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture);
+
+// ...
+
+myDiffuseTexture.bind(Shaders::Phong::DiffuseTextureLayer);
+@endcode
 */
 class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position; /**< @brief Vertex position */
         typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
 
-        explicit Phong();
+        /**
+         * @brief Texture coordinates
+         *
+         * Used only if one of @ref Flag "Flag::AmbientTexture",
+         * @ref Flag "Flag::DiffuseTexture" or @ref Flag "Flag::SpecularTexture"
+         * is set.
+         */
+        typedef Attribute<2, Vector2> TextureCoordinates;
+
+        enum: Int {
+            /**
+             * Layer for ambient texture. Used only if @ref Flag "Flag::AmbientTexture"
+             * is set.
+             */
+            AmbientTextureLayer = 0,
+
+            /**
+             * Layer for diffuse texture. Used only if @ref Flag "Flag::DiffuseTexture"
+             * is set.
+             */
+            DiffuseTextureLayer = 1,
+
+            /**
+             * Layer for specular texture. Used only if @ref Flag "Flag::SpecularTexture"
+             * is set.
+             */
+            SpecularTextureLayer = 2
+        };
+
+        /**
+         * @brief Shader flag
+         *
+         * @see @ref Flags, @ref flags()
+         */
+        enum class Flag: UnsignedByte {
+            AmbientTexture = 1 << 0,    /**< The shader uses ambient texture instead of color */
+            DiffuseTexture = 1 << 1,    /**< The shader uses diffuse texture instead of color */
+            SpecularTexture = 1 << 2    /**< The shader uses specular texture instead of color */
+        };
+
+        /**
+         * @brief Shader flags
+         *
+         * @see @ref flags()
+         */
+        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+
+        /**
+         * @brief Constructor
+         * @param flags     Shader flags
+         */
+        explicit Phong(Flags flags = Flags());
+
+        /** @brief Shader flags */
+        Flags flags() const { return _flags; }
 
         /**
          * @brief Set ambient color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `(0.0f, 0.0f, 0.0f)`.
+         * If not set, default value is `(0.0f, 0.0f, 0.0f)`. Has no effect if
+         * @ref Flag "Flag::AmbientTexture" is set.
          */
-        Phong* setAmbientColor(const Color3& color) {
-            setUniform(ambientColorUniform, color);
-            return this;
-        }
+        Phong& setAmbientColor(const Color3& color);
 
         /**
          * @brief Set diffuse color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
+         *
+         * Has no effect if @ref Flag "Flag::AmbientTexture" is used.
          */
-        Phong* setDiffuseColor(const Color3& color) {
-            setUniform(diffuseColorUniform, color);
-            return this;
-        }
+        Phong& setDiffuseColor(const Color3& color);
 
         /**
          * @brief Set specular color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
+         * If not set, default value is `(1.0f, 1.0f, 1.0f)`. Has no effect if
+         * @ref Flag "Flag::SpecularTexture" is set.
          */
-        Phong* setSpecularColor(const Color3& color) {
-            setUniform(specularColorUniform, color);
-            return this;
-        }
+        Phong& setSpecularColor(const Color3& color);
 
         /**
          * @brief Set shininess
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * The larger value, the harder surface (smaller specular highlight).
          * If not set, default value is `80.0f`.
          */
-        Phong* setShininess(Float shininess) {
+        Phong& setShininess(Float shininess) {
             setUniform(shininessUniform, shininess);
-            return this;
+            return *this;
         }
 
         /**
-         * @brief Set transformation and normal matrix
-         * @return Pointer to self (for method chaining)
+         * @brief Set transformation matrix
+         * @return Reference to self (for method chaining)
          */
-        Phong* setTransformationMatrix(const Matrix4& matrix) {
+        Phong& setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
-            setUniform(normalMatrixUniform, matrix.rotation());
-            return this;
+            return *this;
+        }
+
+        /**
+         * @brief Set normal matrix
+         * @return Reference to self (for method chaining)
+         */
+        Phong& setNormalMatrix(const Math::Matrix<3, Float>& matrix) {
+            setUniform(normalMatrixUniform, matrix);
+            return *this;
         }
 
         /**
          * @brief Set projection matrix
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Phong* setProjectionMatrix(const Matrix4& matrix) {
+        Phong& setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set light position
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Phong* setLightPosition(const Vector3& light) {
+        Phong& setLightPosition(const Vector3& light) {
             setUniform(lightUniform, light);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set light color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
          */
-        Phong* setLightColor(const Color3& color) {
+        Phong& setLightColor(const Color3& color) {
             setUniform(lightColorUniform, color);
-            return this;
+            return *this;
         }
 
     private:
@@ -141,7 +212,26 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
             specularColorUniform,
             lightColorUniform,
             shininessUniform;
+
+        Flags _flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(Phong::Flags)
+
+inline Phong& Phong::setAmbientColor(const Color3& color) {
+    if(!(_flags & Flag::AmbientTexture)) setUniform(ambientColorUniform, color);
+    return *this;
+}
+
+inline Phong& Phong::setDiffuseColor(const Color3& color) {
+    if(!(_flags & Flag::DiffuseTexture)) setUniform(diffuseColorUniform, color);
+    return *this;
+}
+
+inline Phong& Phong::setSpecularColor(const Color3& color) {
+    if(!(_flags & Flag::SpecularTexture)) setUniform(specularColorUniform, color);
+    return *this;
+}
 
 }}
 

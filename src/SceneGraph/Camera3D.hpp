@@ -31,38 +31,40 @@
 #include "AbstractCamera.hpp"
 #include "Camera3D.h"
 
+/** @todo Use AbstractBasicCamera3D<T> when support for GCC 4.6 is dropped (also in header) */
+
 namespace Magnum { namespace SceneGraph {
 
-template<class T> BasicCamera3D<T>::BasicCamera3D(AbstractBasicObject<3, T>* object): AbstractBasicCamera<3, T>(object), _near(T(0)), _far(T(0)) {}
+template<class T> BasicCamera3D<T>::BasicCamera3D(AbstractObject<3, T>& object): AbstractCamera<3, T>(object), _near(T(0)), _far(T(0)) {}
 
-template<class T> BasicCamera3D<T>* BasicCamera3D<T>::setOrthographic(const Math::Vector2<T>& size, T near, T far) {
+template<class T> BasicCamera3D<T>& BasicCamera3D<T>::setOrthographic(const Math::Vector2<T>& size, T near, T far) {
     /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;
 
-    AbstractBasicCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::orthographicProjection(size, near, far);
-    AbstractBasicCamera<3, T>::fixAspectRatio();
-    return this;
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::orthographicProjection(size, near, far);
+    AbstractCamera<3, T>::fixAspectRatio();
+    return *this;
 }
 
-template<class T> BasicCamera3D<T>* BasicCamera3D<T>::setPerspective(const Math::Vector2<T>& size, T near, T far) {
+template<class T> BasicCamera3D<T>& BasicCamera3D<T>::setPerspective(const Math::Vector2<T>& size, T near, T far) {
     /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;
 
-    AbstractBasicCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(size, near, far);
-    AbstractBasicCamera<3, T>::fixAspectRatio();
-    return this;
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(size, near, far);
+    AbstractCamera<3, T>::fixAspectRatio();
+    return *this;
 }
 
-template<class T> BasicCamera3D<T>* BasicCamera3D<T>::setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far) {
+template<class T> BasicCamera3D<T>& BasicCamera3D<T>::setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far) {
     /** @todo Get near/far from the matrix */
     _near = near;
     _far = far;
 
-    AbstractBasicCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(fov, aspectRatio, near, far);
-    AbstractBasicCamera<3, T>::fixAspectRatio();
-    return this;
+    AbstractCamera<3, T>::rawProjectionMatrix = Math::Matrix4<T>::perspectiveProjection(fov, aspectRatio, near, far);
+    AbstractCamera<3, T>::fixAspectRatio();
+    return *this;
 }
 
 }}

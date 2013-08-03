@@ -35,14 +35,14 @@
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
-template<> bool collides(const AbstractShape<2>* const a, const AbstractShape<2>* const b) {
+template<> bool collides(const AbstractShape<2>& a, const AbstractShape<2>& b) {
     /* GCC 4.4 doesn't have comparison operators for strongly typed enums */
-    if(UnsignedInt(a->type()) < UnsignedInt(b->type())) return collides(b, a);
+    if(UnsignedInt(a.type()) < UnsignedInt(b.type())) return collides(b, a);
 
-    switch(UnsignedInt(a->type())*UnsignedInt(b->type())) {
+    switch(UnsignedInt(a.type())*UnsignedInt(b.type())) {
         #define _c(aType, aClass, bType, bClass) \
             case UnsignedInt(ShapeDimensionTraits<2>::Type::aType)*UnsignedInt(ShapeDimensionTraits<2>::Type::bType): \
-                return static_cast<const Shape<aClass>*>(a)->shape % static_cast<const Shape<bClass>*>(b)->shape;
+                return static_cast<const Shape<aClass>&>(a).shape % static_cast<const Shape<bClass>&>(b).shape;
         _c(Sphere, Sphere2D, Point, Point2D)
         _c(Sphere, Sphere2D, Line, Line2D)
         _c(Sphere, Sphere2D, LineSegment, LineSegment2D)
@@ -58,14 +58,14 @@ template<> bool collides(const AbstractShape<2>* const a, const AbstractShape<2>
     return false;
 }
 
-template<> bool collides(const AbstractShape<3>* const a, const AbstractShape<3>* const b) {
+template<> bool collides(const AbstractShape<3>& a, const AbstractShape<3>& b) {
     /* GCC 4.4 doesn't have comparison operators for strongly typed enums */
-    if(UnsignedInt(a->type()) < UnsignedInt(b->type())) return collides(b, a);
+    if(UnsignedInt(a.type()) < UnsignedInt(b.type())) return collides(b, a);
 
-    switch(UnsignedInt(a->type())*UnsignedInt(b->type())) {
+    switch(UnsignedInt(a.type())*UnsignedInt(b.type())) {
         #define _c(aType, aClass, bType, bClass) \
             case UnsignedInt(ShapeDimensionTraits<3>::Type::aType)*UnsignedInt(ShapeDimensionTraits<3>::Type::bType): \
-                return static_cast<const Shape<aClass>*>(a)->shape % static_cast<const Shape<bClass>*>(b)->shape;
+                return static_cast<const Shape<aClass>&>(a).shape % static_cast<const Shape<bClass>&>(b).shape;
         _c(Sphere, Sphere3D, Point, Point3D)
         _c(Sphere, Sphere3D, Line, Line3D)
         _c(Sphere, Sphere3D, LineSegment, LineSegment3D)

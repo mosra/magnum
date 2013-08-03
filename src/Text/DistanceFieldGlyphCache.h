@@ -41,7 +41,7 @@ is red channel only.
 
 @section GlyphCache-usage Usage
 
-Usage is similar to GlyphCache, additionaly you need to specify size of
+Usage is similar to GlyphCache, additionally you need to specify size of
 resulting distance field texture.
 @code
 Text::AbstractFont* font;

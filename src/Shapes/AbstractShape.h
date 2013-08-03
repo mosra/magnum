@@ -37,8 +37,8 @@
 namespace Magnum { namespace Shapes {
 
 namespace Implementation {
-    template<UnsignedInt dimensions> inline const AbstractShape<dimensions>* getAbstractShape(const Shapes::AbstractShape<dimensions>* shape) {
-        return shape->abstractTransformedShape();
+    template<UnsignedInt dimensions> inline const AbstractShape<dimensions>& getAbstractShape(const Shapes::AbstractShape<dimensions>& shape) {
+        return shape.abstractTransformedShape();
     }
 }
 
@@ -49,8 +49,8 @@ This class is not directly instantiable, see Shape instead. See @ref shapes for
 brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractBasicGroupedFeature<dimensions, AbstractShape<dimensions>, Float> {
-    friend const Implementation::AbstractShape<dimensions>* Implementation::getAbstractShape<>(const AbstractShape<dimensions>*);
+template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float> {
+    friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const AbstractShape<dimensions>&);
 
     public:
         enum: UnsignedInt {
@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
          * @param object    Object holding this feature
          * @param group     Group this shape belongs to
          */
-        explicit AbstractShape(SceneGraph::AbstractBasicObject<dimensions, Float>* object, ShapeGroup<dimensions>* group = nullptr);
+        explicit AbstractShape(SceneGraph::AbstractObject<dimensions, Float>& object, ShapeGroup<dimensions>* group = nullptr);
 
         /**
          * @brief Shape group containing this shape
@@ -99,14 +99,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
          *
          * Default implementation returns false.
          */
-        bool collides(const AbstractShape<dimensions>* other) const;
+        bool collides(const AbstractShape<dimensions>& other) const;
 
     protected:
         /** Marks also the group as dirty */
         void markDirty() override;
 
     private:
-        virtual const Implementation::AbstractShape<dimensions> MAGNUM_SHAPES_LOCAL * abstractTransformedShape() const = 0;
+        virtual const Implementation::AbstractShape<dimensions> MAGNUM_SHAPES_LOCAL & abstractTransformedShape() const = 0;
 };
 
 /** @brief Base class for two-dimensional object shapes */

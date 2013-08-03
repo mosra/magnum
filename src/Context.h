@@ -59,6 +59,7 @@ enum class Version: Int {
     GL410 = 410,                    /**< @brief OpenGL 4.1, GLSL 4.10 */
     GL420 = 420,                    /**< @brief OpenGL 4.2, GLSL 4.20 */
     GL430 = 430,                    /**< @brief OpenGL 4.3, GLSL 4.30 */
+    GL440 = 440,                    /**< @brief OpenGL 4.4, GLSL 4.40 */
     #endif
 
     /**
@@ -358,7 +359,7 @@ class MAGNUM_EXPORT Context {
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Implementation::State* state() { return _state; }
+        Implementation::State& state() { return *_state; }
         #endif
 
     private:
@@ -369,7 +370,7 @@ class MAGNUM_EXPORT Context {
         Int _minorVersion;
         Flags _flags;
 
-        std::bitset<128> extensionStatus;
+        std::bitset<160> extensionStatus;
         std::vector<Extension> _supportedExtensions;
 
         Implementation::State* _state;

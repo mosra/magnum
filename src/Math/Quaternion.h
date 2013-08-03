@@ -164,7 +164,7 @@ template<class T> class Quaternion {
          * @brief Whether the quaternion is normalized
          *
          * Quaternion is normalized if it has unit length: @f[
-         *      |q|^2 = |q| = 1
+         *      |q \cdot q - 1| < 2 \epsilon + \epsilon^2 \cong 2 \epsilon
          * @f]
          * @see dot(), normalized()
          */

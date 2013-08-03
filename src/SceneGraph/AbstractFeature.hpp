@@ -32,18 +32,18 @@
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> AbstractBasicFeature<dimensions, T>::AbstractBasicFeature(AbstractBasicObject<dimensions, T>* object) {
-    object->Containers::template LinkedList<AbstractBasicFeature<dimensions, T>>::insert(this);
+template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::AbstractFeature(AbstractObject<dimensions, T>& object) {
+    object.Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
 }
 
 /* `= default` causes linker errors in GCC 4.5 */
-template<UnsignedInt dimensions, class T> AbstractBasicFeature<dimensions, T>::~AbstractBasicFeature() {}
+template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::~AbstractFeature() {}
 
-template<UnsignedInt dimensions, class T> void AbstractBasicFeature<dimensions, T>::markDirty() {}
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::markDirty() {}
 
-template<UnsignedInt dimensions, class T> void AbstractBasicFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
-template<UnsignedInt dimensions, class T> void AbstractBasicFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
 
 }}
 

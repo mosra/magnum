@@ -32,26 +32,27 @@ feature which allows you to chain method calls one after another without
 repeatedly specifying variable the method is called on. Its primary goal is to
 reduce unnecessary repeated names, improving code readability.
 
-%Magnum uses this feature for configuring OpenGL objects (such as various mesh
-and framebuffer options, shader uniforms etc.). Because OpenGL was designed with
-"bind-to-modify" approach, most configuration calls need to bind the object
-first and only after that change the parameters (unless @extension{EXT,direct_state_access}
-extension is available to avoid this). To reduce unneeded bind calls, %Magnum
-binds the object only if it is not already bound somewhere. Method chaining
-encourages you to configure whole object in one run, effectively reducing the
-number of needed bindings. Consider the following example:
+%Magnum uses this feature mainly for configuring OpenGL objects (such as
+various mesh and framebuffer options, shader uniforms etc.). Because OpenGL was
+designed with "bind-to-modify" approach, most configuration calls internally
+need to bind the object first and only after that change the parameters (unless
+@extension{EXT,direct_state_access} extension is available to avoid this). To
+reduce unneeded bind calls, %Magnum binds the object only if it is not already
+bound somewhere. Method chaining encourages you to configure whole object in
+one run, effectively reducing the number of needed bindings. Consider the
+following example:
 @code
-Texture2D *carDiffuseTexture, *carSpecularTexture, *carBumpTexture;
+Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
 
-carDiffuseTexture->setStorage(5, TextureFormat::SRGB8);
-carSpecularTexture->setStorage(3, TextureFormat::R8);
-carBumpTexture->setStorage(5, TextureFormat::RGB8);
-carDiffuseTexture->setSubImage(0, {}, diffuse);
-carSpecularTexture->setSubImage(0, {}, specular;
-carBumpTexture->setSubImage(0, {}, bump);
-carDiffuseTexture->generateMipmap();
-carSpecularTexture->generateMipmap();
-carBumpTexture->generateMipmap();
+carDiffuseTexture.setStorage(5, TextureFormat::SRGB8);
+carSpecularTexture.setStorage(3, TextureFormat::R8);
+carBumpTexture.setStorage(5, TextureFormat::RGB8);
+carDiffuseTexture.setSubImage(0, {}, diffuse);
+carSpecularTexture.setSubImage(0, {}, specular;
+carBumpTexture.setSubImage(0, {}, bump);
+carDiffuseTexture.generateMipmap();
+carSpecularTexture.generateMipmap();
+carBumpTexture.generateMipmap();
 @endcode
 
 This code is written that similar configuration steps are grouped together,
@@ -61,15 +62,15 @@ names and after each configuration step the texture must be rebound to another.
 With method chaining used the code looks much lighter and each object is
 configured in one run, reducing count of bind calls from 9 to 3.
 @code
-carDiffuseTexture->setStorage(5, TextureFormat::SRGB8)
-    ->setSubImage(0, {}, diffuse)
-    ->generateMipmap();
-carSpecularTexture->setStorage(3, TextureFormat::R8)
-    ->setSubImage(0, {}, diffuse)
-    ->generateMipmap();
-carBumpTexture->setStorage(5, TextureFormat::RGB8)
-    ->setSubImage(0, {}, bump)
-    ->generateMipmap();
+carDiffuseTexture.setStorage(5, TextureFormat::SRGB8)
+    .setSubImage(0, {}, diffuse)
+    .generateMipmap();
+carSpecularTexture.setStorage(3, TextureFormat::R8)
+    .setSubImage(0, {}, diffuse)
+    .generateMipmap();
+carBumpTexture.setStorage(5, TextureFormat::RGB8)
+    .setSubImage(0, {}, bump)
+    .generateMipmap();
 @endcode
 
 Method chaining is not used on non-configuring functions, such as Framebuffer::clear()
@@ -84,12 +85,7 @@ Scene3D scene;
 
 (new MyObject(&scene))
     ->rotateX(90.0_degf)
-    ->translate({-1.5f, 0.5f, 7.0f});
+    .translate({-1.5f, 0.5f, 7.0f});
 @endcode
-
-In most cases method chaining methods return pointer to the object, because
-most of the objects are commonly created on the heap. The only exception are
-Shader methods, which return reference, because the class is commonly created
-as local variable in shader constructors.
 */
 }

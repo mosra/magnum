@@ -64,15 +64,15 @@ const std::array<UnsignedByte, 6> indices{{
 
 }
 
-template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractBasicObject<dimensions, Float>* object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType* force, ResourceKey options, SceneGraph::BasicDrawableGroup<dimensions, Float>* drawables): SceneGraph::BasicDrawable<dimensions, Float>(object, drawables), forcePosition(forcePosition), force(force), options(ResourceManager::instance()->get<ForceRendererOptions>(options)) {
+template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType& force, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), forcePosition(forcePosition), force(force), options(ResourceManager::instance().get<ForceRendererOptions>(options)) {
     /* Shader */
-    shader = ResourceManager::instance()->get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
-    if(!shader) ResourceManager::instance()->set<AbstractShaderProgram>(shader.key(), new Shaders::Flat<dimensions>);
+    shader = ResourceManager::instance().get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
+    if(!shader) ResourceManager::instance().set<AbstractShaderProgram>(shader.key(), new Shaders::Flat<dimensions>);
 
     /* Mesh and vertex buffer */
-    mesh = ResourceManager::instance()->get<Mesh>("force");
-    vertexBuffer = ResourceManager::instance()->get<Buffer>("force-vertices");
-    indexBuffer = ResourceManager::instance()->get<Buffer>("force-indices");
+    mesh = ResourceManager::instance().get<Mesh>("force");
+    vertexBuffer = ResourceManager::instance().get<Buffer>("force-vertices");
+    indexBuffer = ResourceManager::instance().get<Buffer>("force-indices");
     if(mesh) return;
 
     /* Create the mesh */
@@ -80,24 +80,24 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
 
     vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
-    ResourceManager::instance()->set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    ResourceManager::instance().set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     indexBuffer->setData(indices, Buffer::Usage::StaticDraw);
-    ResourceManager::instance()->set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
+    ResourceManager::instance().set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(Mesh::Primitive::Lines)
-        ->setIndexCount(indices.size())
-        ->addVertexBuffer(vertexBuffer, 0,
+        .setIndexCount(indices.size())
+        .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))
-        ->setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, positions.size());
-    ResourceManager::instance()->set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+        .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, positions.size());
+    ResourceManager::instance().set(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractBasicCamera<dimensions, Float>* camera) {
-    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), *force)*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->scale())))
-        ->setColor(options->color())
-        ->use();
+template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
+    shader->setTransformationProjectionMatrix(camera.projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), force)*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->scale())))
+        .setColor(options->color())
+        .use();
     mesh->draw();
 }
 

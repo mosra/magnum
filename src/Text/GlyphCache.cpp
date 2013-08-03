@@ -70,9 +70,9 @@ void GlyphCache::initialize(const Vector2i& size) {
 void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& size) {
     /* Initialize texture */
     _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
-        ->setMinificationFilter(Sampler::Filter::Linear)
-        ->setMagnificationFilter(Sampler::Filter::Linear)
-        ->setStorage(1, internalFormat, size);
+        .setMinificationFilter(Sampler::Filter::Linear)
+        .setMagnificationFilter(Sampler::Filter::Linear)
+        .setStorage(1, internalFormat, size);
 
     /* Default "Not Found" glyph */
     glyphs.insert({0, {}});

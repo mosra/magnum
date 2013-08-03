@@ -223,8 +223,11 @@ enum class ImageFormat: GLenum {
 
     #ifndef MAGNUM_TARGET_GLES3
     /**
-     * Stencil index. For framebuffer reading only.
-     * @requires_es_extension %Extension @es_extension2{NV,read_stencil,GL_NV_read_depth_stencil}
+     * Stencil index.
+     * @requires_gl44 %Extension @extension{ARB,texture_stencil8} for texture
+     *      data, otherwise for framebuffer reading only.
+     * @requires_es_extension %Extension @es_extension2{NV,read_stencil,GL_NV_read_depth_stencil},
+     *      for framebuffer reading only.
      * @todo Where to get GL_STENCIL_INDEX in ES?
      */
     #ifndef MAGNUM_TARGET_GLES

@@ -51,37 +51,40 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
     public:
         DistanceFieldVector();
 
-        /** @brief Set transformation and projection matrix */
-        DistanceFieldVector* setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
+        /**
+         * @brief Set transformation and projection matrix
+         * @return Reference to self (for method chaining)
+         */
+        DistanceFieldVector& setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
             AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set fill color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setOutlineColor()
          */
-        DistanceFieldVector* setColor(const Color4& color) {
+        DistanceFieldVector& setColor(const Color4& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set outline color
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * @see setOutlineRange(), setColor()
          */
-        DistanceFieldVector* setOutlineColor(const Color4& color) {
+        DistanceFieldVector& setOutlineColor(const Color4& color) {
             AbstractShaderProgram::setUniform(outlineColorUniform, color);
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set outline range
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Parameter @p start describes where fill ends and possible outline
          * starts. Initial value is `0.5f`, larger values will make the vector
@@ -93,22 +96,22 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see setOutlineColor()
          */
-        DistanceFieldVector* setOutlineRange(Float start, Float end) {
+        DistanceFieldVector& setOutlineRange(Float start, Float end) {
             AbstractShaderProgram::setUniform(outlineRangeUniform, Vector2(start, end));
-            return this;
+            return *this;
         }
 
         /**
          * @brief Set smoothness radius
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Larger values will make edges look less aliased (but blurry), smaller
          * values will make them look more crisp (but possibly aliased). Initial
          * value is `0.04f`.
          */
-        DistanceFieldVector* setSmoothness(Float value) {
+        DistanceFieldVector& setSmoothness(Float value) {
             AbstractShaderProgram::setUniform(smoothnessUniform, value);
-            return this;
+            return *this;
         }
 
     private:

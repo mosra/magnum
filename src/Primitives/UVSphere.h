@@ -59,6 +59,17 @@ class MAGNUM_PRIMITIVES_EXPORT UVSphere {
          * vertices of one segment are duplicated for texture wrapping.
          */
         static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
+
+        /**
+         * @brief Wireframe UV sphere
+         * @param rings         Number of (line) rings. Must be larger or equal
+         *      to 2 and multiple of 2.
+         * @param segments      Number of (line) segments. Must be larger or
+         *      equal to 4 and multiple of 4.
+         *
+         * Indexed @ref Mesh::Primitive "Lines".
+         */
+        static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments);
 };
 
 }}

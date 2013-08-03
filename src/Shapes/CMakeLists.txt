@@ -60,7 +60,7 @@ set(MagnumShapes_HEADERS
 add_library(MagnumShapes ${SHARED_OR_STATIC} ${MagnumShapes_SRCS})
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumShapes PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+    set_target_properties(MagnumShapes PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 target_link_libraries(MagnumShapes Magnum MagnumSceneGraph)
 

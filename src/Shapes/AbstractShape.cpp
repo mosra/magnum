@@ -31,24 +31,24 @@
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape(SceneGraph::AbstractBasicObject<dimensions, Float>* object, ShapeGroup<dimensions>* group): SceneGraph::AbstractBasicGroupedFeature<dimensions, AbstractShape<dimensions>, Float>(object, group) {
-    this->setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
+template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape(SceneGraph::AbstractObject<dimensions, Float>& object, ShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float>(object, group) {
+    SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
 }
 
 template<UnsignedInt dimensions> ShapeGroup<dimensions>* AbstractShape<dimensions>::group() {
-    return static_cast<ShapeGroup<dimensions>*>(SceneGraph::AbstractBasicGroupedFeature<dimensions, AbstractShape<dimensions>, Float>::group());
+    return static_cast<ShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float>::group());
 }
 
 template<UnsignedInt dimensions> const ShapeGroup<dimensions>* AbstractShape<dimensions>::group() const {
-    return static_cast<const ShapeGroup<dimensions>*>(SceneGraph::AbstractBasicGroupedFeature<dimensions, AbstractShape<dimensions>, Float>::group());
+    return static_cast<const ShapeGroup<dimensions>*>(SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float>::group());
 }
 
 template<UnsignedInt dimensions> auto AbstractShape<dimensions>::type() const -> Type {
-    return abstractTransformedShape()->type();
+    return abstractTransformedShape().type();
 }
 
-template<UnsignedInt dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape<dimensions>* other) const {
-    return Implementation::collides(abstractTransformedShape(), other->abstractTransformedShape());
+template<UnsignedInt dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape<dimensions>& other) const {
+    return Implementation::collides(abstractTransformedShape(), other.abstractTransformedShape());
 }
 
 template<UnsignedInt dimensions> void AbstractShape<dimensions>::markDirty() {

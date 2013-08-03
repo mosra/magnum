@@ -431,4 +431,11 @@ class Timeline;
 
 }
 
+namespace std {
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    template<class> struct hash;
+    #endif
+    template<> struct hash<Magnum::ResourceKey>;
+}
+
 #endif

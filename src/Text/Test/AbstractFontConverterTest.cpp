@@ -70,7 +70,7 @@ void AbstractFontConverterTest::convertGlyphs() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont*, GlyphCache*, const std::u32string& characters) const override {
+            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override {
                 this->characters = characters;
                 #ifndef CORRADE_GCC45_COMPATIBILITY
                 return nullptr;
@@ -84,7 +84,7 @@ void AbstractFontConverterTest::convertGlyphs() {
 
     std::u32string characters;
     GlyphExporter exporter(characters);
-    exporter.exportFontToSingleData(nullptr, nullptr, "abC01a0 ");
+    exporter.exportFontToSingleData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "abC01a0 ");
     CORRADE_COMPARE(characters, (std::u32string{
             U' ', U'0', U'1', U'C', U'a', U'b'}));
 }
@@ -94,7 +94,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont*, GlyphCache*, const std::u32string&) const override {
+            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const override {
                 Containers::Array<unsigned char> data(1);
                 data[0] = 0xee;
                 return std::move(data);
@@ -103,7 +103,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
 
     /* doExportFontToData() should call doExportFontToSingleData() */
     SingleDataExporter exporter;
-    auto ret = exporter.exportFontToData(nullptr, nullptr, "font.out", {});
+    auto ret = exporter.exportFontToData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "font.out", {});
     CORRADE_COMPARE(ret.size(), 1);
     CORRADE_COMPARE(ret[0].first, "font.out");
     CORRADE_COMPARE(ret[0].second.size(), 1);
@@ -115,7 +115,7 @@ void AbstractFontConverterTest::exportFontToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
 
-            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont*, GlyphCache*, const std::string& filename, const std::u32string&) const override {
+            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::u32string&) const override {
                 Containers::Array<unsigned char> file(1);
                 file[0] = 0xf0;
 
@@ -136,7 +136,7 @@ void AbstractFontConverterTest::exportFontToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    bool exported = exporter.exportFontToFile(nullptr, nullptr, Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"), {});
+    bool exported = exporter.exportFontToFile(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"), {});
     CORRADE_VERIFY(exported);
     CORRADE_COMPARE_AS(Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"),
                        "\xf0", TestSuite::Compare::FileToString);
@@ -149,7 +149,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache; }
 
-            Containers::Array<unsigned char> doExportGlyphCacheToSingleData(GlyphCache*) const override {
+            Containers::Array<unsigned char> doExportGlyphCacheToSingleData(GlyphCache&) const override {
                 Containers::Array<unsigned char> data(1);
                 data[0] = 0xee;
                 return std::move(data);
@@ -158,7 +158,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
 
     /* doExportGlyphCacheToData() should call doExportGlyphCacheToSingleData() */
     SingleDataExporter exporter;
-    auto ret = exporter.exportGlyphCacheToData(nullptr, "font.out");
+    auto ret = exporter.exportGlyphCacheToData(*static_cast<GlyphCache*>(nullptr), "font.out");
     CORRADE_COMPARE(ret.size(), 1);
     CORRADE_COMPARE(ret[0].first, "font.out");
     CORRADE_COMPARE(ret[0].second.size(), 1);
@@ -170,7 +170,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache|Feature::MultiFile; }
 
-            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportGlyphCacheToData(GlyphCache*, const std::string& filename) const override {
+            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportGlyphCacheToData(GlyphCache&, const std::string& filename) const override {
                 Containers::Array<unsigned char> file(1);
                 file[0] = 0xf0;
 
@@ -191,7 +191,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
 
     /* doExportGlyphCacheToFile() should call doExportGlyphCacheToData() */
     DataExporter exporter;
-    bool exported = exporter.exportGlyphCacheToFile(nullptr, Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"));
+    bool exported = exporter.exportGlyphCacheToFile(*static_cast<GlyphCache*>(nullptr), Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"));
     CORRADE_VERIFY(exported);
     CORRADE_COMPARE_AS(Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"),
                        "\xf0", TestSuite::Compare::FileToString);

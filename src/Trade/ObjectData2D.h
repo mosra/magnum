@@ -38,21 +38,21 @@ namespace Magnum { namespace Trade {
 /**
 @brief Two-dimensional object data
 
-Provides access to object transformation and hierarchy. See also
-MeshObjectData2D, which is specialized for objects with mesh instance type.
-@see ObjectData3D
+Provides access to object transformation and hierarchy.
+@see MeshObjectData2D, ObjectData3D
 */
 class MAGNUM_EXPORT ObjectData2D {
-    ObjectData2D(const ObjectData2D&) = delete;
-    ObjectData2D(ObjectData2D&&) = delete;
-    ObjectData2D& operator=(const ObjectData2D&) = delete;
-    ObjectData2D& operator=(ObjectData2D&&) = delete;
-
     public:
-        /** @brief Instance type */
-        enum class InstanceType {
+        /** @brief Type of instance held by this object */
+        enum class InstanceType: UnsignedByte {
             Camera,     /**< Camera instance (see CameraData) */
-            Mesh,       /**< Three-dimensional mesh instance (see MeshData2D) */
+
+            /**
+             * Three-dimensional mesh instance. The data can be cast to
+             * MeshObjectData2D to provide more information.
+             */
+            Mesh,
+
             Empty       /**< Empty */
         };
 
@@ -61,9 +61,9 @@ class MAGNUM_EXPORT ObjectData2D {
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
-         * @param instanceId        Instance ID
+         * @param instance          Instance ID
          */
-        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, InstanceType instanceType, UnsignedInt instanceId);
+        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, InstanceType instanceType, UnsignedInt instance);
 
         /**
          * @brief Constructor for empty instance
@@ -72,8 +72,20 @@ class MAGNUM_EXPORT ObjectData2D {
          */
         explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation);
 
+        /** @brief Copying is not allowed */
+        ObjectData2D(const ObjectData2D&) = delete;
+
+        /** @brief Move constructor */
+        ObjectData2D(ObjectData2D&&);
+
         /** @brief Destructor */
         virtual ~ObjectData2D();
+
+        /** @brief Copying is not allowed */
+        ObjectData2D& operator=(const ObjectData2D&) = delete;
+
+        /** @brief Move assignment */
+        ObjectData2D& operator=(ObjectData2D&&);
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }
@@ -83,10 +95,8 @@ class MAGNUM_EXPORT ObjectData2D {
 
         /**
          * @brief Instance type
-         * @return Type of instance held by this object
          *
-         * If the instance is of type InstanceType::Mesh, the instance can be
-         * casted to MeshObjectData2D and provide more information.
+         * @see instance()
          */
         InstanceType instanceType() const { return _instanceType; }
 
@@ -95,13 +105,13 @@ class MAGNUM_EXPORT ObjectData2D {
          * @return ID of given camera / light / mesh etc., specified by
          *      instanceType()
          */
-        Int instanceId() const { return _instanceId; }
+        Int instance() const { return _instance; }
 
     private:
         std::vector<UnsignedInt> _children;
         Matrix3 _transformation;
         InstanceType _instanceType;
-        Int _instanceId;
+        Int _instance;
 };
 
 /** @debugoperator{Magnum::Trade::ObjectData2D} */

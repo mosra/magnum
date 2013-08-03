@@ -62,6 +62,20 @@ class MAGNUM_PRIMITIVES_EXPORT Capsule {
          * vertices of one segment are duplicated for texture wrapping.
          */
         static Trade::MeshData3D solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float length, TextureCoords textureCoords = TextureCoords::DontGenerate);
+
+        /**
+         * @brief Wireframe capsule
+         * @param hemisphereRings Number of (line) rings for each hemisphere.
+         *      Must be larger or equal to 1.
+         * @param cylinderRings Number of (line) rings for cylinder. Must be
+         *      larger or equal to 1.
+         * @param segments      Number of line segments. Must be larger or
+         *      equal to 4 and multiple of 4.
+         * @param length        Length of the capsule, excluding hemispheres.
+         *
+         * Indexed @ref Mesh::Primitive "Lines".
+         */
+        static Trade::MeshData3D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float length);
 };
 
 }}

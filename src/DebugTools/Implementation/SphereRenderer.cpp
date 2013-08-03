@@ -28,8 +28,10 @@
 #include "DebugTools/ShapeRenderer.h"
 #include "Shapes/Sphere.h"
 #include "Primitives/Circle.h"
+#include "Primitives/UVSphere.h"
 #include "Shaders/Flat.h"
 #include "Trade/MeshData2D.h"
+#include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
@@ -37,17 +39,22 @@ AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("s
     if(!wireframeMesh) createResources(Primitives::Circle::wireframe(40));
 }
 
-template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>* sphere): sphere(static_cast<const Shapes::Implementation::Shape<Shapes::Sphere<dimensions>>*>(sphere)->shape) {}
+AbstractSphereRenderer<3>::AbstractSphereRenderer(): AbstractShapeRenderer<3>("sphere3d", "sphere3d-vertices", "sphere3d-indices") {
+    if(!wireframeMesh) createResources(Primitives::UVSphere::wireframe(40, 20));
+}
+
+template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>& sphere): sphere(static_cast<const Shapes::Implementation::Shape<Shapes::Sphere<dimensions>>&>(sphere).shape) {}
 
 template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
-    this->wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
+    AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions, Float>::MatrixType::translation(sphere.position())*
         DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(sphere.radius())))
-        ->setColor(options->color())
-        ->use();
-    this->wireframeMesh->draw();
+        .setColor(options->color())
+        .use();
+    AbstractShapeRenderer<dimensions>::wireframeMesh->draw();
 }
 
 template class SphereRenderer<2>;
+template class SphereRenderer<3>;
 
 }}}

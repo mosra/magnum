@@ -75,77 +75,77 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
 
         /**
          * @brief Normalize rotation part
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
          * to prevent rounding errors when rotating the object subsequently.
          */
-        Object<BasicRigidMatrixTransformation2D<T>>* normalizeRotation() {
+        Object<BasicRigidMatrixTransformation2D<T>>& normalizeRotation() {
             setTransformationInternal(Math::Matrix3<T>::from(
                 Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
                 _transformation.translation()));
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
         /**
          * @brief Set transformation
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Expects that the matrix represents rigid transformation.
          * @see Matrix3::isRigidTransformation()
          */
-        Object<BasicRigidMatrixTransformation2D<T>>* setTransformation(const Math::Matrix3<T>& transformation) {
+        Object<BasicRigidMatrixTransformation2D<T>>& setTransformation(const Math::Matrix3<T>& transformation) {
             CORRADE_ASSERT(transformation.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation2D::setTransformation(): the matrix doesn't represent rigid transformation",
-                static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this));
+                static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this));
             setTransformationInternal(transformation);
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
-        Object<BasicRigidMatrixTransformation2D<T>>* resetTransformation() {
+        Object<BasicRigidMatrixTransformation2D<T>>& resetTransformation() {
             setTransformationInternal({});
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
         /**
          * @brief Transform object
          * @param transformation    Transformation
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Expects that the matrix represents rigid transformation.
          * @see Matrix3::isRigidTransformation()
          */
-        Object<BasicRigidMatrixTransformation2D<T>>* transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation2D::transform(): the matrix doesn't represent rigid transformation",
-                static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this));
+                static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this));
             transformInternal(transformation, type);
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
          * Same as calling transform() with Matrix3::translation().
          */
-        Object<BasicRigidMatrixTransformation2D<T>>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix3<T>::translation(vector), type);
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
         /**
          * @brief Rotate object
          * @param angle     Angle (counterclockwise)
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with Matrix3::rotation().
          * @see normalizeRotation()
          */
-        Object<BasicRigidMatrixTransformation2D<T>>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix3<T>::rotation(angle), type);
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
         /**
@@ -153,24 +153,24 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @param normal    Normal of the line through which to reflect
          *      (normalized)
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with Matrix3::reflection().
          */
-        Object<BasicRigidMatrixTransformation2D<T>>* reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
+        Object<BasicRigidMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
             transformInternal(Math::Matrix3<T>::reflection(normal), type);
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
         /**
          * @brief Move object in stacking order
          * @param under     Sibling object under which to move or `nullptr`,
          *      if you want to move it above all.
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Object<BasicRigidMatrixTransformation2D<T>>* move(Object<BasicRigidMatrixTransformation2D<T>>* under) {
+        Object<BasicRigidMatrixTransformation2D<T>>& move(Object<BasicRigidMatrixTransformation2D<T>>* under) {
             static_cast<Object<BasicRigidMatrixTransformation2D>*>(this)->Containers::template LinkedList<Object<BasicRigidMatrixTransformation2D<T>>>::move(this, under);
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>*>(this);
+            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
         }
 
     protected:

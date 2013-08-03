@@ -27,10 +27,10 @@
 namespace Magnum { namespace SceneGraph {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_SCENEGRAPH_EXPORT BasicAnimable<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT BasicAnimable<3, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT BasicAnimableGroup<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT BasicAnimableGroup<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT Animable<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT Animable<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<3, Float>;
 #endif
 
 Debug operator<<(Debug debug, AnimationState value) {

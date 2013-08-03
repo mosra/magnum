@@ -118,7 +118,7 @@ class MAGNUM_EXPORT Renderbuffer {
         }
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context* context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
         typedef void(Renderbuffer::*StorageImplementation)(RenderbufferFormat, const Vector2i&);
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);

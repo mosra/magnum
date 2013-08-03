@@ -70,87 +70,87 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
 
         /**
          * @brief Normalize rotation part
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Normalizes the rotation part to prevent rounding errors when rotating
          * the object subsequently.
          * @see DualComplex::normalized()
          */
-        Object<BasicDualComplexTransformation<T>>* normalizeRotation() {
+        Object<BasicDualComplexTransformation<T>>& normalizeRotation() {
             setTransformationInternal(_transformation.normalized());
-            return static_cast<Object<BasicDualComplexTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
         /**
          * @brief Set transformation
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Expects that the dual complex number is normalized.
          * @see DualComplex::isNormalized()
          */
-        Object<BasicDualComplexTransformation<T>>* setTransformation(const Math::DualComplex<T>& transformation) {
+        Object<BasicDualComplexTransformation<T>>& setTransformation(const Math::DualComplex<T>& transformation) {
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized",
-                static_cast<Object<BasicDualComplexTransformation<T>>*>(this));
+                static_cast<Object<BasicDualComplexTransformation<T>>&>(*this));
             setTransformationInternal(transformation);
-            return static_cast<Object<BasicDualComplexTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
-        Object<BasicDualComplexTransformation<T>>* resetTransformation() {
+        Object<BasicDualComplexTransformation<T>>& resetTransformation() {
             setTransformationInternal({});
-            return static_cast<Object<BasicDualComplexTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
         /**
          * @brief Transform object
          * @param transformation    Transformation
          * @param type              Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Expects that the dual complex number is normalized.
          * @see DualComplex::isNormalized()
          */
-        Object<BasicDualComplexTransformation<T>>* transform(const Math::DualComplex<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicDualComplexTransformation<T>>& transform(const Math::DualComplex<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized",
-                static_cast<Object<BasicDualComplexTransformation<T>>*>(this));
+                static_cast<Object<BasicDualComplexTransformation<T>>&>(*this));
             transformInternal(transformation, type);
-            return static_cast<Object<BasicDualComplexTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
          * Same as calling transform() with DualComplex::translation().
          */
-        Object<BasicDualComplexTransformation<T>>* translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             transformInternal(Math::DualComplex<T>::translation(vector), type);
-            return static_cast<Object<BasicDualComplexTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
         /**
          * @brief Rotate object
          * @param angle     Angle (counterclockwise)
          * @param type      Transformation type
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Same as calling transform() with DualComplex::rotation().
          * @see normalizeRotation()
          */
-        Object<BasicDualComplexTransformation<T>>* rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             transformInternal(Math::DualComplex<T>::rotation(angle), type);
-            return static_cast<Object<BasicDualComplexTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
         /**
          * @brief Move object in stacking order
          * @param under     Sibling object under which to move or `nullptr`,
          *      if you want to move it above all.
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          */
-        Object<BasicDualComplexTransformation<T>>* move(Object<BasicDualComplexTransformation<T>>* under) {
+        Object<BasicDualComplexTransformation<T>>& move(Object<BasicDualComplexTransformation<T>>* under) {
             static_cast<Object<BasicDualComplexTransformation>*>(this)->Containers::template LinkedList<Object<BasicDualComplexTransformation<T>>>::move(this, under);
-            return static_cast<Object<BasicDualComplexTransformation<T>>*>(this);
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
     protected:

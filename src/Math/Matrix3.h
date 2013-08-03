@@ -167,11 +167,26 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D rotation and scaling part of the matrix
          *
          * Upper-left 2x2 part of the matrix.
-         * @see from(const Matrix<2, T>&, const Vector2&), rotation() const,
-         *      rotation(T), Matrix4::rotationScaling() const
-         * @todo extract rotation with assert for no scaling
+         * @see from(const Matrix<2, T>&, const Vector2&), rotation() const
+         *      rotationNormalized(), rotation(T),
+         *      Matrix4::rotationScaling() const
          */
         constexpr Matrix<2, T> rotationScaling() const {
+            return {(*this)[0].xy(),
+                    (*this)[1].xy()};
+        }
+
+        /**
+         * @brief 2D rotation part of the matrix assuming there is no scaling
+         *
+         * Similar to @ref rotationScaling(), but additionally checks that the
+         * base vectors are normalized.
+         * @see rotation() const, @ref Matrix4::rotationNormalized()
+         * @todo assert also orthogonality or this is good enough?
+         */
+        Matrix<2, T> rotationNormalized() const {
+            CORRADE_ASSERT((*this)[0].xy().isNormalized() && (*this)[1].xy().isNormalized(),
+                           "Math::Matrix3::rotationNormalized(): the rotation part is not normalized", {});
             return {(*this)[0].xy(),
                     (*this)[1].xy()};
         }
@@ -180,7 +195,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D rotation part of the matrix
          *
          * Normalized upper-left 2x2 part of the matrix.
-         * @see rotationScaling() const, rotation(T), Matrix4::rotation() const
+         * @see rotationNormalized(), rotationScaling() const, rotation(T),
+         *      Matrix4::rotation() const
          * @todo assert uniform scaling (otherwise this would be garbage)
          */
         Matrix<2, T> rotation() const {

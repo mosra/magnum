@@ -76,6 +76,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void projection();
         void fromParts();
         void rotationScalingPart();
+        void rotationNormalizedPart();
         void rotationPart();
         void vectorParts();
         void invertedRigid();
@@ -110,6 +111,7 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::projection,
               &Matrix3Test::fromParts,
               &Matrix3Test::rotationScalingPart,
+              &Matrix3Test::rotationNormalizedPart,
               &Matrix3Test::rotationPart,
               &Matrix3Test::vectorParts,
               &Matrix3Test::invertedRigid,
@@ -288,6 +290,24 @@ void Matrix3Test::rotationScalingPart() {
 
     CORRADE_COMPARE(b, Matrix2(Vector2(3.0f, 5.0f),
                                Vector2(4.0f, 4.0f)));
+}
+
+void Matrix3Test::rotationNormalizedPart() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+
+    Matrix3 a({1.0f,  0.0f, 8.0f},
+              {1.0f,  0.1f, 7.0f},
+              {7.0f, -1.0f, 8.0f});
+    a.rotationNormalized();
+
+    CORRADE_COMPARE(o.str(), "Math::Matrix3::rotationNormalized(): the rotation part is not normalized\n");
+
+    Matrix3 b({ 0.965926f, 0.258819f, 1.0f},
+              {-0.258819f, 0.965926f, 3.0f},
+              {      0.0f,      0.0f, 1.0f});
+    CORRADE_COMPARE(b.rotationNormalized(), Matrix2(Vector2( 0.965926f, 0.258819f),
+                                                    Vector2(-0.258819f, 0.965926f)));
 }
 
 void Matrix3Test::rotationPart() {

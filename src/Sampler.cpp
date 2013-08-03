@@ -24,6 +24,8 @@
 
 #include "Sampler.h"
 
+#include <Utility/Debug.h>
+
 #include "Context.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
@@ -45,7 +47,7 @@ static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
 
 #ifndef MAGNUM_TARGET_GLES3
 Float Sampler::maxSupportedAnisotropy() {
-    GLfloat& value = Context::current()->state()->texture->maxSupportedAnisotropy;
+    GLfloat& value = Context::current()->state().texture->maxSupportedAnisotropy;
 
     /** @todo Re-enable when extension header is available */
     #ifndef MAGNUM_TARGET_GLES
@@ -55,6 +57,49 @@ Float Sampler::maxSupportedAnisotropy() {
     #endif
 
     return value;
+}
+#endif
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, const Sampler::Filter value) {
+    switch(value) {
+        #define _c(value) case Sampler::Filter::value: return debug << "Sampler::Filter::" #value;
+        _c(Nearest)
+        _c(Linear)
+        #undef _c
+    }
+
+    return debug << "Sampler::Filter::(invalid)";
+}
+
+Debug operator<<(Debug debug, const Sampler::Mipmap value) {
+    switch(value) {
+        #define _c(value) case Sampler::Mipmap::value: return debug << "Sampler::Mipmap::" #value;
+        _c(Base)
+        _c(Nearest)
+        _c(Linear)
+        #undef _c
+    }
+
+    return debug << "Sampler::Mipmap::(invalid)";
+}
+
+Debug operator<<(Debug debug, const Sampler::Wrapping value) {
+    switch(value) {
+        #define _c(value) case Sampler::Wrapping::value: return debug << "Sampler::Wrapping::" #value;
+        _c(Repeat)
+        _c(MirroredRepeat)
+        _c(ClampToEdge)
+        #ifndef MAGNUM_TARGET_GLES3
+        _c(ClampToBorder)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        _c(MirrorClampToEdge)
+        #endif
+        #undef _c
+    }
+
+    return debug << "Sampler::Wrapping::(invalid)";
 }
 #endif
 

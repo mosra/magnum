@@ -39,33 +39,142 @@ namespace Magnum { namespace Trade {
 */
 class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
     public:
+        enum: UnsignedInt {
+            AmbientTextureID = 0,   /**< Ambient texture ID for mapping with texture coordinates */
+            DiffuseTextureID = 1,   /**< Diffuse texture ID for mapping with texture coordinates */
+            SpecularTextureID = 3   /**< Specular texture ID for mapping with texture coordinates */
+        };
+
+        /**
+         * @brief Material flag
+         *
+         * @see @ref Flags, @ref flags()
+         */
+        enum class Flag: UnsignedByte {
+            AmbientTexture = 1 << 0,    /**< The material has ambient texture instead of color */
+            DiffuseTexture = 1 << 1,    /**< The material has diffuse texture instead of color */
+            SpecularTexture = 1 << 2    /**< The material has specular texture instead of color */
+        };
+
+        /**
+         * @brief Material flags
+         *
+         * @see @ref flags()
+         */
+        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+
         /**
          * @brief Constructor
-         * @param ambientColor      Ambient color
-         * @param diffuseColor      Diffuse color
-         * @param specularColor     Specular color
-         * @param shininess         Shininess
+         * @param flags         Material flags
+         * @param shininess     Shininess
+         *
+         * Colors and textures should be specified using member functions based
+         * on what flags are set.
          */
-        explicit PhongMaterialData(const Vector3& ambientColor, const Vector3& diffuseColor, const Vector3& specularColor, Float shininess);
+        explicit PhongMaterialData(Flags flags, Float shininess): AbstractMaterialData(Type::Phong), _shininess(shininess), _flags(flags) {}
 
-        /** @brief Ambient color */
-        Vector3 ambientColor() const { return _ambientColor; }
+        /** @brief Material flags */
+        Flags flags() const { return _flags; }
 
-        /** @brief Diffuse color */
-        Vector3 diffuseColor() const { return _diffuseColor; }
+        /**
+         * @brief Ambient color
+         *
+         * Available only if the material doesn't have @ref Flag "Flag::AmbientTexture".
+         * @see @ref flags()
+         */
+        Vector3& ambientColor();
+        Vector3 ambientColor() const; /**< @overload */
 
-        /** @brief Specular color */
-        Vector3 specularColor() const { return _specularColor; }
+        /**
+         * @brief Ambient texture ID
+         *
+         * Available only if the material has @ref Flag "Flag::AmbientTexture".
+         * @see @ref flags(), @ref AbstractImporter::texture()
+         */
+        UnsignedInt& ambientTexture();
+        UnsignedInt ambientTexture() const; /**< @overload */
+
+        /**
+         * @brief Diffuse color
+         *
+         * Available only if the material doesn't have @ref Flag "Flag::DiffuseTexture".
+         * @see @ref flags()
+         */
+        Vector3& diffuseColor();
+        Vector3 diffuseColor() const; /**< @overload */
+
+        /**
+         * @brief Diffuse texture ID
+         *
+         * Available only if the material has @ref Flag "Flag::DiffuseTexture".
+         * @see @ref flags(), @ref AbstractImporter::texture()
+         */
+        UnsignedInt& diffuseTexture();
+        UnsignedInt diffuseTexture() const; /**< @overload */
+
+        /**
+         * @brief Specular color
+         *
+         * Available only if the material doesn't have @ref Flag "Flag::SpecularTexture".
+         * @see @ref flags()
+         */
+        Vector3& specularColor();
+        Vector3 specularColor() const; /**< @overload */
+
+        /**
+         * @brief Specular texture ID
+         *
+         * Available only if the material has @ref Flag "Flag::SpecularTexture".
+         * @see @ref flags(), @ref AbstractImporter::texture()
+         */
+        UnsignedInt& specularTexture();
+        UnsignedInt specularTexture() const; /**< @overload */
 
         /** @brief Shininess */
         Float shininess() const { return _shininess; }
 
     private:
-        Vector3 _ambientColor,
-            _diffuseColor,
-            _specularColor;
+        union Source {
+            Source() {}
+
+            Vector3 color;
+            UnsignedInt texture;
+        };
+
+        Source _ambient,
+            _diffuse,
+            _specular;
         Float _shininess;
+        Flags _flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(PhongMaterialData::Flags)
+
+/* Ugly as hell. */
+
+inline Vector3 PhongMaterialData::ambientColor() const {
+    return const_cast<PhongMaterialData*>(this)->ambientColor();
+}
+
+inline UnsignedInt PhongMaterialData::ambientTexture() const {
+    return const_cast<PhongMaterialData*>(this)->ambientTexture();
+}
+
+inline Vector3 PhongMaterialData::diffuseColor() const {
+    return const_cast<PhongMaterialData*>(this)->diffuseColor();
+}
+
+inline UnsignedInt PhongMaterialData::diffuseTexture() const {
+    return const_cast<PhongMaterialData*>(this)->diffuseTexture();
+}
+
+inline Vector3 PhongMaterialData::specularColor() const {
+    return const_cast<PhongMaterialData*>(this)->specularColor();
+}
+
+inline UnsignedInt PhongMaterialData::specularTexture() const {
+    return const_cast<PhongMaterialData*>(this)->specularTexture();
+}
 
 }}
 

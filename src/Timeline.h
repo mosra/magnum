@@ -64,7 +64,7 @@ MyApplication::MyApplication(const Parameters& parameters): Platform::Applicatio
     // Initialization ...
 
     timeline.setMinimalFrameTime(1/120.0f)  // 120 FPS at max
-        ->start();
+        .start();
 }
 
 void MyApplication::drawEvent() {
@@ -97,14 +97,14 @@ class MAGNUM_EXPORT Timeline {
 
         /**
          * @brief Set minimal frame time
-         * @return Pointer to self (for method chaining)
+         * @return Reference to self (for method chaining)
          *
          * Default value is 0.
          * @see nextFrame()
          */
-        Timeline* setMinimalFrameTime(Float seconds) {
+        Timeline& setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;
-            return this;
+            return *this;
         }
 
         /**

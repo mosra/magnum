@@ -115,7 +115,7 @@ Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
     return doGlyphAdvance(glyph);
 }
 
-void AbstractFont::fillGlyphCache(GlyphCache* const cache, const std::string& characters) {
+void AbstractFont::fillGlyphCache(GlyphCache& cache, const std::string& characters) {
     CORRADE_ASSERT(isOpened(),
         "Text::AbstractFont::createGlyphCache(): no font opened", );
     CORRADE_ASSERT(!(features() & Feature::PreparedGlyphCache),
@@ -124,7 +124,7 @@ void AbstractFont::fillGlyphCache(GlyphCache* const cache, const std::string& ch
     doFillGlyphCache(cache, Utility::Unicode::utf32(characters));
 }
 
-void AbstractFont::doFillGlyphCache(GlyphCache*, const std::u32string&) {
+void AbstractFont::doFillGlyphCache(GlyphCache&, const std::u32string&) {
     CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 
@@ -141,7 +141,7 @@ GlyphCache* AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
 }
 
-AbstractLayouter* AbstractFont::layout(const GlyphCache* const cache, const Float size, const std::string& text) {
+AbstractLayouter* AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
 
     return doLayout(cache, size, text);

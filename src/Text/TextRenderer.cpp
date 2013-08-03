@@ -60,8 +60,8 @@ struct Vertex {
 
 }
 
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractTextRenderer::render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text) {
-    AbstractLayouter* const layouter = font->layout(cache, size, text);
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractTextRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text) {
+    AbstractLayouter* const layouter = font.layout(cache, size, text);
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
     /* Output data */
@@ -119,8 +119,8 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
-std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
-    AbstractLayouter* const layouter = font->layout(cache, size, text);
+std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
+    AbstractLayouter* const layouter = font.layout(cache, size, text);
 
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
     const UnsignedInt indexCount = layouter->glyphCount()*6;
@@ -158,7 +158,7 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const fon
         /* Advance cursor position to next character */
         cursorPosition += advance;
     }
-    vertexBuffer->setData(vertices, usage);
+    vertexBuffer.setData(vertices, usage);
 
     /* Fill index buffer */
     Mesh::IndexType indexType;
@@ -180,21 +180,21 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont* const fon
         indices = new char[indicesSize];
         createIndices<UnsignedInt>(indices, layouter->glyphCount());
     }
-    indexBuffer->setData(indicesSize, indices, usage);
+    indexBuffer.setData(indicesSize, indices, usage);
     delete indices;
 
     /* Configure mesh except for vertex buffer (depends on dimension count, done
        in subclass) */
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->setIndexCount(indexCount)
-        ->setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
+        .setIndexCount(indexCount)
+        .setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
     delete layouter;
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(AbstractFont* const font, const GlyphCache* const cache, Float size, const std::string& text, Buffer* vertexBuffer, Buffer* indexBuffer, Buffer::Usage usage) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
     /* Finalize mesh configuration and return the result */
     auto r = AbstractTextRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage);
     Mesh& mesh = std::get<0>(r);
@@ -240,7 +240,7 @@ void AbstractTextRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
     buffer.unmap();
 }
 
-AbstractTextRenderer::AbstractTextRenderer(AbstractFont* const font, const GlyphCache* const cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
+AbstractTextRenderer::AbstractTextRenderer(AbstractFont& font, const GlyphCache& cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -264,9 +264,9 @@ AbstractTextRenderer::AbstractTextRenderer(AbstractFont* const font, const Glyph
 
 AbstractTextRenderer::~AbstractTextRenderer() {}
 
-template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont* const font, const GlyphCache* const cache, const Float size): AbstractTextRenderer(font, cache, size) {
+template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont& font, const GlyphCache& cache, const Float size): AbstractTextRenderer(font, cache, size) {
     /* Finalize mesh configuration */
-    _mesh.addInterleavedVertexBuffer(&_vertexBuffer, 0,
+    _mesh.addInterleavedVertexBuffer(_vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(Shaders::AbstractVector<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
 }
@@ -296,7 +296,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
     }
     _indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
     _mesh.setIndexCount(0)
-        ->setIndexBuffer(&_indexBuffer, 0, indexType, 0, vertexCount);
+        .setIndexBuffer(_indexBuffer, 0, indexType, 0, vertexCount);
 
     /* Map buffer for filling */
     void* const indices = bufferMapImplementation(_indexBuffer, indicesSize);
@@ -313,7 +313,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
 }
 
 void AbstractTextRenderer::render(const std::string& text) {
-    AbstractLayouter* layouter = font->layout(cache, size, text);
+    AbstractLayouter* layouter = font.layout(cache, size, text);
 
     CORRADE_ASSERT(layouter->glyphCount() <= _capacity,
         "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );

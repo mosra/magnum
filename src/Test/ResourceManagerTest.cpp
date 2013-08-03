@@ -43,6 +43,8 @@ class ResourceManagerTest: public TestSuite::Tester {
         void residentPolicy();
         void referenceCountedPolicy();
         void manualPolicy();
+        void clear();
+        void clearWhileReferenced();
         void loader();
 };
 
@@ -56,18 +58,6 @@ class Data {
 
 typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 
-class IntResourceLoader: public AbstractResourceLoader<Int> {
-    public:
-        void load(ResourceKey key) override {
-            AbstractResourceLoader<Int>::load(key);
-        }
-
-        void load() {
-            set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
-            setNotFound("world");
-        }
-};
-
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
@@ -78,6 +68,8 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::residentPolicy,
               &ResourceManagerTest::referenceCountedPolicy,
               &ResourceManagerTest::manualPolicy,
+              &ResourceManagerTest::clear,
+              &ResourceManagerTest::clearWhileReferenced,
               &ResourceManagerTest::loader});
 }
 
@@ -180,7 +172,7 @@ void ResourceManagerTest::basic() {
 void ResourceManagerTest::residentPolicy() {
     ResourceManager* rm = new ResourceManager;
 
-    rm->set("blah", new Data(), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm->set("blah", new Data, ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(Data::count, 1);
 
     rm->free();
@@ -222,7 +214,7 @@ void ResourceManagerTest::manualPolicy() {
 
     /* Manual free */
     {
-        rm.set(dataKey, new Data(), ResourceDataState::Mutable, ResourcePolicy::Manual);
+        rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
         Resource<Data> data = rm.get<Data>(dataKey);
         rm.free();
     }
@@ -233,27 +225,96 @@ void ResourceManagerTest::manualPolicy() {
     CORRADE_COMPARE(rm.count<Data>(), 0);
     CORRADE_COMPARE(Data::count, 0);
 
-    rm.set(dataKey, new Data(), ResourceDataState::Mutable, ResourcePolicy::Manual);
+    rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     CORRADE_COMPARE(Data::count, 1);
 }
 
-void ResourceManagerTest::loader() {
+void ResourceManagerTest::clear() {
     ResourceManager rm;
-    IntResourceLoader loader;
-    rm.setLoader(&loader);
 
-    Resource<Data> data = rm.get<Data>("data");
-    Resource<Int> hello = rm.get<Int>("hello");
-    Resource<Int> world = rm.get<Int>("world");
-    CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
-    CORRADE_COMPARE(hello.state(), ResourceState::Loading);
-    CORRADE_COMPARE(world.state(), ResourceState::Loading);
+    rm.set("blah", new Data);
+    CORRADE_COMPARE(Data::count, 1);
 
-    loader.load();
-    CORRADE_COMPARE(hello.state(), ResourceState::Final);
-    CORRADE_COMPARE(*hello, 773);
-    CORRADE_COMPARE(world.state(), ResourceState::NotFound);
+    rm.free();
+    CORRADE_COMPARE(Data::count, 1);
+
+    rm.clear();
+    CORRADE_COMPARE(Data::count, 0);
+}
+
+void ResourceManagerTest::clearWhileReferenced() {
+    /* Should cover also the destruction case */
+
+    std::ostringstream out;
+    Error::setOutput(&out);
+
+    ResourceManager rm;
+    rm.set("blah", new Int);
+    /** @todo this will leak, is there any better solution without hitting
+        assertion in decrementReferenceCount()? */
+    new Resource<Int>(rm.get<Int>("blah"));
+
+    rm.clear();
+    CORRADE_COMPARE(out.str(), "ResourceManager: cleared/destroyed while data are still referenced\n");
+}
+
+void ResourceManagerTest::loader() {
+    class IntResourceLoader: public AbstractResourceLoader<Int> {
+        public:
+            IntResourceLoader(): resource(ResourceManager::instance().get<Data>("data")) {}
+
+            void load() {
+                set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
+                setNotFound("world");
+            }
+
+        private:
+            void doLoad(ResourceKey) override {}
+
+            std::string doName(ResourceKey key) const override {
+                if(key == ResourceKey("hello")) return "hello";
+                return "";
+            }
+
+            /* To verify that the loader is destroyed before unloading
+               _all types of_ resources */
+            Resource<Data> resource;
+    };
+
+    auto rm = new ResourceManager;
+    auto loader = new IntResourceLoader;
+    rm->setLoader(loader);
+
+    {
+        Resource<Data> data = rm->get<Data>("data");
+        Resource<Int> hello = rm->get<Int>("hello");
+        Resource<Int> world = rm->get<Int>("world");
+        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
+        CORRADE_COMPARE(hello.state(), ResourceState::Loading);
+        CORRADE_COMPARE(world.state(), ResourceState::Loading);
+
+        CORRADE_COMPARE(loader->requestedCount(), 2);
+        CORRADE_COMPARE(loader->loadedCount(), 0);
+        CORRADE_COMPARE(loader->notFoundCount(), 0);
+        CORRADE_COMPARE(loader->name(ResourceKey("hello")), "hello");
+
+        loader->load();
+        CORRADE_COMPARE(hello.state(), ResourceState::Final);
+        CORRADE_COMPARE(*hello, 773);
+        CORRADE_COMPARE(world.state(), ResourceState::NotFound);
+
+        CORRADE_COMPARE(loader->requestedCount(), 2);
+        CORRADE_COMPARE(loader->loadedCount(), 1);
+        CORRADE_COMPARE(loader->notFoundCount(), 1);
+
+        /* Verify that the loader is deleted at proper time */
+        rm->set("data", new Data);
+        CORRADE_COMPARE(Data::count, 1);
+    }
+
+    delete rm;
+    CORRADE_COMPARE(Data::count, 0);
 }
 
 }}
