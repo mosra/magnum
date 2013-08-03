@@ -51,7 +51,11 @@ void ArrayTest::construct() {
     constexpr Array<3, Int> a = {5, 6, 7};
     CORRADE_COMPARE(a, (Array<3, Int>(5, 6, 7)));
 
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr Array<3, Int> a2 = 5;
+    #else
+    Array<3, Int> a2 = 5; /* Not constexpr under GCC < 4.7 */
+    #endif
     CORRADE_COMPARE(a2, (Array<3, Int>(5, 5, 5)));
 
     constexpr Array1D b = 5;

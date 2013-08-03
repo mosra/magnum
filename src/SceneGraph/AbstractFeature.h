@@ -180,7 +180,14 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both AbstractFeature and
            AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> AbstractFeature(U& object): AbstractFeature(static_cast<AbstractObject<dimensions, T>&>(object)) {}
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> AbstractFeature(U& object)
+        #ifndef CORRADE_GCC46_COMPATIBILITY
+        : AbstractFeature(static_cast<AbstractObject<dimensions, T>&>(object)) {}
+        #else
+        {
+            object.Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
+        }
+        #endif
         #endif
 
         virtual ~AbstractFeature() = 0;
