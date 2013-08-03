@@ -173,9 +173,9 @@ void Matrix3Test::constructConversion() {
 }
 
 void Matrix3Test::constructCopy() {
-    constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
-                        {4.5f,  4.0f, 7.0f},
-                        {7.9f, -1.0f, 8.0f});
+    constexpr RectangularMatrix<3, 3, Float> a(Vector<3, Float>(3.0f,  5.0f, 8.0f),
+                                               Vector<3, Float>(4.5f,  4.0f, 7.0f),
+                                               Vector<3, Float>(7.9f, -1.0f, 8.0f));
     constexpr Matrix3 b(a);
     CORRADE_COMPARE(b, Matrix3({3.0f,  5.0f, 8.0f},
                                {4.5f,  4.0f, 7.0f},

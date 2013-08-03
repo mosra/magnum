@@ -193,10 +193,10 @@ void Matrix4Test::constructConversion() {
 }
 
 void Matrix4Test::constructCopy() {
-    constexpr Matrix4 a({3.0f,  5.0f, 8.0f, -3.0f},
-                        {4.5f,  4.0f, 7.0f,  2.0f},
-                        {1.0f,  2.0f, 3.0f, -1.0f},
-                        {7.9f, -1.0f, 8.0f, -1.5f});
+    constexpr Matrix<4, Float> a(Vector<4, Float>(3.0f,  5.0f, 8.0f, -3.0f),
+                                 Vector<4, Float>(4.5f,  4.0f, 7.0f,  2.0f),
+                                 Vector<4, Float>(1.0f,  2.0f, 3.0f, -1.0f),
+                                 Vector<4, Float>(7.9f, -1.0f, 8.0f, -1.5f));
     constexpr Matrix4 b(a);
     CORRADE_COMPARE(b, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
                                {4.5f,  4.0f, 7.0f,  2.0f},

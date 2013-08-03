@@ -136,7 +136,7 @@ void Vector4Test::constructConversion() {
 }
 
 void Vector4Test::constructCopy() {
-    constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f);
+    constexpr Vector<4, Float> a(1.0f, -2.5f, 3.0f, 4.1f);
     constexpr Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, -2.5f, 3.0f, 4.1f));
 }

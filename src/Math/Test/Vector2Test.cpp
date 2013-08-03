@@ -131,7 +131,7 @@ void Vector2Test::constructConversion() {
 }
 
 void Vector2Test::constructCopy() {
-    constexpr Vector2 a(1.5f, 2.5f);
+    constexpr Vector<2, Float> a(1.5f, 2.5f);
     constexpr Vector2 b(a);
     CORRADE_COMPARE(b, Vector2(1.5f, 2.5f));
 }
