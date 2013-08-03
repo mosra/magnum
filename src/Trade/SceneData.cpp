@@ -30,6 +30,11 @@ SceneData::SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedIn
 
 SceneData::SceneData(SceneData&&) = default;
 
-SceneData& SceneData::operator=(SceneData&&) = default;
+/* GCC 4.5 doesn't like it defaulted */
+SceneData& SceneData::operator=(SceneData&& other) {
+    std::swap(_children2D, other._children2D);
+    std::swap(_children3D, other._children3D);
+    return *this;
+}
 
 }}

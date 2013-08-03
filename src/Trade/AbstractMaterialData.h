@@ -64,7 +64,7 @@ class MAGNUM_EXPORT AbstractMaterialData {
         AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
 
         /** @brief Move assignment */
-        AbstractMaterialData& operator=(AbstractMaterialData&&) = default;
+        AbstractMaterialData& operator=(AbstractMaterialData&&);
 
         /** @brief Material type */
         Type type() const { return _type; }

@@ -72,7 +72,7 @@ class TextureData {
         TextureData& operator=(const TextureData&) = delete;
 
         /** @brief Move assignment */
-        TextureData& operator=(TextureData&&) = default;
+        TextureData& operator=(TextureData&&);
 
         /** @brief Texture type */
         Type type() const { return _type; }
@@ -107,6 +107,17 @@ class TextureData {
         Array3D<Sampler::Wrapping> _wrapping;
         UnsignedInt _image;
 };
+
+/* GCC 4.5 doesn't like it defaulted */
+inline TextureData& TextureData::operator=(TextureData&& other) {
+    std::swap(_type, other._type);
+    std::swap(_minificationFilter, other._minificationFilter);
+    std::swap(_magnificationFilter, other._magnificationFilter);
+    std::swap(_mipmapFilter, other._mipmapFilter);
+    std::swap(_wrapping, other._wrapping);
+    std::swap(_image, other._image);
+    return *this;
+}
 
 /** @debugoperator{Magnum::Trade::TextureData} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, TextureData::Type value);

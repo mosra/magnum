@@ -28,4 +28,11 @@ namespace Magnum { namespace Trade {
 
 MeshObjectData3D::MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, UnsignedInt material): ObjectData3D(std::move(children), transformation, InstanceType::Mesh, instance), _material(material) {}
 
+/* GCC 4.5 doesn't like it defaulted */
+MeshObjectData3D& MeshObjectData3D::operator=(MeshObjectData3D&& other) {
+    ObjectData3D::operator=(std::move(other));
+    std::swap(_material, other._material);
+    return *this;
+}
+
 }}

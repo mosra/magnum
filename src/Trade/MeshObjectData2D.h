@@ -61,7 +61,7 @@ class MAGNUM_EXPORT MeshObjectData2D: public ObjectData2D {
         MeshObjectData2D& operator=(const MeshObjectData2D&) = delete;
 
         /** @brief Move assignment */
-        MeshObjectData2D& operator=(MeshObjectData2D&&) = default;
+        MeshObjectData2D& operator=(MeshObjectData2D&&);
 
         /** @brief Material ID */
         UnsignedInt material() const { return _material; }

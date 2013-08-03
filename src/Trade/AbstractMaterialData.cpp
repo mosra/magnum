@@ -32,6 +32,12 @@ AbstractMaterialData::AbstractMaterialData(Type type): _type(type) {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
 
+/* GCC 4.5 doesn't like it defaulted */
+AbstractMaterialData& AbstractMaterialData::operator=(AbstractMaterialData&& other) {
+    std::swap(_type, other._type);
+    return *this;
+}
+
 Debug operator<<(Debug debug, const AbstractMaterialData::Type value) {
     switch(value) {
         #define _c(value) case AbstractMaterialData::Type::value: return debug << "Trade::AbstractMaterialData::Type::" #value;

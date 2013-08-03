@@ -34,7 +34,14 @@ ObjectData3D::ObjectData3D(ObjectData3D&&) = default;
 
 ObjectData3D::~ObjectData3D() = default;
 
-ObjectData3D& ObjectData3D::operator=(ObjectData3D&&) = default;
+/* GCC 4.5 doesn't like it defaulted */
+ObjectData3D& ObjectData3D::operator=(ObjectData3D&& other) {
+    std::swap(_children, other._children);
+    std::swap(_transformation, other._transformation);
+    std::swap(_instanceType, other._instanceType);
+    std::swap(_instance, other._instance);
+    return *this;
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, ObjectData3D::InstanceType value) {
