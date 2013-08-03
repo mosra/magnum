@@ -147,14 +147,14 @@ void VectorTest::construct() {
     CORRADE_COMPARE(a, Vector4(1.0f, 2.0f, -3.0f, 4.5f));
 }
 
-void VectorTest::constructDefault() {
-    constexpr Vector4 a;
-    CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-}
-
 void VectorTest::constructFromData() {
     Float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+}
+
+void VectorTest::constructDefault() {
+    constexpr Vector4 a;
+    CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 void VectorTest::constructOneValue() {
