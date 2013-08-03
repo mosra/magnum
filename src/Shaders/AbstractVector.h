@@ -52,8 +52,8 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
         };
 
     protected:
-        explicit AbstractVector() = default;
-        ~AbstractVector() = default;
+        explicit AbstractVector();
+        ~AbstractVector();
 };
 
 /** @brief Base for two-dimensional text shaders */
@@ -61,6 +61,10 @@ typedef AbstractVector<2> AbstractVector2D;
 
 /** @brief Base for three-dimensional text shader */
 typedef AbstractVector<3> AbstractVector3D;
+
+/* GCC 4.5 doesn't like it defaulted in class body */
+template<UnsignedInt dimensions> AbstractVector<dimensions>::AbstractVector() = default;
+template<UnsignedInt dimensions> AbstractVector<dimensions>::~AbstractVector() = default;
 
 }}
 
