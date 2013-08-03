@@ -27,33 +27,33 @@
 namespace Magnum { namespace Trade {
 
 Vector3& PhongMaterialData::ambientColor() {
-    CORRADE_ASSERT(!(_flags & Flag::AmbientTexture), "Trade::PhongMaterialData::ambientColor(): the material has ambient texture", _ambient.color);
-    return _ambient.color;
+    CORRADE_ASSERT(!(_flags & Flag::AmbientTexture), "Trade::PhongMaterialData::ambientColor(): the material has ambient texture", _ambient.color());
+    return _ambient.color();
 }
 
 UnsignedInt& PhongMaterialData::ambientTexture() {
-    CORRADE_ASSERT(_flags & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientTexture(): the material doesn't have ambient texture", _ambient.texture);
-    return _ambient.texture;
+    CORRADE_ASSERT(_flags & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientTexture(): the material doesn't have ambient texture", _ambient.texture());
+    return _ambient.texture();
 }
 
 Vector3& PhongMaterialData::diffuseColor() {
-    CORRADE_ASSERT(!(_flags & Flag::DiffuseTexture), "Trade::PhongMaterialData::diffuseColor(): the material has diffuse texture", _diffuse.color);
-    return _diffuse.color;
+    CORRADE_ASSERT(!(_flags & Flag::DiffuseTexture), "Trade::PhongMaterialData::diffuseColor(): the material has diffuse texture", _diffuse.color());
+    return _diffuse.color();
 }
 
 UnsignedInt& PhongMaterialData::diffuseTexture() {
-    CORRADE_ASSERT(_flags & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have diffuse texture", _diffuse.texture);
-    return _diffuse.texture;
+    CORRADE_ASSERT(_flags & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have diffuse texture", _diffuse.texture());
+    return _diffuse.texture();
 }
 
 Vector3& PhongMaterialData::specularColor() {
-    CORRADE_ASSERT(!(_flags & Flag::SpecularTexture), "Trade::PhongMaterialData::specularColor(): the material has specular texture", _specular.color);
-    return _specular.color;
+    CORRADE_ASSERT(!(_flags & Flag::SpecularTexture), "Trade::PhongMaterialData::specularColor(): the material has specular texture", _specular.color());
+    return _specular.color();
 }
 
 UnsignedInt& PhongMaterialData::specularTexture() {
-    CORRADE_ASSERT(_flags & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have specular texture", _specular.texture);
-    return _specular.texture;
+    CORRADE_ASSERT(_flags & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have specular texture", _specular.texture());
+    return _specular.texture();
 }
 
 }}
