@@ -48,7 +48,7 @@ class TextureData {
             Texture1D,  /**< One-dimensional texture */
             Texture2D,  /**< Two-dimensional texture */
             Texture3D,  /**< Three-dimensional texture */
-            Cube,       /**< Cube map texture */
+            Cube        /**< Cube map texture */
         };
 
         /**
