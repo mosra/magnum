@@ -126,6 +126,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         constexpr explicit DualComplex(const Vector2<T>& vector): Dual<Complex<T>>({}, Complex<T>(vector)) {}
         #endif
 
+        /** @brief Copy constructor */
+        constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}
+
         /**
          * @brief Whether the dual complex number is normalized
          *
@@ -320,9 +323,6 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         #endif
 
     private:
-        /* Used by Dual operators and dualConjugated() */
-        constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}
-
         /* Just to be sure nobody uses this, as it wouldn't probably work with
            our operator*() */
         using Dual<Complex<T>>::operator*;

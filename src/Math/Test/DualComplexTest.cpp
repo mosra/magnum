@@ -127,7 +127,7 @@ void DualComplexTest::constructFromVector() {
 }
 
 void DualComplexTest::constructCopy() {
-    constexpr DualComplex a({-1.0f, 2.5f}, {3.0f, -7.5f});
+    constexpr Math::Dual<Complex> a({-1.0f, 2.5f}, {3.0f, -7.5f});
     constexpr DualComplex b(a);
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 }

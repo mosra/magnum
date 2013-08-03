@@ -98,7 +98,7 @@ Vector3Test::Vector3Test() {
 }
 
 void Vector3Test::construct() {
-    constexpr Vector3 a(1.0f, 2.5f, -3.0f);
+    constexpr Vector3 a = {1.0f, 2.5f, -3.0f};
     CORRADE_COMPARE(a, (Vector<3, Float>(1.0f, 2.5f, -3.0f)));
 }
 
@@ -139,7 +139,7 @@ void Vector3Test::constructConversion() {
 }
 
 void Vector3Test::constructCopy() {
-    constexpr Vector3 a(1.0f, 2.5f, -3.0f);
+    constexpr Vector<3, Float> a(1.0f, 2.5f, -3.0f);
     constexpr Vector3 b(a);
     CORRADE_COMPARE(b, Vector3(1.0f, 2.5f, -3.0f));
 }

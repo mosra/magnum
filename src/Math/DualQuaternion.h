@@ -132,6 +132,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
         #endif
 
+        /** @brief Copy constructor */
+        constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
+
         /**
          * @brief Whether the dual quaternion is normalized
          *
@@ -309,10 +312,6 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualQuaternion, Quaternion)
-
-    private:
-        /* Used by Dual operators and dualConjugated() */
-        constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
 };
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */
