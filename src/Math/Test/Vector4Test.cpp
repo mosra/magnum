@@ -95,7 +95,7 @@ Vector4Test::Vector4Test() {
 }
 
 void Vector4Test::construct() {
-    constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f);
+    constexpr Vector4 a = {1.0f, -2.5f, 3.0f, 4.1f};
     CORRADE_COMPARE(a, (Vector<4, Float>(1.0f, -2.5f, 3.0f, 4.1f)));
 }
 

@@ -134,10 +134,10 @@ Matrix4Test::Matrix4Test() {
 }
 
 void Matrix4Test::construct() {
-    constexpr Matrix4 a({3.0f,  5.0f, 8.0f, -3.0f},
-                        {4.5f,  4.0f, 7.0f,  2.0f},
-                        {1.0f,  2.0f, 3.0f, -1.0f},
-                        {7.9f, -1.0f, 8.0f, -1.5f});
+    constexpr Matrix4 a = {{3.0f,  5.0f, 8.0f, -3.0f},
+                           {4.5f,  4.0f, 7.0f,  2.0f},
+                           {1.0f,  2.0f, 3.0f, -1.0f},
+                           {7.9f, -1.0f, 8.0f, -1.5f}};
     CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},

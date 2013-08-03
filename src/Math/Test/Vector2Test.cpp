@@ -96,7 +96,7 @@ Vector2Test::Vector2Test() {
 }
 
 void Vector2Test::construct() {
-    constexpr Vector2 a(1.5f, 2.5f);
+    constexpr Vector2 a = {1.5f, 2.5f};
     CORRADE_COMPARE(a, (Vector<2, Float>(1.5f, 2.5f)));
 }
 

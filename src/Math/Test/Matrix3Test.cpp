@@ -122,9 +122,9 @@ Matrix3Test::Matrix3Test() {
 }
 
 void Matrix3Test::construct() {
-    constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
-                        {4.5f,  4.0f, 7.0f},
-                        {7.9f, -1.0f, 8.0f});
+    constexpr Matrix3 a = {{3.0f,  5.0f, 8.0f},
+                           {4.5f,  4.0f, 7.0f},
+                           {7.9f, -1.0f, 8.0f}};
     CORRADE_COMPARE(a, Matrix3({3.0f,  5.0f, 8.0f},
                                {4.5f,  4.0f, 7.0f},
                                {7.9f, -1.0f, 8.0f}));

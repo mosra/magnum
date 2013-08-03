@@ -108,11 +108,10 @@ MatrixTest::MatrixTest() {
 }
 
 void MatrixTest::construct() {
-    /* Value constructor */
-    constexpr Matrix4 a(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
-                        Vector4(4.5f,  4.0f, 7.0f,  2.0f),
-                        Vector4(1.0f,  2.0f, 3.0f, -1.0f),
-                        Vector4(7.9f, -1.0f, 8.0f, -1.5f));
+    constexpr Matrix4 a = {Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                           Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                           Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                           Vector4(7.9f, -1.0f, 8.0f, -1.5f)};
     CORRADE_COMPARE(a, Matrix4(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
                                Vector4(4.5f,  4.0f, 7.0f,  2.0f),
                                Vector4(1.0f,  2.0f, 3.0f, -1.0f),

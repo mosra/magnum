@@ -143,7 +143,7 @@ VectorTest::VectorTest() {
 }
 
 void VectorTest::construct() {
-    constexpr Vector4 a(1.0f, 2.0f, -3.0f, 4.5f);
+    constexpr Vector4 a = {1.0f, 2.0f, -3.0f, 4.5f};
     CORRADE_COMPARE(a, Vector4(1.0f, 2.0f, -3.0f, 4.5f));
 }
 
