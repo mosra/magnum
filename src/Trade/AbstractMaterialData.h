@@ -58,7 +58,7 @@ class MAGNUM_EXPORT AbstractMaterialData {
         AbstractMaterialData(const AbstractMaterialData&) = delete;
 
         /** @brief Move constructor */
-        AbstractMaterialData(AbstractMaterialData&&) = default;
+        AbstractMaterialData(AbstractMaterialData&&);
 
         /** @brief Copying is not allowed */
         AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;

@@ -32,6 +32,9 @@ AbstractMaterialData::AbstractMaterialData(Type type): _type(type) {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
 
+/* GCC 4.4 doesn't like it defaulted */
+AbstractMaterialData::AbstractMaterialData(AbstractMaterialData&& other): _type(other._type) {}
+
 /* GCC 4.5 doesn't like it defaulted */
 AbstractMaterialData& AbstractMaterialData::operator=(AbstractMaterialData&& other) {
     std::swap(_type, other._type);

@@ -66,7 +66,7 @@ class TextureData {
         TextureData(const TextureData&) = delete;
 
         /** @brief Move constructor */
-        TextureData(TextureData&&) = default;
+        TextureData(TextureData&&);
 
         /** @brief Copying is not allowed */
         TextureData& operator=(const TextureData&) = delete;
@@ -107,6 +107,9 @@ class TextureData {
         Array3D<Sampler::Wrapping> _wrapping;
         UnsignedInt _image;
 };
+
+/* GCC 4.4 doesn't like it defaulted */
+inline TextureData::TextureData(TextureData&& other): _type(other._type), _minificationFilter(other._minificationFilter), _magnificationFilter(other._magnificationFilter), _mipmapFilter(other._mipmapFilter), _wrapping(other._wrapping), _image(other._image) {}
 
 /* GCC 4.5 doesn't like it defaulted */
 inline TextureData& TextureData::operator=(TextureData&& other) {
