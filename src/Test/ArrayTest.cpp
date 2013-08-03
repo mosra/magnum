@@ -61,13 +61,21 @@ void ArrayTest::construct() {
     constexpr Array1D b = 5;
     CORRADE_COMPARE(b, (Array<1, Int>(5)));
 
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Array2D c = {5, 3};
+    #else
+    constexpr Array2D c(5, 3); /* Ambiguity with default copy constructor */
+    #endif
     CORRADE_COMPARE(c, (Array<2, Int>(5, 3)));
 
     constexpr Array2D c2 = 5;
     CORRADE_COMPARE(c2, (Array<2, Int>(5, 5)));
 
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Array3D d = {5, 3, -2};
+    #else
+    constexpr Array3D d(5, 3, -2); /* Ambiguity with default copy constructor */
+    #endif
     CORRADE_COMPARE(d, (Array<3, Int>(5, 3, -2)));
 
     constexpr Array3D d2 = 5;

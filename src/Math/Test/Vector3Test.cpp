@@ -98,7 +98,11 @@ Vector3Test::Vector3Test() {
 }
 
 void Vector3Test::construct() {
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Vector3 a = {1.0f, 2.5f, -3.0f};
+    #else
+    constexpr Vector3 a(1.0f, 2.5f, -3.0f); /* Ambiguity with default copy constructor */
+    #endif
     CORRADE_COMPARE(a, (Vector<3, Float>(1.0f, 2.5f, -3.0f)));
 }
 

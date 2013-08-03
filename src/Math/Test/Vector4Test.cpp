@@ -95,7 +95,11 @@ Vector4Test::Vector4Test() {
 }
 
 void Vector4Test::construct() {
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Vector4 a = {1.0f, -2.5f, 3.0f, 4.1f};
+    #else
+    constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f); /* Ambiguity with default copy constructor */
+    #endif
     CORRADE_COMPARE(a, (Vector<4, Float>(1.0f, -2.5f, 3.0f, 4.1f)));
 }
 
