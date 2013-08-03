@@ -185,5 +185,49 @@ requirements.
 All classes and functions using those commands are cross-referenced in page
 @ref required-extensions.
 
+@section unit-tests Unit tests
+
+All unit tests use Corrade's @ref Corrade::TestSuite "TestSuite".
+
+Don't forget to test all `constexpr` methods -- many compilers don't implicitly
+check whether the `constexpr` keyword can be used but then complain when you
+force the expression to be constant. It's better not to have given method
+marked as `constexpr` than have it marked it errorneously. It's usually not
+desirable to have special test case for `constexpr` behaviors, add `constexpr`
+keywords to existing test cases to avoid duplicated testing of the same thing.
+Example (testing copy constructor):
+@code
+constexpr Vector3 a(1.5f, 2.0f, 0.4f);
+constexpr Vector3 b(a);
+CORRADE_COMPARE(b, Vector3(1.5f, 2.0f, 0.4f));
+@endcode
+
+Don't forget to test implicit/explicit constructors and conversion operators
+where it matters (i.e. all low-level and frequently used types like vectors,
+matrices etc.). If the constructor/operator is implicit, test it in the context
+where explicit one would fail to compile, if it is explicit, test its
+explicitness with `std::is_convertible` (it should return `false`). These tests
+might catch various ambiguous call errors which would otherwise be unnoticed:
+@code
+Vector2 a = {1.5f, 0.5f}; // Explicit constructor would fail to compile here
+CORRADE_COMPARE(a, Vector2(1.5f, 0.5f));
+
+Vector2i b(a); // Implicit conversion operator would return true in 2nd check
+CORRADE_COMPARE(b, Vector2(1, 0));
+CORRADE_VERIFY(!(std::is_convertible<Vector2, Vector2i>::value));
+@endcode
+
+If some type should be constructible also from base type (additionaly to copy
+constructor), don't forget to test that too. The test is also usually needed
+only for low-level frequently used types (vectors, matrices) where such error
+would do largest harm. Depending on how copy constructor is implemented, you
+probably don't need to test classic copy construction, as it would be handled
+by the already tested one. Example (copy construction from base type):
+@code
+Vector<3, Float> a(1.5f, 2.0f, 0.4f);
+Vector3 b(a);
+CORRADE_COMPARE(b, Vector3(1.5f, 2.0f, 0.4f));
+@endcode
+
 */
 }
