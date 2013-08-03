@@ -256,7 +256,7 @@ void BufferGLTest::copy() {
     Buffer buffer2;
     buffer2.setData(5, nullptr, Buffer::Usage::StaticDraw);
 
-    Buffer::copy(&buffer1, &buffer2, 1, 2, 3);
+    Buffer::copy(buffer1, buffer2, 1, 2, 3);
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to verify the contents in ES? */
