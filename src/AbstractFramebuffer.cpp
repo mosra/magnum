@@ -212,20 +212,20 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context& context) 
     readTarget = FramebufferTarget::Read;
     drawTarget = FramebufferTarget::Draw;
 
-    if(context->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>())
+    if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::ANGLE::framebuffer_blit::string() << "features";
 
-    else if(context->isExtensionSupported<Extensions::GL::APPLE::framebuffer_multisample>())
+    else if(context.isExtensionSupported<Extensions::GL::APPLE::framebuffer_multisample>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::APPLE::framebuffer_multisample::string() << "features";
 
-    else if(context->isExtensionSupported<Extensions::GL::NV::framebuffer_blit>())
+    else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_blit>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::NV::framebuffer_blit::string() << "features";
 
     /* NV_framebuffer_multisample requires NV_framebuffer_blit, which has these
        enums. However, on my system only NV_framebuffer_multisample is
        supported, but NV_framebuffer_blit isn't. I will hold my breath and
        assume these enums are available. */
-    else if(context->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+    else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::NV::framebuffer_multisample::string() << "features";
 
     /* If no such extension is available, reset back to unified target */
