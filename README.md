@@ -37,7 +37,7 @@ DESIGN GOALS
 SUPPORTED PLATFORMS
 ===================
 
-*   **OpenGL** 2.1 through 4.3, core profile functionality and modern
+*   **OpenGL** 2.1 through 4.4, core profile functionality and modern
     extensions
 *   **OpenGL ES** 2.0, 3.0 and extensions to match desktop OpenGL functionality
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
