@@ -120,7 +120,7 @@ Mesh& Mesh::operator=(Mesh&& other) {
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(buffer.targetHint() == Buffer::Target::ElementArray,
-        "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer.targetHint(), this);
+        "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
 
     indexOffset = offset;
