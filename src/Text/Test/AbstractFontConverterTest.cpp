@@ -65,24 +65,45 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
+            #ifndef _WIN32
             GlyphExporter(std::u32string& characters): characters(characters) {}
+            #else
+            GlyphExporter(std::vector<char32_t>& characters): characters(characters) {}
+            #endif
 
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override {
+            #ifndef _WIN32
+            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override
+            #else
+            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>& characters) const override
+            #endif
+            {
                 this->characters = characters;
                 return nullptr;
             }
 
+            #ifndef _WIN32
             std::u32string& characters;
+            #else
+            std::vector<char32_t>& characters;
+            #endif
     };
 
+    #ifndef _WIN32
     std::u32string characters;
+    #else
+    std::vector<char32_t> characters;
+    #endif
     GlyphExporter exporter(characters);
     exporter.exportFontToSingleData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "abC01a0 ");
-    CORRADE_COMPARE(characters, (std::u32string{
+    #ifndef _WIN32
+    CORRADE_COMPARE(characters, U" 01Cab");
+    #else
+    CORRADE_COMPARE(characters, (std::vector<char32_t>{
             U' ', U'0', U'1', U'C', U'a', U'b'}));
+    #endif
 }
 
 void AbstractFontConverterTest::exportFontToSingleData() {
@@ -90,7 +111,12 @@ void AbstractFontConverterTest::exportFontToSingleData() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const override {
+            #ifndef _WIN32
+            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const override
+            #else
+            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const override
+            #endif
+            {
                 Containers::Array<unsigned char> data(1);
                 data[0] = 0xee;
                 return std::move(data);
@@ -111,7 +137,12 @@ void AbstractFontConverterTest::exportFontToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
 
-            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::u32string&) const override {
+            #ifndef _WIN32
+            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::u32string&) const override
+            #else
+            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::vector<char32_t>&) const override
+            #endif
+            {
                 Containers::Array<unsigned char> file(1);
                 file[0] = 0xf0;
 

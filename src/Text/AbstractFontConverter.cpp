@@ -43,7 +43,12 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFo
     return doExportFontToData(font, cache, filename, uniqueUnicode(characters));
 }
 
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
+#ifndef _WIN32
+std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
+#else
+std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
+#endif
+{
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFontConverter::exportFontToData(): feature advertised but not implemented", {});
 
@@ -61,7 +66,12 @@ Containers::Array<unsigned char> AbstractFontConverter::exportFontToSingleData(A
     return doExportFontToSingleData(font, cache, uniqueUnicode(characters));
 }
 
-Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const {
+#ifndef _WIN32
+Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const
+#else
+Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const
+#endif
+{
     CORRADE_ASSERT(false,
         "Text::AbstractFontConverter::exportFontToSingleData(): feature advertised but not implemented", nullptr);
 }
@@ -73,7 +83,12 @@ bool AbstractFontConverter::exportFontToFile(AbstractFont& font, GlyphCache& cac
     return doExportFontToFile(font, cache, filename, uniqueUnicode(characters));
 }
 
-bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
+#ifndef _WIN32
+bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
+#else
+bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
+#endif
+{
     CORRADE_ASSERT(features() & Feature::ConvertData,
         "Text::AbstractFontConverter::exportFontToFile(): not implemented", false);
 
@@ -214,9 +229,18 @@ GlyphCache* AbstractFontConverter::doImportGlyphCacheFromFile(const std::string&
     return doImportGlyphCacheFromSingleData(data);
 }
 
-std::u32string AbstractFontConverter::uniqueUnicode(const std::string& characters) {
+#ifndef _WIN32
+std::u32string AbstractFontConverter::uniqueUnicode(const std::string& characters)
+#else
+std::vector<char32_t> AbstractFontConverter::uniqueUnicode(const std::string& characters)
+#endif
+{
     /* Convert UTF-8 to UTF-32 */
+    #ifndef _WIN32
     std::u32string result = Utility::Unicode::utf32(characters);
+    #else
+    std::vector<char32_t> result = Utility::Unicode::utf32(characters);
+    #endif
 
     /* Remove duplicate glyphs */
     std::sort(result.begin(), result.end());
