@@ -34,11 +34,31 @@
 namespace Magnum { namespace Primitives {
 
 /**
+@brief 2D capsule primitive
+
+%Cylinder of radius `1` along Y axis with hemispheres instead of caps.
+*/
+class MAGNUM_PRIMITIVES_EXPORT Capsule2D {
+    public:
+        /**
+         * @brief Wireframe capsule
+         * @param hemisphereRings Number of (line) rings for each hemisphere.
+         *      Must be larger or equal to 1.
+         * @param cylinderRings Number of (line) rings for cylinder. Must be
+         *      larger or equal to 1.
+         * @param halfLength    Half the length of cylinder part
+         *
+         * Indexed @ref Mesh::Primitive "Lines".
+         */
+        static Trade::MeshData2D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength);
+};
+
+/**
 @brief 3D capsule primitive
 
 %Cylinder of radius `1` along Y axis with hemispheres instead of caps.
 */
-class MAGNUM_PRIMITIVES_EXPORT Capsule {
+class MAGNUM_PRIMITIVES_EXPORT Capsule3D {
     public:
         /** @brief Whether to generate texture coordinates */
         enum class TextureCoords: UnsignedByte {

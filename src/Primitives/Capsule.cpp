@@ -25,13 +25,70 @@
 #include "Capsule.h"
 
 #include "Math/Vector3.h"
+#include "Math/Functions.h"
 #include "Primitives/Implementation/Spheroid.h"
 #include "Primitives/Implementation/WireframeSpheroid.h"
+#include "Trade/MeshData2D.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords) {
+Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength) {
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData2D(Mesh::Primitive::Lines, {}, {}, {}));
+
+    std::vector<Vector2> positions;
+    positions.reserve(hemisphereRings*4+2+(cylinderRings-1)*2);
+    const Rad angleIncrement(Constants::pi()/(2.0f*hemisphereRings));
+    const Float cylinderIncrement = 2.0f*halfLength/cylinderRings;
+
+    /* Bottom cap vertex */
+    positions.emplace_back(0.0f, -halfLength-1.0f);
+
+    /* Bottom hemisphere */
+    for(UnsignedInt i = 0; i != hemisphereRings; ++i) {
+        const Rad angle((i+1)*angleIncrement);
+        const Float x = Math::sin(angle);
+        const Float y = -Math::cos(angle)-halfLength;
+        positions.insert(positions.end(), {{-x, y}, {x, y}});
+    }
+
+    /* Cylinder (bottom and top vertices are done within caps */
+    for(UnsignedInt i = 0; i != cylinderRings-1; ++i) {
+        const Float y = (i+1)*cylinderIncrement-halfLength;
+        positions.insert(positions.end(), {{-1.0f, y}, {1.0f, y}});
+    }
+
+    /* Top hemisphere */
+    for(UnsignedInt i = 0; i != hemisphereRings; ++i) {
+        const Rad angle(i*angleIncrement);
+        const Float x = Math::cos(angle);
+        const Float y = Math::sin(angle)+halfLength;
+        positions.insert(positions.end(), {{-x, y}, {x, y}});
+    }
+
+    /* Top cap vertex */
+    positions.emplace_back(0.0f, halfLength+1.0f);
+
+    std::vector<UnsignedInt> indices;
+    indices.reserve(hemisphereRings*8+cylinderRings*4);
+
+    /* Bottom cap indices */
+    indices.insert(indices.end(), {0, 1, 0, 2});
+
+    /* Side indices */
+    for(UnsignedInt i = 0; i != cylinderRings+hemisphereRings*2-2; ++i)
+        indices.insert(indices.end(), {i*2+1, i*2+3,
+                                       i*2+2, i*2+4});
+
+    /* Top cap indices */
+    indices.insert(indices.end(),
+        {UnsignedInt(positions.size())-3, UnsignedInt(positions.size())-1,
+         UnsignedInt(positions.size())-2, UnsignedInt(positions.size())-1});
+
+    return Trade::MeshData2D(Mesh::Primitive::Lines, std::move(indices), {std::move(positions)}, {});
+}
+
+Trade::MeshData3D Capsule3D::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, {}, {}, {}, {}));
 
     Implementation::Spheroid capsule(segments, textureCoords == TextureCoords::Generate ?
@@ -65,7 +122,7 @@ Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylind
     return capsule.finalize();
 }
 
-Trade::MeshData3D Capsule::wireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
+Trade::MeshData3D Capsule3D::wireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Capsule::wireframe(): improper parameters", Trade::MeshData3D(Mesh::Primitive::Lines, {}, {}, {}, {}));
 
     Implementation::WireframeSpheroid capsule(segments/4);
