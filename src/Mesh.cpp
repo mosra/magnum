@@ -136,25 +136,25 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
     return *this;
 }
 
-void Mesh::draw() {
+void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount, Int indexStart, Int indexEnd) {
     /* Nothing to draw */
-    if(!_vertexCount && !_indexCount) return;
+    if(!vertexCount && !indexCount) return;
 
     (this->*bindImplementation)();
 
     /* Non-indexed mesh */
-    if(!_indexCount)
-        glDrawArrays(static_cast<GLenum>(_primitive), 0, _vertexCount);
+    if(!indexCount)
+        glDrawArrays(static_cast<GLenum>(_primitive), firstVertex, vertexCount);
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Indexed mesh with specified range */
-    else if(_indexEnd)
-        glDrawRangeElements(static_cast<GLenum>(_primitive), _indexStart, _indexEnd, _indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(_indexOffset));
+    else if(indexEnd)
+        glDrawRangeElements(static_cast<GLenum>(_primitive), indexStart, indexEnd, indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
     #endif
 
     /* Indexed mesh without specified range */
     else
-        glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(_indexOffset));
+        glDrawElements(static_cast<GLenum>(_primitive), indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
 
     (this->*unbindImplementation)();
 }

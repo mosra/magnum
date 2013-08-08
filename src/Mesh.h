@@ -584,7 +584,9 @@ class MAGNUM_EXPORT Mesh {
          *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
          *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
          */
-        void draw();
+        void draw() {
+            drawInternal(0, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+        }
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -708,6 +710,8 @@ class MAGNUM_EXPORT Mesh {
         #endif
         #endif
 
+        void drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount, Int indexStart, Int indexEnd);
+
         typedef void(Mesh::*CreateImplementation)();
         void MAGNUM_LOCAL createImplementationDefault();
         void MAGNUM_LOCAL createImplementationVAO();
@@ -791,7 +795,6 @@ template<class ...T> inline Mesh& Mesh::addVertexBuffer(Buffer& buffer, GLintptr
     addVertexBufferInternal(buffer, offset, attributes...);
     return *this;
 }
-
 
 }
 
