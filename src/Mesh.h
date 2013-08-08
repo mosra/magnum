@@ -759,21 +759,21 @@ class MAGNUM_EXPORT Mesh {
         void MAGNUM_LOCAL unbindImplementationVAO();
         static MAGNUM_LOCAL UnbindImplementation unbindImplementation;
 
-        GLuint vao;
+        GLuint _id;
         Primitive _primitive;
         Int _vertexCount, _indexCount;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt indexStart, indexEnd;
+        UnsignedInt _indexStart, _indexEnd;
         #endif
-        GLintptr indexOffset;
-        IndexType indexType;
-        Buffer* indexBuffer;
+        GLintptr _indexOffset;
+        IndexType _indexType;
+        Buffer* _indexBuffer;
 
-        std::vector<Attribute> attributes;
+        std::vector<Attribute> _attributes;
         #ifndef MAGNUM_TARGET_GLES2
-        std::vector<IntegerAttribute> integerAttributes;
+        std::vector<IntegerAttribute> _integerAttributes;
         #ifndef MAGNUM_TARGET_GLES
-        std::vector<LongAttribute> longAttributes;
+        std::vector<LongAttribute> _longAttributes;
         #endif
         #endif
 };

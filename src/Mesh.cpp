@@ -60,9 +60,9 @@ std::size_t Mesh::indexSize(IndexType type) {
 
 Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexCount(0)
     #ifndef MAGNUM_TARGET_GLES2
-    , indexStart(0), indexEnd(0)
+    , _indexStart(0), _indexEnd(0)
     #endif
-    , indexOffset(0), indexType(IndexType::UnsignedInt), indexBuffer(nullptr)
+    , _indexOffset(0), _indexType(IndexType::UnsignedInt), _indexBuffer(nullptr)
 {
     (this->*createImplementation)();
 }
@@ -70,49 +70,49 @@ Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexC
 Mesh::~Mesh() {
     /* Remove current vao from the state */
     GLuint& current = Context::current()->state().mesh->currentVAO;
-    if(current == vao) current = 0;
+    if(current == _id) current = 0;
 
     (this->*destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other): vao(other.vao), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount)
+Mesh::Mesh(Mesh&& other): _id(other._id), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount)
     #ifndef MAGNUM_TARGET_GLES2
-    , indexStart(other.indexStart), indexEnd(other.indexEnd)
+    , _indexStart(other._indexStart), _indexEnd(other._indexEnd)
     #endif
-    , indexOffset(other.indexOffset), indexType(other.indexType), indexBuffer(other.indexBuffer), attributes(std::move(other.attributes))
+    , _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer(other._indexBuffer), _attributes(std::move(other._attributes))
     #ifndef MAGNUM_TARGET_GLES2
-    , integerAttributes(std::move(other.integerAttributes))
+    , _integerAttributes(std::move(other._integerAttributes))
     #ifndef MAGNUM_TARGET_GLES
-    , longAttributes(std::move(other.longAttributes))
+    , _longAttributes(std::move(other._longAttributes))
     #endif
     #endif
 {
-    other.vao = 0;
+    other._id = 0;
 }
 
 Mesh& Mesh::operator=(Mesh&& other) {
     (this->*destroyImplementation)();
 
-    vao = other.vao;
+    _id = other._id;
     _primitive = other._primitive;
     _vertexCount = other._vertexCount;
     _indexCount = other._indexCount;
     #ifndef MAGNUM_TARGET_GLES2
-    indexStart = other.indexStart;
-    indexEnd = other.indexEnd;
+    _indexStart = other._indexStart;
+    _indexEnd = other._indexEnd;
     #endif
-    indexOffset = other.indexOffset;
-    indexType = other.indexType;
-    indexBuffer = other.indexBuffer;
-    attributes = std::move(other.attributes);
+    _indexOffset = other._indexOffset;
+    _indexType = other._indexType;
+    _indexBuffer = other._indexBuffer;
+    _attributes = std::move(other._attributes);
     #ifndef MAGNUM_TARGET_GLES2
-    integerAttributes = std::move(other.integerAttributes);
+    _integerAttributes = std::move(other._integerAttributes);
     #ifndef MAGNUM_TARGET_GLES
-    longAttributes = std::move(other.longAttributes);
+    _longAttributes = std::move(other._longAttributes);
     #endif
     #endif
 
-    other.vao = 0;
+    other._id = 0;
 
     return *this;
 }
@@ -123,11 +123,11 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
         "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
 
-    indexOffset = offset;
-    indexType = type;
+    _indexOffset = offset;
+    _indexType = type;
     #ifndef MAGNUM_TARGET_GLES2
-    indexStart = start;
-    indexEnd = end;
+    _indexStart = start;
+    _indexEnd = end;
     #else
     static_cast<void>(start);
     static_cast<void>(end);
@@ -148,13 +148,13 @@ void Mesh::draw() {
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Indexed mesh with specified range */
-    else if(indexEnd)
-        glDrawRangeElements(static_cast<GLenum>(_primitive), indexStart, indexEnd, _indexCount, static_cast<GLenum>(indexType), reinterpret_cast<GLvoid*>(indexOffset));
+    else if(_indexEnd)
+        glDrawRangeElements(static_cast<GLenum>(_primitive), _indexStart, _indexEnd, _indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(_indexOffset));
     #endif
 
     /* Indexed mesh without specified range */
     else
-        glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(indexType), reinterpret_cast<GLvoid*>(indexOffset));
+        glDrawElements(static_cast<GLenum>(_primitive), _indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(_indexOffset));
 
     (this->*unbindImplementation)();
 }
@@ -226,7 +226,7 @@ void Mesh::createImplementationDefault() {}
 void Mesh::createImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glGenVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    glGenVertexArrays(1, &vao);
+    glGenVertexArrays(1, &_id);
     #endif
 }
 
@@ -235,7 +235,7 @@ void Mesh::destroyImplementationDefault() {}
 void Mesh::destroyImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glDeleteVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    if(vao) glDeleteVertexArrays(1, &vao);
+    if(_id) glDeleteVertexArrays(1, &_id);
     #endif
 }
 
@@ -245,7 +245,7 @@ void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
     #endif
 
-    attributes.push_back(attribute);
+    _attributes.push_back(attribute);
 }
 
 void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
@@ -254,57 +254,57 @@ void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
     #endif
 
-    bindVAO(vao);
+    bindVAO(_id);
     vertexAttribPointer(attribute);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationDSA(const Attribute& attribute) {
-    glEnableVertexArrayAttribEXT(vao, attribute.location);
-    glVertexArrayVertexAttribOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
+    glEnableVertexArrayAttribEXT(_id, attribute.location);
+    glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void Mesh::attributePointerImplementationDefault(const IntegerAttribute& attribute) {
-    integerAttributes.push_back(attribute);
+    _integerAttributes.push_back(attribute);
 }
 
 void Mesh::attributePointerImplementationVAO(const IntegerAttribute& attribute) {
-    bindVAO(vao);
+    bindVAO(_id);
     vertexAttribPointer(attribute);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationDSA(const IntegerAttribute& attribute) {
-    glEnableVertexArrayAttribEXT(vao, attribute.location);
-    glVertexArrayVertexAttribIOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
+    glEnableVertexArrayAttribEXT(_id, attribute.location);
+    glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationDefault(const LongAttribute& attribute) {
-    longAttributes.push_back(attribute);
+    _longAttributes.push_back(attribute);
 }
 
 void Mesh::attributePointerImplementationVAO(const LongAttribute& attribute) {
-    bindVAO(vao);
+    bindVAO(_id);
     vertexAttribPointer(attribute);
 }
 
 void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
-    glEnableVertexArrayAttribEXT(vao, attribute.location);
-    glVertexArrayVertexAttribLOffsetEXT(vao, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
+    glEnableVertexArrayAttribEXT(_id, attribute.location);
+    glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
 }
 #endif
 #endif
 
 void Mesh::bindIndexBufferImplementationDefault(Buffer& buffer) {
-    indexBuffer = &buffer;
+    _indexBuffer = &buffer;
 }
 
 void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
-    bindVAO(vao);
+    bindVAO(_id);
 
     /* Reset ElementArray binding to force explicit glBindBuffer call later */
     /** @todo Do this cleaner way */
@@ -315,37 +315,37 @@ void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
 
 void Mesh::bindImplementationDefault() {
     /* Specify vertex attributes */
-    for(const Attribute& attribute: attributes)
+    for(const Attribute& attribute: _attributes)
         vertexAttribPointer(attribute);
 
     #ifndef MAGNUM_TARGET_GLES2
-    for(const IntegerAttribute& attribute: integerAttributes)
+    for(const IntegerAttribute& attribute: _integerAttributes)
         vertexAttribPointer(attribute);
 
     #ifndef MAGNUM_TARGET_GLES
-    for(const LongAttribute& attribute: longAttributes)
+    for(const LongAttribute& attribute: _longAttributes)
         vertexAttribPointer(attribute);
     #endif
     #endif
 
     /* Bind index buffer, if the mesh is indexed */
-    if(_indexCount) indexBuffer->bind(Buffer::Target::ElementArray);
+    if(_indexCount) _indexBuffer->bind(Buffer::Target::ElementArray);
 }
 
 void Mesh::bindImplementationVAO() {
-    bindVAO(vao);
+    bindVAO(_id);
 }
 
 void Mesh::unbindImplementationDefault() {
-    for(const Attribute& attribute: attributes)
+    for(const Attribute& attribute: _attributes)
         glDisableVertexAttribArray(attribute.location);
 
     #ifndef MAGNUM_TARGET_GLES2
-    for(const IntegerAttribute& attribute: integerAttributes)
+    for(const IntegerAttribute& attribute: _integerAttributes)
         glDisableVertexAttribArray(attribute.location);
 
     #ifndef MAGNUM_TARGET_GLES
-    for(const LongAttribute& attribute: longAttributes)
+    for(const LongAttribute& attribute: _longAttributes)
         glDisableVertexAttribArray(attribute.location);
     #endif
     #endif
