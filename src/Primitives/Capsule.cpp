@@ -31,14 +31,14 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float length, TextureCoords textureCoords) {
+Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, {}, {}, {}, {}));
 
     Implementation::Spheroid capsule(segments, textureCoords == TextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
         Implementation::Spheroid::TextureCoords::DontGenerate);
 
-    Float height = 2.0f+length;
+    Float height = 2.0f+2.0f*halfLength;
     Float hemisphereTextureCoordsVIncrement = 1.0f/(hemisphereRings*height);
     Rad hemisphereRingAngleIncrement(Constants::pi()/(2*hemisphereRings));
 
@@ -46,13 +46,13 @@ Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylind
     capsule.capVertex(-height/2, -1.0f, 0.0f);
 
     /* Rings of bottom hemisphere */
-    capsule.hemisphereVertexRings(hemisphereRings-1, -length/2, -Rad(Constants::pi())/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
+    capsule.hemisphereVertexRings(hemisphereRings-1, -halfLength, -Rad(Constants::pi())/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Rings of cylinder */
-    capsule.cylinderVertexRings(cylinderRings+1, -length/2, length/cylinderRings, 1.0f/height, length/(cylinderRings*height));
+    capsule.cylinderVertexRings(cylinderRings+1, -halfLength, 2.0f*halfLength/cylinderRings, 1.0f/height, 2.0f*halfLength/(cylinderRings*height));
 
     /* Rings of top hemisphere */
-    capsule.hemisphereVertexRings(hemisphereRings-1, length/2, hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, (1.0f + length)/height+hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
+    capsule.hemisphereVertexRings(hemisphereRings-1, halfLength, hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, (1.0f + 2.0f*halfLength)/height+hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Top cap vertex */
     capsule.capVertex(height/2, 1.0f, 1.0f);
@@ -65,23 +65,23 @@ Trade::MeshData3D Capsule::solid(UnsignedInt hemisphereRings, UnsignedInt cylind
     return capsule.finalize();
 }
 
-Trade::MeshData3D Capsule::wireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float length) {
+Trade::MeshData3D Capsule::wireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Capsule::wireframe(): improper parameters", Trade::MeshData3D(Mesh::Primitive::Lines, {}, {}, {}, {}));
 
     Implementation::WireframeSpheroid capsule(segments/4);
 
     /* Bottom hemisphere */
-    capsule.bottomHemisphere(-length/2, hemisphereRings);
+    capsule.bottomHemisphere(-halfLength, hemisphereRings);
 
     /* Cylinder */
-    capsule.ring(-length/2);
+    capsule.ring(-halfLength);
     for(UnsignedInt i = 0; i != cylinderRings; ++i) {
         capsule.cylinder();
-        capsule.ring(-length/2 + (i+1)*(length/cylinderRings));
+        capsule.ring(-halfLength + (i+1)*(2.0f*halfLength/cylinderRings));
     }
 
     /* Top hemisphere */
-    capsule.topHemisphere(length/2, hemisphereRings);
+    capsule.topHemisphere(halfLength, hemisphereRings);
 
     return capsule.finalize();
 }
