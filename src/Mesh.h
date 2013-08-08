@@ -335,7 +335,11 @@ class MAGNUM_EXPORT Mesh {
             UnsignedInt = GL_UNSIGNED_INT
         };
 
-        /** @brief Size of given index type */
+        /**
+         * @brief Size of given index type
+         *
+         * @see indexSize() const
+         */
         static std::size_t indexSize(IndexType type);
 
         /**
@@ -361,6 +365,13 @@ class MAGNUM_EXPORT Mesh {
 
         /** @brief Move assignment */
         Mesh& operator=(Mesh&& other);
+
+        /**
+         * @brief Index size
+         *
+         * @see indexSize(IndexType)
+         */
+        std::size_t indexSize() const { return indexSize(_indexType); }
 
         /** @brief Primitive type */
         Primitive primitive() const { return _primitive; }
