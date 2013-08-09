@@ -240,6 +240,7 @@ for more information.
  */
 class MAGNUM_EXPORT Mesh {
     friend class Context;
+    friend class MeshView;
 
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;

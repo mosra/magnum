@@ -58,6 +58,7 @@ set(Magnum_SRCS
     Image.cpp
     ImageFormat.cpp
     Mesh.cpp
+    MeshView.cpp
     OpenGL.cpp
     Query.cpp
     Renderbuffer.cpp
@@ -117,6 +118,7 @@ set(Magnum_HEADERS
     ImageReference.h
     Magnum.h
     Mesh.h
+    MeshView.h
     OpenGL.h
     Query.h
     Renderbuffer.h
