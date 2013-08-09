@@ -37,9 +37,8 @@
 namespace Magnum {
 
 /** @nosubgrouping
-@brief %Renderer
+@brief Global renderer configuration.
 
-Access to global renderer configuration.
 @todo @extension{ARB,viewport_array}
 */
 class MAGNUM_EXPORT Renderer {
