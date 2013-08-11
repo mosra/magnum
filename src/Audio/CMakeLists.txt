@@ -27,8 +27,13 @@ find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
 
 set(MagnumAudio_SOURCES
-    )
+    Audio.cpp)
+
 set(MagnumAudio_HEADERS
     Audio.h)
 
+add_library(MagnumAudio ${SHARED_OR_STATIC} ${MagnumAudio_SOURCES})
+target_link_libraries(MagnumAudio ${OPENAL_LIBRARY})
+
+install(TARGETS MagnumAudio DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumAudio_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Audio)
