@@ -15,6 +15,7 @@
 #  MAGNUM_PLUGINS_FONTCONVERTER_DIR - Directory with font converter plugins
 #  MAGNUM_PLUGINS_IMAGECONVERTER_DIR - Directory with image converter plugins
 #  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_DIR - Directory with audio importer plugins
 # This command will try to find only the base library, not the optional
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
@@ -75,6 +76,8 @@
 #   installation directory
 #  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation
 #   directory
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR  - Audio omporter plugin
+#   installation directory
 #  MAGNUM_CMAKE_MODULE_INSTALL_DIR      - Installation dir for CMake
 #   modules
 #  MAGNUM_INCLUDE_INSTALL_DIR           - Header installation directory
@@ -343,6 +346,7 @@ set(MAGNUM_PLUGINS_FONT_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fontconverters)
 set(MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/imageconverters)
 set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/audioimporters)
 set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum/Plugins)
@@ -355,6 +359,7 @@ mark_as_advanced(FORCE
     MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR
     MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR
     MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR
+    MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR
     MAGNUM_CMAKE_MODULE_INSTALL_DIR
     MAGNUM_INCLUDE_INSTALL_DIR
     MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
@@ -367,3 +372,4 @@ set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONTCONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/fontconverters)
 set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/imageconverters)
 set(MAGNUM_PLUGINS_IMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/importers)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/audioimporters)

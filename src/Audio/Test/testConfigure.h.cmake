@@ -1,5 +1,3 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
 /*
     This file is part of Magnum.
 
@@ -24,17 +22,4 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
-
-namespace Magnum { namespace Audio {
-
-class AbstractImporter;
-class Buffer;
-class Source;
-/* Renderer used only statically */
-
-}}
-
-#endif
+#define AUDIO_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}"

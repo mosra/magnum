@@ -22,6 +22,12 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/testConfigure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/testConfigure.h)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+corrade_add_test(AudioAbstractImporterTest AbstractImporterTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioBufferTest BufferTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)
