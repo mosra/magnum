@@ -24,3 +24,4 @@
 
 corrade_add_test(AudioBufferTest BufferTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)
+corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)

@@ -1,5 +1,3 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
 /*
     This file is part of Magnum.
 
@@ -24,16 +22,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
+#include <sstream>
+#include <TestSuite/Tester.h>
 
-namespace Magnum { namespace Audio {
+#include "Audio/Source.h"
 
-class Buffer;
-class Source;
-/* Renderer used only statically */
+namespace Magnum { namespace Audio { namespace Test {
 
-}}
+class SourceTest: public TestSuite::Tester {
+    public:
+        explicit SourceTest();
 
-#endif
+        void debugState();
+};
+
+SourceTest::SourceTest() {
+    addTests({&SourceTest::debugState});
+}
+
+void SourceTest::debugState() {
+    std::ostringstream out;
+    Debug(&out) << Source::State::Playing;
+    CORRADE_COMPARE(out.str(), "Audio::Source::State::Playing\n");
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Audio::Test::SourceTest)
