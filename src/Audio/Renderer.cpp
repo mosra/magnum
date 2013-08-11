@@ -1,5 +1,3 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
 /*
     This file is part of Magnum.
 
@@ -24,14 +22,25 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
+#include "Renderer.h"
+
+#include <Utility/Debug.h>
 
 namespace Magnum { namespace Audio {
 
-/* Renderer used only statically */
+Debug operator<<(Debug debug, const Renderer::Error value) {
+    switch(value) {
+        #define _c(value) case Renderer::Error::value: return debug << "Audio::Renderer::Error::" #value;
+        _c(NoError)
+        _c(InvalidName)
+        _c(InvalidEnum)
+        _c(InvalidValue)
+        _c(InvalidOperation)
+        _c(OutOfMemory)
+        #undef _c
+    }
+
+    return debug << "Audio::Renderer::Error::(invalid)";
+}
 
 }}
-
-#endif

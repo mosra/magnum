@@ -1,5 +1,5 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
+#ifndef Magnum_Audio_magnumAudioVisibility_h
+#define Magnum_Audio_magnumAudioVisibility_h
 /*
     This file is part of Magnum.
 
@@ -24,14 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
+#include <Utility/Visibility.h>
 
-namespace Magnum { namespace Audio {
-
-/* Renderer used only statically */
-
-}}
+#ifdef MagnumAudio_EXPORTS
+    #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_EXPORT
+#else
+    #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_IMPORT
+#endif
 
 #endif

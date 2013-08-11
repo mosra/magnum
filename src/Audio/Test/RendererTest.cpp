@@ -1,5 +1,3 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
 /*
     This file is part of Magnum.
 
@@ -24,14 +22,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
+#include <sstream>
+#include <TestSuite/Tester.h>
 
-namespace Magnum { namespace Audio {
+#include "Audio/Renderer.h"
 
-/* Renderer used only statically */
+namespace Magnum { namespace Audio { namespace Test {
 
-}}
+class RendererTest: public TestSuite::Tester {
+    public:
+        explicit RendererTest();
 
-#endif
+        void debugError();
+};
+
+RendererTest::RendererTest() {
+    addTests({&RendererTest::debugError});
+}
+
+void RendererTest::debugError() {
+    std::ostringstream out;
+    Debug(&out) << Renderer::Error::InvalidOperation;
+    CORRADE_COMPARE(out.str(), "Audio::Renderer::Error::InvalidOperation\n");
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Audio::Test::RendererTest)
