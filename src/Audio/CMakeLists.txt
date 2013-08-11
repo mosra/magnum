@@ -28,10 +28,12 @@ include_directories(${OPENAL_INCLUDE_DIR})
 
 set(MagnumAudio_SOURCES
     Audio.cpp
+    Buffer.cpp
     Renderer.cpp)
 
 set(MagnumAudio_HEADERS
     Audio.h
+    Buffer.h
     Renderer.h
 
     magnumAudioVisibility.h)

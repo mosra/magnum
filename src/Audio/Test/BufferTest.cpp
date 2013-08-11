@@ -1,5 +1,3 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
 /*
     This file is part of Magnum.
 
@@ -24,15 +22,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
+#include <sstream>
+#include <TestSuite/Tester.h>
 
-namespace Magnum { namespace Audio {
+#include "Audio/Buffer.h"
 
-class Buffer;
-/* Renderer used only statically */
+namespace Magnum { namespace Audio { namespace Test {
 
-}}
+class BufferTest: public TestSuite::Tester {
+    public:
+        explicit BufferTest();
 
-#endif
+        void debugFormat();
+};
+
+BufferTest::BufferTest() {
+    addTests({&BufferTest::debugFormat});
+}
+
+void BufferTest::debugFormat() {
+    std::ostringstream out;
+    Debug(&out) << Buffer::Format::Stereo16;
+    CORRADE_COMPARE(out.str(), "Audio::Buffer::Format::Stereo16\n");
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Audio::Test::BufferTest)

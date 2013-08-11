@@ -22,4 +22,5 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(AudioBufferTest BufferTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)

@@ -1,5 +1,3 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
 /*
     This file is part of Magnum.
 
@@ -24,15 +22,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
+#include "Buffer.h"
+
+#include <Utility/Debug.h>
 
 namespace Magnum { namespace Audio {
 
-class Buffer;
-/* Renderer used only statically */
+Debug operator<<(Debug debug, const Buffer::Format value) {
+    switch(value) {
+        #define _c(value) case Buffer::Format::value: return debug << "Audio::Buffer::Format::" #value;
+        _c(Mono8)
+        _c(Mono16)
+        _c(Stereo8)
+        _c(Stereo16)
+        #undef _c
+    }
+
+    return debug << "Audio::Buffer::Format::(invalid)";
+}
 
 }}
-
-#endif
