@@ -1,5 +1,3 @@
-#ifndef Magnum_Audio_Audio_h
-#define Magnum_Audio_Audio_h
 /*
     This file is part of Magnum.
 
@@ -24,18 +22,44 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Audio namespace
- */
+#include "Context.h"
+
+#include <alc.h>
+#include <Utility/Assert.h>
+#include <Utility/Debug.h>
+
+#include "Magnum.h"
 
 namespace Magnum { namespace Audio {
 
-class AbstractImporter;
-class Buffer;
-class Context;
-class Source;
-/* Renderer used only statically */
+Context* Context::_current = nullptr;
+
+Context::Context() {
+    CORRADE_ASSERT(!_current, "Audio::Context: context already created", );
+
+    /* Open default device */
+    const ALCchar* const defaultDevice = alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
+    _device = alcOpenDevice(defaultDevice);
+    if(!_device) {
+        Error() << "Audio::Context: cannot open sound device" << defaultDevice;
+        std::exit(1);
+    }
+
+    _context = alcCreateContext(_device, nullptr);
+    if(!_context) {
+        Error() << "Audio::Context: cannot create context:" << alcGetError(_device);
+        std::exit(1);
+    }
+
+    alcMakeContextCurrent(_context);
+    _current = this;
+}
+
+Context::~Context() {
+    CORRADE_INTERNAL_ASSERT(_current == this);
+
+    alcDestroyContext(_context);
+    alcCloseDevice(_device);
+}
 
 }}
-
-#endif

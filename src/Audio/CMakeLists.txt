@@ -30,6 +30,7 @@ set(MagnumAudio_SOURCES
     AbstractImporter.cpp
     Audio.cpp
     Buffer.cpp
+    Context.cpp
     Renderer.cpp
     Source.cpp)
 
@@ -37,6 +38,7 @@ set(MagnumAudio_HEADERS
     AbstractImporter.h
     Audio.h
     Buffer.h
+    Context.h
     Renderer.h
     Source.h
 
