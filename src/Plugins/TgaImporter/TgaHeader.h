@@ -28,7 +28,7 @@
  * @brief Struct Magnum::Trade::TgaHeader
  */
 
-#include <Magnum.h>
+#include <Types.h>
 
 namespace Magnum { namespace Trade {
 
@@ -49,7 +49,7 @@ struct TgaHeader {
     UnsignedByte    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
     UnsignedByte    descriptor;     /**< @brief %Image descriptor */
 };
-#pragma pack(8)
+#pragma pack()
 
 static_assert(sizeof(TgaHeader) == 18, "TgaHeader size is not 18 bytes");
 
