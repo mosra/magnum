@@ -42,8 +42,14 @@ namespace Magnum { namespace Audio {
 /**
 @brief %Source
 
-Manages positional audio source.
-@todo Expose convenient API for buffer queuing
+Manages positional audio source. The audio can be played either from static
+buffer or from buffer queue.
+
+@section Audio-Source-queue Buffer queuing
+
+@code
+??? TODO
+@endcode
 */
 class MAGNUM_AUDIO_EXPORT Source {
     public:
@@ -354,6 +360,38 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @see @ref type(), @fn_al{Sourcei} with @def_al{BUFFER}
          */
         Source& setBuffer(Buffer* buffer);
+
+        /**
+         * @brief Queue buffers for streaming
+         * @param buffers       Buffers to queue
+         *
+         * Changes source type to @ref Type "Type::Streaming". You can
+         * repurpose the queued buffers later using @ref unqueueBuffers(). See
+         * class documentation for example usage.
+         * @see @ref type(), @fn_al{SourceQueueBuffers}
+         * @todo Make it possible to have one buffer used in more than one
+         *      queue preserving RAII encapsulation (i.e. not having one buffer
+         *      ID in two Buffer objects) -- might use pointers and on
+         *      unqueuing map the IDs back to pointers, would the additional
+         *      memory requirements and possible dangling reference issues be
+         *      worth it?
+         */
+        void queueBuffers(std::vector<Buffer>& buffers);
+
+        /** @overload */
+        void queueBuffers(std::vector<Buffer>&& buffers) {
+            queueBuffers(buffers);
+        }
+
+        /**
+         * @brief Unqueue buffers for streaming
+         * @param count         Count of buffers to unqueue
+         *
+         * Moves unqueued buffers back in to the arguments. See class
+         * documentation for example usage.
+         * @see @ref type(), @fn_al{SourceUnqueueBuffers}
+         */
+        std::vector<Buffer> unqueueBuffers(ALsizei count);
 
         /*@}*/
 

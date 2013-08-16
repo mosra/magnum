@@ -35,6 +35,24 @@ Source& Source::setBuffer(Buffer* buffer) {
     return *this;
 }
 
+Source& Source::queueBuffers(std::initializer_list<Buffer*> buffers) {
+    ALuint* ids = new ALuint[buffers.size()];
+    for(auto it = buffers.begin(); it != buffers.end(); ++it)
+        ids[it-buffers.begin()] = *it ? (*it)->id() : 0;
+
+    alSourceQueueBuffers(_id, buffers.size(), ids);
+    delete[] ids;
+    return *this;
+}
+
+Source& Source::queueBuffers(const std::vector<Buffer*>& buffers) {
+    ALuint* ids = new ALuint[buffers.size()];
+    for(auto it = buffers.begin(); it != buffers.end(); ++it)
+        ids[it-buffers.begin()] = *it ? (*it)->id() : 0;
+
+    alSourceQueueBuffers(_id, buffers.size(), ids);
+}
+
 namespace {
 
 const ALuint* sourceIds(const std::initializer_list<Source*>& sources) {
