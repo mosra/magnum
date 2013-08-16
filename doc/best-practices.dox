@@ -65,6 +65,12 @@ to desired target, either in constructor or using Buffer::setTargetHint().
 To ease up the development, @ref Mesh checks proper target hint when adding
 vertex and index buffers.
 
+@section best-practices-hw Hardware-specific
+
+@subsection best-practices-intel Intel hardware
+
+- [Performance tuning applications for Intel Graphics for Linux and Chrome OS](http://software.intel.com/sites/default/files/Performance-tuning-applications-for-Intel-GEN-Graphics-for-Linux-and-Google-Chrome-OS.pdf) [PDF]
+
 @subsection best-practices-powervr PowerVR hardware
 
 - [PowerVR Performance Recommendations](http://www.imgtec.com/powervr/insider/docs/PowerVR.Performance%20Recommendations.1.0.28.External.pdf) [PDF]
