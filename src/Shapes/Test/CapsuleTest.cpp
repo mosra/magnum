@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
 #include "Shapes/Capsule.h"
@@ -36,19 +37,34 @@ class CapsuleTest: public TestSuite::Tester {
     public:
         CapsuleTest();
 
-        void transformed();
+        void transformed2D();
+        void transformed3D();
         void transformedAverageScaling();
         void collisionPoint();
         void collisionSphere();
 };
 
 CapsuleTest::CapsuleTest() {
-    addTests({&CapsuleTest::transformed,
+    addTests({&CapsuleTest::transformed2D,
+              &CapsuleTest::transformed3D,
               &CapsuleTest::collisionPoint,
               &CapsuleTest::collisionSphere});
 }
 
-void CapsuleTest::transformed() {
+void CapsuleTest::transformed2D() {
+    const Shapes::Capsule2D capsule({1.0f, 2.0f}, {-1.0f, -2.0f}, 7.0f);
+
+    const auto transformed = capsule.transformed(Matrix3::rotation(Deg(90.0f)));
+    CORRADE_COMPARE(transformed.a(), Vector2(-2.0f, 1.0f));
+    CORRADE_COMPARE(transformed.b(), Vector2(2.0f, -1.0f));
+    CORRADE_COMPARE(transformed.radius(), 7.0f);
+
+    /* Apply average scaling to radius */
+    const auto scaled = capsule.transformed(Matrix3::scaling({-Constants::sqrt2(), 2.0f}));
+    CORRADE_COMPARE(scaled.radius(), Constants::sqrt3()*7.0f);
+}
+
+void CapsuleTest::transformed3D() {
     const Shapes::Capsule3D capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
 
     const auto transformed = capsule.transformed(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
