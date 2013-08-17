@@ -42,7 +42,7 @@ Unlike other elements the capsule doesn't support asymmetric scaling. When
 applying transformation, the scale factor is averaged from all axes. See
 @ref shapes for brief introduction.
 @see Capsule2D, Capsule3D
-@todo Assert for asymmetric scaling
+@todo Assert for asymmetric scaling to avoid costly sqrt?
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
     public:
