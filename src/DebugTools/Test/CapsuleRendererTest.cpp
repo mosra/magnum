@@ -36,6 +36,8 @@ class CapsuleRendererTest: public TestSuite::Tester {
         void common2D();
 
         void zeroLength3D();
+        void parallel3D();
+        void antiParallel3D();
         void common3D();
 };
 
@@ -44,6 +46,8 @@ CapsuleRendererTest::CapsuleRendererTest() {
               &CapsuleRendererTest::common2D,
 
               &CapsuleRendererTest::zeroLength3D,
+              &CapsuleRendererTest::parallel3D,
+              &CapsuleRendererTest::antiParallel3D,
               &CapsuleRendererTest::common3D});
 }
 
@@ -98,6 +102,42 @@ void CapsuleRendererTest::zeroLength3D() {
     CORRADE_COMPARE(transformation[0].translation(), a);
     CORRADE_COMPARE(transformation[1].translation(), a);
     CORRADE_COMPARE(transformation[2].translation(), a);
+}
+
+void CapsuleRendererTest::parallel3D() {
+    const Vector3 a(0.5f, 3.0f, 7.0f);
+    const Vector3 b(0.5f, 3.0f, 11.0f);
+    std::array<Matrix4, 3> transformation = Implementation::capsuleRendererTransformation<3>(a, b, 3.5f);
+
+    const auto rotation = Matrix4::rotationX(Deg(90.0f));
+    const auto scaling = (rotation*Matrix4::scaling(Vector3(3.5f))).rotationScaling();
+    CORRADE_COMPARE(transformation[0].rotationScaling(), scaling);
+    CORRADE_COMPARE(transformation[1].rotationScaling(),
+        (rotation*Matrix4::scaling({3.5f, 2.0f, 3.5f})).rotationScaling());
+    CORRADE_COMPARE(transformation[2].rotationScaling(), scaling);
+
+    const auto capDistance = Vector3::zAxis(3.5f);
+    CORRADE_COMPARE(transformation[0].translation(), a+capDistance);
+    CORRADE_COMPARE(transformation[1].translation(), a+Vector3::zAxis(2.0f));
+    CORRADE_COMPARE(transformation[2].translation(), b-capDistance);
+}
+
+void CapsuleRendererTest::antiParallel3D() {
+    const Vector3 a(0.5f, 3.0f, 7.0f);
+    const Vector3 b(0.5f, 3.0f, 3.0f);
+    std::array<Matrix4, 3> transformation = Implementation::capsuleRendererTransformation<3>(a, b, 3.5f);
+
+    const auto rotation = Matrix4::rotationX(-Deg(90.0f));
+    const auto rotationScaling = (rotation*Matrix4::scaling(Vector3(3.5f))).rotationScaling();
+    CORRADE_COMPARE(transformation[0].rotationScaling(), rotationScaling);
+    CORRADE_COMPARE(transformation[1].rotationScaling(),
+        (rotation*Matrix4::scaling({3.5f, 2.0f, 3.5f})).rotationScaling());
+    CORRADE_COMPARE(transformation[2].rotationScaling(), rotationScaling);
+
+    const auto capDistance = Vector3::zAxis(-3.5f);
+    CORRADE_COMPARE(transformation[0].translation(), a+capDistance);
+    CORRADE_COMPARE(transformation[1].translation(), a+Vector3::zAxis(-2.0f));
+    CORRADE_COMPARE(transformation[2].translation(), b-capDistance);
 }
 
 void CapsuleRendererTest::common3D() {

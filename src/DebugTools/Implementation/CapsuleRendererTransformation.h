@@ -26,6 +26,7 @@
 
 #include <array>
 
+#include "Math/Functions.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
@@ -72,10 +73,21 @@ template<> std::array<Matrix4, 3> capsuleRendererTransformation<3>(const Vector3
     Vector3 capDistance;
     if(length >= Math::TypeTraits<Float>::epsilon()) {
         const Vector3 directionNormalized = direction/length;
-        rotation.up() = directionNormalized;
-        rotation.right() = Vector3::cross(rotation.up(), Vector3::zAxis()).normalized();
-        rotation.backward() = Vector3::cross(rotation.right(), rotation.up());
-        CORRADE_INTERNAL_ASSERT(rotation.up().isNormalized() && rotation.backward().isNormalized());
+        const Float dot = Vector3::dot(directionNormalized, Vector3::zAxis());
+
+        /* Direction is parallel to Z axis, special rotation case */
+        if(Math::abs(dot) > 1.0f - Math::TypeTraits<Float>::epsilon()) {
+            rotation.up() = dot*Vector3::zAxis();
+            rotation.right() = Vector3::xAxis();
+            rotation.backward() = -dot*Vector3::yAxis();
+
+        /* Common case */
+        } else {
+            rotation.up() = directionNormalized;
+            rotation.right() = Vector3::cross(rotation.up(), Vector3::zAxis()).normalized();
+            rotation.backward() = Vector3::cross(rotation.right(), rotation.up());
+            CORRADE_INTERNAL_ASSERT(rotation.up().isNormalized() && rotation.backward().isNormalized());
+        }
 
         capDistance = directionNormalized*radius;
     }
