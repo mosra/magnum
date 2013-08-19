@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Functions.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
@@ -48,12 +49,8 @@ template<> Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, 
     const Float dot = Vector3::dot(force/forceLength, Vector3::xAxis());
 
     /* Force is parallel to X axis, just scaling */
-    if(dot > 1.0f - Math::TypeTraits<Float>::epsilon())
-        return translation*Matrix4::scaling(Vector3(forceLength));
-
-    /* Force is antiparallel to X axis, scaling inverted on X */
-    if(-dot > 1.0f - Math::TypeTraits<Float>::epsilon())
-        return translation*Matrix4::scaling({-forceLength, forceLength, forceLength});
+    if(Math::abs(dot) > 1.0f - Math::TypeTraits<Float>::epsilon())
+        return translation*Matrix4::scaling({Math::sign(dot)*forceLength, forceLength, forceLength});
 
     /* Normal of plane going through force vector and X axis vector */
     const Vector3 normal = Vector3::cross(Vector3::xAxis(), force).normalized();
