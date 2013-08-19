@@ -59,7 +59,8 @@ template<> Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, 
     const Vector3 normal = Vector3::cross(Vector3::xAxis(), force).normalized();
 
     /* Third base vector, orthogonal to force and normal */
-    const Vector3 binormal = Vector3::cross(normal, force).normalized();
+    const Vector3 binormal = Vector3::cross(normal, force/forceLength);
+    CORRADE_INTERNAL_ASSERT(binormal.isNormalized());
 
     /* Transformation matrix from scaled base vectors and translation vector */
     return Matrix4::from({force, normal*forceLength, binormal*forceLength}, forcePosition);
