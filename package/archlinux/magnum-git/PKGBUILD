@@ -1,16 +1,22 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-git
-pkgver=20120331
+pkgver=20130819
 pkgrel=1
-pkgdesc="OpenGL 3 graphics engine (Git version)"
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Git version)"
 arch=('i686' 'x86_64')
-url="https://github.com/mosra/magnum"
+url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
-depends=('corrade-git' 'glew')
+depends=('corrade-git' 'glew' 'glut' 'openal')
 makedepends=('cmake' 'git')
+provides=('magnum')
+conflicts=('magnum')
 
 _gitroot="git://github.com/mosra/magnum.git"
 _gitname="magnum"
+
+pkgver() {
+    date +%Y%m%d
+}
 
 build() {
     cd "$srcdir"
@@ -31,13 +37,12 @@ build() {
 
     cmake ../$_gitname \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_GLXAPPLICATION=ON \
+        -DWITH_WINDOWLESSGLXAPPLICATION=ON \
+        -DWITH_MAGNUMINFO=ON
     make
-}
-
-check() {
-    cd "$startdir/build"
-    ctest --output-on-failure -E Benchmark
 }
 
 package() {
