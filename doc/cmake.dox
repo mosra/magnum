@@ -106,6 +106,8 @@ are also available as preprocessor variables if including Magnum.h:
 
 %Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.
+@ref cmake-plugins "Plugins repository" and @ref cmake-integration "Integration library"
+have also their own CMake modules.
 
 */
 }

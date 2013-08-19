@@ -142,7 +142,8 @@ STRIP_FROM_PATH        = ../
 # are normally passed to the compiler using the -I flag.
 
 STRIP_FROM_INC_PATH    = ../magnum/src \
-                         ../magnum-plugins/src
+                         ../magnum-plugins/src \
+                         ../magnum-integration/src
 
 # If the SHORT_NAMES tag is set to YES, doxygen will generate much shorter
 # (but less readable) file names. This can be useful if your file system
@@ -688,6 +689,8 @@ INPUT                  = src/ \
                          doc/ \
                          ../magnum-plugins/src/ \
                          ../magnum-plugins/doc/ \
+                         ../magnum-integration/src/ \
+                         ../magnum-integration/doc/ \
                          ../magnum-examples/doc/
 
 # This tag can be used to specify the character encoding of the source files

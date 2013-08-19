@@ -122,10 +122,14 @@ in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
 if it doesn't exist yet.
 
-PLUGINS AND EXAMPLES
-====================
+RELATED PROJECTS
+================
 
-Various importer plugins for image and 3D model formats are maintained in
+The engine itself is kept as small as possible with only little dependencies.
+Additional functionality, often depending on external libraries, is provided in
+separate repositories. Integration with various external math and physics
+libraries can be found at https://github.com/mosra/magnum-integration. Various
+importer plugins for image, audio and 3D model formats are maintained in
 separate repository, which can be found at https://github.com/mosra/magnum-plugins.
 
 There are also examples of engine usage, varying from simple *Hello World*-like

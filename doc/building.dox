@@ -216,6 +216,15 @@ in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
 if it doesn't exist yet.
 
+@section building-related Related projects
+
+The engine itself is kept as small as possible with only little dependencies.
+Additional functionality, often depending on external libraries, is provided in
+separate repositories. Various importer plugins for image, audio and 3D model
+formats are maintained in @ref building-plugins "Plugins repository",
+Integration with various external math and physics libraries is provided by
+@ref building-integration "Integration library".
+
 @section building-arch Building ArchLinux packages
 
 In `package/archlinux` directory is currently one PKGBUILD for Git development
