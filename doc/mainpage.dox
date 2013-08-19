@@ -85,8 +85,8 @@ namespace Magnum {
 
 @section mainpage-getting-started Getting started
 
-@ref getting-started "Thorough guide" to download, build, install and start
-using Magnum in your project.
+Read thorough @ref getting-started "guide to download, build, install and start using Magnum"
+in your project.
 
 @section mainpage-hacking Hacking Magnum
 

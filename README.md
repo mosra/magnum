@@ -122,6 +122,12 @@ in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
 if it doesn't exist yet.
 
+GETTING STARTED
+===============
+
+The Doxygen documentation has a thorough [guide how to start using Magnum](http://mosra.cz/blog/magnum-doc/getting-started.html)
+in your project.
+
 RELATED PROJECTS
 ================
 
