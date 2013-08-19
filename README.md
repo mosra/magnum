@@ -136,6 +136,9 @@ There are also examples of engine usage, varying from simple *Hello World*-like
 example to more advanced applications, such as viewer for complex 3D models.
 Example repository is at https://github.com/mosra/magnum-examples.
 
+Repository with bootstrap projects for many use cases, helping you get up and
+running in no time is located at https://github.com/mosra/magnum-bootstrap.
+
 CONTACT
 =======
 
