@@ -69,7 +69,7 @@ type, `i` is @ref Int underlying type and `d` is for @ref Double underlying type
 | --------------------------------- | ------------------------------------ |
 | @ref Matrix2 or @ref Matrix2d     | `mat2`/`mat2x2` or `dmat2`/`dmat2x2` |
 | @ref Matrix3 or @ref Matrix3d     | `mat3`/`mat3x3` or `dmat3`/`dmat3x3` |
-| @ref Matrix4 or @ref Matrix4d     | `mat4`/`mat4x4` or `dmat3`/`dmat4x4` |
+| @ref Matrix4 or @ref Matrix4d     | `mat4`/`mat4x4` or `dmat4`/`dmat4x4` |
 | @ref Matrix2x3 or @ref Matrix2x3d | `mat2x3` or `dmat2x3`                |
 | @ref Matrix3x2 or @ref Matrix3x2d | `mat3x2` or `dmat3x2`                |
 | @ref Matrix2x4 or @ref Matrix2x4d | `mat2x4` or `dmat2x4`                |
