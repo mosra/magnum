@@ -230,18 +230,17 @@ Integration with various external math and physics libraries is provided by
 In `package/archlinux` directory is currently one PKGBUILD for Git development
 build. The package is also in AUR under the same name.
 
-There is also development PKGBUILD and MinGW development PKGBUILD in root,
-which allows you to build and install the package directly from source tree
-without downloading anything. The PKGBUILD also contains `check()` function
-which will run all unit tests before packaging. Note that the unit tests
-require Qt, as said above.
+There are also a few development PKGBUILDs in project root, which allow you to
+build and install the package directly from source tree without downloading
+anything. The native PKGBUILD also contains `check()` function which will run
+all unit tests before packaging.
 
 If you want to build with another compiler (e.g. Clang), run makepkg this way:
 
     CXX=clang++ makepkg
 
-Both development PKGBUILDs can detect when Clang is used and remove
-unsupported CXX flags.
+Development PKGBUILDs can detect when Clang is used and remove unsupported CXX
+flags.
 
 @section building-win Crosscompiling for Windows using MinGW
 
