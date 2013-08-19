@@ -71,12 +71,13 @@ template<> std::array<Matrix4, 3> capsuleRendererTransformation<3>(const Vector3
     Matrix4 rotation;
     Vector3 capDistance;
     if(length >= Math::TypeTraits<Float>::epsilon()) {
-        rotation.up() = direction/length;
+        const Vector3 directionNormalized = direction/length;
+        rotation.up() = directionNormalized;
         rotation.right() = Vector3::cross(rotation.up(), Vector3::zAxis()).normalized();
         rotation.backward() = Vector3::cross(rotation.right(), rotation.up());
         CORRADE_INTERNAL_ASSERT(rotation.up().isNormalized() && rotation.backward().isNormalized());
 
-        capDistance = direction*(radius/length);
+        capDistance = directionNormalized*radius;
     }
 
     /* Scaling and translation of all parts */
