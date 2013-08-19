@@ -81,7 +81,7 @@ void ForceRendererTest::arbitrary2D() {
     /* All vectors have the same length */
     CORRADE_COMPARE(m.up().length(), force.length());
 
-    /* All vectors are parallel */
+    /* All vectors are orthogonal */
     CORRADE_COMPARE(Vector2::dot(m.right(), m.up()), 0.0f);
 }
 
@@ -112,7 +112,7 @@ void ForceRendererTest::arbitrary3D() {
     CORRADE_COMPARE(m.up().length(), force.length());
     CORRADE_COMPARE(m.backward().length(), force.length());
 
-    /* All vectors are parallel */
+    /* All vectors are orthogonal */
     CORRADE_COMPARE(Vector3::dot(m.right(), m.up()),       0.0f);
     CORRADE_COMPARE(Vector3::dot(m.right(), m.backward()), 0.0f);
     CORRADE_COMPARE(Vector3::dot(m.up(),    m.backward()), 0.0f);
