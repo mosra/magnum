@@ -72,7 +72,7 @@ void CapsuleRendererTest::common2D() {
     CORRADE_COMPARE(transformation[1].up(), up);
     CORRADE_COMPARE(transformation[2].up(), up.resized(3.5f));
 
-    const Vector2 right = Vector2(4.0f, 7.0f).resized(3.5f);
+    const auto right = Vector2(4.0f, 7.0f).resized(3.5f);
     CORRADE_COMPARE(transformation[0].right(), right);
     CORRADE_COMPARE(transformation[1].right(), right);
     CORRADE_COMPARE(transformation[2].right(), right);
