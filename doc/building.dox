@@ -74,17 +74,19 @@ optional features.
     make
     make install
 
-The libraries are build as shared by default, pass `-DBUILD_STATIC=ON` to build
-them as static. If you plan them to use with shared libraries later, enable
-also position-independent code with `-DBUILD_STATIC_PIC=ON`. If you want to
-build with another compiler (e.g. Clang), pass `-DCMAKE_CXX_COMPILER=clang++`
-to CMake.
 
-@subsection building-optional Enabling or disabling features
+@subsection building-features Enabling or disabling features
+
+The libraries are build as shared by default. If you are developing for
+platform which doesn't support shared libraries or if you just want to link
+them statically, enable `BUILD_STATIC` to build the libraries as static. If you
+plan to use them with shared libraries later, enable also position-independent
+code with `BUILD_STATIC_PIC`. If you want to build with another compiler (e.g.
+Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
 By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
-parameters you can target other platforms. Note that some features are available
-for desktop OpenGL only, see @ref requires-gl.
+parameters you can target other platforms. Note that some features are
+available for desktop OpenGL only, see @ref requires-gl.
 
  - `TARGET_GLES` - Target OpenGL ES.
  - `TARGET_GLES2` - Target OpenGL ES 2.0. Currently enabled by default when
@@ -92,9 +94,14 @@ for desktop OpenGL only, see @ref requires-gl.
  - `TARGET_DESKTOP_GLES` - Target OpenGL ES on desktop, i.e. use OpenGL ES
    emulation in desktop OpenGL library. Might not be supported in all drivers.
 
-By default the engine is built with everything except application libraries (see
-below). Using `WITH_*` CMake parameters you can specify which parts will be built
-and which not:
+The features used can be conveniently detected in depending projects both in
+CMake and C++ sources, see @ref cmake and @ref src/Magnum.h for more
+information. See also @ref corrade-cmake and @ref src/Corrade.h for additional
+information.
+
+By default the engine is built with everything except application libraries
+(see below). Using `WITH_*` CMake parameters you can specify which parts will
+be built and which not:
 
  - `WITH_AUDIO` - Audio library. Requires **OpenAL** library.
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
@@ -135,9 +142,10 @@ platform best:
 
 @subsection building-tests Building and running unit tests
 
-If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
-"TestSuite" framework and can be run using
+If you want to build also unit tests (which are not built by default), enable
+`BUILD_TEST` in CMake. Unit tests use Corrade's @ref Corrade::TestSuite
+"TestSuite" framework and can be run either manually (the binaries are located
+in `Test/` subdirectories of build directory) or using
 
     ctest --output-on-failure
 
