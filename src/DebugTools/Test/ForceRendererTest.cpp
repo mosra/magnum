@@ -33,9 +33,7 @@ class ForceRendererTest: public TestSuite::Tester {
         explicit ForceRendererTest();
 
         void zero2D();
-        void parallel2D();
-        void antiParallel2D();
-        void arbitrary2D();
+        void common2D();
 
         void zero3D();
         void parallel3D();
@@ -45,9 +43,7 @@ class ForceRendererTest: public TestSuite::Tester {
 
 ForceRendererTest::ForceRendererTest() {
     addTests({&ForceRendererTest::zero2D,
-              &ForceRendererTest::parallel2D,
-              &ForceRendererTest::antiParallel2D,
-              &ForceRendererTest::arbitrary2D,
+              &ForceRendererTest::common2D,
 
               &ForceRendererTest::zero3D,
               &ForceRendererTest::parallel3D,
@@ -60,17 +56,7 @@ void ForceRendererTest::zero2D() {
                     Matrix3::translation({0.5f, -3.0f})*Matrix3::scaling(Vector2(0.0f)));
 }
 
-void ForceRendererTest::parallel2D() {
-    CORRADE_COMPARE(Implementation::forceRendererTransformation<2>({0.5f, -3.0f}, Vector2::xAxis(2.5f)),
-                    Matrix3::translation({0.5f, -3.0f})*Matrix3::scaling(Vector2(2.5f)));
-}
-
-void ForceRendererTest::antiParallel2D() {
-    CORRADE_COMPARE(Implementation::forceRendererTransformation<2>({0.5f, -3.0f}, Vector2::xAxis(-2.5f)),
-                    Matrix3::translation({0.5f, -3.0f})*Matrix3::scaling(Vector2(-2.5f)));
-}
-
-void ForceRendererTest::arbitrary2D() {
+void ForceRendererTest::common2D() {
     Vector2 force(2.7f, -11.5f);
     Matrix3 m = Implementation::forceRendererTransformation<2>({0.5f, -3.0f}, force);
 
