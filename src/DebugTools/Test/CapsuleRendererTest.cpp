@@ -78,7 +78,7 @@ void CapsuleRendererTest::common2D() {
     CORRADE_COMPARE(transformation[2].right(), right);
 
     /* Orthogonality */
-    CORRADE_VERIFY(Vector2::dot(transformation[0].up(), transformation[0].right()) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_COMPARE(Vector2::dot(transformation[0].up(), transformation[0].right()), 0.0f);
 
     const Vector2 capDistance = up.resized(3.5f);
     CORRADE_COMPARE(transformation[0].translation(), a+capDistance);
@@ -122,9 +122,9 @@ void CapsuleRendererTest::common3D() {
     CORRADE_COMPARE(transformation[2].backward(), backward);
 
     /* Orthogonality */
-    CORRADE_VERIFY(Vector3::dot(transformation[0].up(), transformation[0].right()) < Math::TypeTraits<Float>::epsilon());
-    CORRADE_VERIFY(Vector3::dot(transformation[0].up(), transformation[0].backward()) < Math::TypeTraits<Float>::epsilon());
-    CORRADE_VERIFY(Vector3::dot(transformation[0].right(), transformation[0].backward()) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_COMPARE(Vector3::dot(transformation[0].up(), transformation[0].right()), 0.0f);
+    CORRADE_COMPARE(Vector3::dot(transformation[0].up(), transformation[0].backward()), 0.0f);
+    CORRADE_COMPARE(Vector3::dot(transformation[0].right(), transformation[0].backward()), 0.0f);
 
     const Vector3 capDistance = up.resized(3.5f);
     CORRADE_COMPARE(transformation[0].translation(), a+capDistance);
