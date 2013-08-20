@@ -62,7 +62,7 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          *      equal to 1.
          * @param segments      Number of (face) segments. Must be larger or
          *      equal to 3.
-         * @param length        Cylinder length
+         * @param halfLength    Half the cylinder length
          * @param flags         Flags
          *
          * Indexed @ref Mesh::Primitive "Triangles" with normals, optional 2D
@@ -70,7 +70,7 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          * are generated, vertices of one segment are duplicated for texture
          * wrapping.
          */
-        static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float length, Flags flags = Flags());
+        static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float halfLength, Flags flags = Flags());
 
         /**
          * @brief Wireframe cylinder
@@ -78,11 +78,11 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          *      to 1.
          * @param segments      Number of (line) segments. Must be larger or
          *      equal to 4 and multiple of 4.
-         * @param length        Cylinder length
+         * @param halfLength    Half the cylinder length
          *
          * Indexed @ref Mesh::Primitive "Lines".
          */
-        static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments, Float length);
+        static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
 };
 
 CORRADE_ENUMSET_OPERATORS(Cylinder::Flags)
