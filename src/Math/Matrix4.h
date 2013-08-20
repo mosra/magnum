@@ -268,15 +268,29 @@ template<class T> class Matrix4: public Matrix<4, T> {
         Matrix<3, T> rotation() const;
 
         /**
-         * @brief Uniform scaling part of the matrix
+         * @brief Uniform scaling part of the matrix, squared
          *
-         * Length of vectors in upper-left 3x3 part of the matrix. Expects that
-         * the scaling is the same in all axes.
+         * Squared length of vectors in upper-left 3x3 part of the matrix.
+         * Expects that the scaling is the same in all axes. Faster alternative
+         * to @ref uniformScaling(), because it doesn't compute the square
+         * root.
          * @see @ref rotationScaling(), @ref rotation(),
          *      @ref rotationNormalized(), @ref scaling(const Vector3&),
          *      @ref Matrix3::uniformScaling()
          */
-        T uniformScaling() const;
+        T uniformScalingSquared() const;
+
+        /**
+         * @brief Uniform scaling part of the matrix
+         *
+         * Length of vectors in upper-left 3x3 part of the matrix. Expects that
+         * the scaling is the same in all axes. Use faster alternative
+         * @ref uniformScalingSquared() where possible.
+         * @see @ref rotationScaling(), @ref rotation(),
+         *      @ref rotationNormalized(), @ref scaling(const Vector3&),
+         *      @ref Matrix3::uniformScaling()
+         */
+        T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
         /**
          * @brief Right-pointing 3D vector
@@ -460,12 +474,12 @@ template<class T> inline Matrix<3, T> Matrix4<T>::rotation() const {
             (*this)[2].xyz().normalized()};
 }
 
-template<class T> T Matrix4<T>::uniformScaling() const {
+template<class T> T Matrix4<T>::uniformScalingSquared() const {
     const T scalingSquared = (*this)[0].xyz().dot();
     CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xyz().dot(), scalingSquared) &&
                    TypeTraits<T>::equals((*this)[2].xyz().dot(), scalingSquared),
         "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling", {});
-    return std::sqrt(scalingSquared);
+    return scalingSquared;
 }
 
 template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {

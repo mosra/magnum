@@ -204,20 +204,34 @@ template<class T> class Matrix3: public Matrix<3, T> {
         }
 
         /**
-         * @brief Uniform scaling part of the matrix
+         * @brief Uniform scaling part of the matrix, squared
          *
-         * Length of vectors in upper-left 2x2 part of the matrix. Expects that
-         * the scaling is the same in all axes.
+         * Squared length of vectors in upper-left 2x2 part of the matrix.
+         * Expects that the scaling is the same in all axes. Faster alternative
+         * to @ref uniformScaling(), because it doesn't compute the square
+         * root.
          * @see @ref rotationScaling(), @ref rotation(),
          *      @ref rotationNormalized(), @ref scaling(const Vector2&),
          *      @ref Matrix4::uniformScaling()
          */
-        T uniformScaling() const {
+        T uniformScalingSquared() const {
             const T scalingSquared = (*this)[0].xy().dot();
             CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xy().dot(), scalingSquared),
                            "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling", {});
-            return std::sqrt(scalingSquared);
+            return scalingSquared;
         }
+
+        /**
+         * @brief Uniform scaling part of the matrix
+         *
+         * Length of vectors in upper-left 2x2 part of the matrix. Expects that
+         * the scaling is the same in all axes. Use faster alternative
+         * @ref uniformScalingSquared() where possible.
+         * @see @ref rotationScaling(), @ref rotation(),
+         *      @ref rotationNormalized(), @ref scaling(const Vector2&),
+         *      @ref Matrix4::uniformScaling()
+         */
+        T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
         /**
          * @brief Right-pointing 2D vector
