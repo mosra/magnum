@@ -34,6 +34,7 @@ set(MagnumDebugTools_SRCS
     Implementation/AxisAlignedBoxRenderer.cpp
     Implementation/BoxRenderer.cpp
     Implementation/CapsuleRenderer.cpp
+    Implementation/CylinderRenderer.cpp
     Implementation/LineSegmentRenderer.cpp
     Implementation/PointRenderer.cpp
     Implementation/SphereRenderer.cpp)
