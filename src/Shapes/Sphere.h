@@ -41,6 +41,8 @@ namespace Magnum { namespace Shapes {
 Unlike other elements the sphere expects uniform scaling. See @ref shapes for
 brief introduction.
 @see Sphere2D, Sphere3D
+@todo Store the radius as squared value to avoid sqrt/pow? Will complicate
+    collision detection with another sphere.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
     public:

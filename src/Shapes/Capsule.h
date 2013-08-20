@@ -41,6 +41,8 @@ namespace Magnum { namespace Shapes {
 Unlike other elements the capsule expects uniform scaling. See @ref shapes for
 brief introduction.
 @see Capsule2D, Capsule3D
+@todo Store the radius as squared value to avoid sqrt/pow? Will complicate
+    collision detection with sphere.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
     public:
