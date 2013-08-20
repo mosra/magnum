@@ -78,6 +78,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
         void rotationScalingPart();
         void rotationNormalizedPart();
         void rotationPart();
+        void uniformScalingPart();
         void vectorParts();
         void invertedRigid();
         void transform();
@@ -113,6 +114,7 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::rotationScalingPart,
               &Matrix3Test::rotationNormalizedPart,
               &Matrix3Test::rotationPart,
+              &Matrix3Test::uniformScalingPart,
               &Matrix3Test::vectorParts,
               &Matrix3Test::invertedRigid,
               &Matrix3Test::transform,
@@ -332,6 +334,20 @@ void Matrix3Test::rotationPart() {
         CORRADE_COMPARE(o.str(), "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling\n");
         CORRADE_COMPARE(rotationScaling2, Matrix3(Matrix3::Zero));
     }
+}
+
+void Matrix3Test::uniformScalingPart() {
+    const Matrix3 rotation = Matrix3::rotation(Deg(-74.0f));
+
+    /* Test uniform scaling */
+    CORRADE_COMPARE((rotation*Matrix3::scaling(Vector2(3.0f))).uniformScaling(), 3.0f);
+
+    /* Fails on non-uniform scaling */
+    std::ostringstream o;
+    Error::setOutput(&o);
+    const Float nonUniformScaling = (rotation*Matrix3::scaling(Vector2::yScale(3.0f))).uniformScaling();
+    CORRADE_COMPARE(o.str(), "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling\n");
+    CORRADE_COMPARE(nonUniformScaling, 0.0f);
 }
 
 void Matrix3Test::vectorParts() {
