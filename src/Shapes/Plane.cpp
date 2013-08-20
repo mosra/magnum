@@ -35,8 +35,11 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Shapes {
 
 Plane Plane::transformed(const Matrix4& matrix) const {
+    /* Using matrix.rotation() would result in two more normalizations (slow),
+       using .normalized() instead of matrix.uniformScaling() would not check
+       uniform scaling */
     return Plane(matrix.transformPoint(_position),
-                 matrix.rotation()*_normal);
+                 matrix.rotationScaling()*_normal/matrix.uniformScaling());
 }
 
 bool Plane::operator%(const Line3D& other) const {

@@ -37,8 +37,7 @@ class SphereTest: public TestSuite::Tester {
     public:
         SphereTest();
 
-        void transformed2D();
-        void transformed3D();
+        void transformed();
         void collisionPoint();
         void collisionLine();
         void collisionLineSegment();
@@ -46,46 +45,19 @@ class SphereTest: public TestSuite::Tester {
 };
 
 SphereTest::SphereTest() {
-    addTests({&SphereTest::transformed2D,
-              &SphereTest::transformed3D,
+    addTests({&SphereTest::transformed,
               &SphereTest::collisionPoint,
               &SphereTest::collisionLine,
               &SphereTest::collisionLineSegment,
               &SphereTest::collisionSphere});
 }
 
-void SphereTest::transformed2D() {
-    const Shapes::Sphere2D sphere({1.0f, 2.0f}, 7.0f);
-
-    const auto transformed = sphere.transformed(Matrix3::rotation(Deg(90.0f)));
-    CORRADE_COMPARE(transformed.position(), Vector2(-2.0f, 1.0f));
-    CORRADE_COMPARE(transformed.radius(), 7.0f);
-
-    /* Symmetric scaling */
-    const auto scaled = sphere.transformed(Matrix3::scaling(Vector2(2.0f)));
-    CORRADE_COMPARE(scaled.position(), Vector2(2.0f, 4.0f));
-    CORRADE_COMPARE(scaled.radius(), 14.0f);
-
-    /* Apply average scaling to radius */
-    const auto nonEven = sphere.transformed(Matrix3::scaling({-Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(nonEven.radius(), Constants::sqrt3()*7.0f);
-}
-
-void SphereTest::transformed3D() {
+void SphereTest::transformed() {
     const Shapes::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
-    const auto transformed = sphere.transformed(Matrix4::rotation(Deg(90.0f), Vector3::yAxis()));
-    CORRADE_COMPARE(transformed.position(), Vector3(3.0f, 2.0f, -1.0f));
-    CORRADE_COMPARE(transformed.radius(), 7.0f);
-
-    /* Symmetric scaling */
-    const auto scaled = sphere.transformed(Matrix4::scaling(Vector3(2.0f)));
-    CORRADE_COMPARE(scaled.position(), Vector3(2.0f, 4.0f, 6.0f));
-    CORRADE_COMPARE(scaled.radius(), 14.0f);
-
-    /* Apply average scaling to radius */
-    const auto nonEven = sphere.transformed(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(nonEven.radius(), Constants::sqrt3()*7.0f);
+    const auto transformed = sphere.transformed(Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(Deg(90.0f), Vector3::yAxis()));
+    CORRADE_COMPARE(transformed.position(), Vector3(6.0f, 4.0f, -2.0f));
+    CORRADE_COMPARE(transformed.radius(), 14.0f);
 }
 
 void SphereTest::collisionPoint() {

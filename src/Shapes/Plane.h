@@ -38,8 +38,8 @@ namespace Magnum { namespace Shapes {
 /**
 @brief Infinite plane, defined by position and normal (3D only)
 
-See @ref shapes for brief introduction.
-@todo Assert for uniform scaling to avoid costly normalization?
+Unlike other elements the plane expects uniform scaling. See @ref shapes for
+brief introduction.
 */
 class MAGNUM_SHAPES_EXPORT Plane {
     public:

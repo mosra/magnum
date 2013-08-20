@@ -37,44 +37,25 @@ class CapsuleTest: public TestSuite::Tester {
     public:
         CapsuleTest();
 
-        void transformed2D();
-        void transformed3D();
+        void transformed();
         void transformedAverageScaling();
         void collisionPoint();
         void collisionSphere();
 };
 
 CapsuleTest::CapsuleTest() {
-    addTests({&CapsuleTest::transformed2D,
-              &CapsuleTest::transformed3D,
+    addTests({&CapsuleTest::transformed,
               &CapsuleTest::collisionPoint,
               &CapsuleTest::collisionSphere});
 }
 
-void CapsuleTest::transformed2D() {
-    const Shapes::Capsule2D capsule({1.0f, 2.0f}, {-1.0f, -2.0f}, 7.0f);
-
-    const auto transformed = capsule.transformed(Matrix3::rotation(Deg(90.0f)));
-    CORRADE_COMPARE(transformed.a(), Vector2(-2.0f, 1.0f));
-    CORRADE_COMPARE(transformed.b(), Vector2(2.0f, -1.0f));
-    CORRADE_COMPARE(transformed.radius(), 7.0f);
-
-    /* Apply average scaling to radius */
-    const auto scaled = capsule.transformed(Matrix3::scaling({-Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(scaled.radius(), Constants::sqrt3()*7.0f);
-}
-
-void CapsuleTest::transformed3D() {
+void CapsuleTest::transformed() {
     const Shapes::Capsule3D capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
 
-    const auto transformed = capsule.transformed(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
-    CORRADE_COMPARE(transformed.a(), Vector3(-2.0f, 1.0f, 3.0f));
-    CORRADE_COMPARE(transformed.b(), Vector3(2.0f, -1.0f, -3.0f));
-    CORRADE_COMPARE(transformed.radius(), 7.0f);
-
-    /* Apply average scaling to radius */
-    const auto scaled = capsule.transformed(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(scaled.radius(), Constants::sqrt3()*7.0f);
+    const auto transformed = capsule.transformed(Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
+    CORRADE_COMPARE(transformed.a(), Vector3(-4.0f, 2.0f, 6.0f));
+    CORRADE_COMPARE(transformed.b(), Vector3(4.0f, -2.0f, -6.0f));
+    CORRADE_COMPARE(transformed.radius(), 14.0f);
 }
 
 void CapsuleTest::collisionPoint() {

@@ -36,21 +36,8 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Shapes {
 
-namespace {
-    template<UnsignedInt dimensions> static typename DimensionTraits<dimensions, Float>::VectorType unitVector();
-
-    template<> inline Vector2 unitVector<2>() {
-        return Vector2(1/Constants::sqrt2());
-    }
-
-    template<> inline Vector3 unitVector<3>() {
-        return Vector3(1/Constants::sqrt3());
-    }
-}
-
 template<UnsignedInt dimensions> Capsule<dimensions> Capsule<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
-    return Capsule<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b),
-        (matrix.rotationScaling()*unitVector<dimensions>()).length()*_radius);
+    return Capsule<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b), matrix.uniformScaling()*_radius);
 }
 
 template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {

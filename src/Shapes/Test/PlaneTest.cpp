@@ -49,14 +49,10 @@ PlaneTest::PlaneTest() {
 void PlaneTest::transformed() {
     const Shapes::Plane plane({1.0f, 2.0f, 3.0f}, {Constants::sqrt2(), -Constants::sqrt2(), 0});
 
-    const auto transformed = plane.transformed(Matrix4::rotation(Deg(90.0f), Vector3::xAxis()));
-    CORRADE_COMPARE(transformed.position(), Vector3(1.0f, -3.0f, 2.0f));
+    /* The normal should stay normalized after scaling */
+    const auto transformed = plane.transformed(Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(Deg(90.0f), Vector3::xAxis()));
+    CORRADE_COMPARE(transformed.position(), Vector3(2.0f, -6.0f, 4.0f));
     CORRADE_COMPARE(transformed.normal(), Vector3(Constants::sqrt2(), 0, -Constants::sqrt2()));
-
-    /* The normal should stay normalized */
-    const auto scaled = plane.transformed(Matrix4::scaling({1.5f, 2.0f, 3.0f}));
-    CORRADE_COMPARE(scaled.position(), Vector3(1.5f, 4.0f, 9.0f));
-    CORRADE_COMPARE(scaled.normal(), Vector3(Constants::sqrt2(), -Constants::sqrt2(), 0));
 }
 
 void PlaneTest::collisionLine() {
