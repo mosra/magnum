@@ -34,6 +34,23 @@
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
+/*
+    Adding new collision type:
+
+    1.  Add the type into the 2D/3D enums below, pick new prime number and
+        preserve complexity ordering
+    2.  Update debug output operators for changed enums
+    3.  Add TypeOf struct specialization (either for both 2D/3D or for only one
+        of them)
+    4.  Add the enum value to (documentation-only) enum in Composition
+    5.  Update doc/shapes.dox with new type
+
+    Adding new collision detection implementation:
+
+    1.  Update Implementation/CollisionDispatch.cpp with newly implemented
+        2D/3D pair
+*/
+
 /* Shape type for given dimension count */
 
 template<UnsignedInt> struct ShapeDimensionTraits;
