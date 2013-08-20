@@ -191,12 +191,14 @@ template<class T> class Matrix3: public Matrix<3, T> {
         /**
          * @brief 2D rotation part of the matrix
          *
-         * Normalized upper-left 2x2 part of the matrix.
+         * Normalized upper-left 2x2 part of the matrix. Expects uniform
+         * scaling.
          * @see rotationNormalized(), rotationScaling(), @ref uniformScaling(),
          *      rotation(T), Matrix4::rotation() const
-         * @todo assert uniform scaling (otherwise this would be garbage)
          */
         Matrix<2, T> rotation() const {
+            CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xy().dot(), (*this)[1].xy().dot()),
+                           "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling", {});
             return {(*this)[0].xy().normalized(),
                     (*this)[1].xy().normalized()};
         }

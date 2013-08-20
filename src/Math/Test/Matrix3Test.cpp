@@ -319,21 +319,18 @@ void Matrix3Test::rotationPart() {
     CORRADE_COMPARE(rotationTranslationPart, expectedRotationPart);
 
     /* Test uniform scaling */
-    Matrix3 rotationScaling = rotation*Matrix3::scaling(Vector2(9.0f));
+    Matrix3 rotationScaling = rotation*Matrix3::scaling(Vector2(3.0f));
     Matrix2 rotationScalingPart = rotationScaling.rotation();
     CORRADE_COMPARE(rotationScalingPart.determinant(), 1.0f);
     CORRADE_COMPARE(rotationScalingPart*rotationScalingPart.transposed(), Matrix2());
     CORRADE_COMPARE(rotationScalingPart, expectedRotationPart);
 
     /* Fails on non-uniform scaling */
-    {
-        CORRADE_EXPECT_FAIL("Assertion on uniform scaling is not implemented yet.");
-        std::ostringstream o;
-        Error::setOutput(&o);
-        Matrix3 rotationScaling2 = rotation*Matrix3::scaling(Vector2::yScale(3.5f));
-        CORRADE_COMPARE(o.str(), "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling\n");
-        CORRADE_COMPARE(rotationScaling2, Matrix3(Matrix3::Zero));
-    }
+    std::ostringstream o;
+    Error::setOutput(&o);
+    Matrix2 rotationScaling2 = (rotation*Matrix3::scaling(Vector2::yScale(3.5f))).rotation();
+    CORRADE_COMPARE(o.str(), "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling\n");
+    CORRADE_COMPARE(rotationScaling2, Matrix2());
 }
 
 void Matrix3Test::uniformScalingPart() {

@@ -258,11 +258,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief 3D rotation part of the matrix
          *
-         * Normalized upper-left 3x3 part of the matrix.
+         * Normalized upper-left 3x3 part of the matrix. Expects uniform
+         * scaling.
          * @see rotationNormalized(), rotationScaling() const,
          *      @ref uniformScaling(), rotation(T, const Vector3&),
          *      Matrix3::rotation() const
-         * @todo assert uniform scaling (otherwise this would be garbage)
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         Matrix<3, T> rotation() const;
@@ -452,6 +452,9 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
 }
 
 template<class T> inline Matrix<3, T> Matrix4<T>::rotation() const {
+    CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xyz().dot(), (*this)[1].xyz().dot()) &&
+                   TypeTraits<T>::equals((*this)[1].xyz().dot(), (*this)[2].xyz().dot()),
+        "Math::Matrix4::rotation(): the matrix doesn't have uniform scaling", {});
     return {(*this)[0].xyz().normalized(),
             (*this)[1].xyz().normalized(),
             (*this)[2].xyz().normalized()};
