@@ -1,5 +1,5 @@
-#ifndef Magnum_Shapes_Capsule_h
-#define Magnum_Shapes_Capsule_h
+#ifndef Magnum_Shapes_Cylinder_h
+#define Magnum_Shapes_Cylinder_h
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Capsule, typedef Magnum::Shapes::Capsule2D, Magnum::Shapes::Capsule3D
+ * @brief Class Magnum::Shapes::Cylinder, typedef Magnum::Shapes::Cylinder2D, Magnum::Shapes::Cylinder3D
  */
 
 #include "Math/Vector3.h"
@@ -36,15 +36,15 @@
 namespace Magnum { namespace Shapes {
 
 /**
-@brief %Capsule defined by cylinder start and end point and radius
+@brief Infinite cylinder defined by line and radius
 
-Unlike other elements the capsule expects uniform scaling. See @ref shapes for
+Unlike other elements the cylinder expects uniform scaling. See @ref shapes for
 brief introduction.
-@see Capsule2D, Capsule3D, Cylinder
+@see @ref Cylinder2D, @ref Cylinder3D, @ref Capsule
 @todo Store the radius as squared value to avoid sqrt/pow? Will complicate
     collision detection with sphere.
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
+template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Cylinder {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Dimension count */
@@ -53,32 +53,32 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
         /**
          * @brief Constructor
          *
-         * Creates zero-sized capsule at origin.
+         * Creates zero-sized cylinder at origin.
          */
-        constexpr /*implicit*/ Capsule(): _radius(0.0f) {}
+        constexpr /*implicit*/ Cylinder(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Capsule(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
+        constexpr /*implicit*/ Cylinder(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
 
         /** @brief Transformed shape */
-        Capsule<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
+        Cylinder<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
 
-        /** @brief Start point */
+        /** @brief First point */
         constexpr typename DimensionTraits<dimensions, Float>::VectorType a() const {
             return _a;
         }
 
-        /** @brief Set start point */
+        /** @brief Set first point */
         void setA(const typename DimensionTraits<dimensions, Float>::VectorType& a) {
             _a = a;
         }
 
-        /** @brief End point */
+        /** @brief Second point */
         constexpr typename DimensionTraits<dimensions, Float>::VectorType b() const {
             return _b;
         }
 
-        /** @brief Set end point */
+        /** @brief Set second point */
         void setB(const typename DimensionTraits<dimensions, Float>::VectorType& b) {
             _b = b;
         }
@@ -100,17 +100,17 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
         Float _radius;
 };
 
-/** @brief Two-dimensional capsule */
-typedef Capsule<2> Capsule2D;
+/** @brief Infinite two-dimensional cylinder */
+typedef Cylinder<2> Cylinder2D;
 
-/** @brief Three-dimensional capsule */
-typedef Capsule<3> Capsule3D;
+/** @brief Infinite three-dimensional cylinder */
+typedef Cylinder<3> Cylinder3D;
 
-/** @collisionoperator{Point,Capsule} */
-template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
+/** @collisionoperator{Point,Cylinder} */
+template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
 
-/** @collisionoperator{Sphere,Capsule} */
-template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const Capsule<dimensions>& b) { return b % a; }
+/** @collisionoperator{Sphere,Cylinder} */
+template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
 
 }}
 

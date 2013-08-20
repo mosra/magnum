@@ -51,6 +51,7 @@ line and point. Collision of two lines can be detected only in 2D.
 @subsection shapes-3D Three-dimensional shapes
 
 - @ref Shapes::Sphere "Shapes::Sphere*D" -- @copybrief Shapes::Sphere
+- @ref Shapes::Cylinder "Shapes::Cylinder*D" -- @copybrief Shapes::Cylinder
 - @ref Shapes::Capsule "Shapes::Capsule*D" -- @copybrief Shapes::Capsule
 - @ref Shapes::AxisAlignedBox "Shapes::AxisAlignedBox*D" -- @copybrief Shapes::AxisAlignedBox
 - @ref Shapes::Box "Shapes::Box*D" -- @copybrief Shapes::Box
