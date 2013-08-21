@@ -65,7 +65,7 @@ AbstractCapsuleRenderer<2>::AbstractCapsuleRenderer(): AbstractShapeRenderer<2>(
 
 AbstractCapsuleRenderer<3>::AbstractCapsuleRenderer(): AbstractShapeRenderer<3>("capsule3d", "capsule3d-vertices", "capsule3d-indices") {
     constexpr UnsignedInt rings = 10;
-    constexpr UnsignedInt segments = 20;
+    constexpr UnsignedInt segments = 40;
     if(!wireframeMesh) createResources(Primitives::Capsule3D::wireframe(rings, 1, segments, 1.0f));
 
     /* Bottom hemisphere */
