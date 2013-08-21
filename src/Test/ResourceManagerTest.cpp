@@ -129,8 +129,7 @@ void ResourceManagerTest::stateDisallowed() {
     std::ostringstream out;
     Error::setOutput(&out);
 
-    Data d;
-    rm.set("data", &d, ResourceDataState::Loading, ResourcePolicy::Resident);
+    rm.set("data", Data(), ResourceDataState::Loading, ResourcePolicy::Resident);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
 
     out.str({});
@@ -144,8 +143,8 @@ void ResourceManagerTest::basic() {
     /* One mutable, one final */
     ResourceKey questionKey("the-question");
     ResourceKey answerKey("the-answer");
-    rm.set(questionKey, new Int(10), ResourceDataState::Mutable, ResourcePolicy::Resident);
-    rm.set(answerKey, new Int(42), ResourceDataState::Final, ResourcePolicy::Resident);
+    rm.set(questionKey, 10, ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, 42, ResourceDataState::Final, ResourcePolicy::Resident);
     Resource<Int> theQuestion = rm.get<Int>(questionKey);
     Resource<Int> theAnswer = rm.get<Int>(answerKey);
 
@@ -159,12 +158,12 @@ void ResourceManagerTest::basic() {
     /* Cannot change already final resource */
     std::ostringstream out;
     Error::setOutput(&out);
-    rm.set(answerKey, new Int(43), ResourceDataState::Mutable, ResourcePolicy::Resident);
+    rm.set(answerKey, 43, ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource " + answerKey.hexString() + '\n');
 
     /* But non-final can be changed */
-    rm.set(questionKey, new Int(20), ResourceDataState::Final, ResourcePolicy::Resident);
+    rm.set(questionKey, 20, ResourceDataState::Final, ResourcePolicy::Resident);
     CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
     CORRADE_COMPARE(*theQuestion, 20);
 }
@@ -250,7 +249,7 @@ void ResourceManagerTest::clearWhileReferenced() {
     Error::setOutput(&out);
 
     ResourceManager rm;
-    rm.set("blah", new Int);
+    rm.set("blah", Int());
     /** @todo this will leak, is there any better solution without hitting
         assertion in decrementReferenceCount()? */
     new Resource<Int>(rm.get<Int>("blah"));
@@ -265,7 +264,7 @@ void ResourceManagerTest::loader() {
             IntResourceLoader(): resource(ResourceManager::instance().get<Data>("data")) {}
 
             void load() {
-                set("hello", new Int(773), ResourceDataState::Final, ResourcePolicy::Resident);
+                set("hello", 773, ResourceDataState::Final, ResourcePolicy::Resident);
                 setNotFound("world");
             }
 
