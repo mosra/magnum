@@ -29,6 +29,12 @@ if(CORRADE_GCC46_COMPATIBILITY AND NOT CORRADE_GCC45_COMPATIBILITY)
     string(REPLACE "-pedantic" "" CORRADE_CXX_FLAGS "${CORRADE_CXX_FLAGS}")
 endif()
 
+# Disable strict aliasing for GCC 4.4, as it breaks non-const Matrix[34]::up()
+# etc. accessors (and I have no better solution for that yet)
+if(CORRADE_GCC44_COMPATIBILITY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
