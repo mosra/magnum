@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>Magnum Info</title>
+<meta charset="utf-8" />
 <link rel="stylesheet" href="NaClApplication.css" />
 <style type="text/css">
 #module {
@@ -31,7 +32,7 @@ function messageReceived(message) {
 var listener = document.getElementById('listener');
 listener.addEventListener('message', messageReceived, true);
 </script>
-<embed name="nacl" id="module" type="application/x-nacl" src="magnum-info.nmf" />
+<embed id="module" type="application/x-nacl" src="magnum-info.nmf" />
 <div id="status">Initialization...</div>
 <div id="statusDescription"></div>
 <div id="info"></div>
