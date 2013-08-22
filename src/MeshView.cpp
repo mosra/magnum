@@ -28,16 +28,27 @@
 
 namespace Magnum {
 
-MeshView& MeshView::setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end) {
+#ifndef MAGNUM_TARGET_GLES2
+MeshView& MeshView::setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end)
+#else
+MeshView& MeshView::setIndexRange(Int first, Int count, UnsignedInt, UnsignedInt)
+#endif
+{
     _indexOffset = first*_original->indexSize();
     _indexCount = count;
+    #ifndef MAGNUM_TARGET_GLES2
     _indexStart = start;
     _indexEnd = end;
+    #endif
     return *this;
 }
 
 void MeshView::draw() {
+    #ifndef MAGNUM_TARGET_GLES2
     _original->drawInternal(_firstVertex, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+    #else
+    _original->drawInternal(_firstVertex, _vertexCount, _indexOffset, _indexCount);
+    #endif
 }
 
 }
