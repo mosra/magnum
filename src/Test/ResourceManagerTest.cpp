@@ -98,7 +98,7 @@ void ResourceManagerTest::state() {
 void ResourceManagerTest::stateFallback() {
     {
         ResourceManager rm;
-        rm.setFallback<Data>(new Data);
+        rm.setFallback(new Data);
 
         Resource<Data> data = rm.get<Data>("data");
         CORRADE_VERIFY(data);
@@ -188,7 +188,7 @@ void ResourceManagerTest::referenceCountedPolicy() {
 
     /* Reference counted resources must be requested first */
     {
-        rm.set(dataRefCountKey, new Data(), ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+        rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
         CORRADE_COMPARE(rm.count<Data>(), 0);
         Resource<Data> data = rm.get<Data>(dataRefCountKey);
         CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
@@ -197,7 +197,7 @@ void ResourceManagerTest::referenceCountedPolicy() {
         Resource<Data> data = rm.get<Data>(dataRefCountKey);
         CORRADE_COMPARE(rm.count<Data>(), 1);
         CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
-        rm.set(dataRefCountKey, new Data(), ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+        rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
         CORRADE_COMPARE(data.state(), ResourceState::Final);
         CORRADE_COMPARE(Data::count, 1);
     }
