@@ -125,10 +125,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Set viewport size
          * @return Reference to self (for method chaining)
          *
-         * Has effect only if @ref Flag "Flag::Wireframe" is enabled.
+         * Has effect only if @ref Flag "Flag::Wireframe" is enabled and
+         * geometry shaders are used.
          */
         MeshVisualizer& setViewportSize(const Vector2& size) {
-            setUniform(viewportSizeUniform, size);
+            if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader))
+                setUniform(viewportSizeUniform, size);
             return *this;
         }
 
