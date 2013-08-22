@@ -83,13 +83,14 @@ your NaCl toolchain.
 <html>
 <head>
 <title>Magnum NaCl Application</title>
+<meta charset="utf-8" />
 <link rel="stylesheet" href="NaClApplication.css" />
 </head>
 <body>
 <h1>Magnum NaCl Application</h1>
 <div id="listener">
 <script type="text/javascript" src="NaClApplication.js"></script>
-<embed name="nacl" id="module" type="application/x-nacl" src="application.nmf" />
+<embed id="module" type="application/x-nacl" src="application.nmf" />
 <div id="status">Initialization...</div>
 <div id="statusDescription"></div>
 </div>
