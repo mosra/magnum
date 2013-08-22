@@ -26,6 +26,7 @@
 
 #include <utility>
 #include <Utility/Assert.h>
+#include <corradeCompatibility.h>
 
 #include "DimensionTraits.h"
 #include "Magnum.h"

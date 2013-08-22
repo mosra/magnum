@@ -25,6 +25,7 @@
 */
 
 #include <TestSuite/Tester.h>
+#include <corradeCompatibility.h>
 
 #include "Renderer.h"
 
