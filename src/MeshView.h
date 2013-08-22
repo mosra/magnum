@@ -100,7 +100,9 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Specifying `0` for both @p start and @p end behaves the same as
-         * @ref setIndexRange(Int, Int).
+         * @ref setIndexRange(Int, Int). On OpenGL ES 2.0 this function behaves
+         * always as @ref  setIndexRange(Int, Int), as this functionality is
+         * not available there.
          */
         MeshView& setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end);
 
@@ -129,10 +131,16 @@ class MAGNUM_EXPORT MeshView {
 
         Int _firstVertex, _vertexCount, _indexCount;
         GLintptr _indexOffset;
+        #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
+        #endif
 };
 
-inline MeshView::MeshView(Mesh& original): _original(&original), _firstVertex(0), _vertexCount(0), _indexCount(0), _indexOffset(0), _indexStart(0), _indexEnd(0) {}
+inline MeshView::MeshView(Mesh& original): _original(&original), _firstVertex(0), _vertexCount(0), _indexCount(0), _indexOffset(0)
+    #ifndef MAGNUM_TARGET_GLES2
+    , _indexStart(0), _indexEnd(0)
+    #endif
+    {}
 
 }
 

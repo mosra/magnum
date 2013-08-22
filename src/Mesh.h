@@ -597,7 +597,11 @@ class MAGNUM_EXPORT Mesh {
          *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
          */
         void draw() {
+            #ifndef MAGNUM_TARGET_GLES2
             drawInternal(0, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+            #else
+            drawInternal(0, _vertexCount, _indexOffset, _indexCount);
+            #endif
         }
 
     private:
@@ -722,7 +726,11 @@ class MAGNUM_EXPORT Mesh {
         #endif
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
         void drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount, Int indexStart, Int indexEnd);
+        #else
+        void drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount);
+        #endif
 
         typedef void(Mesh::*CreateImplementation)();
         void MAGNUM_LOCAL createImplementationDefault();

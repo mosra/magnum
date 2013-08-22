@@ -136,7 +136,12 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
     return *this;
 }
 
-void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount, Int indexStart, Int indexEnd) {
+#ifndef MAGNUM_TARGET_GLES2
+void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount, Int indexStart, Int indexEnd)
+#else
+void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount)
+#endif
+{
     /* Nothing to draw */
     if(!vertexCount && !indexCount) return;
 
