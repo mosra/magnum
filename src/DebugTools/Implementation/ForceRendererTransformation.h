@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Functions.h"
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
@@ -34,7 +35,7 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Float>::MatrixType forceRendererTransformation(const typename DimensionTraits<dimensions, Float>::VectorType& forcePosition, const typename DimensionTraits<dimensions, Float>::VectorType& force);
 
 template<> inline Matrix3 forceRendererTransformation<2>(const Vector2& forcePosition, const Vector2& force) {
-    return Matrix3::from({force, Vector2(-force.y(), force.x())}, forcePosition);
+    return Matrix3::from({force, force.perpendicular()}, forcePosition);
 }
 
 template<> Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, const Vector3& force) {
@@ -48,18 +49,15 @@ template<> Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, 
     const Float dot = Vector3::dot(force/forceLength, Vector3::xAxis());
 
     /* Force is parallel to X axis, just scaling */
-    if(dot > 1.0f - Math::TypeTraits<Float>::epsilon())
-        return translation*Matrix4::scaling(Vector3(forceLength));
-
-    /* Force is antiparallel to X axis, scaling inverted on X */
-    if(-dot > 1.0f - Math::TypeTraits<Float>::epsilon())
-        return translation*Matrix4::scaling({-forceLength, forceLength, forceLength});
+    if(Math::abs(dot) > 1.0f - Math::TypeTraits<Float>::epsilon())
+        return translation*Matrix4::scaling({Math::sign(dot)*forceLength, forceLength, forceLength});
 
     /* Normal of plane going through force vector and X axis vector */
     const Vector3 normal = Vector3::cross(Vector3::xAxis(), force).normalized();
 
     /* Third base vector, orthogonal to force and normal */
-    const Vector3 binormal = Vector3::cross(normal, force).normalized();
+    const Vector3 binormal = Vector3::cross(normal, force/forceLength);
+    CORRADE_INTERNAL_ASSERT(binormal.isNormalized());
 
     /* Transformation matrix from scaled base vectors and translation vector */
     return Matrix4::from({force, normal*forceLength, binormal*forceLength}, forcePosition);

@@ -168,7 +168,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *
          * Upper-left 2x2 part of the matrix.
          * @see from(const Matrix<2, T>&, const Vector2&), rotation() const
-         *      rotationNormalized(), rotation(T),
+         *      rotationNormalized(), @ref uniformScaling(), rotation(T),
          *      Matrix4::rotationScaling() const
          */
         constexpr Matrix<2, T> rotationScaling() const {
@@ -181,7 +181,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *
          * Similar to @ref rotationScaling(), but additionally checks that the
          * base vectors are normalized.
-         * @see rotation() const, @ref Matrix4::rotationNormalized()
+         * @see rotation() const, @ref uniformScaling(),
+         *      @ref Matrix4::rotationNormalized()
          * @todo assert also orthogonality or this is good enough?
          */
         Matrix<2, T> rotationNormalized() const {
@@ -194,17 +195,47 @@ template<class T> class Matrix3: public Matrix<3, T> {
         /**
          * @brief 2D rotation part of the matrix
          *
-         * Normalized upper-left 2x2 part of the matrix.
-         * @see rotationNormalized(), rotationScaling() const, rotation(T),
-         *      Matrix4::rotation() const
-         * @todo assert uniform scaling (otherwise this would be garbage)
+         * Normalized upper-left 2x2 part of the matrix. Expects uniform
+         * scaling.
+         * @see rotationNormalized(), rotationScaling(), @ref uniformScaling(),
+         *      rotation(T), Matrix4::rotation() const
          */
         Matrix<2, T> rotation() const {
+            CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xy().dot(), (*this)[1].xy().dot()),
+                           "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling", {});
             return {(*this)[0].xy().normalized(),
                     (*this)[1].xy().normalized()};
         }
 
-        /** @todo uniform scaling extraction */
+        /**
+         * @brief Uniform scaling part of the matrix, squared
+         *
+         * Squared length of vectors in upper-left 2x2 part of the matrix.
+         * Expects that the scaling is the same in all axes. Faster alternative
+         * to @ref uniformScaling(), because it doesn't compute the square
+         * root.
+         * @see @ref rotationScaling(), @ref rotation(),
+         *      @ref rotationNormalized(), @ref scaling(const Vector2&),
+         *      @ref Matrix4::uniformScaling()
+         */
+        T uniformScalingSquared() const {
+            const T scalingSquared = (*this)[0].xy().dot();
+            CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xy().dot(), scalingSquared),
+                           "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling", {});
+            return scalingSquared;
+        }
+
+        /**
+         * @brief Uniform scaling part of the matrix
+         *
+         * Length of vectors in upper-left 2x2 part of the matrix. Expects that
+         * the scaling is the same in all axes. Use faster alternative
+         * @ref uniformScalingSquared() where possible.
+         * @see @ref rotationScaling(), @ref rotation(),
+         *      @ref rotationNormalized(), @ref scaling(const Vector2&),
+         *      @ref Matrix4::uniformScaling()
+         */
+        T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
         /**
          * @brief Right-pointing 2D vector

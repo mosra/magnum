@@ -87,8 +87,8 @@ Int AbstractImporter::defaultScene() {
 Int AbstractImporter::doDefaultScene() { return -1; }
 
 UnsignedInt AbstractImporter::sceneCount() const {
-   CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::sceneCount(): no file opened", 0);
-   return doSceneCount();
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::sceneCount(): no file opened", 0);
+    return doSceneCount();
 }
 
 UnsignedInt AbstractImporter::doSceneCount() const { return 0; }

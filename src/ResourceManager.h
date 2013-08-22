@@ -313,15 +313,25 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             return *this;
         }
 
+        /** @overload */
+        template<class U> ResourceManager<Types...>& set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
+            return set(key, new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)), state, policy);
+        }
+
         /**
          * @brief Set resource data
          * @return Reference to self (for method chaining)
          *
-         * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
+         * Same as above with state set to @ref ResourceDataState "ResourceDataState::Final"
          * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
          */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data) {
             return set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+        }
+
+        /** @overload */
+        template<class U> ResourceManager<Types...>& set(ResourceKey key, U&& data) {
+            return set(key, new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)));
         }
 
         /** @brief Fallback for not found resources */
@@ -341,6 +351,11 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         template<class T> ResourceManager<Types...>& setFallback(T* data) {
             this->Implementation::ResourceManagerData<T>::setFallback(data);
             return *this;
+        }
+
+        /** @overload */
+        template<class U> ResourceManager<Types...>& setFallback(U&& data) {
+            return setFallback(new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)));
         }
 
         /**

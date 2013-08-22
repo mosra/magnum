@@ -27,6 +27,7 @@ set(MagnumShapes_SRCS
     AxisAlignedBox.cpp
     Box.cpp
     Capsule.cpp
+    Cylinder.cpp
     Composition.cpp
     Line.cpp
     Plane.cpp
@@ -44,6 +45,7 @@ set(MagnumShapes_HEADERS
     AxisAlignedBox.h
     Box.h
     Capsule.h
+    Cylinder.h
     Composition.h
     Line.h
     LineSegment.h

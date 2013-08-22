@@ -58,6 +58,7 @@ set(Magnum_SRCS
     Image.cpp
     ImageFormat.cpp
     Mesh.cpp
+    MeshView.cpp
     OpenGL.cpp
     Query.cpp
     Renderbuffer.cpp
@@ -117,6 +118,7 @@ set(Magnum_HEADERS
     ImageReference.h
     Magnum.h
     Mesh.h
+    MeshView.h
     OpenGL.h
     Query.h
     Renderbuffer.h
@@ -191,6 +193,10 @@ add_subdirectory(Math)
 add_subdirectory(Platform)
 add_subdirectory(Trade)
 
+if(WITH_AUDIO)
+    add_subdirectory(Audio)
+endif()
+
 if(WITH_DEBUGTOOLS)
     add_subdirectory(DebugTools)
 endif()
@@ -235,6 +241,12 @@ if(BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${Magnum_LIBS})
+
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
+        install(TARGETS MagnumMathTestLib MagnumTestLib DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
 
     add_subdirectory(Test)
 endif()

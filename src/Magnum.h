@@ -392,6 +392,7 @@ typedef ImageReference<2> ImageReference2D;
 typedef ImageReference<3> ImageReference3D;
 
 class Mesh;
+class MeshView;
 
 /* AbstractQuery is not used directly */
 class PrimitiveQuery;

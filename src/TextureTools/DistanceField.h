@@ -51,7 +51,8 @@ field (stored in red channel in @p rectangle of @p output). The purpose of this
 function is to convert high-resolution binary image (such as vector artwork or
 font glyphs) to low-resolution grayscale image. The image will then occupy much
 less memory and can be scaled without aliasing issues. Additionally it provides
-foundation for features like outlining, glow or drop shadow essentialy for free.
+foundation for features like outlining, glow or drop shadow essentially for
+free.
 
 For each pixel inside @p rectangle the algorithm looks at corresponding pixel in
 @p input and tries to find nearest pixel of opposite color in area given by

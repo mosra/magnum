@@ -38,11 +38,11 @@ namespace Magnum { namespace Shapes {
 /**
 @brief %Sphere defined by position and radius
 
-Unlike other elements the sphere doesn't support asymmetric scaling. When
-applying transformation, the scale factor is averaged from all axes. See
-@ref shapes for brief introduction.
+Unlike other elements the sphere expects uniform scaling. See @ref shapes for
+brief introduction.
 @see Sphere2D, Sphere3D
-@todo Assert for asymmetric scaling
+@todo Store the radius as squared value to avoid sqrt/pow? Will complicate
+    collision detection with another sphere.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
     public:

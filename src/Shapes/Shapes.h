@@ -54,6 +54,10 @@ template<UnsignedInt> class Composition;
 typedef Composition<2> Composition2D;
 typedef Composition<3> Composition3D;
 
+template<UnsignedInt> class Cylinder;
+typedef Cylinder<2> Cylinder2D;
+typedef Cylinder<3> Cylinder3D;
+
 template<UnsignedInt> class Line;
 typedef Line<2> Line2D;
 typedef Line<3> Line3D;

@@ -250,11 +250,28 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * If the plugin doesn't have @ref Feature "Feature::MultiFile",
          * default implementation calls doExportFontToSingleData().
+         * @note On Windows uses `std::vector<char32_t>` instead of
+         *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
+         *      for more information.
          */
+        #ifndef _WIN32
         virtual std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
+        #else
+        virtual std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const;
+        #endif
 
-        /** @brief Implementation for exportFontToSingleData() */
+        /**
+         * @brief Implementation for exportFontToSingleData()
+         *
+         * @note On Windows uses `std::vector<char32_t>` instead of
+         *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
+         *      for more information.
+         */
+        #ifndef _WIN32
         virtual Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::u32string& characters) const;
+        #else
+        virtual Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::vector<char32_t>& characters) const;
+        #endif
 
         /**
          * @brief Implementation for exportFontToFile()
@@ -262,8 +279,15 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If @ref Feature "Feature::ConvertData" is supported, default
          * implementation calls doExportFontToData() and saves the result to
          * given file(s).
+         * @note On Windows uses `std::vector<char32_t>` instead of
+         *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
+         *      for more information.
          */
+        #ifndef _WIN32
         virtual bool doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
+        #else
+        virtual bool doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const;
+        #endif
 
         /**
          * @brief Implementation for exportGlyphCacheToData()
@@ -307,7 +331,11 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         virtual GlyphCache* doImportGlyphCacheFromFile(const std::string& filename) const;
 
     private:
+        #ifndef _WIN32
         MAGNUM_TEXT_LOCAL static std::u32string uniqueUnicode(const std::string& characters);
+        #else
+        MAGNUM_TEXT_LOCAL static std::vector<char32_t> uniqueUnicode(const std::string& characters);
+        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFontConverter::Features)

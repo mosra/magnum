@@ -26,6 +26,7 @@
 
 #include <utility>
 #include <Utility/Assert.h>
+#include <corradeCompatibility.h>
 
 #include "DimensionTraits.h"
 #include "Magnum.h"
@@ -33,6 +34,23 @@
 #include "Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes { namespace Implementation {
+
+/*
+    Adding new collision type:
+
+    1.  Add the type into the 2D/3D enums below, pick new prime number and
+        preserve complexity ordering
+    2.  Update debug output operators for changed enums
+    3.  Add TypeOf struct specialization (either for both 2D/3D or for only one
+        of them)
+    4.  Add the enum value to (documentation-only) enum in Composition
+    5.  Update doc/shapes.dox with new type
+
+    Adding new collision detection implementation:
+
+    1.  Update Implementation/CollisionDispatch.cpp with newly implemented
+        2D/3D pair
+*/
 
 /* Shape type for given dimension count */
 
@@ -44,10 +62,11 @@ template<> struct ShapeDimensionTraits<2> {
         Line = 2,
         LineSegment = 3,
         Sphere = 5,
-        Capsule = 7,
-        AxisAlignedBox = 11,
-        Box = 13,
-        Composition = 17
+        Cylinder = 7,
+        Capsule = 11,
+        AxisAlignedBox = 13,
+        Box = 17,
+        Composition = 19
     };
 };
 
@@ -57,11 +76,12 @@ template<> struct ShapeDimensionTraits<3> {
         Line = 2,
         LineSegment = 3,
         Sphere = 5,
-        Capsule = 7,
-        AxisAlignedBox = 11,
-        Box = 13,
-        Plane = 17,
-        Composition = 19
+        Cylinder = 7,
+        Capsule = 11,
+        AxisAlignedBox = 13,
+        Box = 17,
+        Plane = 19,
+        Composition = 23
     };
 };
 
@@ -90,6 +110,11 @@ template<UnsignedInt dimensions> struct TypeOf<Shapes::LineSegment<dimensions>> 
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Sphere<dimensions>> {
     constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Sphere;
+    }
+};
+template<UnsignedInt dimensions> struct TypeOf<Shapes::Cylinder<dimensions>> {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+        return ShapeDimensionTraits<dimensions>::Type::Cylinder;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Capsule<dimensions>> {

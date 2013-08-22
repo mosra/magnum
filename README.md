@@ -37,7 +37,7 @@ DESIGN GOALS
 SUPPORTED PLATFORMS
 ===================
 
-*   **OpenGL** 2.1 through 4.3, core profile functionality and modern
+*   **OpenGL** 2.1 through 4.4, core profile functionality and modern
     extensions
 *   **OpenGL ES** 2.0, 3.0 and extensions to match desktop OpenGL functionality
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
@@ -72,13 +72,14 @@ more comprehensive guide for building, packaging and crosscompiling.
 Minimal dependencies
 --------------------
 
- * C++ compiler with good C++11 support. Currently there are two compilers
-   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
-   >= 3.1.
- * **CMake** >= 2.8.8 (needed for `OBJECT` library target)
- * **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
- * **Corrade** - Plugin management and utility library. You can get it at
-   https://github.com/mosra/corrade.
+*   C++ compiler with good C++11 support. Currently there are two compilers
+    which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
+    >= 3.1. On Windows you can use **MinGW**, Visual Studio compiler still
+    lacks some needed features.
+*   **CMake** >= 2.8.8
+*   **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
+*   **Corrade** - Plugin management and utility library. You can get it at
+    https://github.com/mosra/corrade.
 
 Compilation, installation
 -------------------------
@@ -121,26 +122,40 @@ in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
 if it doesn't exist yet.
 
-PLUGINS AND EXAMPLES
-====================
+GETTING STARTED
+===============
 
-Various importer plugins for image and 3D model formats are maintained in
+The Doxygen documentation has a thorough [guide how to start using Magnum](http://mosra.cz/blog/magnum-doc/getting-started.html)
+in your project.
+
+RELATED PROJECTS
+================
+
+The engine itself is kept as small as possible with only little dependencies.
+Additional functionality, often depending on external libraries, is provided in
+separate repositories. Integration with various external math and physics
+libraries can be found at https://github.com/mosra/magnum-integration. Various
+importer plugins for image, audio and 3D model formats are maintained in
 separate repository, which can be found at https://github.com/mosra/magnum-plugins.
 
 There are also examples of engine usage, varying from simple *Hello World*-like
 example to more advanced applications, such as viewer for complex 3D models.
 Example repository is at https://github.com/mosra/magnum-examples.
 
+Repository with bootstrap projects for many use cases, helping you get up and
+running in no time is located at https://github.com/mosra/magnum-bootstrap.
+
 CONTACT
 =======
 
-Want to learn more about the library? Found a bug or want to tell me an
-awesome idea? Feel free to visit my website or contact me at:
+Want to learn more about the library? Found a bug or want to tell me an awesome
+idea? Feel free to visit my website or contact me at:
 
- * Website - http://mosra.cz/blog/
- * GitHub - https://github.com/mosra/magnum
- * E-mail - mosra@centrum.cz
- * Jabber - mosra@jabbim.cz
+*   Website - http://mosra.cz/blog/magnum.php
+*   GitHub - https://github.com/mosra/magnum
+*   Twitter - https://twitter.com/czmosra
+*   E-mail - mosra@centrum.cz
+*   Jabber - mosra@jabbim.cz
 
 LICENSE
 =======

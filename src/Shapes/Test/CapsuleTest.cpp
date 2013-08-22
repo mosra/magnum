@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
 #include "Shapes/Capsule.h"
@@ -51,14 +52,10 @@ CapsuleTest::CapsuleTest() {
 void CapsuleTest::transformed() {
     const Shapes::Capsule3D capsule({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f}, 7.0f);
 
-    const auto transformed = capsule.transformed(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
-    CORRADE_COMPARE(transformed.a(), Vector3(-2.0f, 1.0f, 3.0f));
-    CORRADE_COMPARE(transformed.b(), Vector3(2.0f, -1.0f, -3.0f));
-    CORRADE_COMPARE(transformed.radius(), 7.0f);
-
-    /* Apply average scaling to radius */
-    const auto scaled = capsule.transformed(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(scaled.radius(), Constants::sqrt3()*7.0f);
+    const auto transformed = capsule.transformed(Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
+    CORRADE_COMPARE(transformed.a(), Vector3(-4.0f, 2.0f, 6.0f));
+    CORRADE_COMPARE(transformed.b(), Vector3(4.0f, -2.0f, -6.0f));
+    CORRADE_COMPARE(transformed.radius(), 14.0f);
 }
 
 void CapsuleTest::collisionPoint() {

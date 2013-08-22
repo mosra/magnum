@@ -37,8 +37,7 @@ using namespace Magnum::Math::Geometry;
 namespace Magnum { namespace Shapes {
 
 template<UnsignedInt dimensions> Capsule<dimensions> Capsule<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
-    return Capsule<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b),
-        (matrix.rotationScaling()*typename DimensionTraits<dimensions, Float>::VectorType(1/Constants::sqrt3())).length()*_radius);
+    return Capsule<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b), matrix.uniformScaling()*_radius);
 }
 
 template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {

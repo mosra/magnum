@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
+/** @file /Buffer.h
  * @brief Class Magnum::Buffer
  */
 

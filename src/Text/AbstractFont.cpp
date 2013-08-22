@@ -124,7 +124,12 @@ void AbstractFont::fillGlyphCache(GlyphCache& cache, const std::string& characte
     doFillGlyphCache(cache, Utility::Unicode::utf32(characters));
 }
 
-void AbstractFont::doFillGlyphCache(GlyphCache&, const std::u32string&) {
+#ifndef _WIN32
+void AbstractFont::doFillGlyphCache(GlyphCache&, const std::u32string&)
+#else
+void AbstractFont::doFillGlyphCache(GlyphCache&, const std::vector<char32_t>&)
+#endif
+{
     CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 

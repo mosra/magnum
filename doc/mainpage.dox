@@ -62,7 +62,7 @@ namespace Magnum {
 
 @section mainpage-platforms Supported platforms
 
--   **OpenGL** 2.1 through 4.3, core profile functionality and modern
+-   **OpenGL** 2.1 through 4.4, core profile functionality and modern
     extensions
 -   **OpenGL ES** 2.0, 3.0 and extensions to match desktop OpenGL functionality
 -   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
@@ -83,16 +83,10 @@ namespace Magnum {
 -   Pre-made shaders, primitives and other tools for easy prototyping and
     debugging.
 
-@section mainpage-download-build Downloading and building Magnum
-
-Guide @ref building "how to download and build Magnum" on different platforms.
-
 @section mainpage-getting-started Getting started
 
-The best way to get started is to render your first triangle in
-@ref example-index "step-by-step tutorial". Then you can dig deeper and try
-other examples, read about @ref features "fundamental principles" in the
-documentation or start experimenting on your own!
+Read thorough @ref getting-started "guide to download, build, install and start using Magnum"
+in your project.
 
 @section mainpage-hacking Hacking Magnum
 
@@ -105,8 +99,9 @@ make the library as consistent and maintainable as possible.
 
 Feel free to get more information or contact the author at:
 
+- Website - http://mosra.cz/blog/magnum.php
 - GitHub - https://github.com/mosra/magnum
-- Website - http://mosra.cz/blog/
+- Twitter - https://twitter.com/czmosra
 - E-mail - mosra@centrum.cz
 - Jabber - mosra@jabbim.cz
 

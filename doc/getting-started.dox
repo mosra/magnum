@@ -1,0 +1,202 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page getting-started Getting started
+@brief Get started with %Magnum in matter of minutes.
+
+@tableofcontents
+
+@section getting-started-download Download, build and install Magnum
+
+Get latest version from GitHub and install it. Read full guide on
+@ref building "how to download, build and install Magnum" on platform of your
+choice. For our first project we will use GLUT toolkit, don't forget to enable
+it for building using `WITH_GLUTAPPLICATION` CMake parameter.
+
+@section getting-started-bootstrap Download bootstrap project
+
+Setting up a new project can be pretty gruesome and nobody likes repeating the
+same process every time. %Magnum provides "bootstrap" project structures for
+many use cases, helping you get up and running in no time.
+
+The [bootstrap repository](https://github.com/mosra/magnum-bootstrap) is
+located on GitHub. The `master` branch contains just an README file and the
+actual bootstrap projects are in various other branches, each covering some
+particular use case. For your first project you would need the `base` branch,
+which contains only the essential files you need. Download the branch [as an
+archive](https://github.com/mosra/magnum-bootstrap/archive/base.zip) and
+extract it somewhere. Do it rather than cloning the full repository, as it's
+better to init your own repository from scratch to avoid having the history
+polluted.
+
+@section getting-started-review Review project structure
+
+The base project consists of just seven files in two subfolders. %Magnum uses
+CMake build system, see @ref cmake for more information.
+
+    modules/FindCorrade.cmake
+    modules/FindMagnum.cmake
+    modules/FindGLEW.cmake
+    src/MyApplication.cpp
+    src/CMakeLists.txt
+    CMakeLists.txt
+    .gitignore
+
+In root there is pre-filled `.gitignore` for your Git project and also
+project-wide `CMakeLists.txt`. It just sets up project name, specifies module
+directory and delegates everything important to `CMakeLists.txt` in `src/`
+subdirectory.
+@code
+cmake_minimum_required(VERSION 2.8.8)
+project(MyApplication)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
+
+add_subdirectory(src)
+@endcode
+
+Directory `modules/` contains CMake modules for finding the needed
+dependencies. Unlike modules for finding e.g. GLUT and OpenGL, which are part
+of standard CMake installation, these aren't part of it and thus must be
+distributed with the project. These files are just verbatim copied from %Magnum
+repository.
+
+Directory `src/` contains the actual project. To keep things simple, the
+project consists of just one source file with the most minimal code possible:
+@code
+#include <Platform/GlutApplication.h>
+#include <DefaultFramebuffer.h>
+
+using namespace Magnum;
+
+class MyApplication: public Platform::Application {
+    public:
+        explicit MyApplication(const Arguments& arguments);
+
+    protected:
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+};
+
+MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {}
+
+void MyApplication::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
+}
+
+void MyApplication::drawEvent() {
+    defaultFramebuffer.clear(FramebufferClear::Color);
+    swapBuffers();
+}
+
+MAGNUM_APPLICATION_MAIN(MyApplication)
+@endcode
+
+The application essentially does nothing, just clears properly sized screen
+framebuffer to default (black) color and then does buffer swap to actually
+display it on the screen. `CMakeLists.txt` finds %Magnum, sets up compiler
+flags, creates the executable and links it to all needed libraries:
+@code
+find_package(Magnum REQUIRED GlutApplication)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
+
+add_executable(MyApplication MyApplication.cpp)
+target_link_libraries(MyApplication
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
+@endcode
+
+In the following tutorials the code will be explained more thoroughly.
+
+@section getting-started-build Build it and run
+
+In Linux (and other Unix-based OSs) you can build the example using the
+following three commands: create out-of-source build directory, run cmake in it
+and then run make. The application binary will then appear in src/ subdirectory
+of build dir:
+
+    mkdir -p build && cd build
+    cmake ..
+    make
+    ./src/MyApplication
+
+On Windows, if you don't want to touch the command-line, the easiest way is to
+open root `CMakeLists.txt` in QtCreator, let it import the project and then
+just build and run the application. If CMake isn't able to find the
+dependencies or the building fails for some reason, you might want to look at
+@ref building-windows-troubleshooting.
+
+@image html getting-started.png
+@image latex getting-started.png
+
+Now you can try to change something in the code. Without going too deep into
+the concepts of graphics programming, we can change clear color to something
+else and also print basic information about the GPU the engine is running on.
+First include the needed headers:
+@code
+#include <Color.h>
+#include <Context.h>
+#include <Renderer.h>
+@endcode
+
+And in the constructor (which is currently empty) change the clear color and
+print something to debug output:
+@code
+Renderer::setClearColor({0.07f, 0.44f, 0.73f});
+
+Debug() << "Hello! This application is running on" << Context::current()->version()
+        << "using" << Context::current()->rendererString();
+@endcode
+
+After rebuilding and starting the application, the clear color changes to
+blueish one and something like this would be printed to the console:
+@code
+Hello! This application is running on OpenGL 3.3 using Geforce GT 330M
+@endcode
+
+@image html getting-started-blue.png
+@image latex getting-started-blue.png
+
+@section getting-started-tutorials Follow tutorials and learn the principles
+
+Now that you have your first application up and running, the best way to
+continue is to render your first triangle in @ref example-index "step-by-step tutorial".
+Then you can dig deeper and try other examples, read about
+@ref features "fundamental principles" in the documentation and start
+experimenting on your own!
+
+@section getting-started-more Additional information
+
+- @subpage building
+- @subpage building-plugins
+- @subpage building-integration
+- @subpage cmake
+- @subpage cmake-plugins
+- @subpage cmake-integration
+
+*/
+}

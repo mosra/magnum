@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Magnum.h"
 #include "Shapes/LineSegment.h"
@@ -54,18 +55,9 @@ SphereTest::SphereTest() {
 void SphereTest::transformed() {
     const Shapes::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
-    const auto transformed = sphere.transformed(Matrix4::rotation(Deg(90.0f), Vector3::yAxis()));
-    CORRADE_COMPARE(transformed.position(), Vector3(3.0f, 2.0f, -1.0f));
-    CORRADE_COMPARE(transformed.radius(), 7.0f);
-
-    /* Symmetric scaling */
-    const auto scaled = sphere.transformed(Matrix4::scaling(Vector3(2.0f)));
-    CORRADE_COMPARE(scaled.position(), Vector3(2.0f, 4.0f, 6.0f));
-    CORRADE_COMPARE(scaled.radius(), 14.0f);
-
-    /* Apply average scaling to radius */
-    const auto nonEven = sphere.transformed(Matrix4::scaling({Constants::sqrt3(), -Constants::sqrt2(), 2.0f}));
-    CORRADE_COMPARE(nonEven.radius(), Constants::sqrt3()*7.0f);
+    const auto transformed = sphere.transformed(Matrix4::scaling(Vector3(2.0f))*Matrix4::rotation(Deg(90.0f), Vector3::yAxis()));
+    CORRADE_COMPARE(transformed.position(), Vector3(6.0f, 4.0f, -2.0f));
+    CORRADE_COMPARE(transformed.radius(), 14.0f);
 }
 
 void SphereTest::collisionPoint() {

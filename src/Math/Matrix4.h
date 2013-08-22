@@ -231,8 +231,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Upper-left 3x3 part of the matrix.
          * @see from(const Matrix<3, T>&, const Vector3&), rotation() const,
-         *      rotationNormalized(), rotation(T, const Vector3&),
-         *      Matrix3::rotationScaling() const
+         *      rotationNormalized(), @ref uniformScaling(),
+         *      rotation(T, const Vector3&), Matrix3::rotationScaling() const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         constexpr Matrix<3, T> rotationScaling() const {
@@ -246,7 +246,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Similar to @ref rotationScaling(), but additionally checks that the
          * base vectors are normalized.
-         * @see rotation() const, @ref Matrix3::rotationNormalized()
+         * @see rotation() const, @ref uniformScaling(),
+         *      @ref Matrix3::rotationNormalized()
          * @todo assert also orthogonality or this is good enough?
          */
         /* Not Matrix3, because it is for affine 2D transformations */
@@ -261,15 +262,39 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief 3D rotation part of the matrix
          *
-         * Normalized upper-left 3x3 part of the matrix.
+         * Normalized upper-left 3x3 part of the matrix. Expects uniform
+         * scaling.
          * @see rotationNormalized(), rotationScaling() const,
-         *      rotation(T, const Vector3&), Matrix3::rotation() const
-         * @todo assert uniform scaling (otherwise this would be garbage)
+         *      @ref uniformScaling(), rotation(T, const Vector3&),
+         *      Matrix3::rotation() const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         Matrix<3, T> rotation() const;
 
-        /** @todo uniform scaling extraction */
+        /**
+         * @brief Uniform scaling part of the matrix, squared
+         *
+         * Squared length of vectors in upper-left 3x3 part of the matrix.
+         * Expects that the scaling is the same in all axes. Faster alternative
+         * to @ref uniformScaling(), because it doesn't compute the square
+         * root.
+         * @see @ref rotationScaling(), @ref rotation(),
+         *      @ref rotationNormalized(), @ref scaling(const Vector3&),
+         *      @ref Matrix3::uniformScaling()
+         */
+        T uniformScalingSquared() const;
+
+        /**
+         * @brief Uniform scaling part of the matrix
+         *
+         * Length of vectors in upper-left 3x3 part of the matrix. Expects that
+         * the scaling is the same in all axes. Use faster alternative
+         * @ref uniformScalingSquared() where possible.
+         * @see @ref rotationScaling(), @ref rotation(),
+         *      @ref rotationNormalized(), @ref scaling(const Vector3&),
+         *      @ref Matrix3::uniformScaling()
+         */
+        T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
         /**
          * @brief Right-pointing 3D vector
@@ -457,9 +482,20 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
 }
 
 template<class T> inline Matrix<3, T> Matrix4<T>::rotation() const {
+    CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xyz().dot(), (*this)[1].xyz().dot()) &&
+                   TypeTraits<T>::equals((*this)[1].xyz().dot(), (*this)[2].xyz().dot()),
+        "Math::Matrix4::rotation(): the matrix doesn't have uniform scaling", {});
     return {(*this)[0].xyz().normalized(),
             (*this)[1].xyz().normalized(),
             (*this)[2].xyz().normalized()};
+}
+
+template<class T> T Matrix4<T>::uniformScalingSquared() const {
+    const T scalingSquared = (*this)[0].xyz().dot();
+    CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xyz().dot(), scalingSquared) &&
+                   TypeTraits<T>::equals((*this)[2].xyz().dot(), scalingSquared),
+        "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling", {});
+    return scalingSquared;
 }
 
 template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {

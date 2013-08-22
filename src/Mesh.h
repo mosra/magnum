@@ -240,6 +240,7 @@ for more information.
  */
 class MAGNUM_EXPORT Mesh {
     friend class Context;
+    friend class MeshView;
 
     Mesh(const Mesh&) = delete;
     Mesh& operator=(const Mesh&) = delete;
@@ -335,7 +336,11 @@ class MAGNUM_EXPORT Mesh {
             UnsignedInt = GL_UNSIGNED_INT
         };
 
-        /** @brief Size of given index type */
+        /**
+         * @brief Size of given index type
+         *
+         * @see indexSize() const
+         */
         static std::size_t indexSize(IndexType type);
 
         /**
@@ -361,6 +366,13 @@ class MAGNUM_EXPORT Mesh {
 
         /** @brief Move assignment */
         Mesh& operator=(Mesh&& other);
+
+        /**
+         * @brief Index size
+         *
+         * @see indexSize(IndexType)
+         */
+        std::size_t indexSize() const { return indexSize(_indexType); }
 
         /** @brief Primitive type */
         Primitive primitive() const { return _primitive; }
@@ -584,7 +596,9 @@ class MAGNUM_EXPORT Mesh {
          *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
          *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
          */
-        void draw();
+        void draw() {
+            drawInternal(0, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+        }
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -708,6 +722,8 @@ class MAGNUM_EXPORT Mesh {
         #endif
         #endif
 
+        void drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount, Int indexStart, Int indexEnd);
+
         typedef void(Mesh::*CreateImplementation)();
         void MAGNUM_LOCAL createImplementationDefault();
         void MAGNUM_LOCAL createImplementationVAO();
@@ -759,21 +775,21 @@ class MAGNUM_EXPORT Mesh {
         void MAGNUM_LOCAL unbindImplementationVAO();
         static MAGNUM_LOCAL UnbindImplementation unbindImplementation;
 
-        GLuint vao;
+        GLuint _id;
         Primitive _primitive;
         Int _vertexCount, _indexCount;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt indexStart, indexEnd;
+        UnsignedInt _indexStart, _indexEnd;
         #endif
-        GLintptr indexOffset;
-        IndexType indexType;
-        Buffer* indexBuffer;
+        GLintptr _indexOffset;
+        IndexType _indexType;
+        Buffer* _indexBuffer;
 
-        std::vector<Attribute> attributes;
+        std::vector<Attribute> _attributes;
         #ifndef MAGNUM_TARGET_GLES2
-        std::vector<IntegerAttribute> integerAttributes;
+        std::vector<IntegerAttribute> _integerAttributes;
         #ifndef MAGNUM_TARGET_GLES
-        std::vector<LongAttribute> longAttributes;
+        std::vector<LongAttribute> _longAttributes;
         #endif
         #endif
 };
@@ -791,7 +807,6 @@ template<class ...T> inline Mesh& Mesh::addVertexBuffer(Buffer& buffer, GLintptr
     addVertexBufferInternal(buffer, offset, attributes...);
     return *this;
 }
-
 
 }
 

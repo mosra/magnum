@@ -88,6 +88,20 @@ This library is built by default and found by default in CMake. See
 @ref building and @ref cmake for more information.
 */
 
+/** @dir Audio
+ * @brief Namespace Magnum::Audio
+ */
+/** @namespace Magnum::Audio
+@brief %Audio playback
+
+Audio import, playback and integration with @ref SceneGraph.
+
+This library is built when `WITH_AUDIO` is enabled and found as `%Audio`
+component in CMake. See @ref building and @ref cmake for more information.
+Additional plugins are part of plugin repository, see @ref building-plugins and
+@ref cmake-plugins for more information.
+*/
+
 /** @dir DebugTools
  * @brief Namespace Magnum::DebugTools
  */
@@ -177,6 +191,8 @@ Font texture creation and text layouting.
 
 This library is built when `WITH_TEXT` is enabled and found as `%Text`
 component in CMake. See @ref building and @ref cmake for more information.
+Additional plugins are part of plugin repository, see @ref building-plugins and
+@ref cmake-plugins for more information.
 */
 
 /** @dir TextureTools
@@ -202,5 +218,7 @@ Contains plugin interfaces for importing data of various formats and classes
 for direct access to the data.
 
 This library is built by default and found by default in CMake. See
-@ref building and @ref cmake for more information.
+@ref building and @ref cmake for more information. Additional plugins are part
+of plugin repository, see @ref building-plugins and @ref cmake-plugins for more
+information.
 */

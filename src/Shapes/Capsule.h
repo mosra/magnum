@@ -38,11 +38,11 @@ namespace Magnum { namespace Shapes {
 /**
 @brief %Capsule defined by cylinder start and end point and radius
 
-Unlike other elements the capsule doesn't support asymmetric scaling. When
-applying transformation, the scale factor is averaged from all axes. See
-@ref shapes for brief introduction.
-@see Capsule2D, Capsule3D
-@todo Assert for asymmetric scaling
+Unlike other elements the capsule expects uniform scaling. See @ref shapes for
+brief introduction.
+@see Capsule2D, Capsule3D, Cylinder
+@todo Store the radius as squared value to avoid sqrt/pow? Will complicate
+    collision detection with sphere.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
     public:

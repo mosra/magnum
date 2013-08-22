@@ -92,5 +92,11 @@ if(BUILD_TESTS)
     set_target_properties(MagnumSceneGraphTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumSceneGraph_EXPORTS")
     target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)
 
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
+        install(TARGETS MagnumSceneGraphTestLib DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+
     add_subdirectory(Test)
 endif()

@@ -31,6 +31,8 @@
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
+#include "Implementation/CapsuleRenderer.h"
+#include "Implementation/CylinderRenderer.h"
 #include "Implementation/LineSegmentRenderer.h"
 #include "Implementation/PointRenderer.h"
 #include "Implementation/SphereRenderer.h"
@@ -55,6 +57,12 @@ template<> void createDebugMesh(ShapeRenderer<2>& renderer, const Shapes::Implem
             break;
         case Shapes::AbstractShape2D::Type::Sphere:
             renderer.renderers.push_back(new Implementation::SphereRenderer<2>(shape));
+            break;
+        case Shapes::AbstractShape2D::Type::Capsule:
+            renderer.renderers.push_back(new Implementation::CapsuleRenderer<2>(shape));
+            break;
+        case Shapes::AbstractShape2D::Type::Cylinder:
+            renderer.renderers.push_back(new Implementation::CylinderRenderer<2>(shape));
             break;
         case Shapes::AbstractShape2D::Type::Composition: {
             const Shapes::Composition2D& composition =
@@ -83,6 +91,12 @@ template<> void createDebugMesh(ShapeRenderer<3>& renderer, const Shapes::Implem
             break;
         case Shapes::AbstractShape3D::Type::Sphere:
             renderer.renderers.push_back(new Implementation::SphereRenderer<3>(shape));
+            break;
+        case Shapes::AbstractShape3D::Type::Capsule:
+            renderer.renderers.push_back(new Implementation::CapsuleRenderer<3>(shape));
+            break;
+        case Shapes::AbstractShape3D::Type::Cylinder:
+            renderer.renderers.push_back(new Implementation::CylinderRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::Composition: {
             const Shapes::Composition3D& composition =

@@ -38,8 +38,9 @@ Minimal set of tools and libraries required for building is:
 
 - C++ compiler with good C++11 support. Currently there are two compilers
   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
-  >= 3.1.
-- **CMake** >= 2.8.8 (needed for `OBJECT` library target)
+  >= 3.1. On Windows you can use **MinGW**, Visual Studio compiler still lacks
+  some needed features.
+- **CMake** >= 2.8.8
 - **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
 - **Corrade** - Plugin management and utility library. See
   @ref building-corrade "Corrade download and installation guide" for more
@@ -63,9 +64,10 @@ subdirectory.
 
 @section building-compilation Compilation, installation
 
-The library (for example with support for GLUT applications) can be built and
-installed using these four commands. See below for more information about
-optional features.
+@subsection building-linux Via command-line (on Linux/Unix)
+
+On Unix-based OSs, the library (for example with support for GLUT applications)
+can be built and installed using these four commands:
 
     mkdir -p build && cd build
     cmake .. \
@@ -74,17 +76,68 @@ optional features.
     make
     make install
 
-The libraries are build as shared by default, pass `-DBUILD_STATIC=ON` to build
-them as static. If you plan them to use with shared libraries later, enable
-also position-independent code with `-DBUILD_STATIC_PIC=ON`. If you want to
-build with another compiler (e.g. Clang), pass `-DCMAKE_CXX_COMPILER=clang++`
-to CMake.
+The library provides a lot of CMake options (described in sections later). They
+can be passed to CMake either as `-Dname=value` parameters on command-line
+(like above) or set conveniently using `cmake-gui`:
 
-@subsection building-optional Enabling or disabling features
+    cd build
+    cmake-gui .
+
+@subsection building-windows Using QtCreator and CMake GUI (on Windows)
+
+On Windows, if you don't want to touch the command-line, the easiest way is to
+install QtCreator (just QtCreator, you don't need the full Qt SDK) and
+configure it to use MinGW and CMake.
+
+For most convenient usage it's best to install (or copy/paste) all library
+dependencies into directory where MinGW is installed (e.g. `C:/MinGW/`),
+following proper filesystem hierarchy, i.e. headers into `include/` and
+binaries into `bin/` or `lib/`. CMake will then have no problem finding them
+and you won't need to explicitly specify path to each one.
+
+Then just open project's root `CMakeLists.txt` file within QtCreator. It then
+asks you where to create build directory, allows you to specify initial CMake
+parameters and then you can just press Configure and everything should be ready
+to be built. You might need to set some CMake parameters before configuring,
+they can be set with `-Dname=value`. See below for more information.
+
+After the initial import you might want to reconfigure some CMake variables
+(more information below). Start CMake GUI, point it to the recently created
+build dir, modify the variables and press Generate. QtCreator will detect the
+changes and reparse the project accordingly.
+
+For most convenient usage it's best to set `CMAKE_INSTALL_PREFIX` to directory
+where MinGW is installed (e.g. `C:/MinGW/`) and add `C:/MinGW/bin` and
+`C:/MinGW/lib` to `PATH`. Installation to given prefix can be then done from
+within QtCreator by adding new `make install` build rule.
+
+@subsubsection building-windows-troubleshooting Windows troubleshooting
+
+If CMake isn't able to find dependencies (e.g. Corrade is not found) and you
+have installed them to MinGW directory, point to `CMAKE_FIND_ROOT_PATH` to
+MinGW installation prefix, e.g. specify `-DCMAKE_FIND_ROOT_PATH=C:/MinGW/`
+CMake parameter.
+
+If building fails with GLEW linking errors (`undefined reference to glew...`),
+you have to set `GLEW_LIBRARY_DLL` and `GLEW_LIBRARY_LIB` CMake variables
+manually. One of them should point to `glew32.dll` and the other to
+`glew32.lib`. CMake currently isn't able to distinguish between them and in
+most cases points both to the same location.
+
+See also Corrade's @ref building-corrade-windows-troubleshooting "troubleshooting section".
+
+@subsection building-features Enabling or disabling features
+
+The libraries are build as shared by default. If you are developing for
+platform which doesn't support shared libraries or if you just want to link
+them statically, enable `BUILD_STATIC` to build the libraries as static. If you
+plan to use them with shared libraries later, enable also position-independent
+code with `BUILD_STATIC_PIC`. If you want to build with another compiler (e.g.
+Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
 By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
-parameters you can target other platforms. Note that some features are available
-for desktop OpenGL only, see @ref requires-gl.
+parameters you can target other platforms. Note that some features are
+available for desktop OpenGL only, see @ref requires-gl.
 
  - `TARGET_GLES` - Target OpenGL ES.
  - `TARGET_GLES2` - Target OpenGL ES 2.0. Currently enabled by default when
@@ -92,10 +145,16 @@ for desktop OpenGL only, see @ref requires-gl.
  - `TARGET_DESKTOP_GLES` - Target OpenGL ES on desktop, i.e. use OpenGL ES
    emulation in desktop OpenGL library. Might not be supported in all drivers.
 
-By default the engine is built with everything except application libraries (see
-below). Using `WITH_*` CMake parameters you can specify which parts will be built
-and which not:
+The features used can be conveniently detected in depending projects both in
+CMake and C++ sources, see @ref cmake and @ref src/Magnum.h for more
+information. See also @ref corrade-cmake and @ref src/Corrade.h for additional
+information.
 
+By default the engine is built with everything except application libraries
+(see below). Using `WITH_*` CMake parameters you can specify which parts will
+be built and which not:
+
+ - `WITH_AUDIO` - Audio library. Requires **OpenAL** library.
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
    Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
@@ -134,13 +193,15 @@ platform best:
 
 @subsection building-tests Building and running unit tests
 
-If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite
-"TestSuite" framework and can be run using
+If you want to build also unit tests (which are not built by default), enable
+`BUILD_TEST` in CMake. Unit tests use Corrade's @ref Corrade::TestSuite
+"TestSuite" framework and can be run either manually (the binaries are located
+in `Test/` subdirectories of build directory) or using
 
     ctest --output-on-failure
 
-in build directory. Everything should pass ;-)
+in build directory. On Windows the tests require the library to be installed
+with DLLs accessible through `PATH`. See above for more information.
 
 @subsection building-doc Building documentation
 
@@ -155,23 +216,31 @@ in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
 if it doesn't exist yet.
 
+@section building-related Related projects
+
+The engine itself is kept as small as possible with only little dependencies.
+Additional functionality, often depending on external libraries, is provided in
+separate repositories. Various importer plugins for image, audio and 3D model
+formats are maintained in @ref building-plugins "Plugins repository",
+Integration with various external math and physics libraries is provided by
+@ref building-integration "Integration library".
+
 @section building-arch Building ArchLinux packages
 
 In `package/archlinux` directory is currently one PKGBUILD for Git development
 build. The package is also in AUR under the same name.
 
-There is also development PKGBUILD and MinGW development PKGBUILD in root,
-which allows you to build and install the package directly from source tree
-without downloading anything. The PKGBUILD also contains `check()` function
-which will run all unit tests before packaging. Note that the unit tests
-require Qt, as said above.
+There are also a few development PKGBUILDs in project root, which allow you to
+build and install the package directly from source tree without downloading
+anything. The native PKGBUILD also contains `check()` function which will run
+all unit tests before packaging.
 
 If you want to build with another compiler (e.g. Clang), run makepkg this way:
 
     CXX=clang++ makepkg
 
-Both development PKGBUILDs can detect when Clang is used and remove
-unsupported CXX flags.
+Development PKGBUILDs can detect when Clang is used and remove unsupported CXX
+flags.
 
 @section building-win Crosscompiling for Windows using MinGW
 

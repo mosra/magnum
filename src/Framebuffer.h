@@ -161,7 +161,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see attachRenderbuffer(), attachTexture1D(), attachTexture2D(),
          *      attachCubeMapTexture(), attachTexture3D()
          */
-        class BufferAttachment {
+        class MAGNUM_EXPORT BufferAttachment {
             public:
                 /** @brief Depth buffer */
                 static const BufferAttachment Depth;

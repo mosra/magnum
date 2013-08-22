@@ -31,27 +31,27 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Cylinder::solid(UnsignedInt rings, UnsignedInt segments, Float length, Cylinder::Flags flags) {
+Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const Flags flags) {
     CORRADE_ASSERT(rings >= 1 && segments >= 3, "Primitives::Cylinder::solid(): cylinder must have at least one ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, {}, {}, {}, {}));
 
     Implementation::Spheroid cylinder(segments, flags & Flag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate);
 
-    Float y = length*0.5f;
-    Float textureCoordsV = flags & Flag::CapEnds ? 1.0f/(length+2.0f) : 0.0f;
+    const Float length = 2.0f*halfLength;
+    const Float textureCoordsV = flags & Flag::CapEnds ? 1.0f/(length+2.0f) : 0.0f;
 
     /* Bottom cap */
     if(flags & Flag::CapEnds) {
-        cylinder.capVertex(-y, -1.0f, 0.0f);
-        cylinder.capVertexRing(-y, textureCoordsV, Vector3::yAxis(-1.0f));
+        cylinder.capVertex(-halfLength, -1.0f, 0.0f);
+        cylinder.capVertexRing(-halfLength, textureCoordsV, Vector3::yAxis(-1.0f));
     }
 
     /* Vertex rings */
-    cylinder.cylinderVertexRings(rings+1, -y, length/rings, textureCoordsV, length/(rings*(flags & Flag::CapEnds ? length + 2.0f : length)));
+    cylinder.cylinderVertexRings(rings+1, -halfLength, length/rings, textureCoordsV, length/(rings*(flags & Flag::CapEnds ? length + 2.0f : length)));
 
     /* Top cap */
     if(flags & Flag::CapEnds) {
-        cylinder.capVertexRing(y, 1.0f - textureCoordsV, Vector3::yAxis(1.0f));
-        cylinder.capVertex(y, 1.0f, 1.0f);
+        cylinder.capVertexRing(halfLength, 1.0f - textureCoordsV, Vector3::yAxis(1.0f));
+        cylinder.capVertex(halfLength, 1.0f, 1.0f);
     }
 
     /* Faces */
@@ -62,16 +62,18 @@ Trade::MeshData3D Cylinder::solid(UnsignedInt rings, UnsignedInt segments, Float
     return cylinder.finalize();
 }
 
-Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt segments, const Float length) {
+Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(rings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Cylinder::wireframe(): improper parameters", Trade::MeshData3D(Mesh::Primitive::Lines, {}, {}, {}, {}));
 
     Implementation::WireframeSpheroid cylinder(segments/4);
 
+    const Float increment = 2*halfLength/rings;
+
     /* Rings */
-    cylinder.ring(-length/2);
+    cylinder.ring(-halfLength);
     for(UnsignedInt i = 0; i != rings; ++i) {
         cylinder.cylinder();
-        cylinder.ring(-length/2 + (i+1)*(length/rings));
+        cylinder.ring(-halfLength + (i+1)*increment);
     }
 
     return cylinder.finalize();

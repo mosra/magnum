@@ -45,6 +45,9 @@ AbstractImporterTest::AbstractImporterTest() {
 
 void AbstractImporterTest::openFile() {
     class DataImporter: public Trade::AbstractImporter {
+        public:
+            explicit DataImporter(): opened(false) {}
+
         private:
             Features doFeatures() const override { return Feature::OpenData; }
             bool doIsOpened() const override { return opened; }

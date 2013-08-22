@@ -79,6 +79,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
             Line,           /**< Line */
             LineSegment,    /**< @ref LineSegment "Line segment" */
             Sphere,         /**< Sphere */
+            Cylinder,       /**< @ref Cylinder */
             Capsule,        /**< Capsule */
             AxisAlignedBox, /**< @ref AxisAlignedBox "Axis aligned box" */
             Box,            /**< Box */
