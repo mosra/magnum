@@ -29,11 +29,8 @@
  */
 
 #include "Magnum.h"
+#include "OpenGL.h"
 #include "magnumVisibility.h"
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-typedef std::ptrdiff_t GLintptr;
-#endif
 
 namespace Magnum {
 
