@@ -234,7 +234,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set clear color
          *
-         * Initial value is fully opaque black.
+         * Initial value is {0.125f, 0.125f, 0.125f, 1.0f}.
          * @see @fn_gl{ClearColor}
          */
         static void setClearColor(const Color4& color);

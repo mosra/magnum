@@ -205,6 +205,9 @@ void Renderer::initializeContextBasedFunctionality(Context& context) {
     #else
     static_cast<void>(context);
     #endif
+
+    /* Set some "corporate identity" */
+    setClearColor(Color3(0.125f));
 }
 
 #ifndef MAGNUM_TARGET_GLES
