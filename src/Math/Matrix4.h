@@ -31,7 +31,7 @@
 #include "Math/Matrix.h"
 #include "Math/Vector4.h"
 
-#ifdef _WIN32 /* I so HATE windows.h */
+#ifdef _WIN32 /* I so HATE windef.h */
 #undef near
 #undef far
 #endif
