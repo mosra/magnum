@@ -65,62 +65,54 @@ using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-
-/** @todoc remove trailing underscores when Doxygen can handle `undef` */
-
 /**
 @brief Static library build
 
-`MAGNUM_BUILD_STATIC` is defined if build as static libraries. Default are
-shared libraries.
+Defined if built as static libraries. Default are shared libraries.
 @see @ref building-corrade
 */
-#define MAGNUM_BUILD_STATIC_
+#define MAGNUM_BUILD_STATIC
+#undef MAGNUM_BUILD_STATIC
 
 /**
 @brief OpenGL ES target
 
-`MAGNUM_TARGET_GLES` is defined if the engine is built for OpenGL ES 3.0 or
-OpenGL ES 2.0.
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
-    @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
-    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref building
+Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
+    @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
 */
-#define MAGNUM_TARGET_GLES_
+#define MAGNUM_TARGET_GLES
+#undef MAGNUM_TARGET_GLES
 
 /**
 @brief OpenGL ES 2.0 target.
 
-`MAGNUM_TARGET_GLES2` is defined if the engine is built for OpenGL ES 2.0.
-Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
-    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref building
+Defined if the engine is built for OpenGL ES 2.0. Implies also
+@ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_GLES3, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
 */
-#define MAGNUM_TARGET_GLES2_
+#define MAGNUM_TARGET_GLES2
+#undef MAGNUM_TARGET_GLES2
 
 /**
 @brief OpenGL ES 3.0 target.
 
-`MAGNUM_TARGET_GLES3` is defined if the engine is built for OpenGL ES 3.0.
-Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
-    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref building
+Defined if the engine is built for OpenGL ES 3.0. Implies also
+@ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
 */
-#define MAGNUM_TARGET_GLES3_
+#define MAGNUM_TARGET_GLES3
+#undef MAGNUM_TARGET_GLES3
 
 /**
 @brief Desktop emulation of OpenGL ES target
 
-`MAGNUM_TARGET_DESKTOP_GLES` is defined if the engine is built for OpenGL ES
-3.0 or OpenGL ES 2.0 emulated within standard desktop OpenGL. Implies also
-@ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2", @ref building
+Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0 emulated
+within standard desktop OpenGL. Implies also @ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_GLES2, @ref building
 */
-#define MAGNUM_TARGET_DESKTOP_GLES_
-
+#define MAGNUM_TARGET_DESKTOP_GLES
+#undef MAGNUM_TARGET_DESKTOP_GLES
 #endif
 
 /** @{ @name Basic type definitions

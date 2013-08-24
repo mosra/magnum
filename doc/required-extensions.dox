@@ -29,8 +29,8 @@ The engine is meant to be run on OpenGL 3 capable hardware, but most of the
 functionality is working in OpenGL 2.1 hardware too (i.e. integrated Intel
 GPUs), unless stated otherwise. OpenGL ES is also supported.
 
-@see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES",
-    @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2"
+@see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
+    @ref MAGNUM_TARGET_GLES2
 
 Following are lists of functionality requiring specific OpenGL version. In
 most cases it is also specified which extension is required for given
@@ -67,15 +67,15 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 @page requires-extension Functionality requiring specific OpenGL extension
 
 @page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
-@see @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES"
+@see @ref MAGNUM_TARGET_GLES
 
 @page requires-gles20 Functionality requiring OpenGL ES 2.0 (not available in ES 3.0 and desktop OpenGL)
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2"
+@see @ref MAGNUM_TARGET_GLES2
 
 @page requires-gles30 Functionality requiring OpenGL ES 3.0
-@see @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3"
+@see @ref MAGNUM_TARGET_GLES3
 
 @page requires-es-extension Functionality requiring specific OpenGL ES extension
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2"
+@see @ref MAGNUM_TARGET_GLES2
 
 */
