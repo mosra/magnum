@@ -38,9 +38,8 @@ namespace Magnum { namespace Audio {
 @brief WAV importer
 
 Supports mono and stereo PCM files with 8 or 16 bits per channel. The files are
-imported with @ref Buffer::Format "Buffer::Format::Mono8",
-@ref Buffer::Format "Buffer::Format::Mono16", @ref Buffer::Format "Buffer::Format::Stereo8"
-or @ref Buffer::Format "Buffer::Format::Stereo16" respectively.
+imported with @ref Buffer::Format::Mono8, @ref Buffer::Format::Mono16,
+@ref Buffer::Format::Stereo8 or @ref Buffer::Format::Stereo16, respectively.
 */
 class WavImporter: public AbstractImporter {
     public:
