@@ -79,7 +79,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Ambient color
          *
-         * Available only if the material doesn't have @ref Flag "Flag::AmbientTexture".
+         * Available only if the material doesn't have @ref Flag::AmbientTexture.
          * @see @ref flags()
          */
         Vector3& ambientColor();
@@ -88,7 +88,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Ambient texture ID
          *
-         * Available only if the material has @ref Flag "Flag::AmbientTexture".
+         * Available only if the material has @ref Flag::AmbientTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
          */
         UnsignedInt& ambientTexture();
@@ -97,7 +97,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Diffuse color
          *
-         * Available only if the material doesn't have @ref Flag "Flag::DiffuseTexture".
+         * Available only if the material doesn't have @ref Flag::DiffuseTexture.
          * @see @ref flags()
          */
         Vector3& diffuseColor();
@@ -106,7 +106,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Diffuse texture ID
          *
-         * Available only if the material has @ref Flag "Flag::DiffuseTexture".
+         * Available only if the material has @ref Flag::DiffuseTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
          */
         UnsignedInt& diffuseTexture();
@@ -115,7 +115,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Specular color
          *
-         * Available only if the material doesn't have @ref Flag "Flag::SpecularTexture".
+         * Available only if the material doesn't have @ref Flag::SpecularTexture.
          * @see @ref flags()
          */
         Vector3& specularColor();
@@ -124,7 +124,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Specular texture ID
          *
-         * Available only if the material has @ref Flag "Flag::SpecularTexture".
+         * Available only if the material has @ref Flag::SpecularTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
          */
         UnsignedInt& specularTexture();

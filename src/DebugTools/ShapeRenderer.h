@@ -62,8 +62,8 @@ class ShapeRendererOptions {
          * @see setRenderMode()
          */
         enum class RenderMode: UnsignedByte {
-            Wireframe,
-            Solid
+            Wireframe,      /**< Wireframe rendering */
+            Solid           /**< Solid rendering */
         };
 
         constexpr ShapeRendererOptions(): _color(1.0f), _pointSize(0.25f), _renderMode(RenderMode::Wireframe) {}
@@ -75,7 +75,7 @@ class ShapeRendererOptions {
          * @brief Set shape rendering mode
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref RenderMode "RenderMode::Wireframe".
+         * Default is @ref RenderMode::Wireframe.
          */
         ShapeRendererOptions& setRenderMode(RenderMode mode) {
             _renderMode = mode;
@@ -103,7 +103,7 @@ class ShapeRendererOptions {
          * @brief Set point size
          * @return Reference to self (for method chaining)
          *
-         * Size of rendered crosshairs, representing Shapes::Point shapes.
+         * Size of rendered crosshairs, representing @ref Shapes::Point shapes.
          * Default is `0.25f`.
          */
         ShapeRendererOptions& setPointSize(Float size) {

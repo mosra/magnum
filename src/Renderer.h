@@ -222,7 +222,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set hint
          *
-         * Initial value is @ref HintMode "HintMode::DontCare" for all targets.
+         * Initial value is @ref HintMode::DontCare for all targets.
          * @see @fn_gl{Hint}
          */
         static void setHint(Hint target, HintMode mode);
@@ -244,7 +244,7 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set clear depth
          *
          * Initial value is `1.0`.
-         * @see @ref Feature "Feature::DepthTest", @fn_gl{ClearDepth}
+         * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
          * @requires_gl See setClearDepth(Float), which is available in OpenGL ES.
          */
         static void setClearDepth(Double depth);
@@ -253,7 +253,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @overload
          *
-         * @see @ref Feature "Feature::DepthTest", @fn_gl{ClearDepth}
+         * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
          * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
          * is not available, this function behaves exactly as setClearDepth(Double).
          */
@@ -265,7 +265,7 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set clear stencil
          *
          * Initial value is `0`.
-         * @see @ref Feature "Feature::StencilTest", @fn_gl{ClearStencil}
+         * @see @ref Feature::StencilTest, @fn_gl{ClearStencil}
          */
         static void setClearStencil(Int stencil);
 
@@ -297,9 +297,9 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Which polygon facing to cull
          *
-         * Initial value is @ref PolygonFacing "PolygonFacing::Back". If set to
-         * both front and back, only points and lines are drawn.
-         * @see @ref Feature "Feature::FaceCulling", setFrontFace(),
+         * Initial value is @ref PolygonFacing::Back. If set to both front and
+         * back, only points and lines are drawn.
+         * @see @ref Feature::FaceCulling, setFrontFace(),
          *      @fn_gl{CullFace}
          */
         static void setFaceCullingMode(PolygonFacing mode);
@@ -326,7 +326,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set provoking vertex
          *
-         * Initial value is @ref ProvokingVertex "ProvokingVertex::LastVertexConvention".
+         * Initial value is @ref ProvokingVertex::LastVertexConvention.
          * @see @fn_gl{ProvokingVertex}
          * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
@@ -363,7 +363,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set polygon drawing mode
          *
-         * Initial value is @ref PolygonMode "PolygonMode::Fill".
+         * Initial value is @ref PolygonMode::Fill.
          * @see @fn_gl{PolygonMode}
          * @requires_gl OpenGL ES behaves always like the default. See
          *      @ref Magnum::Mesh::setPrimitive() "Mesh::setPrimitive()" for
@@ -377,10 +377,8 @@ class MAGNUM_EXPORT Renderer {
          * @param factor    Scale factor
          * @param units     Offset units
          *
-         * @see @ref Feature "Feature::PolygonOffsetFill",
-         *      @ref Feature "Feature::PolygonOffsetLine",
-         *      @ref Feature "Feature::PolygonOffsetPoint",
-         *      @fn_gl{PolygonOffset}
+         * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetLine,
+         *      @ref Feature::PolygonOffsetPoint, @fn_gl{PolygonOffset}
          */
         static void setPolygonOffset(Float factor, Float units);
 
@@ -397,7 +395,7 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set point size
          *
          * Initial value is `1.0f`.
-         * @see @ref Feature "Feature::ProgramPointSize", @fn_gl{PointSize}
+         * @see @ref Feature::ProgramPointSize, @fn_gl{PointSize}
          * @requires_gl In OpenGL ES use `gl_PointSize` builtin vertex shader
          *      variable.
          */
@@ -411,7 +409,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set scissor rectangle
          *
-         * @see @ref Feature "Feature::ScissorTest", @fn_gl{Scissor}
+         * @see @ref Feature::ScissorTest, @fn_gl{Scissor}
          */
         static void setScissor(const Rectanglei& rectangle);
 
@@ -484,24 +482,22 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set stencil function
          * @param facing            Affected polygon facing
          * @param function          Stencil function. Initial value is
-         *      @ref StencilFunction "StencilFunction::Always".
+         *      @ref StencilFunction::Always.
          * @param referenceValue    Reference value. Initial value is `0`.
          * @param mask              Mask for both reference and buffer value.
          *      Initial value is all `1`s.
          *
-         * @see @ref Feature "Feature::StencilTest",
-         *      setStencilFunction(StencilFunction, Int, UnsignedInt),
-         *      setStencilOperation(),
-         *      @fn_gl{StencilFuncSeparate}
+         * @see @ref Feature::StencilTest, @ref setStencilFunction(StencilFunction, Int, UnsignedInt),
+         *      @ref setStencilOperation(), @fn_gl{StencilFuncSeparate}
          */
         static void setStencilFunction(PolygonFacing facing, StencilFunction function, Int referenceValue, UnsignedInt mask);
 
         /**
          * @brief Set stencil function
          *
-         * The same as setStencilFunction(PolygonFacing, StencilFunction, Int, UnsignedInt)
-         * with @p facing set to @ref PolygonFacing "PolygonFacing::FrontAndBack".
-         * @see @ref Feature "Feature::StencilTest", setStencilOperation(),
+         * The same as @ref setStencilFunction(PolygonFacing, StencilFunction, Int, UnsignedInt)
+         * with @p facing set to @ref PolygonFacing::FrontAndBack.
+         * @see @ref Feature::StencilTest, @ref setStencilOperation(),
          *      @fn_gl{StencilFunc}
          */
         static void setStencilFunction(StencilFunction function, Int referenceValue, UnsignedInt mask);
@@ -515,19 +511,18 @@ class MAGNUM_EXPORT Renderer {
          * @param depthPass         Action when both stencil and depth test
          *      pass
          *
-         * Initial value for all fields is @ref StencilOperation "StencilOperation::Keep".
-         * @see @ref Feature "Feature::StencilTest",
-         *      setStencilOperation(StencilOperation, StencilOperation, StencilOperation),
-         *      setStencilFunction(), @fn_gl{StencilOpSeparate}
+         * Initial value for all fields is @ref StencilOperation::Keep.
+         * @see @ref Feature::StencilTest, @ref setStencilOperation(StencilOperation, StencilOperation, StencilOperation),
+         *      @ref setStencilFunction(), @fn_gl{StencilOpSeparate}
          */
         static void setStencilOperation(PolygonFacing facing, StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass);
 
         /**
          * @brief Set stencil operation
          *
-         * The same as setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation)
-         * with @p facing set to @ref PolygonFacing "PolygonFacing::FrontAndBack".
-         * @see @ref Feature "Feature::StencilTest", setStencilFunction(),
+         * The same as @ref setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation)
+         * with @p facing set to @ref PolygonFacing::FrontAndBack.
+         * @see @ref Feature::StencilTest, @ref setStencilFunction(),
          *      @fn_gl{StencilOp}
          */
         static void setStencilOperation(StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass);
@@ -546,8 +541,8 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set depth function
          *
-         * Initial value is @ref DepthFunction "DepthFunction::Less".
-         * @see @ref Feature "Feature::DepthTest", @fn_gl{DepthFunc}
+         * Initial value is @ref DepthFunction::Less.
+         * @see @ref Feature::DepthTest, @fn_gl{DepthFunc}
          */
         static void setDepthFunction(DepthFunction function);
 
@@ -560,7 +555,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * Set to `false` to disallow writing to given color channel. Initial
          * values are all `true`.
-         * @see setDepthMask(), setStencilMask(), @fn_gl{ColorMask}
+         * @see @ref setDepthMask(), @ref setStencilMask(), @fn_gl{ColorMask}
          * @todo Masking only given draw buffer
          */
         static void setColorMask(GLboolean allowRed, GLboolean allowGreen, GLboolean allowBlue, GLboolean allowAlpha);
@@ -587,8 +582,8 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Mask stencil writes
          *
-         * The same as calling setStencilMask(PolygonFacing, UnsignedInt) with
-         * `facing` set to @ref PolygonFacing "PolygonFacing::FrontAndBack".
+         * The same as calling @ref setStencilMask(PolygonFacing, UnsignedInt)
+         * with `facing` set to @ref PolygonFacing::FrontAndBack.
          * @see @fn_gl{StencilMask}
          */
         static void setStencilMask(UnsignedInt allowBits);
@@ -760,53 +755,52 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set blend equation
          *
          * How to combine source color (pixel value) with destination color
-         * (framebuffer). Initial value is @ref BlendEquation "BlendEquation::Add".
-         * @see @ref Feature "Feature::Blending", setBlendEquation(BlendEquation, BlendEquation),
-         *      setBlendFunction(), setBlendColor(), @fn_gl{BlendEquation}
+         * (framebuffer). Initial value is @ref BlendEquation::Add.
+         * @see @ref Feature::Blending, @ref setBlendEquation(BlendEquation, BlendEquation),
+         *      @ref setBlendFunction(), @ref setBlendColor(),
+         *      @fn_gl{BlendEquation}
          */
         static void setBlendEquation(BlendEquation equation);
 
         /**
          * @brief Set blend equation separately for RGB and alpha components
          *
-         * See setBlendEquation(BlendEquation) for more information.
-         * @see @ref Feature "Feature::Blending", setBlendFunction(),
-         *      setBlendColor(), @fn_gl{BlendEquationSeparate}
+         * See @ref setBlendEquation(BlendEquation) for more information.
+         * @see @ref Feature::Blending, @ref setBlendFunction(),
+         *      @ref setBlendColor(), @fn_gl{BlendEquationSeparate}
          */
         static void setBlendEquation(BlendEquation rgb, BlendEquation alpha);
 
         /**
          * @brief Set blend function
          * @param source        How the source blending factor is computed
-         *      from pixel value. Initial value is @ref BlendFunction "BlendFunction::One".
+         *      from pixel value. Initial value is @ref BlendFunction::One.
          * @param destination   How the destination blending factor is
-         *      computed from framebuffer. Initial value is @ref BlendFunction "BlendFunction::Zero".
+         *      computed from framebuffer. Initial value is @ref BlendFunction::Zero.
          *
-         * @see @ref Feature "Feature::Blending",
-         *      setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
-         *      setBlendEquation(), setBlendColor(), @fn_gl{BlendFunc}
+         * @see @ref Feature::Blending, @ref setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
+         *      @ref setBlendEquation(), @ref setBlendColor(),
+         *      @fn_gl{BlendFunc}
          */
         static void setBlendFunction(BlendFunction source, BlendFunction destination);
 
         /**
          * @brief Set blend function separately for RGB and alpha components
          *
-         * See setBlendFunction(BlendFunction, BlendFunction) for more information.
-         * @see @ref Feature "Feature::Blending", setBlendEquation(),
-         *      setBlendColor(), @fn_gl{BlendFuncSeparate}
+         * See @ref setBlendFunction(BlendFunction, BlendFunction) for more information.
+         * @see @ref Feature::Blending, @ref setBlendEquation(),
+         *      @ref setBlendColor(), @fn_gl{BlendFuncSeparate}
          */
         static void setBlendFunction(BlendFunction sourceRgb, BlendFunction destinationRgb, BlendFunction sourceAlpha, BlendFunction destinationAlpha);
 
         /**
          * @brief Set blend color
          *
-         * Sets constant color used in setBlendFunction() by
-         * @ref BlendFunction "BlendFunction::ConstantColor",
-         * @ref BlendFunction "BlendFunction::OneMinusConstantColor",
-         * @ref BlendFunction "BlendFunction::ConstantAlpha" and
-         * @ref BlendFunction "BlendFunction::OneMinusConstantAlpha".
-         * @see @ref Feature "Feature::Blending", setBlendEquation(),
-         *      setBlendFunction(), @fn_gl{BlendColor}
+         * Sets constant color used in @ref setBlendFunction() by
+         * @ref BlendFunction::ConstantColor, @ref BlendFunction::OneMinusConstantColor,
+         * @ref BlendFunction::ConstantAlpha and @ref BlendFunction::OneMinusConstantAlpha.
+         * @see @ref Feature::Blending, @ref setBlendEquation(),
+         *      @ref setBlendFunction(), @fn_gl{BlendColor}
          */
         static void setBlendColor(const Color4& color);
 
@@ -818,7 +812,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Logical operation
          *
-         * @see setLogicOperation()
+         * @see @ref setLogicOperation()
          * @requires_gl Logical operations on framebuffer are not available in
          *      OpenGL ES.
          */
@@ -844,7 +838,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set logical operation
          *
-         * @see @ref Feature "Feature::LogicOperation", @fn_gl{LogicOp}
+         * @see @ref Feature::LogicOperation, @fn_gl{LogicOp}
          * @requires_gl Logical operations on framebuffer are not available in
          *      OpenGL ES.
          */
@@ -927,8 +921,8 @@ class MAGNUM_EXPORT Renderer {
          * @brief Error status
          *
          * Returns error flag, if any set. If there aren't any more error
-         * flags, returns @ref Error "Error::NoError". Thus this function
-         * should be always called in a loop until it returns @ref Error "Error::NoError".
+         * flags, returns @ref Error::NoError. Thus this function should be
+         * always called in a loop until it returns @ref Error::NoError.
          * @see @fn_gl{GetError}
          */
         static Error error() { return static_cast<Error>(glGetError()); }
@@ -943,8 +937,8 @@ class MAGNUM_EXPORT Renderer {
          */
         enum class ResetNotificationStrategy: GLint {
             /**
-             * No reset notification, thus graphicsResetStatus() will always
-             * return @ref GraphicsResetStatus "GraphicsResetStatus::NoError".
+             * No reset notification, thus @ref graphicsResetStatus() will
+             * always return @ref GraphicsResetStatus::NoError.
              * However this doesn't mean that the context cannot be lost.
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -955,7 +949,7 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Graphics reset will result in context loss, cause of the reset
-             * can be queried with graphicsResetStatus().
+             * can be queried with @ref graphicsResetStatus().
              */
             #ifndef MAGNUM_TARGET_GLES
             LoseContextOnReset = GL_LOSE_CONTEXT_ON_RESET_ARB
@@ -970,7 +964,7 @@ class MAGNUM_EXPORT Renderer {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If OpenGL extension @extension{ARB,robustness} or ES
          * extension @es_extension{EXT,robustness} is not available, this
-         * function always returns @ref ResetNotificationStrategy "ResetNotificationStrategy::NoResetNotification".
+         * function always returns @ref ResetNotificationStrategy::NoResetNotification.
          * @see graphicsResetStatus(), @fn_gl{Get} with @def_gl{RESET_NOTIFICATION_STRATEGY_ARB}
          */
         static ResetNotificationStrategy resetNotificationStrategy();
@@ -1013,9 +1007,8 @@ class MAGNUM_EXPORT Renderer {
          *
          * Reset causes all context state to be lost. If OpenGL extension
          * @extension{ARB,robustness} or ES extension @es_extension{EXT,robustness}
-         * is not available, this function always returns
-         * @ref GraphicsResetStatus "GraphicsResetStatus::NoError".
-         * @see resetNotificationStrategy(), @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
+         * is not available, this function always returns @ref GraphicsResetStatus::NoError.
+         * @see @ref resetNotificationStrategy(), @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
          */
         static GraphicsResetStatus graphicsResetStatus() {
             return graphicsResetStatusImplementation();

@@ -75,12 +75,11 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
 
 @note If internal format of @p output texture is not renderable, this function
     prints message to error output and does nothing. In desktop OpenGL and
-    OpenGL ES 3.0 it's common to render to @ref TextureFormat "TextureFormat::R8".
-    In OpenGL ES 2.0 you can use @ref TextureFormat "TextureFormat::Red" if
-    @es_extension{EXT,texture_rg} is available, if not, the smallest but still
-    inefficient supported format is in most cases @ref TextureFormat "TextureFormat::RGB",
-    rendering to @ref TextureFormat "TextureFormat::Luminance" is not supported
-    in most cases.
+    OpenGL ES 3.0 it's common to render to @ref TextureFormat::R8. In OpenGL ES
+    2.0 you can use @ref TextureFormat::Red if @es_extension{EXT,texture_rg} is
+    available, if not, the smallest but still inefficient supported format is
+    in most cases @ref TextureFormat::RGB, rendering to @ref TextureFormat::Luminance
+    is not supported in most cases.
 
 @bug ES (and maybe GL < 3.20) implementation behaves slightly different
     (jaggies, visible e.g. when rendering outlined fonts)

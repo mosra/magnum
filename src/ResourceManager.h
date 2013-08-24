@@ -322,8 +322,8 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Set resource data
          * @return Reference to self (for method chaining)
          *
-         * Same as above with state set to @ref ResourceDataState "ResourceDataState::Final"
-         * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
+         * Same as above with state set to @ref ResourceDataState::Final and
+         * policy to @ref ResourcePolicy::Resident.
          */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data) {
             return set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);

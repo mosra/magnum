@@ -42,13 +42,13 @@ namespace Magnum { namespace SceneGraph {
 enum class AnimationState: UnsignedByte {
     /**
      * The animation is stopped. The animation will be started from the
-     * beginning when state is changed to @ref AnimationState "AnimationState::Running".
+     * beginning when state is changed to @ref AnimationState::Running.
      */
     Stopped,
 
     /**
      * The animation is stopped. The animation will continue from paused
-     * position when state is changed to @ref AnimationState "AnimationState::Running".
+     * position when state is changed to @ref AnimationState::Running.
      */
     Paused,
 
@@ -121,11 +121,11 @@ void MyApplication::drawEvent() {
 
 @section Animable-performance Using animable groups to improve performance
 
-AnimableGroup is optimized for case when no animation is running - it just
+AnimableGroup is optimized for case when no animation is running -- it just
 puts itself to rest and waits until some animation changes its state to
-@ref AnimationState "AnimationState::Running" again. If you put animations
-which are not pernamently running to separate group, they will not be always
-traversed when calling AnimableGroup::step(), saving precious frame time.
+@ref AnimationState::Running again. If you put animations which are not
+pernamently running to separate group, they will not be always traversed when
+calling @ref AnimableGroup::step(), saving precious frame time.
 
 @section Animable-explicit-specializations Explicit template specializations
 
@@ -167,12 +167,12 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
          * @brief Set animation state
          * @return Reference to self (for method chaining)
          *
-         * Note that changing state from @ref AnimationState "AnimationState::Stopped"
-         * to @ref AnimationState "AnimationState::Paused" is ignored and
-         * animation remains in @ref AnimationState "AnimationState::Stopped"
-         * state. See also animationStep() for more information.
-         * @see animationStarted(), animationPaused(), animationResumed(),
-         *      animationStopped()
+         * Note that changing state from @ref AnimationState::Stopped to
+         * @ref AnimationState::Paused is ignored and animation remains in
+         * @ref AnimationState::Stopped state. See also @ref animationStep()
+         * for more information.
+         * @see @ref animationStarted(), @ref animationPaused(),
+         *      @ref animationResumed(), @ref animationStopped()
          */
         Animable<dimensions, T>& setState(AnimationState state);
 
@@ -242,78 +242,69 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
          * @param time      Time from start of the animation
          * @param delta     Time delta for current frame
          *
-         * This function is periodically called from AnimableGroup::step() if
-         * the animation state is set to @ref AnimationState "AnimationState::Running".
-         * After animation duration is exceeded and repeat is not enabled or
-         * repeat count is exceeded, the animation state is set to
-         * @ref AnimationState "AnimationState::Stopped".
+         * This function is periodically called from @ref AnimableGroup::step()
+         * if the animation state is set to @ref AnimationState::Running. After
+         * animation duration is exceeded and repeat is not enabled or repeat
+         * count is exceeded, the animation state is set to @ref AnimationState::Stopped.
          *
-         * If the animation is resumed from @ref AnimationState "AnimationState::Paused",
-         * this function is called with @p time continuing from the point
-         * when it was paused. If the animation is resumed from
-         * @ref AnimationState "AnimationState::Stopped", @p time starts with
-         * zero.
+         * If the animation is resumed from @ref AnimationState::Paused, this
+         * function is called with @p time continuing from the point when it
+         * was paused. If the animation is resumed from @ref AnimationState::Stopped,
+         * @p time starts with zero.
          *
-         * @see state(), duration(), isRepeated(), repeatCount()
+         * @see @ref state(), @ref duration(), @ref isRepeated(),
+         *      @ref repeatCount()
          */
         virtual void animationStep(Float time, Float delta) = 0;
 
         /**
          * @brief Action on animation start
          *
-         * Called from AnimableGroup::step() when state is changed from
-         * @ref AnimationState "AnimationState::Stopped" to
-         * @ref AnimationState "AnimationState::Running" and before first
-         * animationStep() is called.
+         * Called from @ref AnimableGroup::step() when state is changed from
+         * @ref AnimationState::Stopped to @ref AnimationState::Running and
+         * before first @ref animationStep() is called.
          *
          * Default implementation does nothing.
-         *
-         * @see setState()
+         * @see @ref setState()
          */
         virtual void animationStarted() {}
 
         /**
          * @brief Action on animation pause
          *
-         * Called from AnimableGroup::step() when state changes from
-         * @ref AnimationState "AnimationState::Running" to
-         * @ref AnimationState "AnimationState::Paused" and after last
-         * animationStep() is called.
+         * Called from @ref AnimableGroup::step() when state changes from
+         * @ref AnimationState::Running to @ref AnimationState::Paused and
+         * after last @ref animationStep() is called.
          *
          * Default implementation does nothing.
-         *
-         * @see setState()
+         * @see @ref setState()
          */
         virtual void animationPaused() {}
 
         /**
          * @brief Action on animation resume
          *
-         * Called from AnimableGroup::step() when state changes from
-         * @ref AnimationState "AnimationState::Paused" to
-         * @ref AnimationState "AnimationState::Running" and before first
-         * animationStep() is called.
+         * Called from @ref AnimableGroup::step() when state changes from
+         * @ref AnimationState::Paused to @ref AnimationState::Running and
+         * before first @ref animationStep() is called.
          *
          * Default implementation does nothing.
-         *
-         * @see setState()
+         * @see @ref setState()
          */
         virtual void animationResumed() {}
 
         /**
          * @brief Action on animation stop
          *
-         * Called from AnimableGroup::step() when state changes from either
-         * @ref AnimationState "AnimationState::Running" or
-         * @ref AnimationState "AnimationState::Paused" to
-         * @ref AnimationState "AnimationState::Stopped" and after last
-         * animationStep() is called.
+         * Called from @ref AnimableGroup::step() when state changes from
+         * either @ref AnimationState::Running or @ref AnimationState::Paused
+         * to @ref AnimationState::Stopped and after last @ref animationStep()
+         * is called.
          *
          * You may want to use this function to properly finish the animation
-         * in case the framerate is not high enough to have animationStep()
+         * in case the framerate is not high enough to have @ref animationStep()
          * called enough times. Default implementation does nothing.
-         *
-         * @see setState()
+         * @see @ref setState()
          */
         virtual void animationStopped() {}
 

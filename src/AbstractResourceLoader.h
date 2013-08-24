@@ -140,9 +140,9 @@ template<class T> class AbstractResourceLoader {
          * @brief Request resource to be loaded
          *
          * If the resource isn't yet loaded or loading, state of the resource
-         * is set to @ref Resource::ResourceState "ResourceState::Loading" and count of
-         * requested features is incremented. Depending on implementation the
-         * resource might be loaded synchronously or asynchronously.
+         * is set to @ref ResourceState::Loading and count of requested
+         * features is incremented. Depending on implementation the resource
+         * might be loaded synchronously or asynchronously.
          *
          * @see ResourceManager::state(), requestedCount(), notFoundCount(),
          *      loadedCount()
@@ -153,10 +153,9 @@ template<class T> class AbstractResourceLoader {
         /**
          * @brief Set loaded resource to resource manager
          *
-         * Also increments count of loaded resources. Parameter @p state
-         * must be either @ref ResourceManager::ResourceDataState "ResourceDataState::Mutable"
-         * or @ref ResourceManager::ResourceDataState "ResourceDataState::Final". See
-         * ResourceManager::set() for more information.
+         * Also increments count of loaded resources. Parameter @p state must
+         * be either @ref ResourceDataState::Mutable or @ref ResourceDataState::Final.
+         * See @ref ResourceManager::set() for more information.
          * @see loadedCount()
          */
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
@@ -169,8 +168,8 @@ template<class T> class AbstractResourceLoader {
         /**
          * @brief Set loaded resource to resource manager
          *
-         * Same as above function with state set to @ref ResourceDataState "ResourceDataState::Final"
-         * and policy to @ref ResourcePolicy "ResourcePolicy::Resident".
+         * Same as above function with state set to @ref ResourceDataState::Final
+         * and policy to @ref ResourcePolicy::Resident.
          */
         void set(ResourceKey key, T* data) {
             set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);

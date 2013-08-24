@@ -93,7 +93,7 @@ class TextureData {
          * @brief Image ID
          *
          * ID of 1D, 2D or 3D image based on texture type. If type is
-         * @ref Type "Type::Cube" the function returns first of six consecutive
+         * @ref Type::Cube the function returns first of six consecutive
          * IDs of cube map sides, ordered +X, -X, +Y, -Y, +Z, -Z.
          * @see @ref type(), @ref AbstractImporter::image1D(),
          *      @ref AbstractImporter::image2D(), @ref AbstractImporter::image3D()

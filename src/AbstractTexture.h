@@ -146,11 +146,10 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets filter used when the object pixel size is smaller than the
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
-         * Initial value is (@ref Sampler::Filter "Sampler::Filter::Nearest",
-         * @ref Sampler::Mipmap "Sampler::Mipmap::Linear").
+         * Initial value is (@ref Sampler::Filter::Nearest, @ref Sampler::Mipmap::Linear).
          * @attention For rectangle textures only some modes are supported,
-         *      see @ref Sampler::Filter "Sampler::Filter" and @ref Sampler::Mipmap "Sampler::Mipmap"
-         *      documentation for more information.
+         *      see @ref Sampler::Filter and @ref Sampler::Mipmap documentation
+         *      for more information.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MIN_FILTER}
@@ -165,7 +164,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * Sets filter used when the object pixel size is larger than largest
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some layer before the operation.
-         * Initial value is @ref Sampler::Filter "Sampler::Filter::Linear".
+         * Initial value is @ref Sampler::Filter::Linear.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MAG_FILTER}
@@ -180,7 +179,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Set border color
          * @return Reference to self (for method chaining)
          *
-         * Border color when wrapping is set to @ref Sampler::Wrapping "Sampler::Wrapping::ClampToBorder".
+         * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
          * If @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some layer before the operation. Initial value is
          * `{0.0f, 0.0f, 0.0f, 0.0f}`.

@@ -51,9 +51,8 @@ supported.
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions doExportToImage() or doExportToData() are called only if
-    @ref Feature "Feature::ConvertImage" or @ref Feature "Feature::ConvertData"
-    is supported.
+-   Functions @ref doExportToImage() or @ref doExportToData() are called only
+    if @ref Feature::ConvertImage or @ref Feature::ConvertData is supported.
 */
 class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")
@@ -91,18 +90,18 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         /**
          * @brief Convert image to different format
          *
-         * Available only if @ref Feature "Feature::ConvertImage" is supported.
-         * Returns converted image on success, `nullptr` otherwise.
-         * @see features(), exportToData(), exportToFile()
+         * Available only if @ref Feature::ConvertImage is supported. Returns
+         * converted image on success, `nullptr` otherwise.
+         * @see @ref features(), @ref exportToData(), @ref exportToFile()
          */
         Image2D* exportToImage(const ImageReference2D& image) const;
 
         /**
          * @brief Export image to raw data
          *
-         * Available only if @ref Feature "Feature::ConvertData" is supported.
-         * Returns data on success, zero-sized array otherwise.
-         * @see features(), exportToImage(), exportToFile()
+         * Available only if @ref Feature::ConvertData is supported. Returns
+         * data on success, zero-sized array otherwise.
+         * @see @ref features(), @ref exportToImage(), @ref exportToFile()
          */
         Containers::Array<unsigned char> exportToData(const ImageReference2D& image) const;
 
@@ -131,9 +130,8 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         /**
          * @brief Implementation of exportToFile()
          *
-         * If @ref Feature "Feature::ConvertData" is supported, default
-         * implementation calls doExportToData() and saves the result to given
-         * file.
+         * If @ref Feature::ConvertData is supported, default implementation
+         * calls @ref doExportToData() and saves the result to given file.
          */
         virtual bool doExportToFile(const ImageReference2D& image, const std::string& filename) const;
 };

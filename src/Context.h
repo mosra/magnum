@@ -67,7 +67,7 @@ enum class Version: Int {
      *
      * All the functionality is present in OpenGL 4.2 (extension
      * @extension{ARB,ES2_compatibility}), so on desktop OpenGL this is
-     * equivalent to @ref Version "Version::GL410".
+     * equivalent to @ref Version::GL410.
      */
     #ifndef MAGNUM_TARGET_GLES
     GLES200 = 410,
@@ -80,7 +80,7 @@ enum class Version: Int {
      *
      * All the functionality is present in OpenGL 4.3 (extension
      * @extension{ARB,ES3_compatibility}), so on desktop OpenGL this is the
-     * equivalent to @ref Version "Version::GL430".
+     * equivalent to @ref Version::GL430.
      */
     #ifndef MAGNUM_TARGET_GLES
     GLES300 = 430
@@ -315,8 +315,8 @@ class MAGNUM_EXPORT Context {
          * @endcode
          *
          * If no version from the list is supported, returns lowest available
-         * OpenGL version (@ref Version "Version::GL210" for desktop OpenGL,
-         * @ref Version "Version::GLES200" for OpenGL ES).
+         * OpenGL version (@ref Version::GL210 for desktop OpenGL, @ref Version::GLES200
+         * for OpenGL ES).
          */
         Version supportedVersion(std::initializer_list<Version> versions) const;
 

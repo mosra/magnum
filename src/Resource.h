@@ -168,9 +168,9 @@ class Resource {
          * @brief Whether the resource is available
          *
          * Returns `false` when resource is not loaded and no fallback is
-         * available (i.e. state() is either @ref ResourceState "ResourceState::NotLoaded",
-         * @ref ResourceState "ResourceState::Loading" or
-         * @ref ResourceState "ResourceState::NotFound"), true otherwise.
+         * available (i.e. state() is either @ref ResourceState::NotLoaded,
+         * @ref ResourceState::Loading or @ref ResourceState::NotFound), `true`
+         * otherwise.
          */
         operator bool() {
             acquire();
