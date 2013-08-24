@@ -40,11 +40,11 @@ typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 
 namespace Magnum {
 
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Math {
     template<class T> struct Constants;
 
+    /** @todoc Remove `ifndef` when Doxygen is able to handle operator"" */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     #ifndef CORRADE_GCC46_COMPATIBILITY
     #ifndef MAGNUM_TARGET_GLES
     constexpr Rad<Double> operator "" _rad(long double);
@@ -52,6 +52,7 @@ namespace Math {
     #endif
     constexpr Rad<Float> operator "" _radf(long double);
     constexpr Deg<Float> operator "" _degf(long double);
+    #endif
     #endif
 }
 
@@ -62,7 +63,6 @@ using namespace Corrade;
 using Corrade::Utility::Debug;
 using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
-#endif
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 
@@ -321,8 +321,6 @@ using Math::operator "" _degf;
 using Math::operator "" _radf;
 #endif
 
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Forward declarations for all types in root namespace */
 
 /* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
@@ -416,7 +414,6 @@ typedef Texture<3> Texture3D;
 enum class TextureFormat: GLenum;
 
 class Timeline;
-#endif
 
 }
 

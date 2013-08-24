@@ -38,10 +38,7 @@
 
 namespace Magnum { namespace DebugTools {
 
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt> class ShapeRenderer;
-#endif
 
 namespace Implementation {
     template<UnsignedInt> class AbstractShapeRenderer;

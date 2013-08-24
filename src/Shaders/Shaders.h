@@ -32,9 +32,6 @@
 
 namespace Magnum { namespace Shaders {
 
-/** @todoc remove when doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
-
 template<UnsignedInt> class DistanceFieldVector;
 typedef DistanceFieldVector<2> DistanceFieldVector2D;
 typedef DistanceFieldVector<3> DistanceFieldVector3D;
@@ -57,7 +54,6 @@ typedef Vector<3> Vector3D;
 template<UnsignedInt> class VertexColor;
 typedef VertexColor<2> VertexColor2D;
 typedef VertexColor<3> VertexColor3D;
-#endif
 
 }}
 
