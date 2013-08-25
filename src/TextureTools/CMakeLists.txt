@@ -46,6 +46,21 @@ if(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumTextureTools Magnum)
 
+if(WITH_DISTANCEFIELDCONVERTER)
+    if(NOT UNIX OR TARGET_GLES)
+        message(FATAL_ERROR "magnum-distancefield is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
+    endif()
+
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+    add_executable(magnum-distancefield distance-field.cpp)
+    target_link_libraries(magnum-distancefield MagnumTextureTools Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+    install(TARGETS magnum-distancefield DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
+
 install(TARGETS MagnumTextureTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/TextureTools)
 
