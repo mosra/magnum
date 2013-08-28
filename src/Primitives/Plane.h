@@ -38,16 +38,25 @@ namespace Magnum { namespace Primitives {
 @brief 3D plane primitive
 
 2x2 plane.
+@see @ref Square
 */
 class MAGNUM_PRIMITIVES_EXPORT Plane {
     public:
+        /** @brief Whether to generate texture coordinates */
+        enum class TextureCoords: UnsignedByte {
+            DontGenerate,    /**< Don't generate texture coordinates */
+
+            /** Generate texture coordinates with origin in bottom left corner. */
+            Generate
+        };
+
         /**
          * @brief Solid plane
          *
          * Non-indexed @ref Mesh::Primitive "TriangleStrip" with normals in
          * positive Z direction.
          */
-        static Trade::MeshData3D solid();
+        static Trade::MeshData3D solid(TextureCoords textureCoords = TextureCoords::DontGenerate);
 
         /**
          * @brief Wireframe plane
