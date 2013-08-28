@@ -67,12 +67,12 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Wind
 int DistanceFieldConverter::exec() {
     /* Load plugins */
     PluginManager::Manager<Trade::AbstractImporter> importerManager(MAGNUM_IMPORTER_PLUGIN_DIR);
-    if(!(importerManager.load(args.value("importer")) & (PluginManager::LoadState::Loaded|PluginManager::LoadState::Static))) {
+    if(!(importerManager.load(args.value("importer")) & PluginManager::LoadState::Loaded)) {
         Error() << "Cannot load importer plugin" << args.value("importer") << "from" << MAGNUM_IMPORTER_PLUGIN_DIR;
         return 1;
     }
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager(MAGNUM_IMAGECONVERTER_PLUGIN_DIR);
-    if(!(converterManager.load(args.value("converter")) & (PluginManager::LoadState::Loaded|PluginManager::LoadState::Static))) {
+    if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded)) {
         Error() << "Cannot load converter plugin" << args.value("converter") << "from" << MAGNUM_IMAGECONVERTER_PLUGIN_DIR;
         return 1;
     }
