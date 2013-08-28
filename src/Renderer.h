@@ -278,7 +278,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see setFrontFace()
          */
-        enum FrontFace: GLenum {
+        enum class FrontFace: GLenum {
             /** @brief Counterclockwise polygons are front facing (default). */
             CounterClockWise = GL_CCW,
 
