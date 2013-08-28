@@ -25,6 +25,7 @@
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
     CompressIndices.cpp
+    FullScreenTriangle.cpp
     Tipsify.cpp)
 
 # Files compiled with different flags for main library and unit test library
@@ -37,6 +38,7 @@ set(MagnumMeshTools_HEADERS
     CompressIndices.h
     Duplicate.h
     FlipNormals.h
+    FullScreenTriangle.h
     GenerateFlatNormals.h
     Interleave.h
     RemoveDuplicates.h
