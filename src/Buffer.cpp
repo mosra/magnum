@@ -87,6 +87,9 @@ Buffer::Buffer(Buffer::Target targetHint): _targetHint(targetHint)
 }
 
 Buffer::~Buffer() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     GLuint* bindings = Context::current()->state().buffer->bindings;
 
     /* Remove all current bindings from the state */

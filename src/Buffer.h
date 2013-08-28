@@ -125,11 +125,6 @@ nothing.
 class MAGNUM_EXPORT Buffer {
     friend class Context;
 
-    Buffer(const Buffer&) = delete;
-    Buffer(Buffer&&) = delete;
-    Buffer& operator=(const Buffer&) = delete;
-    Buffer& operator=(Buffer&&) = delete;
-
     public:
         /**
          * @brief %Buffer target
@@ -474,6 +469,12 @@ class MAGNUM_EXPORT Buffer {
          */
         explicit Buffer(Target targetHint = Target::Array);
 
+        /** @brief Copying is not allowed */
+        Buffer(const Buffer&) = delete;
+
+        /** @brief Move constructor */
+        Buffer(Buffer&& other) noexcept;
+
         /**
          * @brief Destructor
          *
@@ -481,6 +482,12 @@ class MAGNUM_EXPORT Buffer {
          * @see @fn_gl{DeleteBuffers}
          */
         ~Buffer();
+
+        /** @brief Copying is not allowed */
+        Buffer& operator=(const Buffer&) = delete;
+
+        /** @brief Move assignment */
+        Buffer& operator=(Buffer&& other) noexcept;
 
         /** @brief OpenGL buffer ID */
         GLuint id() const { return _id; }
@@ -923,6 +930,16 @@ CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 
 /** @debugoperator{Magnum::Buffer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
+
+inline Buffer::Buffer(Buffer&& other) noexcept: _id(other._id), _targetHint(other._targetHint) {
+    other._id = 0;
+}
+
+inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
+    std::swap(_id, other._id);
+    std::swap(_targetHint, other._targetHint);
+    return *this;
+}
 
 #ifndef MAGNUM_TARGET_GLES
 template<class T> Containers::Array<T> inline Buffer::data() {
