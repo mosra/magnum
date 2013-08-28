@@ -242,9 +242,6 @@ class MAGNUM_EXPORT Mesh {
     friend class Context;
     friend class MeshView;
 
-    Mesh(const Mesh&) = delete;
-    Mesh& operator=(const Mesh&) = delete;
-
     public:
         /**
          * @brief Primitive type
@@ -353,8 +350,11 @@ class MAGNUM_EXPORT Mesh {
          */
         explicit Mesh(Primitive primitive = Primitive::Triangles);
 
+        /** @brief Copying is not allowed */
+        Mesh(const Mesh&) = delete;
+
         /** @brief Move constructor */
-        Mesh(Mesh&& other);
+        Mesh(Mesh&& other) noexcept;
 
         /**
          * @brief Destructor
@@ -364,8 +364,11 @@ class MAGNUM_EXPORT Mesh {
          */
         ~Mesh();
 
+        /** @brief Copying is not allowed */
+        Mesh& operator=(const Mesh&) = delete;
+
         /** @brief Move assignment */
-        Mesh& operator=(Mesh&& other);
+        Mesh& operator=(Mesh&& other) noexcept;
 
         /**
          * @brief Index size
