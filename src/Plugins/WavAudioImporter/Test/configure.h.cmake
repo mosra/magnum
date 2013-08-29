@@ -1,5 +1,3 @@
-#ifndef Magnum_Text_MagnumFontConverter_h
-#define Magnum_Text_MagnumFontConverter_h
 /*
     This file is part of Magnum.
 
@@ -24,33 +22,4 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Class Magnum::Text::MagnumFontConverter
- */
-
-#include <Text/AbstractFontConverter.h>
-
-namespace Magnum { namespace Text {
-
-/**
-@brief Converter to MagnumFont
-
-Expects filename prefix, creates two files, `prefix.conf` and `prefix.tga`. See
-MagnumFont for more information about the font.
-*/
-class MagnumFontConverter: public Text::AbstractFontConverter {
-    public:
-        /** @brief Default constructor */
-        explicit MagnumFontConverter();
-
-        /** @brief Plugin manager constructor */
-        explicit MagnumFontConverter(PluginManager::AbstractManager* manager, std::string plugin);
-
-    private:
-        Features doFeatures() const override;
-        std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const override;
-};
-
-}}
-
-#endif
+#define WAVAUDIOIMPORTER_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}"

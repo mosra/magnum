@@ -29,7 +29,7 @@ set(TgaImageConverter_HEADERS
     TgaImageConverter.h)
 
 add_library(TgaImageConverterObjects OBJECT ${TgaImageConverter_SRCS})
-set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR}
     TgaImageConverter.conf
@@ -40,7 +40,7 @@ target_link_libraries(TgaImageConverter ${MAGNUM_LIBRARIES})
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 
 if(BUILD_TESTS)
-    add_library(TgaImageConverterTestLib $<TARGET_OBJECTS:TgaImageConverterObjects>)
+    add_library(TgaImageConverterTestLib SHARED $<TARGET_OBJECTS:TgaImageConverterObjects>)
     target_link_libraries(TgaImageConverterTestLib ${MAGNUM_LIBRARIES})
     add_subdirectory(Test)
 endif()

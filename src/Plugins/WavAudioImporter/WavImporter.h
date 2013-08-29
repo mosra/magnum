@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_TgaImageConverter_h
-#define Magnum_Trade_TgaImageConverter_h
+#ifndef Magnum_Audio_WavImporter_h
+#define Magnum_Audio_WavImporter_h
 /*
     This file is part of Magnum.
 
@@ -25,39 +25,45 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TgaImageConverter
+ * @brief Class Magnum::Audio::WavImporter
  */
 
-#include <Trade/AbstractImageConverter.h>
+#include <Containers/Array.h>
+#include <Utility/Visibility.h>
+#include <Audio/AbstractImporter.h>
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#if defined(TgaImageConverter_EXPORTS) || defined(TgaImageConverterObjects_EXPORTS)
-    #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_EXPORT
-#else
-    #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_IMPORT
-#endif
-#define MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL CORRADE_VISIBILITY_LOCAL
-#endif
-
-namespace Magnum { namespace Trade {
+namespace Magnum { namespace Audio {
 
 /**
-@brief TGA image converter
+@brief WAV importer
 
-Supports images with format @ref ImageFormat::BGR, @ref ImageFormat::BGRA or
-@ref ImageFormat::Red and type @ref ImageType::UnsignedByte.
+Supports mono and stereo PCM files with 8 or 16 bits per channel. The files are
+imported with @ref Buffer::Format::Mono8, @ref Buffer::Format::Mono16,
+@ref Buffer::Format::Stereo8 or @ref Buffer::Format::Stereo16, respectively.
 */
-class MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
+class WavImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
-        explicit TgaImageConverter();
+        explicit WavImporter();
 
         /** @brief Plugin manager constructor */
-        explicit TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin);
+        explicit WavImporter(PluginManager::AbstractManager* manager, std::string plugin);
+
+        ~WavImporter();
 
     private:
-        Features MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL doFeatures() const override;
-        Containers::Array<unsigned char> MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL doExportToData(const ImageReference2D& image) const override;
+        Features doFeatures() const override;
+        bool doIsOpened() const override;
+        void doOpenData(Containers::ArrayReference<const unsigned char> data) override;
+        void doClose() override;
+
+        Buffer::Format doFormat() const override;
+        UnsignedInt doFrequency() const override;
+        Containers::Array<unsigned char> doData() override;
+
+        Containers::Array<unsigned char> _data;
+        Buffer::Format _format;
+        UnsignedInt _frequency;
 };
 
 }}

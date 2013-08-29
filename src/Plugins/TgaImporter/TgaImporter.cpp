@@ -70,7 +70,7 @@ void TgaImporter::doOpenFile(const std::string& filename) {
     in = new std::ifstream(filename.c_str());
     if(in->good()) return;
 
-    Error() << "Trade::TgaImporter::TgaImporter::openFile(): cannot open file" << filename;
+    Error() << "Trade::TgaImporter::openFile(): cannot open file" << filename;
     close();
 }
 
@@ -87,7 +87,7 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     std::streampos filesize = in->tellg();
     in->seekg(0, std::istream::beg);
     if(filesize < std::streampos(sizeof(TgaHeader))) {
-        Error() << "Trade::TgaImporter::TgaImporter::image2D(): the file is too short:" << filesize << "bytes";
+        Error() << "Trade::TgaImporter::image2D(): the file is too short:" << filesize << "bytes";
         return nullptr;
     }
 
@@ -101,7 +101,7 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     /* Image format */
     ImageFormat format;
     if(header.colorMapType != 0) {
-        Error() << "Trade::TgaImporter::TgaImporter::image2D(): paletted files are not supported";
+        Error() << "Trade::TgaImporter::image2D(): paletted files are not supported";
         return nullptr;
     }
 
@@ -123,7 +123,7 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
                 #endif
                 break;
             default:
-                Error() << "Trade::TgaImporter::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
+                Error() << "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
                 return nullptr;
         }
 
@@ -136,13 +136,13 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
         format = ImageFormat::Red;
         #endif
         if(header.bpp != 8) {
-            Error() << "Trade::TgaImporter::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
+            Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
             return nullptr;
         }
 
     /* Compressed files */
     } else {
-        Error() << "Trade::TgaImporter::TgaImporter::image2D(): unsupported (compressed?) image type:" << header.imageType;
+        Error() << "Trade::TgaImporter::image2D(): unsupported (compressed?) image type:" << header.imageType;
         return nullptr;
     }
 

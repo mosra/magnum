@@ -22,37 +22,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED Text)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-set(MagnumFont_SOURCES
-    MagnumFont.cpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(MagnumFont_HEADERS
-    MagnumFont.h)
-
-add_library(MagnumFontObjects OBJECT ${MagnumFont_SOURCES})
-set_target_properties(MagnumFontObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-
-add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_INSTALL_DIR}
-    MagnumFont.conf
-    $<TARGET_OBJECTS:MagnumFontObjects>
-    pluginRegistrationMagnumFont.cpp)
-target_link_libraries(MagnumFont
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_TEXT_LIBRARIES})
-
-if(WIN32)
-    target_link_libraries(MagnumFont TgaImporter)
-endif()
-
-install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
-
-if(BUILD_GL_TESTS)
-    add_library(MagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
-    target_link_libraries(MagnumFontTestLib
-        ${MAGNUM_LIBRARIES}
-        ${MAGNUM_TEXT_LIBRARIES}
-        TgaImporterTestLib)
-
-    add_subdirectory(Test)
-endif()
+corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES WavAudioImporterTestLib)

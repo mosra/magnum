@@ -32,7 +32,7 @@
 #include <Trade/AbstractImporter.h>
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifdef TgaImporter_EXPORTS
+#if defined(TgaImporter_EXPORTS) || defined(TgaImporterObjects_EXPORTS)
     #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
 #else
     #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
@@ -47,15 +47,14 @@ namespace Magnum { namespace Trade {
 
 Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
 
-The images are imported with @ref ImageType "ImageType::UnsignedByte" and
-@ref ImageFormat "ImageFormat::BGR", @ref ImageFormat "ImageFormat::BGRA" or
-@ref ImageFormat "ImageFormat::Red" respectively. Grayscale images require
-extension @extension{ARB,texture_rg}.
+The images are imported with @ref ImageType::UnsignedByte and @ref ImageFormat::BGR,
+@ref ImageFormat::BGRA or @ref ImageFormat::Red, respectively. Grayscale images
+require extension @extension{ARB,texture_rg}.
 
-In OpenGL ES BGR and BGRA images are converted to @ref ImageFormat "ImageFormat::RGB"
-and @ref ImageFormat "ImageFormat::RGBA". In OpenGL ES 2.0, if @es_extension{EXT,texture_rg}
-is not supported, grayscale images use @ref ImageFormat "ImageFormat::Luminance"
-instead of @ref ImageFormat "ImageFormat::Red".
+In OpenGL ES BGR and BGRA images are converted to @ref ImageFormat::RGB
+and @ref ImageFormat::RGBA. In OpenGL ES 2.0, if @es_extension{EXT,texture_rg}
+is not supported, grayscale images use @ref ImageFormat::Luminance instead of
+@ref ImageFormat::Red.
 */
 class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
@@ -65,7 +64,7 @@ class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         /** @brief Plugin manager constructor */
         explicit TgaImporter(PluginManager::AbstractManager* manager, std::string plugin);
 
-        virtual ~TgaImporter();
+        ~TgaImporter();
 
     private:
         Features MAGNUM_TRADE_TGAIMPORTER_LOCAL doFeatures() const override;

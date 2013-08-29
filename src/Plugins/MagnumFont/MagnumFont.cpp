@@ -49,13 +49,13 @@ struct MagnumFont::Data {
 namespace {
     class MagnumFontLayouter: public AbstractLayouter {
         public:
-            explicit MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache* cache, Float fontSize, Float textSize, const std::string& text);
+            explicit MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, const std::string& text);
 
             std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) override;
 
         private:
             const std::vector<Vector2>& glyphAdvance;
-            const GlyphCache* const cache;
+            const GlyphCache& cache;
             const Float fontSize, textSize;
             std::vector<UnsignedInt> glyphs;
     };
@@ -65,6 +65,8 @@ MagnumFont::MagnumFont(): _opened(nullptr) {}
 
 MagnumFont::MagnumFont(PluginManager::AbstractManager* const manager, std::string plugin): AbstractFont(manager, std::move(plugin)), _opened(nullptr) {}
 
+MagnumFont::~MagnumFont() { close(); }
+
 auto MagnumFont::doFeatures() const -> Features { return Feature::OpenData|Feature::MultiFile|Feature::PreparedGlyphCache; }
 
 bool MagnumFont::doIsOpened() const { return _opened; }
@@ -72,7 +74,7 @@ bool MagnumFont::doIsOpened() const { return _opened; }
 void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float) {
     /* We need just the configuration file and image file */
     if(data.size() != 2) {
-        Error() << "Magnum::Text::MagnumFont::openData(): wanted two files, got" << data.size();
+        Error() << "Text::MagnumFont::openData(): wanted two files, got" << data.size();
         return;
     }
 
@@ -80,20 +82,20 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
     std::istringstream in(std::string(reinterpret_cast<const char*>(data[0].second.begin()), data[0].second.size()));
     Utility::Configuration conf(in, Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
-        Error() << "Magnum::Text::MagnumFont::openData(): cannot open file" << data[0].first << conf.isValid();
+        Error() << "Text::MagnumFont::openData(): cannot open file" << data[0].first << conf.isValid();
         return;
     }
 
     /* Check version */
     if(conf.value<UnsignedInt>("version") != 1) {
-        Error() << "Magnum::Text::MagnumFont::openData(): unsupported file version, expected 1 but got"
+        Error() << "Text::MagnumFont::openData(): unsupported file version, expected 1 but got"
                 << conf.value<UnsignedInt>("version");
         return;
     }
 
     /* Check that we have also the image file */
     if(conf.value("image") != data[1].first) {
-        Error() << "Magnum::Text::MagnumFont::openData(): expected file"
+        Error() << "Text::MagnumFont::openData(): expected file"
                 << conf.value("image") << "but got" << data[1].first;
         return;
     }
@@ -101,12 +103,12 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
     /* Open and load image file */
     Trade::TgaImporter importer;
     if(!importer.openData(data[1].second)) {
-        Error() << "Magnum::Text::MagnumFont::openData(): cannot open image file";
+        Error() << "Text::MagnumFont::openData(): cannot open image file";
         return;
     }
     Trade::ImageData2D* image = importer.image2D(0);
     if(!image) {
-        Error() << "Magnum::Text::MagnumFont::openData(): cannot load image file";
+        Error() << "Text::MagnumFont::openData(): cannot load image file";
         return;
     }
 
@@ -118,13 +120,13 @@ void MagnumFont::doOpenFile(const std::string& filename, Float) {
     /* Open the configuration file */
     Utility::Configuration conf(filename, Utility::Configuration::Flag::ReadOnly|Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): cannot open file" << filename << conf.isValid();
+        Error() << "Text::MagnumFont::openFile(): cannot open file" << filename << conf.isValid();
         return;
     }
 
     /* Check version */
     if(conf.value<UnsignedInt>("version") != 1) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): unsupported file version, expected 1 but got"
+        Error() << "Text::MagnumFont::openFile(): unsupported file version, expected 1 but got"
                 << conf.value<UnsignedInt>("version");
         return;
     }
@@ -133,12 +135,12 @@ void MagnumFont::doOpenFile(const std::string& filename, Float) {
     const std::string imageFilename = Utility::Directory::join(Utility::Directory::path(filename), conf.value("image"));
     Trade::TgaImporter importer;
     if(!importer.openFile(imageFilename)) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): cannot open image file" << imageFilename;
+        Error() << "Text::MagnumFont::openFile(): cannot open image file" << imageFilename;
         return;
     }
     Trade::ImageData2D* image = importer.image2D(0);
     if(!image) {
-        Error() << "Magnum::Text::MagnumFont::openFile(): cannot load image file";
+        Error() << "Text::MagnumFont::openFile(): cannot load image file";
         return;
     }
 
@@ -201,13 +203,13 @@ GlyphCache* MagnumFont::doCreateGlyphCache() {
     return cache;
 }
 
-AbstractLayouter* MagnumFont::doLayout(const GlyphCache* cache, Float size, const std::string& text) {
+AbstractLayouter* MagnumFont::doLayout(const GlyphCache& cache, Float size, const std::string& text) {
     return new MagnumFontLayouter(_opened->glyphId, _opened->glyphAdvance, cache, this->size(), size, text);
 }
 
 namespace {
 
-MagnumFontLayouter::MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache* cache, Float fontSize, Float textSize, const std::string& text): glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize) {
+MagnumFontLayouter::MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, const std::string& text): glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize) {
     /* Get glyph codes from characters */
     glyphs.reserve(text.size());
     for(std::size_t i = 0; i != text.size(); ) {
@@ -223,12 +225,12 @@ std::tuple<Rectangle, Rectangle, Vector2> MagnumFontLayouter::renderGlyph(Unsign
     /* Position of the texture in the resulting glyph, texture coordinates */
     Vector2i position;
     Rectanglei rectangle;
-    std::tie(position, rectangle) = (*cache)[glyphs[i]];
+    std::tie(position, rectangle) = cache[glyphs[i]];
 
     const Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/fontSize,
                                                           Vector2(rectangle.size())/fontSize);
-    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache->textureSize(),
-                                       Vector2(rectangle.topRight())/cache->textureSize());
+    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache.textureSize(),
+                                       Vector2(rectangle.topRight())/cache.textureSize());
 
     /* Absolute quad position, composed from cursor position, glyph offset
        and texture position, denormalized to requested text size */

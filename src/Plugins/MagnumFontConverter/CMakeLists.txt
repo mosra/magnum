@@ -31,7 +31,7 @@ set(MagnumFontConverter_HEADERS
     MagnumFontConverter.h)
 
 add_library(MagnumFontConverterObjects OBJECT ${MagnumFontConverter_SOURCES})
-set_target_properties(MagnumFontConverterObjects PROPERTIES COMPILE_FLAGS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS})
+set_target_properties(MagnumFontConverterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR}
     MagnumFontConverter.conf
@@ -41,12 +41,17 @@ target_link_libraries(MagnumFontConverter
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_TEXT_LIBRARIES})
 
+if(WIN32)
+    target_link_libraries(MagnumFontConverter TgaImageConverter)
+endif()
+
 install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
 
-if(BUILD_TESTS)
-    add_library(MagnumFontConverterTestLib $<TARGET_OBJECTS:MagnumFontConverterObjects>)
+if(BUILD_GL_TESTS)
+    add_library(MagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
     target_link_libraries(MagnumFontConverterTestLib
         ${MAGNUM_LIBRARIES}
-        ${MAGNUM_TEXT_LIBRARIES})
+        ${MAGNUM_TEXT_LIBRARIES}
+        TgaImageConverterTestLib)
     add_subdirectory(Test)
 endif()

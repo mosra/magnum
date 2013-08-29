@@ -99,6 +99,8 @@ class MagnumFont: public AbstractFont {
         /** @brief Plugin manager constructor */
         explicit MagnumFont(PluginManager::AbstractManager* manager, std::string plugin);
 
+        ~MagnumFont();
+
     private:
         class Data;
 
@@ -118,7 +120,7 @@ class MagnumFont: public AbstractFont {
 
         GlyphCache* doCreateGlyphCache() override;
 
-        AbstractLayouter* doLayout(const GlyphCache* cache, Float size, const std::string& text) override;
+        AbstractLayouter* doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
 
         Data* _opened;
 

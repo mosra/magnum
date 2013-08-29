@@ -22,37 +22,30 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED Text)
+find_package(Magnum REQUIRED Audio)
 
-set(MagnumFont_SOURCES
-    MagnumFont.cpp)
+include_directories(${MAGNUM_AUDIO_INCLUDE_DIRS})
 
-set(MagnumFont_HEADERS
-    MagnumFont.h)
+set(WavAudioImporter_SRCS
+    WavImporter.cpp)
 
-add_library(MagnumFontObjects OBJECT ${MagnumFont_SOURCES})
-set_target_properties(MagnumFontObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set(WavAudioImporter_HEADERS
+    WavHeader.h
+    WavImporter.h)
 
-add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_INSTALL_DIR}
-    MagnumFont.conf
-    $<TARGET_OBJECTS:MagnumFontObjects>
-    pluginRegistrationMagnumFont.cpp)
-target_link_libraries(MagnumFont
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_TEXT_LIBRARIES})
+add_library(WavAudioImporterObjects OBJECT ${WavAudioImporter_SRCS})
+set_target_properties(WavAudioImporterObjects PROPERTIES COMPILE_FLAGS "-DWavAudioImporterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
-if(WIN32)
-    target_link_libraries(MagnumFont TgaImporter)
-endif()
+add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR}
+    WavAudioImporter.conf
+    $<TARGET_OBJECTS:WavAudioImporterObjects>
+    pluginRegistrationWavAudioImporter.cpp)
+target_link_libraries(WavAudioImporter ${MAGNUM_AUDIO_LIBRARIES})
 
-install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
+install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
-if(BUILD_GL_TESTS)
-    add_library(MagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
-    target_link_libraries(MagnumFontTestLib
-        ${MAGNUM_LIBRARIES}
-        ${MAGNUM_TEXT_LIBRARIES}
-        TgaImporterTestLib)
-
+if(BUILD_TESTS)
+    add_library(WavAudioImporterTestLib STATIC $<TARGET_OBJECTS:WavAudioImporterObjects>)
+    target_link_libraries(WavAudioImporterTestLib ${MAGNUM_LIBRARIES} ${MAGNUM_AUDIO_LIBRARIES})
     add_subdirectory(Test)
 endif()

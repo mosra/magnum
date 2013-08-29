@@ -77,7 +77,7 @@ void MagnumFontConverterTest::exportFont() {
 
     /* Convert the file */
     MagnumFontConverter converter;
-    converter.exportFontToFile(&font, &cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
+    converter.exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
 
     /* Verify font parameters */
     /** @todo This might behave differently elsewhere due to unspecified order of glyphs in cache */

@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_TgaHeader_h
-#define Magnum_Trade_TgaHeader_h
+#ifndef Magnum_Audio_WavHeader_h
+#define Magnum_Audio_WavHeader_h
 /*
     This file is part of Magnum.
 
@@ -25,33 +25,35 @@
 */
 
 /** @file
- * @brief Struct Magnum::Trade::TgaHeader
+ * @brief Struct Magnum::Audio::WavHeader
  */
 
 #include <Types.h>
 
-namespace Magnum { namespace Trade {
+namespace Magnum { namespace Audio {
 
 #pragma pack(1)
-/** @brief TGA file header */
-/** @todoc Enable @c INLINE_SIMPLE_STRUCTS again when unclosed &lt;component&gt; in tagfile is fixed*/
-struct TgaHeader {
-    UnsignedByte    identsize;      /**< @brief Size of ID field that follows header (0) */
-    UnsignedByte    colorMapType;   /**< @brief 0 = None, 1 = paletted */
-    UnsignedByte    imageType;      /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
-    UnsignedShort   colorMapStart;  /**< @brief First color map entry */
-    UnsignedShort   colorMapLength; /**< @brief Number of colors */
-    UnsignedByte    colorMapBpp;    /**< @brief Bits per palette entry */
-    UnsignedShort   beginX;         /**< @brief %Image x origin */
-    UnsignedShort   beginY;         /**< @brief %Image y origin */
-    UnsignedShort   width;          /**< @brief %Image width */
-    UnsignedShort   height;         /**< @brief %Image height */
-    UnsignedByte    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
-    UnsignedByte    descriptor;     /**< @brief %Image descriptor */
+/** @brief WAV file header */
+struct WavHeader {
+    char chunkId[4];                /**< @brief `RIFF` characters */
+    UnsignedInt chunkSize;          /**< @brief Size of the rest of the file */
+    char format[4];                 /**< @brief `WAVE` characters */
+
+    char subChunk1Id[4];            /**< @brief `fmt ` characters */
+    UnsignedInt subChunk1Size;      /**< @brief 16 for PCM */
+    UnsignedShort audioFormat;      /**< @brief 1 = PCM */
+    UnsignedShort numChannels;      /**< @brief 1 = Mono, 2 = Stereo */
+    UnsignedInt sampleRate;         /**< @brief Sample rate in Hz */
+    UnsignedInt byteRate;           /**< @brief Bytes per second */
+    UnsignedShort blockAlign;       /**< @brief Bytes per sample (all channels) */
+    UnsignedShort bitsPerSample;    /**< @brief Bits per sample (one channel) */
+
+    char subChunk2Id[4];            /**< @brief `data` characters */
+    UnsignedInt subChunk2Size;      /**< @brief Size of the following data */
 };
 #pragma pack()
 
-static_assert(sizeof(TgaHeader) == 18, "TgaHeader size is not 18 bytes");
+static_assert(sizeof(WavHeader) == 44, "WavHeader size is not 44 bytes");
 
 }}
 
