@@ -32,25 +32,28 @@
 
 namespace Magnum { namespace MeshTools {
 
-std::pair<Buffer, Mesh> fullScreenTriangle() {
+std::pair<Buffer*, Mesh> fullScreenTriangle() {
     Mesh mesh;
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         .setVertexCount(3);
 
-    Buffer buffer;
+    Buffer* buffer = nullptr;
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isVersionSupported(Version::GL300))
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
     {
+        buffer = new Buffer;
         constexpr Vector2 triangle[] = {
             Vector2(-1.0,  1.0),
             Vector2(-1.0, -3.0),
             Vector2( 3.0,  1.0)
         };
-        buffer.setData(triangle, Buffer::Usage::StaticDraw);
-        mesh.addVertexBuffer(buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
+        buffer->setData(triangle, Buffer::Usage::StaticDraw);
+        /** @todo Is it possible to attach moveable buffer here to avoid heap
+           allocation? OTOH this is more effective in most (modern) cases */
+        mesh.addVertexBuffer(*buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
     }
 
     return {std::move(buffer), std::move(mesh)};
