@@ -139,8 +139,8 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
             Source() {}
 
             public:
-                Vector3& color() { return color; }
-                UnsignedInt& texture() { return texture; }
+                Vector3& color() { return _color; }
+                UnsignedInt& texture() { return _texture; }
 
             private:
                 Vector3 _color;
