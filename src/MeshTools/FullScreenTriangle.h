@@ -52,8 +52,8 @@ computed from them. The vertex positions are, in order:
 On OpenGL 2.1 and OpenGL ES 2.0 the vertex positions are passed explicitly as
 attribute `0`, contained in the buffer. On OpenGL 3.0+ and OpenGL ES 3.0+ the
 mesh is attribute-less and the vertex positions can be computed using
-`gl_VertexID` builtin shader variable, thus the returned vertex buffer is empty
-and basically useless.
+`gl_VertexID` builtin shader variable, thus `nullptr` is returned instead of
+vertex buffer.
 
 Computing positions in vertex shader in a portable way might be done like this.
 For OpenGL 2.1 and OpenGL ES 2.0 you then need to bind the location of `position`
@@ -80,7 +80,7 @@ void main() {
 @attention The implementation needs to check OpenGL version, so it expects
     active context.
 */
-std::pair<Buffer, Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle();
+std::pair<Buffer*, Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle();
 
 }}
 
