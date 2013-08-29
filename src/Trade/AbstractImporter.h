@@ -58,12 +58,13 @@ as the file contains all data user wants to import.
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions doOpenData() and doOpenFile() are called after the previous file
-    was closed, function doClose() is called only if there is any file opened.
--   Function doOpenData() is called only if @ref Feature "Feature::OpenData"
-    is supported.
--   All `do*()` implementations working on opened file are called only if
-    there is any file opened.
+-   Functions @ref doOpenData() and @ref doOpenFile() are called after the
+    previous file was closed, function @ref doClose() is called only if there
+    is any file opened.
+-   Function @ref doOpenData() is called only if @ref Feature::OpenData is
+    supported.
+-   All `do*()` implementations working on opened file are called only if there
+    is any file opened.
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 */
@@ -100,8 +101,8 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * @brief Open raw data
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Available only if @ref Feature "Feature::OpenData" is
-         * supported. Returns `true` on success, `false` otherwise.
+         * file. Available only if @ref Feature::OpenData is supported. Returns
+         * `true` on success, `false` otherwise.
          * @see features(), openFile()
          */
         bool openData(Containers::ArrayReference<const unsigned char> data);
@@ -488,9 +489,8 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for openFile()
          *
-         * If @ref Feature "Feature::OpenData" is supported, default
-         * implementation opens the file and calls doOpenData() with its
-         * contents.
+         * If @ref Feature::OpenData is supported, default implementation opens
+         * the file and calls @ref doOpenData() with its contents.
          */
         virtual void doOpenFile(const std::string& filename);
 

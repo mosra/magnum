@@ -326,7 +326,7 @@ class GlutApplication::Configuration {
          *
          * Default is `0`, thus no multisampling. The actual sample count is
          * ignored, GLUT either enables it or disables. See also
-         * @ref Renderer::Feature "Renderer::Feature::Multisampling".
+         * @ref Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
             _sampleCount = count;

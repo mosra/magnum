@@ -89,8 +89,8 @@ for(std::size_t i = 0; i != 200; ++i)
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 If you are updating only a few discrete portions of the buffer, you can use
-@ref MapFlag "MapFlag::FlushExplicit" and flushMappedRange() to reduce number
-of memory operations performed by OpenGL on unmapping. Example:
+@ref MapFlag::FlushExplicit and flushMappedRange() to reduce number of memory
+operations performed by OpenGL on unmapping. Example:
 @code
 Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
 for(std::size_t i: {7, 27, 56, 128}) {
@@ -124,11 +124,6 @@ nothing.
  */
 class MAGNUM_EXPORT Buffer {
     friend class Context;
-
-    Buffer(const Buffer&) = delete;
-    Buffer(Buffer&&) = delete;
-    Buffer& operator=(const Buffer&) = delete;
-    Buffer& operator=(Buffer&&) = delete;
 
     public:
         /**
@@ -382,7 +377,7 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Previous contents of the entire buffer may be discarded. May
-             * not be used in combination with @ref MapFlag "MapFlag::Read".
+             * not be used in combination with @ref MapFlag::Read.
              * @see invalidateData()
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -393,7 +388,7 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Previous contents of mapped range may be discarded. May not
-             * be used in combination with @ref MapFlag "MapFlag::Read".
+             * be used in combination with @ref MapFlag::Read.
              * @see invalidateSubData()
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -405,7 +400,7 @@ class MAGNUM_EXPORT Buffer {
             /**
              * Only one or more discrete subranges of the mapping will be
              * modified. See flushMappedRange() for more information. May only
-             * be used in conjuction with @ref MapFlag "MapFlag::Write".
+             * be used in conjuction with @ref MapFlag::Write.
              */
             #ifndef MAGNUM_TARGET_GLES2
             FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT,
@@ -474,6 +469,12 @@ class MAGNUM_EXPORT Buffer {
          */
         explicit Buffer(Target targetHint = Target::Array);
 
+        /** @brief Copying is not allowed */
+        Buffer(const Buffer&) = delete;
+
+        /** @brief Move constructor */
+        Buffer(Buffer&& other) noexcept;
+
         /**
          * @brief Destructor
          *
@@ -481,6 +482,12 @@ class MAGNUM_EXPORT Buffer {
          * @see @fn_gl{DeleteBuffers}
          */
         ~Buffer();
+
+        /** @brief Copying is not allowed */
+        Buffer& operator=(const Buffer&) = delete;
+
+        /** @brief Move assignment */
+        Buffer& operator=(Buffer&& other) noexcept;
 
         /** @brief OpenGL buffer ID */
         GLuint id() const { return _id; }
@@ -683,7 +690,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
          * is not available, this function does nothing.
-         * @see @ref MapFlag "MapFlag::InvalidateBuffer", @fn_gl{InvalidateBufferData}
+         * @see @ref MapFlag::InvalidateBuffer, @fn_gl{InvalidateBufferData}
          */
         Buffer& invalidateData() {
             (this->*invalidateImplementation)();
@@ -698,7 +705,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
          * is not available, this function does nothing.
-         * @see @ref MapFlag "MapFlag::InvalidateRange", @fn_gl{InvalidateBufferData}
+         * @see @ref MapFlag::InvalidateRange, @fn_gl{InvalidateBufferData}
          */
         Buffer& invalidateSubData(GLintptr offset, GLsizeiptr length) {
             (this->*invalidateSubImplementation)(offset, length);
@@ -753,8 +760,8 @@ class MAGNUM_EXPORT Buffer {
          * @brief Map buffer to client memory
          * @param offset    Offset into the buffer
          * @param length    Length of the mapped memory
-         * @param flags     Flags. At least @ref MapFlag "MapFlag::Read" or
-         *      @ref MapFlag "MapFlag::Write" must be specified.
+         * @param flags     Flags. At least @ref MapFlag::Read or @ref MapFlag::Write
+         *      must be specified.
          * @return Pointer to buffer data
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -776,7 +783,7 @@ class MAGNUM_EXPORT Buffer {
          * @return Reference to self (for method chaining)
          *
          * Flushes specified subsection of mapped range. Use only if you called
-         * map() with @ref MapFlag "MapFlag::FlushExplicit" flag. See
+         * map() with @ref MapFlag::FlushExplicit flag. See
          * @ref Buffer-data-mapping "class documentation" for usage example.
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -923,6 +930,16 @@ CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 
 /** @debugoperator{Magnum::Buffer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
+
+inline Buffer::Buffer(Buffer&& other) noexcept: _id(other._id), _targetHint(other._targetHint) {
+    other._id = 0;
+}
+
+inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
+    std::swap(_id, other._id);
+    std::swap(_targetHint, other._targetHint);
+    return *this;
+}
 
 #ifndef MAGNUM_TARGET_GLES
 template<class T> Containers::Array<T> inline Buffer::data() {

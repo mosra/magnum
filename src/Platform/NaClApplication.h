@@ -105,8 +105,8 @@ status displayed in the remaining two `&lt;div&gt;`s, if they are available.
 The CSS file contains rudimentary style to avoid eye bleeding.
 
 The `&lt;embed&gt;` file references NMF file which you need to provide too. If
-you target @ref CORRADE_TARGET_NACL_NEWLIB_ "newlib", the file is pretty
-simple, for example:
+you target @ref CORRADE_TARGET_NACL_NEWLIB "newlib", the file is pretty simple,
+for example:
 @code
 {
     "program": {
@@ -116,7 +116,7 @@ simple, for example:
 }
 @endcode
 
-If you target @ref CORRADE_TARGET_NACL_GLIBC_ "glibc", you need to specify also
+If you target @ref CORRADE_TARGET_NACL_GLIBC "glibc", you need to specify also
 all additional dependencies. See [Native Client](https://developers.google.com/native-client/)
 documentation for more information.
 
@@ -337,7 +337,7 @@ class NaClApplication::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is `0`, thus no multisampling. See also
-         * @ref Renderer::Feature "Renderer::Feature::Multisampling".
+         * @ref Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
             _sampleCount = count;

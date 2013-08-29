@@ -1,5 +1,3 @@
-#ifndef Magnum_Trade_Trade_h
-#define Magnum_Trade_Trade_h
 /*
     This file is part of Magnum.
 
@@ -24,35 +22,38 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Trade namespace
- */
+#include "FullScreenTriangle.h"
 
-#include "Types.h"
+#include "Math/Vector2.h"
+#include "AbstractShaderProgram.h"
+#include "Buffer.h"
+#include "Context.h"
+#include "Mesh.h"
 
-namespace Magnum { namespace Trade {
+namespace Magnum { namespace MeshTools {
 
-class AbstractImageConverter;
-class AbstractImporter;
-class AbstractMaterialData;
-class CameraData;
+std::pair<Buffer, Mesh> fullScreenTriangle() {
+    Mesh mesh;
+    mesh.setPrimitive(Mesh::Primitive::Triangles)
+        .setVertexCount(3);
 
-template<UnsignedInt> class ImageData;
-typedef ImageData<1> ImageData1D;
-typedef ImageData<2> ImageData2D;
-typedef ImageData<3> ImageData3D;
+    Buffer buffer;
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isVersionSupported(Version::GL300))
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES300))
+    #endif
+    {
+        constexpr Vector2 triangle[] = {
+            Vector2(-1.0,  1.0),
+            Vector2(-1.0, -3.0),
+            Vector2( 3.0,  1.0)
+        };
+        buffer.setData(triangle, Buffer::Usage::StaticDraw);
+        mesh.addVertexBuffer(buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
+    }
 
-class LightData;
-class MeshData2D;
-class MeshData3D;
-class MeshObjectData2D;
-class MeshObjectData3D;
-class ObjectData2D;
-class ObjectData3D;
-class PhongMaterialData;
-class TextureData;
-class SceneData;
+    return {std::move(buffer), std::move(mesh)};
+}
 
 }}
-
-#endif

@@ -75,7 +75,7 @@ Mesh::~Mesh() {
     (this->*destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other): _id(other._id), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount)
+Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount)
     #ifndef MAGNUM_TARGET_GLES2
     , _indexStart(other._indexStart), _indexEnd(other._indexEnd)
     #endif
@@ -90,29 +90,25 @@ Mesh::Mesh(Mesh&& other): _id(other._id), _primitive(other._primitive), _vertexC
     other._id = 0;
 }
 
-Mesh& Mesh::operator=(Mesh&& other) {
-    (this->*destroyImplementation)();
-
-    _id = other._id;
-    _primitive = other._primitive;
-    _vertexCount = other._vertexCount;
-    _indexCount = other._indexCount;
+Mesh& Mesh::operator=(Mesh&& other) noexcept {
+    std::swap(_id, other._id);
+    std::swap(_primitive, other._primitive);
+    std::swap(_vertexCount, other._vertexCount);
+    std::swap(_indexCount, other._indexCount);
     #ifndef MAGNUM_TARGET_GLES2
-    _indexStart = other._indexStart;
-    _indexEnd = other._indexEnd;
+    std::swap(_indexStart, other._indexStart);
+    std::swap(_indexEnd, other._indexEnd);
     #endif
-    _indexOffset = other._indexOffset;
-    _indexType = other._indexType;
-    _indexBuffer = other._indexBuffer;
-    _attributes = std::move(other._attributes);
+    std::swap(_indexOffset, other._indexOffset);
+    std::swap(_indexType, other._indexType);
+    std::swap(_indexBuffer, other._indexBuffer);
+    std::swap(_attributes, other._attributes);
     #ifndef MAGNUM_TARGET_GLES2
-    _integerAttributes = std::move(other._integerAttributes);
+    std::swap(_integerAttributes, other._integerAttributes);
     #ifndef MAGNUM_TARGET_GLES
-    _longAttributes = std::move(other._longAttributes);
+    std::swap(_longAttributes, other._longAttributes);
     #endif
     #endif
-
-    other._id = 0;
 
     return *this;
 }

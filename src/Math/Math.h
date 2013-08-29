@@ -34,8 +34,6 @@ namespace Magnum { namespace Math {
 
 /** @todo Denormals to zero */
 
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Class Constants used only statically */
 
 template<class> class Complex;
@@ -63,7 +61,6 @@ template<class> class Vector4;
 namespace Geometry {
     template<class> class Rectangle;
 }
-#endif
 
 }}
 

@@ -40,11 +40,11 @@ typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 
 namespace Magnum {
 
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Math {
     template<class T> struct Constants;
 
+    /** @todoc Remove `ifndef` when Doxygen is able to handle operator"" */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     #ifndef CORRADE_GCC46_COMPATIBILITY
     #ifndef MAGNUM_TARGET_GLES
     constexpr Rad<Double> operator "" _rad(long double);
@@ -52,6 +52,7 @@ namespace Math {
     #endif
     constexpr Rad<Float> operator "" _radf(long double);
     constexpr Deg<Float> operator "" _degf(long double);
+    #endif
     #endif
 }
 
@@ -62,65 +63,56 @@ using namespace Corrade;
 using Corrade::Utility::Debug;
 using Corrade::Utility::Warning;
 using Corrade::Utility::Error;
-#endif
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-
-/** @todoc remove trailing underscores when Doxygen can handle `undef` */
-
 /**
 @brief Static library build
 
-`MAGNUM_BUILD_STATIC` is defined if build as static libraries. Default are
-shared libraries.
+Defined if built as static libraries. Default are shared libraries.
 @see @ref building-corrade
 */
-#define MAGNUM_BUILD_STATIC_
+#define MAGNUM_BUILD_STATIC
+#undef MAGNUM_BUILD_STATIC
 
 /**
 @brief OpenGL ES target
 
-`MAGNUM_TARGET_GLES` is defined if the engine is built for OpenGL ES 3.0 or
-OpenGL ES 2.0.
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
-    @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
-    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref building
+Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
+    @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
 */
-#define MAGNUM_TARGET_GLES_
+#define MAGNUM_TARGET_GLES
+#undef MAGNUM_TARGET_GLES
 
 /**
 @brief OpenGL ES 2.0 target.
 
-`MAGNUM_TARGET_GLES2` is defined if the engine is built for OpenGL ES 2.0.
-Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_GLES3_ "MAGNUM_TARGET_GLES3",
-    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref building
+Defined if the engine is built for OpenGL ES 2.0. Implies also
+@ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_GLES3, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
 */
-#define MAGNUM_TARGET_GLES2_
+#define MAGNUM_TARGET_GLES2
+#undef MAGNUM_TARGET_GLES2
 
 /**
 @brief OpenGL ES 3.0 target.
 
-`MAGNUM_TARGET_GLES3` is defined if the engine is built for OpenGL ES 3.0.
-Implies also @ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2",
-    @ref MAGNUM_TARGET_DESKTOP_GLES_ "MAGNUM_TARGET_DESKTOP_GLES",
-    @ref building
+Defined if the engine is built for OpenGL ES 3.0. Implies also
+@ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
 */
-#define MAGNUM_TARGET_GLES3_
+#define MAGNUM_TARGET_GLES3
+#undef MAGNUM_TARGET_GLES3
 
 /**
 @brief Desktop emulation of OpenGL ES target
 
-`MAGNUM_TARGET_DESKTOP_GLES` is defined if the engine is built for OpenGL ES
-3.0 or OpenGL ES 2.0 emulated within standard desktop OpenGL. Implies also
-@ref MAGNUM_TARGET_GLES_ "MAGNUM_TARGET_GLES".
-@see @ref MAGNUM_TARGET_GLES2_ "MAGNUM_TARGET_GLES2", @ref building
+Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0 emulated
+within standard desktop OpenGL. Implies also @ref MAGNUM_TARGET_GLES.
+@see @ref MAGNUM_TARGET_GLES2, @ref building
 */
-#define MAGNUM_TARGET_DESKTOP_GLES_
-
+#define MAGNUM_TARGET_DESKTOP_GLES
+#undef MAGNUM_TARGET_DESKTOP_GLES
 #endif
 
 /** @{ @name Basic type definitions
@@ -321,8 +313,6 @@ using Math::operator "" _degf;
 using Math::operator "" _radf;
 #endif
 
-/** @todoc Remove `ifndef` when Doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Forward declarations for all types in root namespace */
 
 /* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
@@ -428,7 +418,6 @@ enum class TextureFormat: GLenum;
 #endif
 
 class Timeline;
-#endif
 
 }
 

@@ -174,7 +174,7 @@ class Renderer {
         /**
          * @brief Set distance model
          *
-         * Default is @ref DistanceModel "DistanceModel::InverseClamped".
+         * Default is @ref DistanceModel::InverseClamped.
          * @see @fn_al{DistanceModel}
          */
         static void setDistanceModel(DistanceModel model) {

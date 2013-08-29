@@ -29,7 +29,15 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Plane::solid() {
+Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
+    std::vector<std::vector<Vector2>> coords;
+    if(textureCoords == TextureCoords::Generate) coords.push_back({
+        {1.0f, 0.0f},
+        {1.0f, 1.0f},
+        {0.0f, 0.0f},
+        {0.0f, 1.0f}
+    });
+
     return Trade::MeshData3D(Mesh::Primitive::TriangleStrip, {}, {std::vector<Vector3>{
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
@@ -40,7 +48,7 @@ Trade::MeshData3D Plane::solid() {
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f}
-    }}, {});
+    }}, std::move(coords));
 }
 
 Trade::MeshData3D Plane::wireframe() {

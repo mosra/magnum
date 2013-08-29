@@ -267,23 +267,21 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         /**
          * @brief Clean data based on absolute transformation
          *
-         * When object is cleaned and
-         * @ref CachedTransformation "CachedTransformation::Absolute" is
-         * enabled in setCachedTransformations(), this function is called to
-         * recalculate data based on absolute object transformation.
+         * When object is cleaned and @ref CachedTransformation::Absolute is
+         * enabled in @ref setCachedTransformations(), this function is called
+         * to recalculate data based on absolute object transformation.
          *
          * Default implementation does nothing.
-         * @see @ref scenegraph-caching, cleanInverted()
+         * @see @ref scenegraph-caching, @ref cleanInverted()
          */
         virtual void clean(const typename DimensionTraits<dimensions, T>::MatrixType& absoluteTransformationMatrix);
 
         /**
          * @brief Clean data based on inverted absolute transformation
          *
-         * When object is cleaned and
-         * @ref CachedTransformation "CachedTransformation::InvertedAbsolute"
-         * is enabled in setCachedTransformations(), this function is called
-         * to recalculate data based on inverted absolute object
+         * When object is cleaned and @ref CachedTransformation::InvertedAbsolute
+         * is enabled in @ref setCachedTransformations(), this function is
+         * called to recalculate data based on inverted absolute object
          * transformation.
          *
          * Default implementation does nothing.

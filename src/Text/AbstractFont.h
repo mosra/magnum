@@ -60,7 +60,7 @@ checked by the implementation:
     after the previous file was closed, function doClose() is called only if
     there is any file opened.
 -   Functions doOpenData() and doOpenSingleData() are called only if
-    @ref Feature "Feature::OpenData" is supported.
+    @ref Feature::OpenData is supported.
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
 */
@@ -112,8 +112,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Available only if @ref Feature "Feature::OpenData" is
-         * supported. Returns `true` on success, `false` otherwise.
+         * file. Available only if @ref Feature::OpenData is supported. Returns
+         * `true` on success, `false` otherwise.
          */
         bool openData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
 
@@ -123,9 +123,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Available only if @ref Feature "Feature::OpenData" is
-         * supported and the plugin doesn't have @ref Feature "Feature::MultiFile".
-         * Returns `true` on success, `false` otherwise.
+         * file. Available only if @ref Feature::OpenData is supported and the
+         * plugin doesn't have @ref Feature::MultiFile. Returns `true` on
+         * success, `false` otherwise.
          */
         bool openSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
 
@@ -135,10 +135,10 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. If the plugin has @ref Feature "Feature::MultiFile", the
-         * function will use additional files in given path, all sharing common
-         * basename derived from @p filename. Returns `true` on success,
-         * `false` otherwise.
+         * file. If the plugin has @ref Feature::MultiFile, the function will
+         * use additional files in given path, all sharing common basename
+         * derived from @p filename. Returns `true` on success, `false`
+         * otherwise.
          */
         bool openFile(const std::string& filename, Float size);
 
@@ -172,8 +172,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param characters    UTF-8 characters to render
          *
          * Fills the cache with given characters. Fonts having
-         * @ref Feature "Feature::PreparedGlyphCache" do not support partial
-         * glyph cache filling, use createGlyphCache() instead.
+         * @ref Feature::PreparedGlyphCache do not support partial glyph cache
+         * filling, use @ref createGlyphCache() instead.
          */
         void fillGlyphCache(GlyphCache& cache, const std::string& characters);
 
@@ -181,9 +181,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Create glyph cache
          *
          * Configures and fills glyph cache with the contents of whole font.
-         * Available only if @ref Feature "Feature::PreparedGlyphCache" is
-         * supported. Other fonts support only partial glyph cache filling,
-         * see fillGlyphCache().
+         * Available only if @ref Feature::PreparedGlyphCache is supported.
+         * Other fonts support only partial glyph cache filling, see
+         * @ref fillGlyphCache().
          */
         GlyphCache* createGlyphCache();
 
@@ -218,8 +218,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for openData()
          *
-         * If the plugin doesn't have @ref Feature "Feature::MultiFile",
-         * default implementation calls doOpenSingleData().
+         * If the plugin doesn't have @ref Feature::MultiFile, default
+         * implementation calls @ref doOpenSingleData().
          */
         virtual void doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
 
@@ -229,10 +229,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for openFile()
          *
-         * If @ref Feature "Feature::OpenData" is supported and the plugin
-         * doesn't have @ref Feature "Feature::MultiFile", default
-         * implementation opens the file and calls doOpenSingleData() with its
-         * contents.
+         * If @ref Feature::OpenData is supported and the plugin doesn't have
+         * @ref Feature::MultiFile, default implementation opens the file and
+         * calls @ref doOpenSingleData() with its contents.
          */
         virtual void doOpenFile(const std::string& filename, Float size);
 

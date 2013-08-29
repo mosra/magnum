@@ -45,15 +45,15 @@ to be able to render.
 
 @section ShadersMeshVisualizer-wireframe Wireframe visualization
 
-Wireframe visualization is done by enabling @ref Flag "Flag::Wireframe". It is
-done either using geometry shaders or with help of additional vertex information.
+Wireframe visualization is done by enabling @ref Flag::Wireframe. It is done
+either using geometry shaders or with help of additional vertex information.
 
 If you have geometry shaders available, you don't need to do anything else.
 
 @requires_gl32 %Extension @extension{ARB,geometry_shader4} for wireframe
     rendering using geometry shaders.
 
-If you don't have geometry shaders, you need to set @ref Flag "Flag::NoGeometryShader"
+If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
 (it's enabled by default in OpenGL ES) and use only **non-indexed** triangle
 meshes (see MeshTools::duplicate() for possible solution). Additionaly, if you
 have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also @ref VertexIndex
@@ -71,7 +71,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
         /**
          * @brief Vertex index
          *
-         * Used only in OpenGL < 3.1 and OpenGL ES 2.0 if @ref Flag "Flag::Wireframe"
+         * Used only in OpenGL < 3.1 and OpenGL ES 2.0 if @ref Flag::Wireframe
          * is enabled. This attribute specifies index of given vertex in
          * triangle, i.e. `0` for first, `1` for second, `2` for third. In
          * OpenGL 3.1, OpenGL ES 3.0 and newer this value is provided by the
@@ -87,7 +87,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
         enum class Flag: UnsignedByte {
             /**
              * Visualize wireframe. On OpenGL ES this also enables
-             * @ref Flag "Flag::NoGeometryShader".
+             * @ref Flag::NoGeometryShader.
              */
             #ifndef MAGNUM_TARGET_GLES
             Wireframe = 1 << 0,
@@ -98,7 +98,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
             /**
              * Don't use geometry shader for wireframe visualization. If
              * enabled, you might need to provide also VertexIndex attribute in
-             * the mesh. In OpenGL ES enabled alongside @ref Flag "Flag::Wireframe".
+             * the mesh. In OpenGL ES enabled alongside @ref Flag::Wireframe.
              */
             NoGeometryShader = 1 << 1
         };
@@ -125,8 +125,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Set viewport size
          * @return Reference to self (for method chaining)
          *
-         * Has effect only if @ref Flag "Flag::Wireframe" is enabled and
-         * geometry shaders are used.
+         * Has effect only if @ref Flag::Wireframe is enabled and geometry
+         * shaders are used.
          */
         MeshVisualizer& setViewportSize(const Vector2& size) {
             if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader))
@@ -150,7 +150,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Initial value is fully opaque black. Has effect only if
-         * @ref Flag "Flag::Wireframe" is enabled.
+         * @ref Flag::Wireframe is enabled.
          */
         MeshVisualizer& setWireframeColor(const Color4& color) {
             if(flags & Flag::Wireframe) setUniform(wireframeColorUniform, color);
@@ -161,8 +161,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Set wireframe width
          * @return Reference to self (for method chaining)
          *
-         * Initial value is `1.0f`. Has effect only if
-         * @ref Flag "Flag::Wireframe" is enabled.
+         * Initial value is `1.0f`. Has effect only if @ref Flag::Wireframe is
+         * enabled.
          */
         MeshVisualizer& setWireframeWidth(Float width) {
             if(flags & Flag::Wireframe) setUniform(wireframeWidthUniform, width);
@@ -173,8 +173,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Set line smoothness
          * @return Reference to self (for method chaining)
          *
-         * Initial value is `2.0f`. Has effect only if
-         * @ref Flag "Flag::Wireframe" is enabled.
+         * Initial value is `2.0f`. Has effect only if @ref Flag::Wireframe is
+         * enabled.
          */
         MeshVisualizer& setSmoothness(Float smoothness);
 

@@ -100,7 +100,10 @@ void AbstractFont::doOpenFile(const std::string& filename, const Float size) {
 }
 
 void AbstractFont::close() {
-    if(isOpened()) doClose();
+    if(isOpened()) {
+        doClose();
+        CORRADE_INTERNAL_ASSERT(!isOpened());
+    }
 }
 
 UnsignedInt AbstractFont::glyphId(const char32_t character) {

@@ -64,27 +64,26 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         /**
          * @brief Texture coordinates
          *
-         * Used only if one of @ref Flag "Flag::AmbientTexture",
-         * @ref Flag "Flag::DiffuseTexture" or @ref Flag "Flag::SpecularTexture"
-         * is set.
+         * Used only if one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
+         * or @ref Flag::SpecularTexture is set.
          */
         typedef Attribute<2, Vector2> TextureCoordinates;
 
         enum: Int {
             /**
-             * Layer for ambient texture. Used only if @ref Flag "Flag::AmbientTexture"
+             * Layer for ambient texture. Used only if @ref Flag::AmbientTexture
              * is set.
              */
             AmbientTextureLayer = 0,
 
             /**
-             * Layer for diffuse texture. Used only if @ref Flag "Flag::DiffuseTexture"
+             * Layer for diffuse texture. Used only if @ref Flag::DiffuseTexture
              * is set.
              */
             DiffuseTextureLayer = 1,
 
             /**
-             * Layer for specular texture. Used only if @ref Flag "Flag::SpecularTexture"
+             * Layer for specular texture. Used only if @ref Flag::SpecularTexture
              * is set.
              */
             SpecularTextureLayer = 2
@@ -122,7 +121,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`. Has no effect if
-         * @ref Flag "Flag::AmbientTexture" is set.
+         * @ref Flag::AmbientTexture is set.
          */
         Phong& setAmbientColor(const Color3& color);
 
@@ -130,7 +129,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
          *
-         * Has no effect if @ref Flag "Flag::AmbientTexture" is used.
+         * Has no effect if @ref Flag::AmbientTexture is used.
          */
         Phong& setDiffuseColor(const Color3& color);
 
@@ -139,7 +138,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`. Has no effect if
-         * @ref Flag "Flag::SpecularTexture" is set.
+         * @ref Flag::SpecularTexture is set.
          */
         Phong& setSpecularColor(const Color3& color);
 

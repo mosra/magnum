@@ -76,7 +76,10 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
 }
 
 void AbstractImporter::close() {
-    if(isOpened()) doClose();
+    if(isOpened()) {
+        doClose();
+        CORRADE_INTERNAL_ASSERT(!isOpened());
+    }
 }
 
 Buffer::Format AbstractImporter::format() const {

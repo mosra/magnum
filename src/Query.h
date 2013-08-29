@@ -144,7 +144,7 @@ UnsignedInt primitiveCount = q.result<UnsignedInt>();
 class PrimitiveQuery: public AbstractQuery {
     public:
         /** @brief Query target */
-        enum Target: GLenum {
+        enum class Target: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Count of primitives generated from vertex shader or geometry
@@ -210,7 +210,7 @@ q.endConditionalRender();
 class SampleQuery: public AbstractQuery {
     public:
         /** @brief Query target */
-        enum Target: GLenum {
+        enum class Target: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Count of samples passed from fragment shader

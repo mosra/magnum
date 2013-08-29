@@ -73,8 +73,9 @@ information about usage in shaders.
 
 @section Texture-array Texture arrays
 
-You can create texture arrays by passing @ref Target "Texture2D::Target::Texture1DArray"
-or @ref Target "Texture3D::Target::Texture2DArray" to constructor.
+You can create texture arrays by passing
+@ref Target::Texture1DArray "Texture2D::Target::Texture1DArray" or
+@ref Target::Texture2DArray "Texture3D::Target::Texture2DArray" to constructor.
 
 It is possible to specify each layer separately using setSubImage(), but you
 have to allocate the memory for all layers first either by calling setStorage()
@@ -104,8 +105,10 @@ etc.).
 
 @section Texture-multisample Multisample textures
 
-You can create multisample textures by passing @ref Target "Texture2D::Target::Texture2DMultisample"
-or @ref Target "Texture3D::Target::Texture2DMultisampleArray" to constructor.
+You can create multisample textures by passing
+@ref Target::Texture2DMultisample "Texture2D::Target::Texture2DMultisample" or
+@ref Target::Texture2DMultisampleArray "Texture3D::Target::Texture2DMultisampleArray"
+to constructor.
 
 @todoc finish this when fully implemented
 
@@ -115,13 +118,13 @@ or @ref Target "Texture3D::Target::Texture2DMultisampleArray" to constructor.
 
 @section Texture-rectangle Rectangle textures
 
-Rectangle texture is created by passing @ref Target "Target::Rectangle" to
-constructor. In shader, the texture is used via `sampler2DRect` and friends.
+Rectangle texture is created by passing @ref Target::Rectangle "Texture2D::Target::Rectangle"
+to constructor. In shader, the texture is used via `sampler2DRect` and friends.
 Unlike `sampler2D`, which accepts coordinates between 0 and 1, `sampler2DRect`
 accepts coordinates between 0 and `textureSizeInGivenDirection-1`. Note that
 rectangle textures don't support mipmapping and repeating wrapping modes, see
-@ref Sampler::Filter "Sampler::Filter", @ref Sampler::Mipmap "Sampler::Mipmap"
-and generateMipmap() documentation for more information.
+@ref Sampler::Filter, @ref Sampler::Mipmap and @ref generateMipmap()
+documentation for more information.
 
 @requires_gl31 %Extension @extension{ARB,texture_rectangle} for rectangle
     textures.
@@ -255,10 +258,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * textures and (0, textureSizeInGivenDirection-1) for rectangle
          * textures. If @extension{EXT,direct_state_access} is not available,
          * the texture is bound to some layer before the operation. Initial
-         * value is @ref Sampler::Wrapping "Sampler::Wrapping::Repeat".
+         * value is @ref Sampler::Wrapping::Repeat.
          * @attention For rectangle textures only some modes are supported,
-         *      see @ref Sampler::Wrapping "Sampler::Wrapping" documentation
-         *      for more information.
+         *      see @ref Sampler::Wrapping documentation for more information.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},

@@ -142,7 +142,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Write output to back buffer.
              *
-             * On desktop OpenGL, this is equal to @ref DrawAttachment "DrawAttachment::BackLeft".
+             * On desktop OpenGL, this is equal to @ref DrawAttachment::BackLeft.
              */
             #ifdef MAGNUM_TARGET_GLES
             Back = GL_BACK,
@@ -153,7 +153,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Write output to front buffer.
              *
-             * On desktop OpenGL, this is equal to @ref DrawAttachment "DrawAttachment::FrontLeft".
+             * On desktop OpenGL, this is equal to @ref DrawAttachment::FrontLeft.
              */
             #ifdef MAGNUM_TARGET_GLES
             Front = GL_FRONT
@@ -313,8 +313,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *
          * @p attachments is list of shader outputs mapped to buffer
          * attachments. %Shader outputs which are not listed are not used, you
-         * can achieve the same by passing @ref DrawAttachment "DrawAttachment::None"
-         * as attachment. Example usage:
+         * can achieve the same by passing @ref DrawAttachment::None as
+         * attachment. Example usage:
          * @code
          * framebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::BackLeft},
          *                         {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});

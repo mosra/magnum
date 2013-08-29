@@ -347,10 +347,9 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @param buffer        Buffer to attach or `nullptr`
          * @return Reference to self (for method chaining)
          *
-         * If an buffer is attached, changes source type to
-         * @ref Type "Type::Static", if detached, changes source type to
-         * @ref Type "Type::Undetermined". The buffer must be already filled
-         * with data.
+         * If an buffer is attached, changes source type to @ref Type::Static,
+         * if detached, changes source type to @ref Type::Undetermined. The
+         * buffer must be already filled with data.
          * @see @ref type(), @fn_al{Sourcei} with @def_al{BUFFER}
          */
         Source& setBuffer(Buffer* buffer);

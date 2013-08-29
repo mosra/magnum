@@ -161,12 +161,12 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param mask              Which buffers to perform blit operation on
          * @param filter            Interpolation filter
          *
-         * Binds @p source framebuffer to @ref FramebufferTarget "FramebufferTarget::Read"
-         * and @p destination framebuffer to @ref FramebufferTarget "FramebufferTarget::Draw"
-         * and performs blitting operation. See DefaultFramebuffer::mapForRead(),
-         * Framebuffer::mapForRead(), DefaultFramebuffer::mapForDraw() and
-         * Framebuffer::mapForDraw() for specifying particular buffers for
-         * blitting operation.
+         * Binds @p source framebuffer to @ref FramebufferTarget::Read and
+         * @p destination framebuffer to @ref FramebufferTarget::Draw and
+         * performs blitting operation. See @ref DefaultFramebuffer::mapForRead(),
+         * @ref Framebuffer::mapForRead(), @ref DefaultFramebuffer::mapForDraw()
+         * and @ref Framebuffer::mapForDraw() for specifying particular buffers
+         * for blitting operation.
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
@@ -183,8 +183,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * Convenience alternative to above function when source rectangle is
          * the same as destination rectangle. As the image is copied
          * pixel-by-pixel, no interpolation is needed and thus
-         * @ref FramebufferBlitFilter "FramebufferBlitFilter::Nearest"
-         * filtering is used by default.
+         * @ref FramebufferBlitFilter::Nearest filtering is used by default.
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}

@@ -34,8 +34,6 @@
 
 namespace Magnum { namespace SceneGraph {
 
-/** @todoc remove when doxygen is sane again */
-#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class AspectRatioPolicy: UnsignedByte;
 #endif
@@ -187,7 +185,6 @@ typedef BasicRigidMatrixTransformation2D<Float> RigidMatrixTransformation2D;
 typedef BasicRigidMatrixTransformation3D<Float> RigidMatrixTransformation3D;
 
 template<class Transformation> class Scene;
-#endif
 
 }}
 

@@ -73,8 +73,8 @@ is signed three-part vector from the center of the cube, which intersects one
 of the six sides of the cube map. See also AbstractShaderProgram for more
 information about usage in shaders.
 
-@see @ref Renderer::Feature "Renderer::Feature::SeamlessCubeMapTexture",
-    CubeMapTextureArray, Texture, BufferTexture
+@see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTextureArray,
+    @ref Texture, @ref BufferTexture
 */
 class CubeMapTexture: public AbstractTexture {
     public:
@@ -213,10 +213,10 @@ class CubeMapTexture: public AbstractTexture {
          * @param size              Size of invalidated data
          *
          * Z coordinate is equivalent to number of texture face, i.e.
-         * @ref Coordinate "Coordinate::PositiveX" is `0` and so on, in the
-         * same order as in the enum.
+         * @ref Coordinate::PositiveX is `0` and so on, in the same order as in
+         * the enum.
          *
-         * See Texture::invalidateSubImage() for more information.
+         * See @ref Texture::invalidateSubImage() for more information.
          */
         void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
             DataHelper<3>::invalidateSubImage(this, level, offset, size);

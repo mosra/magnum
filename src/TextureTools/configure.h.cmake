@@ -1,5 +1,3 @@
-#ifndef Magnum_Trade_Trade_h
-#define Magnum_Trade_Trade_h
 /*
     This file is part of Magnum.
 
@@ -24,35 +22,5 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for Magnum::Trade namespace
- */
-
-#include "Types.h"
-
-namespace Magnum { namespace Trade {
-
-class AbstractImageConverter;
-class AbstractImporter;
-class AbstractMaterialData;
-class CameraData;
-
-template<UnsignedInt> class ImageData;
-typedef ImageData<1> ImageData1D;
-typedef ImageData<2> ImageData2D;
-typedef ImageData<3> ImageData3D;
-
-class LightData;
-class MeshData2D;
-class MeshData3D;
-class MeshObjectData2D;
-class MeshObjectData3D;
-class ObjectData2D;
-class ObjectData3D;
-class PhongMaterialData;
-class TextureData;
-class SceneData;
-
-}}
-
-#endif
+#define MAGNUM_IMPORTER_PLUGIN_DIR "${MAGNUM_LIBRARY_INSTALL_DIR}/magnum/importers"
+#define MAGNUM_IMAGECONVERTER_PLUGIN_DIR "${MAGNUM_LIBRARY_INSTALL_DIR}/magnum/imageconverters"

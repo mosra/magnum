@@ -242,9 +242,6 @@ class MAGNUM_EXPORT Mesh {
     friend class Context;
     friend class MeshView;
 
-    Mesh(const Mesh&) = delete;
-    Mesh& operator=(const Mesh&) = delete;
-
     public:
         /**
          * @brief Primitive type
@@ -353,8 +350,11 @@ class MAGNUM_EXPORT Mesh {
          */
         explicit Mesh(Primitive primitive = Primitive::Triangles);
 
+        /** @brief Copying is not allowed */
+        Mesh(const Mesh&) = delete;
+
         /** @brief Move constructor */
-        Mesh(Mesh&& other);
+        Mesh(Mesh&& other) noexcept;
 
         /**
          * @brief Destructor
@@ -364,8 +364,11 @@ class MAGNUM_EXPORT Mesh {
          */
         ~Mesh();
 
+        /** @brief Copying is not allowed */
+        Mesh& operator=(const Mesh&) = delete;
+
         /** @brief Move assignment */
-        Mesh& operator=(Mesh&& other);
+        Mesh& operator=(Mesh&& other) noexcept;
 
         /**
          * @brief Index size
@@ -381,9 +384,9 @@ class MAGNUM_EXPORT Mesh {
          * @brief Set primitive type
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref Primitive "Primitive::Triangles".
-         * @see setVertexCount(), addVertexBuffer(),
-         *      addInterleavedVertexBuffer(), addVertexBufferStride()
+         * Default is @ref Primitive::Triangles.
+         * @see @ref setVertexCount(), @ref addVertexBuffer(),
+         *      @ref addInterleavedVertexBuffer(), @ref addVertexBufferStride()
          */
         Mesh& setPrimitive(Primitive primitive) {
             _primitive = primitive;
@@ -834,7 +837,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::Primitive> {
     /**
      * @brief Reads enum value as string
      *
-     * If the value is invalid, returns @ref Magnum::Mesh::Primitive "Mesh::Primitive::Points".
+     * If the value is invalid, returns @ref Magnum::Mesh::Primitive::Points "Mesh::Primitive::Points".
      */
     static Magnum::Mesh::Primitive fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
@@ -853,7 +856,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::IndexType> {
     /**
      * @brief Read enum value as string
      *
-     * If the value is invalid, returns @ref Magnum::Mesh::IndexType "Mesh::IndexType::UnsignedInt".
+     * If the value is invalid, returns @ref Magnum::Mesh::IndexType::UnsignedInt "Mesh::IndexType::UnsignedInt".
      */
     static Magnum::Mesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
 };

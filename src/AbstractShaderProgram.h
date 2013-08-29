@@ -951,10 +951,9 @@ always have vertex attribute with location `0`.
 Template parameter @p T is the type which is used for shader attribute, e.g.
 @ref Vector4i for `ivec4`. DataType is type of passed data when adding vertex
 buffers to mesh. By default it is the same as type used in shader (e.g.
-@ref DataType "DataType::Int" for @ref Vector4i). It's also possible to pass
-integer data to floating-point shader inputs. In this case you may want to
-normalize the values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see
-@ref DataOption "DataOption::Normalize".
+@ref DataType::Int for @ref Vector4i). It's also possible to pass integer data
+to floating-point shader inputs. In this case you may want to normalize the
+values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see @ref DataOption::Normalize.
 
 Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
 or TypeTraits::AttributeType for more information.
@@ -1123,11 +1122,11 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
         /**
          * @brief Constructor
          * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. DataType::Integer for Vector4i).
+         *      type used in shader (e.g. @ref DataType::Int for @ref Vector4i).
          * @param dataOptions   Data options. Default is no options.
          *
          * Component count is set to the same value as in type used in shader
-         * (e.g. @ref Components "Components::Three" for Vector3).
+         * (e.g. @ref Components::Three for @ref Vector3).
          */
         constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
 

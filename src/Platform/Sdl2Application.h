@@ -271,7 +271,7 @@ class Sdl2Application::Configuration {
          * @brief Set window flags
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref Flag "Flag::Resizable".
+         * Default is @ref Flag::Resizable.
          */
         Configuration& setFlags(const Flags flags) {
             _flags = flags;
@@ -286,7 +286,7 @@ class Sdl2Application::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is `0`, thus no multisampling. See also
-         * @ref Renderer::Feature "Renderer::Feature::Multisampling".
+         * @ref Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
             _sampleCount = count;
