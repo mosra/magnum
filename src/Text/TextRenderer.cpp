@@ -198,7 +198,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     /* Finalize mesh configuration and return the result */
     auto r = AbstractTextRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage);
     Mesh& mesh = std::get<0>(r);
-    mesh.addInterleavedVertexBuffer(vertexBuffer, 0,
+    mesh.addVertexBuffer(vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(
                 Shaders::AbstractVector<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
@@ -266,7 +266,7 @@ AbstractTextRenderer::~AbstractTextRenderer() {}
 
 template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont& font, const GlyphCache& cache, const Float size): AbstractTextRenderer(font, cache, size) {
     /* Finalize mesh configuration */
-    _mesh.addInterleavedVertexBuffer(_vertexBuffer, 0,
+    _mesh.addVertexBuffer(_vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(Shaders::AbstractVector<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
 }

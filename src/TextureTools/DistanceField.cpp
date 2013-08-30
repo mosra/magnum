@@ -190,7 +190,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectan
             Vector2( 3.0,  1.0)
         };
         buffer.setData(triangle, Buffer::Usage::StaticDraw);
-        mesh.addInterleavedVertexBuffer(buffer, 0, DistanceFieldShader::Position());
+        mesh.addVertexBuffer(buffer, 0, DistanceFieldShader::Position());
     }
 
     /* Draw the mesh */
