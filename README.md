@@ -1,10 +1,13 @@
-Magnum is 2D/3D graphics engine written in C++11 and modern OpenGL.
+Magnum is 2D/3D graphics engine written in C++11 and modern OpenGL. Its goal is
+to simplify low-level graphics development and interaction with OpenGL using
+recent C++11 features and abstract away platform-specific issues.
 
 DESIGN GOALS
 ============
 
 *   **2D is not an ugly stepchild**
-    Many engines out there are either purely 2D or 3D and if you want to do
+    Many engines out there were created as pure 2D or 3D and the alternative is
+    usually just an afterthought, if it is present at all. If you want to do
     your next project in 2D only, you have to either relearn another engine
     from scratch or emulate it in 3D, leaving many things overly complicated.
     Magnum treats 2D equivalently to 3D so you can reuse what you already
@@ -12,27 +15,26 @@ DESIGN GOALS
 
 *   **Forward compatibility**
     If newer technology makes things faster, simpler or more intuitive, it is
-    the way to go. If you then really need to, you can selectively backport
-    some features and it will be easier than maintaining full backward
-    compatibility by default. Magnum by default relies on decent C++11 support
-    and modern OpenGL features, but compatibility functions for older hardware
-    and compatibility branch for older compilers are available if you need
-    them.
+    the way to go. Magnum by default relies on decent C++11 support and modern
+    OpenGL features and if some feature isn't available, it tries to emulate it
+    using older functionality. However, you are not restricted to use the older
+    functionality directly, if you really want to.
 
 *   **Intuitive, but not restrictive API**
-    Scripting languages are often preferred to C/C++ because they tend to do
-    more with less -- less complicated APIs, nicer syntax and less boilerplate
-    code. Magnum is designed with scripting language intuitivity in mind, but
-    also with speed and static checks that native code and strong typing
-    offers. Usually the most common way is the most simple, but if you need
-    full control, you can have it.
+    Scripting languages are often preferred to C/C++ because they are designed
+    to have less complicated APIs and less boilerplate code. Magnum is
+    designed with intuitivity in mind, but also with speed and static checks
+    that strongly-typed native code offers. It wraps OpenGL into less verbose
+    and more type-safe API, which is easier to use. Usually the most common way
+    is the most simple, but if you need full control, you can have it.
 
 *   **Extensible and replaceable components**
     If you want to use different mathematical library for specific purposes,
     that new windowing toolkit, your own file formats or another physics
-    library, you can. Conversion of data between different libraries can be
-    done on top of pre-made skeleton classes, support for file formats is done
-    using plugins and platform support is done by writing simple wrapper class.
+    library, you can. Conversion of math structures between different libraries
+    can be done on top of pre-made skeleton classes, support for file formats
+    is done using plugins and platform support is done by writing simple
+    wrapper class.
 
 SUPPORTED PLATFORMS
 ===================

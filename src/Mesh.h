@@ -29,7 +29,6 @@
  */
 
 #include <vector>
-#include <Utility/Assert.h>
 #include <Utility/ConfigurationValue.h>
 
 #include "AbstractShaderProgram.h"
@@ -41,20 +40,19 @@ namespace Magnum {
 
 @section Mesh-configuration Mesh configuration
 
-You have to specify at least primitive and vertex count using setPrimitive()
-and setVertexCount(). Then fill your vertex buffers with data, add them to the
-mesh and specify @ref AbstractShaderProgram::Attribute "shader attribute" layout
-inside the buffers using addVertexBuffer(), addInterleavedVertexBuffer() or
-addVertexBufferStride(). You can also use MeshTools::interleave() in
-combination with addInterleavedVertexBuffer() to conveniently fill interleaved
-vertex buffer(s). The function itself calls setVertexCount(), so you don't
-have to do it again.
+You have to specify at least primitive and vertex count using @ref setPrimitive()
+and @ref setVertexCount(). Then fill your vertex buffers with data, add them to
+the mesh and specify @ref AbstractShaderProgram::Attribute "shader attribute"
+layout inside the buffers using @ref addVertexBuffer(). You can also
+use @ref MeshTools::interleave() conveniently fill interleaved vertex buffer.
+The function itself calls @ref setVertexCount(), so you don't have to do it
+again, but you still have to specify the layout using @ref addVertexBuffer().
 
-If you have indexed mesh, you need to call setIndexCount() instead of
-setVertexCount(). Then fill your index buffer with data and specify its layout
-using setIndexBuffer(). You can also use MeshTools::compressIndices() to
-conveniently compress the indices, fill the index buffer and configure the
-mesh instead of calling setIndexCount() and setIndexBuffer() manually.
+If you have indexed mesh, you need to call @ref setIndexCount() instead of
+@ref setVertexCount(). Then fill your index buffer with data and specify its
+layout using @ref setIndexBuffer(). You can also use @ref MeshTools::compressIndices()
+to conveniently compress the indices, fill the index buffer and configure the
+mesh instead of calling @ref setIndexCount() and @ref setIndexBuffer() manually.
 
 Note that neither vertex buffers nor index buffer is managed (e.g. deleted on
 destruction) by the mesh, so you have to manage them on your own and ensure
@@ -64,7 +62,7 @@ different shader) or store data for more meshes in one buffer.
 
 If the mesh has non-zero index count, it is treated as indexed mesh, otherwise
 it is treated as non-indexed mesh. If both index and vertex count is zero, the
-mesh is empty and no draw commands are issued when calling draw().
+mesh is empty and no draw commands are issued when calling @ref draw().
 
 @subsection Mesh-configuration-examples Example mesh configuration
 
@@ -108,9 +106,7 @@ MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
 // Set primitive and specify layout of interleaved vertex buffer, vertex count
 // has been already set by MeshTools::interleave()
 mesh.setPrimitive(plane.primitive())
-    .addInterleavedVertexBuffer(buffer, 0,
-        Shaders::PhongShader::Position(),
-        Shaders::PhongShader::Normal());
+    .addVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 @endcode
 
 @subsubsection Mesh-configuration-examples-indexed-phong Indexed mesh
@@ -162,9 +158,7 @@ MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw,
 // Set primitive and specify layout of interleaved vertex buffer. Index count
 // and index buffer has been already specified by MeshTools::compressIndices().
 mesh.setPrimitive(plane.primitive())
-    .addInterleavedVertexBuffer(vertexBuffer, 0,
-        Shaders::PhongShader::Position(),
-        Shaders::PhongShader::Normal());
+    .addVertexBuffer(vertexBuffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 @endcode
 
 @subsubsection Mesh-configuration-examples-data-options Specific formats of vertex data
@@ -213,7 +207,7 @@ mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color(
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
 respective shader, bind required textures (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
-for more infromation) and call Mesh::draw().
+for more infromation) and call @ref Mesh::draw().
 
 @section Mesh-performance-optimization Performance optimizations
 
@@ -226,12 +220,11 @@ unnecessary calls to @fn_gl{BindVertexArray}.
 If extension @extension{EXT,direct_state_access} and VAOs are available,
 DSA functions are used for specifying attribute locations to avoid unnecessary
 calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
-addVertexBuffer(), addInterleavedVertexBuffer(), addVertexBufferStride() for
-more information.
+@ref addVertexBuffer() for more information.
 
-If index range is specified in setIndexBuffer(), range-based version of
-drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also draw()
-for more information.
+If index range is specified in @ref setIndexBuffer(), range-based version of
+drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
+@ref draw() for more information.
 
 @todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
@@ -385,8 +378,7 @@ class MAGNUM_EXPORT Mesh {
          * @return Reference to self (for method chaining)
          *
          * Default is @ref Primitive::Triangles.
-         * @see @ref setVertexCount(), @ref addVertexBuffer(),
-         *      @ref addInterleavedVertexBuffer(), @ref addVertexBufferStride()
+         * @see @ref setVertexCount(), @ref addVertexBuffer()
          */
         Mesh& setPrimitive(Primitive primitive) {
             _primitive = primitive;
@@ -401,8 +393,7 @@ class MAGNUM_EXPORT Mesh {
          * @return Reference to self (for method chaining)
          *
          * Default is zero.
-         * @see setPrimitive(), addVertexBuffer(), addInterleavedVertexBuffer(),
-         *      addVertexBufferStride(), MeshTools::interleave()
+         * @see setPrimitive(), addVertexBuffer(), MeshTools::interleave()
          */
         Mesh& setVertexCount(Int vertexCount) {
             _vertexCount = vertexCount;
@@ -425,127 +416,66 @@ class MAGNUM_EXPORT Mesh {
         }
 
         /**
-         * @brief Add buffer with non-interleaved vertex attributes for use with given shader
+         * @brief Add buffer with (interleaved) vertex attributes for use with given shader
          * @return Reference to self (for method chaining)
          *
-         * Attribute list is combination of
-         * @ref AbstractShaderProgram::Attribute "attribute definitions"
-         * (specified in implementation of given shader) and gaps between
-         * attribute arrays.
-         *
-         * See @ref Mesh-configuration "class documentation" for simple usage
-         * example. For more involved example imagine that you have buffer
-         * with 35 bytes of some other data at the beginning (possibly material
-         * configuration), then position array, then texture coordinate array
-         * and then normal array. You want to draw it with Shaders::PhongShader,
-         * but it accepts only position and normal, so you have to skip the
-         * texture coordinate array:
-         * @code
-         * Buffer buffer;
-         * Mesh mesh;
-         * mesh.addVertexBuffer(buffer,
-         *     35,                                  // offset of the data
-         *     Shaders::PhongShader::Position(),    // position array
-         *     sizeof(Vector2)*mesh.vertexCount(),  // skip texture coordinate array
-         *     Shaders::PhongShader::Normal());     // normal array
-         * @endcode
-         *
-         * Vou can also achieve the same effect by calling this function more
-         * times with absolute offsets:
-         * @code
-         * mesh.addVertexBuffer(buffer, 35, Shaders::PhongShader::Position());
-         *     .addVertexBuffer(buffer, 35 + (sizeof(Shaders::PhongShader::Position::Type) + sizeof(Vector2))*
-         *          mesh->vertexCount(), Shaders::PhongShader::Normal());
-         * @endcode
-         *
-         * @attention If specifying more than one attribute the actual vertex
-         *      count must be set before calling this function. Otherwise
-         *      vertex data positions in the buffer will be miscalculated.
-         * @attention The buffer passed as parameter is not managed by the
-         *      mesh, you must ensure it will exist for whole lifetime of the
-         *      mesh and delete it afterwards.
-         *
-         * @see addInterleavedVertexBuffer(), addVertexBufferStride(),
-         *      setPrimitive(), setVertexCount(), @fn_gl{BindVertexArray},
-         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer} or
-         *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
-         *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
-         *      if @extension{APPLE,vertex_array_object} is available
-         */
-        template<class ...T> Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes);
-
-        /**
-         * @brief Add buffer with interleaved vertex attributes for use with given shader
-         * @return Reference to self (for method chaining)
-         *
-         * Parameter @p offset is offset of the interleaved array from the
-         * beginning, attribute list is combination of
-         * @ref AbstractShaderProgram::Attribute "attribute definitions"
+         * Parameter @p offset is offset of the array from the beginning,
+         * attribute list is combination of @ref AbstractShaderProgram::Attribute "attribute definitions"
          * (specified in implementation of given shader) and offsets between
-         * attributes.
+         * interleaved attributes.
          *
          * See @ref Mesh-configuration "class documentation" for simple usage
          * example. For more involved example imagine that you have buffer
-         * with 35 bytes of some other data at the beginning (possibly material
+         * with 76 bytes of some other data at the beginning (possibly material
          * configuration) and then the interleaved vertex array. Each vertex
          * consists of weight, position, texture coordinate and normal. You
-         * want to draw it with Shaders::PhongShader, but it accepts only
+         * want to draw it with @ref Shaders::Phong, but it accepts only
          * position and normal, so you have to skip weight and texture
          * coordinate in each vertex:
          * @code
-         * Buffer buffer;
-         * Mesh mesh;
-         * mesh.addInterleavedVertexBuffer(buffer,
-         *     35,                                  // skip other data
-         *     sizeof(Float),                       // skip vertex weight
-         *     Shaders::PhongShader::Position(),    // vertex position
-         *     sizeof(Vector2),                     // skip texture coordinates
-         *     Shaders::PhongShader::Normal());     // vertex normal
-         * @endcode
+           Buffer buffer;
+           Mesh mesh;
+           mesh.addVertexBuffer(buffer, 76, // initial array offset
+               4,                           // skip vertex weight (Float)
+               Shaders::Phong::Position(),  // vertex position
+               8,                           // skip texture coordinates (Vector2)
+               Shaders::Phong::Normal());   // vertex normal
+           @endcode
          *
-         * You can also achieve the same effect by calling addVertexBufferStride()
-         * more times with absolute offset from the beginning and stride
-         * between vertex attributes:
-         * @code
-         * GLsizei stride =                         // size of one vertex
-         *     sizeof(Float) +
-         *     sizeof(Shaders::PhongShader::Position::Type) +
-         *     sizeof(Vector2) +
-         *     sizeof(Shaders::PhongShader::Normal::Type);
+         * You can also achieve the same effect by calling @ref addVertexBuffer()
+         * more times with explicitly specified gaps before and after the
+         * attributes. This can be used for e.g. runtime-dependent
+         * configuration, as it isn't dependent on the variadic template:
+           @code
+           mesh.addVertexBuffer(buffer, 76, 4, Shaders::Phong::Position(), 20)
+               .addVertexBuffer(buffer, 76, 24, Shaders::Phong::Normal(), 0);
+           @endcode
          *
-         * mesh.addVertexBufferStride(buffer, 35 + sizeof(Float),
-         *          stride, Shaders::PhongShader::Position());
-         *     .addVertexBufferStride(buffer, 35 + sizeof(Float) +
-         *          sizeof(Shaders::PhongShader::Position::Type) + sizeof(Vector2),
-         *          stride, Shaders::PhongShader::Normal());
-         * @endcode
+         * If specifying more than one attribute, the function assumes that
+         * the array is interleaved. Adding non-interleaved vertex buffer can
+         * be done by specifying one attribute at a time with specific offset.
+         * Above example with weight, position, texture coordinate and normal
+         * arrays one after another (non-interleaved):
+           @code
+           Int vertexCount = 352;
+           mesh.addVertexBuffer(buffer, 76 + 4*vertexCount, Shaders::Phong::Position())
+               .addVertexBuffer(buffer, 76 + 24*vertexCount, Shaders::Phong::Normal());
+           @endcode
          *
          * @attention The buffer passed as parameter is not managed by the
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
          *
-         * @see addVertexBufferStride(), addVertexBuffer(), setPrimitive(),
-         *      setVertexCount(), @fn_gl{BindVertexArray},
+         * @see setPrimitive(), setVertexCount(), @fn_gl{BindVertexArray},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
+         * @todoc Add back the *s when Doxygen is sane again
          */
-        template<class ...T> inline Mesh& addInterleavedVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
-            addInterleavedVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), attributes...);
-            return *this;
-        }
-
-        /**
-         * @brief Add buffer with interleaved vertex attributes for use with given shader
-         * @return Reference to self (for method chaining)
-         *
-         * See addInterleavedVertexBuffer() for more information.
-         */
-        template<UnsignedInt location, class T> inline Mesh& addVertexBufferStride(Buffer& buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute) {
-            addInterleavedVertexBufferInternal(buffer, offset, stride, attribute);
+        template<class ...T> inline Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
+            addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), attributes...);
             return *this;
         }
 
@@ -644,19 +574,6 @@ class MAGNUM_EXPORT Mesh {
 
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
 
-        /* Adding non-interleaved vertex attributes */
-        template<UnsignedInt location, class T, class ...U> inline void addVertexBufferInternal(Buffer& buffer, GLintptr offset, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
-            addVertexAttribute(buffer, attribute, offset, 0);
-
-            /* Add size of this attribute array to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+attribute.dataSize()*_vertexCount, attributes...);
-        }
-        template<class ...T> inline void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLintptr gap, const T&... attributes) {
-            /* Add the gap to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+gap, attributes...);
-        }
-        inline void addVertexBufferInternal(Buffer&, GLintptr) {}
-
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> inline static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             return attribute.dataSize() + strideOfInterleaved(attributes...);
@@ -667,17 +584,17 @@ class MAGNUM_EXPORT Mesh {
         inline static GLsizei strideOfInterleaved() { return 0; }
 
         /* Adding interleaved vertex attributes */
-        template<UnsignedInt location, class T, class ...U> inline void addInterleavedVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+        template<UnsignedInt location, class T, class ...U> inline void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             addVertexAttribute(buffer, attribute, offset, stride);
 
             /* Add size of this attribute to offset for next attribute */
-            addInterleavedVertexBufferInternal(buffer, offset+attribute.dataSize(), stride, attributes...);
+            addVertexBufferInternal(buffer, offset+attribute.dataSize(), stride, attributes...);
         }
-        template<class ...T> inline void addInterleavedVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLintptr gap, const T&... attributes) {
+        template<class ...T> inline void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */
-            addInterleavedVertexBufferInternal(buffer, offset+gap, stride, attributes...);
+            addVertexBufferInternal(buffer, offset+gap, stride, attributes...);
         }
-        inline void addInterleavedVertexBufferInternal(Buffer&, GLsizei, GLintptr) {}
+        inline void addVertexBufferInternal(Buffer&, GLsizei, GLintptr) {}
 
         template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, Float>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(UnsignedInt i = 0; i != Implementation::Attribute<T>::vectorCount(); ++i)
@@ -810,14 +727,6 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
 
 /** @debugoperator{Magnum::Mesh} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
-
-template<class ...T> inline Mesh& Mesh::addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
-    CORRADE_ASSERT(sizeof...(attributes) == 1 || _vertexCount != 0,
-        "Mesh::addVertexBuffer(): vertex count must be set before binding attributes", *this);
-
-    addVertexBufferInternal(buffer, offset, attributes...);
-    return *this;
-}
 
 }
 
