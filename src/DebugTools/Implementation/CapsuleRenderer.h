@@ -37,6 +37,7 @@ template<UnsignedInt dimensions> class AbstractCapsuleRenderer;
 template<> class AbstractCapsuleRenderer<2>: public AbstractShapeRenderer<2> {
     public:
         explicit AbstractCapsuleRenderer();
+        ~AbstractCapsuleRenderer();
 
     protected:
         Resource<MeshView> bottom, cylinder, top;
@@ -45,6 +46,7 @@ template<> class AbstractCapsuleRenderer<2>: public AbstractShapeRenderer<2> {
 template<> class AbstractCapsuleRenderer<3>: public AbstractShapeRenderer<3> {
     public:
         explicit AbstractCapsuleRenderer();
+        ~AbstractCapsuleRenderer();
 
     protected:
         Resource<MeshView> bottom, cylinder, top;
