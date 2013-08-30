@@ -55,8 +55,8 @@ FEATURES
     Snapshot is available at http://mosra.cz/blog/magnum-doc/.
 *   Vector and matrix library with implementation of complex numbers,
     quaternions and their dual counterparts for representing transformations.
-*   Classes wrapping OpenGL and simplifying its usage with direct state access
-    and automatic fallback for unavailable features.
+*   Classes wrapping OpenGL using RAII principle and simplifying its usage with
+    direct state access and automatic fallback for unavailable features.
 *   Extensible scene graph which can be modified for each specific usage.
 *   Plugin-based data exchange framework, tools for manipulating meshes,
     textures and images.

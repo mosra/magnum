@@ -90,6 +90,10 @@ AbstractCapsuleRenderer<3>::AbstractCapsuleRenderer(): AbstractShapeRenderer<3>(
     }
 }
 
+AbstractCapsuleRenderer<2>::~AbstractCapsuleRenderer() = default;
+
+AbstractCapsuleRenderer<3>::~AbstractCapsuleRenderer() = default;
+
 template<UnsignedInt dimensions> CapsuleRenderer<dimensions>::CapsuleRenderer(const Shapes::Implementation::AbstractShape<dimensions>& capsule): capsule(static_cast<const Shapes::Implementation::Shape<Shapes::Capsule<dimensions>>&>(capsule).shape) {}
 
 template<UnsignedInt dimensions> void CapsuleRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {

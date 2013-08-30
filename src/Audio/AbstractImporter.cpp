@@ -93,7 +93,7 @@ UnsignedInt AbstractImporter::frequency() const {
 }
 
 Containers::Array<unsigned char> AbstractImporter::data() {
-    CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::data(): no file opened", {});
+    CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::data(): no file opened", nullptr);
     return doData();
 }
 
