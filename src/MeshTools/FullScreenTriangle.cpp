@@ -53,7 +53,7 @@ std::pair<Buffer*, Mesh> fullScreenTriangle() {
         buffer->setData(triangle, Buffer::Usage::StaticDraw);
         /** @todo Is it possible to attach moveable buffer here to avoid heap
            allocation? OTOH this is more effective in most (modern) cases */
-        mesh.addVertexBuffer(*buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
+        mesh.addInterleavedVertexBuffer(*buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
     }
 
     return {std::move(buffer), std::move(mesh)};
