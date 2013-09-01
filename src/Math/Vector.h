@@ -221,6 +221,18 @@ template<std::size_t size, class T> class Vector {
         BoolVector<size> operator>(const Vector<size, T>& other) const;
 
         /**
+         * @brief Whether the vector is zero
+         *
+         * @f[
+         *      |\boldsymbol a \cdot \boldsymbol a - 0| < \epsilon^2 \cong \epsilon
+         * @f]
+         * @see dot(), normalized()
+         */
+        bool isZero() const {
+            return Implementation::isZeroSquared(dot());
+        }
+
+        /**
          * @brief Whether the vector is normalized
          *
          * The vector is normalized if it has unit length: @f[
