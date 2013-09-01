@@ -162,7 +162,7 @@ template<class T> class AbstractResourceLoader {
 
         /** @overload */
         template<class U> void set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
-            set(key, new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)), state, policy);
+            set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
 
         /**
@@ -177,7 +177,7 @@ template<class T> class AbstractResourceLoader {
 
         /** @overload */
         template<class U> void set(ResourceKey key, U&& data) {
-            set(key, new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)));
+            set(key, new typename std::decay<U>::type(std::forward<U>(data)));
         }
 
         /**
