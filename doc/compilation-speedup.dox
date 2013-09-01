@@ -33,31 +33,31 @@ directives in both headers and source files. %Magnum is strictly applying this
 policy in all header files, so all types which are not directly used in the
 header have only forward declarations.
 
-For example, when including Magnum.h, you get shortcut typedefs for
+For example, when including @ref Magnum.h, you get shortcut typedefs for
 floating-point vectors and matrices like @ref Vector3 and @ref Matrix4, but to
 actually use any of them, you have to include the respective header, e.g.
-Math/Vector3.h.
+@ref Math/Vector3.h.
 
 You are encouraged to use forward declarations also in your code. However, for
 some types it can be too cumbersome -- e.g. too many template parameters,
 typedefs etc. In this case a header with forward declarations is usually
 available, each namespace has its own:
 
- - Math/Math.h
- - Magnum.h
- - DebugTools/DebugTools.h
- - SceneGraph/SceneGraph.h
- - Shaders/Shaders.h
- - Shapes/Shapes.h
- - Text/Text.h
- - Trade/Trade.h
+ - @ref Math/Math.h
+ - @ref Magnum.h
+ - @ref DebugTools/DebugTools.h
+ - @ref SceneGraph/SceneGraph.h
+ - @ref Shaders/Shaders.h
+ - @ref Shapes/Shapes.h
+ - @ref Text/Text.h
+ - @ref Trade/Trade.h
 
 @section compilation-speedup-templates Templates
 
 Many things in %Magnum are templated to allow handling of various types and
-sizes of data, for example whole Scene graph can operate either with @ref Float
-or @ref Double data type. However, having templated classes and function usually
-means that the compiler compiles the whole templated code again in each
+sizes of data, for example whole scene graph can operate either with @ref Float
+or @ref Double data type. However, having templated classes and function
+usually means that the compiler compiles the whole templated code again in each
 compilation unit (i.e. source file). In linking stage of the application or
 library the duplicates are just thrown out, which is a waste of compilation
 time. A few techniques are employed in %Magnum to avoid this.
@@ -67,48 +67,51 @@ time. A few techniques are employed in %Magnum to avoid this.
 When templated code is too large, it is not stored in header file, but in
 so-called *template implementation file*. Generally, all header files in
 %Magnum have `*.h` extension and all source files have `*.cpp` extension.
-Template implementation files have `*.hpp` extension (hinting that they are
-something between `*.h` and `*.cpp` files).
+Template implementation files have `*.hpp` extension, hinting that they are
+something between `*.h` and `*.cpp` files.
 
 Template implementation file can be included along the header itself and it
 will just work, but it will negatively affect compilation time. If you are
 using one template specialization in many places, the compiler performs
-compilation of the same template specialization many times. Template
-implementation files give you the ability to explicitly instantiate the
-template only once in some dedicated source file. Then you can include just
+compilation of the same template specialization many times, as said above.
+Template implementation files give you the ability to explicitly instantiate
+the template only once in some dedicated source file. Then you can include just
 the header everywhere else and leave the rest on the linker.
 
-Templated classes which have implementation files state in their documentation
-all common specializations that are already compiled in the libraries. So,
-unless the templated class is too generic or you need something special, you
-don't have to mess with template implementation files at all. See
-SceneGraph::Object or SceneGraph::AbstractCamera for an example.
+Templated classes having code in template implementation files state in their
+documentation all common specializations that are already compiled in the
+libraries. So, unless the templated class is too generic or you need something
+special, you don't have to mess with template implementation files at all. See
+@ref SceneGraph::Object or @ref SceneGraph::AbstractCamera for an example.
 
-Sometimes you however need to use your own specialization and that's why
-template implementation files are included in the library. For example we want
-to use @ref SceneGraph::Object "Object" from SceneGraph with
-@ref SceneGraph::MatrixTransformation3D "MatrixTransformation3D" with
-@ref Double as underlying type, because our scene will span the whole universe.
-We include the implementation file in dedicated source file and explicitly
-instantiate the template:
+Sometimes, however, you need to use your own specialization and that's why
+template implementation files are installed along with the library. For example
+we want to use @ref SceneGraph::Object "Object" from @ref SceneGraph with
+@ref SceneGraph::BasicMatrixTransformation3D "BasicMatrixTransformation3D" with
+@ref Double instead of @ref Float as underlying type, because our scene will
+span the whole universe. We include the implementation file in dedicated source
+file and explicitly instantiate the template:
 @code
 // Object.cpp
 #include "SceneGraph/Object.hpp"
+#include "SceneGraph/MatrixTransformation3D.h"
 
-using namespace Magnum::SceneGraph;
+using namespace Magnum;
 
-template class Object<MatrixTransformation3D<Double>>;
+template class SceneGraph::Object<SceneGraph::BasicMatrixTransformation3D<Double>>;
 @endcode
+
 All other files using the same object specialization now need to include only
-SceneGraph/Object.h header. Thus the Object specialization will be compiled
-only once in our `Object.cpp` file, saving precious compilation time.
+@ref SceneGraph/Object.h header. Thus the @ref SceneGraph::Object "Object"
+specialization will be compiled only once in our `Object.cpp` file, saving
+precious compilation time.
 
 @subsection compilation-speedup-extern-templates Extern templates
 
-Keyword `extern template` is new thing in C++11, attempting to solve
-compilation time problems. However, when used on whole classes, on some
-compilers it causes conflicting symbol errors, so in %Magnum its used only for
-specific functions.
+Keyword `extern template` is a new thing in C++11, attempting to solve
+compilation time problems related to templated code. However, on some compilers
+it causes conflicting symbol errors when used on whole classes, thus in %Magnum
+it's used only for specific functions.
 
 This is completely transparent to end user, so no special care is needed.
 Extern template is used for example for @ref debugoperators "debug operators"
