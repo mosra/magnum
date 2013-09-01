@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
+/** @file Audio/Context.h
  * @brief Class Magnum::Audio::Context
  */
 

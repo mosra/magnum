@@ -38,6 +38,8 @@
 
 namespace Magnum {
 
+/** @todoc Resolve conflict with Audio/Context.h (Doxygen doesn't list this file) */
+
 namespace Implementation {
     struct State;
 }
