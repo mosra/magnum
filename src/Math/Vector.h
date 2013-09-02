@@ -1051,84 +1051,84 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 
 #define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                  \
     template<class T> inline Type<T> operator*(typename std::common_type<T>::type number, const Type<T>& vector) { \
-        return number*static_cast<const Math::Vector<size, T>&>(vector);          \
+        return number*static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
     template<class T> inline Type<T> operator/(typename std::common_type<T>::type number, const Type<T>& vector) { \
-        return number/static_cast<const Math::Vector<size, T>&>(vector);          \
+        return number/static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
                                                                             \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator~(const Type<Integral>& vector) { \
-        return ~static_cast<const Math::Vector<size, Integral>&>(vector);         \
+        return ~static_cast<const Math::Vector<size, Integral>&>(vector);   \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator&=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) &= b;                       \
+        static_cast<Math::Vector<size, Integral>&>(a) &= b;                 \
         return a;                                                           \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator&(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) & b;           \
+        return static_cast<const Math::Vector<size, Integral>&>(a) & b;     \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator|=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) |= b;                       \
+        static_cast<Math::Vector<size, Integral>&>(a) |= b;                 \
         return a;                                                           \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator|(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) | b;           \
+        return static_cast<const Math::Vector<size, Integral>&>(a) | b;     \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator^=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) ^= b;                       \
+        static_cast<Math::Vector<size, Integral>&>(a) ^= b;                 \
         return a;                                                           \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator^(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a) ^ b;           \
+        return static_cast<const Math::Vector<size, Integral>&>(a) ^ b;     \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator<<=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) <<= shift;             \
+        static_cast<Math::Vector<size, Integral>&>(vector) <<= shift;       \
         return vector;                                                      \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator<<(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
         return static_cast<const Math::Vector<size, Integral>&>(vector) << shift; \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator>>=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) >>= shift;             \
+        static_cast<Math::Vector<size, Integral>&>(vector) >>= shift;       \
         return vector;                                                      \
     }                                                                       \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator>>(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
         return static_cast<const Math::Vector<size, Integral>&>(vector) >> shift; \
     }                                                                       \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& vector, FloatingPoint number) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) *= number;             \
+        static_cast<Math::Vector<size, Integral>&>(vector) *= number;       \
         return vector;                                                      \
     }                                                                       \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& vector, FloatingPoint number) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector)*number;   \
+        return static_cast<const Math::Vector<size, Integral>&>(vector)*number; \
     }                                                                       \
     template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint number, const Type<Integral>& vector) { \
-        return number*static_cast<const Math::Vector<size, Integral>&>(vector);   \
+        return number*static_cast<const Math::Vector<size, Integral>&>(vector); \
     }                                                                       \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& vector, FloatingPoint number) { \
-        static_cast<Math::Vector<size, Integral>&>(vector) /= number;             \
+        static_cast<Math::Vector<size, Integral>&>(vector) /= number;       \
         return vector;                                                      \
     }                                                                       \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& vector, FloatingPoint number) { \
-        return static_cast<const Math::Vector<size, Integral>&>(vector)/number;   \
+        return static_cast<const Math::Vector<size, Integral>&>(vector)/number; \
     }                                                                       \
                                                                             \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) *= b;                       \
+        static_cast<Math::Vector<size, Integral>&>(a) *= b;                 \
         return a;                                                           \
     }                                                                       \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a)*b;             \
+        return static_cast<const Math::Vector<size, Integral>&>(a)*b;       \
     }                                                                       \
     template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Math::Vector<size, FloatingPoint>& a, const Type<Integral>& b) { \
-        return a*static_cast<const Math::Vector<size, Integral>&>(b);             \
+        return a*static_cast<const Math::Vector<size, Integral>&>(b);       \
     }                                                                       \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        static_cast<Math::Vector<size, Integral>&>(a) /= b;                       \
+        static_cast<Math::Vector<size, Integral>&>(a) /= b;                 \
         return a;                                                           \
     }                                                                       \
     template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
-        return static_cast<const Math::Vector<size, Integral>&>(a)/b;             \
+        return static_cast<const Math::Vector<size, Integral>&>(a)/b;       \
     }
 #endif
 

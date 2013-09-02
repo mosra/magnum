@@ -511,7 +511,7 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
         return number/static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
     }                                                                       \
     template<std::size_t size, class T> inline __VA_ARGS__ operator*(const Vector<size, T>& vector, const RectangularMatrix<size, 1, T>& matrix) { \
-        return Math::RectangularMatrix<1, size, T>(vector)*matrix; \
+        return Math::RectangularMatrix<1, size, T>(vector)*matrix;          \
     }
 
 #define MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(size, Type)                  \
@@ -522,7 +522,7 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
         return number/static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
     }                                                                       \
     template<class T> inline Type<T> operator*(const Vector<size, T>& vector, const RectangularMatrix<size, 1, T>& matrix) { \
-        return Math::RectangularMatrix<1, size, T>(vector)*matrix; \
+        return Math::RectangularMatrix<1, size, T>(vector)*matrix;          \
     }
 #endif
 
