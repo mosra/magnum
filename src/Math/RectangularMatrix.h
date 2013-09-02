@@ -328,8 +328,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *      (\boldsymbol {Aa})_i = \sum_{k=0}^{m-1} \boldsymbol A_{ki} \boldsymbol a_k
          * @f]
          */
-        Vector<rows, T> operator*(const Vector<rows, T>& other) const {
-            return operator*(RectangularMatrix<1, rows, T>(other))[0];
+        Vector<rows, T> operator*(const Vector<cols, T>& other) const {
+            return operator*(RectangularMatrix<1, cols, T>(other))[0];
         }
 
         /**

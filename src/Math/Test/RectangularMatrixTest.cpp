@@ -74,6 +74,7 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
         void addSubtract();
         void multiplyDivide();
         void multiply();
+        void multiplyVector();
 
         void transposed();
         void diagonal();
@@ -94,6 +95,11 @@ typedef RectangularMatrix<2, 2, Int> Matrix2i;
 typedef Vector<4, Float> Vector4;
 typedef Vector<3, Float> Vector3;
 typedef Vector<2, Float> Vector2;
+
+typedef RectangularMatrix<4, 3, Int> Matrix4x3i;
+typedef RectangularMatrix<3, 4, Int> Matrix3x4i;
+typedef Vector<4, Int> Vector4i;
+typedef Vector<3, Int> Vector3i;
 typedef Vector<2, Int> Vector2i;
 
 RectangularMatrixTest::RectangularMatrixTest() {
@@ -114,6 +120,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::addSubtract,
               &RectangularMatrixTest::multiplyDivide,
               &RectangularMatrixTest::multiply,
+              &RectangularMatrixTest::multiplyVector,
 
               &RectangularMatrixTest::transposed,
               &RectangularMatrixTest::diagonal,
@@ -347,6 +354,22 @@ void RectangularMatrixTest::multiply() {
     );
 
     CORRADE_COMPARE(left*right, expected);
+}
+
+void RectangularMatrixTest::multiplyVector() {
+    Vector4i a(-5, 27, 10, 33);
+    RectangularMatrix<3, 1, Int> b(1, 2, 3);
+    CORRADE_COMPARE(a*b, Matrix3x4i(
+       Vector4i( -5,  27, 10,  33),
+       Vector4i(-10,  54, 20,  66),
+       Vector4i(-15,  81, 30,  99)
+    ));
+
+    Matrix3x4i c(Vector4i(0, 4,  8, 12),
+                 Vector4i(1, 5,  9, 13),
+                 Vector4i(3, 7, 11, 15));
+    Vector3i d(2, -2, 3);
+    CORRADE_COMPARE(c*d, Vector4i(7, 19, 31, 43));
 }
 
 void RectangularMatrixTest::transposed() {
