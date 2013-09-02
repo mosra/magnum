@@ -42,7 +42,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     GlyphCache(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
         TextureFormat::Red : TextureFormat::RGB, originalSize, size, Vector2i(radius)),
     #endif
-    scale(Vector2(size)/originalSize), radius(radius)
+    scale(Vector2(size)/Vector2(originalSize)), radius(radius)
 {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);

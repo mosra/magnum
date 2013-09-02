@@ -134,10 +134,10 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         Vector2<T> perpendicular() const { return {-y(), x()}; }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector2, 2)
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 };
 
-MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector2, 2)
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, Vector2)
 
 /** @debugoperator{Magnum::Math::Vector2} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector2<T>& value) {

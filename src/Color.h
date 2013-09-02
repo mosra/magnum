@@ -254,13 +254,13 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
             return Implementation::value<T>(*this);
         }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(BasicColor3, 3)
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, BasicColor3)
 };
 
 /** @brief Three-component (RGB) float color */
 typedef BasicColor3<Float> Color3;
 
-MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(BasicColor3, 3)
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, BasicColor3)
 
 /**
 @brief Four-component (RGBA) color
@@ -374,13 +374,13 @@ class BasicColor4: public Math::Vector4<T> {
             return Implementation::value<T>(rgb());
         }
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(BasicColor4, 4)
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, BasicColor4)
 };
 
 /** @brief Four-component (RGBA) float color */
 typedef BasicColor4<Float> Color4;
 
-MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(BasicColor4, 4)
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, BasicColor4)
 
 /** @debugoperator{Magnum::BasicColor3} */
 template<class T> inline Debug operator<<(Debug debug, const BasicColor3<T>& value) {
