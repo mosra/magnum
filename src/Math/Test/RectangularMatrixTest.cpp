@@ -80,6 +80,9 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
 
         void vector();
 
+        void subclassTypes();
+        void subclass();
+
         void debug();
         void configuration();
 };
@@ -116,6 +119,9 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::diagonal,
 
               &RectangularMatrixTest::vector,
+
+              &RectangularMatrixTest::subclassTypes,
+              &RectangularMatrixTest::subclass,
 
               &RectangularMatrixTest::debug,
               &RectangularMatrixTest::configuration});
@@ -308,19 +314,12 @@ void RectangularMatrixTest::multiplyDivide() {
     CORRADE_COMPARE(-1.5f*matrix, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, matrix);
 
-    Math::RectangularMatrix<1, 1, Byte> matrixChar(32);
-    Math::RectangularMatrix<1, 1, Byte> multipliedChar(-48);
-    CORRADE_COMPARE(matrixChar*-1.5f, multipliedChar);
-    CORRADE_COMPARE(multipliedChar/-1.5f, matrixChar);
-    CORRADE_COMPARE(-1.5f*matrixChar, multipliedChar);
-
     /* Divide vector with number and inverse */
     Matrix2 divisor(Vector2( 1.0f, 2.0f),
                     Vector2(-4.0f, 8.0f));
     Matrix2 result(Vector2(  1.0f,   0.5f),
                    Vector2(-0.25f, 0.125f));
     CORRADE_COMPARE(1.0f/divisor, result);
-    CORRADE_COMPARE(-1550.0f/multipliedChar, matrixChar);
 }
 
 void RectangularMatrixTest::multiply() {
@@ -392,6 +391,110 @@ void RectangularMatrixTest::vector() {
 
     CORRADE_COMPARE(a.toVector(), b);
     CORRADE_COMPARE(Matrix4x3i::fromVector(b), a);
+}
+
+template<std::size_t size, class T> class BasicMat: public Math::RectangularMatrix<size, size, T> {
+    public:
+        template<class ...U> BasicMat(U&&... args): Math::RectangularMatrix<size, size, T>{std::forward<U>(args)...} {}
+
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, BasicMat<size, T>)
+};
+
+MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(BasicMat<size, T>)
+
+template<class T> class BasicMat2x2: public BasicMat<2, T> {
+    public:
+        template<class ...U> BasicMat2x2(U&&... args): BasicMat<2, T>{std::forward<U>(args)...} {}
+
+        MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(2, 2, BasicMat2x2<T>)
+};
+
+MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(2, BasicMat2x2)
+
+typedef BasicMat2x2<Float> Mat2x2;
+
+void RectangularMatrixTest::subclassTypes() {
+    Float* const data = nullptr;
+    const Float* const cdata = nullptr;
+    CORRADE_VERIFY((std::is_same<decltype(Mat2x2::from(data)), Mat2x2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(Mat2x2::from(cdata)), const Mat2x2&>::value));
+
+    /* Const operators */
+    const Mat2x2 c;
+    CORRADE_VERIFY((std::is_same<decltype(-c), Mat2x2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c + c), Mat2x2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c*1.0f), Mat2x2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(1.0f*c), Mat2x2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c/1.0f), Mat2x2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(1.0f/c), Mat2x2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(Vector2()*Math::RectangularMatrix<2, 1, Float>()), Mat2x2>::value));
+
+    /* Assignment operators */
+    Mat2x2 a;
+    CORRADE_VERIFY((std::is_same<decltype(a = c), Mat2x2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a += c), Mat2x2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a -= c), Mat2x2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a *= 1.0f), Mat2x2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a /= 1.0f), Mat2x2&>::value));
+
+    /* Operators on variable-sized matrix */
+    const BasicMat<3, Float> c2;
+    CORRADE_VERIFY((std::is_same<decltype(1.0f*c2), BasicMat<3, Float>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(1.0f/c2), BasicMat<3, Float>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(Vector3()*Math::RectangularMatrix<3, 1, Float>()), BasicMat<3, Float>>::value));
+}
+
+void RectangularMatrixTest::subclass() {
+    Float data[] = {1.0f, -2.0f, 3.0f, -4.5f};
+    CORRADE_COMPARE(Mat2x2::from(data), Mat2x2(Vector2(1.0f, -2.0f),
+                                               Vector2(3.0f, -4.5f)));
+
+    const Float cdata[] = {1.0f, -2.0f, 3.0f, -4.5f};
+    CORRADE_COMPARE(Mat2x2::from(cdata), Mat2x2(Vector2(1.0f, -2.0f),
+                                                Vector2(3.0f, -4.5f)));
+
+    const Mat2x2 a(Vector2(1.0f, -3.0f),
+                   Vector2(-3.0f, 1.0f));
+    CORRADE_COMPARE(-a, Mat2x2(Vector2(-1.0f, 3.0f),
+                               Vector2(3.0f, -1.0f)));
+
+    Mat2x2 b(Vector2(-2.0f, 5.0f),
+             Vector2(5.0f, -2.0f));
+    const Mat2x2 bExpected(Vector2(-1.0f, 2.0f),
+                           Vector2(2.0f, -1.0f));
+    CORRADE_COMPARE(b + a, bExpected);
+
+    Mat2x2 c(Vector2(-2.0f, 5.0f),
+             Vector2(5.0f, -2.0f));
+    const Mat2x2 cExpected(Vector2(-3.0f, 8.0f),
+                           Vector2(8.0f, -3.0f));
+    CORRADE_COMPARE(c - a, cExpected);
+
+    Mat2x2 d(Vector2(-2.0f, 5.0f),
+             Vector2(5.0f, -2.0f));
+    const Mat2x2 dExpected(Vector2(-4.0f, 10.0f),
+                           Vector2(10.0f, -4.0f));
+    CORRADE_COMPARE(d*2.0f, dExpected);
+    CORRADE_COMPARE(2.0f*d, dExpected);
+
+    Mat2x2 e(Vector2(-2.0f, 5.0f),
+             Vector2(5.0f, -2.0f));
+    CORRADE_COMPARE(e/0.5f, dExpected);
+    CORRADE_COMPARE(2.0f/e, Mat2x2(Vector2(-1.0f, 0.4f),
+                                   Vector2(0.4f, -1.0f)));
+    const Vector2 f(2.0f, 5.0f);
+    const Math::RectangularMatrix<2, 1, Float> g(3.0f, -1.0f);
+    CORRADE_COMPARE(f*g, Mat2x2(Vector2(6.0f, 15.0f),
+                                Vector2(-2.0f, -5.0f)));
+
+    /* Operators on variable-sized matrix */
+    const BasicMat<1, Float> h(-2.0f);
+    CORRADE_COMPARE(2.0f*h, (BasicMat<1, Float>(-4.0f)));
+    CORRADE_COMPARE(2.0f/h, (BasicMat<1, Float>(-1.0f)));
+
+    const Math::Vector<1, Float> i(2.0f);
+    const Math::RectangularMatrix<1, 1, Float> j(3.0f);
+    CORRADE_COMPARE(i*j, (BasicMat<1, Float>(6.0f)));
 }
 
 void RectangularMatrixTest::debug() {

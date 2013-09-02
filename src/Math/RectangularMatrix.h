@@ -271,11 +271,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *      \boldsymbol A_j = a \boldsymbol A_j
          * @f]
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>&>::type operator*=(U number) {
-        #else
-        template<class U> RectangularMatrix<cols, rows, T>& operator*=(U number) {
-        #endif
+        RectangularMatrix<cols, rows, T>& operator*=(T number) {
             for(std::size_t i = 0; i != cols; ++i)
                 _data[i] *= number;
 
@@ -285,14 +281,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Multiply matrix with number
          *
-         * @see operator*=(U), operator*(U, const RectangularMatrix<cols, rows, T>&)
+         * @see operator*=(T), operator*(T, const RectangularMatrix<cols, rows, T>&)
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number) const {
-        #else
-        template<class U> RectangularMatrix<cols, rows, T> operator*(U number) const {
-        #endif
-            return RectangularMatrix<cols, rows, T>(*this)*=number;
+        RectangularMatrix<cols, rows, T> operator*(T number) const {
+            return RectangularMatrix<cols, rows, T>(*this) *= number;
         }
 
         /**
@@ -302,11 +294,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *      \boldsymbol A_j = \frac{\boldsymbol A_j} a
          * @f]
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>&>::type operator/=(U number) {
-        #else
-        template<class U> RectangularMatrix<cols, rows, T>& operator/=(U number) {
-        #endif
+        RectangularMatrix<cols, rows, T>& operator/=(T number) {
             for(std::size_t i = 0; i != cols; ++i)
                 _data[i] /= number;
 
@@ -316,14 +304,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Divide matrix with number
          *
-         * @see operator/=(), operator/(U, const RectangularMatrix<cols, rows, T>&)
+         * @see operator/=(T),
+         *      operator/(T, const RectangularMatrix<cols, rows, T>&)
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number) const {
-        #else
-        template<class U> RectangularMatrix<cols, rows, T> operator/(U number) const {
-        #endif
-            return RectangularMatrix<cols, rows, T>(*this)/=number;
+        RectangularMatrix<cols, rows, T> operator/(T number) const {
+            return RectangularMatrix<cols, rows, T>(*this) /= number;
         }
 
         /**
@@ -385,13 +370,16 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 /** @relates RectangularMatrix
 @brief Multiply number with matrix
 
-Same as RectangularMatrix::operator*(U) const.
+Same as RectangularMatrix::operator*(T) const.
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T, class U> inline RectangularMatrix<cols, rows, T> operator*(U number, const RectangularMatrix<cols, rows, T>& matrix) {
-#else
-template<std::size_t cols, std::size_t rows, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator*(U number, const RectangularMatrix<cols, rows, T>& matrix) {
-#endif
+template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> operator*(
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    T
+    #else
+    typename std::common_type<T>::type
+    #endif
+    number, const RectangularMatrix<cols, rows, T>& matrix)
+{
     return matrix*number;
 }
 
@@ -401,13 +389,16 @@ template<std::size_t cols, std::size_t rows, class T, class U> inline typename s
 The computation is done column-wise. @f[
     \boldsymbol B_j = \frac a {\boldsymbol A_j}
 @f]
-@see RectangularMatrix::operator/(U) const
+@see RectangularMatrix::operator/(T) const
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T, class U> inline RectangularMatrix<cols, rows, T> operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
-#else
-template<std::size_t cols, std::size_t rows, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, RectangularMatrix<cols, rows, T>>::type operator/(U number, const RectangularMatrix<cols, rows, T>& matrix) {
-#endif
+template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> operator/(
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    T
+    #else
+    typename std::common_type<T>::type
+    #endif
+    number, const RectangularMatrix<cols, rows, T>& matrix)
+{
     RectangularMatrix<cols, rows, T> out;
 
     for(std::size_t i = 0; i != cols; ++i)
@@ -502,19 +493,41 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     __VA_ARGS__ operator-(const Math::RectangularMatrix<cols, rows, T>& other) const { \
         return Math::RectangularMatrix<cols, rows, T>::operator-(other);    \
     }                                                                       \
-    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator*=(U number) { \
+    __VA_ARGS__& operator*=(T number) {                                     \
         Math::RectangularMatrix<cols, rows, T>::operator*=(number);         \
         return *this;                                                       \
     }                                                                       \
-    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator*(U number) const { \
+    __VA_ARGS__ operator*(T number) const {                                 \
         return Math::RectangularMatrix<cols, rows, T>::operator*(number);   \
     }                                                                       \
-    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__&>::type operator/=(U number) { \
+    __VA_ARGS__& operator/=(T number) {                                     \
         Math::RectangularMatrix<cols, rows, T>::operator/=(number);         \
         return *this;                                                       \
     }                                                                       \
-    template<class U> typename std::enable_if<std::is_arithmetic<U>::value, __VA_ARGS__>::type operator/(U number) const { \
+    __VA_ARGS__ operator/(T number) const {                                 \
         return Math::RectangularMatrix<cols, rows, T>::operator/(number);   \
+    }
+
+#define MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(...)                          \
+    template<std::size_t size, class T> inline __VA_ARGS__ operator*(typename std::common_type<T>::type number, const __VA_ARGS__& matrix) { \
+        return number*static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
+    }                                                                       \
+    template<std::size_t size, class T> inline __VA_ARGS__ operator/(typename std::common_type<T>::type number, const __VA_ARGS__& matrix) { \
+        return number/static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
+    }                                                                       \
+    template<std::size_t size, class T> inline __VA_ARGS__ operator*(const Vector<size, T>& vector, const RectangularMatrix<size, 1, T>& matrix) { \
+        return Math::RectangularMatrix<1, size, T>(vector)*matrix; \
+    }
+
+#define MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(size, Type)                  \
+    template<class T> inline Type<T> operator*(typename std::common_type<T>::type number, const Type<T>& matrix) { \
+        return number*static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
+    }                                                                       \
+    template<class T> inline Type<T> operator/(typename std::common_type<T>::type number, const Type<T>& matrix) { \
+        return number/static_cast<const Math::RectangularMatrix<size, size, T>&>(matrix); \
+    }                                                                       \
+    template<class T> inline Type<T> operator*(const Vector<size, T>& vector, const RectangularMatrix<size, 1, T>& matrix) { \
+        return Math::RectangularMatrix<1, size, T>(vector)*matrix; \
     }
 #endif
 
