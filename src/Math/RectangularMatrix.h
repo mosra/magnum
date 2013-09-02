@@ -471,11 +471,6 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
         return *reinterpret_cast<const __VA_ARGS__*>(data);                 \
     }                                                                       \
                                                                             \
-    __VA_ARGS__& operator=(const Math::RectangularMatrix<cols, rows, T>& other) { \
-        Math::RectangularMatrix<cols, rows, T>::operator=(other);           \
-        return *this;                                                       \
-    }                                                                       \
-                                                                            \
     __VA_ARGS__ operator-() const {                                         \
         return Math::RectangularMatrix<cols, rows, T>::operator-();         \
     }                                                                       \
