@@ -74,6 +74,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void multiplyDivideIntegral();
         void multiplyDivideComponentWise();
         void multiplyDivideComponentWiseIntegral();
+        void bitwise();
 
         void compare();
         void compareComponentWise();
@@ -127,6 +128,7 @@ VectorTest::VectorTest() {
               &VectorTest::multiplyDivideIntegral,
               &VectorTest::multiplyDivideComponentWise,
               &VectorTest::multiplyDivideComponentWiseIntegral,
+              &VectorTest::bitwise,
 
               &VectorTest::compare,
               &VectorTest::compareComponentWise,
@@ -335,6 +337,21 @@ void VectorTest::multiplyDivideComponentWiseIntegral() {
     /* Using integer vector as divisor is not supported */
 }
 
+void VectorTest::bitwise() {
+    typedef Math::Vector<2, Int> Vector2i;
+
+    const Vector2i a(85, 240);
+    const Vector2i b(170, 85);
+    CORRADE_COMPARE(~a, Vector2i(-86, -241));
+    CORRADE_COMPARE(a & b, Vector2i(0, 80));
+    CORRADE_COMPARE(a | b, Vector2i(255, 245));
+    CORRADE_COMPARE(a ^ b, Vector2i(255, 165));
+
+    const Vector2i c(7, 32);
+    CORRADE_COMPARE(c << 2, Vector2i(28, 128));
+    CORRADE_COMPARE(c >> 2, Vector2i(1, 8));
+}
+
 void VectorTest::dot() {
     CORRADE_COMPARE(Vector4::dot({1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
 }
@@ -462,9 +479,22 @@ void VectorTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(a *= c), Vec2&>::value));
     CORRADE_VERIFY((std::is_same<decltype(a /= c), Vec2&>::value));
 
-    /* Integer multiplication/division */
+    /* Bitwise operations */
     const Vec2i ci;
     Vec2i i;
+    CORRADE_VERIFY((std::is_same<decltype(~ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci & ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci | ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci ^ ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci << 1), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci >> 1), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i &= ci), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i |= ci), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i ^= ci), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i <<= 1), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i >>= 1), Vec2i&>::value));
+
+    /* Integer multiplication/division */
     CORRADE_VERIFY((std::is_same<decltype(ci*1.0f), Vec2i>::value));
     CORRADE_VERIFY((std::is_same<decltype(1.0f*ci), Vec2i>::value));
     CORRADE_VERIFY((std::is_same<decltype(c*ci), Vec2i>::value));
@@ -497,6 +527,15 @@ void VectorTest::subclass() {
 
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*Vec2(1.5f, -2.0f), Vec2(-3.0f, -10.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/Vec2(2.0f/3.0f, -0.5f), Vec2(-3.0f, -10.0f));
+
+    /* Bitwise operations */
+    CORRADE_COMPARE(~Vec2i(85, 240), Vec2i(-86, -241));
+    CORRADE_COMPARE(Vec2i(85, 240) & Vec2i(170, 85), Vec2i(0, 80));
+    CORRADE_COMPARE(Vec2i(85, 240) | Vec2i(170, 85), Vec2i(255, 245));
+    CORRADE_COMPARE(Vec2i(85, 240) ^ Vec2i(170, 85), Vec2i(255, 165));
+
+    CORRADE_COMPARE(Vec2i(7, 32) << 2, Vec2i(28, 128));
+    CORRADE_COMPARE(Vec2i(7, 32) >> 2, Vec2i(1, 8));
 
     /* Integral multiplication/division */
     CORRADE_COMPARE(Vec2i(2, 4)*1.5f, Vec2i(3, 6));
