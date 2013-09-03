@@ -220,8 +220,8 @@ std::tuple<Rectangle, Rectangle, Vector2> MagnumFontLayouter::renderGlyph(Unsign
 
     const Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/fontSize,
                                                           Vector2(rectangle.size())/fontSize);
-    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache.textureSize(),
-                                       Vector2(rectangle.topRight())/cache.textureSize());
+    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/Vector2(cache.textureSize()),
+                                       Vector2(rectangle.topRight())/Vector2(cache.textureSize()));
 
     /* Absolute quad position, composed from cursor position, glyph offset
        and texture position, denormalized to requested text size */
