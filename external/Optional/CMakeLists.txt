@@ -22,5 +22,4 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_subdirectory(OpenGL)
-add_subdirectory(Optional)
+install(FILES optional.hpp DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Optional)
