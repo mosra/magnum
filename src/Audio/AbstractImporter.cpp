@@ -93,7 +93,11 @@ UnsignedInt AbstractImporter::frequency() const {
 }
 
 Containers::Array<unsigned char> AbstractImporter::data() {
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::data(): no file opened", nullptr);
+    #else
+    CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::data(): no file opened", {});
+    #endif
     return doData();
 }
 
