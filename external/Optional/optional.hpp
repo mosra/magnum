@@ -38,9 +38,21 @@
 #  else
 #   define OPTIONAL_HAS_THIS_RVALUE_REFS 0
 #  endif
+#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#   define OPTIONAL_GCC45_COMPATIBILITY 0
+#  else
+#   define OPTIONAL_GCC45_COMPATIBILITY 1
+#  endif
+#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 5))
+#   define OPTIONAL_GCC44_COMPATIBILITY 0
+#  else
+#   define OPTIONAL_GCC44_COMPATIBILITY 1
+#  endif
 # else
 #  define OPTIONAL_HAS_THIS_RVALUE_REFS 0
 #  define OPTIONAL_HAS_USING 0
+#  define OPTIONAL_GCC45_COMPATIBILITY 0
+#  define OPTIONAL_GCC44_COMPATIBILITY 0
 # endif
 
 
@@ -66,6 +78,7 @@ using is_trivially_destructible = typename std::has_trivial_destructor<T>;
 #  else
 
 
+#if !OPTIONAL_GCC45_COMPATIBILITY
 // workaround for missing traits in GCC and CLANG
 template <class T>
 struct is_nothrow_move_constructible
@@ -103,6 +116,7 @@ struct is_nothrow_move_assignable
   constexpr static bool value = has_nothrow_move_assign<T, is_assignable<T&, T&&>::value>::value;
 };
 // end workaround
+#endif
 
 
 #  endif // not as good as GCC 4.7
@@ -152,6 +166,7 @@ template <class T> inline constexpr typename std::remove_reference<T>::type&& co
 #endif
 
 
+#if !OPTIONAL_GCC45_COMPATIBILITY
 template <typename T>
 struct has_overloaded_addressof
 {
@@ -177,19 +192,39 @@ T* static_addressof(T& ref)
 {
   return std::addressof(ref);
 }
+#else
+template <typename T>
+T* addressof(T& ref)
+{
+  return reinterpret_cast<T*>(&const_cast<char&>(reinterpret_cast<const volatile char&>(ref)));
+}
+template <typename T>
+T* static_addressof(T& ref)
+{
+  return addressof(ref);
+}
+#endif
 
 
 
 template <class U>
 struct is_not_optional
 {
+  #if !OPTIONAL_GCC45_COMPATIBILITY
   constexpr static bool value = true;
+  #else
+  static const bool value = true;
+  #endif
 };
 
 template <class T>
 struct is_not_optional<optional<T>>
 {
+  #if !OPTIONAL_GCC45_COMPATIBILITY
   constexpr static bool value = false;
+  #else
+  static const bool value = false;
+  #endif
 };
 
 
@@ -217,6 +252,7 @@ public:
 };
 
 
+#if !OPTIONAL_GCC45_COMPATIBILITY
 template <class T>
 union storage_t
 {
@@ -245,7 +281,23 @@ union constexpr_storage_t
 
     ~constexpr_storage_t() = default;
 };
+#else
+template <class T>
+struct storage_t
+{
+  unsigned char storage_[sizeof(T)];
+  T& value_() { return *reinterpret_cast<T*>(storage_); }
+  const T& value_() const { return *reinterpret_cast<const T*>(storage_); }
 
+  storage_t( trivial_init_t ): storage_() {}
+
+  template <class... Args> storage_t( Args&&... args ) {
+    new(storage_) T(forward<Args>(args)...);
+  }
+
+  ~storage_t(){}
+};
+#endif
 
 constexpr struct only_set_initialized_t{} only_set_initialized{};
 
@@ -267,14 +319,25 @@ struct optional_base
     template <class... Args> explicit optional_base(in_place_t, Args&&... args)
         : init_(true), storage_(constexpr_forward<Args>(args)...) {}
 
-    template <class U, class... Args, REQUIRES(is_constructible<T, std::initializer_list<U>>)>
+    template <class U, class... Args
+      #if !OPTIONAL_GCC44_COMPATIBILITY
+      , REQUIRES(is_constructible<T, std::initializer_list<U>>)
+      #endif
+      >
     explicit optional_base(in_place_t, std::initializer_list<U> il, Args&&... args)
         : init_(true), storage_(il, std::forward<Args>(args)...) {}
 
-    ~optional_base() { if (init_) storage_.value_.T::~T(); }
+    ~optional_base() {
+      #if !OPTIONAL_GCC45_COMPATIBILITY
+      if (init_) storage_.value_.T::~T();
+      #else
+      if (init_) storage_.value_().T::~T();
+      #endif
+    }
 };
 
 
+#if !OPTIONAL_GCC45_COMPATIBILITY
 template <class T>
 struct constexpr_optional_base
 {
@@ -298,6 +361,7 @@ struct constexpr_optional_base
 
     ~constexpr_optional_base() = default;
 };
+#endif
 
 # if OPTIONAL_HAS_USING
 template <class T>
@@ -318,16 +382,40 @@ class optional : private OptionalBase<T>
 
 
   constexpr bool initialized() const noexcept { return OptionalBase<T>::init_; }
-  T* dataptr() {  return std::addressof(OptionalBase<T>::storage_.value_); }
-  constexpr const T* dataptr() const { return static_addressof(OptionalBase<T>::storage_.value_); }
+  T* dataptr() {
+    #if !OPTIONAL_GCC45_COMPATIBILITY
+    return std::addressof(OptionalBase<T>::storage_.value_);
+    #else
+    return std::addressof(OptionalBase<T>::storage_.value_());
+    #endif
+  }
+  constexpr const T* dataptr() const {
+    #if !OPTIONAL_GCC45_COMPATIBILITY
+    return static_addressof(OptionalBase<T>::storage_.value_);
+    #else
+    return static_addressof(OptionalBase<T>::storage_.value_());
+    #endif
+  }
 
 # if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
   constexpr const T& contained_val() const& { return OptionalBase<T>::storage_.value_; }
   T& contained_val() & { return OptionalBase<T>::storage_.value_; }
   T&& contained_val() && { return std::move(OptionalBase<T>::storage_.value_); }
 # else
-  constexpr const T& contained_val() const { return OptionalBase<T>::storage_.value_; }
-  T& contained_val() { return OptionalBase<T>::storage_.value_; }
+  constexpr const T& contained_val() const {
+    #if !OPTIONAL_GCC45_COMPATIBILITY
+    return OptionalBase<T>::storage_.value_;
+    #else
+    return OptionalBase<T>::storage_.value_();
+    #endif
+  }
+  T& contained_val() {
+    #if !OPTIONAL_GCC45_COMPATIBILITY
+    return OptionalBase<T>::storage_.value_;
+    #else
+    return OptionalBase<T>::storage_.value_();
+    #endif
+  }
 # endif
 
   void clear() noexcept {
@@ -336,7 +424,10 @@ class optional : private OptionalBase<T>
   }
 
   template <class... Args>
-  void initialize(Args&&... args) noexcept(noexcept(T(std::forward<Args>(args)...)))
+  void initialize(Args&&... args)
+  #if !OPTIONAL_GCC45_COMPATIBILITY
+  noexcept(noexcept(T(std::forward<Args>(args)...)))
+  #endif
   {
     assert(!OptionalBase<T>::init_);
     new (dataptr()) T(std::forward<Args>(args)...);
@@ -344,7 +435,10 @@ class optional : private OptionalBase<T>
   }
 
   template <class U, class... Args>
-  void initialize(std::initializer_list<U> il, Args&&... args) noexcept(noexcept(T(il, std::forward<Args>(args)...)))
+  void initialize(std::initializer_list<U> il, Args&&... args)
+  #if !OPTIONAL_GCC45_COMPATIBILITY
+  noexcept(noexcept(T(il, std::forward<Args>(args)...)))
+  #endif
   {
     assert(!OptionalBase<T>::init_);
     new (dataptr()) T(il, std::forward<Args>(args)...);
@@ -364,7 +458,10 @@ public:
     if (rhs.initialized()) new (dataptr()) T(*rhs);
   }
 
-  optional(optional&& rhs) noexcept(std::is_nothrow_move_constructible<T>::value)
+  optional(optional&& rhs)
+  #if !OPTIONAL_GCC45_COMPATIBILITY
+  noexcept(std::is_nothrow_move_constructible<T>::value)
+  #endif
   : OptionalBase<T>(only_set_initialized, rhs.initialized())
   {
     if (rhs.initialized()) new (dataptr()) T(std::move(*rhs));
@@ -378,7 +475,11 @@ public:
     constexpr explicit optional(in_place_t, Args&&... args)
         : OptionalBase<T>(in_place_t{}, constexpr_forward<Args>(args)...) {}
 
-    template <class U, class... Args, REQUIRES(is_constructible<T, std::initializer_list<U>>)>
+    template <class U, class... Args
+      #if !OPTIONAL_GCC44_COMPATIBILITY
+      , REQUIRES(is_constructible<T, std::initializer_list<U>>)
+      #endif
+      >
     explicit optional(in_place_t, std::initializer_list<U> il, Args&&... args)
         : OptionalBase<T>(in_place_t{}, il, constexpr_forward<Args>(args)...) {}
 
@@ -401,7 +502,9 @@ public:
   }
 
   optional& operator=(optional&& rhs)
+  #if !OPTIONAL_GCC45_COMPATIBILITY
   noexcept(std::is_nothrow_move_assignable<T>::value && std::is_nothrow_move_constructible<T>::value)
+  #endif
   {
     if      (initialized() == true  && rhs.initialized() == false) clear();
     else if (initialized() == false && rhs.initialized() == true)  initialize(std::move(*rhs));
@@ -438,7 +541,10 @@ public:
   }
 
   // 20.5.4.4 Swap
-  void swap(optional<T>& rhs) noexcept(is_nothrow_move_constructible<T>::value && noexcept(swap(declval<T&>(), declval<T&>())))
+  void swap(optional<T>& rhs)
+  #if !OPTIONAL_GCC45_COMPATIBILITY
+  noexcept(is_nothrow_move_constructible<T>::value && noexcept(swap(declval<T&>(), declval<T&>())))
+  #endif
   {
     if      (initialized() == true  && rhs.initialized() == false) { rhs.initialize(std::move(**this)); clear(); }
     else if (initialized() == false && rhs.initialized() == true)  { initialize(std::move(*rhs)); rhs.clear(); }
@@ -472,7 +578,10 @@ public:
     return initialized() ? contained_val() : (throw bad_optional_access("bad optional access"), contained_val());
   }
 
-  constexpr explicit operator bool() const noexcept { return initialized(); }
+  #if !OPTIONAL_GCC44_COMPATIBILITY
+  constexpr explicit
+  #endif
+  operator bool() const noexcept { return initialized(); }
 
 # if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
 
@@ -589,7 +698,10 @@ public:
     return ref ? *ref : (throw bad_optional_access("bad optional access"), *ref);
   }
 
-  explicit constexpr operator bool() const noexcept {
+  #if !OPTIONAL_GCC44_COMPATIBILITY
+  explicit constexpr
+  #endif
+  operator bool() const noexcept {
     return ref != nullptr;
   }
 
@@ -890,7 +1002,10 @@ template <class T> constexpr bool operator>=(const T& v, const optional<const T&
 
 // 20.5.12 Specialized algorithms
 template <class T>
-void swap(optional<T>& x, optional<T>& y) noexcept(noexcept(x.swap(y)))
+void swap(optional<T>& x, optional<T>& y)
+#if !OPTIONAL_GCC45_COMPATIBILITY
+noexcept(noexcept(x.swap(y)))
+#endif
 {
   x.swap(y);
 }
