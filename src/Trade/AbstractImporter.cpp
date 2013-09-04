@@ -28,11 +28,14 @@
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
 
+#include "Trade/AbstractMaterialData.h"
 #include "Trade/CameraData.h"
 #include "Trade/ImageData.h"
 #include "Trade/LightData.h"
 #include "Trade/MeshData2D.h"
 #include "Trade/MeshData3D.h"
+#include "Trade/ObjectData2D.h"
+#include "Trade/ObjectData3D.h"
 #include "Trade/SceneData.h"
 #include "Trade/TextureData.h"
 
@@ -209,13 +212,13 @@ std::string AbstractImporter::object2DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doObject2DName(UnsignedInt) { return {}; }
 
-ObjectData2D* AbstractImporter::object2D(const UnsignedInt id) {
+std::unique_ptr<ObjectData2D> AbstractImporter::object2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2D(): no file opened", {});
     CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2D(): index out of range", {});
     return doObject2D(id);
 }
 
-ObjectData2D* AbstractImporter::doObject2D(UnsignedInt) { return nullptr; }
+std::unique_ptr<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) { return nullptr; }
 
 UnsignedInt AbstractImporter::object3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3DCount(): no file opened", {});
@@ -239,13 +242,13 @@ std::string AbstractImporter::object3DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doObject3DName(UnsignedInt) { return {}; }
 
-ObjectData3D* AbstractImporter::object3D(const UnsignedInt id) {
+std::unique_ptr<ObjectData3D> AbstractImporter::object3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3D(): no file opened", {});
     CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3D(): index out of range", {});
     return doObject3D(id);
 }
 
-ObjectData3D* AbstractImporter::doObject3D(UnsignedInt) { return nullptr; }
+std::unique_ptr<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) { return nullptr; }
 
 UnsignedInt AbstractImporter::mesh2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2DCount(): no file opened", {});
@@ -329,13 +332,13 @@ std::string AbstractImporter::materialName(const UnsignedInt id) {
 
 std::string AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
 
-AbstractMaterialData* AbstractImporter::material(const UnsignedInt id) {
+std::unique_ptr<AbstractMaterialData> AbstractImporter::material(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
     CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::material(): index out of range", {});
     return doMaterial(id);
 }
 
-AbstractMaterialData* AbstractImporter::doMaterial(UnsignedInt) { return nullptr; }
+std::unique_ptr<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedInt) { return nullptr; }
 
 UnsignedInt AbstractImporter::textureCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::textureCount(): no file opened", {});

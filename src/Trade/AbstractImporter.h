@@ -28,6 +28,7 @@
  * @brief Class Magnum::Trade::AbstractImporter
  */
 
+#include <memory>
 #include <Containers/EnumSet.h>
 #include <PluginManager/AbstractPlugin.h>
 
@@ -240,10 +241,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * @brief Two-dimensional object
          * @param id        Object ID, from range [0, object2DCount()).
          *
-         * Returns given object or `nullptr` if importing failed. Deleting the
-         * data is user responsibility.
+         * Returns given object or `nullptr` if importing failed.
          */
-        ObjectData2D* object2D(UnsignedInt id);
+        std::unique_ptr<ObjectData2D> object2D(UnsignedInt id);
 
         /** @brief Three-dimensional object count */
         UnsignedInt object3DCount() const;
@@ -268,10 +268,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * @brief Three-dimensional object
          * @param id        Object ID, from range [0, object3DCount()).
          *
-         * Returns given object or `nullptr` if importing failed. Deleting the
-         * data is user responsibility.
+         * Returns given object or `nullptr` if importing failed.
          */
-        ObjectData3D* object3D(UnsignedInt id);
+        std::unique_ptr<ObjectData3D> object3D(UnsignedInt id);
 
         /** @brief Two-dimensional mesh count */
         UnsignedInt mesh2DCount() const;
@@ -350,10 +349,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
          * @brief Material
          * @param id        Material ID, from range [0, materialCount()).
          *
-         * Returns given material or `nullptr` if importing failed. Deleting
-         * the data is user responsibility.
+         * Returns given material or `nullptr` if importing failed.
          */
-        AbstractMaterialData* material(UnsignedInt id);
+        std::unique_ptr<AbstractMaterialData> material(UnsignedInt id);
 
         /** @brief %Texture count */
         UnsignedInt textureCount() const;
@@ -539,7 +537,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
         virtual std::string doObject2DName(UnsignedInt id);
 
         /** @brief Implementation for object2D() */
-        virtual ObjectData2D* doObject2D(UnsignedInt id);
+        virtual std::unique_ptr<ObjectData2D> doObject2D(UnsignedInt id);
 
         /** @brief Implementation for object3DCount() */
         virtual UnsignedInt doObject3DCount() const;
@@ -551,7 +549,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
         virtual std::string doObject3DName(UnsignedInt id);
 
         /** @brief Implementation for object3D() */
-        virtual ObjectData3D* doObject3D(UnsignedInt id);
+        virtual std::unique_ptr<ObjectData3D> doObject3D(UnsignedInt id);
 
         /** @brief Implementation for mesh2DCount() */
         virtual UnsignedInt doMesh2DCount() const;
@@ -587,7 +585,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
         virtual std::string doMaterialName(UnsignedInt id);
 
         /** @brief Implementation for material() */
-        virtual AbstractMaterialData* doMaterial(UnsignedInt id);
+        virtual std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id);
 
         /** @brief Implementation for textureCount() */
         virtual UnsignedInt doTextureCount() const;
