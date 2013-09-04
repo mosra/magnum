@@ -35,12 +35,7 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Camera data
 */
-class MAGNUM_EXPORT CameraData {
-    CameraData(const CameraData&) = delete;
-    CameraData(CameraData&&) = delete;
-    CameraData& operator=(const CameraData&) = delete;
-    CameraData& operator=(CameraData&&) = delete;
-};
+class MAGNUM_EXPORT CameraData {};
 
 }}
 

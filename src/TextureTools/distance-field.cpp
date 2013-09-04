@@ -83,7 +83,7 @@ int DistanceFieldConverter::exec() {
     CORRADE_INTERNAL_ASSERT(importer && converter);
 
     /* Open input file */
-    Trade::ImageData2D* image = nullptr;
+    std::optional<Trade::ImageData2D> image;
     if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
         Error() << "Cannot open file" << args.value("input");
         delete importer;
@@ -114,7 +114,6 @@ int DistanceFieldConverter::exec() {
     /* Do it */
     Debug() << "Converting image of size" << image->size() << "to distance field...";
     TextureTools::distanceField(input, output, {{}, args.value<Vector2i>("output-size")}, args.value<Int>("radius"), image->size());
-    delete image;
 
     /* Save image */
     Image2D result(ImageFormat::Red, ImageType::UnsignedByte);

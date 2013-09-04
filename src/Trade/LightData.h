@@ -35,12 +35,7 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Light data
 */
-class MAGNUM_EXPORT LightData {
-    LightData(const LightData&) = delete;
-    LightData(LightData&&) = delete;
-    LightData& operator=(const LightData&) = delete;
-    LightData& operator=(LightData&&) = delete;
-};
+class MAGNUM_EXPORT LightData {};
 
 }}
 
