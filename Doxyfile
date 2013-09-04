@@ -203,7 +203,7 @@ ALIASES                = \
     "debugoperator{1}=@relates \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing \1 with Corrade::Utility::Debug and friends." \
     "configurationvalueref{1}=@see @ref configurationvalues \"Corrade::Utility::ConfigurationValue<\1>\"" \
     "configurationvalue{1}=@brief %Configuration value parser and writer @xrefitem configurationvalues \"Configuration value parser and writer\" \"Configuration value parsers and writers for custom types\" Allows parsing and writing \1 from and to Corrade::Utility::Configuration." \
-    "collisionoperator{2}=@relates \1\n@brief Collision of %\1 and %\2\n@see \2::operator%(const \1&) const" \
+    "collisionoccurenceoperator{2}=@relates \1\n@brief %Collision occurence of %\1 and %\2\n@see \2::operator%(const \1&) const" \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "fn_gl{1}=<a href=\"http://www.opengl.org/sdk/docs/man4/xhtml/gl\1.xml\">gl\1()</a>" \
     "fn_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">gl\1<b></b>\2()</a>" \

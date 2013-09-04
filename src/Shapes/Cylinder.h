@@ -89,10 +89,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Cylinder {
         /** @brief Set radius */
         void setRadius(Float radius) { _radius = radius; }
 
-        /** @brief Collision with point */
+        /** @brief %Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
-        /** @brief Collision with sphere */
+        /** @brief %Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
@@ -106,10 +106,10 @@ typedef Cylinder<2> Cylinder2D;
 /** @brief Infinite three-dimensional cylinder */
 typedef Cylinder<3> Cylinder3D;
 
-/** @collisionoperator{Point,Cylinder} */
+/** @collisionoccurenceoperator{Point,Cylinder} */
 template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
 
-/** @collisionoperator{Sphere,Cylinder} */
+/** @collisionoccurenceoperator{Sphere,Cylinder} */
 template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
 
 }}

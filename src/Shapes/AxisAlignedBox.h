@@ -81,7 +81,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AxisAlignedBox {
             _max = max;
         }
 
-        /** @brief Collision with point */
+        /** @brief %Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
     private:
@@ -94,7 +94,7 @@ typedef AxisAlignedBox<2> AxisAlignedBox2D;
 /** @brief Three-dimensional axis-aligned box */
 typedef AxisAlignedBox<3> AxisAlignedBox3D;
 
-/** @collisionoperator{Point,AxisAlignedBox} */
+/** @collisionoccurenceoperator{Point,AxisAlignedBox} */
 template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const AxisAlignedBox<dimensions>& b) { return b % a; }
 
 }}

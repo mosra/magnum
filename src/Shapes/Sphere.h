@@ -79,16 +79,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         /** @brief Set radius */
         void setRadius(Float radius) { _radius = radius; }
 
-        /** @brief Collision with point */
+        /** @brief %Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
-        /** @brief Collision with line */
+        /** @brief %Collision occurence with line */
         bool operator%(const Line<dimensions>& other) const;
 
-        /** @brief Collision with line segment */
+        /** @brief %Collision occurence with line segment */
         bool operator%(const LineSegment<dimensions>& other) const;
 
-        /** @brief Collision with sphere */
+        /** @brief %Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
@@ -102,13 +102,13 @@ typedef Sphere<2> Sphere2D;
 /** @brief Three-dimensional sphere */
 typedef Sphere<3> Sphere3D;
 
-/** @collisionoperator{Point,Sphere} */
+/** @collisionoccurenceoperator{Point,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
-/** @collisionoperator{Line,Sphere} */
+/** @collisionoccurenceoperator{Line,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
-/** @collisionoperator{LineSegment,Sphere} */
+/** @collisionoccurenceoperator{LineSegment,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 }}

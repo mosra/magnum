@@ -76,20 +76,20 @@ class MAGNUM_SHAPES_EXPORT Plane {
             _normal = normal;
         }
 
-        /** @brief Collision with line */
+        /** @brief %Collision occurence with line */
         bool operator%(const Line3D& other) const;
 
-        /** @brief Collision with line segment */
+        /** @brief %Collision occurence with line segment */
         bool operator%(const LineSegment3D& other) const;
 
     private:
         Vector3 _position, _normal;
 };
 
-/** @collisionoperator{Line,Plane} */
+/** @collisionoccurenceoperator{Line,Plane} */
 inline bool operator%(const Line3D& a, const Plane& b) { return b % a; }
 
-/** @collisionoperator{LineSegment,Plane} */
+/** @collisionoccurenceoperator{LineSegment,Plane} */
 inline bool operator%(const LineSegment3D& a, const Plane& b) { return b % a; }
 
 
