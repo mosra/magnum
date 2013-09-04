@@ -28,6 +28,14 @@
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
 
+#include "Trade/CameraData.h"
+#include "Trade/ImageData.h"
+#include "Trade/LightData.h"
+#include "Trade/MeshData2D.h"
+#include "Trade/MeshData3D.h"
+#include "Trade/SceneData.h"
+#include "Trade/TextureData.h"
+
 namespace Magnum { namespace Trade {
 
 AbstractImporter::AbstractImporter() = default;
@@ -111,13 +119,13 @@ std::string AbstractImporter::sceneName(const UnsignedInt id) {
 
 std::string AbstractImporter::doSceneName(UnsignedInt) { return {}; }
 
-SceneData* AbstractImporter::scene(const UnsignedInt id) {
+std::optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::scene(): no file opened", {});
     CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::scene(): index out of range", {});
     return doScene(id);
 }
 
-SceneData* AbstractImporter::doScene(UnsignedInt) { return nullptr; }
+std::optional<SceneData> AbstractImporter::doScene(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::lightCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightCount(): no file opened", {});
@@ -141,13 +149,13 @@ std::string AbstractImporter::lightName(const UnsignedInt id) {
 
 std::string AbstractImporter::doLightName(UnsignedInt) { return {}; }
 
-LightData* AbstractImporter::light(const UnsignedInt id) {
+std::optional<LightData> AbstractImporter::light(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::light(): no file opened", {});
     CORRADE_ASSERT(id < doLightCount(), "Trade::AbstractImporter::light(): index out of range", {});
     return doLight(id);
 }
 
-LightData* AbstractImporter::doLight(UnsignedInt) { return nullptr; }
+std::optional<LightData> AbstractImporter::doLight(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::cameraCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::cameraCount(): no file opened", {});
@@ -171,13 +179,13 @@ std::string AbstractImporter::cameraName(const UnsignedInt id) {
 
 std::string AbstractImporter::doCameraName(UnsignedInt) { return {}; }
 
-CameraData* AbstractImporter::camera(const UnsignedInt id) {
+std::optional<CameraData> AbstractImporter::camera(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::camera(): no file opened", {});
     CORRADE_ASSERT(id < doCameraCount(), "Trade::AbstractImporter::camera(): index out of range", {});
     return doCamera(id);
 }
 
-CameraData* AbstractImporter::doCamera(UnsignedInt) { return nullptr; }
+std::optional<CameraData> AbstractImporter::doCamera(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::object2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DCount(): no file opened", {});
@@ -261,13 +269,13 @@ std::string AbstractImporter::mesh2DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doMesh2DName(UnsignedInt) { return {}; }
 
-MeshData2D* AbstractImporter::mesh2D(const UnsignedInt id) {
+std::optional<MeshData2D> AbstractImporter::mesh2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2D(): no file opened", {});
     CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::object2D(): index out of range", {});
     return doMesh2D(id);
 }
 
-MeshData2D* AbstractImporter::doMesh2D(UnsignedInt) { return nullptr; }
+std::optional<MeshData2D> AbstractImporter::doMesh2D(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::mesh3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DCount(): no file opened", {});
@@ -291,13 +299,13 @@ std::string AbstractImporter::mesh3DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doMesh3DName(UnsignedInt) { return {}; }
 
-MeshData3D* AbstractImporter::mesh3D(const UnsignedInt id) {
+std::optional<MeshData3D> AbstractImporter::mesh3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3D(): no file opened", {});
     CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3D(): index out of range", {});
     return doMesh3D(id);
 }
 
-MeshData3D* AbstractImporter::doMesh3D(UnsignedInt) { return nullptr; }
+std::optional<MeshData3D> AbstractImporter::doMesh3D(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::materialCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::materialCount(): no file opened", {});
@@ -351,13 +359,13 @@ std::string AbstractImporter::textureName(const UnsignedInt id) {
 
 std::string AbstractImporter::doTextureName(UnsignedInt) { return {}; }
 
-TextureData* AbstractImporter::texture(const UnsignedInt id) {
+std::optional<TextureData> AbstractImporter::texture(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::texture(): no file opened", {});
     CORRADE_ASSERT(id < doTextureCount(), "Trade::AbstractImporter::texture(): index out of range", {});
     return doTexture(id);
 }
 
-TextureData* AbstractImporter::doTexture(UnsignedInt) { return nullptr; }
+std::optional<TextureData> AbstractImporter::doTexture(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::image1DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1DCount(): no file opened", {});
@@ -381,13 +389,13 @@ std::string AbstractImporter::image1DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doImage1DName(UnsignedInt) { return {}; }
 
-ImageData1D* AbstractImporter::image1D(const UnsignedInt id) {
+std::optional<ImageData1D> AbstractImporter::image1D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1D(): no file opened", {});
     CORRADE_ASSERT(id < doImage1DCount(), "Trade::AbstractImporter::image1D(): index out of range", {});
     return doImage1D(id);
 }
 
-ImageData1D* AbstractImporter::doImage1D(UnsignedInt) { return nullptr; }
+std::optional<ImageData1D> AbstractImporter::doImage1D(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::image2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2DCount(): no file opened", {});
@@ -411,13 +419,13 @@ std::string AbstractImporter::image2DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doImage2DName(UnsignedInt) { return {}; }
 
-ImageData2D* AbstractImporter::image2D(const UnsignedInt id) {
+std::optional<ImageData2D> AbstractImporter::image2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2D(): no file opened", {});
     CORRADE_ASSERT(id < doImage2DCount(), "Trade::AbstractImporter::image2D(): index out of range", {});
     return doImage2D(id);
 }
 
-ImageData2D* AbstractImporter::doImage2D(UnsignedInt) { return nullptr; }
+std::optional<ImageData2D> AbstractImporter::doImage2D(UnsignedInt) { return std::nullopt; }
 
 UnsignedInt AbstractImporter::image3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3DCount(): no file opened", {});
@@ -441,12 +449,12 @@ std::string AbstractImporter::image3DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doImage3DName(UnsignedInt) { return {}; }
 
-ImageData3D* AbstractImporter::image3D(const UnsignedInt id) {
+std::optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3D(): no file opened", {});
     CORRADE_ASSERT(id < doImage3DCount(), "Trade::AbstractImporter::image3D(): index out of range", {});
     return doImage3D(id);
 }
 
-ImageData3D* AbstractImporter::doImage3D(UnsignedInt) { return nullptr; }
+std::optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt) { return std::nullopt; }
 
 }}
