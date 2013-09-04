@@ -48,6 +48,10 @@ template<UnsignedInt> class Capsule;
 typedef Capsule<2> Capsule2D;
 typedef Capsule<3> Capsule3D;
 
+template<UnsignedInt> class Collision;
+typedef Collision<2> Collision2D;
+typedef Collision<3> Collision3D;
+
 template<UnsignedInt> class Composition;
 typedef Composition<2> Composition2D;
 typedef Composition<3> Composition3D;

@@ -26,6 +26,7 @@ corrade_add_test(ShapesShapeImplementationTest ShapeImplementationTest.cpp LIBRA
 corrade_add_test(ShapesAxisAlignedBoxTest AxisAlignedBoxTest.cpp LIBRARIES MagnumShapes)
 corrade_add_test(ShapesBoxTest BoxTest.cpp LIBRARIES MagnumShapes)
 corrade_add_test(ShapesCapsuleTest CapsuleTest.cpp LIBRARIES MagnumShapes)
+corrade_add_test(ShapesCollisionTest CollisionTest.cpp LIBRARIES MagnumShapes)
 corrade_add_test(ShapesCylinderTest CylinderTest.cpp LIBRARIES MagnumShapes)
 corrade_add_test(ShapesLineTest LineTest.cpp LIBRARIES MagnumShapes)
 corrade_add_test(ShapesPlaneTest PlaneTest.cpp LIBRARIES MagnumShapes)
