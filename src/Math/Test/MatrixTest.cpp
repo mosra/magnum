@@ -75,6 +75,9 @@ class MatrixTest: public Corrade::TestSuite::Tester {
         void inverted();
         void invertedOrthogonal();
 
+        void subclassTypes();
+        void subclass();
+
         void debug();
         void configuration();
 };
@@ -103,6 +106,10 @@ MatrixTest::MatrixTest() {
               &MatrixTest::determinant,
               &MatrixTest::inverted,
               &MatrixTest::invertedOrthogonal,
+
+              &MatrixTest::subclassTypes,
+              &MatrixTest::subclass,
+
               &MatrixTest::debug,
               &MatrixTest::configuration});
 }
@@ -291,6 +298,62 @@ void MatrixTest::invertedOrthogonal() {
 
     CORRADE_COMPARE(a.invertedOrthogonal()*a, Matrix3());
     CORRADE_COMPARE(a.invertedOrthogonal(), a.inverted());
+}
+
+template<class T> class BasicVec2: public Math::Vector<2, T> {
+    public:
+        template<class ...U> BasicVec2(U&&... args): Math::Vector<2, T>{std::forward<U>(args)...} {}
+};
+
+template<class T> class BasicMat2: public Math::Matrix<2, T> {
+    public:
+        template<class ...U> BasicMat2(U&&... args): Math::Matrix<2, T>{std::forward<U>(args)...} {}
+
+        MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(2, BasicMat2, BasicVec2)
+};
+
+typedef BasicVec2<Float> Vec2;
+typedef BasicMat2<Float> Mat2;
+
+void MatrixTest::subclassTypes() {
+    const Mat2 c;
+    Mat2 a;
+    CORRADE_VERIFY((std::is_same<decltype(c[1]), const Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a[1]), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.row(1)), Vec2>::value));
+
+    const Mat2 c2;
+    const Vec2 cv;
+    CORRADE_VERIFY((std::is_same<decltype(c*c2), Mat2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c*cv), Vec2>::value));
+
+    CORRADE_VERIFY((std::is_same<decltype(c.transposed()), Mat2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.inverted()), Mat2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.invertedOrthogonal()), Mat2>::value));
+}
+
+void MatrixTest::subclass() {
+    const Mat2 a(Vec2(2.0f, 3.5f),
+                 Vec2(3.0f, 1.0f));
+    Mat2 b(Vec2(2.0f, 3.5f),
+           Vec2(3.0f, 1.0f));
+    CORRADE_COMPARE(a[1], Vec2(3.0f, 1.0f));
+    CORRADE_COMPARE(b[1], Vec2(3.0f, 1.0f));
+    CORRADE_COMPARE(a.row(1), Vec2(3.5f, 1.0f));
+
+    CORRADE_COMPARE(a*b, Mat2(Vec2(14.5f, 10.5f),
+                              Vec2(9.0f, 11.5f)));
+    CORRADE_COMPARE(a*Vec2(1.0f, 0.5f), Vec2(3.5f, 4.0f));
+
+    CORRADE_COMPARE(a.transposed(), Mat2(Vec2(2.0f, 3.0f),
+                                         Vec2(3.5f, 1.0f)));
+
+    Mat2 c(Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f),
+           Vec2(-Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f));
+    CORRADE_COMPARE(c.inverted(), Mat2(Vec2(Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f),
+                                       Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f)));
+    CORRADE_COMPARE(c.invertedOrthogonal(), Mat2(Vec2(Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f),
+                                                 Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f)));
 }
 
 void MatrixTest::debug() {

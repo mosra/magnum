@@ -106,10 +106,10 @@ template<class T> class Vector4: public Vector<4, T> {
         Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
         constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
 
-        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(Vector4, 4)
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
 };
 
-MAGNUM_VECTOR_SUBCLASS_OPERATOR_IMPLEMENTATION(Vector4, 4)
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)
 
 /** @debugoperator{Magnum::Math::Vector4} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector4<T>& value) {

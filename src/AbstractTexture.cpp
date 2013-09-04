@@ -684,10 +684,8 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
     const ImageFormat format = imageFormatForInternalFormat(internalFormat);
     const ImageType type = imageTypeForInternalFormat(internalFormat);
 
-    auto levelSize = size;
     for(GLsizei level = 0; level != levels; ++level) {
-        (this->*image1DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
-        levelSize = Math::max(Math::Vector<1, GLsizei>(1), levelSize/2);
+        (this->*image1DImplementation)(target, level, internalFormat, Math::max(Math::Vector<1, GLsizei>(1), size >> level), format, type, nullptr);
     }
 }
 
@@ -721,15 +719,12 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
     if(target == GL_TEXTURE_2D)
     #endif
     {
-        Vector2i levelSize = size;
         for(GLsizei level = 0; level != levels; ++level) {
-            (this->*image2DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
-            levelSize = Math::max(Vector2i(1), levelSize/2);
+            (this->*image2DImplementation)(target, level, internalFormat, Math::max(Vector2i(1), size >> level), format, type, nullptr);
         }
 
     /* Cube map additionally needs to specify all faces */
     } else if(target == GL_TEXTURE_CUBE_MAP) {
-        Vector2i levelSize = size;
         for(GLsizei level = 0; level != levels; ++level) {
             const std::initializer_list<GLenum> faces = {
                 GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -740,17 +735,14 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
                 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
             };
             for(auto it = faces.begin(); it != faces.end(); ++it)
-                (this->*image2DImplementation)(*it, level, internalFormat, levelSize, format, type, nullptr);
-            levelSize = Math::max(Vector2i(1), levelSize/2);
+                (this->*image2DImplementation)(*it, level, internalFormat, Math::max(Vector2i(1), size >> level), format, type, nullptr);
         }
 
     #ifndef MAGNUM_TARGET_GLES
     /* Array texture is not scaled in "layer" dimension */
     } else if(target == GL_TEXTURE_1D_ARRAY) {
-        Vector2i levelSize = size;
         for(GLsizei level = 0; level != levels; ++level) {
-            (this->*image2DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
-            levelSize.x() = Math::max(1, levelSize.x()/2);
+            (this->*image2DImplementation)(target, level, internalFormat, Math::max(Vector2i(1), size >> level), format, type, nullptr);
         }
     #endif
 
@@ -789,10 +781,8 @@ void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei level
     if(target == GL_TEXTURE_3D_OES)
     #endif
     {
-        Vector3i levelSize = size;
         for(GLsizei level = 0; level != levels; ++level) {
-            (this->*image3DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
-            levelSize = Math::max(Vector3i(1), levelSize/2);
+            (this->*image3DImplementation)(target, level, internalFormat, Math::max(Vector3i(1), size >> level), format, type, nullptr);
         }
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -804,10 +794,8 @@ void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei level
     else if(target == GL_TEXTURE_2D_ARRAY)
     #endif
     {
-        Vector3i levelSize = size;
         for(GLsizei level = 0; level != levels; ++level) {
-            (this->*image3DImplementation)(target, level, internalFormat, levelSize, format, type, nullptr);
-            levelSize.xy() = Math::max(Vector2i(1), levelSize.xy()/2);
+            (this->*image3DImplementation)(target, level, internalFormat, Math::max(Vector3i(1), size >> level), format, type, nullptr);
         }
     #endif
 

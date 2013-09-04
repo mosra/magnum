@@ -55,6 +55,12 @@ template<UnsignedInt dimensions, class T> struct DimensionTraits {
     #endif
 };
 
+/**
+@todo `using VectorTypeForDimension<dimensions, T> = typename DimensionTraits<dimensions, T>::VectorType`
+    etc. shortcuts when support for GCC 4.6 is dropped (similarly to what C++14
+    does with type traits)
+ */
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* One dimension */
 template<class T> struct DimensionTraits<1, T> {

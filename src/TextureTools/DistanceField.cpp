@@ -158,7 +158,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectan
 
     DistanceFieldShader shader;
     shader.setRadius(radius)
-        .setScaling(Vector2(imageSize)/rectangle.size())
+        .setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
         .use();
 
     input.bind(DistanceFieldShader::TextureLayer);
@@ -169,7 +169,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectan
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
     {
-        shader.setImageSizeInverted(Vector2(1)/imageSize);
+        shader.setImageSizeInverted(1.0f/Vector2(imageSize));
     }
 
     Mesh mesh;

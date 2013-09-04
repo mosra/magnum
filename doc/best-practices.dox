@@ -33,6 +33,10 @@ Here is collection of carefully selected links to official guidelines and
 other articles with valuable information to help developers create better
 applications. Feel free to add one, if it contains new unique information.
 
+@section best-practices-general General best practices
+
+- [Writing Portable OpenGL ES 2.0](https://www.khronos.org/assets/uploads/developers/library/2011-siggraph-mobile/Writing-Portable-OpenGL-ES-2.0_Aug-11.pdf)
+
 @section best-practices-platform Platform-specific
 
 Some platforms need special care, see their respective sections for more

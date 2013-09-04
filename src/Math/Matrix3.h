@@ -315,10 +315,10 @@ template<class T> class Matrix3: public Matrix<3, T> {
         }
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(3, 3, Matrix3<T>)
-        MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Matrix3, Vector3, 3)
+        MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(3, Matrix3, Vector3)
 };
 
-MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Matrix3, 3)
+MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(3, Matrix3)
 
 /** @debugoperator{Magnum::Math::Matrix3} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix3<T>& value) {

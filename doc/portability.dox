@@ -46,7 +46,7 @@ If you include Magnum.h, you get these predefined macros:
 Example usage:
 @code
 #ifndef MAGNUM_TARGET_GLES
-Mesh::setPolygonMode(Mesh::PolygonMode::Lines);
+Renderer::setPolygonMode(Renderer::PolygonMode::Lines);
 // draw mesh as wireframe...
 #else
 // use different mesh, as polygon mode is not supported in OpenGL ES...
@@ -54,7 +54,7 @@ Mesh::setPolygonMode(Mesh::PolygonMode::Lines);
 @endcode
 
 Each feature is marked accordingly if it is not available in some targets. See
-also @ref requires-gl and @ref requires-gles30.
+also @ref requires-gl, @ref requires-gles20 and @ref requires-gles30.
 
 @section portability-compiler Compiler-specific code
 
@@ -62,38 +62,39 @@ also @ref requires-gl and @ref requires-gles30.
 possible. Many features from C++11 are used to simplify things and make them
 faster and more secure, but on the other hand it requires fairly recent
 compiler with good enough support of the new standard. Currently %Magnum is
-written with GCC 4.7 and Clang 3.1 in mind, but support for some other
-compilers is also available and handled by Corrade library. See Corrade.h for
-more information.
+written with GCC 4.8 and Clang 3.1 in mind, but support for some other
+compilers is also available and handled by Corrade library. See @ref Corrade.h
+for more information.
 
 Each feature is marked accordingly if it is not available on some compilers,
 see @ref SceneGraph::DrawableGroup3D for an example. It is up to you (or your
-platform) which compiler your code will support, code written for GCC 4.7 will
-work also on Magnum compiled with support for older compilers.
+platform) which compiler your code will support, code written for e.g. GCC 4.6
+will work also on Magnum compiled with support for newer compilers, although
+newer compilers may catch errors that weren't spotted by earlier versions.
 
 @section portability-extensions Extension-aware code
 
 Some functionality is depending on support of particular extension and thus
-the decision cannot be made at compile time. Header Extensions.h contains list
-of extensions, which you can pass to Context::isExtensionSupported() and
-decide based on that:
+the decision cannot be made at compile time. Header @ref Extensions.h contains
+list of extensions, which you can pass to @ref Context::isExtensionSupported()
+and decide based on that:
 @code
 if(Context::instance()->isExtensionSupported<GL::ARB::geometry_shader4>()) {
     // draw mesh with wireframe on top in one pass using geometry shader...
 } else {
     // draw underlying mesh...
-    Mesh::setPolygonMode(Mesh::PolygonMode::Lines);
+    Renderer::setPolygonMode(Renderer::PolygonMode::Lines);
     // draw mesh as wirefreame in second pass...
 }
 @endcode
 
-You can also decide on particular OpenGL version using Context::isVersionSupported(),
+You can also decide on particular OpenGL version using @ref Context::isVersionSupported(),
 but remember that some features from that version might be available even if
 the drivers don't expose that version.
 
 On the other hand, if you don't want to write fallback code for unsupported
-extensions, you can use macros MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
-MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
+extensions, you can use macros @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
+@ref MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
 extension or version:
 @code
 MAGNUM_ASSERT_EXTENSION_SUPPORTED(GL::ARB::geometry_shader4);
@@ -103,7 +104,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(GL::ARB::geometry_shader4);
 Each class, function or enum value is marked accordingly if it needs specific
 extension or specific OpenGL version. Various classes in %Magnum are taking
 advantage of some extensions and enable faster code paths if given extension is
-available, but also have proper fallback when it's not, for example
+available, but also have proper fallback when it's not, see for example
 @ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
 @ref AbstractTexture-performance-optimization "AbstractTexture" or
 @ref Mesh-performance-optimization "Mesh". See also @ref required-extensions.
@@ -117,8 +118,8 @@ texture uniform locations, required precision qualifiers in OpenGL ES etc.
 
 Shader class allows you to explicitly specify shader version and based on that
 you can decide on the syntax in your shader code. You can also use
-Context::supportedVersion() to conveniently select highest supported version
-from a list:
+@ref Context::supportedVersion() to conveniently select highest supported
+version from a list:
 @code
 // MyShader.vert
 #if __VERSION__ < 130
@@ -141,22 +142,22 @@ Version version = Context::instance()->supportedVersion({Version::GL430, Version
 attachShader(Shader::fromFile(version, "MyShader.vert"));
 @endcode
 
-All shaders in Shaders namespace support desktop OpenGL starting from version
-2.1 and also OpenGL ES 2.0 and 3.0. Feel free to look into their sources to
-see how portability is handled there.
+All shaders in @ref Shaders namespace support desktop OpenGL starting from
+version 2.1 and also OpenGL ES 2.0 and 3.0. Feel free to look into their
+sources to see how portability is handled there.
 
 @section portability-applications Platform-specific application support
 
 Your application might run on Windows box, on some embedded Linux or even in
 browser - each platform has different requirements how to create entry point
 to the application, how to handle input events, how to create window and
-OpenGL context etc. Namespace Platform contains base classes for applications
+OpenGL context etc. Namespace @ref Platform contains application base classes
 which are abstracting out most of it for your convenience.
 
 All the classes support limited form of static polymorphism, which means you
-can switch to another base class and probably don't need to change any other
-code. It has its limitations, though - some toolkits don't support all keys,
-mouse movement events etc.
+can just switch to another base class and in many cases you won't need to
+change any other code. It has its limitations, though - some toolkits don't
+support all keys, mouse movement events etc.
 
 In most cases the entry point is classic `main()` function, but some platforms
 (e.g. Native Client) have different requirements. To make things easier, entry
@@ -174,8 +175,8 @@ variables.
 
 Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
-functions will work on both without changes, the main difference will be in
-particular *Event class implementations:
+functions will work on both without changes, the main difference might (or
+might not, depending what you use) be in particular event handlers:
 @code
 #ifndef MAGNUM_TARGET_GLES
 #include <Platform/Sdl2Application.h>

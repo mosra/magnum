@@ -184,17 +184,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         #endif
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator*(U number, const Matrix<size, T>& matrix) {
-    return number*RectangularMatrix<size, size, T>(matrix);
-}
-template<std::size_t size, class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Matrix<size, T>>::type operator/(U number, const Matrix<size, T>& matrix) {
-    return number/RectangularMatrix<size, size, T>(matrix);
-}
-template<std::size_t size, class T> inline Matrix<size, T> operator*(const Vector<size, T>& vector, const RectangularMatrix<size, 1, T>& matrix) {
-    return RectangularMatrix<1, size, T>(vector)*matrix;
-}
-#endif
+MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)
 
 /** @debugoperator{Magnum::Math::Matrix} */
 template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix<size, T>& value) {
@@ -202,7 +192,7 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(Type, VectorType, size)       \
+#define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(size, Type, VectorType)       \
     VectorType<T>& operator[](std::size_t col) {                            \
         return static_cast<VectorType<T>&>(Matrix<size, T>::operator[](col)); \
     }                                                                       \
@@ -227,17 +217,6 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
     Type<T> inverted() const { return Matrix<size, T>::inverted(); }        \
     Type<T> invertedOrthogonal() const {                                    \
         return Matrix<size, T>::invertedOrthogonal();                       \
-    }
-
-#define MAGNUM_MATRIX_SUBCLASS_OPERATOR_IMPLEMENTATION(Type, size)          \
-    template<class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator*(U number, const Type<T>& matrix) { \
-        return number*Matrix<size, T>(matrix);                              \
-    }                                                                       \
-    template<class T, class U> inline typename std::enable_if<std::is_arithmetic<U>::value, Type<T>>::type operator/(U number, const Type<T>& matrix) { \
-        return number/Matrix<size, T>(matrix);                              \
-    }                                                                       \
-    template<class T> inline Type<T> operator*(const Vector<size, T>& vector, const RectangularMatrix<size, 1, T>& matrix) { \
-        return RectangularMatrix<1, size, T>(vector)*matrix;                \
     }
 
 namespace Implementation {

@@ -62,6 +62,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void constructConversion();
         void constructCopy();
 
+        void isZero();
         void isNormalized();
 
         void convert();
@@ -70,7 +71,10 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void negative();
         void addSubtract();
         void multiplyDivide();
+        void multiplyDivideIntegral();
         void multiplyDivideComponentWise();
+        void multiplyDivideComponentWiseIntegral();
+        void bitwise();
 
         void compare();
         void compareComponentWise();
@@ -91,6 +95,9 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void projectedOntoNormalized();
         void angle();
 
+        void subclassTypes();
+        void subclass();
+
         void debug();
         void configuration();
 };
@@ -109,6 +116,7 @@ VectorTest::VectorTest() {
               &VectorTest::constructConversion,
               &VectorTest::constructCopy,
 
+              &VectorTest::isZero,
               &VectorTest::isNormalized,
 
               &VectorTest::convert,
@@ -117,7 +125,10 @@ VectorTest::VectorTest() {
               &VectorTest::negative,
               &VectorTest::addSubtract,
               &VectorTest::multiplyDivide,
+              &VectorTest::multiplyDivideIntegral,
               &VectorTest::multiplyDivideComponentWise,
+              &VectorTest::multiplyDivideComponentWiseIntegral,
+              &VectorTest::bitwise,
 
               &VectorTest::compare,
               &VectorTest::compareComponentWise,
@@ -137,6 +148,9 @@ VectorTest::VectorTest() {
               &VectorTest::projected,
               &VectorTest::projectedOntoNormalized,
               &VectorTest::angle,
+
+              &VectorTest::subclassTypes,
+              &VectorTest::subclass,
 
               &VectorTest::debug,
               &VectorTest::configuration});
@@ -196,6 +210,11 @@ void VectorTest::constructCopy() {
     constexpr Vector4 a(1.0f, 3.5f, 4.0f, -2.7f);
     constexpr Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
+}
+
+void VectorTest::isZero() {
+    CORRADE_VERIFY(!Vector3(0.01f, 0.0f, 0.0f).isZero());
+    CORRADE_VERIFY(Vector3(0.0f, 0.0f, 0.0f).isZero());
 }
 
 void VectorTest::isNormalized() {
@@ -285,17 +304,21 @@ void VectorTest::multiplyDivide() {
     CORRADE_COMPARE(-1.5f*vector, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, vector);
 
-    Math::Vector<1, Byte> vectorChar(32);
-    Math::Vector<1, Byte> multipliedChar(-48);
-    CORRADE_COMPARE(vectorChar*-1.5f, multipliedChar);
-    CORRADE_COMPARE(multipliedChar/-1.5f, vectorChar);
-    CORRADE_COMPARE(-1.5f*vectorChar, multipliedChar);
-
-    /* Divide vector with number and inverse */
+    /* Divide vector with number and invert */
     Vector4 divisor(1.0f, 2.0f, -4.0f, 8.0f);
     Vector4 result(1.0f, 0.5f, -0.25f, 0.125f);
     CORRADE_COMPARE(1.0f/divisor, result);
-    CORRADE_COMPARE(-1550.0f/multipliedChar, vectorChar);
+}
+
+void VectorTest::multiplyDivideIntegral() {
+    Vector4i vector(32, 10, -6, 2);
+    Vector4i multiplied(-48, -15, 9, -3);
+
+    CORRADE_COMPARE(vector*-1.5f, multiplied);
+    CORRADE_COMPARE(-1.5f*vector, multiplied);
+
+    CORRADE_COMPARE(multiplied/-1.5f, vector);
+    /* Using integer vector as divisor is not supported */
 }
 
 void VectorTest::multiplyDivideComponentWise() {
@@ -305,6 +328,33 @@ void VectorTest::multiplyDivideComponentWise() {
 
     CORRADE_COMPARE(vec*multiplier, multiplied);
     CORRADE_COMPARE(multiplied/multiplier, vec);
+}
+
+void VectorTest::multiplyDivideComponentWiseIntegral() {
+    Vector4i vec(7, 2, -16, -1);
+    Vector4 multiplier(2.0f, -1.5f, 0.5f, 10.0f);
+    Vector4i multiplied(14, -3, -8, -10);
+
+    CORRADE_COMPARE(vec*multiplier, multiplied);
+    CORRADE_COMPARE(multiplier*vec, multiplied);
+
+    CORRADE_COMPARE(multiplied/multiplier, vec);
+    /* Using integer vector as divisor is not supported */
+}
+
+void VectorTest::bitwise() {
+    typedef Math::Vector<2, Int> Vector2i;
+
+    const Vector2i a(85, 240);
+    const Vector2i b(170, 85);
+    CORRADE_COMPARE(~a, Vector2i(-86, -241));
+    CORRADE_COMPARE(a & b, Vector2i(0, 80));
+    CORRADE_COMPARE(a | b, Vector2i(255, 245));
+    CORRADE_COMPARE(a ^ b, Vector2i(255, 165));
+
+    const Vector2i c(7, 32);
+    CORRADE_COMPARE(c << 2, Vector2i(28, 128));
+    CORRADE_COMPARE(c >> 2, Vector2i(1, 8));
 }
 
 void VectorTest::dot() {
@@ -392,6 +442,120 @@ void VectorTest::angle() {
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
                                    Vector3(1.0f, -2.0f, 3.0f).normalized()),
                     Rad(1.162514f));
+}
+
+template<class T> class BasicVec2: public Math::Vector<2, T> {
+    public:
+        template<class ...U> BasicVec2(U&&... args): Math::Vector<2, T>{std::forward<U>(args)...} {}
+
+        MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, BasicVec2)
+};
+
+MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, BasicVec2)
+
+typedef BasicVec2<Float> Vec2;
+typedef BasicVec2<Int> Vec2i;
+
+void VectorTest::subclassTypes() {
+    Float* const data = nullptr;
+    const Float* const cdata = nullptr;
+    CORRADE_VERIFY((std::is_same<decltype(Vec2::from(data)), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(Vec2::from(cdata)), const Vec2&>::value));
+
+    /* Const operators */
+    const Vec2 c;
+    const Vec2 c2;
+    CORRADE_VERIFY((std::is_same<decltype(-c), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c + c), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c*1.0f), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(1.0f*c), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c/1.0f), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(1.0f/c), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c*c2), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c/c2), Vec2>::value));
+
+    /* Assignment operators */
+    Vec2 a;
+    CORRADE_VERIFY((std::is_same<decltype(a = c), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a += c), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a -= c), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a *= 1.0f), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a /= 1.0f), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a *= c), Vec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a /= c), Vec2&>::value));
+
+    /* Bitwise operations */
+    const Vec2i ci;
+    Vec2i i;
+    CORRADE_VERIFY((std::is_same<decltype(~ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci & ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci | ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci ^ ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci << 1), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci >> 1), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i &= ci), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i |= ci), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i ^= ci), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i <<= 1), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i >>= 1), Vec2i&>::value));
+
+    /* Integer multiplication/division */
+    CORRADE_VERIFY((std::is_same<decltype(ci*1.0f), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(1.0f*ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c*ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci*c), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci/c), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i *= c), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i /= c), Vec2i&>::value));
+
+    /* Functions */
+    CORRADE_VERIFY((std::is_same<decltype(c.normalized()), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.resized(1.0f)), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.projected(c2)), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.projectedOntoNormalized(c2)), Vec2>::value));
+}
+
+void VectorTest::subclass() {
+    Float data[] = {1.0f, -2.0f};
+    CORRADE_COMPARE(Vec2::from(data), Vec2(1.0f, -2.0f));
+
+    const Float cdata[] = {1.0f, -2.0f};
+    CORRADE_COMPARE(Vec2::from(cdata), Vec2(1.0f, -2.0f));
+
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f) + Vec2(1.0f, -3.0f), Vec2(-1.0f, 2.0f));
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f) - Vec2(1.0f, -3.0f), Vec2(-3.0f, 8.0f));
+
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*2.0f, Vec2(-4.0f, 10.0f));
+    CORRADE_COMPARE(2.0f*Vec2(-2.0f, 5.0f), Vec2(-4.0f, 10.0f));
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/0.5f, Vec2(-4.0f, 10.0f));
+    CORRADE_COMPARE(2.0f/Vec2(-2.0f, 5.0f), Vec2(-1.0f, 0.4f));
+
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*Vec2(1.5f, -2.0f), Vec2(-3.0f, -10.0f));
+    CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/Vec2(2.0f/3.0f, -0.5f), Vec2(-3.0f, -10.0f));
+
+    /* Bitwise operations */
+    CORRADE_COMPARE(~Vec2i(85, 240), Vec2i(-86, -241));
+    CORRADE_COMPARE(Vec2i(85, 240) & Vec2i(170, 85), Vec2i(0, 80));
+    CORRADE_COMPARE(Vec2i(85, 240) | Vec2i(170, 85), Vec2i(255, 245));
+    CORRADE_COMPARE(Vec2i(85, 240) ^ Vec2i(170, 85), Vec2i(255, 165));
+
+    CORRADE_COMPARE(Vec2i(7, 32) << 2, Vec2i(28, 128));
+    CORRADE_COMPARE(Vec2i(7, 32) >> 2, Vec2i(1, 8));
+
+    /* Integral multiplication/division */
+    CORRADE_COMPARE(Vec2i(2, 4)*1.5f, Vec2i(3, 6));
+    CORRADE_COMPARE(1.5f*Vec2i(2, 4), Vec2i(3, 6));
+    CORRADE_COMPARE(Vec2i(2, 4)/(2.0f/3.0f), Vec2i(3, 6));
+
+    CORRADE_COMPARE(Vec2i(2, 4)*Vec2(-1.5f, 0.5f), Vec2i(-3, 2));
+    CORRADE_COMPARE(Vec2(-1.5f, 0.5f)*Vec2i(2, 4), Vec2i(-3, 2));
+    CORRADE_COMPARE(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f), Vec2i(-3, 2));
+
+    /* Functions */
+    CORRADE_COMPARE(Vec2(3.0f, 0.0f).normalized(), Vec2(1.0f, 0.0f));
+    CORRADE_COMPARE(Vec2(3.0f, 0.0f).resized(6.0f), Vec2(6.0f, 0.0f));
+    CORRADE_COMPARE(Vec2(1.0f, 1.0f).projected({0.0f, 2.0f}), Vec2(0.0f, 1.0f));
+    CORRADE_COMPARE(Vec2(1.0f, 1.0f).projectedOntoNormalized({0.0f, 1.0f}), Vec2(0.0f, 1.0f));
 }
 
 void VectorTest::debug() {

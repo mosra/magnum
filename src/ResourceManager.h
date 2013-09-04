@@ -315,7 +315,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /** @overload */
         template<class U> ResourceManager<Types...>& set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
-            return set(key, new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)), state, policy);
+            return set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
 
         /**
@@ -331,7 +331,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /** @overload */
         template<class U> ResourceManager<Types...>& set(ResourceKey key, U&& data) {
-            return set(key, new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)));
+            return set(key, new typename std::decay<U>::type(std::forward<U>(data)));
         }
 
         /** @brief Fallback for not found resources */
@@ -355,7 +355,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /** @overload */
         template<class U> ResourceManager<Types...>& setFallback(U&& data) {
-            return setFallback(new typename std::remove_cv<typename std::remove_reference<U>::type>::type(std::forward<U>(data)));
+            return setFallback(new typename std::decay<U>::type(std::forward<U>(data)));
         }
 
         /**
