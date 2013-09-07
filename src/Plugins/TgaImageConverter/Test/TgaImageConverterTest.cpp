@@ -94,7 +94,7 @@ void TgaImageConverterTest::data() {
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.openData(data));
-    Trade::ImageData2D* converted = importer.image2D(0);
+    std::optional<Trade::ImageData2D> converted = importer.image2D(0);
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));

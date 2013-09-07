@@ -71,14 +71,14 @@ void TgaImporter::doClose() {
 
 UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
 
-ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
+std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     /* Check if the file is long enough */
     in->seekg(0, std::istream::end);
     std::streampos filesize = in->tellg();
     in->seekg(0, std::istream::beg);
     if(filesize < std::streampos(sizeof(TgaHeader))) {
         Error() << "Trade::TgaImporter::image2D(): the file is too short:" << filesize << "bytes";
-        return nullptr;
+        return std::nullopt;
     }
 
     TgaHeader header;
@@ -92,7 +92,7 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     ImageFormat format;
     if(header.colorMapType != 0) {
         Error() << "Trade::TgaImporter::image2D(): paletted files are not supported";
-        return nullptr;
+        return std::nullopt;
     }
 
     /* Color */
@@ -114,7 +114,7 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
                 break;
             default:
                 Error() << "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
-                return nullptr;
+                return std::nullopt;
         }
 
     /* Grayscale */
@@ -127,13 +127,13 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
         #endif
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
-            return nullptr;
+            return std::nullopt;
         }
 
     /* Compressed files */
     } else {
         Error() << "Trade::TgaImporter::image2D(): unsupported (compressed?) image type:" << header.imageType;
-        return nullptr;
+        return std::nullopt;
     }
 
     const std::size_t dataSize = header.width*header.height*header.bpp/8;
@@ -154,7 +154,7 @@ ImageData2D* TgaImporter::doImage2D(UnsignedInt) {
     }
     #endif
 
-    return new ImageData2D(format, ImageType::UnsignedByte, size, data);
+    return ImageData2D(format, ImageType::UnsignedByte, size, data);
 }
 
 }}

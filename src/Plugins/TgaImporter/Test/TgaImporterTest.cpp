@@ -142,7 +142,7 @@ void TgaImporterTest::colorBits24() {
     #endif
     CORRADE_VERIFY(importer.openData(data));
 
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(image->format(), ImageFormat::BGR);
@@ -152,8 +152,6 @@ void TgaImporterTest::colorBits24() {
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
-
-    delete image;
 }
 
 void TgaImporterTest::colorBits32() {
@@ -175,7 +173,7 @@ void TgaImporterTest::colorBits32() {
     #endif
     CORRADE_VERIFY(importer.openData(data));
 
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(image->format(), ImageFormat::BGRA);
@@ -185,8 +183,6 @@ void TgaImporterTest::colorBits32() {
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ImageType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
-
-    delete image;
 }
 
 void TgaImporterTest::grayscaleBits8() {
@@ -199,7 +195,7 @@ void TgaImporterTest::grayscaleBits8() {
     };
     CORRADE_VERIFY(importer.openData(data));
 
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->format(), ImageFormat::Red);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
@@ -229,7 +225,7 @@ void TgaImporterTest::file() {
     };
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
 
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->format(), ImageFormat::Red);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));

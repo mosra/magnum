@@ -73,7 +73,7 @@ class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
         void MAGNUM_TRADE_TGAIMPORTER_LOCAL doClose() override;
         UnsignedInt MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2DCount() const override;
-        ImageData2D MAGNUM_TRADE_TGAIMPORTER_LOCAL * doImage2D(UnsignedInt id) override;
+        std::optional<ImageData2D> MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2D(UnsignedInt id) override;
 
         std::istream* in;
 };
