@@ -38,7 +38,7 @@ namespace Magnum { namespace Trade {
 /**
 @brief Type of instance held by given 3D object
 
-@see @ref ObjectData3D::type()
+@see @ref ObjectData3D::instanceType()
 */
 enum class ObjectInstanceType3D: UnsignedByte {
     Camera,     /**< Camera instance (see CameraData) */
