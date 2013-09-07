@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::ObjectData2D
+ * @brief Class @ref Magnum::Trade::ObjectData2D, enum @ref Magnum::Trade::ObjectInstanceType2D
  */
 
 #include <vector>
@@ -36,6 +36,23 @@
 namespace Magnum { namespace Trade {
 
 /**
+@brief Type of instance held by given 2D object
+
+@see @ref ObjectData2D::instanceType()
+*/
+enum class ObjectInstanceType2D: UnsignedByte {
+    Camera,     /**< Camera instance (see CameraData) */
+
+    /**
+     * Mesh instance. The data can be cast to @ref MeshObjectData2D to provide
+     * more information.
+     */
+    Mesh,
+
+    Empty       /**< Empty */
+};
+
+/**
 @brief Two-dimensional object data
 
 Provides access to object transformation and hierarchy.
@@ -43,19 +60,6 @@ Provides access to object transformation and hierarchy.
 */
 class MAGNUM_EXPORT ObjectData2D {
     public:
-        /** @brief Type of instance held by this object */
-        enum class InstanceType: UnsignedByte {
-            Camera,     /**< Camera instance (see CameraData) */
-
-            /**
-             * Three-dimensional mesh instance. The data can be cast to
-             * MeshObjectData2D to provide more information.
-             */
-            Mesh,
-
-            Empty       /**< Empty */
-        };
-
         /**
          * @brief Constructor
          * @param children          Child objects
@@ -63,7 +67,7 @@ class MAGNUM_EXPORT ObjectData2D {
          * @param instanceType      Instance type
          * @param instance          Instance ID
          */
-        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, InstanceType instanceType, UnsignedInt instance);
+        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectInstanceType2D instanceType, UnsignedInt instance);
 
         /**
          * @brief Constructor for empty instance
@@ -98,7 +102,7 @@ class MAGNUM_EXPORT ObjectData2D {
          *
          * @see instance()
          */
-        InstanceType instanceType() const { return _instanceType; }
+        ObjectInstanceType2D instanceType() const { return _instanceType; }
 
         /**
          * @brief Instance ID
@@ -110,12 +114,12 @@ class MAGNUM_EXPORT ObjectData2D {
     private:
         std::vector<UnsignedInt> _children;
         Matrix3 _transformation;
-        InstanceType _instanceType;
+        ObjectInstanceType2D _instanceType;
         Int _instance;
 };
 
 /** @debugoperator{Magnum::Trade::ObjectData2D} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectData2D::InstanceType value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectInstanceType2D value);
 
 }}
 
