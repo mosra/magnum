@@ -43,8 +43,8 @@ AbstractMaterialDataTest::AbstractMaterialDataTest() {
 void AbstractMaterialDataTest::debug() {
     std::ostringstream out;
 
-    Debug(&out) << AbstractMaterialData::Type::Phong;
-    CORRADE_COMPARE(out.str(), "Trade::AbstractMaterialData::Type::Phong\n");
+    Debug(&out) << MaterialType::Phong;
+    CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong\n");
 }
 
 }}}

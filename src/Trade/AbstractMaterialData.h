@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::AbstractMaterialData
+ * @brief Class @ref Magnum::Trade::AbstractMaterialData, enum @ref Magnum::Trade::MaterialType
  */
 
 #include "magnumVisibility.h"
@@ -34,22 +34,26 @@
 namespace Magnum { namespace Trade {
 
 /**
+@brief Material type
+
+@see @ref AbstractMaterialData::type()
+*/
+enum class MaterialType: UnsignedByte {
+    Phong       /**< Phong shading */
+};
+
+/**
 @brief Base for material data
 
 Subclasses provide access to parameters for given material type.
 */
 class MAGNUM_EXPORT AbstractMaterialData {
     public:
-        /** @brief Material type */
-        enum class Type: UnsignedByte {
-            Phong       /**< Phong shading */
-        };
-
         /**
          * @brief Constructor
          * @param type      Material type
          */
-        explicit AbstractMaterialData(Type type);
+        explicit AbstractMaterialData(MaterialType type);
 
         /** @brief Destructor */
         virtual ~AbstractMaterialData() = 0;
@@ -67,14 +71,14 @@ class MAGNUM_EXPORT AbstractMaterialData {
         AbstractMaterialData& operator=(AbstractMaterialData&&) = default;
 
         /** @brief Material type */
-        Type type() const { return _type; }
+        MaterialType type() const { return _type; }
 
     private:
-        Type _type;
+        MaterialType _type;
 };
 
 /** @debugoperator{Magnum::Trade::AbstractMaterialData} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, AbstractMaterialData::Type value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, MaterialType value);
 
 }}
 
