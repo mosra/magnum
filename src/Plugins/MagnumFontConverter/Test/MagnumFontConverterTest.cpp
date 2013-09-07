@@ -88,7 +88,8 @@ void MagnumFontConverterTest::exportFont() {
     /* Verify font image, no need to test image contents, as the image is garbage anyway */
     Trade::TgaImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga")));
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
+    CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(256));
     CORRADE_COMPARE(image->format(), ImageFormat::Red);
     CORRADE_COMPARE(image->type(), ImageType::UnsignedByte);

@@ -102,14 +102,13 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
         Error() << "Text::MagnumFont::openData(): cannot open image file";
         return;
     }
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     if(!image) {
         Error() << "Text::MagnumFont::openData(): cannot load image file";
         return;
     }
 
     openInternal(std::move(conf), std::move(*image));
-    delete image;
 }
 
 void MagnumFont::doOpenFile(const std::string& filename, Float) {
@@ -134,14 +133,13 @@ void MagnumFont::doOpenFile(const std::string& filename, Float) {
         Error() << "Text::MagnumFont::openFile(): cannot open image file" << imageFilename;
         return;
     }
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     if(!image) {
         Error() << "Text::MagnumFont::openFile(): cannot load image file";
         return;
     }
 
     openInternal(std::move(conf), std::move(*image));
-    delete image;
 }
 
 void MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image) {
