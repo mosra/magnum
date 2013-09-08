@@ -78,23 +78,20 @@ int DistanceFieldConverter::exec() {
     }
 
     /* Instance plugins */
-    Trade::AbstractImporter* importer = importerManager.instance(args.value("importer"));
-    Trade::AbstractImageConverter* converter = converterManager.instance(args.value("converter"));
-    CORRADE_INTERNAL_ASSERT(importer && converter);
+    std::unique_ptr<Trade::AbstractImporter> importer = importerManager.instance(args.value("importer"));
+    CORRADE_INTERNAL_ASSERT(importer);
+    std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.instance(args.value("converter"));
+    CORRADE_INTERNAL_ASSERT(converter);
 
     /* Open input file */
     std::optional<Trade::ImageData2D> image;
     if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
         Error() << "Cannot open file" << args.value("input");
-        delete importer;
-        delete converter;
         return 1;
     }
 
-    delete importer;
     if(image->format() != ImageFormat::Red) {
         Error() << "Unsupported image format" << image->format();
-        delete converter;
         return 1;
     }
 
@@ -120,11 +117,9 @@ int DistanceFieldConverter::exec() {
     output.image(0, result);
     if(!converter->exportToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");
-        delete converter;
         return 1;
     }
 
-    delete converter;
     return 0;
 }
 
