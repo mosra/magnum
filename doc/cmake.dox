@@ -47,7 +47,7 @@ variables:
 - `MAGNUM_PLUGINS_IMPORTER_DIR` -- Directory with importer plugins
 
 However, this command will try to find only the base library, not the optional
-components. The base library depends on %Corrade, OpenGL and GLEW libraries (or
+components. The base library depends on %Corrade and OpenGL libraries (or
 OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 

@@ -28,8 +28,6 @@
  * @brief Class Magnum::Platform::AbstractContextHandler
  */
 
-#include "ExtensionWrangler.h"
-
 namespace Magnum { namespace Platform {
 
 /**
@@ -57,15 +55,6 @@ template<class Display, class VisualId, class Window> class AbstractContextHandl
 
         /** @brief Create context */
         virtual void createContext(Window nativeWindow) = 0;
-
-        /**
-         * @brief Whether to enable experimental extension wrangler features
-         *
-         * Default is to disable.
-         */
-        virtual ExtensionWrangler::ExperimentalFeatures experimentalExtensionWranglerFeatures() const {
-            return ExtensionWrangler::ExperimentalFeatures::Disable;
-        }
 
         /** @brief Make the context current */
         virtual void makeCurrent() = 0;

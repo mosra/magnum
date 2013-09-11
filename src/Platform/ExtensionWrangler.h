@@ -35,14 +35,8 @@ class ExtensionWrangler {
     public:
         ExtensionWrangler() = delete;
 
-        /** @brief Whether to enable or disable experimental features */
-        enum class ExperimentalFeatures {
-            Disable,
-            Enable
-        };
-
         /** @brief Initialize extension wrangler */
-        static void initialize(ExperimentalFeatures experimentalFeatures = ExperimentalFeatures::Disable);
+        static void initialize();
 };
 
 }}

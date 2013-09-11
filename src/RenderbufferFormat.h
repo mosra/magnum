@@ -366,12 +366,8 @@ enum class RenderbufferFormat: GLenum {
     R11FG11FB10F = GL_R11F_G11F_B10F,
     #endif
 
-    /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
-       GL_ARB_ES2_compatibility */
-    #if defined(GL_RGB565) || defined(DOXYGEN_GENERATING_OUTPUT)
     /** RGB, normalized unsigned, red and blue 5bit, green 6bit. */
     RGB565 = GL_RGB565,
-    #endif
 
     /**
      * sRGBA, each component normalized unsigned byte.

@@ -32,20 +32,16 @@
 
 namespace Magnum { namespace Platform {
 
-void ExtensionWrangler::initialize(ExperimentalFeatures experimentalFeatures) {
+void ExtensionWrangler::initialize() {
     #ifndef MAGNUM_TARGET_GLES
-    /* Enable experimental features */
-    if(experimentalFeatures == ExperimentalFeatures::Enable)
-        glewExperimental = true;
-
-    /* Init GLEW */
-    GLenum err = glewInit();
-    if(err != GLEW_OK) {
-        Error() << "ExtensionWrangler: cannot initialize GLEW:" << glewGetErrorString(err);
+    /* Init glLoadGen. Ignore functions that failed to load (described by
+       `ogl_LOAD_SUCCEEDED + n` return code), as we requested the latest OpenGL
+       with many vendor extensions and there won't ever be a driver supporting
+       everything possible. */
+    if(ogl_LoadFunctions() == ogl_LOAD_FAILED) {
+        Error() << "ExtensionWrangler: cannot initialize glLoadGen";
         std::exit(1);
     }
-    #else
-    static_cast<void>(experimentalFeatures); /* Shut up about unused parameter */
     #endif
 }
 

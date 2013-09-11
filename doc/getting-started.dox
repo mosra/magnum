@@ -58,7 +58,6 @@ CMake build system, see @ref cmake for more information.
 
     modules/FindCorrade.cmake
     modules/FindMagnum.cmake
-    modules/FindGLEW.cmake
     src/MyApplication.cpp
     src/CMakeLists.txt
     CMakeLists.txt

@@ -28,6 +28,7 @@
 #include <Utility/Debug.h>
 
 #include "Context.h"
+#include "Platform/ExtensionWrangler.h"
 
 #define None 0L // redef Xlib nonsense
 
@@ -103,7 +104,7 @@ void WindowlessGlxApplication::createContext(const Configuration&) {
     }
 
     /* Initialize extension wrangler */
-    ExtensionWrangler::initialize(ExtensionWrangler::ExperimentalFeatures::Enable);
+    ExtensionWrangler::initialize();
 
     c = new Context;
 }

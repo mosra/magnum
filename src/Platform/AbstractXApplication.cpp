@@ -97,7 +97,7 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
     contextHandler->makeCurrent();
 
     /* Initialize extension wrangler */
-    ExtensionWrangler::initialize(contextHandler->experimentalExtensionWranglerFeatures());
+    ExtensionWrangler::initialize();
 
     c = new Context;
 }

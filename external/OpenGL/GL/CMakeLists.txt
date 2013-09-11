@@ -22,4 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-install(FILES glcorearb.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/GL)
+add_library(MagnumGLLoadGenObjects OBJECT gl_magnum.c)
+set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+
+install(FILES gl_magnum.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/GL)

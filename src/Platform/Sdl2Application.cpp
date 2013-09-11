@@ -106,9 +106,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         return false;
     }
 
-    /* This must be enabled, otherwise (on my NVidia) it crashes when creating
-       VAO. WTF. */
-    ExtensionWrangler::initialize(ExtensionWrangler::ExperimentalFeatures::Enable);
+    ExtensionWrangler::initialize();
 
     /* Push resize event, so viewportEvent() is called at startup */
     SDL_Event* sizeEvent = new SDL_Event;

@@ -17,9 +17,9 @@
 #  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_DIR - Directory with audio importer plugins
 # This command will try to find only the base library, not the optional
-# components. The base library depends on Corrade, OpenGL and GLEW
-# libraries. Additional dependencies are specified by the components. The
-# optional components are:
+# components. The base library depends on Corrade and OpenGL libraries (or
+# OpenGL ES libraries). Additional dependencies are specified by the
+# components. The optional components are:
 #  Audio            - Audio library (depends on OpenAL library)
 #  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
 #                     SceneGraph, Shaders and Shapes components)
@@ -148,9 +148,6 @@ if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
 else()
     find_package(OpenGLES2 REQUIRED)
-endif()
-if(NOT MAGNUM_TARGET_GLES)
-    find_package(GLEW REQUIRED)
 endif()
 
 # On Windows and in static builds, *Application libraries need to have
@@ -333,9 +330,6 @@ if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGL_gl_LIBRARY})
 else()
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES2_LIBRARY})
-endif()
-if(NOT MAGNUM_TARGET_GLES)
-    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${GLEW_LIBRARIES})
 endif()
 
 # Installation dirs

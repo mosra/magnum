@@ -165,7 +165,8 @@ set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EX
 # Main library
 add_library(Magnum ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumObjects>
-    $<TARGET_OBJECTS:MagnumMathObjects>)
+    $<TARGET_OBJECTS:MagnumMathObjects>
+    $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
@@ -179,9 +180,6 @@ elseif(TARGET_GLES2)
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES2_LIBRARY})
 else()
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES3_LIBRARY})
-endif()
-if(NOT TARGET_GLES)
-    set(Magnum_LIBS ${Magnum_LIBS} ${GLEW_LIBRARIES})
 endif()
 target_link_libraries(Magnum ${Magnum_LIBS})
 
@@ -238,7 +236,8 @@ if(BUILD_TESTS)
 
     add_library(MagnumTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumObjects>
-        $<TARGET_OBJECTS:MagnumMathObjects>)
+        $<TARGET_OBJECTS:MagnumMathObjects>
+        $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${Magnum_LIBS})
 
