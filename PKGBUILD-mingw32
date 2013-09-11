@@ -6,7 +6,7 @@ pkgdesc="OpenGL graphics engine (mingw32)"
 arch=('any')
 url="https://github.com/mosra/magnum"
 license=('MIT')
-depends=('mingw32-runtime' 'mingw32-corrade' 'mingw32-glew' 'mingw32-freeglut')
+depends=('mingw32-runtime' 'mingw32-corrade' 'mingw32-freeglut')
 makedepends=('mingw32-gcc' 'cmake' 'corrade')
 options=(!buildflags !strip)
 
