@@ -36,6 +36,8 @@ option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
 cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
 cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
 
+option(WITH_FIND_MODULE "Install FindMagnum.cmake module into CMake's module dir (might require admin privileges)" OFF)
+
 # Parts of the library
 option(WITH_AUDIO "Build Audio library" ON)
 option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
@@ -127,7 +129,7 @@ include(CorradeLibSuffix)
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/magnum)
-set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
+set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 
 add_subdirectory(external)
