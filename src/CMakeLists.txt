@@ -84,6 +84,7 @@ set(Magnum_SRCS
     Trade/PhongMaterialData.cpp
     Trade/SceneData.cpp
     Trade/TextureData.cpp)
+set(Magnum_OBJECTS $<TARGET_OBJECTS:MagnumObjects>)
 
 # Desktop-only code
 if(NOT TARGET_GLES)
@@ -147,6 +148,7 @@ endif()
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h)
+    set(Magnum_OBJECTS ${Magnum_OBJECTS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Files shared between main library and math unit test library
@@ -164,9 +166,8 @@ set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EX
 
 # Main library
 add_library(Magnum ${SHARED_OR_STATIC}
-    $<TARGET_OBJECTS:MagnumObjects>
-    $<TARGET_OBJECTS:MagnumMathObjects>
-    $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
+    ${Magnum_OBJECTS}
+    $<TARGET_OBJECTS:MagnumMathObjects>)
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
@@ -235,9 +236,8 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
 
     add_library(MagnumTestLib ${SHARED_OR_STATIC}
-        $<TARGET_OBJECTS:MagnumObjects>
-        $<TARGET_OBJECTS:MagnumMathObjects>
-        $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
+        ${Magnum_OBJECTS}
+        $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${Magnum_LIBS})
 
