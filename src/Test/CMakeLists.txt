@@ -42,6 +42,4 @@ endif()
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
 
 # Install bootstrap header for GL tests to be used in dependent projects
-if(BUILD_GL_TESTS)
-    install(FILES AbstractOpenGLTester.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)
-endif()
+install(FILES AbstractOpenGLTester.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)
