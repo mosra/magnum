@@ -6,7 +6,7 @@ pkgdesc="OpenGL graphics engine"
 arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('MIT')
-depends=('corrade' 'sdl-hg' 'freeglut')
+depends=('corrade' 'sdl2' 'freeglut')
 makedepends=('cmake')
 provides=('magnum-git')
 
