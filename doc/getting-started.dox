@@ -99,7 +99,9 @@ class MyApplication: public Platform::Application {
         void drawEvent() override;
 };
 
-MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {}
+MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {
+    // TODO: Add your initialization code here
+}
 
 void MyApplication::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
@@ -107,6 +109,9 @@ void MyApplication::viewportEvent(const Vector2i& size) {
 
 void MyApplication::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
+
+    // TODO: Add your drawing code here
+
     swapBuffers();
 }
 
