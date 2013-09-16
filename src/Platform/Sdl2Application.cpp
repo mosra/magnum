@@ -25,7 +25,6 @@
 #include "Sdl2Application.h"
 
 #include "Context.h"
-#include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Platform {
 
@@ -105,8 +104,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         window = nullptr;
         return false;
     }
-
-    ExtensionWrangler::initialize();
 
     /* Push resize event, so viewportEvent() is called at startup */
     SDL_Event* sizeEvent = new SDL_Event;

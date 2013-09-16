@@ -28,7 +28,6 @@
 #include <Utility/Debug.h>
 
 #include "Context.h"
-#include "Platform/ExtensionWrangler.h"
 
 #define None 0L // redef Xlib nonsense
 
@@ -102,9 +101,6 @@ void WindowlessGlxApplication::createContext(const Configuration&) {
         Error() << "WindowlessGlxApplication: cannot make context current";
         std::exit(1);
     }
-
-    /* Initialize extension wrangler */
-    ExtensionWrangler::initialize();
 
     c = new Context;
 }

@@ -22,22 +22,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumPlatform_HEADERS
-    AbstractContextHandler.h
-    ExtensionWrangler.h)
-
-# Extension wrangler
-add_library(MagnumPlatformExtensionWrangler OBJECT ExtensionWrangler.cpp)
-
+set(MagnumPlatform_HEADERS AbstractContextHandler.h)
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)
     if(GLUT_FOUND)
-        add_library(MagnumGlutApplication STATIC
-            GlutApplication.cpp
-            $<TARGET_OBJECTS:MagnumPlatformExtensionWrangler>)
+        add_library(MagnumGlutApplication STATIC GlutApplication.cpp)
         install(FILES GlutApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
         install(TARGETS MagnumGlutApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
@@ -50,9 +42,7 @@ if(WITH_SDL2APPLICATION)
     find_package(SDL2)
     if(SDL2_FOUND)
         include_directories(${SDL2_INCLUDE_DIR})
-        add_library(MagnumSdl2Application STATIC
-            Sdl2Application.cpp
-            $<TARGET_OBJECTS:MagnumPlatformExtensionWrangler>)
+        add_library(MagnumSdl2Application STATIC Sdl2Application.cpp)
         install(FILES Sdl2Application.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
         install(TARGETS MagnumSdl2Application DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
@@ -66,8 +56,7 @@ if(WITH_NACLAPPLICATION)
         message(FATAL_ERROR "NaClApplication is available only when targeting Google Chrome Native Client. Set WITH_NACLAPPLICATION to OFF to skip building it.")
     endif()
 
-    add_library(MagnumNaClApplication STATIC
-        NaClApplication.cpp)
+    add_library(MagnumNaClApplication STATIC NaClApplication.cpp)
     install(FILES NaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
@@ -78,8 +67,7 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
         message(FATAL_ERROR "WindowlessNaClApplication is available only when targeting Google Chrome Native Client. Set WITH_WINDOWLESSNACLAPPLICATION to OFF to skip building it.")
     endif()
 
-    add_library(MagnumWindowlessNaClApplication STATIC
-        WindowlessNaClApplication.cpp)
+    add_library(MagnumWindowlessNaClApplication STATIC WindowlessNaClApplication.cpp)
     install(FILES WindowlessNaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
@@ -95,8 +83,7 @@ if(WITH_GLXAPPLICATION)
     set(NEED_GLXCONTEXT 1)
     add_library(MagnumGlxApplication STATIC
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumGlxContextHandler>
-        $<TARGET_OBJECTS:MagnumPlatformExtensionWrangler>)
+        $<TARGET_OBJECTS:MagnumGlxContextHandler>)
     install(FILES GlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlxApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
@@ -107,8 +94,7 @@ if(WITH_XEGLAPPLICATION)
     set(NEED_EGLCONTEXT 1)
     add_library(MagnumXEglApplication STATIC
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumEglContextHandler>
-        $<TARGET_OBJECTS:MagnumPlatformExtensionWrangler>)
+        $<TARGET_OBJECTS:MagnumEglContextHandler>)
     install(FILES XEglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumXEglApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
@@ -122,9 +108,7 @@ endif()
 
 # Windowless GLX application
 if(WITH_WINDOWLESSGLXAPPLICATION)
-    add_library(MagnumWindowlessGlxApplication STATIC
-        WindowlessGlxApplication.cpp
-        $<TARGET_OBJECTS:MagnumPlatformExtensionWrangler>)
+    add_library(MagnumWindowlessGlxApplication STATIC WindowlessGlxApplication.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumWindowlessGlxApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
     install(FILES WindowlessGlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)

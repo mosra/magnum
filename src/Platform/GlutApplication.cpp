@@ -25,7 +25,6 @@
 #include "GlutApplication.h"
 
 #include "Context.h"
-#include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Platform {
 
@@ -82,8 +81,6 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
     glutMouseFunc(staticMouseEvent);
     glutMotionFunc(staticMouseMoveEvent);
     glutDisplayFunc(staticDrawEvent);
-
-    ExtensionWrangler::initialize();
 
     c = new Context;
     return true;
