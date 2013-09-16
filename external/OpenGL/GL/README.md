@@ -1,10 +1,6 @@
-OpenGL header and extension loader is generated using [glLoadGen](https://bitbucket.org/alfonse/glloadgen),
-preferrably from tip of the development branch, currently `2.0`. For it to work
-flawlessly on OpenGL 2.1 and simultaenously not containing all that pre-core
-stuff, you need to patch it with included `glloadgen.patch`, which will then
-force it to use pre-3.0 `glGetString(GL_EXTENSIONS)` even if we request OpenGL
-4.4. Otherwise it would use `glGetStringi(GL_EXTENSIONS, i)`, which is not
-available on OpenGL 2.1 and extension loading will fail on these systems.
+OpenGL header and extension loader is generated using glLoadGen, originally
+from [BitBucket](https://bitbucket.org/alfonse/glloadgen), with Magnum-related
+changes at [](https://github.com/mosra/glloadgen.git).
 
 See `extensions.txt` for a list of requested non-core extensions. Copy the file
 into glLoadGen directory and generate the files using Lua:

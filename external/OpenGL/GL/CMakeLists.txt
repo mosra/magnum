@@ -23,6 +23,6 @@
 #
 
 add_library(MagnumGLLoadGenObjects OBJECT gl_magnum.c)
-set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -fvisibility=hidden -DGLLoadGen_EXPORTS")
 
 install(FILES gl_magnum.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/GL)

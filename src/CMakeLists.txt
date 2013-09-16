@@ -161,8 +161,8 @@ set(MagnumMath_SRCS
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 add_library(MagnumObjects OBJECT ${Magnum_SRCS})
-set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS -DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS -DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
 add_library(Magnum ${SHARED_OR_STATIC}
