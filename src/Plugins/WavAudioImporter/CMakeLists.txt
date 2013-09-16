@@ -40,7 +40,7 @@ add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR}
     WavAudioImporter.conf
     $<TARGET_OBJECTS:WavAudioImporterObjects>
     pluginRegistrationWavAudioImporter.cpp)
-target_link_libraries(WavAudioImporter ${MAGNUM_AUDIO_LIBRARIES})
+target_link_libraries(WavAudioImporter ${MAGNUM_LIBRARIES} ${MAGNUM_AUDIO_LIBRARIES})
 
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
