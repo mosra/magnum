@@ -27,6 +27,10 @@
 #define color gl_FragColor
 #endif
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 #ifndef GL_ES
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 7) uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);

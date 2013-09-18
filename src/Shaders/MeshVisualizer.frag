@@ -25,6 +25,9 @@
 #ifndef NEW_GLSL
 #define in varying
 #define fragmentColor gl_FragColor
+#endif
+
+#ifndef RUNTIME_CONST
 #define const
 #endif
 

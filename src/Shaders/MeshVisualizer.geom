@@ -22,6 +22,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef RUNTIME_CONST
+#define const
+#endif
+
 layout(location = 1) uniform vec2 viewportSize;
 
 layout(triangles) in;
