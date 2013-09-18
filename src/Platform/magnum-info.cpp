@@ -49,8 +49,15 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Utility::Arguments args;
     args.addBooleanOption("all-extensions")
         .setHelp("all-extensions", "show extensions also for fully supported versions")
-        .setHelp("Displays information about Magnum engine and OpenGL capabilities.")
-        .parse(arguments.argc, arguments.argv);
+        .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
+
+    /**
+     * @todo Make this work in NaCl, somehow the arguments aren't passed to
+     *      constructor but to Init() or whatnot
+     */
+    #ifndef CORRADE_TARGET_NACL
+    args.parse(arguments.argc, arguments.argv);
+    #endif
 
     /* Create context after parsing arguments, so the help can be displayed
        without creating context */
