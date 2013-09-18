@@ -24,5 +24,7 @@
 
 if(BUILD_GL_TESTS)
     corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
     corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersVertexColorTest VertexColorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
 endif()
