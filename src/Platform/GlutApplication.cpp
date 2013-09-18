@@ -40,7 +40,8 @@ GlutApplication::GlutApplication(const Arguments& arguments, const Configuration
 #ifndef DOXYGEN_GENERATING_OUTPUT
 GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
     initialize(arguments.argc, arguments.argv);
-    createContext({});
+    /* GCC 4.5 can't handle {} here (wtf) */
+    createContext(Configuration());
 }
 #endif
 

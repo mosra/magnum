@@ -56,7 +56,8 @@ Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configur
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
     initialize();
-    createContext({});
+    /* GCC 4.5 can't handle {} here (wtf) */
+    createContext(Configuration());
 }
 #endif
 

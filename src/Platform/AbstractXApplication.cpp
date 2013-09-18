@@ -43,7 +43,8 @@ AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, Visu
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
-    createContext({});
+    /* GCC 4.5 can't handle {} here (wtf) */
+    createContext(Configuration());
 }
 #endif
 

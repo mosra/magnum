@@ -54,7 +54,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     /* Create context after parsing arguments, so the help can be displayed
        without creating context */
-    createContext({});
+    /* GCC 4.5 can't handle {} here (wtf) */
+    createContext(Configuration());
     Context* c = Context::current();
 
     /* Pass debug output as messages to JavaScript */
