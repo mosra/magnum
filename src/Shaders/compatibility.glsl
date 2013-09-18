@@ -37,6 +37,7 @@
 #if defined(GL_ARB_shading_language_420pack)
     #extension GL_ARB_shading_language_420pack: enable
     #define EXPLICIT_TEXTURE_LAYER
+    #define RUNTIME_CONST
 #endif
 #ifdef GL_ARB_explicit_uniform_location
     #extension GL_ARB_explicit_uniform_location: enable
@@ -47,7 +48,8 @@
 
 #if defined(GL_ES) && __VERSION__ >= 300
 #define EXPLICIT_ATTRIB_LOCATION
-/* EXPLICIT_TEXTURE_LAYER & EXPLICIT_UNIFORM_LOCATION is not available in OpenGL ES */
+/* EXPLICIT_TEXTURE_LAYER, EXPLICIT_UNIFORM_LOCATION and RUNTIME_CONST is not
+   available in OpenGL ES */
 #endif
 
 /* Precision qualifiers are not supported in GLSL 1.20 */
@@ -55,10 +57,4 @@
 #define highp
 #define mediump
 #define lowp
-#endif
-
-/* const qualifier can be used for readonly variables since GLSL 4.20, however
-   it's not supported even in ES 3.0 */
-#if !defined(GL_ES) && __VERSION__ >= 420
-#define RUNTIME_CONST
 #endif
