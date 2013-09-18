@@ -366,11 +366,13 @@ class GlutApplication::InputEvent {
     protected:
         constexpr InputEvent(): _accepted(false) {}
 
-        ~InputEvent() = default;
+        ~InputEvent();
 
     private:
         bool _accepted;
 };
+
+GlutApplication::InputEvent::~InputEvent() = default;
 
 /**
 @brief Key event

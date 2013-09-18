@@ -349,12 +349,14 @@ class Sdl2Application::InputEvent {
     protected:
         constexpr explicit InputEvent(): _accepted(false) {}
 
-        ~InputEvent() = default;
+        ~InputEvent();
     #endif
 
     private:
         bool _accepted;
 };
+
+Sdl2Application::InputEvent::~InputEvent() = default;
 
 /**
 @brief Key event

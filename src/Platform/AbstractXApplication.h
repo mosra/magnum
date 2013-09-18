@@ -289,13 +289,15 @@ class AbstractXApplication::InputEvent {
     protected:
         constexpr InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
 
-        ~InputEvent() = default;
+        ~InputEvent();
     #endif
 
     private:
         Modifiers _modifiers;
         bool _accepted;
 };
+
+AbstractXApplication::InputEvent::~InputEvent() = default;
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
 
