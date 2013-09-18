@@ -2,7 +2,7 @@
 pkgname=mingw32-magnum
 pkgver=dev
 pkgrel=1
-pkgdesc="OpenGL graphics engine (mingw32)"
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (mingw32)"
 arch=('any')
 url="https://github.com/mosra/magnum"
 license=('MIT')
