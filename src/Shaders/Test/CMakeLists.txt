@@ -22,43 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_resource(MagnumShaders_RCS resources.conf)
-
-set(MagnumShaders_SRCS
-    DistanceFieldVector.cpp
-    Flat.cpp
-    MeshVisualizer.cpp
-    Phong.cpp
-    Vector.cpp
-    VertexColor.cpp
-    ${MagnumShaders_RCS})
-
-set(MagnumShaders_HEADERS
-    DistanceFieldVector.h
-    AbstractVector.h
-    Flat.h
-    MeshVisualizer.h
-    Phong.h
-    Shaders.h
-    Vector.h
-    VertexColor.h
-
-    magnumShadersVisibility.h)
-
-if(BUILD_STATIC)
-    set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} magnumShadersResourceImport.hpp)
-endif()
-
-add_library(MagnumShaders ${SHARED_OR_STATIC} ${MagnumShaders_SRCS})
-if(BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumShaders PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-endif()
-target_link_libraries(MagnumShaders Magnum)
-
-install(TARGETS MagnumShaders DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-install(FILES ${MagnumShaders_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Shaders)
-
-if(BUILD_TESTS)
-    add_subdirectory(Test)
+if(BUILD_GL_TESTS)
+    corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
 endif()
