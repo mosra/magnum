@@ -25,6 +25,7 @@
 #ifndef NEW_GLSL
 #define in varying
 #define color gl_FragColor
+#define texture texture2D
 #endif
 
 #ifndef RUNTIME_CONST
