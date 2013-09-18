@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Trade {
 
-AbstractMaterialData::AbstractMaterialData(Type type): _type(type) {}
+AbstractMaterialData::AbstractMaterialData(MaterialType type): _type(type) {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
 
@@ -41,14 +41,14 @@ AbstractMaterialData& AbstractMaterialData::operator=(AbstractMaterialData&& oth
     return *this;
 }
 
-Debug operator<<(Debug debug, const AbstractMaterialData::Type value) {
+Debug operator<<(Debug debug, const MaterialType value) {
     switch(value) {
-        #define _c(value) case AbstractMaterialData::Type::value: return debug << "Trade::AbstractMaterialData::Type::" #value;
+        #define _c(value) case MaterialType::value: return debug << "Trade::MaterialType::" #value;
         _c(Phong)
         #undef _c
     }
 
-    return debug << "Trade::AbstractMaterialData::Type::(unknown)";
+    return debug << "Trade::MaterialType::(unknown)";
 }
 
 }}

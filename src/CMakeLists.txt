@@ -90,6 +90,7 @@ set(Magnum_SRCS
     Trade/PhongMaterialData.cpp
     Trade/SceneData.cpp
     Trade/TextureData.cpp)
+set(Magnum_OBJECTS $<TARGET_OBJECTS:MagnumObjects>)
 
 # Desktop-only code
 if(NOT TARGET_GLES)
@@ -153,6 +154,7 @@ endif()
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h)
+    set(Magnum_OBJECTS ${Magnum_OBJECTS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Files shared between main library and math unit test library
@@ -165,12 +167,12 @@ set(MagnumMath_SRCS
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 add_library(MagnumObjects OBJECT ${Magnum_SRCS})
-set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS -DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS -DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
 # Main library
 add_library(Magnum ${SHARED_OR_STATIC}
-    $<TARGET_OBJECTS:MagnumObjects>
+    ${Magnum_OBJECTS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
@@ -185,9 +187,6 @@ elseif(TARGET_GLES2)
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES2_LIBRARY})
 else()
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES3_LIBRARY})
-endif()
-if(NOT TARGET_GLES)
-    set(Magnum_LIBS ${Magnum_LIBS} ${GLEW_LIBRARIES})
 endif()
 target_link_libraries(Magnum ${Magnum_LIBS})
 
@@ -243,7 +242,7 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
 
     add_library(MagnumTestLib ${SHARED_OR_STATIC}
-        $<TARGET_OBJECTS:MagnumObjects>
+        ${Magnum_OBJECTS}
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumTestLib ${Magnum_LIBS})

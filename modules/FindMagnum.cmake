@@ -17,9 +17,9 @@
 #  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_DIR - Directory with audio importer plugins
 # This command will try to find only the base library, not the optional
-# components. The base library depends on Corrade, OpenGL and GLEW
-# libraries. Additional dependencies are specified by the components. The
-# optional components are:
+# components. The base library depends on Corrade and OpenGL libraries (or
+# OpenGL ES libraries). Additional dependencies are specified by the
+# components. The optional components are:
 #  Audio            - Audio library (depends on OpenAL library)
 #  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
 #                     SceneGraph, Shaders and Shapes components)
@@ -78,8 +78,8 @@
 #   directory
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR  - Audio omporter plugin
 #   installation directory
-#  MAGNUM_CMAKE_MODULE_INSTALL_DIR      - Installation dir for CMake
-#   modules
+#  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake
+#   Find* modules
 #  MAGNUM_INCLUDE_INSTALL_DIR           - Header installation directory
 #  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR   - Plugin header installation
 #   directory
@@ -148,9 +148,6 @@ if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
 else()
     find_package(OpenGLES2 REQUIRED)
-endif()
-if(NOT MAGNUM_TARGET_GLES)
-    find_package(GLEW REQUIRED)
 endif()
 
 # On Windows and in static builds, *Application libraries need to have
@@ -334,9 +331,6 @@ if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
 else()
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES2_LIBRARY})
 endif()
-if(NOT MAGNUM_TARGET_GLES)
-    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${GLEW_LIBRARIES})
-endif()
 
 # Installation dirs
 include(CorradeLibSuffix)
@@ -347,7 +341,7 @@ set(MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fontc
 set(MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/imageconverters)
 set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/audioimporters)
-set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
+set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum/Plugins)
 mark_as_advanced(FORCE

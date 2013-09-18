@@ -42,8 +42,8 @@ ObjectData3DTest::ObjectData3DTest() {
 
 void ObjectData3DTest::debug() {
     std::ostringstream o;
-    Debug(&o) << ObjectData3D::InstanceType::Light;
-    CORRADE_COMPARE(o.str(), "Trade::ObjectData3D::InstanceType::Light\n");
+    Debug(&o) << ObjectInstanceType3D::Light;
+    CORRADE_COMPARE(o.str(), "Trade::ObjectInstanceType3D::Light\n");
 }
 
 }}}

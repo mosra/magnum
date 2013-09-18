@@ -26,9 +26,9 @@
 
 namespace Magnum { namespace Trade {
 
-ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectData2D::InstanceType instanceType, UnsignedInt instance): _children(std::move(children)), _transformation(transformation), _instanceType(instanceType), _instance(instance) {}
+ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectInstanceType2D instanceType, UnsignedInt instance): _children(std::move(children)), _transformation(transformation), _instanceType(instanceType), _instance(instance) {}
 
-ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation): _children(children), _transformation(transformation), _instanceType(InstanceType::Empty), _instance(-1) {}
+ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation): _children(std::move(children)), _transformation(transformation), _instanceType(ObjectInstanceType2D::Empty), _instance(-1) {}
 
 /* GCC 4.4 doesn't like it defaulted */
 ObjectData2D::ObjectData2D(ObjectData2D&& other): _children(std::move(other._children)), _transformation(std::move(other._transformation)), _instanceType(std::move(other._instanceType)), _instance(std::move(other._instance)) {}
@@ -45,16 +45,16 @@ ObjectData2D& ObjectData2D::operator=(ObjectData2D&& other) {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, ObjectData2D::InstanceType value) {
+Debug operator<<(Debug debug, ObjectInstanceType2D value) {
     switch(value) {
-        #define _c(value) case ObjectData2D::InstanceType::value: return debug << "Trade::ObjectData2D::InstanceType::" #value;
+        #define _c(value) case ObjectInstanceType2D::value: return debug << "Trade::ObjectInstanceType2D::" #value;
         _c(Camera)
         _c(Mesh)
         _c(Empty)
         #undef _c
     }
 
-    return debug << "ObjectData2D::InstanceType::(invalid)";
+    return debug << "Trade::ObjectInstanceType2D::(invalid)";
 }
 #endif
 

@@ -2,7 +2,7 @@
 pkgname=nacl-magnum
 pkgver=dev.glibc
 pkgrel=1
-pkgdesc="OpenGL graphics engine (NaCl glibc version)"
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (NaCl glibc version)"
 arch=('any')
 url="https://github.com/mosra/magnum"
 license=('MIT')

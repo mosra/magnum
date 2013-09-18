@@ -27,7 +27,6 @@
 #include <Utility/utilities.h>
 
 #include "Context.h"
-#include "ExtensionWrangler.h"
 
 #define None 0L // redef Xlib nonsense
 
@@ -100,9 +99,6 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
 
     /* Set OpenGL context as current */
     contextHandler->makeCurrent();
-
-    /* Initialize extension wrangler */
-    ExtensionWrangler::initialize(contextHandler->experimentalExtensionWranglerFeatures());
 
     c = new Context;
 }

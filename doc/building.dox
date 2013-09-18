@@ -41,7 +41,6 @@ Minimal set of tools and libraries required for building is:
   >= 3.1. On Windows you can use **MinGW**, Visual Studio compiler still lacks
   some needed features.
 - **CMake** >= 2.8.8
-- **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
 - **Corrade** - Plugin management and utility library. See
   @ref building-corrade "Corrade download and installation guide" for more
   information.
@@ -117,12 +116,6 @@ If CMake isn't able to find dependencies (e.g. Corrade is not found) and you
 have installed them to MinGW directory, point to `CMAKE_FIND_ROOT_PATH` to
 MinGW installation prefix, e.g. specify `-DCMAKE_FIND_ROOT_PATH=C:/MinGW/`
 CMake parameter.
-
-If building fails with GLEW linking errors (`undefined reference to glew...`),
-you have to set `GLEW_LIBRARY_DLL` and `GLEW_LIBRARY_LIB` CMake variables
-manually. One of them should point to `glew32.dll` and the other to
-`glew32.lib`. CMake currently isn't able to distinguish between them and in
-most cases points both to the same location.
 
 See also Corrade's @ref building-corrade-windows-troubleshooting "troubleshooting section".
 
@@ -251,12 +244,11 @@ flags.
 this system there is also prepared `mingw32-magnum` development package in
 root, named `PKGBUILD-mingw32`.
 
-You will need MinGW32 versions of the compiler and all libraries (GLEW,
-Corrade), i.e. these ArchLinux packages:
+You will need MinGW32 versions of the compiler and all dependent libraries
+(Corrade), i.e. these ArchLinux packages:
 
 - `mingw32-gcc`, which depends on `mingw32-w32api` containing OpenGL headers
 - `mingw32-runtime`
-- `mingw32-glew`
 - `mingw32-corrade`
 
 Make sure you have `toolchains` submodule updated, as

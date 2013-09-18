@@ -33,33 +33,31 @@
 
 /* Desktop OpenGL */
 #ifndef MAGNUM_TARGET_GLES
-#include <GL/glew.h>
-#include <OpenGL/GL/glcorearb.h>
+    #include <OpenGL/GL/gl_magnum.h>
 
 /* NaCl has its own gl2.h, the official one causes linker issues. Additionaly
    to NaCl's gl2ext.h we are including our own to prevent undeclared symbol
    errors with some recent extensions. */
 #elif defined(CORRADE_TARGET_NACL)
+    /* Enable function prototypes (the supported ones shouldn't fail at link time) */
+    #define GL_GLEXT_PROTOTYPES
 
-/* Enable function prototypes (the supported ones shouldn't fail at link time) */
-#define GL_GLEXT_PROTOTYPES
-
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#undef __gl2ext_h_
-#include <OpenGL/GLES2/gl2ext.h>
+    #include <GLES2/gl2.h>
+    #include <GLES2/gl2ext.h>
+    #undef __gl2ext_h_
+    #include <OpenGL/GLES2/gl2ext.h>
 
 /* Generic OpenGL ES */
 #else
-#include <OpenGL/KHR/khrplatform.h>
-#ifndef MAGNUM_TARGET_GLES2
-#include <OpenGL/GLES3/gl3platform.h>
-#include <OpenGL/GLES3/gl3.h>
-#else
-#include <OpenGL/GLES2/gl2platform.h>
-#include <OpenGL/GLES2/gl2.h>
-#include <OpenGL/GLES2/gl2ext.h>
-#endif
+    #include <OpenGL/KHR/khrplatform.h>
+    #ifndef MAGNUM_TARGET_GLES2
+        #include <OpenGL/GLES3/gl3platform.h>
+        #include <OpenGL/GLES3/gl3.h>
+    #else
+        #include <OpenGL/GLES2/gl2platform.h>
+        #include <OpenGL/GLES2/gl2.h>
+        #include <OpenGL/GLES2/gl2ext.h>
+    #endif
 #endif
 
 #endif

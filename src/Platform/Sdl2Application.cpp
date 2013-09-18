@@ -25,7 +25,6 @@
 #include "Sdl2Application.h"
 
 #include "Context.h"
-#include "ExtensionWrangler.h"
 
 namespace Magnum { namespace Platform {
 
@@ -111,10 +110,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         window = nullptr;
         return false;
     }
-
-    /* This must be enabled, otherwise (on my NVidia) it crashes when creating
-       VAO. WTF. */
-    ExtensionWrangler::initialize(ExtensionWrangler::ExperimentalFeatures::Enable);
 
     /* Push resize event, so viewportEvent() is called at startup */
     SDL_Event* sizeEvent = new SDL_Event;

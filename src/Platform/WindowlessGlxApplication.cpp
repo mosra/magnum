@@ -108,9 +108,6 @@ void WindowlessGlxApplication::createContext(const Configuration&) {
         std::exit(1);
     }
 
-    /* Initialize extension wrangler */
-    ExtensionWrangler::initialize(ExtensionWrangler::ExperimentalFeatures::Enable);
-
     c = new Context;
 }
 

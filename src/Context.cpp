@@ -174,6 +174,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,map_buffer_alignment),
         _extension(GL,ARB,shader_atomic_counters),
         _extension(GL,ARB,shader_image_load_store),
+        /* Mentioned in GLSL 4.20 specs as newly added */
+        _extension(GL,ARB,shading_language_packing),        // done
         _extension(GL,ARB,texture_storage)};
     static const std::vector<Extension> extensions430{
         _extension(GL,ARB,arrays_of_arrays),                // done
@@ -296,6 +298,17 @@ const std::vector<Extension>& Extension::extensions(Version version) {
 Context* Context::_current = nullptr;
 
 Context::Context() {
+    #ifndef MAGNUM_TARGET_GLES
+    /* Init glLoadGen. Ignore functions that failed to load (described by
+       `ogl_LOAD_SUCCEEDED + n` return code), as we requested the latest OpenGL
+       with many vendor extensions and there won't ever be a driver supporting
+       everything possible. */
+    if(ogl_LoadFunctions() == ogl_LOAD_FAILED) {
+        Error() << "ExtensionWrangler: cannot initialize glLoadGen";
+        std::exit(1);
+    }
+    #endif
+
     /* Version */
     #ifndef MAGNUM_TARGET_GLES2
     glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);

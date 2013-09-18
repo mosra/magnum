@@ -42,8 +42,8 @@ ObjectData2DTest::ObjectData2DTest() {
 
 void ObjectData2DTest::debug() {
     std::ostringstream o;
-    Debug(&o) << ObjectData2D::InstanceType::Empty;
-    CORRADE_COMPARE(o.str(), "Trade::ObjectData2D::InstanceType::Empty\n");
+    Debug(&o) << ObjectInstanceType2D::Empty;
+    CORRADE_COMPARE(o.str(), "Trade::ObjectInstanceType2D::Empty\n");
 }
 
 }}}

@@ -359,7 +359,7 @@ void AbstractTextRenderer::render(const std::string& text) {
     delete layouter;
 }
 
-template class TextRenderer<2>;
-template class TextRenderer<3>;
+template class MAGNUM_TEXT_EXPORT TextRenderer<2>;
+template class MAGNUM_TEXT_EXPORT TextRenderer<3>;
 
 }}

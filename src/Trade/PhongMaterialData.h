@@ -71,7 +71,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Colors and textures should be specified using member functions based
          * on what flags are set.
          */
-        explicit PhongMaterialData(Flags flags, Float shininess): AbstractMaterialData(Type::Phong), _shininess(shininess), _flags(flags) {}
+        explicit PhongMaterialData(Flags flags, Float shininess): AbstractMaterialData(MaterialType::Phong), _shininess(shininess), _flags(flags) {}
 
         /** @brief Material flags */
         Flags flags() const { return _flags; }

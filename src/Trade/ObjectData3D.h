@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::ObjectData3D
+ * @brief Class @ref Magnum::Trade::ObjectData3D, enum @ref Magnum::Trade::ObjectInstanceType3D
  */
 
 #include <vector>
@@ -36,6 +36,25 @@
 namespace Magnum { namespace Trade {
 
 /**
+@brief Type of instance held by given 3D object
+
+@see @ref ObjectData3D::instanceType()
+*/
+enum class ObjectInstanceType3D: UnsignedByte {
+    Camera,     /**< Camera instance (see CameraData) */
+    Light,      /**< Light instance (see LightData) */
+
+    /**
+     * Mesh instance. The data can be cast to @ref MeshObjectData3D to provide
+     * more information.
+     */
+    Mesh,
+
+    Empty       /**< Empty */
+};
+
+
+/**
 @brief Three-dimensional object data
 
 Provides access to object transformation and hierarchy.
@@ -43,20 +62,6 @@ Provides access to object transformation and hierarchy.
 */
 class MAGNUM_EXPORT ObjectData3D {
     public:
-        /** @brief Type of instance held by this object */
-        enum class InstanceType: UnsignedByte {
-            Camera,     /**< Camera instance (see CameraData) */
-            Light,      /**< Light instance (see LightData) */
-
-            /**
-             * Three-dimensional mesh instance. The data can be cast to
-             * MeshObjectData3D to provide more information.
-             */
-            Mesh,
-
-            Empty       /**< Empty */
-        };
-
         /**
          * @brief Constructor
          * @param children          Child objects
@@ -64,7 +69,7 @@ class MAGNUM_EXPORT ObjectData3D {
          * @param instanceType      Instance type
          * @param instance          Instance ID
          */
-        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, InstanceType instanceType, UnsignedInt instance);
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectInstanceType3D instanceType, UnsignedInt instance);
 
         /**
          * @brief Constructor for empty instance
@@ -99,7 +104,7 @@ class MAGNUM_EXPORT ObjectData3D {
          *
          * @see instance()
          */
-        InstanceType instanceType() const { return _instanceType; }
+        ObjectInstanceType3D instanceType() const { return _instanceType; }
 
         /**
          * @brief Instance ID
@@ -111,12 +116,12 @@ class MAGNUM_EXPORT ObjectData3D {
     private:
         std::vector<UnsignedInt> _children;
         Matrix4 _transformation;
-        InstanceType _instanceType;
+        ObjectInstanceType3D _instanceType;
         Int _instance;
 };
 
 /** @debugoperator{Magnum::Trade::ObjectData3D} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectData3D::InstanceType value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectInstanceType3D value);
 
 }}
 

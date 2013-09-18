@@ -131,6 +131,7 @@ namespace GL {
         _extension(GL,ARB,map_buffer_alignment,         GL210, GL420) // #113
         _extension(GL,ARB,shader_atomic_counters,       GL300, GL420) // #114
         _extension(GL,ARB,shader_image_load_store,      GL300, GL420) // #115
+        _extension(GL,ARB,shading_language_packing, /*?*/ GL210, GL420) // #116
         _extension(GL,ARB,texture_storage,              GL210, GL420) // #117
         _extension(GL,ARB,arrays_of_arrays,             GL210, GL430) // #120
         _extension(GL,ARB,clear_buffer_object,          GL210, GL430) // #121

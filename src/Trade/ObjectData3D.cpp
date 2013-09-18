@@ -26,9 +26,9 @@
 
 namespace Magnum { namespace Trade {
 
-ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectData3D::InstanceType instanceType, UnsignedInt instance): _children(std::move(children)), _transformation(transformation), _instanceType(instanceType), _instance(instance) {}
+ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectInstanceType3D instanceType, UnsignedInt instance): _children(std::move(children)), _transformation(transformation), _instanceType(instanceType), _instance(instance) {}
 
-ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation): _children(std::move(children)), _transformation(transformation), _instanceType(InstanceType::Empty), _instance(-1) {}
+ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation): _children(std::move(children)), _transformation(transformation), _instanceType(ObjectInstanceType3D::Empty), _instance(-1) {}
 
 /* GCC 4.4 doesn't like it defaulted */
 ObjectData3D::ObjectData3D(ObjectData3D&& other): _children(std::move(other._children)), _transformation(std::move(other._transformation)), _instanceType(std::move(other._instanceType)), _instance(std::move(other._instance)) {}
@@ -45,9 +45,9 @@ ObjectData3D& ObjectData3D::operator=(ObjectData3D&& other) {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, ObjectData3D::InstanceType value) {
+Debug operator<<(Debug debug, ObjectInstanceType3D value) {
     switch(value) {
-        #define _c(value) case ObjectData3D::InstanceType::value: return debug << "Trade::ObjectData3D::InstanceType::" #value;
+        #define _c(value) case ObjectInstanceType3D::value: return debug << "Trade::ObjectInstanceType3D::" #value;
         _c(Camera)
         _c(Light)
         _c(Mesh)
@@ -55,7 +55,7 @@ Debug operator<<(Debug debug, ObjectData3D::InstanceType value) {
         #undef _c
     }
 
-    return debug << "ObjectData3D::InstanceType::(invalid)";
+    return debug << "Trade::ObjectInstanceType3D::(invalid)";
 }
 #endif
 

@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Utility/Arguments.h>
 #include <Utility/Debug.h>
 #include <corradeCompatibility.h>
 #ifdef CORRADE_TARGET_NACL
@@ -44,7 +45,16 @@ class MagnumInfo: public Platform::WindowlessApplication {
         int exec() override { return 0; }
 };
 
-MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments) {
+MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
+    Utility::Arguments args;
+    args.addBooleanOption("all-extensions")
+        .setHelp("all-extensions", "show extensions also for fully supported versions")
+        .setHelp("Displays information about Magnum engine and OpenGL capabilities.")
+        .parse(arguments.argc, arguments.argv);
+
+    /* Create context after parsing arguments, so the help can be displayed
+       without creating context */
+    createContext({});
     Context* c = Context::current();
 
     /* Pass debug output as messages to JavaScript */
@@ -133,8 +143,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         Version::None
     };
     std::size_t future = 0;
-    while(versions[future] != Version::None && c->isVersionSupported(versions[future]))
-        ++future;
+
+    if(!args.isSet("all-extensions"))
+        while(versions[future] != Version::None && c->isVersionSupported(versions[future]))
+            ++future;
 
     /* Display supported OpenGL extensions from unsupported versions */
     for(std::size_t i = future; i != versions.size(); ++i) {

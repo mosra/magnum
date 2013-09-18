@@ -519,13 +519,7 @@ enum class TextureFormat: GLenum {
      * RGB, normalized unsigned, red and blue component 5bit, green 6bit.
      * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
      */
-    /* 1.5.6 <= GLEW < 1.8.0 doesn't have this, even if there is
-       GL_ARB_ES2_compatibility */
-    #ifdef GL_RGB565
     RGB565 = GL_RGB565,
-    #else
-    RGB565 = 0x8D62,
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES3
     /**
@@ -722,39 +716,37 @@ enum class TextureFormat: GLenum {
      */
     CompressedSignedRGRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
-    /* These are named with _ARB suffix, because glcorearb.h doesn't
-       have suffixless version (?!) and GLEW has it without suffix as
-       late as of 1.8.0 { */
-
     /**
      * BPTC compressed RGB, unsigned float.
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
+     * @todo Remove workaround when glLoadGen has `GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT`
      */
-    CompressedRGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB,
+    CompressedRGBBptcUnsignedFloat = 0x8E8F,//GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
 
     /**
      * BPTC compressed RGB, signed float.
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
+     * @todo Remove workaround when glLoadGen has `GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT`
      */
-    CompressedRGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB,
+    CompressedRGBBptcSignedFloat = 0x8E8E,//GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
 
     /**
      * BPTC compressed RGBA, normalized unsigned.
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
+     * @todo Remove workaround when glLoadGen has `GL_COMPRESSED_RGBA_BPTC_UNORM`
      */
-    CompressedRGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB,
+    CompressedRGBABptcUnorm = 0x8E8C,//GL_COMPRESSED_RGBA_BPTC_UNORM,
 
     /**
      * BPTC compressed sRGBA, normalized unsigned.
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
+     * @todo Remove workaround when glLoadGen has `GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM`
      */
-    CompressedSRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB,
-
-    /*}*/
+    CompressedSRGBAlphaBptcUnorm = 0x8E8D,//GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
     #endif
 
     /**

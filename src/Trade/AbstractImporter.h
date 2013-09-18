@@ -70,6 +70,8 @@ checked by the implementation:
     is any file opened.
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
+
+@todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
 class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.3")

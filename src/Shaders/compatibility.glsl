@@ -56,3 +56,9 @@
 #define mediump
 #define lowp
 #endif
+
+/* const qualifier can be used for readonly variables since GLSL 4.20, however
+   it's not supported even in ES 3.0 */
+#if !defined(GL_ES) && __VERSION__ >= 420
+#define RUNTIME_CONST
+#endif

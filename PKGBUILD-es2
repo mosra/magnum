@@ -2,11 +2,11 @@
 pkgname=magnum
 pkgver=dev.es2
 pkgrel=1
-pkgdesc="OpenGL graphics engine (OpenGL ES 2.0 version)"
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (OpenGL ES 2.0 version)"
 arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('MIT')
-depends=('corrade' 'glew')
+depends=('corrade' 'openal')
 makedepends=('cmake')
 options=(!strip)
 provides=('magnum-git')
