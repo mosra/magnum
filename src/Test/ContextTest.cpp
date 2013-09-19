@@ -37,6 +37,7 @@ class ContextTest: public AbstractOpenGLTester {
         void supportedExtension();
         void unsupportedExtension();
         void pastExtension();
+        void versionDependentExtension();
 };
 
 ContextTest::ContextTest() {
@@ -44,7 +45,8 @@ ContextTest::ContextTest() {
               &ContextTest::versionList,
               &ContextTest::supportedExtension,
               &ContextTest::unsupportedExtension,
-              &ContextTest::pastExtension});
+              &ContextTest::pastExtension,
+              &ContextTest::versionDependentExtension});
 }
 
 void ContextTest::version() {
@@ -111,6 +113,19 @@ void ContextTest::pastExtension() {
     CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>());
     /* No assertion should be fired */
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_rg);
+    #endif
+}
+
+void ContextTest::versionDependentExtension() {
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(Extensions::GL::ARB::get_program_binary::requiredVersion(), Version::GL300);
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_program_binary>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_program_binary::string() + std::string("extension isn't supported, can't test"));
+
+    CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::GL::ARB::get_program_binary>(Context::current()->version()));
+    CORRADE_VERIFY(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_program_binary>(Version::GL210));
+    #else
+    CORRADE_SKIP("No OpenGL ES 3.0-only extensions exist yet");
     #endif
 }
 
