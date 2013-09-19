@@ -110,9 +110,11 @@ out lowp vec4 color;
 void main() {
     #ifdef AMBIENT_TEXTURE
     const vec3 ambientColor = texture(ambientTexture, interpolatedTextureCoords).xyz;
-    #elif defined(DIFFUSE_TEXTURE)
+    #endif
+    #ifdef DIFFUSE_TEXTURE
     const vec3 diffuseColor = texture(diffuseTexture, interpolatedTextureCoords).xyz;
-    #elif defined(SPECULAR_TEXTURE)
+    #endif
+    #ifdef SPECULAR_TEXTURE
     const vec3 specularColor = texture(specularTexture, interpolatedTextureCoords).xyz;
     #endif
 
