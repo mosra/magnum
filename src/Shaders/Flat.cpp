@@ -41,26 +41,25 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProject
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL310, Version::GL300, Version::GL210});
     #else
-    Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader frag(v, Shader::Type::Vertex);
+    Shader frag(version, Shader::Type::Vertex);
     frag.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
 
-    Shader vert(v, Shader::Type::Fragment);
+    Shader vert(version, Shader::Type::Fragment);
     vert.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Flat.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
@@ -71,7 +70,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProject
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
