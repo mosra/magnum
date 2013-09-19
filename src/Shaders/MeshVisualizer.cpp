@@ -34,8 +34,10 @@ namespace Magnum { namespace Shaders {
 
 MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationProjectionMatrixUniform(0), viewportSizeUniform(1), colorUniform(2), wireframeColorUniform(3), wireframeWidthUniform(4), smoothnessUniform(5) {
     #ifndef MAGNUM_TARGET_GLES
-    if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader))
+    if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
+        MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL320);
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+    }
     #elif defined(MAGNUM_TARGET_GLES2)
     if(flags & Flag::Wireframe)
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::standard_derivatives);
@@ -44,12 +46,13 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version v = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
+    CORRADE_INTERNAL_ASSERT_OUTPUT(flags & Flag::NoGeometryShader || version >= Version::GL320);
     #else
-    const Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert(v, Shader::Type::Vertex);
+    Shader vert(version, Shader::Type::Vertex);
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("compatibility.glsl"))
@@ -60,7 +63,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
 
     #ifndef MAGNUM_TARGET_GLES
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
-        Shader geom(v, Shader::Type::Geometry);
+        Shader geom(version, Shader::Type::Geometry);
         geom.addSource(rs.get("compatibility.glsl"))
             .addSource(rs.get("MeshVisualizer.geom"));
         CORRADE_INTERNAL_ASSERT_OUTPUT(geom.compile());
@@ -69,7 +72,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     }
     #endif
 
-    Shader frag(v, Shader::Type::Fragment);
+    Shader frag(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("compatibility.glsl"))
@@ -79,8 +82,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
@@ -99,7 +101,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     link();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
