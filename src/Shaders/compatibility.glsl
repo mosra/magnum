@@ -26,17 +26,21 @@
     #define NEW_GLSL
 #endif
 
+#ifdef GL_ARB_shading_language_420pack
+    #extension GL_ARB_shading_language_420pack: enable
+    #define RUNTIME_CONST
+#endif
+
 /* On NVidia and GLSL 1.20 layout qualifiers result in parsing error, even if
    the extension is defined as supported */
-#if !defined(GL_ES) && __VERSION__ >= 130
+#if !defined(GL_ES) && __VERSION__ >= 140
     #ifdef GL_ARB_explicit_attrib_location
         #extension GL_ARB_explicit_attrib_location: enable
         #define EXPLICIT_ATTRIB_LOCATION
     #endif
-    #if defined(GL_ARB_shading_language_420pack)
-        #extension GL_ARB_shading_language_420pack: enable
+    #ifdef GL_ARB_shading_language_420pack
+        /* Already enabled */
         #define EXPLICIT_TEXTURE_LAYER
-        #define RUNTIME_CONST
     #endif
     #ifdef GL_ARB_explicit_uniform_location
         #extension GL_ARB_explicit_uniform_location: enable
