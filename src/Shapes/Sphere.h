@@ -95,6 +95,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         /** @brief %Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
 
+        /** @brief %Collision with sphere */
+        Collision<dimensions> operator/(const Sphere<dimensions>& other) const;
+
     private:
         typename DimensionTraits<dimensions, Float>::VectorType _position;
         Float _radius;

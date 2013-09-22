@@ -74,7 +74,29 @@ template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const LineSe
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Sphere<dimensions>& other) const {
-    return (other._position-_position).dot() < Math::pow<2>(_radius+other._radius);
+    return (_position - other._position).dot() < Math::pow<2>(_radius+other._radius);
+}
+
+template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::operator/(const Sphere<dimensions>& other) const {
+    const Float minDistance = _radius + other._radius;
+    const typename DimensionTraits<dimensions, Float>::VectorType separating = _position - other._position;
+    const Float dot = separating.dot();
+
+    /* No collision occured */
+    if(dot > Math::pow<2>(minDistance)) return {};
+
+    /* Actual distance */
+    const Float distance = Math::sqrt(dot);
+
+    /* Separating normal. If can't decide on direction, just move up. */
+    /** @todo How to handle this in a configurable way? */
+    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal =
+        Math::TypeTraits<Float>::equals(dot, 0.0f) ?
+        DimensionTraits<dimensions, Float>::VectorType::yAxis() :
+        separating/distance;
+
+    /* Contact position is on the surface of `other`, minDistace > distance */
+    return Collision<dimensions>(other._position + separatingNormal*other._radius, separatingNormal, minDistance - distance);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
