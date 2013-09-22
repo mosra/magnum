@@ -124,6 +124,7 @@ find_path(CORRADE_INCLUDE_DIR
 # CMake module dir
 find_path(_CORRADE_MODULE_DIR
     NAMES UseCorrade.cmake CorradeLibSuffix.cmake
+    PATHS ${CMAKE_ROOT}/Modules
     PATH_SUFFIXES share/cmake/Corrade)
 
 include(FindPackageHandleStandardArgs)
@@ -189,6 +190,10 @@ mark_as_advanced(CORRADE_UTILITY_LIBRARY
     CORRADE_TESTSUITE_LIBRARY
     _CORRADE_MODULE_DIR)
 
-# Include file with macros from our module dir
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${_CORRADE_MODULE_DIR}")
+# Include our module dir, if we have any
+if(NOT "${_CORRADE_MODULE_DIR}" STREQUAL "${CMAKE_ROOT}/Modules")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${_CORRADE_MODULE_DIR}")
+endif()
+
+# Finalize the finding process
 include(UseCorrade)
