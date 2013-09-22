@@ -128,6 +128,10 @@ plan to use them with shared libraries later, enable also position-independent
 code with `BUILD_STATIC_PIC`. If you want to build with another compiler (e.g.
 Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
+%Magnum by default does not install `FindMagnum.cmake`, as you should bundle
+the module with your code instead of depending on it being in system location.
+You can install it by enabling `WITH_FIND_MODULE`.
+
 By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
 parameters you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
