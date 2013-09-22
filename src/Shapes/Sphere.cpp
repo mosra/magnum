@@ -41,7 +41,28 @@ template<UnsignedInt dimensions> Sphere<dimensions> Sphere<dimensions>::transfor
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Point<dimensions>& other) const {
-    return (other.position()-_position).dot() < Math::pow<2>(_radius);
+    return (_position - other.position()).dot() < Math::pow<2>(_radius);
+}
+
+template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::operator/(const Point<dimensions>& other) const {
+    const typename DimensionTraits<dimensions, Float>::VectorType separating = _position - other.position();
+    const Float dot = separating.dot();
+
+    /* No collision occured */
+    if(dot > Math::pow<2>(_radius)) return {};
+
+    /* Actual distance from the center */
+    const Float distance = Math::sqrt(dot);
+
+    /* Separating normal. If can't decide on direction, just move up. */
+    /** @todo How to handle this in a configurable way? */
+    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal =
+        Math::TypeTraits<Float>::equals(dot, 0.0f) ?
+        DimensionTraits<dimensions, Float>::VectorType::yAxis() :
+        separating/distance;
+
+    /* Collision position is on the point */
+    return Collision<dimensions>(other.position(), separatingNormal, _radius - distance);
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Line<dimensions>& other) const {

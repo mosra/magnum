@@ -61,12 +61,29 @@ void SphereTest::transformed() {
 }
 
 void SphereTest::collisionPoint() {
-    Shapes::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
-    Shapes::Point3D point({1.0f, 3.0f, 3.0f});
-    Shapes::Point3D point2({1.0f, 3.0f, 1.0f});
+    const Shapes::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
 
-    VERIFY_COLLIDES(sphere, point);
-    VERIFY_NOT_COLLIDES(sphere, point2);
+    /* Collision */
+    const Shapes::Point3D point({2.5f, 2.0f, 3.0f});
+    const Shapes::Collision3D collision = sphere/point;
+    CORRADE_VERIFY(sphere%point && point%sphere);
+    CORRADE_COMPARE(collision.position(), point.position());
+    CORRADE_COMPARE(collision.separationNormal(), -Vector3::xAxis());
+    CORRADE_COMPARE(collision.separationDistance(), 0.5f);
+
+    /* Collision, flipped */
+    CORRADE_COMPARE(collision.separationNormal(), -(point/sphere).separationNormal());
+
+    /* Collision with ambiguous separation vector */
+    const Shapes::Point3D point2(sphere.position());
+    const Shapes::Collision3D collision2 = sphere/point2;
+    CORRADE_COMPARE(collision2.position(), point2.position());
+    CORRADE_COMPARE(collision2.separationNormal(), Vector3::yAxis());
+    CORRADE_COMPARE(collision2.separationDistance(), 2.0f);
+
+    /* No collision */
+    const Shapes::Point3D point3({-1.5f, 2.0f, 3.0f});
+    CORRADE_VERIFY(!(sphere%point3) && !(sphere/point3));
 }
 
 void SphereTest::collisionLine() {

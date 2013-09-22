@@ -30,6 +30,7 @@
 
 #include "Math/Vector3.h"
 #include "DimensionTraits.h"
+#include "Shapes/Collision.h"
 #include "Shapes/Shapes.h"
 #include "Shapes/magnumShapesVisibility.h"
 
@@ -82,6 +83,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         /** @brief %Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
+        /** @brief %Collision with point */
+        Collision<dimensions> operator/(const Point<dimensions>& other) const;
+
         /** @brief %Collision occurence with line */
         bool operator%(const Line<dimensions>& other) const;
 
@@ -104,6 +108,9 @@ typedef Sphere<3> Sphere3D;
 
 /** @collisionoccurenceoperator{Point,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+
+/** @collisionoperator{Point,Sphere} */
+template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Point<dimensions>& a, const Sphere<dimensions>& b) { return (b/a).flipped(); }
 
 /** @collisionoccurenceoperator{Line,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
