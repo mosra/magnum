@@ -49,7 +49,7 @@ namespace Implementation {
 /**
 @brief Shape renderer options
 
-See ShapeRenderer documentation for more information.
+See @ref ShapeRenderer documentation for more information.
 */
 class ShapeRendererOptions {
     public:
@@ -133,7 +133,7 @@ Shapes::AbstractShape2D* shape;
 new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @endcode
 
-@see ShapeRenderer2D, ShapeRenderer3D
+@see @ref ShapeRenderer2D, @ref ShapeRenderer3D, @ref ShapeRendererOptions
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions, Float> {
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>&, const Shapes::Implementation::AbstractShape<dimensions>&);

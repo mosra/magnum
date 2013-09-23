@@ -39,7 +39,7 @@ namespace Magnum { namespace DebugTools {
 /**
 @brief Object renderer options
 
-See ObjectRenderer documentation for more information.
+See @ref ObjectRenderer documentation for more information.
 */
 class ObjectRendererOptions {
     public:
@@ -81,7 +81,7 @@ Object3D* object;
 new DebugTools::ObjectRenderer2D(object, "my", debugDrawables);
 @endcode
 
-@see ObjectRenderer2D, ObjectRenderer3D
+@see @ref ObjectRenderer2D, @ref ObjectRenderer3D, @ref ObjectRendererOptions
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:
