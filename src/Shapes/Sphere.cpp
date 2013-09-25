@@ -74,7 +74,7 @@ template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const LineSe
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Sphere<dimensions>& other) const {
-    return (_position - other._position).dot() < Math::pow<2>(_radius+other._radius);
+    return (_position - other._position).dot() < Math::pow<2>(_radius + other._radius);
 }
 
 template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::operator/(const Sphere<dimensions>& other) const {
