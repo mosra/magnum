@@ -109,6 +109,53 @@ typedef Sphere<2> Sphere2D;
 /** @brief Three-dimensional sphere */
 typedef Sphere<3> Sphere3D;
 
+/**
+@brief Inverted sphere defined by position and radius
+
+Inverted version of @ref Sphere, detecting collisions on the outside, not on
+the inside. See @ref shapes for brief introduction.
+@see @ref InvertedSphere2D, @ref InvertedSphere3D
+*/
+template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    public Sphere<dimensions>
+    #else
+    private Sphere<dimensions>
+    #endif
+{
+    public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates zero-sized sphere at origin.
+         */
+        constexpr /*implicit*/ InvertedSphere() = default;
+
+        /** @brief Constructor */
+        constexpr /*implicit*/ InvertedSphere(const typename DimensionTraits<dimensions, Float>::VectorType& position, Float radius): Sphere<dimensions>(position, radius) {}
+
+        using Sphere<dimensions>::Dimensions;
+
+        /** @brief Transformed shape */
+        InvertedSphere<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+            return Sphere<dimensions>::transformed(matrix);
+        }
+
+        using Sphere<dimensions>::position;
+        using Sphere<dimensions>::setPosition;
+        using Sphere<dimensions>::radius;
+        using Sphere<dimensions>::setRadius;
+
+    private:
+        constexpr /*implicit*/ InvertedSphere(const Sphere<dimensions>& other): Sphere<dimensions>(other) {}
+};
+
+/** @brief Inverted two-dimensional sphere */
+typedef InvertedSphere<2> InvertedSphere2D;
+
+/** @brief Inverted three-dimensional sphere */
+typedef InvertedSphere<3> InvertedSphere3D;
+
 /** @collisionoccurenceoperator{Point,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 

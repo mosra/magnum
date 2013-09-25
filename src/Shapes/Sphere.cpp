@@ -102,6 +102,8 @@ template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::opera
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_SHAPES_EXPORT Sphere<2>;
 template class MAGNUM_SHAPES_EXPORT Sphere<3>;
+template class MAGNUM_SHAPES_EXPORT InvertedSphere<2>;
+template class MAGNUM_SHAPES_EXPORT InvertedSphere<3>;
 #endif
 
 }}

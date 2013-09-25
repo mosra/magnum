@@ -78,6 +78,10 @@ template<UnsignedInt> class Sphere;
 typedef Sphere<2> Sphere2D;
 typedef Sphere<3> Sphere3D;
 
+template<UnsignedInt> class InvertedSphere;
+typedef InvertedSphere<2> InvertedSphere2D;
+typedef InvertedSphere<3> InvertedSphere3D;
+
 class Plane;
 
 template<UnsignedInt> class Point;
