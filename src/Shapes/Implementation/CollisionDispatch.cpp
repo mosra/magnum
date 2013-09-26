@@ -48,6 +48,8 @@ template<> bool collides(const AbstractShape<2>& a, const AbstractShape<2>& b) {
         _c(Sphere, Sphere2D, LineSegment, LineSegment2D)
         _c(Sphere, Sphere2D, Sphere, Sphere2D)
 
+        _c(InvertedSphere, InvertedSphere2D, Point, Point2D)
+
         _c(Cylinder, Cylinder2D, Point, Point2D)
         _c(Cylinder, Cylinder2D, Sphere, Sphere2D)
 
@@ -72,6 +74,8 @@ template<> bool collides(const AbstractShape<3>& a, const AbstractShape<3>& b) {
         _c(Sphere, Sphere3D, Line, Line3D)
         _c(Sphere, Sphere3D, LineSegment, LineSegment3D)
         _c(Sphere, Sphere3D, Sphere, Sphere3D)
+
+        _c(InvertedSphere, InvertedSphere3D, Point, Point3D)
 
         _c(Cylinder, Cylinder3D, Point, Point3D)
         _c(Cylinder, Cylinder3D, Sphere, Sphere3D)

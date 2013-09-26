@@ -146,6 +146,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
         using Sphere<dimensions>::radius;
         using Sphere<dimensions>::setRadius;
 
+        /** @brief %Collision occurence with point */
+        bool operator%(const Point<dimensions>& other) const;
+
+        /** @brief %Collision with point */
+        Collision<dimensions> operator/(const Point<dimensions>& other) const;
+
     private:
         constexpr /*implicit*/ InvertedSphere(const Sphere<dimensions>& other): Sphere<dimensions>(other) {}
 };
@@ -159,8 +165,14 @@ typedef InvertedSphere<3> InvertedSphere3D;
 /** @collisionoccurenceoperator{Point,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
+/** @collisionoccurenceoperator{Point,InvertedSphere} */
+template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
+
 /** @collisionoperator{Point,Sphere} */
 template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Point<dimensions>& a, const Sphere<dimensions>& b) { return (b/a).flipped(); }
+
+/** @collisionoperator{Point,InvertedSphere} */
+template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
 
 /** @collisionoccurenceoperator{Line,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }

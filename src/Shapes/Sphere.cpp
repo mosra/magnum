@@ -44,6 +44,10 @@ template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Point<
     return (_position - other.position()).dot() < Math::pow<2>(_radius);
 }
 
+template<UnsignedInt dimensions> bool InvertedSphere<dimensions>::operator%(const Point<dimensions>& other) const {
+    return (other.position() - position()).dot() > Math::pow<2>(radius());
+}
+
 template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::operator/(const Point<dimensions>& other) const {
     const typename DimensionTraits<dimensions, Float>::VectorType separating = _position - other.position();
     const Float dot = separating.dot();
@@ -63,6 +67,23 @@ template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::opera
 
     /* Collision position is on the point */
     return Collision<dimensions>(other.position(), separatingNormal, _radius - distance);
+}
+
+template<UnsignedInt dimensions> Collision<dimensions> InvertedSphere<dimensions>::operator/(const Point<dimensions>& other) const {
+    const typename DimensionTraits<dimensions, Float>::VectorType separating = other.position() - position();
+    const Float dot = separating.dot();
+
+    /* No collision occured */
+    if(dot < Math::pow<2>(radius())) return {};
+
+    /* Actual distance from the center */
+    const Float distance = Math::sqrt(dot);
+
+    /* Separating normal */
+    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal = separating/distance;
+
+    /* Collision position is on the point */
+    return Collision<dimensions>(other.position(), separatingNormal, distance - radius());
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Line<dimensions>& other) const {

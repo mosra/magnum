@@ -39,6 +39,7 @@ class SphereTest: public TestSuite::Tester {
 
         void transformed();
         void collisionPoint();
+        void collisionPointInverted();
         void collisionLine();
         void collisionLineSegment();
         void collisionSphere();
@@ -47,6 +48,7 @@ class SphereTest: public TestSuite::Tester {
 SphereTest::SphereTest() {
     addTests({&SphereTest::transformed,
               &SphereTest::collisionPoint,
+              &SphereTest::collisionPointInverted,
               &SphereTest::collisionLine,
               &SphereTest::collisionLineSegment,
               &SphereTest::collisionSphere});
@@ -83,6 +85,25 @@ void SphereTest::collisionPoint() {
 
     /* No collision */
     const Shapes::Point3D point3({-1.5f, 2.0f, 3.0f});
+    CORRADE_VERIFY(!(sphere%point3) && !(sphere/point3));
+}
+
+void SphereTest::collisionPointInverted() {
+    const Shapes::InvertedSphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+
+    /* Collision */
+    const Shapes::Point3D point({-1.5f, 2.0f, 3.0f});
+    const Shapes::Collision3D collision = sphere/point;
+    CORRADE_VERIFY(sphere%point && point%sphere);
+    CORRADE_COMPARE(collision.position(), point.position());
+    CORRADE_COMPARE(collision.separationNormal(), -Vector3::xAxis());
+    CORRADE_COMPARE(collision.separationDistance(), 0.5f);
+
+    /* Collision, flipped */
+    CORRADE_COMPARE(collision.separationNormal(), -(point/sphere).separationNormal());
+
+    /* No collision */
+    const Shapes::Point3D point3({2.0f, 2.0f, 3.0f});
     CORRADE_VERIFY(!(sphere%point3) && !(sphere/point3));
 }
 
