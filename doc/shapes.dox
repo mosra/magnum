@@ -48,7 +48,7 @@ around platformer game level.
 - @ref Shapes::LineSegment "Shapes::LineSegment*D" -- @copybrief Shapes::LineSegment
 
 Because of numerical instability it's not possible to detect collisions of
-line and point. Collision of two lines can be detected only in 2D.
+line and point. %Collision of two lines can be detected only in 2D.
 
 @subsection shapes-2D Two-dimensional shapes
 
@@ -103,13 +103,29 @@ Shapes::Composition3D composition = simplified && (sphere || box);
 
 @section shapes-collisions Detecting shape collisions
 
-%Shape pairs which have collision detection implemented can be tested for
-collision using operator%(), for example:
+%Shape pairs which have collision occurence detection implemented can be tested
+for collision using operator%(). The operator returns boolean describing
+whether the collision happened or not. Example:
 @code
 Shapes::Point3D point;
 Shapes::Sphere3D sphere;
 
 bool collide = point % sphere;
+@endcode
+
+As this is useful for e.g. menu handling and simple particle systems, for
+serious physics you often need more information like contact point, separation
+normal and penetration depth. For shape pairs which have implemented this
+detailed collision detection you can use `operator/()`, which returns @ref Collision
+object. Note that unlike with `operator%()` mentioned above, this operation is
+not commutative. See @ref Collision class documentation for more information
+about the returned data. Example:
+@code
+Shapes::Collision3D c = point/sphere;
+if(c) {
+    Vector3 translation = c.separationNormal()*c.separationDistance();
+    // translate point by translation...
+}
 @endcode
 
 @section shapes-scenegraph Integration with scene graph
