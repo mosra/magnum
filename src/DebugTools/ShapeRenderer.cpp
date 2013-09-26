@@ -56,6 +56,7 @@ template<> void createDebugMesh(ShapeRenderer<2>& renderer, const Shapes::Implem
             renderer.renderers.push_back(new Implementation::PointRenderer<2>(shape));
             break;
         case Shapes::AbstractShape2D::Type::Sphere:
+        case Shapes::AbstractShape2D::Type::InvertedSphere: /* Isn't publicly subclassed, but shouldn't matter */
             renderer.renderers.push_back(new Implementation::SphereRenderer<2>(shape));
             break;
         case Shapes::AbstractShape2D::Type::Capsule:
@@ -90,6 +91,7 @@ template<> void createDebugMesh(ShapeRenderer<3>& renderer, const Shapes::Implem
             renderer.renderers.push_back(new Implementation::PointRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::Sphere:
+        case Shapes::AbstractShape3D::Type::InvertedSphere: /* Isn't publicly subclassed, but shouldn't matter */
             renderer.renderers.push_back(new Implementation::SphereRenderer<3>(shape));
             break;
         case Shapes::AbstractShape3D::Type::Capsule:
