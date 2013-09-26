@@ -98,6 +98,10 @@ template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Sphere
     return (_position - other._position).dot() < Math::pow<2>(_radius + other._radius);
 }
 
+template<UnsignedInt dimensions> bool InvertedSphere<dimensions>::operator%(const Sphere<dimensions>& other) const {
+    return (position() - other.position()).dot() > Math::pow<2>(radius() - other.radius());
+}
+
 template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::operator/(const Sphere<dimensions>& other) const {
     const Float minDistance = _radius + other._radius;
     const typename DimensionTraits<dimensions, Float>::VectorType separating = _position - other._position;
@@ -118,6 +122,26 @@ template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::opera
 
     /* Contact position is on the surface of `other`, minDistace > distance */
     return Collision<dimensions>(other._position + separatingNormal*other._radius, separatingNormal, minDistance - distance);
+}
+
+template<UnsignedInt dimensions> Collision<dimensions> InvertedSphere<dimensions>::operator/(const Sphere<dimensions>& other) const {
+    const Float maxDistance = radius() - other.radius();
+    /** @todo How to handle inseparable shapes or shapes which can't be separated by movement only (i.e. two half-spaces)? */
+    CORRADE_INTERNAL_ASSERT(maxDistance > 0.0f);
+    const typename DimensionTraits<dimensions, Float>::VectorType separating = other.position() - position();
+    const Float dot = separating.dot();
+
+    /* No collision occured */
+    if(dot < Math::pow<2>(maxDistance)) return {};
+
+    /* Actual distance */
+    const Float distance = Math::sqrt(dot);
+
+    /* Separating normal */
+    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal = separating/distance;
+
+    /* Contact position is on the surface of `other`, distance > maxDistance */
+    return Collision<dimensions>(other.position() + separatingNormal*other.radius(), separatingNormal, distance - maxDistance);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

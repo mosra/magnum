@@ -43,6 +43,7 @@ class SphereTest: public TestSuite::Tester {
         void collisionLine();
         void collisionLineSegment();
         void collisionSphere();
+        void collisionSphereInverted();
 };
 
 SphereTest::SphereTest() {
@@ -51,7 +52,8 @@ SphereTest::SphereTest() {
               &SphereTest::collisionPointInverted,
               &SphereTest::collisionLine,
               &SphereTest::collisionLineSegment,
-              &SphereTest::collisionSphere});
+              &SphereTest::collisionSphere,
+              &SphereTest::collisionSphereInverted});
 }
 
 void SphereTest::transformed() {
@@ -148,6 +150,25 @@ void SphereTest::collisionSphere() {
 
     /* No collision */
     const Shapes::Sphere3D sphere3({-2.5f, 2.0f, 3.0f}, 1.0f);
+    CORRADE_VERIFY(!(sphere%sphere3) && !(sphere/sphere3));
+}
+
+void SphereTest::collisionSphereInverted() {
+    const Shapes::InvertedSphere3D sphere({1.0f, 2.0f, 3.0f}, 2.0f);
+
+    /* Collision */
+    const Shapes::Sphere3D sphere1({-0.5f, 2.0f, 3.0f}, 1.0f);
+    const Shapes::Collision3D collision = sphere/sphere1;
+    CORRADE_VERIFY(sphere%sphere1 && sphere1%sphere);
+    CORRADE_COMPARE(collision.position(), sphere1.position() - Vector3::xAxis(sphere1.radius()));
+    CORRADE_COMPARE(collision.separationNormal(), -Vector3::xAxis());
+    CORRADE_COMPARE(collision.separationDistance(), 0.5f);
+
+    /* Collision, flipped */
+    CORRADE_COMPARE(collision.separationNormal(), -(sphere1/sphere).separationNormal());
+
+    /* No collision */
+    const Shapes::Sphere3D sphere3({1.5f, 2.0f, 3.0f}, 1.0f);
     CORRADE_VERIFY(!(sphere%sphere3) && !(sphere/sphere3));
 }
 

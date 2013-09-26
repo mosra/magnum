@@ -152,6 +152,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
         /** @brief %Collision with point */
         Collision<dimensions> operator/(const Point<dimensions>& other) const;
 
+        /** @brief %Collision occurence with sphere */
+        bool operator%(const Sphere<dimensions>& other) const;
+
+        /** @brief %Collision with sphere */
+        Collision<dimensions> operator/(const Sphere<dimensions>& other) const;
+
     private:
         constexpr /*implicit*/ InvertedSphere(const Sphere<dimensions>& other): Sphere<dimensions>(other) {}
 };
@@ -179,6 +185,12 @@ template<UnsignedInt dimensions> inline bool operator%(const Line<dimensions>& a
 
 /** @collisionoccurenceoperator{LineSegment,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+
+/** @collisionoccurenceoperator{Sphere,InvertedSphere} */
+template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
+
+/** @collisionoperator{Sphere,InvertedSphere} */
+template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
 
 }}
 
