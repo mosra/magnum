@@ -29,9 +29,16 @@
 namespace Magnum { namespace Implementation {
 
 struct MeshState {
-    constexpr MeshState(): currentVAO(0) {}
+    constexpr MeshState(): currentVAO(0)
+        #ifndef MAGNUM_TARGET_GLES2
+        , maxElementsIndices(0), maxElementsVertices(0)
+        #endif
+        {}
 
     GLuint currentVAO;
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint maxElementsIndices, maxElementsVertices;
+    #endif
 };
 
 }}

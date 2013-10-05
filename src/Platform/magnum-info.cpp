@@ -32,6 +32,7 @@
 #include "AbstractShaderProgram.h"
 #include "Context.h"
 #include "Extensions.h"
+#include "Mesh.h"
 #include "Shader.h"
 #ifndef CORRADE_TARGET_NACL
 #include "Platform/WindowlessGlxApplication.h"
@@ -178,6 +179,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #define _l(val) Debug() << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
 
     Debug() << "Limits and implementation-defined values:";
+    #ifndef MAGNUM_TARGET_GLES2
+    _l(Mesh::maxElementsIndices())
+    _l(Mesh::maxElementsVertices())
+    #endif
     _l(Shader::maxVertexOutputComponents())
     _l(Shader::maxFragmentInputComponents())
     _l(Shader::maxTextureImageUnits(Shader::Type::Vertex))

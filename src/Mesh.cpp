@@ -48,6 +48,30 @@ Mesh::BindIndexBufferImplementation Mesh::bindIndexBufferImplementation = &Mesh:
 Mesh::BindImplementation Mesh::bindImplementation = &Mesh::bindImplementationDefault;
 Mesh::UnbindImplementation Mesh::unbindImplementation = &Mesh::unbindImplementationDefault;
 
+Int Mesh::maxVertexAttributes() { return AbstractShaderProgram::maxVertexAttributes(); }
+
+#ifndef MAGNUM_TARGET_GLES2
+Int Mesh::maxElementsIndices() {
+    GLint& value = Context::current()->state().mesh->maxElementsIndices;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &value);
+
+    return value;
+}
+
+Int Mesh::maxElementsVertices() {
+    GLint& value = Context::current()->state().mesh->maxElementsVertices;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &value);
+
+    return value;
+}
+#endif
+
 std::size_t Mesh::indexSize(IndexType type) {
     switch(type) {
         case IndexType::UnsignedByte: return 1;
