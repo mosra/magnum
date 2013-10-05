@@ -29,9 +29,15 @@ add any performance gains, is not supported in %Magnum.
 
 @section unsupported-features Unsupported features
 
-- Fixed precision data types (OpenGL ES) are not supported, as they occupy the
-  same memory as floats and they aren't faster than floats on current hardware
-  anymore.
+-   Line and polygon smoothing (`GL_LINE_SMOOTH`, `GL_POLYGON_SMOOTH`) and
+    related functions are not supported, as the driver might do it in software
+    with serious performance drops. Multisampling is far superior solution.
+-   Fixed precision data types (`GL_FIXED` in OpenGL ES) are not supported, as
+    they occupy the same memory as floats and they aren't faster than floats on
+    current hardware anymore.
+-   Shader compiler is assumed to be present (`GL_SHADER_COMPILER` returning
+    true), as all desktop GL implementations and also ES3 are required to
+    support it.
 
 @section unsupported-extensions Unsupported extensions
 
