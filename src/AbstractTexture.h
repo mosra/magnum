@@ -48,9 +48,9 @@ information and usage examples.
 The engine tracks currently bound textures in all available layers to avoid
 unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. %Texture
 configuration functions use dedicated highest available texture layer to not
-affect active bindings in user layers. %Texture limits (such as
-maxSupportedLayerCount()) are cached, so repeated queries don't result in
-repeated @fn_gl{Get} calls.
+affect active bindings in user layers. %Texture limits and
+implementation-defined values (such as @ref maxColorSamples()) are cached, so
+repeated queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, bind() uses DSA
 function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all texture
@@ -91,6 +91,10 @@ do nothing.
 @todo Move constructor/assignment - how to avoid creation of empty texture and
     then deleting it immediately?
 @todo ES2 - proper support for pixel unpack buffer when extension is in headers
+@todo `GL_MAX_3D_TEXTURE_SIZE`, `GL_MAX_ARRAY_TEXTURE_LAYERS`, `GL_MAX_CUBE_MAP_TEXTURE_SIZE`, `GL_MAX_RECTANGLE_TEXTURE_SIZE`, `GL_MAX_TEXTURE_SIZE`, `GL_MAX_TEXTURE_BUFFER_SIZE` enable them only where it makes sense?
+@todo `GL_MAX_TEXTURE_LOD_BIAS` when `TEXTURE_LOD_BIAS` is implemented
+@todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
+@todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
 */
 class MAGNUM_EXPORT AbstractTexture {
     friend class Context;
@@ -100,12 +104,53 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Max supported layer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls.
-         * @see @ref AbstractShaderProgram-subclassing, bind(Int),
-         *      @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS},
-         *      @fn_gl{ActiveTexture}
+         * OpenGL calls. This function is in fact alias to
+         * @ref Shader::maxCombinedTextureImageUnits().
+         * @see @ref bind(Int)
          */
-        static Int maxSupportedLayerCount();
+        static Int maxLayers();
+
+        /**
+         * @copybrief maxLayers()
+         * @deprecated Use @ref Magnum::AbstractTexture::maxLayers() "maxLayers()"
+         *      instead.
+         */
+        static Int maxSupportedLayerCount() { return maxLayers(); }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Max supported color sample count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
+         * not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_COLOR_TEXTURE_SAMPLES}
+         * @requires_gl Multisample textures are not available in OpenGL ES.
+         */
+        static Int maxColorSamples();
+
+        /**
+         * @brief Max supported depth sample count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
+         * not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}
+         * @requires_gl Multisample textures are not available in OpenGL ES.
+         */
+        static Int maxDepthSamples();
+
+        /**
+         * @brief Max supported integer sample count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
+         * not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_INTEGER_SAMPLES}
+         * @requires_gl Multisample textures are not available in OpenGL ES.
+         */
+        static Int maxIntegerSamples();
+        #endif
 
         /** @brief Copying is not allowed */
         AbstractTexture(const AbstractTexture&) = delete;
@@ -126,11 +171,10 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Bind texture for rendering
          *
          * Sets current texture as active in given layer. The layer must be
-         * between 0 and maxSupportedLayerCount(). Note that only one texture
-         * can be bound to given layer. If @extension{EXT,direct_state_access}
-         * is not available, the layer is made active before binding the
-         * texture.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
+         * between 0 and @ref maxLayers(). Note that only one texture can be
+         * bound to given layer. If @extension{EXT,direct_state_access} is not
+         * available, the layer is made active before binding the texture.
+         * @see @ref maxLayers(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
          *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
         void bind(Int layer);
@@ -205,7 +249,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * greater than `1.0f` for anisotropic filtering. If
          * @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some layer before the operation.
-         * @see maxSupportedAnisotropy(), @fn_gl{ActiveTexture},
+         * @see @ref Sampler::maxAnisotropy(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}

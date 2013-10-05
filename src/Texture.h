@@ -52,7 +52,7 @@ Texture2D texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
     .setWrapping(Sampler::Wrapping::ClampToEdge)
-    .setMaxAnisotropy(Sampler::maxSupportedAnisotropy())
+    .setMaxAnisotropy(Sampler::maxAnisotropy())
     .setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
     .setSubImage(0, {}, &image)
     .generateMipmap();

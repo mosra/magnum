@@ -46,8 +46,8 @@ static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
 #undef filter_or
 
 #ifndef MAGNUM_TARGET_GLES3
-Float Sampler::maxSupportedAnisotropy() {
-    GLfloat& value = Context::current()->state().texture->maxSupportedAnisotropy;
+Float Sampler::maxAnisotropy() {
+    GLfloat& value = Context::current()->state().texture->maxAnisotropy;
 
     /** @todo Re-enable when extension header is available */
     #ifndef MAGNUM_TARGET_GLES

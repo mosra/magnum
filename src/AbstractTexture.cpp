@@ -30,6 +30,7 @@
 #include "Extensions.h"
 #include "Image.h"
 #include "ImageFormat.h"
+#include "Shader.h"
 #include "TextureFormat.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
@@ -80,9 +81,48 @@ AbstractTexture::SubImage3DImplementation AbstractTexture::subImage3DImplementat
 AbstractTexture::InvalidateImageImplementation AbstractTexture::invalidateImageImplementation = &AbstractTexture::invalidateImageImplementationNoOp;
 AbstractTexture::InvalidateSubImageImplementation AbstractTexture::invalidateSubImageImplementation = &AbstractTexture::invalidateSubImageImplementationNoOp;
 
-Int AbstractTexture::maxSupportedLayerCount() {
-    return Context::current()->state().texture->maxSupportedLayerCount;
+Int AbstractTexture::maxLayers() { return Shader::maxCombinedTextureImageUnits(); }
+
+#ifndef MAGNUM_TARGET_GLES
+Int AbstractTexture::maxColorSamples() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        return 0;
+
+    GLint& value = Context::current()->state().texture->maxColorSamples;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &value);
+
+    return value;
 }
+
+Int AbstractTexture::maxDepthSamples() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        return 0;
+
+    GLint& value = Context::current()->state().texture->maxDepthSamples;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, &value);
+
+    return value;
+}
+
+Int AbstractTexture::maxIntegerSamples() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        return 0;
+
+    GLint& value = Context::current()->state().texture->maxIntegerSamples;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_INTEGER_SAMPLES, &value);
+
+    return value;
+}
+#endif
 
 void AbstractTexture::destroy() {
     /* Moved out */
@@ -183,7 +223,7 @@ void AbstractTexture::bindInternal() {
         return;
 
     /* Set internal layer as active if not already */
-    const GLint internalLayer = textureState->maxSupportedLayerCount-1;
+    const GLint internalLayer = maxLayers()-1;
     if(textureState->currentLayer != internalLayer)
         glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = internalLayer));
 
@@ -193,13 +233,6 @@ void AbstractTexture::bindInternal() {
 }
 
 void AbstractTexture::initializeContextBasedFunctionality(Context& context) {
-    Implementation::TextureState* const textureState = context.state().texture;
-    GLint& value = textureState->maxSupportedLayerCount;
-
-    /* Get the value and resize bindings array */
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &value);
-    textureState->bindings.resize(value);
-
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "AbstractTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
@@ -246,6 +279,8 @@ void AbstractTexture::initializeContextBasedFunctionality(Context& context) {
             storage3DImplementation = &AbstractTexture::storageImplementationDefault;
         }
     }
+    #else
+    static_cast<void>(context);
     #endif
 }
 

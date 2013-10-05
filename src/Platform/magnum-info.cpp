@@ -214,6 +214,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(AbstractShaderProgram::maxUniformLocations())
     #endif
     _l(AbstractShaderProgram::maxVertexAttributes())
+    #ifndef MAGNUM_TARGET_GLES
+    _l(AbstractTexture::maxColorSamples())
+    _l(AbstractTexture::maxDepthSamples())
+    _l(AbstractTexture::maxIntegerSamples())
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
@@ -326,6 +331,14 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Buffer::maxUniformBindings())
         _l(AbstractShaderProgram::minTexelOffset())
         _l(AbstractShaderProgram::maxTexelOffset())
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES3
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
+        _h(EXT::texture_filter_anisotropic)
+
+        _l(Sampler::maxAnisotropy())
     }
     #endif
 

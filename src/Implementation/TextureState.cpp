@@ -26,7 +26,11 @@
 
 namespace Magnum { namespace Implementation {
 
-TextureState::TextureState(): maxSupportedLayerCount(0), maxSupportedAnisotropy(0.0f), currentLayer(0) {}
+TextureState::TextureState(): maxAnisotropy(0.0f), currentLayer(0)
+    #ifndef MAGNUM_TARGET_GLES
+    , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0)
+    #endif
+    {}
 
 TextureState::~TextureState() = default;
 
