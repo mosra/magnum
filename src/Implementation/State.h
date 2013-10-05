@@ -30,6 +30,7 @@ struct BufferState;
 struct FramebufferState;
 struct MeshState;
 struct RendererState;
+struct ShaderState;
 struct ShaderProgramState;
 struct TextureState;
 
@@ -41,6 +42,7 @@ struct State {
     FramebufferState* const framebuffer;
     MeshState* const mesh;
     RendererState* const renderer;
+    ShaderState* const shader;
     ShaderProgramState* const shaderProgram;
     TextureState* const texture;
 };

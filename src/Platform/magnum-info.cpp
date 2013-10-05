@@ -29,7 +29,10 @@
 #include <Utility/NaClStreamBuffer.h>
 #endif
 
+#include "AbstractShaderProgram.h"
 #include "Context.h"
+#include "Extensions.h"
+#include "Shader.h"
 #ifndef CORRADE_TARGET_NACL
 #include "Platform/WindowlessGlxApplication.h"
 #else
@@ -169,6 +172,142 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
         Debug() << "";
     }
+
+    /* Limits and implementation-defined values */
+    #define _h(val) Debug() << "\n " << Extensions::GL::val::string() + std::string(":");
+    #define _l(val) Debug() << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
+
+    Debug() << "Limits and implementation-defined values:";
+    _l(Shader::maxVertexOutputComponents())
+    _l(Shader::maxFragmentInputComponents())
+    _l(Shader::maxTextureImageUnits(Shader::Type::Vertex))
+    #ifndef MAGNUM_TARGET_GLES
+    _l(Shader::maxTextureImageUnits(Shader::Type::TessellationControl))
+    _l(Shader::maxTextureImageUnits(Shader::Type::TessellationEvaluation))
+    _l(Shader::maxTextureImageUnits(Shader::Type::Geometry))
+    _l(Shader::maxTextureImageUnits(Shader::Type::Compute))
+    #endif
+    _l(Shader::maxTextureImageUnits(Shader::Type::Fragment))
+    _l(Shader::maxCombinedTextureImageUnits())
+    _l(Shader::maxUniformComponents(Shader::Type::Vertex))
+    #ifndef MAGNUM_TARGET_GLES
+    _l(Shader::maxUniformComponents(Shader::Type::TessellationControl))
+    _l(Shader::maxUniformComponents(Shader::Type::TessellationEvaluation))
+    _l(Shader::maxUniformComponents(Shader::Type::Geometry))
+    _l(Shader::maxUniformComponents(Shader::Type::Compute))
+    #endif
+    _l(Shader::maxUniformComponents(Shader::Type::Fragment))
+    #ifndef MAGNUM_TARGET_GLES
+    _l(AbstractShaderProgram::maxUniformLocations())
+    #endif
+    _l(AbstractShaderProgram::maxVertexAttributes())
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::compute_shader>()) {
+        _h(ARB::compute_shader)
+
+        _l(AbstractShaderProgram::maxComputeSharedMemorySize())
+        _l(AbstractShaderProgram::maxComputeWorkGroupInvocations())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>()) {
+        _h(ARB::geometry_shader4)
+
+        _l(Shader::maxGeometryInputComponents())
+        _l(Shader::maxGeometryOutputComponents())
+        _l(Shader::maxGeometryTotalOutputComponents())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>()) {
+        _h(ARB::shader_atomic_counters)
+
+        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Vertex))
+        _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationControl))
+        _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationEvaluation))
+        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Geometry))
+        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Compute))
+        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Fragment))
+        _l(Shader::maxCombinedAtomicCounterBuffers())
+        _l(Shader::maxAtomicCounters(Shader::Type::Vertex))
+        _l(Shader::maxAtomicCounters(Shader::Type::TessellationControl))
+        _l(Shader::maxAtomicCounters(Shader::Type::TessellationEvaluation))
+        _l(Shader::maxAtomicCounters(Shader::Type::Geometry))
+        _l(Shader::maxAtomicCounters(Shader::Type::Compute))
+        _l(Shader::maxAtomicCounters(Shader::Type::Fragment))
+        _l(Shader::maxCombinedAtomicCounters())
+        _l(AbstractShaderProgram::maxAtomicCounterBufferSize())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>()) {
+        _h(ARB::shader_image_load_store)
+
+        _l(Shader::maxImageUniforms(Shader::Type::Vertex))
+        _l(Shader::maxImageUniforms(Shader::Type::TessellationControl))
+        _l(Shader::maxImageUniforms(Shader::Type::TessellationEvaluation))
+        _l(Shader::maxImageUniforms(Shader::Type::Geometry))
+        _l(Shader::maxImageUniforms(Shader::Type::Compute))
+        _l(Shader::maxImageUniforms(Shader::Type::Fragment))
+        _l(Shader::maxCombinedImageUniforms())
+        _l(AbstractShaderProgram::maxCombinedShaderOutputResources())
+        _l(AbstractShaderProgram::maxImageUnits())
+        _l(AbstractShaderProgram::maxImageSamples())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>()) {
+        _h(ARB::shader_storage_buffer_object)
+
+        _l(Shader::maxShaderStorageBlocks(Shader::Type::Vertex))
+        _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationControl))
+        _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationEvaluation))
+        _l(Shader::maxShaderStorageBlocks(Shader::Type::Geometry))
+        _l(Shader::maxShaderStorageBlocks(Shader::Type::Compute))
+        _l(Shader::maxShaderStorageBlocks(Shader::Type::Fragment))
+        _l(Shader::maxCombinedShaderStorageBlocks())
+        /* AbstractShaderProgram::maxCombinedShaderOutputResources() already in shader_image_load_store */
+        _l(AbstractShaderProgram::maxShaderStorageBlockSize())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
+        _h(ARB::tessellation_shader)
+
+        _l(Shader::maxTessellationControlInputComponents())
+        _l(Shader::maxTessellationControlOutputComponents())
+        _l(Shader::maxTessellationControlTotalOutputComponents())
+        _l(Shader::maxTessellationEvaluationInputComponents())
+        _l(Shader::maxTessellationEvaluationOutputComponents())
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(c->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>()) {
+        _h(ARB::uniform_buffer_object)
+
+        _l(Shader::maxUniformBlocks(Shader::Type::Vertex))
+        _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))
+        _l(Shader::maxUniformBlocks(Shader::Type::TessellationEvaluation))
+        _l(Shader::maxUniformBlocks(Shader::Type::Geometry))
+        _l(Shader::maxUniformBlocks(Shader::Type::Compute))
+        _l(Shader::maxUniformBlocks(Shader::Type::Fragment))
+        _l(Shader::maxCombinedUniformBlocks())
+        _l(Shader::maxCombinedUniformComponents(Shader::Type::Vertex))
+        _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationControl))
+        _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationEvaluation))
+        _l(Shader::maxCombinedUniformComponents(Shader::Type::Geometry))
+        _l(Shader::maxCombinedUniformComponents(Shader::Type::Compute))
+        _l(Shader::maxCombinedUniformComponents(Shader::Type::Fragment))
+        _l(AbstractShaderProgram::maxUniformBlockSize())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>()) {
+        _h(EXT::gpu_shader4)
+
+        _l(AbstractShaderProgram::minTexelOffset())
+        _l(AbstractShaderProgram::maxTexelOffset())
+    }
+    #endif
+
+    #undef _l
+    #undef _h
 }
 
 }

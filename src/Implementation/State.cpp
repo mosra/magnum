@@ -24,12 +24,13 @@
 
 #include "State.h"
 
-#include "BufferState.h"
-#include "FramebufferState.h"
-#include "MeshState.h"
-#include "RendererState.h"
-#include "ShaderProgramState.h"
-#include "TextureState.h"
+#include "Implementation/BufferState.h"
+#include "Implementation/FramebufferState.h"
+#include "Implementation/MeshState.h"
+#include "Implementation/RendererState.h"
+#include "Implementation/ShaderState.h"
+#include "Implementation/ShaderProgramState.h"
+#include "Implementation/TextureState.h"
 
 namespace Magnum { namespace Implementation {
 
@@ -38,12 +39,14 @@ State::State():
     framebuffer(new FramebufferState),
     mesh(new MeshState),
     renderer(new RendererState),
+    shader(new ShaderState),
     shaderProgram(new ShaderProgramState),
     texture(new TextureState) {}
 
 State::~State() {
     delete texture;
     delete shaderProgram;
+    delete shader;
     delete renderer;
     delete mesh;
     delete framebuffer;

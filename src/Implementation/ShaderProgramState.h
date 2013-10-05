@@ -29,11 +29,33 @@
 namespace Magnum { namespace Implementation {
 
 struct ShaderProgramState {
-    constexpr ShaderProgramState(): current(0), maxSupportedVertexAttributeCount(0) {}
+    constexpr ShaderProgramState(): current(0), maxVertexAttributes(0)
+        #ifndef MAGNUM_TARGET_GLES
+        , maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxImageSamples(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0), maxShaderStorageBlockSize(0)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        , minTexelOffset(0), maxTexelOffset(0), maxUniformBlockSize(0)
+        #endif
+        {}
 
     /* Currently used program */
     GLuint current;
-    GLint maxSupportedVertexAttributeCount;
+
+    GLint maxVertexAttributes;
+    #ifndef MAGNUM_TARGET_GLES
+    GLint maxAtomicCounterBufferSize,
+        maxComputeSharedMemorySize,
+        maxComputeWorkGroupInvocations,
+        maxImageUnits,
+        maxImageSamples,
+        maxCombinedShaderOutputResources,
+        maxUniformLocations;
+    GLint64 maxShaderStorageBlockSize;
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint minTexelOffset, maxTexelOffset, maxUniformBlockSize;
+    #endif
 };
 
 }}
