@@ -78,6 +78,69 @@ void Buffer::initializeContextBasedFunctionality(Context& context) {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
+Int Buffer::minMapAlignment() {
+    GLint& value = Context::current()->state().buffer->minMapAlignment;
+
+    if(value == 0)
+        glGetIntegerv(GL_MIN_MAP_BUFFER_ALIGNMENT, &value);
+
+    return value;
+}
+
+Int Buffer::maxAtomicCounterBindings() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+        return 0;
+
+    GLint& value = Context::current()->state().buffer->maxAtomicCounterBindings;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS, &value);
+
+    return value;
+}
+
+Int Buffer::maxShaderStorageBindings() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+        return 0;
+
+    GLint& value = Context::current()->state().buffer->maxShaderStorageBindings;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &value);
+
+    return value;
+}
+
+Int Buffer::shaderStorageOffsetAlignment() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+        return 0;
+
+    GLint& value = Context::current()->state().buffer->shaderStorageOffsetAlignment;
+
+    if(value == 0)
+        glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &value);
+
+    return value;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+Int Buffer::maxUniformBindings() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current()->state().buffer->maxUniformBindings;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &value);
+
+    return value;
+}
+#endif
+
 Buffer::Buffer(Buffer::Target targetHint): _targetHint(targetHint)
     #ifdef CORRADE_TARGET_NACL
     , _mappedBuffer(nullptr)

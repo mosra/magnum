@@ -30,6 +30,7 @@
 #endif
 
 #include "AbstractShaderProgram.h"
+#include "Buffer.h"
 #include "Context.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
@@ -239,6 +240,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(c->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>()) {
         _h(ARB::shader_atomic_counters)
 
+        _l(Buffer::maxAtomicCounterBindings())
         _l(Shader::maxAtomicCounterBuffers(Shader::Type::Vertex))
         _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationControl))
         _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationEvaluation))
@@ -288,6 +290,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(c->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
         _h(ARB::tessellation_shader)
 
+        _l(Buffer::shaderStorageOffsetAlignment())
+        _l(Buffer::maxShaderStorageBindings())
         _l(Shader::maxTessellationControlInputComponents())
         _l(Shader::maxTessellationControlOutputComponents())
         _l(Shader::maxTessellationControlTotalOutputComponents())
@@ -319,6 +323,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(c->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>()) {
         _h(EXT::gpu_shader4)
 
+        _l(Buffer::maxUniformBindings())
         _l(AbstractShaderProgram::minTexelOffset())
         _l(AbstractShaderProgram::maxTexelOffset())
     }
