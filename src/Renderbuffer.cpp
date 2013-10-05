@@ -40,6 +40,36 @@ Renderbuffer::StorageMultisampleImplementation Renderbuffer::storageMultisampleI
     nullptr;
     #endif
 
+Int Renderbuffer::maxSize() {
+    GLint& value = Context::current()->state().framebuffer->maxRenderbufferSize;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &value);
+
+    return value;
+}
+
+Int Renderbuffer::maxSamples() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current()->state().framebuffer->maxSamples;
+
+    /* Get the value, if not already cached */
+    if(value == 0) {
+        #ifndef MAGNUM_TARGET_GLES2
+        glGetIntegerv(GL_MAX_SAMPLES, &value);
+        #else
+        glGetIntegerv(GL_MAX_SAMPLES_NV, &value);
+        #endif
+    }
+
+    return value;
+}
+
 Renderbuffer::~Renderbuffer() {
     /* If bound, remove itself from state */
     GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;

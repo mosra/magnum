@@ -133,11 +133,13 @@ See DefaultFramebuffer and Framebuffer for more information.
 
 The engine tracks currently bound framebuffer and current viewport to avoid
 unnecessary calls to @fn_gl{BindFramebuffer} and @fn_gl{Viewport} when
-switching framebuffers.
+switching framebuffers. %Framebuffer limits and implementation-defined values
+(such as @ref maxViewportSize()) are cached, so repeated queries don't result
+in repeated @fn_gl{Get} calls.
 
 If @extension{ARB,robustness} is available, read() operations are protected
 from buffer overflow.
-@todo @extension{ARB,viewport_array}
+@todo @extension{ARB,viewport_array} (and `GL_MAX_VIEWPORTS`)
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
     friend class Context;
@@ -148,6 +150,43 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     AbstractFramebuffer& operator=(AbstractFramebuffer&&) = delete;
 
     public:
+        /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh). Also for consistency it might be good to rename ImageFormat and ImageType to `ColorFormat` and `ColorType` (@extension{ARB,ES2_compatibility}). */
+
+        /**
+         * @brief Max supported viewport size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @ref setViewport(), @fn_gl{Get} with @def_gl{MAX_VIEWPORT_DIMS}
+         */
+        static Vector2i maxViewportSize();
+
+        /**
+         * @brief Max supported draw buffer count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If ES extension @extension{NV,draw_buffers} is not
+         * available, returns `0`.
+         * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
+         *      @fn_gl{Get} with @def_gl{MAX_DRAW_BUFFERS}
+         */
+        static Int maxDrawBuffers();
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Max supported dual-source draw buffer count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,blend_func_extended} is
+         * not available, returns `0`.
+         * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
+         *      @fn_gl{Get} with @def_gl{MAX_DUAL_SOURCE_DRAW_BUFFERS}
+         * @requires_gl Multiple blending inputs are not available in
+         *      OpenGL ES.
+         */
+        static Int maxDualSourceDrawBuffers();
+        #endif
+
         /**
          * @brief Copy block of pixels
          * @param source            Source framebuffer
@@ -211,7 +250,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * Saves the viewport to be used at later time in bind(). If the
          * framebuffer is currently bound, updates the viewport to given
          * rectangle.
-         * @see @fn_gl{Viewport}
+         * @see @ref maxViewportSize(), @fn_gl{Viewport}
          */
         AbstractFramebuffer& setViewport(const Rectanglei& rectangle);
 

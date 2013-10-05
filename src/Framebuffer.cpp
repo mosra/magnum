@@ -52,6 +52,25 @@ const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::DepthStencil 
 const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Depth = Framebuffer::InvalidationAttachment(GL_DEPTH_ATTACHMENT);
 const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Stencil = Framebuffer::InvalidationAttachment(GL_STENCIL_ATTACHMENT);
 
+Int Framebuffer::maxColorAttachments() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::fbo_color_attachments>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current()->state().framebuffer->maxColorAttachments;
+
+    if(value == 0) {
+        #ifndef MAGNUM_TARGET_GLES2
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &value);
+        #else
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_NV, &value);
+        #endif
+    }
+
+    return value;
+}
+
 Framebuffer::Framebuffer(const Rectanglei& viewport) {
     _viewport = viewport;
 
