@@ -137,18 +137,18 @@ set(Magnum_HEADERS
 
     magnumVisibility.h)
 
-# Desktop-only headers
+# Desktop-only headers and libraries
 if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferTexture.h
         CubeMapTextureArray.h)
+    set(Magnum_OBJECTS ${Magnum_OBJECTS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Not-ES2 headers
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h)
-    set(Magnum_OBJECTS ${Magnum_OBJECTS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Files shared between main library and math unit test library
