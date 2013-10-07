@@ -228,6 +228,7 @@ namespace GL {
         _extension(GL,KHR,debug,                    GLES200,    None) // #118
     } namespace NV {
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
+        _extension(GL,NV,fbo_color_attachments,     GLES200, GLES300) // #92
         _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
         _extension(GL,NV,read_buffer_front,         GLES200,    None) // #93
         _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
