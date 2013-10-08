@@ -26,10 +26,10 @@
 
 #include "Buffer.h"
 #include "BufferImage.h"
+#include "ColorFormat.h"
 #include "Context.h"
 #include "Extensions.h"
 #include "Image.h"
-#include "ImageFormat.h"
 #include "Shader.h"
 #include "TextureFormat.h"
 #include "Implementation/State.h"
@@ -284,7 +284,7 @@ void AbstractTexture::initializeContextBasedFunctionality(Context& context) {
     #endif
 }
 
-ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
+ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         case TextureFormat::Red:
         #ifndef MAGNUM_TARGET_GLES2
@@ -304,7 +304,7 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRedRtgc1:
         case TextureFormat::CompressedSignedRedRgtc1:
         #endif
-            return ImageFormat::Red;
+            return ColorFormat::Red;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8UI:
@@ -313,7 +313,7 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::R16I:
         case TextureFormat::R32UI:
         case TextureFormat::R32I:
-            return ImageFormat::RedInteger;
+            return ColorFormat::RedInteger;
         #endif
 
         case TextureFormat::RG:
@@ -334,7 +334,7 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGRgtc2:
         case TextureFormat::CompressedSignedRGRgtc2:
         #endif
-            return ImageFormat::RG;
+            return ColorFormat::RG;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG8UI:
@@ -343,7 +343,7 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RG16I:
         case TextureFormat::RG32UI:
         case TextureFormat::RG32I:
-            return ImageFormat::RGInteger;
+            return ColorFormat::RGInteger;
         #endif
 
         case TextureFormat::RGB:
@@ -386,7 +386,7 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
         #endif
-            return ImageFormat::RGB;
+            return ColorFormat::RGB;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB8UI:
@@ -395,7 +395,7 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RGB16I:
         case TextureFormat::RGB32UI:
         case TextureFormat::RGB32I:
-            return ImageFormat::RGBInteger;
+            return ColorFormat::RGBInteger;
         #endif
 
         case TextureFormat::RGBA:
@@ -431,7 +431,7 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
-            return ImageFormat::RGBA;
+            return ColorFormat::RGBA;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGBA8UI:
@@ -441,14 +441,14 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RGBA32UI:
         case TextureFormat::RGBA32I:
         case TextureFormat::RGB10A2UI:
-            return ImageFormat::RGBAInteger;
+            return ColorFormat::RGBAInteger;
         #endif
 
         #ifdef MAGNUM_TARGET_GLES2
         case TextureFormat::Luminance:
-            return ImageFormat::Luminance;
+            return ColorFormat::Luminance;
         case TextureFormat::LuminanceAlpha:
-            return ImageFormat::LuminanceAlpha;
+            return ColorFormat::LuminanceAlpha;
         #endif
 
         case TextureFormat::DepthComponent:
@@ -460,11 +460,11 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::DepthComponent32F:
         #endif
-            return ImageFormat::DepthComponent;
+            return ColorFormat::DepthComponent;
 
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::StencilIndex8:
-            return ImageFormat::StencilIndex;
+            return ColorFormat::StencilIndex;
         #endif
 
         case TextureFormat::DepthStencil:
@@ -472,13 +472,13 @@ ImageFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::Depth32FStencil8:
         #endif
-            return ImageFormat::DepthStencil;
+            return ColorFormat::DepthStencil;
     }
 
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
+ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         case TextureFormat::Red:
         case TextureFormat::RG:
@@ -519,7 +519,7 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
-            return ImageType::UnsignedByte;
+            return ColorType::UnsignedByte;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8Snorm:
@@ -534,7 +534,7 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedSignedRedRgtc1:
         case TextureFormat::CompressedSignedRGRgtc2:
         #endif
-            return ImageType::Byte;
+            return ColorType::Byte;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -556,7 +556,7 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGBA12: /**< @todo really? */
         #endif
-            return ImageType::UnsignedShort;
+            return ColorType::UnsignedShort;
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -569,7 +569,7 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RG16I:
         case TextureFormat::RGB16I:
         case TextureFormat::RGBA16I:
-            return ImageType::Short;
+            return ColorType::Short;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -577,19 +577,19 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RG16F:
         case TextureFormat::RGB16F:
         case TextureFormat::RGBA16F:
-            return ImageType::HalfFloat;
+            return ColorType::HalfFloat;
 
         case TextureFormat::R32UI:
         case TextureFormat::RG32UI:
         case TextureFormat::RGB32UI:
         case TextureFormat::RGBA32UI:
-            return ImageType::UnsignedInt;
+            return ColorType::UnsignedInt;
 
         case TextureFormat::R32I:
         case TextureFormat::RG32I:
         case TextureFormat::RGB32I:
         case TextureFormat::RGBA32I:
-            return ImageType::Int;
+            return ColorType::Int;
 
         case TextureFormat::R32F:
         case TextureFormat::RG32F:
@@ -599,24 +599,24 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
         #endif
-            return ImageType::Float;
+            return ColorType::Float;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::R3B3G2:
-            return ImageType::UnsignedByte332;
+            return ColorType::UnsignedByte332;
         case TextureFormat::RGB4:
-            return ImageType::UnsignedShort4444;
+            return ColorType::UnsignedShort4444;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGB5:
         #endif
         case TextureFormat::RGB5A1:
-            return ImageType::UnsignedShort5551;
+            return ColorType::UnsignedShort5551;
 
         case TextureFormat::RGB565:
-            return ImageType::UnsignedShort565;
+            return ColorType::UnsignedShort565;
 
         #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::RGB10:
@@ -625,42 +625,42 @@ ImageType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB10A2UI:
         #endif
-            return ImageType::UnsignedInt2101010Rev; /**< @todo Rev for all? */
+            return ColorType::UnsignedInt2101010Rev; /**< @todo Rev for all? */
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R11FG11FB10F:
-            return ImageType::UnsignedInt10F11F11FRev;
+            return ColorType::UnsignedInt10F11F11FRev;
         case TextureFormat::RGB9E5:
-            return ImageType::UnsignedInt5999Rev;
+            return ColorType::UnsignedInt5999Rev;
         #endif
 
         case TextureFormat::DepthComponent16:
-            return ImageType::UnsignedShort;
+            return ColorType::UnsignedShort;
 
         case TextureFormat::DepthComponent:
         case TextureFormat::DepthComponent24:
         #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::DepthComponent32:
         #endif
-            return ImageType::UnsignedInt;
+            return ColorType::UnsignedInt;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::DepthComponent32F:
-            return ImageType::Float;
+            return ColorType::Float;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::StencilIndex8:
-            return ImageType::UnsignedByte;
+            return ColorType::UnsignedByte;
         #endif
 
         case TextureFormat::DepthStencil:
         case TextureFormat::Depth24Stencil8:
-            return ImageType::UnsignedInt248;
+            return ColorType::UnsignedInt248;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::Depth32FStencil8:
-            return ImageType::Float32UnsignedInt248Rev;
+            return ColorType::Float32UnsignedInt248Rev;
         #endif
     }
 
@@ -715,8 +715,8 @@ void AbstractTexture::getLevelParameterImplementationDSA(GLenum target, GLint le
 void AbstractTexture::storageImplementationFallback(const GLenum target, const GLsizei levels, const TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
     CORRADE_INTERNAL_ASSERT(target == GL_TEXTURE_1D);
 
-    const ImageFormat format = imageFormatForInternalFormat(internalFormat);
-    const ImageType type = imageTypeForInternalFormat(internalFormat);
+    const ColorFormat format = imageFormatForInternalFormat(internalFormat);
+    const ColorType type = imageTypeForInternalFormat(internalFormat);
 
     for(GLsizei level = 0; level != levels; ++level) {
         (this->*image1DImplementation)(target, level, internalFormat, Math::max(Math::Vector<1, GLsizei>(1), size >> level), format, type, nullptr);
@@ -743,8 +743,8 @@ void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, Te
 #endif
 
 void AbstractTexture::storageImplementationFallback(const GLenum target, const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
-    const ImageFormat format = imageFormatForInternalFormat(internalFormat);
-    const ImageType type = imageTypeForInternalFormat(internalFormat);
+    const ColorFormat format = imageFormatForInternalFormat(internalFormat);
+    const ColorType type = imageTypeForInternalFormat(internalFormat);
 
     /* Common code for classic types */
     #ifndef MAGNUM_TARGET_GLES
@@ -802,8 +802,8 @@ void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, Te
 #endif
 
 void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
-    const ImageFormat format = imageFormatForInternalFormat(internalFormat);
-    const ImageType type = imageTypeForInternalFormat(internalFormat);
+    const ColorFormat format = imageFormatForInternalFormat(internalFormat);
+    const ColorType type = imageTypeForInternalFormat(internalFormat);
 
     /* Common code for classic type */
     #ifndef MAGNUM_TARGET_GLES2
@@ -855,16 +855,16 @@ void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, Te
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::getImageImplementationDefault(const GLenum target, const GLint level, const ImageFormat format, const ImageType type, const std::size_t, GLvoid* const data) {
+void AbstractTexture::getImageImplementationDefault(const GLenum target, const GLint level, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
     bindInternal();
     glGetTexImage(target, level, GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::getImageImplementationDSA(const GLenum target, const GLint level, const ImageFormat format, const ImageType type, const std::size_t, GLvoid* const data) {
+void AbstractTexture::getImageImplementationDSA(const GLenum target, const GLint level, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
     glGetTextureImageEXT(_id, target, level, GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::getImageImplementationRobustness(const GLenum target, const GLint level, const ImageFormat format, const ImageType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractTexture::getImageImplementationRobustness(const GLenum target, const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     #ifndef MAGNUM_TARGET_GLES
     bindInternal();
     glGetnTexImageARB(target, level, GLenum(format), GLenum(type), dataSize, data);
@@ -881,28 +881,28 @@ void AbstractTexture::getImageImplementationRobustness(const GLenum target, cons
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
     glTexImage1D(target, level, static_cast<GLint>(internalFormat), size[0], 0, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
-void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data) {
     glTextureImage1DEXT(_id, target, level, GLint(internalFormat), size[0], 0, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 #endif
 
-void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
     glTexImage2D(target, level, GLint(internalFormat), size.x(), size.y(), 0, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     glTextureImage2DEXT(_id, target, level, GLint(internalFormat), size.x(), size.y(), 0, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 #endif
 
-void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
     /** @todo Get some extension wrangler instead to avoid linker errors to glTexImage3D() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
@@ -919,34 +919,34 @@ void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, Tex
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     glTextureImage3DEXT(_id, target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
     glTexSubImage1D(target, level, offset[0], size[0], static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
-void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data) {
     glTextureSubImage1DEXT(_id, target, level, offset[0], size[0], static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 #endif
 
-void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
     glTexSubImage2D(target, level, offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     glTextureSubImage2DEXT(_id, target, level, offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 #endif
 
-void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
     /** @todo Get some extension wrangler instead to avoid linker errors to glTexSubImage3D() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
@@ -963,7 +963,7 @@ void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, 
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ImageFormat format, ImageType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     glTextureSubImage3DEXT(_id, target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 #endif

@@ -376,12 +376,12 @@ void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
 }
 #endif
 
-void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ImageFormat format, const ImageType type, const std::size_t, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
     glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES3
-void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ImageFormat format, const ImageType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     /** @todo Enable when extension wrangler for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), dataSize, data);

@@ -27,7 +27,7 @@
 #include <TestSuite/Compare/FileToString.h>
 #include <Utility/Directory.h>
 
-#include "ImageFormat.h"
+#include "ColorFormat.h"
 #include "ImageReference.h"
 #include "Trade/AbstractImageConverter.h"
 
@@ -64,7 +64,7 @@ void AbstractImageConverterTest::exportToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    ImageReference2D image(ImageFormat::RGBA, ImageType::UnsignedByte, {0xfe, 0xed}, nullptr);
+    ImageReference2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {0xfe, 0xed}, nullptr);
     CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "\xFE\xED", TestSuite::Compare::FileToString);

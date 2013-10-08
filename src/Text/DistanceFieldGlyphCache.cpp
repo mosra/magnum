@@ -24,10 +24,10 @@
 
 #include "DistanceFieldGlyphCache.h"
 
-#include "Extensions.h"
 #ifndef CORRADE_NO_ASSERT
-#include "ImageFormat.h"
+#include "ColorFormat.h"
 #endif
+#include "Extensions.h"
 #include "ImageReference.h"
 #include "TextureFormat.h"
 #include "TextureTools/DistanceField.h"
@@ -58,18 +58,18 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
     const TextureFormat internalFormat = TextureFormat::R8;
-    CORRADE_ASSERT(image.format() == ImageFormat::Red,
-        "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
+    CORRADE_ASSERT(image.format() == ColorFormat::Red,
+        "Text::DistanceFieldGlyphCache::setImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
     #else
     TextureFormat internalFormat;
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
         internalFormat = TextureFormat::Red;
-        CORRADE_ASSERT(image.format() == ImageFormat::Red,
-            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
+        CORRADE_ASSERT(image.format() == ColorFormat::Red,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
     } else {
         internalFormat = TextureFormat::Luminance;
-        CORRADE_ASSERT(image.format() == ImageFormat::Luminance,
-            "Text::DistanceFieldGlyphCache::setImage(): expected" << ImageFormat::Luminance << "but got" << image.format(), );
+        CORRADE_ASSERT(image.format() == ColorFormat::Luminance,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << ColorFormat::Luminance << "but got" << image.format(), );
     }
     #endif
 
@@ -85,16 +85,16 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageRefere
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image) {
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
-    CORRADE_ASSERT(image.format() == ImageFormat::Red,
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
+    CORRADE_ASSERT(image.format() == ColorFormat::Red,
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
     #else
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>())
-        CORRADE_ASSERT(image.format() == ImageFormat::Red,
-            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ImageFormat::Red << "but got" << image.format(), );
+        CORRADE_ASSERT(image.format() == ColorFormat::Red,
+            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
 
     /* Luminance is not renderable in most cases */
-    else CORRADE_ASSERT(image.format() == ImageFormat::RGB,
-            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ImageFormat::RGB << "but got" << image.format(), );
+    else CORRADE_ASSERT(image.format() == ColorFormat::RGB,
+            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::RGB << "but got" << image.format(), );
     #endif
 
     texture().setSubImage(0, offset, image);

@@ -46,7 +46,7 @@ data from e.g. Image. Example configuration of high quality texture with
 trilinear anisotropic filtering, i.e. the best you can ask for:
 @code
 void* data;
-Image2D image({4096, 4096}, ImageFormat::RGBA, ImageType::UnsignedByte, data);
+Image2D image({4096, 4096}, ColorFormat::RGBA, ColorType::UnsignedByte, data);
 
 Texture2D texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
@@ -89,7 +89,7 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* data = ...;
-    Image2D image({64, 64}, ImageFormat::RGBA, ImageType::UnsignedByte, image);
+    Image2D image({64, 64}, ColorFormat::RGBA, ColorType::UnsignedByte, image);
     texture.setSubImage(0, Vector3i::zAxis(i), image);
 }
 

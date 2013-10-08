@@ -51,12 +51,12 @@ set(Magnum_SRCS
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
+    ColorFormat.cpp
     Context.cpp
     DebugMarker.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
-    ImageFormat.cpp
     Mesh.cpp
     MeshView.cpp
     OpenGL.cpp
@@ -107,6 +107,7 @@ set(Magnum_HEADERS
     Array.h
     Buffer.h
     Color.h
+    ColorFormat.h
     Context.h
     CubeMapTexture.h
     DebugMarker.h

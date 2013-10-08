@@ -48,7 +48,7 @@ calling setStorage() or by passing properly sized empty Image to setImage().
 Example: array with 16 layers of cube map faces, each face consisting of six
 64x64 images:
 @code
-Image3D dummy({64, 64, 16*6}, ImageFormat::RGBA, ImageType::UnsignedByte, nullptr);
+Image3D dummy({64, 64, 16*6}, ColorFormat::RGBA, ColorType::UnsignedByte, nullptr);
 
 CubeMapTextureArray texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
@@ -57,7 +57,7 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
 
 for(std::size_t i = 0; i != 16; ++i) {
     void* dataPositiveX = ...;
-    Image2D imagePositiveX({64, 64}, ImageFormat::RGBA, ImageType::UnsignedByte, imagePositiveX);
+    Image2D imagePositiveX({64, 64}, ColorFormat::RGBA, ColorType::UnsignedByte, imagePositiveX);
     // ...
     texture.setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, {}, imagePositiveX);
     texture.setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, {}, imageNegativeX);

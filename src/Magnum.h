@@ -347,6 +347,12 @@ template<class> class BasicColor4;
 typedef BasicColor3<Float> Color3;
 typedef BasicColor4<Float> Color4;
 
+enum class ColorFormat: GLenum;
+enum class ColorType: GLenum;
+/** @todo Remove this when dropping backward compatibility */
+typedef ColorFormat ImageFormat;
+typedef ColorType ColorType;
+
 enum class Version: Int;
 class Context;
 class CubeMapTexture;
@@ -366,9 +372,6 @@ template<UnsignedInt> class Image;
 typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
-
-enum class ImageFormat: GLenum;
-enum class ImageType: GLenum;
 
 template<UnsignedInt> class ImageReference;
 typedef ImageReference<1> ImageReference1D;

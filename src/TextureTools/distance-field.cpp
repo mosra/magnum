@@ -26,8 +26,8 @@
 #include <PluginManager/Manager.h>
 
 #include "Math/Geometry/Rectangle.h"
+#include "ColorFormat.h"
 #include "Image.h"
-#include "ImageFormat.h"
 #include "Renderer.h"
 #include "Texture.h"
 #include "TextureFormat.h"
@@ -90,7 +90,7 @@ int DistanceFieldConverter::exec() {
         return 1;
     }
 
-    if(image->format() != ImageFormat::Red) {
+    if(image->format() != ColorFormat::Red) {
         Error() << "Unsupported image format" << image->format();
         return 1;
     }
@@ -113,7 +113,7 @@ int DistanceFieldConverter::exec() {
     TextureTools::distanceField(input, output, {{}, args.value<Vector2i>("output-size")}, args.value<Int>("radius"), image->size());
 
     /* Save image */
-    Image2D result(ImageFormat::Red, ImageType::UnsignedByte);
+    Image2D result(ColorFormat::Red, ColorType::UnsignedByte);
     output.image(0, result);
     if(!converter->exportToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");

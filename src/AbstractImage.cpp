@@ -26,117 +26,117 @@
 
 #include <Utility/Assert.h>
 
-#include "ImageFormat.h"
+#include "ColorFormat.h"
 
 namespace Magnum {
 
-std::size_t AbstractImage::pixelSize(ImageFormat format, ImageType type) {
+std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
     std::size_t size = 0;
     switch(type) {
-        case ImageType::UnsignedByte:
+        case ColorType::UnsignedByte:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageType::Byte:
+        case ColorType::Byte:
         #endif
             size = 1; break;
-        case ImageType::UnsignedShort:
+        case ColorType::UnsignedShort:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageType::Short:
+        case ColorType::Short:
         #endif
-        case ImageType::HalfFloat:
+        case ColorType::HalfFloat:
             size = 2; break;
-        case ImageType::UnsignedInt:
+        case ColorType::UnsignedInt:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageType::Int:
+        case ColorType::Int:
         #endif
-        case ImageType::Float:
+        case ColorType::Float:
             size = 4; break;
 
         #ifndef MAGNUM_TARGET_GLES
-        case ImageType::UnsignedByte332:
-        case ImageType::UnsignedByte233Rev:
+        case ColorType::UnsignedByte332:
+        case ColorType::UnsignedByte233Rev:
             return 1;
         #endif
-        case ImageType::UnsignedShort565:
+        case ColorType::UnsignedShort565:
         #ifndef MAGNUM_TARGET_GLES
-        case ImageType::UnsignedShort565Rev:
+        case ColorType::UnsignedShort565Rev:
         #endif
-        case ImageType::UnsignedShort4444:
+        case ColorType::UnsignedShort4444:
         #ifndef MAGNUM_TARGET_GLES3
-        case ImageType::UnsignedShort4444Rev:
+        case ColorType::UnsignedShort4444Rev:
         #endif
-        case ImageType::UnsignedShort5551:
+        case ColorType::UnsignedShort5551:
         #ifndef MAGNUM_TARGET_GLES3
-        case ImageType::UnsignedShort1555Rev:
+        case ColorType::UnsignedShort1555Rev:
         #endif
             return 2;
         #ifndef MAGNUM_TARGET_GLES
-        case ImageType::UnsignedInt8888:
-        case ImageType::UnsignedInt8888Rev:
-        case ImageType::UnsignedInt1010102:
+        case ColorType::UnsignedInt8888:
+        case ColorType::UnsignedInt8888Rev:
+        case ColorType::UnsignedInt1010102:
         #endif
-        case ImageType::UnsignedInt2101010Rev:
+        case ColorType::UnsignedInt2101010Rev:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageType::UnsignedInt10F11F11FRev:
-        case ImageType::UnsignedInt5999Rev:
+        case ColorType::UnsignedInt10F11F11FRev:
+        case ColorType::UnsignedInt5999Rev:
         #endif
-        case ImageType::UnsignedInt248:
+        case ColorType::UnsignedInt248:
             return 4;
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageType::Float32UnsignedInt248Rev:
+        case ColorType::Float32UnsignedInt248Rev:
             return 8;
         #endif
     }
 
     switch(format) {
-        case ImageFormat::Red:
+        case ColorFormat::Red:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageFormat::RedInteger:
+        case ColorFormat::RedInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case ImageFormat::Green:
-        case ImageFormat::Blue:
-        case ImageFormat::GreenInteger:
-        case ImageFormat::BlueInteger:
+        case ColorFormat::Green:
+        case ColorFormat::Blue:
+        case ColorFormat::GreenInteger:
+        case ColorFormat::BlueInteger:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case ImageFormat::Luminance:
+        case ColorFormat::Luminance:
         #endif
             return 1*size;
-        case ImageFormat::RG:
+        case ColorFormat::RG:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageFormat::RGInteger:
+        case ColorFormat::RGInteger:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case ImageFormat::LuminanceAlpha:
+        case ColorFormat::LuminanceAlpha:
         #endif
             return 2*size;
-        case ImageFormat::RGB:
+        case ColorFormat::RGB:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageFormat::RGBInteger:
+        case ColorFormat::RGBInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case ImageFormat::BGR:
-        case ImageFormat::BGRInteger:
+        case ColorFormat::BGR:
+        case ColorFormat::BGRInteger:
         #endif
             return 3*size;
-        case ImageFormat::RGBA:
+        case ColorFormat::RGBA:
         #ifndef MAGNUM_TARGET_GLES2
-        case ImageFormat::RGBAInteger:
+        case ColorFormat::RGBAInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES3
-        case ImageFormat::BGRA:
+        case ColorFormat::BGRA:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case ImageFormat::BGRAInteger:
+        case ColorFormat::BGRAInteger:
         #endif
             return 4*size;
 
         /* Handled above */
-        case ImageFormat::DepthComponent:
+        case ColorFormat::DepthComponent:
         #ifndef MAGNUM_TARGET_GLES3
-        case ImageFormat::StencilIndex:
+        case ColorFormat::StencilIndex:
         #endif
-        case ImageFormat::DepthStencil:
+        case ColorFormat::DepthStencil:
             CORRADE_ASSERT_UNREACHABLE();
     }
 

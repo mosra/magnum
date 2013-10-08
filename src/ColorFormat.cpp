@@ -22,16 +22,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "ImageFormat.h"
+#include "ColorFormat.h"
 
 #include <Utility/Debug.h>
 
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, ImageFormat value) {
+Debug operator<<(Debug debug, const ColorFormat value) {
     switch(value) {
-        #define _c(value) case ImageFormat::value: return debug << "ImageFormat::" #value;
+        #define _c(value) case ColorFormat::value: return debug << "ColorFormat::" #value;
         _c(Red)
         #ifndef MAGNUM_TARGET_GLES
         _c(Green)
@@ -74,12 +74,12 @@ Debug operator<<(Debug debug, ImageFormat value) {
         #undef _c
     }
 
-    return debug << "ImageFormat::(invalid)";
+    return debug << "ColorFormat::(invalid)";
 }
 
-Debug operator<<(Debug debug, ImageType value) {
+Debug operator<<(Debug debug, const ColorType value) {
     switch(value) {
-        #define _c(value) case ImageType::value: return debug << "ImageType::" #value;
+        #define _c(value) case ColorType::value: return debug << "ColorType::" #value;
         _c(UnsignedByte)
         #ifndef MAGNUM_TARGET_GLES2
         _c(Byte)
@@ -127,7 +127,7 @@ Debug operator<<(Debug debug, ImageType value) {
         #undef _c
     }
 
-    return debug << "ImageType::(invalid)";
+    return debug << "ColorType::(invalid)";
 }
 #endif
 

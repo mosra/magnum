@@ -54,7 +54,7 @@ See Texture documentation for introduction.
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. set of Image objects:
 @code
-Image2D positiveX({256, 256}, ImageFormat::RGBA, ImageType::UnsignedByte, dataPositiveX);
+Image2D positiveX({256, 256}, ColorFormat::RGBA, ColorType::UnsignedByte, dataPositiveX);
 // ...
 
 CubeMapTexture texture;

@@ -24,7 +24,7 @@
 
 #include <TestSuite/Tester.h>
 
-#include "ImageFormat.h"
+#include "ColorFormat.h"
 #include "Trade/ImageData.h"
 
 namespace Magnum { namespace Trade { namespace Test {
@@ -46,36 +46,36 @@ ImageDataTest::ImageDataTest() {
 
 void ImageDataTest::moveConstructor() {
     unsigned char* data = new unsigned char[3];
-    Trade::ImageData2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
+    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     Trade::ImageData2D b(std::move(a));
     CORRADE_VERIFY(!a.data());
-    CORRADE_COMPARE(b.format(), ImageFormat::Red);
-    CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), ColorFormat::Red);
+    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_VERIFY(b.data() == data);
 }
 
 void ImageDataTest::moveAssignment() {
     unsigned char* data = new unsigned char[3];
-    Trade::ImageData2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
+    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
-    Trade::ImageData2D b(ImageFormat::Red, ImageType::UnsignedByte, {}, nullptr);
+    Trade::ImageData2D b(ColorFormat::Red, ColorType::UnsignedByte, {}, nullptr);
     b = std::move(a);
     CORRADE_VERIFY(!a.data());
-    CORRADE_COMPARE(b.format(), ImageFormat::Red);
-    CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), ColorFormat::Red);
+    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_VERIFY(b.data() == data);
 }
 
 void ImageDataTest::toReference() {
     unsigned char* data = new unsigned char[3];
-    Trade::ImageData2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
+    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     ImageReference2D b = a;
-    CORRADE_COMPARE(b.format(), ImageFormat::Red);
-    CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), ColorFormat::Red);
+    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 }

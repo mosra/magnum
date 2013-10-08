@@ -54,13 +54,13 @@ class MAGNUM_EXPORT AbstractImage {
          *
          * @see pixelSize() const
          */
-        static std::size_t pixelSize(ImageFormat format, ImageType type);
+        static std::size_t pixelSize(ColorFormat format, ColorType type);
 
         /** @brief Format of pixel data */
-        constexpr ImageFormat format() const { return _format; }
+        constexpr ColorFormat format() const { return _format; }
 
         /** @brief Data type of pixel data */
-        constexpr ImageType type() const { return _type; }
+        constexpr ColorType type() const { return _type; }
 
         /**
          * @brief Pixel size (in bytes)
@@ -75,7 +75,7 @@ class MAGNUM_EXPORT AbstractImage {
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          */
-        constexpr explicit AbstractImage(ImageFormat format, ImageType type): _format(format), _type(type) {}
+        constexpr explicit AbstractImage(ColorFormat format, ColorType type): _format(format), _type(type) {}
 
         ~AbstractImage() = default;
 
@@ -84,8 +84,8 @@ class MAGNUM_EXPORT AbstractImage {
     #else
     protected:
     #endif
-        ImageFormat _format;
-        ImageType _type;
+        ColorFormat _format;
+        ColorType _type;
 };
 
 }

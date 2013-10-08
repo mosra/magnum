@@ -150,7 +150,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     AbstractFramebuffer& operator=(AbstractFramebuffer&&) = delete;
 
     public:
-        /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh). Also for consistency it might be good to rename ImageFormat and ImageType to `ColorFormat` and `ColorType` (@extension{ARB,ES2_compatibility}). */
+        /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@extension{ARB,ES2_compatibility}). */
 
         /**
          * @brief Max supported viewport size
@@ -357,10 +357,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
         #endif
 
-        typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, ImageFormat, ImageType, std::size_t, GLvoid*);
-        static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ImageFormat format, ImageType type, std::size_t dataSize, GLvoid* data);
+        typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
+        static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES3
-        static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ImageFormat format, ImageType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         #endif
         static ReadImplementation MAGNUM_LOCAL readImplementation;
 };
