@@ -44,8 +44,8 @@ namespace Magnum { namespace Trade {
 /**
 @brief TGA image converter
 
-Supports images with format @ref ImageFormat::BGR, @ref ImageFormat::BGRA or
-@ref ImageFormat::Red and type @ref ImageType::UnsignedByte.
+Supports images with format @ref ColorFormat::BGR, @ref ColorFormat::BGRA or
+@ref ColorFormat::Red and type @ref ColorType::UnsignedByte.
 */
 class MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:

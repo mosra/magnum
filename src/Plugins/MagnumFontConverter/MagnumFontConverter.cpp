@@ -27,8 +27,8 @@
 #include <sstream>
 #include <Containers/Array.h>
 #include <Utility/Directory.h>
+#include <ColorFormat.h>
 #include <Image.h>
-#include <ImageFormat.h>
 #include <Text/GlyphCache.h>
 #include <Text/AbstractFont.h>
 #include <TgaImageConverter/TgaImageConverter.h>
@@ -102,7 +102,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
     /* Save cache image */
-    Image2D image(ImageFormat::Red, ImageType::UnsignedByte);
+    Image2D image(ColorFormat::Red, ColorType::UnsignedByte);
     cache.texture().image(0, image);
     auto tgaData = Trade::TgaImageConverter().exportToData(image);
 

@@ -28,7 +28,7 @@
 #include <sstream>
 #include <Utility/Endianness.h>
 #include <Containers/Array.h>
-#include <ImageFormat.h>
+#include <ColorFormat.h>
 #include <Trade/ImageData.h>
 
 #ifdef MAGNUM_TARGET_GLES
@@ -89,7 +89,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     header.height = Utility::Endianness::littleEndian(header.height);
 
     /* Image format */
-    ImageFormat format;
+    ColorFormat format;
     if(header.colorMapType != 0) {
         Error() << "Trade::TgaImporter::image2D(): paletted files are not supported";
         return std::nullopt;
@@ -100,16 +100,16 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
         switch(header.bpp) {
             case 24:
                 #ifndef MAGNUM_TARGET_GLES
-                format = ImageFormat::BGR;
+                format = ColorFormat::BGR;
                 #else
-                format = ImageFormat::RGB;
+                format = ColorFormat::RGB;
                 #endif
                 break;
             case 32:
                 #ifndef MAGNUM_TARGET_GLES
-                format = ImageFormat::BGRA;
+                format = ColorFormat::BGRA;
                 #else
-                format = ImageFormat::RGBA;
+                format = ColorFormat::RGBA;
                 #endif
                 break;
             default:
@@ -121,9 +121,9 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     } else if(header.imageType == 3) {
         #ifdef MAGNUM_TARGET_GLES
         format = Context::current() && Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
-            ImageFormat::Red : ImageFormat::Luminance;
+            ColorFormat::Red : ColorFormat::Luminance;
         #else
-        format = ImageFormat::Red;
+        format = ColorFormat::Red;
         #endif
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
@@ -143,18 +143,18 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     Vector2i size(header.width, header.height);
 
     #ifdef MAGNUM_TARGET_GLES
-    if(format == ImageFormat::RGB) {
+    if(format == ColorFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data);
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
-    } else if(format == ImageFormat::RGBA) {
+    } else if(format == ColorFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data);
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
     #endif
 
-    return ImageData2D(format, ImageType::UnsignedByte, size, data);
+    return ImageData2D(format, ColorType::UnsignedByte, size, data);
 }
 
 }}
