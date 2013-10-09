@@ -91,6 +91,14 @@ enum class Version: Int {
     #endif
 };
 
+#if defined(CORRADE_GCC44_COMPATIBILITY) && !defined(DOXYGEN_GENERATING_OUTPUT)
+/* GCC 4.4 somehow doesn't have comparison operators for strongly-typed enums */
+inline bool operator<=(Version a, Version b) { return Int(a) <= Int(b); }
+inline bool operator>=(Version a, Version b) { return Int(a) >= Int(b); }
+inline bool operator<(Version a, Version b) { return Int(a) < Int(b); }
+inline bool operator>(Version a, Version b) { return Int(a) > Int(b); }
+#endif
+
 /** @debugoperator{Magnum::Context} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Version value);
 
@@ -303,11 +311,7 @@ class MAGNUM_EXPORT Context {
          * @see supportedVersion(), MAGNUM_ASSERT_VERSION_SUPPORTED()
          */
         bool isVersionSupported(Version version) const {
-            #ifndef CORRADE_GCC44_COMPATIBILITY
             return _version >= version;
-            #else
-            return static_cast<GLint>(_version) >= static_cast<GLint>(version);
-            #endif
         }
 
         /**
