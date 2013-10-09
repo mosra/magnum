@@ -1015,7 +1015,11 @@ inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
 #ifndef MAGNUM_TARGET_GLES
 template<class T> Containers::Array<T> inline Buffer::data() {
     const Int bufferSize = size();
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     CORRADE_ASSERT(bufferSize%sizeof(T) == 0, "Buffer::data(): the buffer size is" << bufferSize << "bytes, which can't be expressed as array of types with size" << sizeof(T), nullptr);
+    #else
+    CORRADE_ASSERT(bufferSize%sizeof(T) == 0, "Buffer::data(): the buffer size is" << bufferSize << "bytes, which can't be expressed as array of types with size" << sizeof(T), {});
+    #endif
     return subData<T>(0, bufferSize/sizeof(T));
 }
 
