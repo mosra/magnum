@@ -366,13 +366,19 @@ class GlutApplication::InputEvent {
     protected:
         constexpr InputEvent(): _accepted(false) {}
 
+        #ifndef CORRADE_GCC45_COMPATIBILITY
+        ~InputEvent() = default;
+        #else
         ~InputEvent();
+        #endif
 
     private:
         bool _accepted;
 };
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
 GlutApplication::InputEvent::~InputEvent() = default;
+#endif
 
 /**
 @brief Key event

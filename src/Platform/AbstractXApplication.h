@@ -289,7 +289,11 @@ class AbstractXApplication::InputEvent {
     protected:
         constexpr InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
 
+        #ifndef CORRADE_GCC45_COMPATIBILITY
+        ~InputEvent() = default;
+        #else
         ~InputEvent();
+        #endif
     #endif
 
     private:
@@ -297,7 +301,9 @@ class AbstractXApplication::InputEvent {
         bool _accepted;
 };
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
 AbstractXApplication::InputEvent::~InputEvent() = default;
+#endif
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
 

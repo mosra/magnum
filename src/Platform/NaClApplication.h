@@ -410,13 +410,21 @@ class NaClApplication::InputEvent {
     protected:
         constexpr InputEvent(Modifiers modifiers): _accepted(false), _modifiers(modifiers) {}
 
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         ~InputEvent() = default;
+        #else
+        ~InputEvent();
+        #endif
     #endif
 
     private:
         bool _accepted;
         const Modifiers _modifiers;
 };
+
+#ifdef CORRADE_GCC45_COMPATIBILITY
+NaClApplication::InputEvent::~InputEvent() = default;
+#endif
 
 /**
 @brief Key event

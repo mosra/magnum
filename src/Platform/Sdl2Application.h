@@ -349,14 +349,20 @@ class Sdl2Application::InputEvent {
     protected:
         constexpr explicit InputEvent(): _accepted(false) {}
 
+        #ifndef CORRADE_GCC45_COMPATIBILITY
+        ~InputEvent() = default;
+        #else
         ~InputEvent();
+        #endif
     #endif
 
     private:
         bool _accepted;
 };
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
 Sdl2Application::InputEvent::~InputEvent() = default;
+#endif
 
 /**
 @brief Key event
