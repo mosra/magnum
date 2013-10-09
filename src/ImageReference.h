@@ -63,7 +63,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        constexpr explicit ImageReference(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -74,7 +74,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * Data pointer is set to zero, call setData() to fill the image with
          * data.
          */
-        constexpr explicit ImageReference(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
         constexpr typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }

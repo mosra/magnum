@@ -40,6 +40,9 @@ namespace Magnum {
 @brief Global renderer configuration.
 
 @todo @extension{ARB,viewport_array}
+@todo `GL_POINT_SIZE_GRANULARITY`, `GL_POINT_SIZE_RANGE` (?)
+@todo `GL_STEREO`, `GL_DOUBLEBUFFER` (?)
+@todo `GL_MAX_CLIP_DISTANCES`...
 */
 class MAGNUM_EXPORT Renderer {
     friend class Context;

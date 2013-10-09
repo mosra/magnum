@@ -40,7 +40,7 @@ namespace Magnum { namespace DebugTools {
 /**
 @brief Force renderer options
 
-See ForceRenderer documentation for more information.
+See @ref ForceRenderer documentation for more information.
 */
 class ForceRendererOptions {
     public:
@@ -99,7 +99,7 @@ Vector3 force;
 new DebugTools::ForceRenderer2D(object, {0.3f, 1.5f, -0.7f}, &force, "my", debugDrawables);
 @endcode
 
-@see ForceRenderer2D, ForceRenderer3D
+@see @ref ForceRenderer2D, @ref ForceRenderer3D, @ref ForceRendererOptions
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:

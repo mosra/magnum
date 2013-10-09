@@ -57,12 +57,12 @@ set(Magnum_SRCS
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
+    ColorFormat.cpp
     Context.cpp
     DebugMarker.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
-    ImageFormat.cpp
     Mesh.cpp
     MeshView.cpp
     OpenGL.cpp
@@ -113,6 +113,7 @@ set(Magnum_HEADERS
     Array.h
     Buffer.h
     Color.h
+    ColorFormat.h
     Context.h
     CubeMapTexture.h
     DebugMarker.h
@@ -143,18 +144,18 @@ set(Magnum_HEADERS
 
     magnumVisibility.h)
 
-# Desktop-only headers
+# Desktop-only headers and libraries
 if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferTexture.h
         CubeMapTextureArray.h)
+    set(Magnum_OBJECTS ${Magnum_OBJECTS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Not-ES2 headers
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h)
-    set(Magnum_OBJECTS ${Magnum_OBJECTS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Files shared between main library and math unit test library

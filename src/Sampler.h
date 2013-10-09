@@ -39,7 +39,7 @@ namespace Magnum {
 
 @see Texture, CubeMapTexture, CubeMapTextureArray
 */
-class Sampler {
+class MAGNUM_EXPORT Sampler {
     public:
         /**
          * @brief %Texture filtering
@@ -144,7 +144,14 @@ class Sampler {
          * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
          * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
-        static Float maxSupportedAnisotropy();
+        static Float maxAnisotropy();
+
+        /**
+         * @copybrief maxAnisotropy()
+         * @deprecated Use @ref Magnum::Shader::maxAnisotropy() "maxAnisotropy()"
+         *      instead.
+         */
+        static Float maxSupportedAnisotropy() { return maxAnisotropy(); }
         #endif
 };
 

@@ -47,6 +47,51 @@ FramebufferTarget AbstractFramebuffer::readTarget = FramebufferTarget::ReadDraw;
 FramebufferTarget AbstractFramebuffer::drawTarget = FramebufferTarget::ReadDraw;
 #endif
 
+Vector2i AbstractFramebuffer::maxViewportSize() {
+    Vector2i& value = Context::current()->state().framebuffer->maxViewportSize;
+
+    /* Get the value, if not already cached */
+    if(value == Vector2i())
+        glGetIntegerv(GL_MAX_VIEWPORT_DIMS, value.data());
+
+    return value;
+}
+
+Int AbstractFramebuffer::maxDrawBuffers() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::draw_buffers>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current()->state().framebuffer->maxDrawBuffers;
+
+    /* Get the value, if not already cached */
+    if(value == 0) {
+        #ifndef MAGNUM_TARGET_GLES2
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &value);
+        #else
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS_NV, &value);
+        #endif
+    }
+
+    return value;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>())
+        return 0;
+
+    GLint& value = Context::current()->state().framebuffer->maxDualSourceDrawBuffers;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS, &value);
+
+    return value;
+}
+#endif
+
 void AbstractFramebuffer::bind(FramebufferTarget target) {
     bindInternal(target);
     setViewportInternal();
@@ -331,12 +376,12 @@ void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
 }
 #endif
 
-void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ImageFormat format, const ImageType type, const std::size_t, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
     glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES3
-void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ImageFormat format, const ImageType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     /** @todo Enable when extension wrangler for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), dataSize, data);

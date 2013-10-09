@@ -53,7 +53,7 @@ polluted.
 
 @section getting-started-review Review project structure
 
-The base project consists of just seven files in two subfolders. %Magnum uses
+The base project consists of just six files in two subfolders. %Magnum uses
 CMake build system, see @ref cmake for more information.
 
     modules/FindCorrade.cmake
@@ -153,6 +153,9 @@ open root `CMakeLists.txt` in QtCreator, let it import the project and then
 just build and run the application. If CMake isn't able to find the
 dependencies or the building fails for some reason, you might want to look at
 @ref building-windows-troubleshooting.
+
+If CMake complains about `GlutApplication` missing, you forgot to enable
+`WITH_GLUTAPPLICATION` when building %Magnum, @ref getting-started-download "go back and fix it".
 
 @image html getting-started.png
 @image latex getting-started.png

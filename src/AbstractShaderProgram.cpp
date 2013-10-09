@@ -76,8 +76,8 @@ AbstractShaderProgram::UniformMatrix3x4dvImplementation AbstractShaderProgram::u
 AbstractShaderProgram::UniformMatrix4x3dvImplementation AbstractShaderProgram::uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
 #endif
 
-Int AbstractShaderProgram::maxSupportedVertexAttributeCount() {
-    GLint& value = Context::current()->state().shaderProgram->maxSupportedVertexAttributeCount;
+Int AbstractShaderProgram::maxVertexAttributes() {
+    GLint& value = Context::current()->state().shaderProgram->maxVertexAttributes;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -85,6 +85,153 @@ Int AbstractShaderProgram::maxSupportedVertexAttributeCount() {
 
     return value;
 }
+
+#ifndef MAGNUM_TARGET_GLES
+Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+        return 0;
+
+    GLint& value = Context::current()->state().shaderProgram->maxAtomicCounterBufferSize;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_ATOMIC_COUNTER_BUFFER_SIZE, &value);
+
+    return value;
+}
+
+Int AbstractShaderProgram::maxComputeSharedMemorySize() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+        return 0;
+
+    GLint& value = Context::current()->state().shaderProgram->maxComputeSharedMemorySize;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, &value);
+
+    return value;
+}
+
+Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+        return 0;
+
+    GLint& value = Context::current()->state().shaderProgram->maxComputeWorkGroupInvocations;
+
+    /** @todo Fix when glLoadGen has `GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS` */
+    if(value == 0)
+        glGetIntegerv(/*GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS*/0x90EB, &value);
+
+    return value;
+}
+
+Int AbstractShaderProgram::maxImageUnits() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        return 0;
+
+    GLint& value = Context::current()->state().shaderProgram->maxImageUnits;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_IMAGE_UNITS, &value);
+
+    return value;
+}
+
+Int AbstractShaderProgram::maxImageSamples() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        return 0;
+
+    GLint& value = Context::current()->state().shaderProgram->maxImageSamples;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_IMAGE_SAMPLES, &value);
+
+    return value;
+}
+
+Int AbstractShaderProgram::maxCombinedShaderOutputResources() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() || !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        return 0;
+
+    GLint& value = Context::current()->state().shaderProgram->maxCombinedShaderOutputResources;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES, &value);
+
+    return value;
+}
+
+Long AbstractShaderProgram::maxShaderStorageBlockSize() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+        return 0;
+
+    GLint64& value = Context::current()->state().shaderProgram->maxShaderStorageBlockSize;
+
+    if(value == 0)
+        glGetInteger64v(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &value);
+
+    return value;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+Int AbstractShaderProgram::maxUniformBlockSize() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current()->state().shaderProgram->maxUniformBlockSize;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &value);
+
+    return value;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+Int AbstractShaderProgram::maxUniformLocations() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+        return 0;
+
+    GLint& value = Context::current()->state().shaderProgram->maxUniformLocations;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_UNIFORM_LOCATIONS, &value);
+
+    return value;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+Int AbstractShaderProgram::minTexelOffset() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current()->state().shaderProgram->minTexelOffset;
+
+    if(value == 0)
+        glGetIntegerv(GL_MIN_PROGRAM_TEXEL_OFFSET, &value);
+
+    return value;
+}
+
+Int AbstractShaderProgram::maxTexelOffset() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current()->state().shaderProgram->maxTexelOffset;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_PROGRAM_TEXEL_OFFSET, &value);
+
+    return value;
+}
+#endif
 
 AbstractShaderProgram::AbstractShaderProgram(): _id(glCreateProgram()) {}
 

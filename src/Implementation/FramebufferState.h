@@ -31,10 +31,19 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    constexpr FramebufferState(): readBinding(0), drawBinding(0), renderbufferBinding(0) {}
+    constexpr FramebufferState(): readBinding(0), drawBinding(0), renderbufferBinding(0), maxDrawBuffers(0), maxColorAttachments(0), maxRenderbufferSize(0), maxSamples(0)
+        #ifndef MAGNUM_TARGET_GLES
+        , maxDualSourceDrawBuffers(0)
+        #endif
+        {}
 
     GLuint readBinding, drawBinding, renderbufferBinding;
+    GLint maxDrawBuffers, maxColorAttachments, maxRenderbufferSize, maxSamples;
+    #ifndef MAGNUM_TARGET_GLES
+    GLint maxDualSourceDrawBuffers;
+    #endif
     Rectanglei viewport;
+    Vector2i maxViewportSize;
 };
 
 }}

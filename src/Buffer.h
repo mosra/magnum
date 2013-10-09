@@ -106,7 +106,9 @@ The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl{BindBuffer}. If the buffer is already bound to some target, functions
 copy(), setData(), setSubData(), map(), flushMappedRange() and unmap() use
 that target instead of binding the buffer to some specific target. You can
-also use setTargetHint() to possibly reduce unnecessary rebinding.
+also use setTargetHint() to possibly reduce unnecessary rebinding. %Buffer
+limits and implementation-defined values (such as @ref maxVertexAttributeBindings())
+are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, functions
 copy(), setData(), setSubData(), map(), flushMappedRange() and unmap() use DSA
@@ -428,6 +430,73 @@ class MAGNUM_EXPORT Buffer {
          */
         typedef Containers::EnumSet<MapFlag, GLbitfield> MapFlags;
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Minimal supported mapping alignment
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @ref map(), @fn_gl{Get} with @def_gl{MIN_MAP_BUFFER_ALIGNMENT}
+         * @requires_gl No minimal value is specified for OpenGL ES.
+         */
+        static Int minMapAlignment();
+
+        /**
+         * @brief Max supported atomic counter buffer binding count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
+         * not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
+         */
+        static Int maxAtomicCounterBindings();
+
+        /**
+         * @brief Max supported shader storage buffer binding count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
+         * is not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
+         */
+        static Int maxShaderStorageBindings();
+
+        /**
+         * @brief Alignment of shader storage buffer binding offset
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
+         * is not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
+         */
+        static Int shaderStorageOffsetAlignment();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Max supported uniform buffer binding count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
+         * is not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
+         */
+        static Int maxUniformBindings();
+        #endif
+
+        /**
+         * @brief Max supported vertex buffer binding count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @fn_gl{Get} with @def_gl{MAX_VERTEX_ATTRIB_BINDINGS}
+         */
+        static Int maxVertexAttributeBindings();
+
         /**
          * @brief Unbind any buffer from given target
          * @param target    %Target
@@ -724,8 +793,9 @@ class MAGNUM_EXPORT Buffer {
          * before the operation.
          * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
-         * @see unmap(), setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{MapBuffer}
-         *      or @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access}
+         * @see @ref minMapAlignment(), @ref unmap(), @ref setTargetHint(),
+         *      @fn_gl{BindBuffer} and @fn_gl{MapBuffer} or
+         *      @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} in
          *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      in OpenGL ES 3.0 instead.
@@ -767,7 +837,8 @@ class MAGNUM_EXPORT Buffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @see flushMappedRange(), unmap(), map(MapAccess), setTargetHint(), @fn_gl{BindBuffer}
+         * @see @ref minMapAlignment(), @ref flushMappedRange(), @ref unmap(),
+         *      @ref map(MapAccess), @ref setTargetHint(), @fn_gl{BindBuffer}
          *      and @fn_gl{MapBufferRange} or @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}

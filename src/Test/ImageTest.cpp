@@ -24,8 +24,8 @@
 
 #include <TestSuite/Tester.h>
 
+#include "ColorFormat.h"
 #include "Image.h"
-#include "ImageFormat.h"
 
 namespace Magnum { namespace Test {
 
@@ -46,36 +46,36 @@ ImageTest::ImageTest() {
 
 void ImageTest::moveConstructor() {
     unsigned char* data = new unsigned char[3];
-    Image2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
+    Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     Image2D b(std::move(a));
     CORRADE_VERIFY(!a.data());
-    CORRADE_COMPARE(b.format(), ImageFormat::Red);
-    CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), ColorFormat::Red);
+    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_VERIFY(b.data() == data);
 }
 
 void ImageTest::moveAssignment() {
     unsigned char* data = new unsigned char[3];
-    Image2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
+    Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
-    Image2D b(ImageFormat::Red, ImageType::UnsignedByte);
+    Image2D b(ColorFormat::Red, ColorType::UnsignedByte);
     b = std::move(a);
     CORRADE_VERIFY(!a.data());
-    CORRADE_COMPARE(b.format(), ImageFormat::Red);
-    CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), ColorFormat::Red);
+    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_VERIFY(b.data() == data);
 }
 
 void ImageTest::toReference() {
     unsigned char* data = new unsigned char[3];
-    Image2D a(ImageFormat::Red, ImageType::UnsignedByte, {1, 3}, data);
+    Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     ImageReference2D b = a;
-    CORRADE_COMPARE(b.format(), ImageFormat::Red);
-    CORRADE_COMPARE(b.type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), ColorFormat::Red);
+    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_VERIFY(b.data() == data);
 }

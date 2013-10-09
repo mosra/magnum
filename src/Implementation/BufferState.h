@@ -43,10 +43,29 @@ struct BufferState {
     static std::size_t indexForTarget(Buffer::Target target);
     static const Buffer::Target targetForIndex[TargetCount-1];
 
-    constexpr BufferState(): bindings() {}
+    constexpr BufferState(): bindings()
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        , minMapAlignment(0), maxAtomicCounterBindings(0), maxShaderStorageBindings(0), shaderStorageOffsetAlignment(0)
+        #endif
+        , maxUniformBindings(0)
+        #endif
+        {}
 
     /* Currently bound buffer for all targets */
     GLuint bindings[TargetCount];
+
+    /* Limits */
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint
+        #ifndef MAGNUM_TARGET_GLES
+        minMapAlignment,
+        maxAtomicCounterBindings,
+        maxShaderStorageBindings,
+        shaderStorageOffsetAlignment,
+        #endif
+        maxUniformBindings;
+    #endif
 };
 
 }}

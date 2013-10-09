@@ -215,7 +215,9 @@ If @extension{APPLE,vertex_array_object}, OpenGL ES 3.0 or
 @es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
 in each draw() call. The engine tracks currently bound VAO to avoid
-unnecessary calls to @fn_gl{BindVertexArray}.
+unnecessary calls to @fn_gl{BindVertexArray}. %Mesh limits and
+implementation-defined values (such as @ref maxVertexAttributes()) are cached,
+so repeated queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} and VAOs are available,
 DSA functions are used for specifying attribute locations to avoid unnecessary
@@ -325,6 +327,40 @@ class MAGNUM_EXPORT Mesh {
              */
             UnsignedInt = GL_UNSIGNED_INT
         };
+
+        /**
+         * @brief Max supported vertex attribute count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. This function is in fact alias to
+         * @ref AbstractShaderProgram::maxVertexAttributes().
+         * @see @ref addVertexBuffer()
+         */
+        static Int maxVertexAttributes();
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Max recommended index count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENTS_INDICES}
+         * @requires_gles30 Ranged element draw is not supported in OpenGL ES
+         *      2.0.
+         */
+        static Int maxElementsIndices();
+
+        /**
+         * @brief Max recommended vertex count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENTS_VERTICES}
+         * @requires_gles30 Ranged element draw is not supported in OpenGL ES
+         *      2.0.
+         */
+        static Int maxElementsVertices();
+        #endif
 
         /**
          * @brief Size of given index type
@@ -466,7 +502,8 @@ class MAGNUM_EXPORT Mesh {
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
          *
-         * @see setPrimitive(), setVertexCount(), @fn_gl{BindVertexArray},
+         * @see @ref maxVertexAttributes(), @ref setPrimitive(),
+         *      @ref setVertexCount(), @fn_gl{BindVertexArray},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
@@ -495,7 +532,8 @@ class MAGNUM_EXPORT Mesh {
          * On OpenGL ES 2.0 this function behaves always as
          * setIndexBuffer(Buffer*, GLintptr, IndexType), as this functionality
          * is not available there.
-         * @see setIndexCount(), MeshTools::compressIndices(),
+         * @see @ref maxElementsIndices(), @ref maxElementsVertices(),
+         *      @ref setIndexCount(), @ref MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */

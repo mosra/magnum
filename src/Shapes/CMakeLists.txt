@@ -46,6 +46,7 @@ set(MagnumShapes_HEADERS
     Box.h
     Capsule.h
     Cylinder.h
+    Collision.h
     Composition.h
     Line.h
     LineSegment.h

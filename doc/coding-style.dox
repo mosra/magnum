@@ -102,11 +102,15 @@ Additionally to @c \@todoc, @c \@debugoperator @c \@configurationvalue and
 
 @subsubsection documentation-commands-collisionoperator Shape collision operators
 
-Out-of-class operators for collision occurence in Shapes namespace should be
-marked with @c \@collisionoccurenceoperator, e.g.:
+Out-of-class operators for collision and collision occurence in Shapes
+namespace should be marked with @c \@collisionoperator and @c \@collisionoccurenceoperator,
+e.g.:
 @code
 // @collisionoccurenceoperator{Point,Sphere}
 inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
+
+// @collisionoperator{Point,Sphere}
+inline Collision operator/(const Point& a, const Sphere& b) { return (b/a).reverted(); }
 @endcode
 They will appear as related functions within documentation of class for which
 the operator is implemented (not of class in which the operator is

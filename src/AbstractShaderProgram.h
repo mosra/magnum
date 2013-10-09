@@ -149,6 +149,7 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 // Link...
 @endcode
 
+@see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 %Extension @extension{EXT,gpu_shader4} for using
     bindFragmentDataLocation().
 @requires_gl33 %Extension @extension{ARB,blend_func_extended} for using
@@ -180,6 +181,7 @@ Int transformationUniform = uniformLocation("transformation");
 Int projectionUniform = uniformLocation("projection");
 @endcode
 
+@see @ref maxUniformLocations()
 @requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
     explicit uniform location instead of using uniformLocation().
 @requires_gl Explicit uniform location is not supported in OpenGL ES. Use
@@ -203,6 +205,7 @@ setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
 setUniform(SpecularTextureUniform, SpecularTextureLayer);
 @endcode
 
+@see @ref Shader::maxTextureImageUnits()
 @requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
     texture layer binding instead of using setUniform(Int, Int).
 @requires_gl Explicit texture layer binding is not supported in OpenGL ES. Use
@@ -272,7 +275,7 @@ See @ref types for more information, only types with GLSL equivalent can be used
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 
 The engine tracks currently used shader program to avoid unnecessary calls to
-@fn_gl{UseProgram}. %Shader limits (such as maxSupportedVertexAttributeCount())
+@fn_gl{UseProgram}. %Shader limits (such as @ref maxVertexAttributes())
 are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{ARB,separate_shader_objects} or
@@ -283,8 +286,11 @@ setUniform() documentation for more information.
 To achieve least state changes, set all uniforms in one run -- method chaining
 comes in handy.
 
+@see @ref portability-shaders
+
 @todo Compiling and linking more than one shader in parallel, then checking
     status, should be faster -- https://twitter.com/g_truc/status/352778836657700866
+@todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram {
     friend class Context;
@@ -297,9 +303,152 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see Attribute, @fn_gl{Get} with @def_gl{MAX_VERTEX_ATTRIBS}
+         * @see @ref Mesh::maxVertexAttributes(),
+         *      @ref AbstractShaderProgram::Attribute, @fn_gl{Get} with
+         *      @def_gl{MAX_VERTEX_ATTRIBS}
          */
-        static Int maxSupportedVertexAttributeCount();
+        static Int maxVertexAttributes();
+
+        /**
+         * @copydoc maxVertexAttributes()
+         * @deprecated Use @ref Magnum::AbstractShaderProgram::maxVertexAttributes() "maxVertexAttributes()"
+         *      instead.
+         */
+        static Int maxSupportedVertexAttributeCount() { return maxVertexAttributes(); }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Max supported atomic counter buffer size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
+         * not available, returns `0`.
+         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE}
+         */
+        static Int maxAtomicCounterBufferSize();
+
+        /**
+         * @brief Max supported compute shared memory size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,compute_shader} is not
+         * available, returns `0`.
+         * @requires_gl Compute shaders are not available in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_SHARED_MEMORY_SIZE}
+         */
+        static Int maxComputeSharedMemorySize();
+
+        /**
+         * @brief Max supported compute work group invocation count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,compute_shader} is not
+         * available, returns `0`.
+         * @requires_gl Compute shaders are not available in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS}
+         */
+        static Int maxComputeWorkGroupInvocations();
+
+        /** @todo MAX_COMPUTE_WORK_GROUP_COUNT, MAX_COMPUTE_WORK_GROUP_SIZE */
+
+        /**
+         * @brief Max supported image unit count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
+         * is not available, returns `0`.
+         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_UNITS}
+         */
+        static Int maxImageUnits();
+
+        /**
+         * @brief Max supported image sample count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
+         * is not available, returns `0`.
+         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_SAMPLES}
+         */
+        static Int maxImageSamples();
+
+        /**
+         * @brief Max supported combined shader output resource count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither @extension{ARB,shader_image_load_store}
+         * nor @extension{ARB,shader_storage_buffer_object} extension is
+         * available, returns `0`.
+         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES}
+         */
+        static Int maxCombinedShaderOutputResources();
+
+        /**
+         * @brief Max supported shader storage block size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
+         * is not available, returns `0`.
+         * @requires_gl Shader storage is not available in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE}
+         */
+        static Long maxShaderStorageBlockSize();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Max supported uniform block size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
+         * is not available, returns `0`.
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
+         * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BLOCK_SIZE}
+         */
+        static Int maxUniformBlockSize();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Max supported explicit uniform location count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,explicit_uniform_location}
+         * is not available, returns `0`.
+         * @requires_gl Explicit uniform location is not supported in OpenGL ES.
+         * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_LOCATIONS}
+         */
+        static Int maxUniformLocations();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Min supported program texel offset
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
+         * available, returns `0`.
+         * @requires_gles30 Texture lookup with offset is not available in
+         *      OpenGL ES 2.0.
+         * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
+         */
+        static Int minTexelOffset();
+
+        /**
+         * @brief Max supported program texel offset
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
+         * available, returns `0`.
+         * @requires_gles30 Texture lookup with offset is not available in
+         *      OpenGL ES 2.0.
+         * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
+         */
+        static Int maxTexelOffset();
+        #endif
 
         /**
          * @brief Constructor
@@ -945,8 +1094,8 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 @brief Base struct for attribute location and type
 
 Template parameter @p location is vertex attribute location, number between `0`
-and maxSupportedVertexAttributeCount(). To ensure compatibility, you should
-always have vertex attribute with location `0`.
+and @ref maxVertexAttributes(). To ensure compatibility, you should always have
+vertex attribute with location `0`.
 
 Template parameter @p T is the type which is used for shader attribute, e.g.
 @ref Vector4i for `ivec4`. DataType is type of passed data when adding vertex

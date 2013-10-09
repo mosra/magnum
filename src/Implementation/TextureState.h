@@ -34,9 +34,13 @@ struct TextureState {
     explicit TextureState();
     ~TextureState();
 
-    GLint maxSupportedLayerCount;
-    GLfloat maxSupportedAnisotropy;
+    GLfloat maxAnisotropy;
     GLint currentLayer;
+    #ifndef MAGNUM_TARGET_GLES
+    GLint maxColorSamples,
+        maxDepthSamples,
+        maxIntegerSamples;
+    #endif
 
     std::vector<GLuint> bindings;
 };

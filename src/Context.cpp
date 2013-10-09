@@ -250,6 +250,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_storage),
         _extension(GL,EXT,map_buffer_range),
         _extension(GL,NV,draw_buffers),
+        _extension(GL,NV,fbo_color_attachments),
         _extension(GL,NV,read_buffer),
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_depth_stencil),

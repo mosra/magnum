@@ -53,7 +53,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit Image(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        explicit Image(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -63,7 +63,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Dimensions and data pointer are set to zero, call setData() to fill
          * the image with data.
          */
-        explicit Image(ImageFormat format, ImageType type): AbstractImage(format, type), _data(nullptr) {}
+        explicit Image(ColorFormat format, ColorType type): AbstractImage(format, type), _data(nullptr) {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&& other) = delete;
@@ -104,7 +104,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          */
-        void setData(ImageFormat format, ImageType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data);
+        void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data);
 
     private:
         Math::Vector<Dimensions, Int> _size;

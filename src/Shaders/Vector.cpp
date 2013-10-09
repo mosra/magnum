@@ -44,27 +44,26 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     /* Weird bug in GCC 4.5 - cannot use initializer list here, although the
        same thing works in PhongShader flawlessly */
     #ifndef MAGNUM_TARGET_GLES
-    std::initializer_list<Version> vs{Version::GL320, Version::GL210};
+    std::initializer_list<Version> vs{Version::GL310, Version::GL300, Version::GL210};
     #else
     std::initializer_list<Version> vs{Version::GLES300, Version::GLES200};
     #endif
-    Version v = Context::current()->supportedVersion(vs);
+    Version version = Context::current()->supportedVersion(vs);
 
-    Shader vert(v, Shader::Type::Vertex);
+    Shader vert(version, Shader::Type::Vertex);
     vert.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     AbstractShaderProgram::attachShader(vert);
 
-    Shader frag(v, Shader::Type::Fragment);
+    Shader frag(version, Shader::Type::Fragment);
     frag.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Vector.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     AbstractShaderProgram::attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
@@ -76,7 +75,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     CORRADE_INTERNAL_ASSERT_OUTPUT(AbstractShaderProgram::link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
@@ -84,7 +83,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
     #endif
     {
         AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureLayer);

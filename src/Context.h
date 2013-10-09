@@ -321,8 +321,9 @@ class MAGNUM_EXPORT Context {
          * @endcode
          *
          * If no version from the list is supported, returns lowest available
-         * OpenGL version (@ref Version::GL210 for desktop OpenGL, @ref Version::GLES200
-         * for OpenGL ES).
+         * OpenGL version (@ref Version::GL210 for desktop OpenGL,
+         * @ref Version::GLES200 for OpenGL ES).
+         * @see @ref isExtensionSupported(Version)
          */
         Version supportedVersion(std::initializer_list<Version> versions) const;
 
@@ -344,6 +345,25 @@ class MAGNUM_EXPORT Context {
          */
         template<class T> bool isExtensionSupported() const {
             return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
+        }
+
+        /**
+         * @brief Whether given extension is supported in given version
+         *
+         * Similar to @ref isExtensionSupported(), but checks also that the
+         * minimal required version of the extension is larger or equal to
+         * @p version. Useful mainly in shader compilation when the decisions
+         * depend on selected GLSL version, for example:
+         * @code
+         * const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL300, Version::GL210});
+         * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+         *     // Called only if ARB_explicit_attrib_location is supported
+         *     // *and* version is higher than GL 3.1
+         * }
+         * @endcode
+         */
+        template<class T> bool isExtensionSupported(Version version) const {
+            return T::coreVersion() <= version || (T::requiredVersion() <= version && extensionStatus[T::Index]);
         }
 
         /**

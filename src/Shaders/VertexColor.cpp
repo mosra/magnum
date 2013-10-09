@@ -44,9 +44,9 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
        same thing works in PhongShader flawlessly*/
     #ifndef CORRADE_GCC45_COMPATIBILITY
     #ifndef MAGNUM_TARGET_GLES
-    Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL310, Version::GL300, Version::GL210});
     #else
-    Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
     #else
     #ifndef MAGNUM_TARGET_GLES
@@ -54,24 +54,23 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     #else
     std::initializer_list<Version> vs{Version::GLES300, Version::GLES200};
     #endif
-    Version v = Context::current()->supportedVersion(vs);
+    Version version = Context::current()->supportedVersion(vs);
     #endif
 
-    Shader vert(v, Shader::Type::Vertex);
+    Shader vert(version, Shader::Type::Vertex);
     vert.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(v, Shader::Type::Fragment);
+    Shader frag(version, Shader::Type::Fragment);
     frag.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("VertexColor.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
@@ -83,7 +82,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");

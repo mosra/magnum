@@ -62,11 +62,12 @@ template<> struct ShapeDimensionTraits<2> {
         Line = 2,
         LineSegment = 3,
         Sphere = 5,
-        Cylinder = 7,
-        Capsule = 11,
-        AxisAlignedBox = 13,
-        Box = 17,
-        Composition = 19
+        InvertedSphere = 7,
+        Cylinder = 11,
+        Capsule = 13,
+        AxisAlignedBox = 17,
+        Box = 19,
+        Composition = 23
     };
 };
 
@@ -76,12 +77,13 @@ template<> struct ShapeDimensionTraits<3> {
         Line = 2,
         LineSegment = 3,
         Sphere = 5,
-        Cylinder = 7,
-        Capsule = 11,
-        AxisAlignedBox = 13,
-        Box = 17,
-        Plane = 19,
-        Composition = 23
+        InvertedSphere = 7,
+        Cylinder = 11,
+        Capsule = 13,
+        AxisAlignedBox = 17,
+        Box = 19,
+        Plane = 23,
+        Composition = 29
     };
 };
 
@@ -110,6 +112,11 @@ template<UnsignedInt dimensions> struct TypeOf<Shapes::LineSegment<dimensions>> 
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Sphere<dimensions>> {
     constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
         return ShapeDimensionTraits<dimensions>::Type::Sphere;
+    }
+};
+template<UnsignedInt dimensions> struct TypeOf<Shapes::InvertedSphere<dimensions>> {
+    constexpr static typename ShapeDimensionTraits<dimensions>::Type type() {
+        return ShapeDimensionTraits<dimensions>::Type::InvertedSphere;
     }
 };
 template<UnsignedInt dimensions> struct TypeOf<Shapes::Cylinder<dimensions>> {

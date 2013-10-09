@@ -30,6 +30,7 @@
 
 #include "Math/Vector3.h"
 #include "DimensionTraits.h"
+#include "Shapes/Collision.h"
 #include "Shapes/Shapes.h"
 #include "Shapes/magnumShapesVisibility.h"
 
@@ -82,6 +83,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         /** @brief %Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
+        /** @brief %Collision with point */
+        Collision<dimensions> operator/(const Point<dimensions>& other) const;
+
         /** @brief %Collision occurence with line */
         bool operator%(const Line<dimensions>& other) const;
 
@@ -90,6 +94,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
 
         /** @brief %Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
+
+        /** @brief %Collision with sphere */
+        Collision<dimensions> operator/(const Sphere<dimensions>& other) const;
 
     private:
         typename DimensionTraits<dimensions, Float>::VectorType _position;
@@ -102,14 +109,88 @@ typedef Sphere<2> Sphere2D;
 /** @brief Three-dimensional sphere */
 typedef Sphere<3> Sphere3D;
 
+/**
+@brief Inverted sphere defined by position and radius
+
+Inverted version of @ref Sphere, detecting collisions on the outside, not on
+the inside. See @ref shapes for brief introduction.
+@see @ref InvertedSphere2D, @ref InvertedSphere3D
+*/
+template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    public Sphere<dimensions>
+    #else
+    private Sphere<dimensions>
+    #endif
+{
+    public:
+        /**
+         * @brief Default constructor
+         *
+         * Creates zero-sized sphere at origin.
+         */
+        constexpr /*implicit*/ InvertedSphere() = default;
+
+        /** @brief Constructor */
+        constexpr /*implicit*/ InvertedSphere(const typename DimensionTraits<dimensions, Float>::VectorType& position, Float radius): Sphere<dimensions>(position, radius) {}
+
+        using Sphere<dimensions>::Dimensions;
+
+        /** @brief Transformed shape */
+        InvertedSphere<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+            return Sphere<dimensions>::transformed(matrix);
+        }
+
+        using Sphere<dimensions>::position;
+        using Sphere<dimensions>::setPosition;
+        using Sphere<dimensions>::radius;
+        using Sphere<dimensions>::setRadius;
+
+        /** @brief %Collision occurence with point */
+        bool operator%(const Point<dimensions>& other) const;
+
+        /** @brief %Collision with point */
+        Collision<dimensions> operator/(const Point<dimensions>& other) const;
+
+        /** @brief %Collision occurence with sphere */
+        bool operator%(const Sphere<dimensions>& other) const;
+
+        /** @brief %Collision with sphere */
+        Collision<dimensions> operator/(const Sphere<dimensions>& other) const;
+
+    private:
+        constexpr /*implicit*/ InvertedSphere(const Sphere<dimensions>& other): Sphere<dimensions>(other) {}
+};
+
+/** @brief Inverted two-dimensional sphere */
+typedef InvertedSphere<2> InvertedSphere2D;
+
+/** @brief Inverted three-dimensional sphere */
+typedef InvertedSphere<3> InvertedSphere3D;
+
 /** @collisionoccurenceoperator{Point,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+
+/** @collisionoccurenceoperator{Point,InvertedSphere} */
+template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
+
+/** @collisionoperator{Point,Sphere} */
+template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Point<dimensions>& a, const Sphere<dimensions>& b) { return (b/a).flipped(); }
+
+/** @collisionoperator{Point,InvertedSphere} */
+template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
 
 /** @collisionoccurenceoperator{Line,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
 /** @collisionoccurenceoperator{LineSegment,Sphere} */
 template<UnsignedInt dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+
+/** @collisionoccurenceoperator{Sphere,InvertedSphere} */
+template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
+
+/** @collisionoperator{Sphere,InvertedSphere} */
+template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
 
 }}
 

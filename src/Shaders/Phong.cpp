@@ -35,19 +35,19 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    Version v = Context::current()->supportedVersion({Version::GL320, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL310, Version::GL300, Version::GL210});
     #else
-    Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert(v, Shader::Type::Vertex);
+    Shader vert(version, Shader::Type::Vertex);
     vert.addSource(flags ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Phong.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(v, Shader::Type::Fragment);
+    Shader frag(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
@@ -57,8 +57,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>() ||
-        Context::current()->version() == Version::GL210)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
@@ -71,7 +70,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationMatrixUniform = uniformLocation("transformationMatrix");
@@ -86,7 +85,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+    if(flags && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
     #endif
     {
         if(flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureLayer);

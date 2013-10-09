@@ -37,7 +37,7 @@ make porting easier -- it is better to fail at compile time on e.g. undefined
 enum value than fail at runtime in some corner case because given texture
 format is not supported.
 
-If you include Magnum.h, you get these predefined macros:
+If you include @ref Magnum.h, you get these predefined macros:
 
 - @ref MAGNUM_TARGET_GLES if targeting OpenGL ES
 - @ref MAGNUM_TARGET_GLES2 if targeting OpenGL ES 2.0
@@ -109,7 +109,7 @@ available, but also have proper fallback when it's not, see for example
 @ref AbstractTexture-performance-optimization "AbstractTexture" or
 @ref Mesh-performance-optimization "Mesh". See also @ref required-extensions.
 
-@section portability-shaders Portable shaders
+@section portability-shaders Writing portable shaders
 
 %Shaders are probably the most painful thing to port. There are many issues to
 address - different shader syntax (`in`/`out` vs. `attribute` and `varying`
@@ -120,6 +120,11 @@ Shader class allows you to explicitly specify shader version and based on that
 you can decide on the syntax in your shader code. You can also use
 @ref Context::supportedVersion() to conveniently select highest supported
 version from a list:
+@code
+// MyShader.cpp
+Version version = Context::instance()->supportedVersion({Version::GL430, Version::GL330, Version::GL210});
+attachShader(Shader::fromFile(version, "MyShader.vert"));
+@endcode
 @code
 // MyShader.vert
 #if __VERSION__ < 130
@@ -136,11 +141,22 @@ void main() {
     // ...
 }
 @endcode
+
+It is often desirable to query extension presence based on actually used GLSL
+version -- while the extension might be supported in the driver, it might not
+be available in given GLSL version (e.g. causing compilation errors). You can
+use @ref Context::isExtensionSupported(Version) to check that the extension
+is present in given version:
 @code
-// MyShader.cpp
-Version version = Context::instance()->supportedVersion({Version::GL430, Version::GL330, Version::GL210});
-attachShader(Shader::fromFile(version, "MyShader.vert"));
+if(!Context::instance()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+    bindAttributeLocation(Position::Location, "position");
+    // ...
+}
 @endcode
+
+See also @ref AbstractShaderProgram class documentation for information about
+specifying attribute location, uniform location and texture layer in various
+OpenGL versions.
 
 All shaders in @ref Shaders namespace support desktop OpenGL starting from
 version 2.1 and also OpenGL ES 2.0 and 3.0. Feel free to look into their

@@ -58,3 +58,7 @@ target_link_libraries(MagnumShaders Magnum)
 
 install(TARGETS MagnumShaders DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumShaders_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Shaders)
+
+if(BUILD_TESTS)
+    add_subdirectory(Test)
+endif()

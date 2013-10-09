@@ -99,7 +99,7 @@ namespace GL {
         _extension(GL,ARB,texture_query_lod,            GL210, GL400) // #73
         _extension(GL,ARB,texture_compression_bptc,     GL310, GL420) // #77
         _extension(GL,ARB,blend_func_extended,          GL210, GL330) // #78
-        _extension(GL,ARB,explicit_attrib_location,     GL210, GL330) // #79
+        _extension(GL,ARB,explicit_attrib_location, /*!*/ GL310, GL330) // #79
         _extension(GL,ARB,occlusion_query2,             GL210, GL330) // #80
         _extension(GL,ARB,sampler_objects,              GL210, GL330) // #81
         _extension(GL,ARB,shader_bit_encoding,    /*?*/ GL210, GL330) // #82
@@ -123,7 +123,7 @@ namespace GL {
         _extension(GL,ARB,viewport_array,               GL210, GL410) // #100
         _extension(GL,ARB,robustness,                   GL210,  None) // #105
         _extension(GL,ARB,base_instance,                GL210, GL420) // #107
-        _extension(GL,ARB,shading_language_420pack,     GL300, GL420) // #108
+        _extension(GL,ARB,shading_language_420pack, /*!*/ GL310, GL420) // #108
         _extension(GL,ARB,transform_feedback_instanced, GL210, GL420) // #109
         _extension(GL,ARB,compressed_texture_pixel_storage, GL210, GL420) // #110
         _extension(GL,ARB,conservative_depth,           GL300, GL420) // #111
@@ -140,7 +140,7 @@ namespace GL {
         _extension(GL,ARB,texture_view,                 GL210, GL430) // #124
         _extension(GL,ARB,vertex_attrib_binding,        GL210, GL430) // #125
         _extension(GL,ARB,ES3_compatibility,            GL330, GL430) // #127
-        _extension(GL,ARB,explicit_uniform_location,    GL210, GL430) // #128
+        _extension(GL,ARB,explicit_uniform_location, /*!*/ GL310, GL430) // #128
         _extension(GL,ARB,fragment_layer_viewport,      GL300, GL430) // #129
         _extension(GL,ARB,framebuffer_no_attachments,   GL210, GL430) // #130
         _extension(GL,ARB,internalformat_query2,        GL210, GL430) // #131
@@ -228,6 +228,7 @@ namespace GL {
         _extension(GL,KHR,debug,                    GLES200,    None) // #118
     } namespace NV {
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
+        _extension(GL,NV,fbo_color_attachments,     GLES200, GLES300) // #92
         _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
         _extension(GL,NV,read_buffer_front,         GLES200,    None) // #93
         _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
@@ -261,6 +262,20 @@ namespace GL {
 }
 #undef _extension
 #endif
+
+/*
+    Notes (marked with ! above)
+
+    ARB_explicit_attrib_location, ARB_explicit_uniform_location don't work
+    with GLSL 1.20 (compiler error related to layout qualifier on Mesa) or 1.30
+    (compiler error related to layout qualifier on NVidia), bumping minimal
+    required version to GL 3.1 even if both have *2.1* as minimal.
+
+    ARB_shading_language_420pack (particularly sampler bindings) doesn't work
+    with GLSL 1.30 (compiler error related to layout qualifier, similar to the
+    above), bumping minimal required version to GL 3.1 even if it has *3.0* as
+    minimal.
+*/
 
 }
 

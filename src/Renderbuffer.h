@@ -47,10 +47,12 @@ for more information.
 @section Renderbuffer-performance-optimization Performance optimizations
 
 The engine tracks currently bound renderbuffer to avoid unnecessary calls to
-@fn_gl{BindRenderbuffer} in setStorage().
+@fn_gl{BindRenderbuffer} in setStorage(). %Renderbuffer limits and
+implementation-defined values (such as @ref maxSize()) are cached, so repeated
+queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, function
-setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}.
+setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindRenderbuffer}.
 See its documentation for more information.
 
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
@@ -64,6 +66,27 @@ class MAGNUM_EXPORT Renderbuffer {
     Renderbuffer& operator=(Renderbuffer&&) = delete;
 
     public:
+        /**
+         * @brief Max supported renderbuffer size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @ref setStorage(), @ref setStorageMultisample(), @fn_gl{Get}
+         *      with @def_gl{MAX_RENDERBUFFER_SIZE}
+         */
+        static Int maxSize();
+
+        /**
+         * @brief Max supported sample count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If ES extension @es_extension{ANGLE,framebuffer_multisample}
+         * or @es_extension{NV,framebuffer_multisample} is not available,
+         * returns `0`.
+         * @see @ref setStorageMultisample(), @fn_gl{Get} with @def_gl{MAX_SAMPLES}
+         */
+        static Int maxSamples();
+
         /**
          * @brief Constructor
          *
@@ -91,8 +114,8 @@ class MAGNUM_EXPORT Renderbuffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage} or
-         *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
+         * @see @ref maxSize(), @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage}
+         *      or @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
          */
         void setStorage(RenderbufferFormat internalFormat, const Vector2i& size) {
             (this->*storageImplementation)(internalFormat, size);
@@ -107,8 +130,8 @@ class MAGNUM_EXPORT Renderbuffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage} or
-         *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
+         * @see @ref maxSize(), @ref maxSamples(), @fn_gl{BindRenderbuffer},
+         *      @fn_gl{RenderbufferStorage} or @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
          *      or @es_extension{NV,framebuffer_multisample}
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?

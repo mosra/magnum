@@ -288,6 +288,18 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
             #endif
         };
 
+        /** @todo `GL_MAX_FRAMEBUFFER_WIDTH` etc. when @extension{ARB,framebuffer_no_attachments} is done */
+
+        /**
+         * @brief Max supported color attachment count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If ES extension @extension{NV,fbo_color_attachments}
+         * is not available, returns `0`.
+         * @see @ref mapForDraw(), @fn_gl{Get} with @def_gl{MAX_COLOR_ATTACHMENTS}
+         */
+        static Int maxColorAttachments();
+
         /**
          * @brief Constructor
          *
@@ -334,7 +346,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers} or
+         * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
+         *      @ref maxColorAttachments(), @ref mapForRead(),
+         *      @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers} or
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          */
@@ -351,7 +365,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer} or
+         * @see @ref maxColorAttachments(), @ref mapForRead(),
+         *      @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer} or
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
