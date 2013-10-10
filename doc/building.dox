@@ -237,7 +237,14 @@ If you want to build with another compiler (e.g. Clang), run makepkg this way:
 Development PKGBUILDs can detect when Clang is used and remove unsupported CXX
 flags.
 
-@section building-win Crosscompiling for Windows using MinGW
+@section building-crosscompiling Crosscompiling
+
+For crosscompiling you need to have *both* target and native version of
+%Corrade installed, because %Corrade needs to run `corrade-rc` utility on the
+host system as part of the build process. If native version of `corrade-rc` is
+not found on the system, crosscompilation will fail.
+
+@subsection building-cross-win Crosscompiling for Windows using MinGW
 
 @note This guide is tailored mainly for crosscompiling from ArchLinux. For
 this system there is also prepared `mingw32-magnum` development package in
@@ -265,7 +272,7 @@ cmake and make. You may need to modify the `basic-mingw32.cmake` file and
 Then you can install the package using `make install` to make it available for
 depending projects.
 
-@section building-nacl Compiling for Google Chrome Native Client
+@subsection building-cross-nacl Crosscompiling for Google Chrome Native Client
 
 You will need [Native Client SDK](https://developers.google.com/native-client/beta/sdk/download).
 Tested version is `pepper_22`.
@@ -314,4 +321,5 @@ For ArchLinux there are also prepared package files in root, named
 `PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`.
 
 */
+
 }
