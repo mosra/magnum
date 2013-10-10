@@ -202,8 +202,8 @@ with DLLs accessible through `PATH`. See above for more information.
 
 The documentation (which you are currently reading) is written in **Doxygen**
 (version 1.8 with Markdown support is used, but older versions should do good
-job too) and additionally uses **Graphviz** for class diagrams and  **TeX**
-for math formulas. The documentation can be build by running
+job too) and additionally uses **TeX** for math formulas. The documentation can
+be build by running
 
     doxygen
 
