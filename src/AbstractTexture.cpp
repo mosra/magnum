@@ -233,6 +233,9 @@ void AbstractTexture::bindInternal() {
 }
 
 void AbstractTexture::initializeContextBasedFunctionality(Context& context) {
+    /* Resize bindings array to hold all possible layers */
+    context.state().texture->bindings.resize(maxLayers());
+
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         Debug() << "AbstractTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
