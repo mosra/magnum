@@ -23,14 +23,9 @@
 */
 
 namespace Magnum {
+
 /** @page building Downloading and building
 @brief Guide how to download and build %Magnum on different platforms.
-
-%Magnum can be downloaded from GitHub and built either
-@ref building-compilation "manually" or using already prepared packaging files,
-currently only @ref building-arch "ArchLinux PKGBUILDs". Guide how to
-crosscompile for @ref building-win "Windows" and
-@ref building-nacl "Google Chrome Native Client" is also available.
 
 @tableofcontents
 
