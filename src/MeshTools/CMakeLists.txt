@@ -68,7 +68,10 @@ if(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumMeshTools Magnum)
 
-install(TARGETS MagnumMeshTools DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(TARGETS MagnumMeshTools
+    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumMeshTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/MeshTools)
 
 if(BUILD_TESTS)
@@ -82,7 +85,10 @@ if(BUILD_TESTS)
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumMeshToolsTestLib DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+        install(TARGETS MagnumMeshToolsTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     endif()
 
     add_subdirectory(Test)

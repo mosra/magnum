@@ -81,7 +81,10 @@ add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
     ${MagnumSceneGraph_GracefulAssert_SRCS})
 target_link_libraries(MagnumSceneGraph Magnum)
 
-install(TARGETS MagnumSceneGraph DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(TARGETS MagnumSceneGraph
+    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumSceneGraph_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/SceneGraph)
 
 if(BUILD_TESTS)
@@ -95,7 +98,10 @@ if(BUILD_TESTS)
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumSceneGraphTestLib DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+        install(TARGETS MagnumSceneGraphTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     endif()
 
     add_subdirectory(Test)

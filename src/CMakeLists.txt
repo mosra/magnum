@@ -185,7 +185,10 @@ else()
 endif()
 target_link_libraries(Magnum ${Magnum_LIBS})
 
-install(TARGETS Magnum DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(TARGETS Magnum
+    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
@@ -245,7 +248,10 @@ if(BUILD_TESTS)
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumMathTestLib MagnumTestLib DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+        install(TARGETS MagnumMathTestLib MagnumTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     endif()
 
     add_subdirectory(Test)
