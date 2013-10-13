@@ -35,13 +35,13 @@ namespace Magnum {
 
 /**
 @copybrief ColorFormat
-@deprecated Use @ref ColorFormat instead.
+@deprecated Use @ref Magnum::ColorFormat "ColorFormat" instead.
 */
 typedef ColorFormat ImageFormat;
 
 /**
 @copybrief ColorType
-@deprecated Use @ref ColorType instead.
+@deprecated Use @ref Magnum::ColorType "ColorType" instead.
 */
 typedef ColorType ImageType;
 

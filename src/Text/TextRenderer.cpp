@@ -359,7 +359,9 @@ void AbstractTextRenderer::render(const std::string& text) {
     delete layouter;
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_TEXT_EXPORT TextRenderer<2>;
 template class MAGNUM_TEXT_EXPORT TextRenderer<3>;
+#endif
 
 }}
