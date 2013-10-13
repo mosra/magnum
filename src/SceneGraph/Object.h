@@ -215,7 +215,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * @see transformation()
          */
         MatrixType transformationMatrix() const {
-            return Transformation::toMatrix(Transformation::transformation());
+            return Implementation::Transformation<Transformation>::toMatrix(Transformation::transformation());
         }
 
         /**
@@ -224,7 +224,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * @see absoluteTransformation()
          */
         MatrixType absoluteTransformationMatrix() const {
-            return Transformation::toMatrix(absoluteTransformation());
+            return Implementation::Transformation<Transformation>::toMatrix(absoluteTransformation());
         }
 
         /**

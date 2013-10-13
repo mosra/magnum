@@ -69,27 +69,27 @@ RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
 void RigidMatrixTransformation3DTest::fromMatrix() {
     std::ostringstream o;
     Error::setOutput(&o);
-    RigidMatrixTransformation3D::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
-    CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation3D::fromMatrix(): the matrix doesn't represent rigid transformation\n");
+    Implementation::Transformation<RigidMatrixTransformation3D>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
+    CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation3D: the matrix doesn't represent rigid transformation\n");
 
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation3D::fromMatrix(m), m);
+    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation3D>::fromMatrix(m), m);
 }
 
 void RigidMatrixTransformation3DTest::toMatrix() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation3D::toMatrix(m), m);
+    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation3D>::toMatrix(m), m);
 }
 
 void RigidMatrixTransformation3DTest::compose() {
     Matrix4 parent = Matrix4::rotationX(Deg(17.0f));
     Matrix4 child = Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation3D::compose(parent, child), parent*child);
+    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation3D>::compose(parent, child), parent*child);
 }
 
 void RigidMatrixTransformation3DTest::inverted() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(RigidMatrixTransformation3D::inverted(m)*m, Matrix4());
+    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation3D>::inverted(m)*m, Matrix4());
 }
 
 void RigidMatrixTransformation3DTest::setTransformation() {

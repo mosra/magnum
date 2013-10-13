@@ -46,40 +46,8 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         /** @brief Transformation type */
         typedef Math::DualComplex<T> DataType;
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        static Math::DualComplex<T> fromMatrix(const Math::Matrix3<T>& matrix) {
-            return Math::DualComplex<T>::fromMatrix(matrix);
-        }
-
-        constexpr static Math::Matrix3<T> toMatrix(const Math::DualComplex<T>& transformation) {
-            return transformation.toMatrix();
-        }
-
-        static Math::DualComplex<T> compose(const Math::DualComplex<T>& parent, const Math::DualComplex<T>& child) {
-            return parent*child;
-        }
-
-        static Math::DualComplex<T> inverted(const Math::DualComplex<T>& transformation) {
-            return transformation.invertedNormalized();
-        }
-
-        Math::DualComplex<T> transformation() const {
-            return _transformation;
-        }
-        #endif
-
-        /**
-         * @brief Normalize rotation part
-         * @return Reference to self (for method chaining)
-         *
-         * Normalizes the rotation part to prevent rounding errors when rotating
-         * the object subsequently.
-         * @see DualComplex::normalized()
-         */
-        Object<BasicDualComplexTransformation<T>>& normalizeRotation() {
-            setTransformationInternal(_transformation.normalized());
-            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
-        }
+        /** @brief Object transformation */
+        Math::DualComplex<T> transformation() const { return _transformation; }
 
         /**
          * @brief Set transformation
@@ -99,6 +67,19 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
         Object<BasicDualComplexTransformation<T>>& resetTransformation() {
             setTransformationInternal({});
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
+        }
+
+        /**
+         * @brief Normalize rotation part
+         * @return Reference to self (for method chaining)
+         *
+         * Normalizes the rotation part to prevent rounding errors when rotating
+         * the object subsequently.
+         * @see DualComplex::normalized()
+         */
+        Object<BasicDualComplexTransformation<T>>& normalizeRotation() {
+            setTransformationInternal(_transformation.normalized());
             return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
@@ -194,6 +175,28 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
 @see @ref DualQuaternionTransformation
 */
 typedef BasicDualComplexTransformation<Float> DualComplexTransformation;
+
+namespace Implementation {
+
+template<class T> struct Transformation<BasicDualComplexTransformation<T>> {
+    static Math::DualComplex<T> fromMatrix(const Math::Matrix3<T>& matrix) {
+        return Math::DualComplex<T>::fromMatrix(matrix);
+    }
+
+    constexpr static Math::Matrix3<T> toMatrix(const Math::DualComplex<T>& transformation) {
+        return transformation.toMatrix();
+    }
+
+    static Math::DualComplex<T> compose(const Math::DualComplex<T>& parent, const Math::DualComplex<T>& child) {
+        return parent*child;
+    }
+
+    static Math::DualComplex<T> inverted(const Math::DualComplex<T>& transformation) {
+        return transformation.invertedNormalized();
+    }
+};
+
+}
 
 }}
 

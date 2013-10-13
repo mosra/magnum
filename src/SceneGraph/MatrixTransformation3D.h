@@ -45,27 +45,8 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         /** @brief Underlying transformation type */
         typedef Math::Matrix4<T> DataType;
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        constexpr static Math::Matrix4<T> fromMatrix(const Math::Matrix4<T>& matrix) {
-            return matrix;
-        }
-
-        constexpr static Math::Matrix4<T> toMatrix(const Math::Matrix4<T>& transformation) {
-            return transformation;
-        }
-
-        static Math::Matrix4<T> compose(const Math::Matrix4<T>& parent, const Math::Matrix4<T>& child) {
-            return parent*child;
-        }
-
-        static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
-            return transformation.inverted();
-        }
-
-        Math::Matrix4<T> transformation() const {
-            return _transformation;
-        }
-        #endif
+        /** @brief Object transformation */
+        Math::Matrix4<T> transformation() const { return _transformation; }
 
         /**
          * @brief Set transformation
@@ -221,6 +202,28 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
 @see @ref MatrixTransformation2D
 */
 typedef BasicMatrixTransformation3D<Float> MatrixTransformation3D;
+
+namespace Implementation {
+
+template<class T> struct Transformation<BasicMatrixTransformation3D<T>> {
+    constexpr static Math::Matrix4<T> fromMatrix(const Math::Matrix4<T>& matrix) {
+        return matrix;
+    }
+
+    constexpr static Math::Matrix4<T> toMatrix(const Math::Matrix4<T>& transformation) {
+        return transformation;
+    }
+
+    static Math::Matrix4<T> compose(const Math::Matrix4<T>& parent, const Math::Matrix4<T>& child) {
+        return parent*child;
+    }
+
+    static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
+        return transformation.inverted();
+    }
+};
+
+}
 
 }}
 
