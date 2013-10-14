@@ -28,11 +28,7 @@
  * @brief Class Magnum::SceneGraph::AbstractTransformation, alias Magnum::SceneGraph::AbstractBasicTransformation2D, Magnum::SceneGraph::AbstractBasicTransformation3D, typedef Magnum::SceneGraph::AbstractTransformation2D, Magnum::SceneGraph::AbstractTransformation3D, enum Magnum::SceneGraph::TransformationType
  */
 
-#include <vector>
-
-#include "DimensionTraits.h"
-#include "SceneGraph.h"
-
+#include "SceneGraph/SceneGraph.h"
 #include "SceneGraph/magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
