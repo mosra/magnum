@@ -65,6 +65,11 @@ DualQuaternionTransformationTest::DualQuaternionTransformationTest() {
 }
 
 void DualQuaternionTransformationTest::fromMatrix() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+    Implementation::Transformation<DualQuaternionTransformation>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
+    CORRADE_COMPARE(o.str(), "SceneGraph::DualQuaternionTransformation: the matrix doesn't represent rigid transformation\n");
+
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
     CORRADE_COMPARE(Implementation::Transformation<DualQuaternionTransformation>::fromMatrix(m), q);
