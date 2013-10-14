@@ -69,7 +69,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
         Object<BasicRigidMatrixTransformation3D<T>>& resetTransformation() {
-            setTransformation({});
+            setTransformationInternal({});
             return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
@@ -81,7 +81,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * to prevent rounding errors when rotating the object subsequently.
          */
         Object<BasicRigidMatrixTransformation3D<T>>& normalizeRotation() {
-            setTransformation(Math::Matrix4<T>::from(
+            setTransformationInternal(Math::Matrix4<T>::from(
                 Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
                 _transformation.translation()));
             return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
@@ -225,7 +225,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
 
         /* No assertions fired, for internal use */
         void transformInternal(const Math::Matrix4<T>& transformation, TransformationType type) {
-            setTransformation(type == TransformationType::Global ?
+            setTransformationInternal(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
 

@@ -66,7 +66,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
         Object<BasicDualQuaternionTransformation<T>>& resetTransformation() {
-            setTransformation({});
+            setTransformationInternal({});
             return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
         }
 
@@ -79,7 +79,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * @see DualQuaternion::normalized()
          */
         Object<BasicDualQuaternionTransformation<T>>& normalizeRotation() {
-            setTransformation(_transformation.normalized());
+            setTransformationInternal(_transformation.normalized());
             return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
         }
 
@@ -166,7 +166,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
 
         /* No assertions fired, for internal use */
         void transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
-            setTransformation(type == TransformationType::Global ?
+            setTransformationInternal(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
 

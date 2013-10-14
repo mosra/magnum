@@ -162,7 +162,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
 
         /* No assertions fired, for internal use */
         void transformInternal(const Math::DualComplex<T>& transformation, TransformationType type) {
-            setTransformation(type == TransformationType::Global ?
+            setTransformationInternal(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
 
