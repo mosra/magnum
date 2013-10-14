@@ -94,6 +94,17 @@ typedef AbstractTransformation<2, Float> AbstractTransformation2D;
 typedef AbstractTransformation<3, Float> AbstractTransformation3D;
 #endif
 
+template<UnsignedInt, class T, class = T> class AbstractTranslation;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T, class TranslationType = T> using AbstractBasicTranslation2D = AbstractTranslation<2, T, TranslationType>;
+template<class T, class TranslationType = T> using AbstractBasicTranslation3D = AbstractTranslation<3, T, TranslationType>;
+typedef AbstractBasicTranslation2D<Float> AbstractTranslation2D;
+typedef AbstractBasicTranslation3D<Float> AbstractTranslation3D;
+#else
+typedef AbstractTranslation<2, Float> AbstractTranslation2D;
+typedef AbstractTranslation<3, Float> AbstractTranslation3D;
+#endif
+
 template<class> class AbstractBasicTranslationRotation2D;
 template<class> class AbstractBasicTranslationRotation3D;
 typedef AbstractBasicTranslationRotation2D<Float> AbstractTranslationRotation2D;

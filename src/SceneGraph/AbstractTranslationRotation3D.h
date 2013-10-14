@@ -28,8 +28,7 @@
  * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotation3D, typedef Magnum::SceneGraph::AbstractTranslationRotation3D
  */
 
-#include "AbstractTransformation.h"
-#include "Math/Vector3.h"
+#include "SceneGraph/AbstractTranslation.h"
 
 namespace Magnum { namespace SceneGraph {
 
@@ -39,22 +38,9 @@ namespace Magnum { namespace SceneGraph {
 @see @ref AbstractTranslationRotation3D @ref scenegraph, @ref AbstractBasicTranslationRotation2D
 @todo Use AbstractBasicTransformation3D<T> when support for GCC 4.6 is dropped
 */
-template<class T> class AbstractBasicTranslationRotation3D: public AbstractTransformation<3, T> {
+template<class T> class AbstractBasicTranslationRotation3D: public AbstractTranslation<3, T> {
     public:
         explicit AbstractBasicTranslationRotation3D() = default;
-
-        /**
-         * @brief Translate object
-         * @param vector            Translation vector
-         * @param type              Transformation type
-         * @return Reference to self (for method chaining)
-         *
-         * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()
-         */
-        AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
-            doTranslate(vector, type);
-            return *this;
-        }
 
         /**
          * @brief Rotate object
@@ -129,9 +115,6 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
     #else
     private:
     #endif
-        /** @brief Polymorphic implementation for translate() */
-        virtual void doTranslate(const Math::Vector3<T>& vector, TransformationType type) = 0;
-
         /** @brief Polymorphic implementation for rotate() */
         virtual void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) = 0;
 

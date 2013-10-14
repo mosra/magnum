@@ -38,6 +38,7 @@ set(MagnumSceneGraph_HEADERS
     AbstractGroupedFeature.h
     AbstractObject.h
     AbstractTransformation.h
+    AbstractTranslation.h
     AbstractTranslationRotation2D.h
     AbstractTranslationRotation3D.h
     AbstractTranslationRotationScaling2D.h

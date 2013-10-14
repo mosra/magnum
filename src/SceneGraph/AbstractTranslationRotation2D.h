@@ -28,8 +28,7 @@
  * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotation2D, typedef Magnum::SceneGraph::AbstractTranslationRotation2D
  */
 
-#include "Math/Vector2.h"
-#include "AbstractTransformation.h"
+#include "SceneGraph/AbstractTranslation.h"
 
 namespace Magnum { namespace SceneGraph {
 
@@ -39,22 +38,9 @@ namespace Magnum { namespace SceneGraph {
 @see @ref AbstractTranslationRotation2D, @ref scenegraph, @ref AbstractBasicTranslationRotation3D
 @todo Use AbstractBasicTransformation2D<T> when support for GCC 4.6 is dropped
 */
-template<class T> class AbstractBasicTranslationRotation2D: public AbstractTransformation<2, T> {
+template<class T> class AbstractBasicTranslationRotation2D: public AbstractTranslation<2, T> {
     public:
         explicit AbstractBasicTranslationRotation2D() = default;
-
-        /**
-         * @brief Translate object
-         * @param vector    Translation vector
-         * @param type      Transformation type
-         * @return Reference to self (for method chaining)
-         *
-         * @see Vector2::xAxis(), Vector2::yAxis()
-         */
-        AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            doTranslate(vector, type);
-            return *this;
-        }
 
         /**
          * @brief Rotate object
@@ -83,9 +69,6 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractTrans
     #else
     private:
     #endif
-        /** @brief Polymorphic implementation for translate() */
-        virtual void doTranslate(const Math::Vector2<T>& vector, TransformationType type) = 0;
-
         /** @brief Polymorphic implementation for rotate() */
         virtual void doRotate(Math::Rad<T> angle, TransformationType type) = 0;
 };
