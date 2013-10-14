@@ -118,7 +118,7 @@ Convenience alternative to <tt>%AbstractTransformation<3, T></tt>. See
 AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
     instead.
-@see @ref AbstractTransformation3D, @ref AbstractBasicTransformation3D
+@see @ref AbstractTransformation3D, @ref AbstractBasicTransformation2D
 */
 template<class T> using AbstractBasicTransformation3D = AbstractTransformation<3, T>;
 #endif

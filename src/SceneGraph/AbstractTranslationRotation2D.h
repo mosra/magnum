@@ -33,7 +33,7 @@
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief Base translation for two-dimensional scenes supporting translation and rotation
+@brief Base transformation for two-dimensional scenes supporting translation and rotation
 
 @see @ref AbstractTranslationRotation2D, @ref scenegraph, @ref AbstractBasicTranslationRotation3D
 @todo Use AbstractBasicTransformation2D<T> when support for GCC 4.6 is dropped
