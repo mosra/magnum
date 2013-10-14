@@ -71,15 +71,13 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
          * @return Reference to self (for method chaining)
          */
         Object<BasicMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
-            setTransformation(type == TransformationType::Global ?
+            return setTransformation(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
-            return static_cast<Object<BasicMatrixTransformation2D<T>>&>(*this);
         }
 
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
         Object<BasicMatrixTransformation2D<T>>& resetTransformation() {
-            setTransformation({});
-            return static_cast<Object<BasicMatrixTransformation2D<T>>&>(*this);
+            return setTransformation({});
         }
 
         /**
@@ -87,8 +85,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
          * Same as calling transform() with Matrix3::translation().
          */
         Object<BasicMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            transform(Math::Matrix3<T>::translation(vector), type);
-            return static_cast<Object<BasicMatrixTransformation2D<T>>&>(*this);
+            return transform(Math::Matrix3<T>::translation(vector), type);
         }
 
         /**
@@ -96,8 +93,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
          * Same as calling transform() with Matrix3::rotation().
          */
         Object<BasicMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            transform(Math::Matrix3<T>::rotation(angle), type);
-            return static_cast<Object<BasicMatrixTransformation2D<T>>&>(*this);
+            return transform(Math::Matrix3<T>::rotation(angle), type);
         }
 
         /**
@@ -105,8 +101,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
          * Same as calling transform() with Matrix3::scaling().
          */
         Object<BasicMatrixTransformation2D<T>>& scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            transform(Math::Matrix3<T>::scaling(vector), type);
-            return static_cast<Object<BasicMatrixTransformation2D<T>>&>(*this);
+            return transform(Math::Matrix3<T>::scaling(vector), type);
         }
 
         /**
@@ -119,8 +114,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
          * Same as calling transform() with Matrix3::reflection().
          */
         Object<BasicMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
-            transform(Math::Matrix3<T>::reflection(normal), type);
-            return static_cast<Object<BasicMatrixTransformation2D<T>>&>(*this);
+            return transform(Math::Matrix3<T>::reflection(normal), type);
         }
 
         /**

@@ -60,14 +60,12 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized",
                 static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this));
-            setTransformationInternal(transformation);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return setTransformationInternal(transformation);
         }
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
         Object<BasicDualQuaternionTransformation<T>>& resetTransformation() {
-            setTransformationInternal({});
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return setTransformationInternal({});
         }
 
         /**
@@ -79,8 +77,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * @see DualQuaternion::normalized()
          */
         Object<BasicDualQuaternionTransformation<T>>& normalizeRotation() {
-            setTransformationInternal(_transformation.normalized());
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return setTransformationInternal(_transformation.normalized());
         }
 
         /**
@@ -96,8 +93,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized",
                 static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this));
-            transformInternal(transformation, type);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return transformInternal(transformation, type);
         }
 
         /**
@@ -105,8 +101,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * Same as calling transform() with DualQuaternion::translation().
          */
         Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::DualQuaternion<T>::translation(vector), type);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return transformInternal(Math::DualQuaternion<T>::translation(vector), type);
         }
 
         /**
@@ -121,8 +116,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          *      normalizeRotation()
          */
         Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
@@ -154,7 +148,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /* No assertions fired, for internal use */
-        void setTransformationInternal(const Math::DualQuaternion<T>& transformation) {
+        Object<BasicDualQuaternionTransformation<T>>& setTransformationInternal(const Math::DualQuaternion<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -162,11 +156,13 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
                 _transformation = transformation;
                 static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this)->setDirty();
             }
+
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
         }
 
         /* No assertions fired, for internal use */
-        void transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
-            setTransformationInternal(type == TransformationType::Global ?
+        Object<BasicDualQuaternionTransformation<T>>& transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
+            return setTransformationInternal(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
 
