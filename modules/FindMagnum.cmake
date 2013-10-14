@@ -76,7 +76,7 @@
 #   installation directory
 #  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation
 #   directory
-#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR  - Audio omporter plugin
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR - Audio omporter plugin
 #   installation directory
 #  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake
 #   Find* modules
