@@ -63,6 +63,7 @@ set(MagnumSceneGraph_HEADERS
     Object.hpp
     Scene.h
     SceneGraph.h
+    TranslationTransformation.h
 
     magnumSceneGraphVisibility.h)
 

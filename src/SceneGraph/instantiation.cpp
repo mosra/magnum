@@ -33,6 +33,7 @@
 #include "SceneGraph/Object.hpp"
 #include "SceneGraph/RigidMatrixTransformation2D.h"
 #include "SceneGraph/RigidMatrixTransformation3D.h"
+#include "SceneGraph/TranslationTransformation.h"
 
 namespace Magnum { namespace SceneGraph {
 
@@ -58,6 +59,8 @@ template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation2D<Float
 template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation3D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation2D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation3D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicTranslationTransformation2D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicTranslationTransformation3D<Float>>;
 #endif
 
 }}

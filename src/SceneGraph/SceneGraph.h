@@ -191,6 +191,17 @@ typedef BasicRigidMatrixTransformation3D<Float> RigidMatrixTransformation3D;
 
 template<class Transformation> class Scene;
 
+template<UnsignedInt, class T, class = T> class TranslationTransformation;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T, class TranslationType = T> using BasicTranslationTransformation2D = TranslationTransformation<2, T, TranslationType>;
+template<class T, class TranslationType = T> using BasicTranslationTransformation3D = TranslationTransformation<3, T, TranslationType>;
+typedef BasicTranslationTransformation2D<Float> TranslationTransformation2D;
+typedef BasicTranslationTransformation3D<Float> TranslationTransformation3D;
+#else
+typedef TranslationTransformation<2, Float> TranslationTransformation2D;
+typedef TranslationTransformation<3, Float> TranslationTransformation3D;
+#endif
+
 }}
 
 #endif
