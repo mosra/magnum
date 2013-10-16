@@ -28,6 +28,8 @@
  * @brief Class Magnum::Platform::Sdl2Application
  */
 
+#include <Containers/EnumSet.h>
+
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
@@ -36,7 +38,6 @@
 #endif
 #include <SDL.h>
 #include <SDL_scancode.h>
-#include <Corrade/Containers/EnumSet.h>
 
 namespace Magnum {
 
