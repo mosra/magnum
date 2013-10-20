@@ -205,7 +205,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     return std::move(r);
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
 AbstractTextRenderer::BufferMapImplementation AbstractTextRenderer::bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationFull;
 AbstractTextRenderer::BufferUnmapImplementation AbstractTextRenderer::bufferUnmapImplementation = &AbstractTextRenderer::bufferUnmapImplementationDefault;
 
@@ -222,28 +222,37 @@ void AbstractTextRenderer::bufferUnmapImplementationSub(Buffer& buffer) {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
 inline void* AbstractTextRenderer::bufferMapImplementation(Buffer& buffer, GLsizeiptr length)
 #else
 void* AbstractTextRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length)
 #endif
 {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     return buffer.map(0, length, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
+    #else
+    static_cast<void>(length);
+    return &buffer == &_indexBuffer ? _indexBufferData : _vertexBufferData;
+    #endif
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
 inline void AbstractTextRenderer::bufferUnmapImplementation(Buffer& buffer)
 #else
 void AbstractTextRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
 #endif
 {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     buffer.unmap();
+    #else
+    buffer.setSubData(0, &buffer == &_indexBuffer ? _indexBufferData : _vertexBufferData);
+    #endif
 }
 
 AbstractTextRenderer::AbstractTextRenderer(AbstractFont& font, const GlyphCache& cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
-    #elif defined(MAGNUM_TARGET_GLES2)
+    #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
         bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationRange;
     } else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
@@ -279,6 +288,9 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
 
     /* Allocate vertex buffer, reset vertex count */
     _vertexBuffer.setData(vertexCount*sizeof(Vertex), nullptr, vertexBufferUsage);
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _vertexBufferData = Containers::Array<UnsignedByte>(vertexCount*sizeof(Vertex));
+    #endif
     _mesh.setVertexCount(0);
 
     /* Allocate index buffer, reset index count and reconfigure buffer binding */
@@ -295,6 +307,9 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
         indicesSize = indexCount*sizeof(UnsignedInt);
     }
     _indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _indexBufferData = Containers::Array<UnsignedByte>(indicesSize);
+    #endif
     _mesh.setIndexCount(0)
         .setIndexBuffer(_indexBuffer, 0, indexType, 0, vertexCount);
 
