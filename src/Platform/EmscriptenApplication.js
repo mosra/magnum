@@ -3,11 +3,11 @@ var Module = {
     postRun: [],
 
     printErr: function(message) {
-        console.error(Array.prototype.slice.call(message).join(' '));
+        console.error(Array.prototype.slice.call(arguments).join(' '));
     },
 
     print: function(message) {
-        console.log(Array.prototype.slice.call(message).join(' '));
+        console.log(Array.prototype.slice.call(arguments).join(' '));
     },
 
     canvas: document.getElementById('module'),
