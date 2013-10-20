@@ -80,6 +80,9 @@ if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
     if(CORRADE_TARGET_NACL_NEWLIB)
         set(BUILD_STATIC ON)
     endif()
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    # It's meaningless to use dynamic libraries with Emscripten
+    set(BUILD_STATIC ON)
 endif()
 
 if(BUILD_STATIC)
