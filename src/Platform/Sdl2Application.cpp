@@ -126,14 +126,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     context = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
     #endif
 
-    /* Push resize event, so viewportEvent() is called at startup */
-//     SDL_Event* sizeEvent = new SDL_Event;
-//     sizeEvent->type = SDL_WINDOWEVENT;
-//     sizeEvent->window.event = SDL_WINDOWEVENT_RESIZED;
-//     sizeEvent->window.data1 = configuration.size().x();
-//     sizeEvent->window.data2 = configuration.size().y();
-//     SDL_PushEvent(sizeEvent);
-
     c = new Context;
     return true;
 }
