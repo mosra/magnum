@@ -75,26 +75,26 @@ to simplify porting.
 
 You need to provide HTML markup for your application. Template one is below,
 you can modify it to your liking. The markup references two files,
-`NaClApplication.js` and `NaClApplication.css`, both are in `Platform/`
+`NaClApplication.js` and `WebApplication.css`, both are in `Platform/`
 directory in the source tree and are also installed into `share/magnum/` inside
 your NaCl toolchain.
 @code
 <!DOCTYPE html>
-<html>
-<head>
-<title>Magnum NaCl Application</title>
-<meta charset="utf-8" />
-<link rel="stylesheet" href="NaClApplication.css" />
-</head>
-<body>
-<h1>Magnum NaCl Application</h1>
-<div id="listener">
-<script type="text/javascript" src="NaClApplication.js"></script>
-<embed id="module" type="application/x-nacl" src="application.nmf" />
-<div id="status">Initialization...</div>
-<div id="statusDescription"></div>
-</div>
-</body>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Magnum NaCl Application</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="WebApplication.css" />
+  </head>
+  <body>
+    <h1>Magnum NaCl Application</h1>
+    <div id="listener">
+      <embed id="module" type="application/x-nacl" src="application.nmf" />
+      <div id="status">Initialization...</div>
+      <div id="statusDescription" />
+      <script src="NaClApplication.js"></script>
+    </div>
+  </body>
 </html>
 @endcode
 
