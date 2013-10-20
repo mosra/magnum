@@ -257,9 +257,29 @@ class AbstractXApplication::InputEvent {
             Alt = Mod1Mask,             /**< Alt */
             AltGr = Mod5Mask,           /**< AltGr */
 
-            LeftButton = Button1Mask,   /**< Left mouse button */
-            MiddleButton = Button2Mask, /**< Middle mouse button */
-            RightButton = Button3Mask,  /**< Right mouse button */
+            /**
+             * @copybrief Button::Left
+             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Left "Button::Left"
+             *      instead.
+             */
+            LeftButton = Button1Mask,
+
+            /**
+             * @copybrief Button::Middle
+             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Middle "Button::Middle"
+             *      instead.
+             */
+            MiddleButton = Button2Mask,
+
+            /**
+             * @copybrief Button::Right
+             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Right "Button::Right"
+             *      instead.
+             */
+            RightButton = Button3Mask,
 
             CapsLock = LockMask,        /**< Caps lock */
             NumLock = Mod2Mask          /**< Num lock */
@@ -272,6 +292,24 @@ class AbstractXApplication::InputEvent {
          */
         typedef Containers::EnumSet<Modifier, unsigned int> Modifiers;
 
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref Buttons, @ref buttons()
+         */
+        enum class Button: unsigned int {
+            Left = Button1Mask,     /**< Left button */
+            Middle = Button2Mask,   /**< Middle button */
+            Right = Button3Mask     /**< Right button */
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button, unsigned int> Buttons;
+
         /** @copydoc GlutApplication::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
@@ -280,6 +318,9 @@ class AbstractXApplication::InputEvent {
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
+
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() const { return Button(static_cast<unsigned int>(_modifiers)); }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -294,6 +335,7 @@ class AbstractXApplication::InputEvent {
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
 
 /**
 @brief Key event

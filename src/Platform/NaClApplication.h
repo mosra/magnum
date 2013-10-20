@@ -372,9 +372,29 @@ class NaClApplication::InputEvent {
             Alt = PP_INPUTEVENT_MODIFIER_ALTKEY,        /**< Alt */
             Meta = PP_INPUTEVENT_MODIFIER_METAKEY,      /**< Meta */
 
-            LeftButton = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,     /**< Left mouse button */
-            MiddleButton = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN, /**< Middle mouse button */
-            RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,   /**< Right mouse button */
+            /**
+             * @copybrief Button::Left
+             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Left "Button::Left"
+             *      instead.
+             */
+            LeftButton = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,
+
+            /**
+             * @copybrief Button::Middle
+             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Middle "Button::Middle"
+             *      instead.
+             */
+            MiddleButton = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN,
+
+            /**
+             * @copybrief Button::Right
+             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Right "Button::Right"
+             *      instead.
+             */
+            RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,
 
             CapsLock = PP_INPUTEVENT_MODIFIER_CAPSLOCKKEY,  /**< Caps lock */
             NumLock = PP_INPUTEVENT_MODIFIER_NUMLOCKKEY     /**< Num lock */
@@ -387,8 +407,29 @@ class NaClApplication::InputEvent {
          */
         typedef Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
 
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref Buttons, @ref buttons()
+         */
+        enum class Button: std::uint32_t {
+            Left = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,       /**< Left button */
+            Middle = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN,   /**< Middle button */
+            Right = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN      /**< Right button */
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button, std::uint32_t> Buttons;
+
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
+
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() const { return Buttons(_modifiers); }
 
         /**
          * @brief Set event as accepted
@@ -613,6 +654,7 @@ typedef NaClApplication Application;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Buttons)
 
 /* Implementations for inline functions with unused parameters */
 inline void NaClApplication::keyPressEvent(KeyEvent&) {}
