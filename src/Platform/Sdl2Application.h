@@ -522,8 +522,8 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
             Middle = SDL_BUTTON_MIDDLE,     /**< Middle button */
             Right = SDL_BUTTON_RIGHT,       /**< Right button */
-            WheelUp = 4,                    /**< Wheel up */
-            WheelDown = 5                   /**< Wheel down */
+            WheelUp = SDL_BUTTON_X1,        /**< Wheel up */
+            WheelDown = SDL_BUTTON_X2       /**< Wheel down */
         };
 
         /** @brief Button */
