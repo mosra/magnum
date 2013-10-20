@@ -557,6 +557,26 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
     friend class Sdl2Application;
 
     public:
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref Buttons, @ref buttons()
+         */
+        enum class Button: Uint32 {
+            Left = SDL_BUTTON_LMASK,        /**< Left button */
+            Middle = SDL_BUTTON_MMASK,      /**< Middle button */
+            Right = SDL_BUTTON_RMASK,       /**< Right button */
+            WheelUp = SDL_BUTTON_X1MASK,    /**< Wheel up */
+            WheelDown = SDL_BUTTON_X2MASK   /**< Wheel down */
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button, Uint32> Buttons;
+
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }
 
@@ -567,6 +587,9 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
          */
         constexpr Vector2i relativePosition() const { return _relativePosition; }
 
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() const { return _buttons; }
+
         /**
          * @brief Modifiers
          *
@@ -575,10 +598,11 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
+        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position(position), _relativePosition(relativePosition), modifiersLoaded(false), _buttons(buttons) {}
 
         const Vector2i _position, _relativePosition;
         bool modifiersLoaded;
+        Buttons _buttons;
         Modifiers _modifiers;
 };
 
@@ -614,6 +638,7 @@ typedef Sdl2Application Application;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
 
 /* Implementations for inline functions with unused parameters */
 inline void Sdl2Application::keyPressEvent(KeyEvent&) {}

@@ -204,7 +204,7 @@ void Sdl2Application::mainLoop() {
                 } break;
 
             case SDL_MOUSEMOTION: {
-                MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel});
+                MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state));
                 mouseMoveEvent(e);
                 break;
             }
