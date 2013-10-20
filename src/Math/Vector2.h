@@ -134,6 +134,15 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         Vector2<T> perpendicular() const { return {-y(), x()}; }
 
+        /**
+         * @brief Aspect ratio
+         *
+         * Returns quotient of the two elements. @f[
+         *      a = \frac{v_x}{v_y}
+         * @f]
+         */
+        T aspectRatio() const { return x()/y(); }
+
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 };
 

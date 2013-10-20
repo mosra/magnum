@@ -67,6 +67,7 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void axes();
         void scales();
         void perpendicular();
+        void aspectRatio();
 
         void debug();
         void configuration();
@@ -90,6 +91,7 @@ Vector2Test::Vector2Test() {
               &Vector2Test::axes,
               &Vector2Test::scales,
               &Vector2Test::perpendicular,
+              &Vector2Test::aspectRatio,
 
               &Vector2Test::debug,
               &Vector2Test::configuration});
@@ -194,6 +196,11 @@ void Vector2Test::perpendicular() {
     CORRADE_COMPARE(a.perpendicular(), Vector2(15.0f, 0.5f));
     CORRADE_COMPARE(Vector2::dot(a.perpendicular(), a), 0.0f);
     CORRADE_COMPARE(Vector2::xAxis().perpendicular(), Vector2::yAxis());
+}
+
+void Vector2Test::aspectRatio() {
+    const Vector2 a(3.0f, 4.0f);
+    CORRADE_COMPARE(a.aspectRatio(), 0.75f);
 }
 
 void Vector2Test::debug() {
