@@ -326,6 +326,38 @@ for depending projects. The headers are shared by both versions.
 For ArchLinux there are also prepared package files in root, named
 `PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`.
 
+@subsection building-cross-emscripten Crosscompiling for Emscripten
+
+You will need [Emscripten](https://github.com/kripken/emscripten/wiki/Tutorial)
+installed and configured.
+
+Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in `generic/Emscripten.cmake`
+to path where Emscripten is installed. Default is `/usr/emscripten`. Emscripten
+supports dynamic only to simplify porting and they are generally slower, thus
+`BUILD_STATIC` is implicitly enabled.
+
+Then create build directory and run cmake and make in it. The toolchain needs
+access to its platform file, so be sure to properly set **absolute** path to
+`modules/` directory containing `Platform/Emscripten.cmake`. Default is
+`/usr/emscripten`. Also set `CMAKE_INSTALL_PREFIX` to value which is contained
+in `CMAKE_FIND_ROOT_PATH` in toolchain file.
+
+    mkdir -p build-emscripten
+    cd build-emscripten
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
+        -DWITH_SDL2APPLICATION=ON
+    make
+
+Then you can install the library using `make install` to make it available for
+depending projects.
+
+If you have Node.js installed, you can also build and run unit tests using
+`ctest`. See `BUILD_TESTS` above.
+
 */
 
 }
