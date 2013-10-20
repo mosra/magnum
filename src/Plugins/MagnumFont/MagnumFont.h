@@ -102,7 +102,7 @@ class MagnumFont: public AbstractFont {
         ~MagnumFont();
 
     private:
-        class Data;
+        struct Data;
 
         Features doFeatures() const override;
 
