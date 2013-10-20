@@ -48,14 +48,6 @@ compressed archive or use the command line:
 
     git clone git://github.com/mosra/magnum.git
 
-If you need toolchains for crosscompiling, run also the following commands, or,
-if you build from source archive, download snapshot of toolchains repository
-from https://github.com/mosra/toolchains and put them in `toolchains/`
-subdirectory.
-
-    git submodule init
-    git submodule update
-
 @section building-compilation Compilation, installation
 
 @subsection building-linux Via command-line (on Linux/Unix)
@@ -246,6 +238,14 @@ For crosscompiling you need to have *both* target and native version of
 host system as part of the build process. If native version of `corrade-rc` is
 not found on the system, crosscompilation will fail.
 
+You also need to have the toolchains submodule updated. Either run the
+following commands, or, if you build from source archive, download snapshot of
+toolchains repository from https://github.com/mosra/toolchains and put the
+contents in `toolchains/` subdirectory.
+
+    git submodule init
+    git submodule update
+
 @subsection building-cross-win Crosscompiling for Windows using MinGW
 
 @note This guide is tailored mainly for crosscompiling from ArchLinux. For
@@ -259,10 +259,9 @@ You will need MinGW32 versions of the compiler and all dependent libraries
 - `mingw32-runtime`
 - `mingw32-corrade`
 
-Make sure you have `toolchains` submodule updated, as
-@ref building-download "explained above". Then create build directory and run
-cmake and make. You may need to modify the `basic-mingw32.cmake` file and
-`CMAKE_INSTALL_PREFIX` to suit your distribution filesystem hierarchy.
+Then create build directory and run cmake and make. You may need to modify the
+`basic-mingw32.cmake` file and `CMAKE_INSTALL_PREFIX` to suit your distribution
+filesystem hierarchy.
 
     mkdir build-win
     cd build-win
@@ -279,15 +278,13 @@ depending projects.
 You will need [Native Client SDK](https://developers.google.com/native-client/beta/sdk/download).
 Tested version is `pepper_22`.
 
-Make sure you have `toolchains` submodule updated, as
-@ref building-download "explained above". You can choose from either `glibc` or
-`newlib` toolchain. `Newlib` supports only static linking, thus `BUILD_STATIC`
-is always enabled. Don't forget to adapt `NACL_PREFIX` variable in
-`generic/NaCl-*-x86-32.cmake` and `generic/NaCl-*-x86-64.cmake` to path where
-your SDK is installed. Default is `/usr/nacl`. You may need to adapt also
-`NACL_TOOLCHAIN_PATH` so CMake is able to find the compiler. NaCl currently
-supports only OpenGL ES 2, thus `TARGET_GLES` and `TARGET_GLES2` is always
-enabled.
+You can choose from either `glibc` or `newlib` toolchain. `Newlib` supports
+only static linking, thus `BUILD_STATIC` is always enabled. Don't forget to
+adapt `NACL_PREFIX` variable in `generic/NaCl-*-x86-32.cmake` and
+`generic/NaCl-*-x86-64.cmake` to path where your SDK is installed. Default is
+`/usr/nacl`. You may need to adapt also `NACL_TOOLCHAIN_PATH` so CMake is able
+to find the compiler. NaCl currently supports only OpenGL ES 2, thus
+`TARGET_GLES` and `TARGET_GLES2` is always enabled.
 
 Then create build directories for x86-32 and x86-64 and run cmake and make in
 them. The toolchains need access to its platform file, so be sure to properly
