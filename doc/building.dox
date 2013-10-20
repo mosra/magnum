@@ -39,6 +39,8 @@ Minimal set of tools and libraries required for building is:
 - **Corrade** - Plugin management and utility library. See
   @ref building-corrade "Corrade download and installation guide" for more
   information.
+- **OpenAL** - By default needed by Audio library, but you can disable building
+  of it by setting `WITH_AUDIO` to `OFF` (see below).
 
 @section building-download Downloading the sources
 
