@@ -148,7 +148,7 @@ class MAGNUM_EXPORT Sampler {
 
         /**
          * @copybrief maxAnisotropy()
-         * @deprecated Use @ref Magnum::Shader::maxAnisotropy() "maxAnisotropy()"
+         * @deprecated Use @ref Magnum::Sampler::maxAnisotropy() "maxAnisotropy()"
          *      instead.
          */
         static Float maxSupportedAnisotropy() { return maxAnisotropy(); }
