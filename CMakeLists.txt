@@ -75,13 +75,11 @@ endif()
 if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
     set(TARGET_GLES 1)
     set(TARGET_GLES2 1)
+endif()
 
-    # Newlib toolchain supports only static linking
-    if(CORRADE_TARGET_NACL_NEWLIB)
-        set(BUILD_STATIC ON)
-    endif()
-elseif(CORRADE_TARGET_EMSCRIPTEN)
-    # It's meaningless to use dynamic libraries with Emscripten
+# NaCl newlib toolchain supports only static linking, dynamic linking is
+# meaningless on Emscripten
+if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN)
     set(BUILD_STATIC ON)
 endif()
 
