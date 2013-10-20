@@ -17,7 +17,8 @@ build() {
 
         cmake .. \
             -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Emscripten.cmake"
+            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Emscripten.cmake" \
+            -DWITH_AUDIO=OFF
     fi
 
     cd "$startdir/build-emscripten"
@@ -26,7 +27,6 @@ build() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
         -DWITH_AUDIO=OFF \
-        -DWITH_GLUTAPPLICATION=OFF \
         -DWITH_SDL2APPLICATION=ON
     make
 }
