@@ -462,13 +462,37 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
     friend class GlutApplication;
 
     public:
+        /**
+         * @brief Mouse button
+         *
+         * @see Buttons, buttons()
+         */
+        enum class Button: UnsignedByte {
+            /**
+             * Any button. Note that GLUT doesn't differentiate between mouse
+             * buttons when firing the event.
+             */
+            Left = 1
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see buttons()
+         */
+        typedef Containers::EnumSet<Button, UnsignedByte> Buttons;
+
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }
 
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() { return _buttons; }
+
     private:
-        constexpr MouseMoveEvent(const Vector2i& position): _position(position) {}
+        constexpr MouseMoveEvent(const Vector2i& position, Buttons buttons): _position(position), _buttons(buttons) {}
 
         const Vector2i _position;
+        const Buttons _buttons;
 };
 
 /** @hideinitializer
@@ -501,6 +525,8 @@ typedef GlutApplication Application;
 #undef MAGNUM_APPLICATION_MAIN
 #endif
 #endif
+
+CORRADE_ENUMSET_OPERATORS(GlutApplication::MouseMoveEvent::Buttons)
 
 /* Implementations for inline functions with unused parameters */
 inline void GlutApplication::keyPressEvent(KeyEvent&) {}

@@ -104,7 +104,7 @@ void GlutApplication::staticMouseEvent(int button, int state, int x, int y) {
 }
 
 void GlutApplication::staticMouseMoveEvent(int x, int y) {
-    MouseMoveEvent e({x, y});
+    MouseMoveEvent e({x, y}, MouseMoveEvent::Button::Left);
     instance->mouseMoveEvent(e);
 }
 
