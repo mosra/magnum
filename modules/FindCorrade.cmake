@@ -124,8 +124,13 @@ find_path(CORRADE_INCLUDE_DIR
 # CMake module dir
 find_path(_CORRADE_MODULE_DIR
     NAMES UseCorrade.cmake CorradeLibSuffix.cmake
-    PATHS ${CMAKE_ROOT}/Modules
     PATH_SUFFIXES share/cmake/Corrade)
+
+# If not found, try system module dir
+find_path(_CORRADE_MODULE_DIR
+    NAMES UseCorrade.cmake CorradeLibSuffix.cmake
+    PATHS ${CMAKE_ROOT}/Modules
+    NO_CMAKE_FIND_ROOT_PATH)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Corrade DEFAULT_MSG
