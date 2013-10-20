@@ -261,12 +261,11 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         struct ConsoleDebugOutput;
 
         enum class Flag: UnsignedByte {
-            ViewportUpdated = 1 << 0,
-            SwapInProgress = 1 << 1,
-            Redraw = 1 << 2,
-            FullscreenSwitchInProgress = 1 << 3,
-            WillBeFullscreen = 1 << 4,
-            MouseLocked = 1 << 5
+            SwapInProgress = 1 << 0,
+            Redraw = 1 << 1,
+            FullscreenSwitchInProgress = 1 << 2,
+            WillBeFullscreen = 1 << 3,
+            MouseLocked = 1 << 4
         };
         typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
 

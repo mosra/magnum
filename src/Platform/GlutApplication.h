@@ -144,6 +144,11 @@ class GlutApplication {
          * Called when window size changes. You should pass the new size to
          * DefaultFramebuffer::setViewport() and possibly elsewhere (cameras,
          * other framebuffers...).
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You are responsible for configuring the initial
+         * state yourself, viewport of default framebuffer can be retrieved
+         * from @ref DefaultFramebuffer::viewport().
          */
         virtual void viewportEvent(const Vector2i& size) = 0;
 

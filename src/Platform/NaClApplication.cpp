@@ -109,9 +109,6 @@ bool NaClApplication::tryCreateContext(const Configuration& configuration) {
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
     RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 
-    /* Make sure viewportEvent() is called for first time */
-    flags |= Flag::ViewportUpdated;
-
     c = new Context;
     return true;
 }
@@ -164,14 +161,7 @@ void NaClApplication::DidChangeView(const pp::View& view) {
     /* Canvas resized */
     if(viewportSize != size) {
         graphics->ResizeBuffers(size.x(), size.y());
-        viewportSize = size;
-        flags |= Flag::ViewportUpdated;
-    }
-
-    /* Update viewport, if changed */
-    if(flags & Flag::ViewportUpdated) {
-        flags &= ~Flag::ViewportUpdated;
-        viewportEvent(size);
+        viewportEvent(viewportSize = size);
     }
 
     drawEvent();

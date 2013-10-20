@@ -113,9 +113,6 @@ int AbstractXApplication::exec() {
     /* Show window */
     XMapWindow(display, window);
 
-    /* Call viewportEvent for the first time */
-    viewportEvent(viewportSize);
-
     while(!(flags & Flag::Exit)) {
         XEvent event;
 
