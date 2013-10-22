@@ -39,9 +39,9 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Phong shader
 
-Uses ambient, diffuse and specular color or texture. You need to provide
-@ref Position and @ref Normal attributes in your triangle mesh and call at
-least @ref setTransformationMatrix(), @ref setNormalMatrix(),
+Uses ambient, diffuse and specular color or texture. For colored mesh you need
+to provide @ref Position and @ref Normal attributes in your triangle mesh and
+call at least @ref setTransformationMatrix(), @ref setNormalMatrix(),
 @ref setProjectionMatrix(), @ref setDiffuseColor() and @ref setLightPosition().
 
 If you want to use texture instead of color, you need to provide also
