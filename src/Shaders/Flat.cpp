@@ -37,7 +37,7 @@ namespace {
     template<> constexpr const char* vertexShaderName<3>() { return "Flat3D.vert"; }
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProjectionMatrixUniform(0), colorUniform(1) {
+template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): transformationProjectionMatrixUniform(0), colorUniform(1), _flags(flags) {
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -46,17 +46,19 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProject
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader frag(version, Shader::Type::Vertex);
-    frag.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>()));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-    attachShader(frag);
-
     Shader vert(version, Shader::Type::Fragment);
-    vert.addSource(rs.get("compatibility.glsl"))
+    vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
+        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Flat.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
+
+    Shader frag(version, Shader::Type::Vertex);
+    frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
+        .addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get(vertexShaderName<dimensions>()));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
@@ -65,6 +67,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProject
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
+        if(flags & Flag::Textured) bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
     }
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
@@ -74,7 +77,14 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(): transformationProject
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        colorUniform = uniformLocation("color");
+        if(!(flags & Flag::Textured)) colorUniform = uniformLocation("color");
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(flags && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
+    #endif
+    {
+        if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureLayer);
     }
 }
 
