@@ -31,6 +31,7 @@
 
 #include "ColorFormat.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum {
 
 /**
@@ -46,5 +47,8 @@ typedef ColorFormat ImageFormat;
 typedef ColorType ImageType;
 
 }
+#else
+#error
+#endif
 
 #endif

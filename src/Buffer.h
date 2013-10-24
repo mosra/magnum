@@ -657,6 +657,7 @@ class MAGNUM_EXPORT Buffer {
             return *this;
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set buffer data
          * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, Usage) "setData(Containers::ArrayReference<const void>, Usage)"
@@ -665,6 +666,7 @@ class MAGNUM_EXPORT Buffer {
         Buffer& setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
             return setData({data, std::size_t(size)}, usage);
         }
+        #endif
 
         /**
          * @brief Set buffer data
@@ -702,6 +704,7 @@ class MAGNUM_EXPORT Buffer {
             return *this;
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set buffer subdata
          * @deprecated Use @ref Magnum::Buffer::setSubData(GLintptr, Containers::ArrayReference<const void>) "setSubData(GLintptr, Containers::ArrayReference<const void>)"
@@ -710,6 +713,7 @@ class MAGNUM_EXPORT Buffer {
         Buffer& setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             return setSubData(offset, {data, std::size_t(size)});
         }
+        #endif
 
         /**
          * @brief Set buffer subdata

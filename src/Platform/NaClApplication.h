@@ -371,6 +371,7 @@ class NaClApplication::InputEvent {
             Alt = PP_INPUTEVENT_MODIFIER_ALTKEY,        /**< Alt */
             Meta = PP_INPUTEVENT_MODIFIER_METAKEY,      /**< Meta */
 
+            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * @copybrief Button::Left
              * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
@@ -394,6 +395,7 @@ class NaClApplication::InputEvent {
              *      instead.
              */
             RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,
+            #endif
 
             CapsLock = PP_INPUTEVENT_MODIFIER_CAPSLOCKKEY,  /**< Caps lock */
             NumLock = PP_INPUTEVENT_MODIFIER_NUMLOCKKEY     /**< Num lock */

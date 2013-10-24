@@ -116,7 +116,6 @@ set(Magnum_HEADERS
     Extensions.h
     Framebuffer.h
     Image.h
-    ImageFormat.h
     ImageReference.h
     Magnum.h
     Mesh.h
@@ -137,6 +136,12 @@ set(Magnum_HEADERS
     Types.h
 
     magnumVisibility.h)
+
+# Deprecated headers
+if(BUILD_DEPRECATED)
+    set(Magnum_HEADERS ${Magnum_HEADERS}
+       ImageFormat.h)
+endif()
 
 # Desktop-only headers and libraries
 if(NOT TARGET_GLES)

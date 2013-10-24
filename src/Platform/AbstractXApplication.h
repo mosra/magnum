@@ -257,6 +257,7 @@ class AbstractXApplication::InputEvent {
             Alt = Mod1Mask,             /**< Alt */
             AltGr = Mod5Mask,           /**< AltGr */
 
+            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * @copybrief Button::Left
              * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
@@ -280,6 +281,7 @@ class AbstractXApplication::InputEvent {
              *      instead.
              */
             RightButton = Button3Mask,
+            #endif
 
             CapsLock = LockMask,        /**< Caps lock */
             NumLock = Mod2Mask          /**< Num lock */

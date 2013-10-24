@@ -309,12 +309,14 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          */
         static Int maxVertexAttributes();
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copydoc maxVertexAttributes()
          * @deprecated Use @ref Magnum::AbstractShaderProgram::maxVertexAttributes() "maxVertexAttributes()"
          *      instead.
          */
         static Int maxSupportedVertexAttributeCount() { return maxVertexAttributes(); }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
