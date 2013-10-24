@@ -69,7 +69,7 @@ using Corrade::Utility::Error;
 @brief Static library build
 
 Defined if built as static libraries. Default are shared libraries.
-@see @ref building-corrade
+@see @ref building
 */
 #define MAGNUM_BUILD_STATIC
 #undef MAGNUM_BUILD_STATIC
