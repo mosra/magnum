@@ -677,13 +677,13 @@ class MAGNUM_EXPORT Buffer {
          * @see setData(GLsizeiptr, const GLvoid*, Usage)
          */
         template<class T> Buffer& setData(const std::vector<T>& data, Usage usage) {
-            setData(data.size()*sizeof(T), data.data(), usage);
+            setData({data.data(), data.size()}, usage);
             return *this;
         }
 
         /** @overload */
         template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, Usage usage) {
-            setData(data.size()*sizeof(T), data.data(), usage);
+            setData({data.data(), data.size()}, usage);
             return *this;
         }
 
@@ -724,13 +724,13 @@ class MAGNUM_EXPORT Buffer {
          * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
         template<class T> Buffer& setSubData(GLintptr offset, const std::vector<T>& data) {
-            setSubData(offset, data.size()*sizeof(T), data.data());
+            setSubData(offset, {data.data(), data.size()});
             return *this;
         }
 
         /** @overload */
         template<std::size_t size, class T> Buffer& setSubData(GLintptr offset, const std::array<T, size>& data) {
-            setSubData(offset, data.size()*sizeof(T), data.data());
+            setSubData(offset, {data.data(), data.size()});
             return *this;
         }
 

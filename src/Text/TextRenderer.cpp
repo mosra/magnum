@@ -180,7 +180,7 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, con
         indices = new char[indicesSize];
         createIndices<UnsignedInt>(indices, layouter->glyphCount());
     }
-    indexBuffer.setData(indicesSize, indices, usage);
+    indexBuffer.setData({indices, indicesSize}, usage);
     delete indices;
 
     /* Configure mesh except for vertex buffer (depends on dimension count, done
@@ -287,7 +287,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
     const UnsignedInt indexCount = glyphCount*6;
 
     /* Allocate vertex buffer, reset vertex count */
-    _vertexBuffer.setData(vertexCount*sizeof(Vertex), nullptr, vertexBufferUsage);
+    _vertexBuffer.setData({nullptr, vertexCount*sizeof(Vertex)}, vertexBufferUsage);
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     _vertexBufferData = Containers::Array<UnsignedByte>(vertexCount*sizeof(Vertex));
     #endif
@@ -306,7 +306,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
         indexType = Mesh::IndexType::UnsignedInt;
         indicesSize = indexCount*sizeof(UnsignedInt);
     }
-    _indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
+    _indexBuffer.setData({nullptr, indicesSize}, indexBufferUsage);
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     _indexBufferData = Containers::Array<UnsignedByte>(indicesSize);
     #endif

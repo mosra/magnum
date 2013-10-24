@@ -22,6 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <array>
+#include <vector>
 #include <Containers/Array.h>
 
 #include "Buffer.h"
@@ -82,10 +84,22 @@ void BufferGLTest::construct() {
 void BufferGLTest::data() {
     Buffer buffer;
 
+    /* Plain array */
     constexpr Int data[] = {2, 7, 5, 13, 25};
-    buffer.setData(5*4, data, Buffer::Usage::StaticDraw);
+    buffer.setData({data, 5}, Buffer::Usage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(buffer.size(), 5*4);
 
+    /* STL vector */
+    std::vector<Int> data2{2, 7, 5, 13, 25};
+    buffer.setData(data2, Buffer::Usage::StaticDraw);
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(buffer.size(), 5*4);
+
+    /* STL array */
+    std::array<Int, 5> data3{2, 7, 5, 13, 25};
+    buffer.setData(data3, Buffer::Usage::StaticDraw);
+    MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /** @todo How to verify the contents in ES? */
@@ -100,10 +114,22 @@ void BufferGLTest::data() {
     CORRADE_COMPARE(contents[4], 25);
     #endif
 
+    /* Plain array */
     constexpr Int subData[] = {125, 3, 15};
-    buffer.setSubData(4, 3*4, subData);
+    buffer.setSubData(4, {subData, 3});
     MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(buffer.size(), 5*4);
 
+    /* STL vector */
+    std::vector<Int> subData2{125, 3, 15};
+    buffer.setSubData(4, subData2);
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(buffer.size(), 5*4);
+
+    /* STL array */
+    std::array<Int, 3> subData3{125, 3, 15};
+    buffer.setSubData(4, subData3);
+    MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /** @todo How to verify the contents in ES? */
@@ -254,7 +280,7 @@ void BufferGLTest::copy() {
     buffer1.setData(data, Buffer::Usage::StaticDraw);
 
     Buffer buffer2;
-    buffer2.setData(5, nullptr, Buffer::Usage::StaticDraw);
+    buffer2.setData({nullptr, 5}, Buffer::Usage::StaticDraw);
 
     Buffer::copy(buffer1, buffer2, 1, 2, 3);
     MAGNUM_VERIFY_NO_ERROR();
