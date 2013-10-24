@@ -66,6 +66,17 @@ using Corrade::Utility::Error;
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /**
+@brief Build with deprecated API included
+
+Defined if the library contains deprecated API (which will be removed in the
+future). To preserve backward compatibility, %Magnum is by default built with
+deprecated API included.
+@see @ref building
+*/
+#define MAGNUM_BUILD_DEPRECATED
+/* (enabled by default) */
+
+/**
 @brief Static library build
 
 Defined if built as static libraries. Default are shared libraries.

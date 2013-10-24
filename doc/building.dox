@@ -121,6 +121,12 @@ Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 the module with your code instead of depending on it being in system location.
 You can install it by enabling `WITH_FIND_MODULE`.
 
+The library is constantly evolving and thus some APIs are deprecated and then
+later removed in favor of better ones. To preserve backwards compatibility,
+%Magnum is by default built with all deprecated APIs. However, to make your
+code more robust and future-proof, it's recommended to build the library with
+`BUILD_DEPRECATED` disabled.
+
 By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
 parameters you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
