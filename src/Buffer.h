@@ -319,7 +319,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Memory mapping access
          *
-         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see map(MapAccess), mapSub()
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} or
@@ -769,7 +769,7 @@ class MAGNUM_EXPORT Buffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see @ref minMapAlignment(), @ref unmap(), @ref setTargetHint(),
          *      @fn_gl{BindBuffer} and @fn_gl{MapBuffer} or
@@ -793,7 +793,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * If the buffer is not already bound somewhere, it is bound to hinted
          * target before the operation.
-         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see unmapSub(), setTargetHint(), @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
