@@ -55,9 +55,9 @@ void CapsuleRendererTest::zeroLength2D() {
     const Vector2 a(0.5f, 3.0f);
     std::array<Matrix3, 3> transformation = Implementation::capsuleRendererTransformation<2>(a, a, 3.5f);
 
-    const auto scaling = Math::Matrix<2, Float>::fromDiagonal(Vector2(3.5f));
+    const auto scaling = Matrix2x2::fromDiagonal(Vector2(3.5f));
     CORRADE_COMPARE(transformation[0].rotationScaling(), scaling);
-    CORRADE_COMPARE(transformation[1].rotationScaling(), (Math::Matrix<2, Float>::fromDiagonal({3.5f, 0.0f})));
+    CORRADE_COMPARE(transformation[1].rotationScaling(), Matrix2x2::fromDiagonal({3.5f, 0.0f}));
     CORRADE_COMPARE(transformation[2].rotationScaling(), scaling);
 
     CORRADE_COMPARE(transformation[0].translation(), a);
@@ -94,9 +94,9 @@ void CapsuleRendererTest::zeroLength3D() {
     const Vector3 a(0.5f, 3.0f, 7.0f);
     std::array<Matrix4, 3> transformation = Implementation::capsuleRendererTransformation<3>(a, a, 3.5f);
 
-    const auto scaling = Math::Matrix<3, Float>::fromDiagonal(Vector3(3.5f));
+    const auto scaling = Matrix3x3::fromDiagonal(Vector3(3.5f));
     CORRADE_COMPARE(transformation[0].rotationScaling(), scaling);
-    CORRADE_COMPARE(transformation[1].rotationScaling(), (Math::Matrix<3, Float>::fromDiagonal({3.5f, 0.0f, 3.5f})));
+    CORRADE_COMPARE(transformation[1].rotationScaling(), Matrix3x3::fromDiagonal({3.5f, 0.0f, 3.5f}));
     CORRADE_COMPARE(transformation[2].rotationScaling(), scaling);
 
     CORRADE_COMPARE(transformation[0].translation(), a);

@@ -185,14 +185,58 @@ typedef Math::Vector3<Int> Vector3i;
 /** @brief Four-component signed integer vector */
 typedef Math::Vector4<Int> Vector4i;
 
-/** @brief 2x2 float matrix */
-typedef Math::Matrix<2, Float> Matrix2;
+/**
+@brief 3x3 float transformation matrix
 
-/** @brief 3x3 float matrix */
+@see @ref Matrix3x3
+*/
 typedef Math::Matrix3<Float> Matrix3;
 
-/** @brief 4x4 float matrix */
+/**
+@brief 4x4 float transformation matrix
+
+@see @ref Matrix4x4
+*/
 typedef Math::Matrix4<Float> Matrix4;
+
+/** @brief 2x2 float matrix */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix2x2<Float> Matrix2x2;
+#else
+typedef Math::Matrix<2, Float> Matrix2x2;
+#endif
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief Matrix2x2
+@deprecated Use @ref Magnum::Matrix2x2 "Matrix2x2" instead.
+*/
+typedef Math::Matrix<2, Float> Matrix2;
+#endif
+
+/**
+@brief 3x3 float matrix
+
+Note that this is different from @ref Matrix3, which contains additional
+functions for transformations in 2D.
+*/
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix3x3<Float> Matrix3x3;
+#else
+typedef Math::Matrix<3, Float> Matrix3x3;
+#endif
+
+/**
+@brief 4x4 float matrix
+
+Note that this is different from @ref Matrix4, which contains additional
+functions for transformations in 3D.
+*/
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix4x4<Float> Matrix4x4;
+#else
+typedef Math::Matrix<4, Float> Matrix4x4;
+#endif
 
 /** @brief Float matrix with 2 columns and 3 rows */
 #ifndef CORRADE_GCC46_COMPATIBILITY
@@ -284,14 +328,58 @@ typedef Math::Vector3<Double> Vector3d;
 /** @brief Four-component double vector */
 typedef Math::Vector4<Double> Vector4d;
 
-/** @brief 2x2 double matrix */
-typedef Math::Matrix<2, Double> Matrix2d;
+/**
+@brief 3x3 double transformation matrix
 
-/** @brief 3x3 double matrix */
+@see @ref Matrix3x3d
+*/
 typedef Math::Matrix3<Double> Matrix3d;
 
-/** @brief 4x4 double matrix */
+/**
+@brief 4x4 double transformation matrix
+
+@see @ref Matrix4x4d
+*/
 typedef Math::Matrix4<Double> Matrix4d;
+
+/** @brief 2x2 double matrix */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix2x2<Double> Matrix2x2d;
+#else
+typedef Math::Matrix<2, Double> Matrix2x2d;
+#endif
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief Matrix2x2d
+@deprecated Use @ref Magnum::Matrix2x2d "Matrix2x2d" instead.
+*/
+typedef Math::Matrix<2, Double> Matrix2d;
+#endif
+
+/**
+@brief 3x3 double matrix
+
+Note that this is different from @ref Matrix3d, which contains additional
+functions for transformations in 2D.
+*/
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix3x3<Double> Matrix3x3d;
+#else
+typedef Math::Matrix<3, Double> Matrix3x3d;
+#endif
+
+/**
+@brief 4x4 double matrix
+
+Note that this is different from @ref Matrix4d, which contains additional
+functions for transformations in 3D.
+*/
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix4x4<Double> Matrix4x4d;
+#else
+typedef Math::Matrix<4, Double> Matrix4x4d;
+#endif
 
 /** @brief Double matrix with 2 columns and 3 rows */
 #ifndef CORRADE_GCC46_COMPATIBILITY

@@ -55,7 +55,7 @@ void CylinderRendererTest::zeroLength2D() {
     const Vector2 a(0.5f, 3.0f);
     const Matrix3 transformation = Implementation::cylinderRendererTransformation<2>(a, a, 3.5f);
 
-    CORRADE_COMPARE(transformation.rotationScaling(), (Math::Matrix<2, Float>::fromDiagonal({3.5f, 0.0f})));
+    CORRADE_COMPARE(transformation.rotationScaling(), Matrix2x2::fromDiagonal({3.5f, 0.0f}));
     CORRADE_COMPARE(transformation.translation(), a);
 }
 
@@ -76,7 +76,7 @@ void CylinderRendererTest::zeroLength3D() {
     const Vector3 a(0.5f, 3.0f, 7.0f);
     const Matrix4 transformation = Implementation::cylinderRendererTransformation<3>(a, a, 3.5f);
 
-    CORRADE_COMPARE(transformation.rotationScaling(), (Math::Matrix<3, Float>::fromDiagonal({3.5f, 0.0f, 3.5f})));
+    CORRADE_COMPARE(transformation.rotationScaling(), Matrix3x3::fromDiagonal({3.5f, 0.0f, 3.5f}));
     CORRADE_COMPARE(transformation.translation(), a);
 }
 

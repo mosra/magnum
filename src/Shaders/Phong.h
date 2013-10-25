@@ -167,7 +167,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set normal matrix
          * @return Reference to self (for method chaining)
          */
-        Phong& setNormalMatrix(const Math::Matrix<3, Float>& matrix) {
+        Phong& setNormalMatrix(const Matrix3x3& matrix) {
             setUniform(normalMatrixUniform, matrix);
             return *this;
         }

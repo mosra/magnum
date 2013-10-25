@@ -44,6 +44,12 @@ template<class> class DualComplex;
 template<class> class DualQuaternion;
 
 template<std::size_t, class> class Matrix;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T> using Matrix2x2 = Matrix<2, T>;
+template<class T> using Matrix3x3 = Matrix<3, T>;
+template<class T> using Matrix4x4 = Matrix<4, T>;
+#endif
+
 template<class> class Matrix3;
 template<class> class Matrix4;
 
