@@ -48,9 +48,8 @@ Vector.
 The data are stored in column-major order, to reflect that, all indices in
 math formulas are in reverse order (i.e. @f$ \boldsymbol A_{ji} @f$ instead
 of @f$ \boldsymbol A_{ij} @f$).
-@see Magnum::Matrix2x3, Magnum::Matrix3x2, Magnum::Matrix2x4, Magnum::Matrix4x2,
-    Magnum::Matrix3x4, Magnum::Matrix4x3, Magnum::Matrix2x3d, Magnum::Matrix3x2d,
-    Magnum::Matrix2x4d, Magnum::Matrix4x2d, Magnum::Matrix3x4d, Magnum::Matrix4x3d
+@see @ref Matrix2x3, @ref Matrix3x2, @ref Matrix2x4, @ref Matrix4x2,
+    @ref Matrix3x4, @ref Matrix4x3
 */
 template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     static_assert(cols != 0 && rows != 0, "RectangularMatrix cannot have zero elements");
@@ -366,6 +365,74 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         Vector<rows, T> _data[cols];
 };
+
+#ifndef CORRADE_GCC46_COMPATIBILITY
+/**
+@brief Matrix with 2 columns and 3 rows
+
+Convenience alternative to <tt>%RectangularMatrix<2, 3, T></tt>. See
+@ref RectangularMatrix for more information.
+@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<2, 3, T></tt>
+    instead.
+@see @ref Magnum::Matrix2x3, @ref Magnum::Matrix2x3d
+*/
+template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
+
+/**
+@brief Matrix with 3 columns and 2 rows
+
+Convenience alternative to <tt>%RectangularMatrix<3, 2, T></tt>. See
+@ref RectangularMatrix for more information.
+@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<3, 2, T></tt>
+    instead.
+@see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d
+*/
+template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
+
+/**
+@brief Matrix with 2 columns and 4 rows
+
+Convenience alternative to <tt>%RectangularMatrix<2, 4, T></tt>. See
+@ref RectangularMatrix for more information.
+@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<2, 4, T></tt>
+    instead.
+@see @ref Magnum::Matrix2x4, @ref Magnum::Matrix2x4d
+*/
+template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
+
+/**
+@brief Matrix with 4 columns and 2 rows
+
+Convenience alternative to <tt>%RectangularMatrix<4, 2, T></tt>. See
+@ref RectangularMatrix for more information.
+@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<4, 2, T></tt>
+    instead.
+@see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d
+*/
+template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
+
+/**
+@brief Matrix with 3 columns and 4 rows
+
+Convenience alternative to <tt>%RectangularMatrix<3, 4, T></tt>. See
+@ref RectangularMatrix for more information.
+@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<3, 4, T></tt>
+    instead.
+@see @ref Magnum::Matrix3x4, @ref Magnum::Matrix3x4d
+*/
+template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
+
+/**
+@brief Matrix with 4 columns and 3 rows
+
+Convenience alternative to <tt>%RectangularMatrix<4, 3, T></tt>. See
+@ref RectangularMatrix for more information.
+@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<4, 3, T></tt>
+    instead.
+@see @ref Magnum::Matrix4x3, @ref Magnum::Matrix4x3d
+*/
+template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
+#endif
 
 /** @relates RectangularMatrix
 @brief Multiply number with matrix

@@ -195,22 +195,46 @@ typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix4<Float> Matrix4;
 
 /** @brief Float matrix with 2 columns and 3 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix2x3<Float> Matrix2x3;
+#else
 typedef Math::RectangularMatrix<2, 3, Float> Matrix2x3;
+#endif
 
 /** @brief Float matrix with 3 columns and 2 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix3x2<Float> Matrix3x2;
+#else
 typedef Math::RectangularMatrix<3, 2, Float> Matrix3x2;
+#endif
 
 /** @brief Float matrix with 2 columns and 4 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix2x4<Float> Matrix2x4;
+#else
 typedef Math::RectangularMatrix<2, 4, Float> Matrix2x4;
+#endif
 
 /** @brief Float matrix with 4 columns and 2 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix4x2<Float> Matrix4x2;
+#else
 typedef Math::RectangularMatrix<4, 2, Float> Matrix4x2;
+#endif
 
 /** @brief Float matrix with 3 columns and 4 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix3x4<Float> Matrix3x4;
+#else
 typedef Math::RectangularMatrix<3, 4, Float> Matrix3x4;
+#endif
 
 /** @brief Float matrix with 4 columns and 3 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix4x3<Float> Matrix4x3;
+#else
 typedef Math::RectangularMatrix<4, 3, Float> Matrix4x3;
+#endif
 
 /** @brief Float complex number */
 typedef Math::Complex<Float> Complex;
@@ -270,22 +294,46 @@ typedef Math::Matrix3<Double> Matrix3d;
 typedef Math::Matrix4<Double> Matrix4d;
 
 /** @brief Double matrix with 2 columns and 3 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix2x3<Double> Matrix2x3d;
+#else
 typedef Math::RectangularMatrix<2, 3, Double> Matrix2x3d;
+#endif
 
 /** @brief Double matrix with 3 columns and 2 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix3x2<Double> Matrix3x2d;
+#else
 typedef Math::RectangularMatrix<3, 2, Double> Matrix3x2d;
+#endif
 
 /** @brief Double matrix with 2 columns and 4 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix2x4<Double> Matrix2x4d;
+#else
 typedef Math::RectangularMatrix<2, 4, Double> Matrix2x4d;
+#endif
 
 /** @brief Double matrix with 4 columns and 2 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix4x2<Double> Matrix4x2d;
+#else
 typedef Math::RectangularMatrix<4, 2, Double> Matrix4x2d;
+#endif
 
 /** @brief Double matrix with 3 columns and 4 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix3x4<Double> Matrix3x4d;
+#else
 typedef Math::RectangularMatrix<3, 4, Double> Matrix3x4d;
+#endif
 
 /** @brief Double matrix with 4 columns and 3 rows */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Matrix4x3<Double> Matrix4x3d;
+#else
 typedef Math::RectangularMatrix<4, 3, Double> Matrix4x3d;
+#endif
 
 /** @brief Double complex number */
 typedef Math::Complex<Double> Complexd;

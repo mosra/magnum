@@ -101,8 +101,8 @@ auto diag2 = Matrix3::fromDiagonal({3.0f, 2.0f, 1.0f});
 It is possible to create matrices from other matrices and vectors with the same
 row count; vectors from vector and scalar:
 @code
-Math::RectangularMatrix<2, 3, Int> a;
-Math::Vector<3, Int> b, c;
+Math::Matrix2x3<Int> a;
+Math::Vector3<Int> b, c;
 Math::Matrix3<Int> mat(a, b);
 Math::Vector<8, Int> vec(1, b, 2, c);
 @endcode
@@ -115,7 +115,7 @@ on the array itself:
 @code
 Int[] mat = { 2, 4, 6,
               1, 3, 5 };
-RectangularMatrix<2, 3, Int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
+Math::Matrix2x3<Int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
 @endcode
 Note that unlike constructors, this function has no way to check whether the
 array is long enough to contain all elements, so use with caution.
@@ -235,7 +235,7 @@ implications and it may differ from what is common in mathematics:
 - Order of template arguments in specification of @ref Math::RectangularMatrix
   is also column-major:
 @code
-Math::RectangularMatrix<2, 3, Int> mat; // two columns, three rows
+Math::RectangularMatrix<2, 5, Int> mat; // two columns, five rows
 @endcode
 - Order of components in matrix constructors is also column-major, further
   emphasized by requirement that you have to pass directly column vectors:
