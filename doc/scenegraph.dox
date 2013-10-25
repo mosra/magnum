@@ -60,8 +60,7 @@ won't allow you to scale or shear objects, but are more memory efficient than
 matrices.
 
 It's also possible to implement your own transformation class for specific
-needs, see @ref AbstractTransformation-subclassing
-"AbstractTransformation documentation" for more information.
+needs, see source of other transformation classes for more information.
 
 @section scenegraph-hierarchy Scene hierarchy
 

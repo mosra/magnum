@@ -169,7 +169,7 @@ Math::Vector<6, Int> w10xyz = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); /
 @section matrix-vector-operations Operations with matrices and vectors
 
 Vectors can be added, subtracted, negated and multiplied or divided with
-scalars, as is common in mathematics, Magnum also adds the ability to divide
+scalars, as is common in mathematics, %Magnum also adds the ability to divide
 scalar with vector:
 @code
 Vector3 a(1.0f, 2.0f, 3.0f);
@@ -232,8 +232,8 @@ OpenGL matrices are column-major, thus it is reasonable to have matrices in
 %Magnum also column major (and vectors as columns). This has naturally some
 implications and it may differ from what is common in mathematics:
 
-- Order of template arguments in specification of RectangularMatrix is also
-  column-major:
+- Order of template arguments in specification of @ref Math::RectangularMatrix
+  is also column-major:
 @code
 Math::RectangularMatrix<2, 3, Int> mat; // two columns, three rows
 @endcode

@@ -30,9 +30,9 @@ namespace Magnum {
 @section types-builtin Builtin types
 
 %Magnum provides typedefs for builtin integral and floating-point arithmetic
-types to ensure portability (e.g. Int is *always* 32bit), maintain consistency
-and reduce confusion (e.g. `std::int32_t`, `int` and `GLint` all refer to the
-same type).
+types to ensure portability (e.g. @ref Int is *always* 32bit), maintain
+consistency and reduce confusion (e.g. `std::int32_t`, `int` and `GLint` all
+refer to the same type).
 
 | %Magnum type       | Size           | Equivalent GLSL type |
 | ------------------ | -------------- | -------------------- |
@@ -52,9 +52,10 @@ types which cannot be directly passed to GLSL shaders (such as `long double`)
 have no typedefs.
 
 Types from the above table are then used to define other types. All following
-types are aliases of corresponding types in Math namespace. No suffix after type
-name means @ref Float underlying type, `ui` means @ref UnsignedInt underlying
-type, `i` is @ref Int underlying type and `d` is for @ref Double underlying type.
+types are aliases of corresponding types in @ref Math namespace. No suffix
+after type name means @ref Float underlying type, `ui` means @ref UnsignedInt
+underlying type, `i` is @ref Int underlying type and `d` is for @ref Double
+underlying type.
 
 @section types-matrix Matrix/vector types
 
@@ -78,7 +79,7 @@ type, `i` is @ref Int underlying type and `d` is for @ref Double underlying type
 | @ref Matrix4x3 or @ref Matrix4x3d | `mat4x3` or `dmat4x3`                |
 
 Any super- or sub-class of the same size and underlying type can be used
-equivalently (e.g. Math::Vector or Color3 instead of @ref Vector3).
+equivalently (e.g. @ref Math::Vector or @ref Color3 instead of @ref Vector3).
 
 @section types-other Other types
 
