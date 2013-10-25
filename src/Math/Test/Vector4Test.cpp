@@ -165,24 +165,37 @@ void Vector4Test::convert() {
 void Vector4Test::access() {
     Vector4 vec(1.0f, -2.0f, 5.0f, 0.5f);
     CORRADE_COMPARE(vec.x(), 1.0f);
+    CORRADE_COMPARE(vec.r(), 1.0f);
     CORRADE_COMPARE(vec.y(), -2.0f);
+    CORRADE_COMPARE(vec.g(), -2.0f);
     CORRADE_COMPARE(vec.z(), 5.0f);
+    CORRADE_COMPARE(vec.b(), 5.0f);
     CORRADE_COMPARE(vec.w(), 0.5f);
+    CORRADE_COMPARE(vec.a(), 0.5f);
 
     constexpr Vector4 cvec(1.0f, -2.0f, 5.0f, 0.5f);
     constexpr Float x = cvec.x();
+    constexpr Float r = cvec.r();
     constexpr Float y = cvec.y();
+    constexpr Float g = cvec.g();
     constexpr Float z = cvec.z();
+    constexpr Float b = cvec.b();
     constexpr Float w = cvec.w();
+    constexpr Float a = cvec.a();
     CORRADE_COMPARE(x, 1.0f);
+    CORRADE_COMPARE(r, 1.0f);
     CORRADE_COMPARE(y, -2.0f);
+    CORRADE_COMPARE(g, -2.0f);
     CORRADE_COMPARE(z, 5.0f);
+    CORRADE_COMPARE(b, 5.0f);
     CORRADE_COMPARE(w, 0.5f);
+    CORRADE_COMPARE(a, 0.5f);
 }
 
 void Vector4Test::threeComponent() {
     Vector4 a(1.0f, 2.0f, 3.0f, 4.0f);
     CORRADE_COMPARE(a.xyz(), Vector3(1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(a.rgb(), Vector3(1.0f, 2.0f, 3.0f));
 
     constexpr Vector4 b(1.0f, 2.0f, 3.0f, 4.0f);
     constexpr Vector3 c = b.xyz();

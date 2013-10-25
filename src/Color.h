@@ -202,13 +202,6 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /** @brief Copy constructor */
         constexpr BasicColor3(const Math::Vector<3, T>& other): Math::Vector3<T>(other) {}
 
-        T& r() { return Math::Vector3<T>::x(); }                /**< @brief R component */
-        constexpr T r() const { return Math::Vector3<T>::x(); } /**< @overload */
-        T& g() { return Math::Vector3<T>::y(); }                /**< @brief G component */
-        constexpr T g() const { return Math::Vector3<T>::y(); } /**< @overload */
-        T& b() { return Math::Vector3<T>::z(); }                /**< @brief B component */
-        constexpr T b() const { return Math::Vector3<T>::z(); } /**< @overload */
-
         /**
          * @brief Convert to HSV
          *
@@ -336,42 +329,24 @@ class BasicColor4: public Math::Vector4<T> {
         /** @brief Copy constructor */
         constexpr BasicColor4(const Math::Vector<4, T>& other): Math::Vector4<T>(other) {}
 
-        T& r() { return Math::Vector4<T>::x(); }                /**< @brief R component */
-        constexpr T r() const { return Math::Vector4<T>::x(); } /**< @overload */
-        T& g() { return Math::Vector4<T>::y(); }                /**< @brief G component */
-        constexpr T g() const { return Math::Vector4<T>::y(); } /**< @overload */
-        T& b() { return Math::Vector4<T>::z(); }                /**< @brief B component */
-        constexpr T b() const { return Math::Vector4<T>::z(); } /**< @overload */
-        T& a() { return Math::Vector4<T>::w(); }                /**< @brief A component */
-        constexpr T a() const { return Math::Vector4<T>::w(); } /**< @overload */
-
-        /**
-         * @brief RGB part of the vector
-         * @return First three components of the vector
-         *
-         * @see swizzle()
-         */
-        BasicColor3<T>& rgb() { return BasicColor3<T>::from(Math::Vector4<T>::data()); }
-        constexpr BasicColor3<T> rgb() const { return BasicColor3<T>::from(Math::Vector4<T>::data()); } /**< @overload */
-
         /** @copydoc BasicColor3::toHSV() */
         constexpr HSV toHSV() const {
-            return Implementation::toHSV<T>(rgb());
+            return Implementation::toHSV<T>(Math::Vector4<T>::rgb());
         }
 
         /** @copydoc BasicColor3::hue() */
         constexpr Math::Deg<FloatingPointType> hue() const {
-            return Implementation::hue<T>(rgb());
+            return Implementation::hue<T>(Math::Vector4<T>::rgb());
         }
 
         /** @copydoc BasicColor3::saturation() */
         constexpr FloatingPointType saturation() const {
-            return Implementation::saturation<T>(rgb());
+            return Implementation::saturation<T>(Math::Vector4<T>::rgb());
         }
 
         /** @copydoc BasicColor3::value() */
         constexpr FloatingPointType value() const {
-            return Implementation::value<T>(rgb());
+            return Implementation::value<T>(Math::Vector4<T>::rgb());
         }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, BasicColor4)

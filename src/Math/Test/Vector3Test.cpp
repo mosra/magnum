@@ -167,16 +167,25 @@ void Vector3Test::convert() {
 void Vector3Test::access() {
     Vector3 vec(1.0f, -2.0f, 5.0f);
     CORRADE_COMPARE(vec.x(), 1.0f);
+    CORRADE_COMPARE(vec.r(), 1.0f);
     CORRADE_COMPARE(vec.y(), -2.0f);
+    CORRADE_COMPARE(vec.g(), -2.0f);
     CORRADE_COMPARE(vec.z(), 5.0f);
+    CORRADE_COMPARE(vec.b(), 5.0f);
 
     constexpr Vector3 cvec(1.0f, -2.0f, 5.0f);
     constexpr Float x = cvec.x();
+    constexpr Float r = cvec.r();
     constexpr Float y = cvec.y();
+    constexpr Float g = cvec.g();
     constexpr Float z = cvec.z();
+    constexpr Float b = cvec.b();
     CORRADE_COMPARE(x, 1.0f);
+    CORRADE_COMPARE(r, 1.0f);
     CORRADE_COMPARE(y, -2.0f);
+    CORRADE_COMPARE(g, -2.0f);
     CORRADE_COMPARE(z, 5.0f);
+    CORRADE_COMPARE(b, 5.0f);
 }
 
 void Vector3Test::cross() {

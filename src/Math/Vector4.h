@@ -75,29 +75,94 @@ template<class T> class Vector4: public Vector<4, T> {
         /** @brief Copy constructor */
         constexpr Vector4(const Vector<4, T>& other): Vector<4, T>(other) {}
 
-        T& x() { return (*this)[0]; }                   /**< @brief X component */
+        /**
+         * @brief X component
+         *
+         * @see @ref r()
+         */
+        T& x() { return (*this)[0]; }
         constexpr T x() const { return (*this)[0]; }    /**< @overload */
-        T& y() { return (*this)[1]; }                   /**< @brief Y component */
+
+        /**
+         * @brief Y component
+         *
+         * @see @ref g()
+         */
+        T& y() { return (*this)[1]; }
         constexpr T y() const { return (*this)[1]; }    /**< @overload */
-        T& z() { return (*this)[2]; }                   /**< @brief Z component */
+
+        /**
+         * @brief Z component
+         *
+         * @see @ref b()
+         */
+        T& z() { return (*this)[2]; }
         constexpr T z() const { return (*this)[2]; }    /**< @overload */
-        T& w() { return (*this)[3]; }                   /**< @brief W component */
+
+        /**
+         * @brief W component
+         *
+         * @see @ref a()
+         */
+        T& w() { return (*this)[3]; }
         constexpr T w() const { return (*this)[3]; }    /**< @overload */
+
+        /**
+         * @brief R component
+         *
+         * Equivalent to @ref x().
+         */
+        T& r() { return x(); }
+        constexpr T r() const { return x(); }           /**< @overload */
+
+        /**
+         * @brief G component
+         *
+         * Equivalent to @ref y().
+         */
+        T& g() { return y(); }
+        constexpr T g() const { return y(); }           /**< @overload */
+
+        /**
+         * @brief B component
+         *
+         * Equivalent to @ref z().
+         */
+        T& b() { return z(); }
+        constexpr T b() const { return z(); }           /**< @overload */
+
+        /**
+         * @brief A component
+         *
+         * Equivalent to @ref w().
+         */
+        T& a() { return w(); }
+        constexpr T a() const { return w(); }           /**< @overload */
 
         /**
          * @brief XYZ part of the vector
          * @return First three components of the vector
          *
-         * @see swizzle()
+         * @see @ref swizzle(), @ref rgb()
          */
         Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
         constexpr const Vector3<T> xyz() const { return {x(), y(), z()}; } /**< @overload */
 
         /**
+         * @brief RGB part of the vector
+         * @return First three components of the vector
+         *
+         * Equivalent to @ref xyz().
+         * @see @ref swizzle()
+         */
+        Vector3<T>& rgb() { return xyz(); }
+        constexpr const Vector3<T> rgb() const { return xyz(); } /**< @overload */
+
+        /**
          * @brief XY part of the vector
          * @return First two components of the vector
          *
-         * @see swizzle()
+         * @see @ref swizzle()
          */
         Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
         constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */

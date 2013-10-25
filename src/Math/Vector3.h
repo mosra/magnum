@@ -145,12 +145,54 @@ template<class T> class Vector3: public Vector<3, T> {
         /** @brief Copy constructor */
         constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
 
-        T& x() { return (*this)[0]; }                   /**< @brief X component */
+
+        /**
+         * @brief X component
+         *
+         * @see @ref r()
+         */
+        T& x() { return (*this)[0]; }
         constexpr T x() const { return (*this)[0]; }    /**< @overload */
-        T& y() { return (*this)[1]; }                   /**< @brief Y component */
+
+        /**
+         * @brief Y component
+         *
+         * @see @ref g()
+         */
+        T& y() { return (*this)[1]; }
         constexpr T y() const { return (*this)[1]; }    /**< @overload */
-        T& z() { return (*this)[2]; }                   /**< @brief Z component */
+
+        /**
+         * @brief Z component
+         *
+         * @see @ref b()
+         */
+        T& z() { return (*this)[2]; }
         constexpr T z() const { return (*this)[2]; }    /**< @overload */
+
+        /**
+         * @brief R component
+         *
+         * Equivalent to @ref x().
+         */
+        T& r() { return x(); }
+        constexpr T r() const { return x(); }           /**< @overload */
+
+        /**
+         * @brief G component
+         *
+         * Equivalent to @ref y().
+         */
+        T& g() { return y(); }
+        constexpr T g() const { return y(); }           /**< @overload */
+
+        /**
+         * @brief B component
+         *
+         * Equivalent to @ref z().
+         */
+        T& b() { return z(); }
+        constexpr T b() const { return z(); }           /**< @overload */
 
         /**
          * @brief XY part of the vector

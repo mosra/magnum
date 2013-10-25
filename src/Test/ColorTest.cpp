@@ -34,8 +34,6 @@ class ColorTest: public TestSuite::Tester {
     public:
         ColorTest();
 
-        void access();
-
         void fromHue();
         void fromSaturation();
         void fromValue();
@@ -56,9 +54,7 @@ typedef Magnum::BasicColor3<UnsignedByte> Color3ub;
 typedef Magnum::BasicColor4<UnsignedByte> Color4ub;
 
 ColorTest::ColorTest() {
-    addTests({&ColorTest::access,
-
-              &ColorTest::fromHue,
+    addTests({&ColorTest::fromHue,
               &ColorTest::fromSaturation,
               &ColorTest::fromValue,
 
@@ -72,30 +68,6 @@ ColorTest::ColorTest() {
 
               &ColorTest::debug,
               &ColorTest::configuration});
-}
-
-void ColorTest::access() {
-    Color3ub c3(15, 255, 10);
-    const Color3ub cc3(15, 255, 10);
-
-    CORRADE_COMPARE(c3.r(), 15);
-    CORRADE_COMPARE(c3.g(), 255);
-    CORRADE_COMPARE(c3.b(), 10);
-    CORRADE_COMPARE(cc3.r(), 15);
-    CORRADE_COMPARE(cc3.g(), 255);
-    CORRADE_COMPARE(cc3.b(), 10);
-
-    Color4ub c4(125, 98, 51, 22);
-    const Color4ub cc4(125, 98, 51, 22);
-
-    CORRADE_COMPARE(c4.r(), 125);
-    CORRADE_COMPARE(c4.g(), 98);
-    CORRADE_COMPARE(c4.b(), 51);
-    CORRADE_COMPARE(c4.a(), 22);
-    CORRADE_COMPARE(cc4.r(), 125);
-    CORRADE_COMPARE(cc4.g(), 98);
-    CORRADE_COMPARE(cc4.b(), 51);
-    CORRADE_COMPARE(cc4.a(), 22);
 }
 
 void ColorTest::fromHue() {
