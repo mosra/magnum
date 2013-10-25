@@ -32,20 +32,13 @@ class SwizzleTest: public TestSuite::Tester {
     public:
         SwizzleTest();
 
-        void rgba();
         void type();
         void defaultType();
 };
 
 SwizzleTest::SwizzleTest() {
-    addTests({&SwizzleTest::rgba,
-              &SwizzleTest::type,
+    addTests({&SwizzleTest::type,
               &SwizzleTest::defaultType});
-}
-
-void SwizzleTest::rgba() {
-    constexpr auto a = swizzle<'b', 'r', 'a', 'g'>(Vector4i(2, 4, 5, 7));
-    CORRADE_COMPARE(a, Vector4i(5, 2, 7, 4));
 }
 
 void SwizzleTest::type() {

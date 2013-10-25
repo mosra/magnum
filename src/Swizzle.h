@@ -33,13 +33,6 @@
 
 namespace Magnum {
 
-namespace Math { namespace Implementation {
-    template<std::size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
-    template<std::size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
-    template<std::size_t size> struct Component<size, 'b'>: public ComponentAtPosition<size, 2> {};
-    template<std::size_t size> struct Component<size, 'a'>: public ComponentAtPosition<size, 3> {};
-}}
-
 namespace Implementation {
     template<std::size_t size, class T> struct TypeForSize {
         typedef Math::Vector<size, typename T::Type> Type;

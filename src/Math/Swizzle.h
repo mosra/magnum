@@ -44,6 +44,10 @@ namespace Implementation {
     template<std::size_t size> struct Component<size, 'y'>: public ComponentAtPosition<size, 1> {};
     template<std::size_t size> struct Component<size, 'z'>: public ComponentAtPosition<size, 2> {};
     template<std::size_t size> struct Component<size, 'w'>: public ComponentAtPosition<size, 3> {};
+    template<std::size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
+    template<std::size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
+    template<std::size_t size> struct Component<size, 'b'>: public ComponentAtPosition<size, 2> {};
+    template<std::size_t size> struct Component<size, 'a'>: public ComponentAtPosition<size, 3> {};
     template<std::size_t size> struct Component<size, '0'> {
         template<class T> constexpr static T value(const Math::Vector<size, T>&) { return T(0); }
     };
