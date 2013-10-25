@@ -153,6 +153,11 @@ template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::De
     return debug << static_cast<const Vector<2, T>&>(value);
 }
 
+namespace Implementation {
+    template<std::size_t, class> struct TypeForSize;
+    template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
+}
+
 }}
 
 namespace Corrade { namespace Utility {

@@ -367,6 +367,13 @@ template<class T> inline Debug operator<<(Debug debug, const BasicColor4<T>& val
     return debug << static_cast<const Math::Vector4<T>&>(value);
 }
 
+namespace Math { namespace Implementation {
+    template<class T> struct TypeForSize<3, BasicColor3<T>> { typedef BasicColor3<T> Type; };
+    template<class T> struct TypeForSize<3, BasicColor4<T>> { typedef BasicColor3<T> Type; };
+    template<class T> struct TypeForSize<4, BasicColor3<T>> { typedef BasicColor4<T> Type; };
+    template<class T> struct TypeForSize<4, BasicColor4<T>> { typedef BasicColor4<T> Type; };
+}}
+
 }
 
 namespace Corrade { namespace Utility {

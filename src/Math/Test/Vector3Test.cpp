@@ -69,6 +69,7 @@ class Vector3Test: public Corrade::TestSuite::Tester {
         void scales();
         void twoComponent();
 
+        void swizzleType();
         void debug();
         void configuration();
 };
@@ -222,6 +223,12 @@ void Vector3Test::twoComponent() {
     constexpr Float d = b.xy().y();
     CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
     CORRADE_COMPARE(d, 2.0f);
+}
+
+void Vector3Test::swizzleType() {
+    constexpr Vector<4, Int> orig;
+    constexpr auto b = swizzle<'y', 'z', 'a'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(b), const Vector3i>::value));
 }
 
 void Vector3Test::debug() {

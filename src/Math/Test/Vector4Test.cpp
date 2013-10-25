@@ -67,6 +67,7 @@ class Vector4Test: public Corrade::TestSuite::Tester {
         void threeComponent();
         void twoComponent();
 
+        void swizzleType();
         void debug();
         void configuration();
 };
@@ -90,6 +91,7 @@ Vector4Test::Vector4Test() {
               &Vector4Test::threeComponent,
               &Vector4Test::twoComponent,
 
+              &Vector4Test::swizzleType,
               &Vector4Test::debug,
               &Vector4Test::configuration});
 }
@@ -213,6 +215,12 @@ void Vector4Test::twoComponent() {
     constexpr Float d = b.xy().x();
     CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
     CORRADE_COMPARE(d, 1.0f);
+}
+
+void Vector4Test::swizzleType() {
+    constexpr Vector4i orig;
+    constexpr auto c = swizzle<'y', 'a', 'y', 'x'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(c), const Vector4i>::value));
 }
 
 void Vector4Test::debug() {

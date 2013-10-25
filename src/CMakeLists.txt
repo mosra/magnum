@@ -129,7 +129,6 @@ set(Magnum_HEADERS
     ResourceManager.h
     Sampler.h
     Shader.h
-    Swizzle.h
     Texture.h
     TextureFormat.h
     Timeline.h
@@ -140,7 +139,8 @@ set(Magnum_HEADERS
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
-       ImageFormat.h)
+        ImageFormat.h
+        Swizzle.h)
 endif()
 
 # Desktop-only headers and libraries

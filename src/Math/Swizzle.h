@@ -54,6 +54,10 @@ namespace Implementation {
     template<std::size_t size> struct Component<size, '1'> {
         template<class T> constexpr static T value(const Math::Vector<size, T>&) { return T(1); }
     };
+
+    template<std::size_t size, class T> struct TypeForSize {
+        typedef Math::Vector<size, typename T::Type> Type;
+    };
 }
 
 /**
@@ -61,23 +65,22 @@ namespace Implementation {
 
 Creates new vector from given components. Example:
 @code
-Vector4<Int> original(-1, 2, 3, 4);
+Vector4i original(-1, 2, 3, 4);
 
 auto vec = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original);
 // vec == { 4, 1, 0, -1, 2, 3 }
 @endcode
-You can use letters `x`, `y`, `z`, `w` for addressing components or letters
-`0` and `1` for zero and one. Count of elements is unlimited, but must be at
-least one.
+You can use letters `x`, `y`, `z`, `w` and `r`, `g`, `b`, `a` for addressing
+components or letters `0` and `1` for zero and one. Count of elements is
+unlimited, but must be at least one. If the resulting vector is two, three or
+four-component, corresponding @ref Math::Vector2, @ref Math::Vector3,
+@ref Math::Vector4, @ref Color3 or @ref Color4 specialization is returned.
 
-See also Magnum::swizzle() which has some added convenience features not
-present in this lightweight implementation for Math namespace.
-
-@see @ref matrix-vector-component-access, Vector4::xyz(),
-    Vector4::xy(), Vector3::xy()
+@see @ref matrix-vector-component-access, @ref Vector4::xyz(),
+    @ref Vector4::xy(), @ref Vector3::xy(), @ref Color4::rgb()
 */
-template<char ...components, std::size_t size, class T> constexpr Vector<sizeof...(components), T> swizzle(const Vector<size, T>& vector) {
-    return {Implementation::Component<size, components>::value(vector)...};
+template<char ...components, class T> constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
+    return {Implementation::Component<T::Size, components>::value(vector)...};
 }
 
 }}

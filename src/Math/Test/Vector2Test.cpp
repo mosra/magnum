@@ -69,6 +69,7 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void perpendicular();
         void aspectRatio();
 
+        void swizzleType();
         void debug();
         void configuration();
 };
@@ -93,6 +94,7 @@ Vector2Test::Vector2Test() {
               &Vector2Test::perpendicular,
               &Vector2Test::aspectRatio,
 
+              &Vector2Test::swizzleType,
               &Vector2Test::debug,
               &Vector2Test::configuration});
 }
@@ -201,6 +203,12 @@ void Vector2Test::perpendicular() {
 void Vector2Test::aspectRatio() {
     const Vector2 a(3.0f, 4.0f);
     CORRADE_COMPARE(a.aspectRatio(), 0.75f);
+}
+
+void Vector2Test::swizzleType() {
+    constexpr Vector<4, Int> orig;
+    constexpr auto a = swizzle<'y', 'a'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(a), const Vector2i>::value));
 }
 
 void Vector2Test::debug() {
