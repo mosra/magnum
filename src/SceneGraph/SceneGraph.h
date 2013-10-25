@@ -202,6 +202,10 @@ typedef TranslationTransformation<2, Float> TranslationTransformation2D;
 typedef TranslationTransformation<3, Float> TranslationTransformation3D;
 #endif
 
+namespace Implementation {
+    template<class> struct Transformation;
+}
+
 }}
 
 #endif

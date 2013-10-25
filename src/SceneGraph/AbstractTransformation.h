@@ -130,11 +130,6 @@ typedef AbstractBasicTransformation3D<Float> AbstractTransformation3D;
 typedef AbstractTransformation<3, Float> AbstractTransformation3D;
 #endif
 
-namespace Implementation {
-    /* See DualQuaternionTransformation.h for example implementation */
-    template<class T> struct Transformation;
-}
-
 }}
 
 #endif
