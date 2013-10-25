@@ -26,7 +26,7 @@
 #include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Math/Vector3.h"
+#include "Math/Vector3.h" /* Vector3 used in Vector2::cross() */
 
 struct Vec2 {
     float x, y;
