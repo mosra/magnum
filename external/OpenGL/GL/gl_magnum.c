@@ -6,7 +6,7 @@
 #if defined(__APPLE__)
 #include <mach-o/dyld.h>
 
-static void* AppleGLGetProcAddress (const GLubyte *name)
+static void* AppleGLGetProcAddress (const char* name)
 {
   static const struct mach_header* image = NULL;
   NSSymbol symbol;
