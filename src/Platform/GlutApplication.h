@@ -491,7 +491,7 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
         constexpr Vector2i position() const { return _position; }
 
         /** @brief Mouse buttons */
-        constexpr Buttons buttons() { return _buttons; }
+        constexpr Buttons buttons() const { return _buttons; }
 
     private:
         constexpr MouseMoveEvent(const Vector2i& position, Buttons buttons): _position(position), _buttons(buttons) {}
