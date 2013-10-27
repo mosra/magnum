@@ -283,7 +283,7 @@ wouldn't help either:
 @code
 class MyObject: MyFeature, public Object3D {
     public:
-        MyObject(Object3D* parent): Object3D(parent), MyFeature(this) {}
+        MyObject(Object3D* parent): Object3D(parent), MyFeature(*this) {}
 
         // crash on destruction!
 };
