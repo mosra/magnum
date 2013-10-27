@@ -44,9 +44,11 @@ SUPPORTED PLATFORMS
 *   **OpenGL ES** 2.0, 3.0 and extensions to match desktop OpenGL functionality
 *   **WebGL** 1.0 and extensions to match desktop OpenGL functionality
 
+
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     GLUT or SDL2 toolkit)
 *   **Windows** (through GLUT or SDL2 toolkit)
+*   **OS X** (thanks to [Miguel Martin](https://github.com/miguelishawt))
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
     both `newlib` and `glibc` toolchains are supported)
 *   **HTML5/JavaScript** (through [Emscripten](https://github.com/kripken/emscripten/wiki))
