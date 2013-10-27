@@ -97,7 +97,7 @@ void BufferGLTest::data() {
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL array */
-    std::array<Int, 5> data3{2, 7, 5, 13, 25};
+    std::array<Int, 5> data3{{2, 7, 5, 13, 25}};
     buffer.setData(data3, Buffer::Usage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
@@ -127,7 +127,7 @@ void BufferGLTest::data() {
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL array */
-    std::array<Int, 3> subData3{125, 3, 15};
+    std::array<Int, 3> subData3{{125, 3, 15}};
     buffer.setSubData(4, subData3);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
