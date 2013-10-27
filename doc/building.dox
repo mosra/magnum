@@ -202,6 +202,10 @@ in build directory. On Windows the tests require the library to be installed
 with DLLs accessible through `PATH`. See
 @ref building-windows "above Windows documentation" for more information.
 
+Platforms which have windowless context creation implemented (currently only
+desktop Linux) can build also tests for OpenGL functionality. You can enable
+them with `BUILD_GL_TESTS`.
+
 @subsection building-doc Building documentation
 
 The documentation (which you are currently reading) is written in **Doxygen**
