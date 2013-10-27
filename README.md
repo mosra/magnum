@@ -39,11 +39,14 @@ DESIGN GOALS
 SUPPORTED PLATFORMS
 ===================
 
+Graphics APIs:
+
 *   **OpenGL** 2.1 through 4.4, core profile functionality and modern
     extensions
 *   **OpenGL ES** 2.0, 3.0 and extensions to match desktop OpenGL functionality
 *   **WebGL** 1.0 and extensions to match desktop OpenGL functionality
 
+Platforms:
 
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     GLUT or SDL2 toolkit)
