@@ -217,7 +217,11 @@ be build by running
 
 in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
-if it doesn't exist yet.
+if it doesn't exist yet. If %Corrade with generated documentation is placed in
+`corrade` directory next to `magnum`, the documentation will be crosslinked
+with %Corrade's one. If related projects (`magnum-plugins`, `magnum-integration`
+and `magnum-examples`, see below) are places along these, their documentation
+will be also included in generated output.
 
 @section building-related Related projects
 
