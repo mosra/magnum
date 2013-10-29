@@ -39,7 +39,6 @@
 #undef Always
 
 #include "Magnum.h"
-#include "Platform/AbstractContextHandler.h"
 
 namespace Magnum { namespace Platform {
 
