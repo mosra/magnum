@@ -44,16 +44,15 @@ to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building and
 /** @namespace Magnum::Platform
 @brief Platform-specific application and context creation
 
-Base classes for creating applications with various toolkits. See @ref platform
-for introduction.
+Base classes for creating applications with various toolkits.
 
 Parts of this namespace are built if `WITH_*APPLICATION` is enabled in CMake,
 with each library having specific toolkit dependencies and platform
 requirements. To use particular application library, you need to request given
 `*Application` component in CMake, add `${MAGNUM_*APPLICATION_INCLUDE_DIRS}` to
 include path and link to `${MAGNUM_*APPLICATION_LIBRARIES}`. See particular
-`*Application` class documentation, @ref building and @ref cmake for more
-information.
+`*Application` class documentation, @ref building, @ref cmake and @ref platform
+for more information.
 */
 
 /** @dir Math
@@ -62,12 +61,11 @@ information.
 /** @namespace Magnum::Math
 @brief %Math library
 
-Template classes for matrix and vector calculations. See @ref matrix-vector
-and @ref transformations for introduction.
+Template classes for matrix and vector calculations.
 
 This library is built by default. To use it, you need to add `${MAGNUM_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building and
-@ref cmake for more information.
+to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building,
+@ref cmake, @ref matrix-vector and @ref transformations for more information.
 */
 
 /** @dir Math/Algorithms
@@ -108,8 +106,9 @@ This library depends on **OpenAL** library. It is built if `WITH_AUDIO` is
 enabled in CMake. To use this library, you need to request `%Audio` component
 in CMake, add `${MAGNUM_AUDIO_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_AUDIO_LIBRARIES}`. See @ref building and @ref cmake for more
-information. Additional plugins are part of plugin repository, see
-@ref building-plugins and @ref cmake-plugins for more information.
+information. Additional plugins are part of plugin repository, see particular
+`*Importer` class documentation, @ref building-plugins and @ref cmake-plugins
+for more information.
 */
 
 /** @dir DebugTools
@@ -118,13 +117,12 @@ information. Additional plugins are part of plugin repository, see
 /** @namespace Magnum::DebugTools
 @brief %Debug tools
 
-Debugging helpers, renderers and profilers. See @ref debug-tools for
-introduction.
+Debugging helpers, renderers and profilers.
 
 This library is built if `WITH_DEBUGTOOLS` is enabled in CMake. To use this
 library, you need to request `%DebugTools` component in CMake and link to
-`${MAGNUM_DEBUGTOOLS_LIBRARIES}`. See @ref building and @ref cmake for more
-information.
+`${MAGNUM_DEBUGTOOLS_LIBRARIES}`. See @ref building, @ref cmake and
+@ref debug-tools for more information.
 */
 
 /** @dir MeshTools
@@ -162,13 +160,12 @@ information.
 @namespace Magnum::SceneGraph
 @brief %Scene graph library
 
-Managing object hierarchy, transformations and interactions. See
-@ref scenegraph for introduction.
+Managing object hierarchy, transformations and interactions.
 
 This library is built if `WITH_SCENEGRAPH` is enabled in CMake. To use this
 library, you need to request `%SceneGraph` component in CMake and link to
-`${MAGNUM_SCENEGRAPH_LIBRARIES}`. See @ref building and @ref cmake for more
-information.
+`${MAGNUM_SCENEGRAPH_LIBRARIES}`. See @ref building, @ref cmake and
+@ref scenegraph for more information.
 */
 
 /** @dir Shaders
@@ -191,12 +188,12 @@ information.
 /** @namespace Magnum::Shapes
 @brief %Shape library
 
-Collision detection system. See @ref shapes for introduction.
+Collision detection system.
 
 This library is built if `WITH_SHAPES` is enabled in CMake. To use this
 library, you need to request `%Shapes` component in CMake and link to
-`${MAGNUM_SHAPES_LIBRARIES}`. See @ref building and @ref cmake for more
-information.
+`${MAGNUM_SHAPES_LIBRARIES}`. See @ref building, @ref cmake and @ref shapes for
+more information.
 */
 
 /** @dir Text
@@ -210,8 +207,9 @@ Font texture creation and text layouting.
 This library is built if `WITH_TEXT` is enabled in CMake. To use this library,
 you need to request `%Text` component in CMake and link to `${MAGNUM_TEXT_LIBRARIES}`.
 See @ref building and @ref cmake for more information. Additional plugins are
-part of plugin repository, see @ref building-plugins and @ref cmake-plugins for
-more information.
+part of plugin repository, see particular `*Font` and `*FontConverter` class
+documentation, @ref building-plugins and @ref cmake-plugins for more
+information.
 */
 
 /** @dir TextureTools
@@ -240,6 +238,7 @@ for direct access to the data.
 This library is built by default. To use it, you need to add `${MAGNUM_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building and
 @ref cmake for more information. Additional plugins are part of plugin
-repository, see @ref building-plugins and @ref cmake-plugins for more
+repository, see particular `*Importer` and `*ImageConverter` class
+documentation, @ref building-plugins and @ref cmake-plugins for more
 information.
 */

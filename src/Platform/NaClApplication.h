@@ -53,7 +53,7 @@ namespace Magnum { namespace Platform {
 @brief NaCl application
 
 Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
-Supports keyboard and mouse handling. See @ref platform for brief introduction.
+Supports keyboard and mouse handling.
 
 This application library is available only in @ref CORRADE_TARGET_NACL "Native Client".
 It is built if `WITH_NACLAPPLICATION` is enabled in CMake. To use it, you need
@@ -61,7 +61,8 @@ to request `%NaClApplication` component in CMake, add
 `${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting.
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section NaClApplication-usage Usage
 

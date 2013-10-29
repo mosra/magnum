@@ -35,8 +35,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief X/EGL application
 
-Application using pure X11 and EGL. Supports keyboard and mouse handling. See
-@ref platform for brief introduction.
+Application using pure X11 and EGL. Supports keyboard and mouse handling.
 
 This application library is available on both desktop OpenGL and
 @ref MAGNUM_TARGET_GLES "OpenGL ES" on Linux. It depends on **X11** and **EGL**
@@ -46,7 +45,8 @@ source to `modules/` dir in your project (so CMake is able to find EGL),
 request `%XEglApplication` component in CMake, add `${MAGNUM_XEGLAPPLICATION_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_XEGLAPPLICATION_LIBRARIES}`.  If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting.
+and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section XEglApplication-usage Usage
 

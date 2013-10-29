@@ -24,7 +24,7 @@
 
 namespace Magnum {
 /** @page features Feature overview
-@brief Fundamental principles and design goals
+@brief Fundamental principles and design goals.
 
 - @subpage platform -- @copybrief platform
 - @subpage types -- @copybrief types

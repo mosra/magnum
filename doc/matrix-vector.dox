@@ -24,15 +24,18 @@
 
 namespace Magnum {
 /** @page matrix-vector Operations with matrices and vectors
-
 @brief Introduction to essential classes of the graphics pipeline.
 
-@tableofcontents
+-   Previous page: @ref types
+-   Next page: @ref transformations
 
 Matrices and vectors are the most important part of graphics programming and
-one of goals of %Magnum is to make their usage as intuitive as possible. This
-page will overview their usage and introduce some tricks to make your life
-easier.
+one of goals of %Magnum is to make their usage as intuitive as possible. They
+are contained in @ref Math namespace and common variants also have aliases in
+root @ref Magnum namespace. See documentation of these namespaces for more
+information about usage with CMake.
+
+@tableofcontents
 
 @section matrix-vector-hierarchy Matrix and vector classes
 
@@ -256,5 +259,10 @@ mat[2][0] = 5;  // first element of third column
   alternatives which operate on columns. It's then up to user decision to
   operate with transposed matrices or use the slower non-transposed
   alternative of the algorithm.
+
+&nbsp;
+
+-   Previous page: @ref types
+-   Next page: @ref transformations
 */
-}}
+}

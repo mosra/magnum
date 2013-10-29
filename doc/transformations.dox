@@ -24,16 +24,22 @@
 
 namespace Magnum { namespace Math {
 /** @page transformations 2D and 3D transformations
-
 @brief Introduction to essential operations on vectors and points.
+
+-   Previous page: @ref matrix-vector
+-   Next page: @ref scenegraph
+
+Transformations are essential operations involved in scene management -- object
+relations, hierarchies, animations etc. They extend basic vectors and matrices
+in @ref Math namespace, see its documentation for more information about usage
+with CMake.
 
 @tableofcontents
 
-Transformations are essential operations involved in scene management -- object
-relations, hierarchies, animations etc. %Magnum provides classes for
-transformations in both 2D and 3D. Each class is suited for different purposes,
-but their usage is nearly the same to make your life simpler. This page will
-explain the basic operation and differences between various representations.
+%Magnum provides classes for transformations in both 2D and 3D. Each class is
+suited for different purposes, but their usage is nearly the same to make your
+life simpler. This page will explain the basic operation and differences
+between various representations.
 
 @section transformations-representation Representing transformations
 
@@ -310,5 +316,8 @@ are always of unit length, thus normalizing them reduces the drift.
 DualQuaternion transformation;
 transformation = transformation.normalized();
 @endcode
+
+-   Previous page: @ref matrix-vector
+-   Next page: @ref scenegraph
 */
 }}

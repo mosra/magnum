@@ -24,19 +24,22 @@
 
 namespace Magnum { namespace Platform {
 /** @page platform Platform support
+@brief Integration into windowing toolkits and creation of windowless contexts.
 
-@brief Integration into windowing toolkits and creation of windowless contexts
+-   Next page: @ref types
+
+@ref Platform namespace contains classes integrating %Magnum engine into
+various toolkits, both windowed and windowless. Each class has slightly
+different dependencies and platform requirements, see documentation of
+@ref Platform namespace and particular `*Application` classes for more
+information about building and usage with CMake.
 
 @tableofcontents
 
-Platform namespace provides classes integrating %Magnum engine into various
-toolkits, both windowed and windowless. All the classes have common API to
-achieve static polymorphism, so basically you can use different toolkits on
-different platforms and the only thing you need to change is the class name,
-everything else is the same.
-
-Basic usage is to subclass the chosen `*Application` class and implement
-required methods.
+All the classes have common API to achieve static polymorphism, so basically
+you can use different toolkits on different platforms and the only thing you
+need to change is the class name, everything else is the same. Basic usage is
+to subclass the chosen `*Application` class and implement required methods.
 
 @section platform-windowed Windowed applications
 
@@ -52,7 +55,7 @@ directly in `main()`, but for convenience and portability it's better to use
 To simplify the porting, the library provides `Platform::Application` typedef
 and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
 is included, to avoid ambiguity). Changing the code to use different toolkit is
-then matter of replacing only the `#include` statement.
+then matter of replacing only the <tt>#</tt>`include` statement.
 
 Barebone application implementation which will just clear the window to dark
 blue color:
@@ -107,10 +110,11 @@ macro.
 Similarly as with windowed applications, to simplify the porting, the library
 provides `Platform::WindowlessApplication` typedef and `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`
 macro, but only if only one windowless application header is included. Changing
-the code to use different toolkit is then matter of replacing only the `#include`
-statement. Aliases for windowless applications are separated from aliases for
-windowed applications, because projects commonly contain both graphics
-application and command-line tools (for data preparation etc.).
+the code to use different toolkit is then matter of replacing only the
+<tt>#</tt>`include` statement. Aliases for windowless applications are
+separated from aliases for windowed applications, because projects commonly
+contain both graphics application and command-line tools (for data preparation
+etc.).
 
 Barebone application which will just print out current OpenGL version and
 renderer string and exits:
@@ -218,5 +222,6 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc
 }
 @endcode
 
+-   Next page: @ref types
 */
 }}

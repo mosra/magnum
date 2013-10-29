@@ -52,7 +52,6 @@ namespace Magnum { namespace Platform {
 
 Application for offscreen rendering running in
 [Google Chrome Native Client](https://developers.google.com/native-client/).
-See @ref platform for brief introduction.
 
 This application library is available only in @ref CORRADE_TARGET_NACL "Native Client".
 It is built if `WITH_WINDOWLESSNACLAPPLICATION` is enabled in CMake. To use it,
@@ -61,7 +60,8 @@ you need to request `%WindowlessNaClApplication` component in CMake, add
 `${MAGNUM_WINDOWLESSNACLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting.
+`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section WindowlessNaClApplication-usage Usage
 

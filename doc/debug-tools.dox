@@ -24,15 +24,17 @@
 
 namespace Magnum {
 /** @page debug-tools Debugging helpers
-
 @brief Convenience classes to help you during development.
 
-@tableofcontents
+-   Previous page: @ref shapes
 
-DebugTools library provides various helper classes to help you with
+@ref DebugTools library provides various helper classes to help you with
 prototyping and debugging applications without the need to write too much
 common code. They probably have no usage in production code, but can be useful
-in development.
+in development. See documentation of @ref DebugTools namespace for more
+information about building and usage with CMake.
+
+@tableofcontents
 
 @section debug-tools-renderers Debug renderers
 
@@ -75,5 +77,6 @@ new DebugTools::ObjectRenderer2D(*object, "my", debugDrawables);
 See DebugTools::ObjectRenderer and DebugTools::ShapeRenderer for more
 information.
 
+-   Previous page: @ref shapes
 */
 }

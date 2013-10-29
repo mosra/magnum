@@ -45,8 +45,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless GLX application
 
-Application for offscreen rendering using pure X11 and GLX. See @ref platform
-for brief introduction.
+Application for offscreen rendering using pure X11 and GLX.
 
 This application library is available on desktop OpenGL and
 @ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
@@ -56,7 +55,8 @@ component in CMake, add `${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to
 include path and link to `${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no
 other windowless application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting.
+`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section WindowlessGlxApplication-usage Usage
 

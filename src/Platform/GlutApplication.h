@@ -47,7 +47,7 @@ namespace Platform {
 
 Application using GLUT toolkit. Supports keyboard handling for limited subset
 of keys, mouse handling with support for changing cursor and mouse tracking and
-warping. See @ref platform for brief introduction.
+warping.
 
 This application library is available only on desktop OpenGL (Linux, Windows,
 OS X). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION` is
@@ -55,7 +55,8 @@ enabled in CMake. To use it, you need to request `%GlutApplication` component
 in CMake, add `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link
 to `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting.
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section GlutApplication-usage Usage
 
