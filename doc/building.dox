@@ -142,7 +142,7 @@ By default the engine is built with everything except application libraries
 (see below). Using `WITH_*` CMake parameters you can specify which parts will
 be built and which not:
 
- - `WITH_AUDIO` - Audio library. Requires **OpenAL** library.
+ - `WITH_AUDIO` - Audio library.
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
    Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
@@ -168,26 +168,18 @@ None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
 platform best:
 
-- `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication",
-  available only if targeting desktop OpenGL. Requires **GLUT** library.
-- `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication".
-  Available only if targetting desktop OpenGL or ES desktop emulation, not
-  available on Google Chrome Native Client or Emscripten. Requires **X11** and
-  **GLX** libraries.
-- `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication",
-  available only if targeting Google Chrome Native Client.
-- `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application".
-  Available also on Emscripten, but not on Google Chrome Native Client.
-  Requires **SDL2** library.
-- `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication",
-  available only if targeting OpenGL ES (see above). Not available on Google
-  Chrome Native Client or Emscripten. Requires **X11** and **EGL** libraries.
-- `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication".
-  Available only if targetting desktop OpenGL or ES desktop emulation, not
-  available on Google Chrome Native Client or Emscripten. Requires **X11** and
-  **GLX** libraries.
-- `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication",
-  available only if targeting Google Chrome Native Client.
+- `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
+- `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
+- `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
+- `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
+- `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
+- `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+- `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
+
+Note that [each namespace](namespaces.html) and all @ref Platform libraries
+contain more detailed information about dependencies, availability on
+particular platform and also guide how to enable given library in build and use
+it with CMake.
 
 @subsection building-tests Building and running unit tests
 

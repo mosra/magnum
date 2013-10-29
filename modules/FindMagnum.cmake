@@ -20,7 +20,7 @@
 # components. The base library depends on Corrade and OpenGL libraries (or
 # OpenGL ES libraries). Additional dependencies are specified by the
 # components. The optional components are:
-#  Audio            - Audio library (depends on OpenAL library)
+#  Audio            - Audio library
 #  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
 #                     SceneGraph, Shaders and Shapes components)
 #  MeshTools        - MeshTools library
@@ -30,14 +30,13 @@
 #  Shapes           - Shapes library (depends on SceneGraph component)
 #  Text             - Text library (depends on TextureTools component)
 #  TextureTools     - TextureTools library
-#  GlutApplication  - GLUT application (depends on GLUT library)
-#  GlxApplication   - GLX application (depends on GLX and X11 libraries)
-#  NaClApplication  - NaCl application (only if targeting Google Chrome
-#                     Native Client)
-#  Sdl2Application  - SDL2 application (depends on SDL2 library)
-#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
-#  WindowlessGlxApplication - Windowless GLX application (depends on GLX
-#                     and X11 libraries)
+#  GlutApplication  - GLUT application
+#  GlxApplication   - GLX application
+#  NaClApplication  - NaCl application
+#  Sdl2Application  - SDL2 application
+#  XEglApplication  - X/EGL application
+#  WindowlessNaClApplication - Windowless NaCl application
+#  WindowlessGlxApplication - Windowless GLX application
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
