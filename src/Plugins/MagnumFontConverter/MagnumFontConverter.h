@@ -33,10 +33,20 @@
 namespace Magnum { namespace Text {
 
 /**
-@brief Converter to MagnumFont
+@brief MagnumFont converter plugin
 
 Expects filename prefix, creates two files, `prefix.conf` and `prefix.tga`. See
-MagnumFont for more information about the font.
+@ref MagnumFont for more information about the font.
+
+This plugin is available only on desktop OpenGL, as it uses @ref Texture::image()
+to read back the generated data. It depends on
+@ref Trade::TgaImageConverter "TgaImageConverter" plugin and is built if
+`WITH_MAGNUMFONTCONVERTER` is enabled in CMake. To use dynamic plugin, you need
+to load `%MagnumFontConverter` plugin from `fontconverters/` subdirectory of
+your plugin dir. To use static plugin or use this as a dependency of another
+plugin, you need to request `%MagnumFontConverter` component in CMake and link
+to `${MAGNUMPLUGINS_MAGNUMFONTCONVERTER_LIBRARIES}`. See @ref building-plugins
+and @ref cmake-plugins for more information.
 */
 class MagnumFontConverter: public Text::AbstractFontConverter {
     public:
