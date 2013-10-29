@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::NaClApplication
+ * @brief Class @ref Magnum::Platform::NaClApplication
  */
 
 #include <string>
@@ -55,19 +55,27 @@ namespace Magnum { namespace Platform {
 Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
 Supports keyboard and mouse handling. See @ref platform for brief introduction.
 
+This application library is available only in @ref CORRADE_TARGET_NACL "Native Client".
+It is built if `WITH_NACLAPPLICATION` is enabled in CMake. To use it, you need
+to request `%NaClApplication` component in CMake, add
+`${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
+you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting.
+
 @section NaClApplication-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass must be then registered to NaCl API using
-MAGNUM_NACLAPPLICATION_MAIN() macro.
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen. The subclass must be then registered to NaCl API
+using @ref MAGNUM_NACLAPPLICATION_MAIN() macro.
 @code
-class MyApplication: public Magnum::Platform::NaClApplication {
+class MyApplication: public Platform::NaClApplication {
     // implement required methods...
 };
 MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 

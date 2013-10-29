@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::WindowlessNaClApplication
+ * @brief Class @ref Magnum::Platform::WindowlessNaClApplication
  */
 
 #include <string>
@@ -50,21 +50,31 @@ namespace Magnum { namespace Platform {
 /** @nosubgrouping
 @brief Windowless NaCl application
 
-Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
+Application for offscreen rendering running in
+[Google Chrome Native Client](https://developers.google.com/native-client/).
 See @ref platform for brief introduction.
+
+This application library is available only in @ref CORRADE_TARGET_NACL "Native Client".
+It is built if `WITH_WINDOWLESSNACLAPPLICATION` is enabled in CMake. To use it,
+you need to request `%WindowlessNaClApplication` component in CMake, add
+`${MAGNUM_WINDOWLESSNACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_WINDOWLESSNACLAPPLICATION_LIBRARIES}`. If no other windowless
+application is requested, you can also use generic
+`${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting.
 
 @section WindowlessNaClApplication-usage Usage
 
-Place your code into exec(). The subclass must be then registered to NaCl API
-using MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() macro.
+Place your code into @ref exec(). The subclass must be then registered to NaCl
+API using @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() macro.
 @code
-class MyApplication: public Magnum::Platform::WindowlessNaClApplication {
+class MyApplication: public Platform::WindowlessNaClApplication {
     // implement required methods...
 };
 MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::WindowlessApplication` and the macro is aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
 

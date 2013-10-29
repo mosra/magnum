@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::Sdl2Application
+ * @brief Class @ref Magnum::Platform::Sdl2Application
  */
 
 #include <Containers/EnumSet.h>
@@ -50,26 +50,37 @@ namespace Platform {
 /** @nosubgrouping
 @brief SDL2 application
 
-Application using [Simple DirectMedia Layer](www.libsdl.org/). Supports
+Application using [Simple DirectMedia Layer](www.libsdl.org/) toolkit. Supports
 keyboard and mouse handling. See @ref platform for brief introduction.
+
+This application library is available on desktop OpenGL (Linux, Windows, OS X)
+and in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It depends on **SDL2**
+library (Emscripten has it built in) and is built if `WITH_SDL2APPLICATION` is
+enabled in CMake. To use it, you need to copy `FindSDL2.cmake` from `modules/`
+directory in %Magnum source to `modules/` dir in your project (so CMake is able
+to find SDL2), request `%Sdl2Application` component in CMake, add
+`${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other application is requested,
+you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting.
 
 @section Sdl2Application-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()` -- see
-convenience macro MAGNUM_SDL2APPLICATION_MAIN().
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen. The subclass can be then used directly in `main()`
+-- see convenience macro @ref MAGNUM_SDL2APPLICATION_MAIN().
 @code
-class MyApplication: public Magnum::Platform::Sdl2Application {
+class MyApplication: public Platform::Sdl2Application {
     // implement required methods...
 };
 MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 
-@section NaClApplication-html Usage with Emscripten
+@section Sdl2Application-html Usage with Emscripten
 
 If you are targetting @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", you need to
 provide HTML markup for your application. Template one is below, you can modify

@@ -55,7 +55,9 @@ namespace Implementation {
 @brief Base for X11-based applications
 
 Supports keyboard and mouse handling. See @ref platform for brief introduction.
-@note Not meant to be used directly, see subclasses.
+
+@note Not meant to be used directly, see @ref GlxApplication and
+    @ref XEglApplication subclasses.
 */
 class AbstractXApplication {
     public:

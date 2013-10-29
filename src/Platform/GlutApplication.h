@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::GlutApplication
+ * @brief Class @ref Magnum::Platform::GlutApplication
  */
 
 #include <string>
@@ -45,23 +45,31 @@ namespace Platform {
 /** @nosubgrouping
 @brief GLUT application
 
-Supports keyboard handling for limited subset of keys, mouse handling with
-support for changing cursor and mouse tracking and warping. See @ref platform
-for brief introduction.
+Application using GLUT toolkit. Supports keyboard handling for limited subset
+of keys, mouse handling with support for changing cursor and mouse tracking and
+warping. See @ref platform for brief introduction.
+
+This application library is available only on desktop OpenGL (Linux, Windows,
+OS X). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION` is
+enabled in CMake. To use it, you need to request `%GlutApplication` component
+in CMake, add `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link
+to `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
+you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting.
 
 @section GlutApplication-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()` -- see
-convenience macro MAGNUM_GLUTAPPLICATION_MAIN().
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen. The subclass can be then used directly in `main()`
+-- see convenience macro @ref MAGNUM_GLUTAPPLICATION_MAIN().
 @code
-class MyApplication: public Magnum::Platform::GlutApplication {
+class MyApplication: public Platform::GlutApplication {
     // implement required methods...
 };
 MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 */
