@@ -27,6 +27,7 @@
 #include <Utility/utilities.h>
 
 #include "Context.h"
+#include "Platform/Implementation/AbstractContextHandler.h"
 
 #define None 0L // redef Xlib nonsense
 
@@ -37,17 +38,17 @@ namespace Magnum { namespace Platform {
 
 /** @todo Delegating constructor when support for GCC 4.6 is dropped */
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
     createContext(configuration);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
     createContext({});
 }
 #endif
 
-AbstractXApplication::AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
 void AbstractXApplication::createContext(const Configuration& configuration) {
     CORRADE_ASSERT(!c, "AbstractXApplication::createContext(): context already created", );
@@ -107,6 +108,10 @@ AbstractXApplication::~AbstractXApplication() {
     /* Shut down X */
     XDestroyWindow(display, window);
     XCloseDisplay(display);
+}
+
+void AbstractXApplication::swapBuffers() {
+    contextHandler->swapBuffers();
 }
 
 int AbstractXApplication::exec() {

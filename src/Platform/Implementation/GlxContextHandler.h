@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_GlxContextHandler_h
-#define Magnum_Platform_GlxContextHandler_h
+#ifndef Magnum_Platform_Implementation_GlxContextHandler_h
+#define Magnum_Platform_Implementation_GlxContextHandler_h
 /*
     This file is part of Magnum.
 
@@ -24,10 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Class Magnum::Platform::GlxContextHandler
- */
-
 #include "OpenGL.h"
 #include <GL/glx.h>
 /* undef Xlib nonsense to avoid conflicts */
@@ -39,7 +35,7 @@
 
 #include "corradeCompatibility.h"
 
-namespace Magnum { namespace Platform {
+namespace Magnum { namespace Platform { namespace Implementation {
 
 /**
 @brief GLX context
@@ -68,6 +64,6 @@ class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Windo
         GLXContext context;
 };
 
-}}
+}}}
 
 #endif

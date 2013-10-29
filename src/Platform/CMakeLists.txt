@@ -100,7 +100,8 @@ if(WITH_GLXAPPLICATION)
     set(NEED_GLXCONTEXT 1)
     add_library(MagnumGlxApplication STATIC
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumGlxContextHandler>)
+        $<TARGET_OBJECTS:MagnumGlxContextHandler>
+        GlxApplication.cpp)
     install(FILES GlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -114,7 +115,8 @@ if(WITH_XEGLAPPLICATION)
     set(NEED_EGLCONTEXT 1)
     add_library(MagnumXEglApplication STATIC
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumEglContextHandler>)
+        $<TARGET_OBJECTS:MagnumEglContextHandler>
+        XEglApplication.cpp)
     install(FILES XEglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumXEglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -151,10 +153,9 @@ endif()
 
 # GLX context
 if(NEED_GLXCONTEXT)
-    add_library(MagnumGlxContextHandler OBJECT GlxContextHandler.cpp)
+    add_library(MagnumGlxContextHandler OBJECT Implementation/GlxContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumGlxContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-    install(FILES GlxContextHandler.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
 # EGL context
@@ -163,10 +164,9 @@ if(NEED_EGLCONTEXT)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
-    add_library(MagnumEglContextHandler OBJECT EglContextHandler.cpp)
+    add_library(MagnumEglContextHandler OBJECT Implementation/EglContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-    install(FILES EglContextHandler.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
 # Magnum Info

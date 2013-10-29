@@ -28,8 +28,7 @@
  * @brief Class Magnum::Platform::XEglApplication
  */
 
-#include "AbstractXApplication.h"
-#include "EglContextHandler.h"
+#include "Platform/AbstractXApplication.h"
 
 namespace Magnum { namespace Platform {
 
@@ -57,10 +56,10 @@ to simplify porting.
 class XEglApplication: public AbstractXApplication {
     public:
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
-        explicit XEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration()): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
+        explicit XEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
-        explicit XEglApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new EglContextHandler, nullptr) {}
+        explicit XEglApplication(const Arguments& arguments, std::nullptr_t);
 
     protected:
         /* Nobody will need to have (and delete) XEglApplication*, thus this is

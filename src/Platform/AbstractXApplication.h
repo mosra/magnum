@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::AbstractXApplication
+ * @brief Class @ref Magnum::Platform::AbstractXApplication
  */
 
 #include <Containers/EnumSet.h>
@@ -40,13 +40,16 @@
 #undef Always
 
 #include "Math/Vector2.h"
-#include "AbstractContextHandler.h"
 
 namespace Magnum {
 
 class Context;
 
 namespace Platform {
+
+namespace Implementation {
+    template<class, class, class> class AbstractContextHandler;
+}
 
 /** @nosubgrouping
 @brief Base for X11-based applications
@@ -67,34 +70,6 @@ class AbstractXApplication {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
-
-        /**
-         * @brief Default constructor
-         * @param contextHandler OpenGL context handler
-         * @param arguments     Application arguments
-         * @param configuration %Configuration
-         *
-         * Creates application with default or user-specified configuration.
-         * See Configuration for more information. The program exits if the
-         * context cannot be created, see below for an alternative.
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
-        #endif
-
-        /**
-         * @brief Constructor
-         * @param contextHandler OpenGL context handler
-         * @param arguments     Application arguments
-         *
-         * Unlike above, the context is not created and must be created later
-         * with createContext() or tryCreateContext().
-         */
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
 
         /**
          * @brief Execute main loop
@@ -127,7 +102,7 @@ class AbstractXApplication {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutApplication::swapBuffers() */
-        void swapBuffers() { contextHandler->swapBuffers(); }
+        void swapBuffers();
 
         /** @copydoc GlutApplication::redraw() */
         void redraw() { flags |= Flag::Redraw; }
@@ -157,6 +132,18 @@ class AbstractXApplication {
 
         /*@}*/
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        /* These two are split to avoid "invalid use of incomplete type" when
+           using default argument for configuration */
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
+
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
+
     private:
         enum class Flag: unsigned int {
             Redraw = 1 << 0,
@@ -170,7 +157,7 @@ class AbstractXApplication {
         Window window;
         Atom deleteWindow;
 
-        AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
+        Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
 
         Context* c;
 

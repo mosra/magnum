@@ -28,7 +28,7 @@
 
 #include "Context.h"
 
-namespace Magnum { namespace Platform {
+namespace Magnum { namespace Platform { namespace Implementation {
 
 EglContextHandler::~EglContextHandler() {
     eglDestroyContext(display, context);
@@ -131,4 +131,4 @@ const char* EglContextHandler::errorString(EGLint error) {
     return {};
 }
 
-}}
+}}}

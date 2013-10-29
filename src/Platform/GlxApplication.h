@@ -28,8 +28,7 @@
  * @brief Class Magnum::Platform::GlxApplication
  */
 
-#include "AbstractXApplication.h"
-#include "GlxContextHandler.h"
+#include "Platform/AbstractXApplication.h"
 
 namespace Magnum { namespace Platform {
 
@@ -57,10 +56,10 @@ to simplify porting.
 class GlxApplication: public AbstractXApplication {
     public:
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
-        explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration()): AbstractXApplication(new GlxContextHandler, arguments, configuration) {}
+        explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
-        explicit GlxApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new GlxContextHandler, arguments, nullptr) {}
+        explicit GlxApplication(const Arguments& arguments, std::nullptr_t);
 
     protected:
         /* Nobody will need to have (and delete) GlxApplication*, thus this is

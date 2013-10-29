@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_AbstractContextHandler_h
-#define Magnum_Platform_AbstractContextHandler_h
+#ifndef Magnum_Platform_Implementation_AbstractContextHandler_h
+#define Magnum_Platform_Implementation_AbstractContextHandler_h
 /*
     This file is part of Magnum.
 
@@ -24,11 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Class Magnum::Platform::AbstractContextHandler
- */
-
-namespace Magnum { namespace Platform {
+namespace Magnum { namespace Platform { namespace Implementation {
 
 /**
 @brief Base for OpenGL context handlers
@@ -63,6 +59,6 @@ template<class Display, class VisualId, class Window> class AbstractContextHandl
         virtual void swapBuffers() = 0;
 };
 
-}}
+}}}
 
 #endif
