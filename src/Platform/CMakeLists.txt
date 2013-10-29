@@ -22,9 +22,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumPlatform_HEADERS AbstractContextHandler.h)
-install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)
