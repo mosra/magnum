@@ -175,19 +175,9 @@ can just switch to another base class and in many cases you won't need to
 change any other code. It has its limitations, though - some toolkits don't
 support all keys, mouse movement events etc.
 
-In most cases the entry point is classic `main()` function, but some platforms
-(e.g. Native Client) have different requirements. To make things easier, entry
-points are handled using macros, which take care of the rest.
-
-If exactly one `*Application` or `*Windowless*Application` header is included,
-the application class is aliased to `Platform::Application` or
-`Platform::WindowlessApplication` and the macro is aliased to
-`MAGNUM_APPLICATION_MAIN()` or `MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to
-simplify porting. The same is with CMake code, if exactly one `*Application` or
-`Windowless*Application` component , the libraries and include dirs are
-available in `MAGNUM_APPLICATION_LIBRARIES` / `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES`
-and `MAGNUM_APPLICATION_INCLUDE_DIRS` / `MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS`
-variables.
+As mentioned in @ref platform, all the classes, macros and CMake variables have
+generic aliases, thus using different toolkit is in most cases only matter of
+replacing two lines of code.
 
 Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the

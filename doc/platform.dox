@@ -41,11 +41,18 @@ required methods.
 @section platform-windowed Windowed applications
 
 Windowed applications provide a window and keyboard and mouse handling. The
-most basic toolkit (and toolkit available on most platforms) is GLUT, which is
-is implemented in GlutApplication. As said above, the usage is similar for all
-toolkits, you must provide two-argument constructor and implement at least
-@ref GlutApplication::viewportEvent() "viewportEvent()" and
-@ref GlutApplication::drawEvent() "drawEvent()".
+most basic toolkit (and toolkit packaged for most systems) is GLUT, which is
+implemented in @ref Platform::GlutApplication. As said above, the usage is
+similar for all toolkits, you must provide one-argument constructor and
+implement at least @ref GlutApplication::viewportEvent() "viewportEvent()" and
+@ref GlutApplication::drawEvent() "drawEvent()". The class can be then used
+directly in `main()`, but for convenience and portability it's better to use
+@ref MAGNUM_GLUTAPPLICATION_MAIN() macro.
+
+To simplify the porting, the library provides `Platform::Application` typedef
+and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
+is included, to avoid ambiguity). Changing the code to use different toolkit is
+then matter of replacing only the `#include` statement.
 
 Barebone application implementation which will just clear the window to dark
 blue color:
@@ -56,7 +63,7 @@ blue color:
 
 using namespace Magnum;
 
-class MyApplication: public Platform::GlutApplication {
+class MyApplication: public Platform::Application {
     public:
         MyApplication(const Arguments& arguments);
 
@@ -64,7 +71,7 @@ class MyApplication: public Platform::GlutApplication {
         void drawEvent() override;
 };
 
-MyApplication::MyApplication(const Arguments& arguments): Platform::GlutApplication(arguments) {
+MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {
     // Set clear color to dark blue
     Renderer::setClearColor({0.0f, 0.0f, 0.4f});
 }
@@ -83,7 +90,7 @@ void MyApplication::drawEvent() {
 }
 
 // main() function implementation
-MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
+MAGNUM_APPLICATION_MAIN(MyApplication)
 @endcode
 
 @section platform-windowless Windowless applications
@@ -91,8 +98,19 @@ MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
 Windowless applications provide just a context for ofscreen rendering or
 performing tasks on GPU. There is not yet any platform-independent toolkit
 which could handle this in portable way, thus you have to use platform-specific
-ones. As example we use WindowlessGlxApplication, you need to implement just
-@ref WindowlessGlxApplication::exec() "exec()" function.
+ones. As example we use @ref Platform::WindowlessGlxApplication, you need to
+implement just @ref WindowlessGlxApplication::exec() "exec()" function. The
+class can be then used directly in `main()`, but again, for convenience and
+portability it's better to use @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
+macro.
+
+Similarly as with windowed applications, to simplify the porting, the library
+provides `Platform::WindowlessApplication` typedef and `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`
+macro, but only if only one windowless application header is included. Changing
+the code to use different toolkit is then matter of replacing only the `#include`
+statement. Aliases for windowless applications are separated from aliases for
+windowed applications, because projects commonly contain both graphics
+application and command-line tools (for data preparation etc.).
 
 Barebone application which will just print out current OpenGL version and
 renderer string and exits:
@@ -102,14 +120,14 @@ renderer string and exits:
 
 using namespace Magnum;
 
-class MyApplication: public Platform::WindowlessGlxApplication {
+class MyApplication: public Platform::WindowlessApplication {
     public:
         MyApplication(const Arguments& arguments);
 
         int exec() override;
 };
 
-MyApplication::MyApplication(const Arguments& arguments): Platform::WindowlessGlxApplication(arguments) {}
+MyApplication::MyApplication(const Arguments& arguments): Platform::WindowlessApplication(arguments) {}
 
 int MyApplication::exec() {
     Debug() << "OpenGL version:" << Context::current()->versionString();
@@ -120,23 +138,31 @@ int MyApplication::exec() {
 }
 
 // main() function implementation
-MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(MyApplication)
+MAGNUM_WINDOWLESSAPPLICATION_MAIN(MyApplication)
 @endcode
 
 @section platform-compilation Compilation with CMake
 
 Barebone compilation consists just of finding %Magnum library with required
-`*Application` component, compilation of the executable and linking the
-libraries to it:
+`*Application` component, adding %Magnum's `${MAGNUM_INCLUDE_DIRS}` and application-specific `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path, compilation of the
+executable and linking `${MAGNUM_LIBRARIES}` and `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`
+to it.
+
+Again, to simplify porting, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
+and `${MAGNUM_WAPPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`, `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
+only if only one application (windowless application) component is requested to
+avoid ambiguity. Changing the code to use different toolkit is then matter of
+replacing only the requested `*Application` component.
+
 @code
 find_package(Magnum REQUIRED GlutApplication)
 
-include_directories(${MAGNUM_INCLUDE_DIRS})
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 add_executable(myapplication MyApplication.cpp)
 target_link_libraries(myapplication
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+    ${MAGNUM_APPLICATION_LIBRARIES})
 @endcode
 
 @section platform-configuration Specifying configuration
@@ -147,20 +173,20 @@ window size 800x600 pixels). If you want something else, you can pass
 constructor. Using method chaining it can be done conveniently like this:
 @code
 MyApplication::MyApplication(int& argc, char** argv):
-    Platform::GlutApplication(argc, argv, Configuration()
+    Platform::Application(argc, argv, Configuration()
         .setTitle("My Application")
         .setSize({800, 600})
-    {
+{
     // ...
 }
 @endcode
 
 However, sometimes you would need to configure the application based on some
 configuration file or system introspection. In that case you can pass `nullptr`
-instead of Configuration instance and then specify it later with
-@ref GlutApplication::createContext() "createContext()":
+instead of @ref GlutApplication::Configuration "Configuration" instance and
+then specify it later with @ref GlutApplication::createContext() "createContext()":
 @code
-MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv, nullptr) {
+MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
     // ...
 
     createContext(Configuration()
@@ -173,12 +199,12 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(
 
 If the context creation in constructor or @ref GlutApplication::createContext() "createContext()"
 fails, the application exits. However, it is also possible to negotiate the
-context using @ref GlutApplication::tryCreateContext() "tryCreateContext()". The
-only difference is that this function returns `false` instead of exiting. You
-can for example try enabling MSAA and if the context creation fails, fall back
-to no-AA rendering:
+context using @ref GlutApplication::tryCreateContext() "tryCreateContext()".
+The only difference is that this function returns `false` instead of exiting.
+You can for example try enabling MSAA and if the context creation fails, fall
+back to no-AA rendering:
 @code
-MyApplication::MyApplication(int& argc, char** argv): Platform::GlutApplication(argc, argv, nullptr) {
+MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
     // ...
 
     Configuration conf;
