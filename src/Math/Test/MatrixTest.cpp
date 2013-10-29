@@ -159,10 +159,9 @@ void MatrixTest::constructConversion() {
                           Vector4(1.0f,  2.0f, 3.0f, -1.0f),
                           Vector4(7.9f, -1.0f, 8.0f, -1.5f));
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Matrix4x4i b(a);
-    #else
-    Matrix4i b(a); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Matrix4x4i b(a);
     CORRADE_COMPARE(b, Matrix4x4i(Vector4i(3,  5, 8, -3),
                                   Vector4i(4,  4, 7,  2),
                                   Vector4i(1,  2, 3, -1),
