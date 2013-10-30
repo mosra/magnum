@@ -474,7 +474,7 @@ class NaClApplication::InputEvent {
 };
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
-NaClApplication::InputEvent::~InputEvent() = default;
+inline NaClApplication::InputEvent::~InputEvent() = default;
 #endif
 
 /**
