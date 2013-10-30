@@ -319,7 +319,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Memory mapping access
          *
-         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see map(MapAccess), mapSub()
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} or
@@ -642,8 +642,7 @@ class MAGNUM_EXPORT Buffer {
 
         /**
          * @brief Set buffer data
-         * @param size      Data size
-         * @param data      Pointer to data
+         * @param data      Data
          * @param usage     %Buffer usage
          * @return Reference to self (for method chaining)
          *
@@ -653,28 +652,20 @@ class MAGNUM_EXPORT Buffer {
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData} or
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
-        Buffer& setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
-            (this->*dataImplementation)(size, data, usage);
+        Buffer& setData(Containers::ArrayReference<const void> data, Usage usage) {
+            (this->*dataImplementation)(data.size(), data, usage);
             return *this;
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set buffer data
-         * @param data      Fixed-size array with data
-         * @param usage     %Buffer usage
-         * @return Reference to self (for method chaining)
-         *
-         * @see setData(GLsizeiptr, const GLvoid*, Usage).
+         * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, Usage) "setData(Containers::ArrayReference<const void>, Usage)"
+         *      instead.
          */
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        #define size size_ /* With GCC 4.6 it conflicts with size(). WTF. */
-        #endif
-        template<std::size_t size, class T> Buffer& setData(const T(&data)[size], Usage usage) {
-            setData(size*sizeof(T), data, usage);
-            return *this;
+        Buffer& setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
+            return setData({data, std::size_t(size)}, usage);
         }
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        #undef size
         #endif
 
         /**
@@ -686,21 +677,20 @@ class MAGNUM_EXPORT Buffer {
          * @see setData(GLsizeiptr, const GLvoid*, Usage)
          */
         template<class T> Buffer& setData(const std::vector<T>& data, Usage usage) {
-            setData(data.size()*sizeof(T), data.data(), usage);
+            setData({data.data(), data.size()}, usage);
             return *this;
         }
 
         /** @overload */
         template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, Usage usage) {
-            setData(data.size()*sizeof(T), data.data(), usage);
+            setData({data.data(), data.size()}, usage);
             return *this;
         }
 
         /**
          * @brief Set buffer subdata
          * @param offset    Offset in the buffer
-         * @param size      Data size
-         * @param data      Pointer to data
+         * @param data      Data
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -709,28 +699,20 @@ class MAGNUM_EXPORT Buffer {
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
          *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
-        Buffer& setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-            (this->*subDataImplementation)(offset, size, data);
+        Buffer& setSubData(GLintptr offset, Containers::ArrayReference<const void> data) {
+            (this->*subDataImplementation)(offset, data.size(), data);
             return *this;
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset in the buffer
-         * @param data      Fixed-size array with data
-         * @return Reference to self (for method chaining)
-         *
-         * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
+         * @deprecated Use @ref Magnum::Buffer::setSubData(GLintptr, Containers::ArrayReference<const void>) "setSubData(GLintptr, Containers::ArrayReference<const void>)"
+         *      instead.
          */
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        #define size size_ /* With GCC 4.6 it conflicts with size(). WTF. */
-        #endif
-        template<std::size_t size, class T> Buffer& setSubData(GLintptr offset, const T(&data)[size]) {
-            setSubData(offset, size*sizeof(T), data);
-            return *this;
+        Buffer& setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+            return setSubData(offset, {data, std::size_t(size)});
         }
-        #ifdef CORRADE_GCC46_COMPATIBILITY
-        #undef size
         #endif
 
         /**
@@ -742,13 +724,13 @@ class MAGNUM_EXPORT Buffer {
          * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
          */
         template<class T> Buffer& setSubData(GLintptr offset, const std::vector<T>& data) {
-            setSubData(offset, data.size()*sizeof(T), data.data());
+            setSubData(offset, {data.data(), data.size()});
             return *this;
         }
 
         /** @overload */
         template<std::size_t size, class T> Buffer& setSubData(GLintptr offset, const std::array<T, size>& data) {
-            setSubData(offset, data.size()*sizeof(T), data.data());
+            setSubData(offset, {data.data(), data.size()});
             return *this;
         }
 
@@ -791,7 +773,7 @@ class MAGNUM_EXPORT Buffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see @ref minMapAlignment(), @ref unmap(), @ref setTargetHint(),
          *      @fn_gl{BindBuffer} and @fn_gl{MapBuffer} or
@@ -815,7 +797,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * If the buffer is not already bound somewhere, it is bound to hinted
          * target before the operation.
-         * @deprecated Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
          * @see unmapSub(), setTargetHint(), @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use

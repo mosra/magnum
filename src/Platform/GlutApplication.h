@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::GlutApplication
+ * @brief Class @ref Magnum::Platform::GlutApplication
  */
 
 #include <string>
@@ -45,23 +45,32 @@ namespace Platform {
 /** @nosubgrouping
 @brief GLUT application
 
-Supports keyboard handling for limited subset of keys, mouse handling with
-support for changing cursor and mouse tracking and warping. See @ref platform
-for brief introduction.
+Application using GLUT toolkit. Supports keyboard handling for limited subset
+of keys, mouse handling with support for changing cursor and mouse tracking and
+warping.
+
+This application library is available only on desktop OpenGL (Linux, Windows,
+OS X). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION` is
+enabled in CMake. To use it, you need to request `%GlutApplication` component
+in CMake, add `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link
+to `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
+you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section GlutApplication-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()` -- see
-convenience macro MAGNUM_GLUTAPPLICATION_MAIN().
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen. The subclass can be then used directly in `main()`
+-- see convenience macro @ref MAGNUM_GLUTAPPLICATION_MAIN().
 @code
-class MyApplication: public Magnum::Platform::GlutApplication {
+class MyApplication: public Platform::GlutApplication {
     // implement required methods...
 };
 MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 */
@@ -148,6 +157,11 @@ class GlutApplication {
          * Called when window size changes. You should pass the new size to
          * DefaultFramebuffer::setViewport() and possibly elsewhere (cameras,
          * other framebuffers...).
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You are responsible for configuring the initial
+         * state yourself, viewport of default framebuffer can be retrieved
+         * from @ref DefaultFramebuffer::viewport().
          */
         virtual void viewportEvent(const Vector2i& size) = 0;
 
@@ -474,13 +488,37 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
     friend class GlutApplication;
 
     public:
+        /**
+         * @brief Mouse button
+         *
+         * @see Buttons, buttons()
+         */
+        enum class Button: UnsignedByte {
+            /**
+             * Any button. Note that GLUT doesn't differentiate between mouse
+             * buttons when firing the event.
+             */
+            Left = 1
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see buttons()
+         */
+        typedef Containers::EnumSet<Button, UnsignedByte> Buttons;
+
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }
 
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() const { return _buttons; }
+
     private:
-        constexpr MouseMoveEvent(const Vector2i& position): _position(position) {}
+        constexpr MouseMoveEvent(const Vector2i& position, Buttons buttons): _position(position), _buttons(buttons) {}
 
         const Vector2i _position;
+        const Buttons _buttons;
 };
 
 /** @hideinitializer
@@ -513,6 +551,8 @@ typedef GlutApplication Application;
 #undef MAGNUM_APPLICATION_MAIN
 #endif
 #endif
+
+CORRADE_ENUMSET_OPERATORS(GlutApplication::MouseMoveEvent::Buttons)
 
 /* Implementations for inline functions with unused parameters */
 inline void GlutApplication::keyPressEvent(KeyEvent&) {}

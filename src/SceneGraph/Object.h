@@ -85,6 +85,8 @@ See @ref compilation-speedup-hpp for more information.
  - @ref MatrixTransformation3D "Object<MatrixTransformation3D<Float>>"
  - @ref RigidMatrixTransformation2D "Object<RigidMatrixTransformation2D<Float>>"
  - @ref RigidMatrixTransformation3D "Object<RigidMatrixTransformation3D<Float>>"
+ - @ref TranslationTransformation2D "Object<TranslationTransformation2D<Float>>"
+ - @ref TranslationTransformation3D "Object<TranslationTransformation3D<Float>>"
 
 @see Scene, AbstractFeature, AbstractTransformation, DebugTools::ObjectRenderer
 */
@@ -215,7 +217,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * @see transformation()
          */
         MatrixType transformationMatrix() const {
-            return Transformation::toMatrix(Transformation::transformation());
+            return Implementation::Transformation<Transformation>::toMatrix(Transformation::transformation());
         }
 
         /**
@@ -224,7 +226,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * @see absoluteTransformation()
          */
         MatrixType absoluteTransformationMatrix() const {
-            return Transformation::toMatrix(absoluteTransformation());
+            return Implementation::Transformation<Transformation>::toMatrix(absoluteTransformation());
         }
 
         /**

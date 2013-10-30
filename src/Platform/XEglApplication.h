@@ -25,47 +25,56 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::XEglApplication
+ * @brief Class @ref Magnum::Platform::XEglApplication
  */
 
-#include "AbstractXApplication.h"
-#include "EglContextHandler.h"
+#include "Platform/AbstractXApplication.h"
 
 namespace Magnum { namespace Platform {
 
 /**
 @brief X/EGL application
 
-Uses EglContextHandler. See @ref platform for brief introduction.
+Application using pure X11 and EGL. Supports keyboard and mouse handling.
+
+This application library is available on both desktop OpenGL and
+@ref MAGNUM_TARGET_GLES "OpenGL ES" on Linux. It depends on **X11** and **EGL**
+libraries and is built if `WITH_XEGLAPPLICATION` is enabled in CMake. To use
+it, you need to copy `FindEGL.cmake` from `modules/` directory in %Magnum
+source to `modules/` dir in your project (so CMake is able to find EGL),
+request `%XEglApplication` component in CMake, add `${MAGNUM_XEGLAPPLICATION_INCLUDE_DIRS}`
+to include path and link to `${MAGNUM_XEGLAPPLICATION_LIBRARIES}`.  If no other
+application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
+and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section XEglApplication-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen.  The subclass can be then used directly in `main()` - see
-convenience macro MAGNUM_XEGLAPPLICATION_MAIN().
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen.  The subclass can be then used directly in `main()`
+-- see convenience macro @ref MAGNUM_XEGLAPPLICATION_MAIN().
 @code
-class MyApplication: public Magnum::Platform::XEglApplication {
+class MyApplication: public Platform::XEglApplication {
     // implement required methods...
 };
 MAGNUM_XEGLAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 */
 class XEglApplication: public AbstractXApplication {
     public:
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
-        explicit XEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration()): AbstractXApplication(new EglContextHandler, arguments, configuration) {}
+        explicit XEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
         #ifndef CORRADE_GCC45_COMPATIBILITY
-        explicit XEglApplication(const Arguments& arguments, std::nullptr_t)
+        explicit XEglApplication(const Arguments& arguments, std::nullptr_t);
         #else
-        explicit XEglApplication(const Arguments& arguments, void*)
+        explicit XEglApplication(const Arguments& arguments, void*);
         #endif
-            : AbstractXApplication(new EglContextHandler, nullptr) {}
 
     protected:
         /* Nobody will need to have (and delete) XEglApplication*, thus this is

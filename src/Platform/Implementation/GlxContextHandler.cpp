@@ -31,7 +31,7 @@
 
 #define None 0L // redef Xlib nonsense
 
-namespace Magnum { namespace Platform {
+namespace Magnum { namespace Platform { namespace Implementation {
 
 VisualID GlxContextHandler::getVisualId(Display* nativeDisplay) {
     display = nativeDisplay;
@@ -97,4 +97,4 @@ GlxContextHandler::~GlxContextHandler() {
     glXDestroyContext(display, context);
 }
 
-}}
+}}}

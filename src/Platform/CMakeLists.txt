@@ -22,16 +22,16 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumPlatform_HEADERS AbstractContextHandler.h)
-install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)
     if(GLUT_FOUND)
         add_library(MagnumGlutApplication STATIC GlutApplication.cpp)
         install(FILES GlutApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-        install(TARGETS MagnumGlutApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+        install(TARGETS MagnumGlutApplication
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
         message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTAPPLICATION to OFF to skip building it.")
     endif()
@@ -44,7 +44,10 @@ if(WITH_SDL2APPLICATION)
         include_directories(${SDL2_INCLUDE_DIR})
         add_library(MagnumSdl2Application STATIC Sdl2Application.cpp)
         install(FILES Sdl2Application.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-        install(TARGETS MagnumSdl2Application DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+        install(TARGETS MagnumSdl2Application
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     else()
         message(FATAL_ERROR "SDL2 library, required by Sdl2Application, was not found. Set WITH_SDL2APPLICATION to OFF to skip building it.")
     endif()
@@ -58,7 +61,10 @@ if(WITH_NACLAPPLICATION)
 
     add_library(MagnumNaClApplication STATIC NaClApplication.cpp)
     install(FILES NaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    install(TARGETS MagnumNaClApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
 # Windowless NaCl application
@@ -69,12 +75,20 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
 
     add_library(MagnumWindowlessNaClApplication STATIC WindowlessNaClApplication.cpp)
     install(FILES WindowlessNaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumWindowlessNaClApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    install(TARGETS MagnumWindowlessNaClApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
 # JavaScript and CSS stuff for NaCl
 if(WITH_NACLAPPLICATION OR WITH_WINDOWLESSNACLAPPLICATION)
-    install(FILES NaClApplication.js NaClApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+    install(FILES NaClApplication.js WebApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+endif()
+
+# JavaScript and CSS stuff for Emscripten
+if(WITH_SDL2APPLICATION AND CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES EmscriptenApplication.js WebApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
 # GLX application
@@ -83,9 +97,13 @@ if(WITH_GLXAPPLICATION)
     set(NEED_GLXCONTEXT 1)
     add_library(MagnumGlxApplication STATIC
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumGlxContextHandler>)
+        $<TARGET_OBJECTS:MagnumGlxContextHandler>
+        GlxApplication.cpp)
     install(FILES GlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumGlxApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    install(TARGETS MagnumGlxApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
 # X/EGL application
@@ -94,9 +112,13 @@ if(WITH_XEGLAPPLICATION)
     set(NEED_EGLCONTEXT 1)
     add_library(MagnumXEglApplication STATIC
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumEglContextHandler>)
+        $<TARGET_OBJECTS:MagnumEglContextHandler>
+        XEglApplication.cpp)
     install(FILES XEglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumXEglApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    install(TARGETS MagnumXEglApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
 if(WITH_WINDOWLESSGLXAPPLICATION OR NEED_ABSTRACTXAPPLICATION)
@@ -112,7 +134,10 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumWindowlessGlxApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
     install(FILES WindowlessGlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumWindowlessGlxApplication DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    install(TARGETS MagnumWindowlessGlxApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
 # Abstract X application
@@ -125,10 +150,9 @@ endif()
 
 # GLX context
 if(NEED_GLXCONTEXT)
-    add_library(MagnumGlxContextHandler OBJECT GlxContextHandler.cpp)
+    add_library(MagnumGlxContextHandler OBJECT Implementation/GlxContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumGlxContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-    install(FILES GlxContextHandler.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
 # EGL context
@@ -137,10 +161,9 @@ if(NEED_EGLCONTEXT)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
-    add_library(MagnumEglContextHandler OBJECT EglContextHandler.cpp)
+    add_library(MagnumEglContextHandler OBJECT Implementation/EglContextHandler.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-    install(FILES EglContextHandler.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
 # Magnum Info

@@ -25,8 +25,10 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::Sdl2Application
+ * @brief Class @ref Magnum::Platform::Sdl2Application
  */
+
+#include <Containers/EnumSet.h>
 
 #include "Math/Vector2.h"
 #include "Magnum.h"
@@ -36,7 +38,8 @@
 #endif
 #include <SDL.h>
 #include <SDL_scancode.h>
-#include <Corrade/Containers/EnumSet.h>
+#include <Containers/EnumSet.h>
+#include <Corrade.h>
 
 namespace Magnum {
 
@@ -47,24 +50,75 @@ namespace Platform {
 /** @nosubgrouping
 @brief SDL2 application
 
-Application using [Simple DirectMedia Layer](www.libsdl.org/). Supports
-keyboard and mouse handling. See @ref platform for brief introduction.
+Application using [Simple DirectMedia Layer](www.libsdl.org/) toolkit. Supports
+keyboard and mouse handling.
+
+This application library is available on desktop OpenGL (Linux, Windows, OS X)
+and in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It depends on **SDL2**
+library (Emscripten has it built in) and is built if `WITH_SDL2APPLICATION` is
+enabled in CMake. To use it, you need to copy `FindSDL2.cmake` from `modules/`
+directory in %Magnum source to `modules/` dir in your project (so CMake is able
+to find SDL2), request `%Sdl2Application` component in CMake, add
+`${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other application is requested,
+you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section Sdl2Application-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()` -- see
-convenience macro MAGNUM_SDL2APPLICATION_MAIN().
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen. The subclass can be then used directly in `main()`
+-- see convenience macro @ref MAGNUM_SDL2APPLICATION_MAIN().
 @code
-class MyApplication: public Magnum::Platform::Sdl2Application {
+class MyApplication: public Platform::Sdl2Application {
     // implement required methods...
 };
 MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
+
+@section Sdl2Application-html Usage with Emscripten
+
+If you are targetting @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", you need to
+provide HTML markup for your application. Template one is below, you can modify
+it to your liking. The markup references two files, `EmscriptenApplication.js`
+and `WebApplication.css`, both are in `Platform/` directory in the source tree
+and are also installed into `share/magnum/` inside your Emscripten toolchain.
+Change `&lt;application&gt;` to name of your executable.
+@code
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Magnum Emscripten Application</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="WebApplication.css" />
+  </head>
+  <body>
+    <h1>Magnum Emscripten Application</h1>
+    <div id="listener">
+      <canvas id="module"></canvas>
+      <div id="status">Initialization...</div>
+      <div id="statusDescription" />
+      <script src="EmscriptenApplication.js"></script>
+      <script async="async" src="<application>.js"></script>
+    </div>
+  </body>
+</html>
+@endcode
+
+You can modify all the files to your liking, but the HTML file must contain at
+least the `&lt;canvas&gt;` enclosed in listener `&lt;div&gt;`. The JavaScript
+file contains event listeners which print loading status on the page. The
+status displayed in the remaining two `&lt;div&gt;`s, if they are available.
+The CSS file contains rudimentary style to avoid eye bleeding.
+
+The application redirects @ref Corrade::Utility::Debug "Debug",
+@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
+output to JavaScript console.
 */
 class Sdl2Application {
     public:
@@ -100,7 +154,7 @@ class Sdl2Application {
         int exec();
 
         /** @brief Exit application main loop */
-        void exit() { flags |= Flag::Exit; }
+        void exit();
 
     protected:
         /* Nobody will need to have (and delete) Sdl2Application*, thus this is
@@ -122,7 +176,7 @@ class Sdl2Application {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutApplication::swapBuffers() */
-        void swapBuffers() { SDL_GL_SwapWindow(window); }
+        void swapBuffers();
 
         /** @copydoc GlutApplication::redraw() */
         void redraw() { flags |= Flag::Redraw; }
@@ -177,17 +231,28 @@ class Sdl2Application {
     private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
             Exit = 1 << 1
+            #endif
         };
 
         typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        static Sdl2Application* instance;
+        static void staticMainLoop();
+        #endif
+
         void initialize();
         void mainLoop();
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* window;
         SDL_GLContext context;
+        #else
+        SDL_Surface* context;
+        #endif
 
         Context* c;
 
@@ -482,8 +547,8 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
             Middle = SDL_BUTTON_MIDDLE,     /**< Middle button */
             Right = SDL_BUTTON_RIGHT,       /**< Right button */
-            WheelUp = 4,                    /**< Wheel up */
-            WheelDown = 5                   /**< Wheel down */
+            WheelUp = SDL_BUTTON_X1,        /**< Wheel up */
+            WheelDown = SDL_BUTTON_X2       /**< Wheel down */
         };
 
         /** @brief Button */
@@ -517,6 +582,26 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
     friend class Sdl2Application;
 
     public:
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref Buttons, @ref buttons()
+         */
+        enum class Button: Uint32 {
+            Left = SDL_BUTTON_LMASK,        /**< Left button */
+            Middle = SDL_BUTTON_MMASK,      /**< Middle button */
+            Right = SDL_BUTTON_RMASK,       /**< Right button */
+            WheelUp = SDL_BUTTON_X1MASK,    /**< Wheel up */
+            WheelDown = SDL_BUTTON_X2MASK   /**< Wheel down */
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button, Uint32> Buttons;
+
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }
 
@@ -527,6 +612,9 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
          */
         constexpr Vector2i relativePosition() const { return _relativePosition; }
 
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() const { return _buttons; }
+
         /**
          * @brief Modifiers
          *
@@ -535,10 +623,11 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition): _position(position), _relativePosition(relativePosition), modifiersLoaded(false) {}
+        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position(position), _relativePosition(relativePosition), modifiersLoaded(false), _buttons(buttons) {}
 
         const Vector2i _position, _relativePosition;
         bool modifiersLoaded;
+        Buttons _buttons;
         Modifiers _modifiers;
 };
 
@@ -574,6 +663,7 @@ typedef Sdl2Application Application;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
 
 /* Implementations for inline functions with unused parameters */
 inline void Sdl2Application::keyPressEvent(KeyEvent&) {}

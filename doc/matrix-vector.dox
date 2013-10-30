@@ -24,15 +24,18 @@
 
 namespace Magnum {
 /** @page matrix-vector Operations with matrices and vectors
-
 @brief Introduction to essential classes of the graphics pipeline.
 
-@tableofcontents
+-   Previous page: @ref types
+-   Next page: @ref transformations
 
 Matrices and vectors are the most important part of graphics programming and
-one of goals of %Magnum is to make their usage as intuitive as possible. This
-page will overview their usage and introduce some tricks to make your life
-easier.
+one of goals of %Magnum is to make their usage as intuitive as possible. They
+are contained in @ref Math namespace and common variants also have aliases in
+root @ref Magnum namespace. See documentation of these namespaces for more
+information about usage with CMake.
+
+@tableofcontents
 
 @section matrix-vector-hierarchy Matrix and vector classes
 
@@ -101,8 +104,8 @@ auto diag2 = Matrix3::fromDiagonal({3.0f, 2.0f, 1.0f});
 It is possible to create matrices from other matrices and vectors with the same
 row count; vectors from vector and scalar:
 @code
-Math::RectangularMatrix<2, 3, Int> a;
-Math::Vector<3, Int> b, c;
+Math::Matrix2x3<Int> a;
+Math::Vector3<Int> b, c;
 Math::Matrix3<Int> mat(a, b);
 Math::Vector<8, Int> vec(1, b, 2, c);
 @endcode
@@ -115,7 +118,7 @@ on the array itself:
 @code
 Int[] mat = { 2, 4, 6,
               1, 3, 5 };
-RectangularMatrix<2, 3, Int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
+Math::Matrix2x3<Int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
 @endcode
 Note that unlike constructors, this function has no way to check whether the
 array is long enough to contain all elements, so use with caution.
@@ -169,7 +172,7 @@ Math::Vector<6, Int> w10xyz = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); /
 @section matrix-vector-operations Operations with matrices and vectors
 
 Vectors can be added, subtracted, negated and multiplied or divided with
-scalars, as is common in mathematics, Magnum also adds the ability to divide
+scalars, as is common in mathematics, %Magnum also adds the ability to divide
 scalar with vector:
 @code
 Vector3 a(1.0f, 2.0f, 3.0f);
@@ -232,10 +235,10 @@ OpenGL matrices are column-major, thus it is reasonable to have matrices in
 %Magnum also column major (and vectors as columns). This has naturally some
 implications and it may differ from what is common in mathematics:
 
-- Order of template arguments in specification of RectangularMatrix is also
-  column-major:
+- Order of template arguments in specification of @ref Math::RectangularMatrix
+  is also column-major:
 @code
-Math::RectangularMatrix<2, 3, Int> mat; // two columns, three rows
+Math::RectangularMatrix<2, 5, Int> mat; // two columns, five rows
 @endcode
 - Order of components in matrix constructors is also column-major, further
   emphasized by requirement that you have to pass directly column vectors:
@@ -256,5 +259,10 @@ mat[2][0] = 5;  // first element of third column
   alternatives which operate on columns. It's then up to user decision to
   operate with transposed matrices or use the slower non-transposed
   alternative of the algorithm.
+
+&nbsp;
+
+-   Previous page: @ref types
+-   Next page: @ref transformations
 */
-}}
+}

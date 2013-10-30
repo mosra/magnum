@@ -39,14 +39,22 @@ DESIGN GOALS
 SUPPORTED PLATFORMS
 ===================
 
+Graphics APIs:
+
 *   **OpenGL** 2.1 through 4.4, core profile functionality and modern
     extensions
 *   **OpenGL ES** 2.0, 3.0 and extensions to match desktop OpenGL functionality
+*   **WebGL** 1.0 and extensions to match desktop OpenGL functionality
+
+Platforms:
+
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     GLUT or SDL2 toolkit)
 *   **Windows** (through GLUT or SDL2 toolkit)
+*   **OS X** (through SDL2 toolkit, thanks to [Miguel Martin](https://github.com/miguelishawt))
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
     both `newlib` and `glibc` toolchains are supported)
+*   **HTML5/JavaScript** (through [Emscripten](https://github.com/kripken/emscripten/wiki))
 
 FEATURES
 ========

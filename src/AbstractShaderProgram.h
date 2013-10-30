@@ -309,12 +309,14 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          */
         static Int maxVertexAttributes();
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copydoc maxVertexAttributes()
          * @deprecated Use @ref Magnum::AbstractShaderProgram::maxVertexAttributes() "maxVertexAttributes()"
          *      instead.
          */
         static Int maxSupportedVertexAttributeCount() { return maxVertexAttributes(); }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -544,7 +546,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          *
          * Binds attribute to location which is used later for binding vertex
          * buffers.
-         * @deprecated Preferred usage is to specify attribute location
+         * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
@@ -562,7 +564,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * Binds fragment data to location which is used later for framebuffer
          * operations. See also Framebuffer::BlendFunction for more
          * information about using color input index.
-         * @deprecated Preferred usage is to specify attribute location
+         * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
@@ -604,7 +606,7 @@ class MAGNUM_EXPORT AbstractShaderProgram {
          * @brief Get uniform location
          * @param name          Uniform name
          *
-         * @deprecated Preferred usage is to specify uniform location
+         * @deprecated_gl Preferred usage is to specify uniform location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-uniform-location "class documentation"
          *      for more information.

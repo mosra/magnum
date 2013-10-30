@@ -74,7 +74,7 @@ enum class ColorFormat: GLenum {
     /**
      * Floating-point luminance channel. The value is used for all RGB
      * channels.
-     * @deprecated Included for compatibility reasons only, use
+     * @deprecated_gl Included for compatibility reasons only, use
      *      @ref Magnum::ColorFormat "ColorFormat::Red" instead.
      * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
      *      @ref Magnum::ColorFormat "ColorFormat::Red" instead.
@@ -98,7 +98,7 @@ enum class ColorFormat: GLenum {
     /**
      * Floating-point luminance and alpha channel. First value is used for all
      * RGB channels, second value is used for alpha channel.
-     * @deprecated Included for compatibility reasons only, use
+     * @deprecated_gl Included for compatibility reasons only, use
      *      @ref Magnum::ColorFormat "ColorFormat::RG" instead.
      * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
      *      @ref Magnum::ColorFormat "ColorFormat::RG" instead.

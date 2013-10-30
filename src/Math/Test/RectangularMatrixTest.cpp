@@ -90,8 +90,8 @@ class RectangularMatrixTest: public Corrade::TestSuite::Tester {
 
 typedef RectangularMatrix<4, 3, Float> Matrix4x3;
 typedef RectangularMatrix<3, 4, Float> Matrix3x4;
-typedef RectangularMatrix<2, 2, Float> Matrix2;
-typedef RectangularMatrix<2, 2, Int> Matrix2i;
+typedef RectangularMatrix<2, 2, Float> Matrix2x2;
+typedef RectangularMatrix<2, 2, Int> Matrix2x2i;
 typedef Vector<4, Float> Vector4;
 typedef Vector<3, Float> Vector3;
 typedef Vector<2, Float> Vector2;
@@ -152,19 +152,19 @@ void RectangularMatrixTest::constructDefault() {
 }
 
 void RectangularMatrixTest::constructConversion() {
-    constexpr Matrix2 a(Vector2(  1.3f, 2.7f),
-                        Vector2(-15.0f, 7.0f));
+    constexpr Matrix2x2 a(Vector2(  1.3f, 2.7f),
+                          Vector2(-15.0f, 7.0f));
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Matrix2i b(a);
+    constexpr Matrix2x2i b(a);
     #else
-    Matrix2i b(a); /* Not constexpr under GCC < 4.7 */
+    Matrix2x2i b(a); /* Not constexpr under GCC < 4.7 */
     #endif
 
-    CORRADE_COMPARE(b, Matrix2i(Vector2i(  1, 2),
-                                Vector2i(-15, 7)));
+    CORRADE_COMPARE(b, Matrix2x2i(Vector2i(  1, 2),
+                                  Vector2i(-15, 7)));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Matrix2, Matrix2i>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Matrix2x2, Matrix2x2i>::value));
 }
 
 void RectangularMatrixTest::constructFromData() {
@@ -273,28 +273,28 @@ void RectangularMatrixTest::row() {
 }
 
 void RectangularMatrixTest::compare() {
-    Matrix2 a(Vector2(1.0f, -3.0f),
-              Vector2(5.0f, -10.0f));
-    Matrix2 b(Vector2(1.0f + TypeTraits<Float>::epsilon()/2, -3.0f),
-              Vector2(5.0f, -10.0f));
-    Matrix2 c(Vector2(1.0f, -1.0f + TypeTraits<Float>::epsilon()*2),
-              Vector2(5.0f, -10.0f));
+    Matrix2x2 a(Vector2(1.0f, -3.0f),
+                Vector2(5.0f, -10.0f));
+    Matrix2x2 b(Vector2(1.0f + TypeTraits<Float>::epsilon()/2, -3.0f),
+                Vector2(5.0f, -10.0f));
+    Matrix2x2 c(Vector2(1.0f, -1.0f + TypeTraits<Float>::epsilon()*2),
+                Vector2(5.0f, -10.0f));
     CORRADE_VERIFY(a == b);
     CORRADE_VERIFY(a != c);
 
-    Matrix2i ai(Vector2i(1, -3),
-                Vector2i(5, -10));
-    Matrix2i bi(Vector2i(1, -2),
-                Vector2i(5, -10));
+    Matrix2x2i ai(Vector2i(1, -3),
+                  Vector2i(5, -10));
+    Matrix2x2i bi(Vector2i(1, -2),
+                  Vector2i(5, -10));
     CORRADE_VERIFY(ai == ai);
     CORRADE_VERIFY(ai != bi);
 }
 
 void RectangularMatrixTest::negative() {
-    Matrix2 matrix(Vector2(1.0f,  -3.0f),
-                   Vector2(5.0f, -10.0f));
-    Matrix2 negated(Vector2(-1.0f,  3.0f),
-                    Vector2(-5.0f, 10.0f));
+    Matrix2x2 matrix(Vector2(1.0f,  -3.0f),
+                     Vector2(5.0f, -10.0f));
+    Matrix2x2 negated(Vector2(-1.0f,  3.0f),
+                      Vector2(-5.0f, 10.0f));
     CORRADE_COMPARE(-matrix, negated);
 }
 
@@ -317,20 +317,20 @@ void RectangularMatrixTest::addSubtract() {
 }
 
 void RectangularMatrixTest::multiplyDivide() {
-    Matrix2 matrix(Vector2(1.0f, 2.0f),
-                   Vector2(3.0f, 4.0f));
-    Matrix2 multiplied(Vector2(-1.5f, -3.0f),
-                       Vector2(-4.5f, -6.0f));
+    Matrix2x2 matrix(Vector2(1.0f, 2.0f),
+                     Vector2(3.0f, 4.0f));
+    Matrix2x2 multiplied(Vector2(-1.5f, -3.0f),
+                         Vector2(-4.5f, -6.0f));
 
     CORRADE_COMPARE(matrix*-1.5f, multiplied);
     CORRADE_COMPARE(-1.5f*matrix, multiplied);
     CORRADE_COMPARE(multiplied/-1.5f, matrix);
 
     /* Divide vector with number and inverse */
-    Matrix2 divisor(Vector2( 1.0f, 2.0f),
-                    Vector2(-4.0f, 8.0f));
-    Matrix2 result(Vector2(  1.0f,   0.5f),
-                   Vector2(-0.25f, 0.125f));
+    Matrix2x2 divisor(Vector2( 1.0f, 2.0f),
+                      Vector2(-4.0f, 8.0f));
+    Matrix2x2 result(Vector2(  1.0f,   0.5f),
+                     Vector2(-0.25f, 0.125f));
     CORRADE_COMPARE(1.0f/divisor, result);
 }
 

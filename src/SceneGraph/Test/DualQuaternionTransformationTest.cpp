@@ -65,26 +65,31 @@ DualQuaternionTransformationTest::DualQuaternionTransformationTest() {
 }
 
 void DualQuaternionTransformationTest::fromMatrix() {
+    std::ostringstream o;
+    Error::setOutput(&o);
+    Implementation::Transformation<DualQuaternionTransformation>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
+    CORRADE_COMPARE(o.str(), "SceneGraph::DualQuaternionTransformation: the matrix doesn't represent rigid transformation\n");
+
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation::fromMatrix(m), q);
+    CORRADE_COMPARE(Implementation::Transformation<DualQuaternionTransformation>::fromMatrix(m), q);
 }
 
 void DualQuaternionTransformationTest::toMatrix() {
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation::toMatrix(q), m);
+    CORRADE_COMPARE(Implementation::Transformation<DualQuaternionTransformation>::toMatrix(q), m);
 }
 
 void DualQuaternionTransformationTest::compose() {
     DualQuaternion parent = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis());
     DualQuaternion child = DualQuaternion::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation::compose(parent, child), parent*child);
+    CORRADE_COMPARE(Implementation::Transformation<DualQuaternionTransformation>::compose(parent, child), parent*child);
 }
 
 void DualQuaternionTransformationTest::inverted() {
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(DualQuaternionTransformation::inverted(q)*q, DualQuaternion());
+    CORRADE_COMPARE(Implementation::Transformation<DualQuaternionTransformation>::inverted(q)*q, DualQuaternion());
 }
 
 void DualQuaternionTransformationTest::setTransformation() {

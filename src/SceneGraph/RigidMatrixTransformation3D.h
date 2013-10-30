@@ -49,43 +49,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         /** @brief Underlying transformation type */
         typedef Math::Matrix4<T> DataType;
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        static Math::Matrix4<T> fromMatrix(const Math::Matrix4<T>& matrix) {
-            CORRADE_ASSERT(matrix.isRigidTransformation(),
-                "SceneGraph::RigidMatrixTransformation3D::fromMatrix(): the matrix doesn't represent rigid transformation", {});
-            return matrix;
-        }
-
-        constexpr static Math::Matrix4<T> toMatrix(const Math::Matrix4<T>& transformation) {
-            return transformation;
-        }
-
-        static Math::Matrix4<T> compose(const Math::Matrix4<T>& parent, const Math::Matrix4<T>& child) {
-            return parent*child;
-        }
-
-        static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
-            return transformation.invertedRigid();
-        }
-
-        Math::Matrix4<T> transformation() const {
-            return _transformation;
-        }
-        #endif
-
-        /**
-         * @brief Normalize rotation part
-         * @return Reference to self (for method chaining)
-         *
-         * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
-         * to prevent rounding errors when rotating the object subsequently.
-         */
-        Object<BasicRigidMatrixTransformation3D<T>>& normalizeRotation() {
-            setTransformation(Math::Matrix4<T>::from(
-                Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
-                _transformation.translation()));
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
-        }
+        /** @brief Object transformation */
+        Math::Matrix4<T> transformation() const { return _transformation; }
 
         /**
          * @brief Set transformation
@@ -98,14 +63,25 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
             CORRADE_ASSERT(transformation.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation",
                 static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this));
-            setTransformationInternal(transformation);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return setTransformationInternal(transformation);
         }
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
         Object<BasicRigidMatrixTransformation3D<T>>& resetTransformation() {
-            setTransformation({});
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return setTransformationInternal({});
+        }
+
+        /**
+         * @brief Normalize rotation part
+         * @return Reference to self (for method chaining)
+         *
+         * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
+         * to prevent rounding errors when rotating the object subsequently.
+         */
+        Object<BasicRigidMatrixTransformation3D<T>>& normalizeRotation() {
+            return setTransformationInternal(Math::Matrix4<T>::from(
+                Math::Algorithms::gramSchmidtOrthonormalize(_transformation.rotationScaling()),
+                _transformation.translation()));
         }
 
         /**
@@ -121,8 +97,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
             CORRADE_ASSERT(transformation.isRigidTransformation(),
                 "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation",
                 static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this));
-            transformInternal(transformation, type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return transformInternal(transformation, type);
         }
 
         /**
@@ -130,8 +105,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * Same as calling transform() with Matrix4::translation().
          */
         Object<BasicRigidMatrixTransformation3D<T>>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::Matrix4<T>::translation(vector), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return transformInternal(Math::Matrix4<T>::translation(vector), type);
         }
 
         /**
@@ -146,8 +120,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          *      Vector3::yAxis(), Vector3::zAxis(), normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation3D<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return transformInternal(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
         }
 
         /**
@@ -160,8 +133,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @see normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation3D<T>>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::Matrix4<T>::rotationX(angle), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return transformInternal(Math::Matrix4<T>::rotationX(angle), type);
         }
 
         /**
@@ -174,8 +146,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @see normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation3D<T>>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::Matrix4<T>::rotationY(angle), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return transformInternal(Math::Matrix4<T>::rotationY(angle), type);
         }
 
         /**
@@ -188,8 +159,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @see normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation3D<T>>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::Matrix4<T>::rotationZ(angle), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return transformInternal(Math::Matrix4<T>::rotationZ(angle), type);
         }
 
         /**
@@ -202,8 +172,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * Same as calling transform() with Matrix4::reflection().
          */
         Object<BasicRigidMatrixTransformation3D<T>>& reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::Matrix4<T>::reflection(normal), type);
-            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
+            return transformInternal(Math::Matrix4<T>::reflection(normal), type);
         }
 
     protected:
@@ -234,7 +203,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         /* No assertions fired, for internal use */
-        void setTransformationInternal(const Math::Matrix4<T>& transformation) {
+        Object<BasicRigidMatrixTransformation3D<T>>& setTransformationInternal(const Math::Matrix4<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -242,11 +211,13 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
                 _transformation = transformation;
                 static_cast<Object<BasicRigidMatrixTransformation3D<T>>*>(this)->setDirty();
             }
+
+            return static_cast<Object<BasicRigidMatrixTransformation3D<T>>&>(*this);
         }
 
         /* No assertions fired, for internal use */
-        void transformInternal(const Math::Matrix4<T>& transformation, TransformationType type) {
-            setTransformation(type == TransformationType::Global ?
+        Object<BasicRigidMatrixTransformation3D<T>>& transformInternal(const Math::Matrix4<T>& transformation, TransformationType type) {
+            return setTransformationInternal(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
 
@@ -261,6 +232,30 @@ template<class T> inline BasicRigidMatrixTransformation3D<T>::BasicRigidMatrixTr
 @see @ref RigidMatrixTransformation2D
 */
 typedef BasicRigidMatrixTransformation3D<Float> RigidMatrixTransformation3D;
+
+namespace Implementation {
+
+template<class T> struct Transformation<BasicRigidMatrixTransformation3D<T>> {
+    static Math::Matrix4<T> fromMatrix(const Math::Matrix4<T>& matrix) {
+        CORRADE_ASSERT(matrix.isRigidTransformation(),
+            "SceneGraph::RigidMatrixTransformation3D: the matrix doesn't represent rigid transformation", {});
+        return matrix;
+    }
+
+    constexpr static Math::Matrix4<T> toMatrix(const Math::Matrix4<T>& transformation) {
+        return transformation;
+    }
+
+    static Math::Matrix4<T> compose(const Math::Matrix4<T>& parent, const Math::Matrix4<T>& child) {
+        return parent*child;
+    }
+
+    static Math::Matrix4<T> inverted(const Math::Matrix4<T>& transformation) {
+        return transformation.invertedRigid();
+    }
+};
+
+}
 
 }}
 

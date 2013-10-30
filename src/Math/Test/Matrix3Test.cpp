@@ -90,7 +90,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
 typedef Math::Deg<Float> Deg;
 typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix3<Int> Matrix3i;
-typedef Math::Matrix<2, Float> Matrix2;
+typedef Math::Matrix<2, Float> Matrix2x2;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector2<Float> Vector2;
 
@@ -274,8 +274,8 @@ void Matrix3Test::projection() {
 }
 
 void Matrix3Test::fromParts() {
-    constexpr Matrix2 rotationScaling(Vector2(3.0f, 5.0f),
-                                      Vector2(4.0f, 4.0f));
+    constexpr Matrix2x2 rotationScaling(Vector2(3.0f, 5.0f),
+                                        Vector2(4.0f, 4.0f));
     constexpr Vector2 translation(7.0f, -1.0f);
     constexpr Matrix3 a = Matrix3::from(rotationScaling, translation);
 
@@ -288,10 +288,10 @@ void Matrix3Test::rotationScalingPart() {
     constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
                         {4.0f,  4.0f, 7.0f},
                         {7.0f, -1.0f, 8.0f});
-    constexpr Matrix2 b = a.rotationScaling();
+    constexpr Matrix2x2 b = a.rotationScaling();
 
-    CORRADE_COMPARE(b, Matrix2(Vector2(3.0f, 5.0f),
-                               Vector2(4.0f, 4.0f)));
+    CORRADE_COMPARE(b, Matrix2x2(Vector2(3.0f, 5.0f),
+                                 Vector2(4.0f, 4.0f)));
 }
 
 void Matrix3Test::rotationNormalizedPart() {
@@ -308,34 +308,34 @@ void Matrix3Test::rotationNormalizedPart() {
     Matrix3 b({ 0.965926f, 0.258819f, 1.0f},
               {-0.258819f, 0.965926f, 3.0f},
               {      0.0f,      0.0f, 1.0f});
-    CORRADE_COMPARE(b.rotationNormalized(), Matrix2(Vector2( 0.965926f, 0.258819f),
-                                                    Vector2(-0.258819f, 0.965926f)));
+    CORRADE_COMPARE(b.rotationNormalized(), Matrix2x2(Vector2( 0.965926f, 0.258819f),
+                                                      Vector2(-0.258819f, 0.965926f)));
 }
 
 void Matrix3Test::rotationPart() {
     Matrix3 rotation = Matrix3::rotation(Deg(15.0f));
-    Matrix2 expectedRotationPart(Vector2( 0.965926f, 0.258819f),
-                                 Vector2(-0.258819f, 0.965926f));
+    Matrix2x2 expectedRotationPart(Vector2( 0.965926f, 0.258819f),
+                                   Vector2(-0.258819f, 0.965926f));
 
     /* For rotation and translation this is the same as rotationScaling() */
     Matrix3 rotationTranslation = rotation*Matrix3::translation({2.0f, 5.0f});
-    Matrix2 rotationTranslationPart = rotationTranslation.rotation();
+    Matrix2x2 rotationTranslationPart = rotationTranslation.rotation();
     CORRADE_COMPARE(rotationTranslationPart, rotationTranslation.rotationScaling());
     CORRADE_COMPARE(rotationTranslationPart, expectedRotationPart);
 
     /* Test uniform scaling */
     Matrix3 rotationScaling = rotation*Matrix3::scaling(Vector2(3.0f));
-    Matrix2 rotationScalingPart = rotationScaling.rotation();
+    Matrix2x2 rotationScalingPart = rotationScaling.rotation();
     CORRADE_COMPARE(rotationScalingPart.determinant(), 1.0f);
-    CORRADE_COMPARE(rotationScalingPart*rotationScalingPart.transposed(), Matrix2());
+    CORRADE_COMPARE(rotationScalingPart*rotationScalingPart.transposed(), Matrix2x2());
     CORRADE_COMPARE(rotationScalingPart, expectedRotationPart);
 
     /* Fails on non-uniform scaling */
     std::ostringstream o;
     Error::setOutput(&o);
-    Matrix2 rotationScaling2 = (rotation*Matrix3::scaling(Vector2::yScale(3.5f))).rotation();
+    Matrix2x2 rotationScaling2 = (rotation*Matrix3::scaling(Vector2::yScale(3.5f))).rotation();
     CORRADE_COMPARE(o.str(), "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling\n");
-    CORRADE_COMPARE(rotationScaling2, Matrix2());
+    CORRADE_COMPARE(rotationScaling2, Matrix2x2());
 }
 
 void Matrix3Test::uniformScalingPart() {

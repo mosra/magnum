@@ -25,57 +25,30 @@
 */
 
 /** @file /Swizzle.h
- * @brief Function Magnum::swizzle()
+ * @brief Function @ref Magnum::swizzle()
+ * @deprecated Use @ref Math/Swizzle.h instead.
  */
 
 #include "Math/Swizzle.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include "Color.h"
 
 namespace Magnum {
 
-namespace Math { namespace Implementation {
-    template<std::size_t size> struct Component<size, 'r'>: public ComponentAtPosition<size, 0> {};
-    template<std::size_t size> struct Component<size, 'g'>: public ComponentAtPosition<size, 1> {};
-    template<std::size_t size> struct Component<size, 'b'>: public ComponentAtPosition<size, 2> {};
-    template<std::size_t size> struct Component<size, 'a'>: public ComponentAtPosition<size, 3> {};
-}}
-
-namespace Implementation {
-    template<std::size_t size, class T> struct TypeForSize {
-        typedef Math::Vector<size, typename T::Type> Type;
-    };
-    template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
-    template<class T> struct TypeForSize<3, T> { typedef Math::Vector3<typename T::Type> Type; };
-    template<class T> struct TypeForSize<4, T> { typedef Math::Vector4<typename T::Type> Type; };
-    template<class T> struct TypeForSize<3, BasicColor3<T>> { typedef BasicColor3<T> Type; };
-    template<class T> struct TypeForSize<3, BasicColor4<T>> { typedef BasicColor3<T> Type; };
-    template<class T> struct TypeForSize<4, BasicColor3<T>> { typedef BasicColor4<T> Type; };
-    template<class T> struct TypeForSize<4, BasicColor4<T>> { typedef BasicColor4<T> Type; };
-}
-
 /**
-@brief Swizzle Vector components
-
-Creates new vector from given components. Example:
-@code
-Vector4i original(-1, 2, 3, 4);
-
-auto vec = swizzle<'a', '1', '0', 'r', 'g', 'b'>(original);
-// vec == { 4, 1, 0, -1, 2, 3 }
-@endcode
-You can use letters `x`, `y`, `z`, `w` and `r`, `g`, `b`, `a` for addressing
-components or letters `0` and `1` for zero and one. Count of elements is
-unlimited, but must be at least one. If the resulting vector is two, three or
-four-component, corresponding Math::Vector2, Math::Vector3, Math::Vector4,
-Color3 or Color4 specialization is returned.
-
-@see @ref matrix-vector-component-access, Math::swizzle(), Vector4::xyz(),
-    Color4::rgb(), Vector4::xy(), Vector3::xy()
+@copybrief Math::swizzle()
+@deprecated Use @ref Magnum::Math::swizzle() "Math::swizzle()" instead.
 */
-template<char ...components, class T> constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
-    return {Math::Implementation::Component<T::Size, components>::value(vector)...};
-}
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<char ...components, class T> constexpr typename Math::Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector);
+#else
+using Math::swizzle;
+#endif
 
 }
+#else
+#error
+#endif
 
 #endif

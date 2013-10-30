@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_EglContextHandler_h
-#define Magnum_Platform_EglContextHandler_h
+#ifndef Magnum_Platform_Implementation_EglContextHandler_h
+#define Magnum_Platform_Implementation_EglContextHandler_h
 /*
     This file is part of Magnum.
 
@@ -24,10 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Class Magnum::Platform::EglContextHandler
- */
-
 #include "Magnum.h"
 
 #ifndef SUPPORT_X11
@@ -42,7 +38,7 @@
 
 #include "corradeCompatibility.h"
 
-namespace Magnum { namespace Platform {
+namespace Magnum { namespace Platform { namespace Implementation {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* EGL returns visual ID as int, but Xorg expects long unsigned int */
@@ -83,6 +79,6 @@ class EglContextHandler: public AbstractContextHandler<EGLNativeDisplayType, Vis
         EGLContext context;
 };
 
-}}
+}}}
 
 #endif

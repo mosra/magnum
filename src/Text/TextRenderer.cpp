@@ -180,7 +180,7 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, con
         indices = new char[indicesSize];
         createIndices<UnsignedInt>(indices, layouter->glyphCount());
     }
-    indexBuffer.setData(indicesSize, indices, usage);
+    indexBuffer.setData({indices, indicesSize}, usage);
     delete indices;
 
     /* Configure mesh except for vertex buffer (depends on dimension count, done
@@ -205,7 +205,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
     return std::move(r);
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
 AbstractTextRenderer::BufferMapImplementation AbstractTextRenderer::bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationFull;
 AbstractTextRenderer::BufferUnmapImplementation AbstractTextRenderer::bufferUnmapImplementation = &AbstractTextRenderer::bufferUnmapImplementationDefault;
 
@@ -222,28 +222,37 @@ void AbstractTextRenderer::bufferUnmapImplementationSub(Buffer& buffer) {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
 inline void* AbstractTextRenderer::bufferMapImplementation(Buffer& buffer, GLsizeiptr length)
 #else
 void* AbstractTextRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length)
 #endif
 {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     return buffer.map(0, length, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
+    #else
+    static_cast<void>(length);
+    return &buffer == &_indexBuffer ? _indexBufferData : _vertexBufferData;
+    #endif
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
 inline void AbstractTextRenderer::bufferUnmapImplementation(Buffer& buffer)
 #else
 void AbstractTextRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
 #endif
 {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     buffer.unmap();
+    #else
+    buffer.setSubData(0, &buffer == &_indexBuffer ? _indexBufferData : _vertexBufferData);
+    #endif
 }
 
 AbstractTextRenderer::AbstractTextRenderer(AbstractFont& font, const GlyphCache& cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
-    #elif defined(MAGNUM_TARGET_GLES2)
+    #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
         bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationRange;
     } else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
@@ -278,7 +287,10 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
     const UnsignedInt indexCount = glyphCount*6;
 
     /* Allocate vertex buffer, reset vertex count */
-    _vertexBuffer.setData(vertexCount*sizeof(Vertex), nullptr, vertexBufferUsage);
+    _vertexBuffer.setData({nullptr, vertexCount*sizeof(Vertex)}, vertexBufferUsage);
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _vertexBufferData = Containers::Array<UnsignedByte>(vertexCount*sizeof(Vertex));
+    #endif
     _mesh.setVertexCount(0);
 
     /* Allocate index buffer, reset index count and reconfigure buffer binding */
@@ -294,7 +306,10 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
         indexType = Mesh::IndexType::UnsignedInt;
         indicesSize = indexCount*sizeof(UnsignedInt);
     }
-    _indexBuffer.setData(indicesSize, nullptr, indexBufferUsage);
+    _indexBuffer.setData({nullptr, indicesSize}, indexBufferUsage);
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _indexBufferData = Containers::Array<UnsignedByte>(indicesSize);
+    #endif
     _mesh.setIndexCount(0)
         .setIndexBuffer(_indexBuffer, 0, indexType, 0, vertexCount);
 
@@ -359,7 +374,9 @@ void AbstractTextRenderer::render(const std::string& text) {
     delete layouter;
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_TEXT_EXPORT TextRenderer<2>;
 template class MAGNUM_TEXT_EXPORT TextRenderer<3>;
+#endif
 
 }}

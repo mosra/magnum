@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::AbstractXApplication
+ * @brief Class @ref Magnum::Platform::AbstractXApplication
  */
 
 #include <Containers/EnumSet.h>
@@ -40,7 +40,6 @@
 #undef Always
 
 #include "Math/Vector2.h"
-#include "AbstractContextHandler.h"
 
 namespace Magnum {
 
@@ -48,11 +47,17 @@ class Context;
 
 namespace Platform {
 
+namespace Implementation {
+    template<class, class, class> class AbstractContextHandler;
+}
+
 /** @nosubgrouping
 @brief Base for X11-based applications
 
 Supports keyboard and mouse handling. See @ref platform for brief introduction.
-@note Not meant to be used directly, see subclasses.
+
+@note Not meant to be used directly, see @ref GlxApplication and
+    @ref XEglApplication subclasses.
 */
 class AbstractXApplication {
     public:
@@ -67,38 +72,6 @@ class AbstractXApplication {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
-
-        /**
-         * @brief Default constructor
-         * @param contextHandler OpenGL context handler
-         * @param arguments     Application arguments
-         * @param configuration %Configuration
-         *
-         * Creates application with default or user-specified configuration.
-         * See Configuration for more information. The program exits if the
-         * context cannot be created, see below for an alternative.
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
-        #endif
-
-        /**
-         * @brief Constructor
-         * @param contextHandler OpenGL context handler
-         * @param arguments     Application arguments
-         *
-         * Unlike above, the context is not created and must be created later
-         * with createContext() or tryCreateContext().
-         */
-        #ifndef CORRADE_GCC45_COMPATIBILITY
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
-        #else
-        explicit AbstractXApplication(AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, void*);
-        #endif
 
         /**
          * @brief Execute main loop
@@ -131,7 +104,7 @@ class AbstractXApplication {
         virtual void drawEvent() = 0;
 
         /** @copydoc GlutApplication::swapBuffers() */
-        void swapBuffers() { contextHandler->swapBuffers(); }
+        void swapBuffers();
 
         /** @copydoc GlutApplication::redraw() */
         void redraw() { flags |= Flag::Redraw; }
@@ -161,6 +134,22 @@ class AbstractXApplication {
 
         /*@}*/
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        /* These two are split to avoid "invalid use of incomplete type" when
+           using default argument for configuration */
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
+
+        #ifndef CORRADE_GCC45_COMPATIBILITY
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
+        #else
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, void*);
+        #endif
+
     private:
         enum class Flag: unsigned int {
             Redraw = 1 << 0,
@@ -174,7 +163,7 @@ class AbstractXApplication {
         Window window;
         Atom deleteWindow;
 
-        AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
+        Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
 
         Context* c;
 
@@ -261,9 +250,31 @@ class AbstractXApplication::InputEvent {
             Alt = Mod1Mask,             /**< Alt */
             AltGr = Mod5Mask,           /**< AltGr */
 
-            LeftButton = Button1Mask,   /**< Left mouse button */
-            MiddleButton = Button2Mask, /**< Middle mouse button */
-            RightButton = Button3Mask,  /**< Right mouse button */
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * @copybrief Button::Left
+             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Left "Button::Left"
+             *      instead.
+             */
+            LeftButton = Button1Mask,
+
+            /**
+             * @copybrief Button::Middle
+             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Middle "Button::Middle"
+             *      instead.
+             */
+            MiddleButton = Button2Mask,
+
+            /**
+             * @copybrief Button::Right
+             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Right "Button::Right"
+             *      instead.
+             */
+            RightButton = Button3Mask,
+            #endif
 
             CapsLock = LockMask,        /**< Caps lock */
             NumLock = Mod2Mask          /**< Num lock */
@@ -276,6 +287,24 @@ class AbstractXApplication::InputEvent {
          */
         typedef Containers::EnumSet<Modifier, unsigned int> Modifiers;
 
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref Buttons, @ref buttons()
+         */
+        enum class Button: unsigned int {
+            Left = Button1Mask,     /**< Left button */
+            Middle = Button2Mask,   /**< Middle button */
+            Right = Button3Mask     /**< Right button */
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button, unsigned int> Buttons;
+
         /** @copydoc GlutApplication::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
@@ -284,6 +313,9 @@ class AbstractXApplication::InputEvent {
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
+
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() const { return Button(static_cast<unsigned int>(_modifiers)); }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -306,6 +338,7 @@ AbstractXApplication::InputEvent::~InputEvent() = default;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
 
 /**
 @brief Key event

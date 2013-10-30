@@ -138,6 +138,15 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         Vector2<T> perpendicular() const { return {-y(), x()}; }
 
+        /**
+         * @brief Aspect ratio
+         *
+         * Returns quotient of the two elements. @f[
+         *      a = \frac{v_x}{v_y}
+         * @f]
+         */
+        T aspectRatio() const { return x()/y(); }
+
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 };
 
@@ -146,6 +155,11 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, Vector2)
 /** @debugoperator{Magnum::Math::Vector2} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector2<T>& value) {
     return debug << static_cast<const Vector<2, T>&>(value);
+}
+
+namespace Implementation {
+    template<std::size_t, class> struct TypeForSize;
+    template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
 }
 
 }}

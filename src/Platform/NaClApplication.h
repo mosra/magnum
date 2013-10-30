@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::NaClApplication
+ * @brief Class @ref Magnum::Platform::NaClApplication
  */
 
 #include <string>
@@ -53,21 +53,30 @@ namespace Magnum { namespace Platform {
 @brief NaCl application
 
 Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
-Supports keyboard and mouse handling. See @ref platform for brief introduction.
+Supports keyboard and mouse handling.
+
+This application library is available only in @ref CORRADE_TARGET_NACL "Native Client".
+It is built if `WITH_NACLAPPLICATION` is enabled in CMake. To use it, you need
+to request `%NaClApplication` component in CMake, add
+`${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
+you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section NaClApplication-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass must be then registered to NaCl API using
-MAGNUM_NACLAPPLICATION_MAIN() macro.
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen. The subclass must be then registered to NaCl API
+using @ref MAGNUM_NACLAPPLICATION_MAIN() macro.
 @code
-class MyApplication: public Magnum::Platform::NaClApplication {
+class MyApplication: public Platform::NaClApplication {
     // implement required methods...
 };
 MAGNUM_NACLAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 
@@ -75,26 +84,26 @@ to simplify porting.
 
 You need to provide HTML markup for your application. Template one is below,
 you can modify it to your liking. The markup references two files,
-`NaClApplication.js` and `NaClApplication.css`, both are in `Platform/`
+`NaClApplication.js` and `WebApplication.css`, both are in `Platform/`
 directory in the source tree and are also installed into `share/magnum/` inside
-your NaCl toolchain.
+your NaCl toolchain. Change `&lt;application&gt;` to name of your executable.
 @code
 <!DOCTYPE html>
-<html>
-<head>
-<title>Magnum NaCl Application</title>
-<meta charset="utf-8" />
-<link rel="stylesheet" href="NaClApplication.css" />
-</head>
-<body>
-<h1>Magnum NaCl Application</h1>
-<div id="listener">
-<script type="text/javascript" src="NaClApplication.js"></script>
-<embed id="module" type="application/x-nacl" src="application.nmf" />
-<div id="status">Initialization...</div>
-<div id="statusDescription"></div>
-</div>
-</body>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Magnum NaCl Application</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="WebApplication.css" />
+  </head>
+  <body>
+    <h1>Magnum NaCl Application</h1>
+    <div id="listener">
+      <embed id="module" type="application/x-nacl" src="<application>.nmf" />
+      <div id="status">Initialization...</div>
+      <div id="statusDescription" />
+      <script src="NaClApplication.js"></script>
+    </div>
+  </body>
 </html>
 @endcode
 
@@ -106,12 +115,12 @@ The CSS file contains rudimentary style to avoid eye bleeding.
 
 The `&lt;embed&gt;` file references NMF file which you need to provide too. If
 you target @ref CORRADE_TARGET_NACL_NEWLIB "newlib", the file is pretty simple,
-for example:
+for example (change `&lt;application&gt;` to name of your executable):
 @code
 {
     "program": {
-        "x86-32": {"url": "application-x86-32.nexe"},
-        "x86-64": {"url": "application-x86-64.nexe"}
+        "x86-32": {"url": "<application>-x86-32.nexe"},
+        "x86-64": {"url": "<application>-x86-64.nexe"}
     }
 }
 @endcode
@@ -265,12 +274,11 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         struct ConsoleDebugOutput;
 
         enum class Flag: UnsignedByte {
-            ViewportUpdated = 1 << 0,
-            SwapInProgress = 1 << 1,
-            Redraw = 1 << 2,
-            FullscreenSwitchInProgress = 1 << 3,
-            WillBeFullscreen = 1 << 4,
-            MouseLocked = 1 << 5
+            SwapInProgress = 1 << 0,
+            Redraw = 1 << 1,
+            FullscreenSwitchInProgress = 1 << 2,
+            WillBeFullscreen = 1 << 3,
+            MouseLocked = 1 << 4
         };
         typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
 
@@ -376,9 +384,31 @@ class NaClApplication::InputEvent {
             Alt = PP_INPUTEVENT_MODIFIER_ALTKEY,        /**< Alt */
             Meta = PP_INPUTEVENT_MODIFIER_METAKEY,      /**< Meta */
 
-            LeftButton = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,     /**< Left mouse button */
-            MiddleButton = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN, /**< Middle mouse button */
-            RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,   /**< Right mouse button */
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * @copybrief Button::Left
+             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Left "Button::Left"
+             *      instead.
+             */
+            LeftButton = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,
+
+            /**
+             * @copybrief Button::Middle
+             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Middle "Button::Middle"
+             *      instead.
+             */
+            MiddleButton = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN,
+
+            /**
+             * @copybrief Button::Right
+             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
+             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Right "Button::Right"
+             *      instead.
+             */
+            RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,
+            #endif
 
             CapsLock = PP_INPUTEVENT_MODIFIER_CAPSLOCKKEY,  /**< Caps lock */
             NumLock = PP_INPUTEVENT_MODIFIER_NUMLOCKKEY     /**< Num lock */
@@ -391,8 +421,29 @@ class NaClApplication::InputEvent {
          */
         typedef Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
 
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref Buttons, @ref buttons()
+         */
+        enum class Button: std::uint32_t {
+            Left = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,       /**< Left button */
+            Middle = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN,   /**< Middle button */
+            Right = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN      /**< Right button */
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button, std::uint32_t> Buttons;
+
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
+
+        /** @brief Mouse buttons */
+        constexpr Buttons buttons() const { return Buttons(_modifiers); }
 
         /**
          * @brief Set event as accepted
@@ -625,6 +676,7 @@ typedef NaClApplication Application;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Buttons)
 
 /* Implementations for inline functions with unused parameters */
 inline void NaClApplication::keyPressEvent(KeyEvent&) {}

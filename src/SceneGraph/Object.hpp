@@ -92,8 +92,8 @@ template<class Transformation> Object<Transformation>& Object<Transformation>::s
 template<class Transformation> Object<Transformation>& Object<Transformation>::setParentKeepTransformation(Object<Transformation>* parent) {
     CORRADE_ASSERT(scene() == parent->scene(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene", *this);
 
-    const auto transformation = Transformation::compose(
-        Transformation::inverted(parent->absoluteTransformation()), absoluteTransformation());
+    const auto transformation = Implementation::Transformation<Transformation>::compose(
+        Implementation::Transformation<Transformation>::inverted(parent->absoluteTransformation()), absoluteTransformation());
     setParent(parent);
     Transformation::setTransformation(transformation);
 
@@ -102,7 +102,7 @@ template<class Transformation> Object<Transformation>& Object<Transformation>::s
 
 template<class Transformation> typename Transformation::DataType Object<Transformation>::absoluteTransformation() const {
     if(!parent()) return Transformation::transformation();
-    return Transformation::compose(parent()->absoluteTransformation(), Transformation::transformation());
+    return Implementation::Transformation<Transformation>::compose(parent()->absoluteTransformation(), Transformation::transformation());
 }
 
 template<class Transformation> void Object<Transformation>::setDirty() {
@@ -154,7 +154,7 @@ template<class Transformation> void Object<Transformation>::setClean() {
         objects.pop();
 
         /* Compose transformation and clean object */
-        absoluteTransformation = Transformation::compose(absoluteTransformation, o->transformation());
+        absoluteTransformation = Implementation::Transformation<Transformation>::compose(absoluteTransformation, o->transformation());
         CORRADE_INTERNAL_ASSERT(o->isDirty());
         o->setClean(absoluteTransformation);
         CORRADE_ASSERT(!o->isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
@@ -172,10 +172,10 @@ template<class Transformation> auto Object<Transformation>::doTransformationMatr
 }
 
 template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Transformation::fromMatrix(initialTransformationMatrix));
+    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Implementation::Transformation<Transformation>::fromMatrix(initialTransformationMatrix));
     std::vector<MatrixType> transformationMatrices(transformations.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
-        transformationMatrices[i] = Transformation::toMatrix(transformations[i]);
+        transformationMatrices[i] = Implementation::Transformation<Transformation>::toMatrix(transformations[i]);
 
     return transformationMatrices;
 }
@@ -324,16 +324,16 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
         if(!parent) {
             CORRADE_INTERNAL_ASSERT(o->isScene());
             return (jointTransformations[joint] =
-                Transformation::compose(initialTransformation, jointTransformations[joint]));
+                Implementation::Transformation<Transformation>::compose(initialTransformation, jointTransformations[joint]));
 
         /* Joint object, compose transformation with the joint, done */
         } else if(parent->flags & Flag::Joint) {
             return (jointTransformations[joint] =
-                Transformation::compose(computeJointTransformation(jointObjects, jointTransformations, parent->counter, initialTransformation), jointTransformations[joint]));
+                Implementation::Transformation<Transformation>::compose(computeJointTransformation(jointObjects, jointTransformations, parent->counter, initialTransformation), jointTransformations[joint]));
 
         /* Else compose transformation with parent, go up the hierarchy */
         } else {
-            jointTransformations[joint] = Transformation::compose(parent->transformation(), jointTransformations[joint]);
+            jointTransformations[joint] = Implementation::Transformation<Transformation>::compose(parent->transformation(), jointTransformations[joint]);
             o = parent;
         }
     }
@@ -406,7 +406,7 @@ template<class Transformation> void Object<Transformation>::setClean(const typen
         if(i->cachedTransformations() & CachedTransformation::Absolute) {
             if(!(cached & CachedTransformation::Absolute)) {
                 cached |= CachedTransformation::Absolute;
-                matrix = Transformation::toMatrix(absoluteTransformation);
+                matrix = Implementation::Transformation<Transformation>::toMatrix(absoluteTransformation);
             }
 
             i->clean(matrix);
@@ -417,7 +417,8 @@ template<class Transformation> void Object<Transformation>::setClean(const typen
         if(i->cachedTransformations() & CachedTransformation::InvertedAbsolute) {
             if(!(cached & CachedTransformation::InvertedAbsolute)) {
                 cached |= CachedTransformation::InvertedAbsolute;
-                invertedMatrix = Transformation::toMatrix(Transformation::inverted(absoluteTransformation));
+                invertedMatrix = Implementation::Transformation<Transformation>::toMatrix(
+                    Implementation::Transformation<Transformation>::inverted(absoluteTransformation));
             }
 
             i->cleanInverted(invertedMatrix);

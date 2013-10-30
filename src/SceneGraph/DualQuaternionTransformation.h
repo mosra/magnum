@@ -46,42 +46,8 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         /** @brief Underlying transformation type */
         typedef Math::DualQuaternion<T> DataType;
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        static Math::DualQuaternion<T> fromMatrix(const Math::Matrix4<T>& matrix) {
-            CORRADE_ASSERT(matrix.isRigidTransformation(),
-                "SceneGraph::DualQuaternionTransformation::fromMatrix(): the matrix doesn't represent rigid transformation", {});
-            return Math::DualQuaternion<T>::fromMatrix(matrix);
-        }
-
-        constexpr static Math::Matrix4<T> toMatrix(const Math::DualQuaternion<T>& transformation) {
-            return transformation.toMatrix();
-        }
-
-        static Math::DualQuaternion<T> compose(const Math::DualQuaternion<T>& parent, const Math::DualQuaternion<T>& child) {
-            return parent*child;
-        }
-
-        static Math::DualQuaternion<T> inverted(const Math::DualQuaternion<T>& transformation) {
-            return transformation.invertedNormalized();
-        }
-
-        Math::DualQuaternion<T> transformation() const {
-            return _transformation;
-        }
-        #endif
-
-        /**
-         * @brief Normalize rotation part
-         * @return Reference to self (for method chaining)
-         *
-         * Normalizes the rotation part to prevent rounding errors when rotating
-         * the object subsequently.
-         * @see DualQuaternion::normalized()
-         */
-        Object<BasicDualQuaternionTransformation<T>>& normalizeRotation() {
-            setTransformation(_transformation.normalized());
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
-        }
+        /** @brief Object transformation */
+        Math::DualQuaternion<T> transformation() const { return _transformation; }
 
         /**
          * @brief Set transformation
@@ -94,14 +60,24 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized",
                 static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this));
-            setTransformationInternal(transformation);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return setTransformationInternal(transformation);
         }
 
         /** @copydoc AbstractTranslationRotationScaling3D::resetTransformation() */
         Object<BasicDualQuaternionTransformation<T>>& resetTransformation() {
-            setTransformation({});
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return setTransformationInternal({});
+        }
+
+        /**
+         * @brief Normalize rotation part
+         * @return Reference to self (for method chaining)
+         *
+         * Normalizes the rotation part to prevent rounding errors when rotating
+         * the object subsequently.
+         * @see DualQuaternion::normalized()
+         */
+        Object<BasicDualQuaternionTransformation<T>>& normalizeRotation() {
+            return setTransformationInternal(_transformation.normalized());
         }
 
         /**
@@ -117,8 +93,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized",
                 static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this));
-            transformInternal(transformation, type);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return transformInternal(transformation, type);
         }
 
         /**
@@ -126,8 +101,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * Same as calling transform() with DualQuaternion::translation().
          */
         Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::DualQuaternion<T>::translation(vector), type);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return transformInternal(Math::DualQuaternion<T>::translation(vector), type);
         }
 
         /**
@@ -142,8 +116,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          *      normalizeRotation()
          */
         Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);
-            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
+            return transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
@@ -175,7 +148,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /* No assertions fired, for internal use */
-        void setTransformationInternal(const Math::DualQuaternion<T>& transformation) {
+        Object<BasicDualQuaternionTransformation<T>>& setTransformationInternal(const Math::DualQuaternion<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -183,11 +156,13 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
                 _transformation = transformation;
                 static_cast<Object<BasicDualQuaternionTransformation<T>>*>(this)->setDirty();
             }
+
+            return static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this);
         }
 
         /* No assertions fired, for internal use */
-        void transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
-            setTransformation(type == TransformationType::Global ?
+        Object<BasicDualQuaternionTransformation<T>>& transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
+            return setTransformationInternal(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
 
@@ -202,6 +177,30 @@ template<class T> inline BasicDualQuaternionTransformation<T>::BasicDualQuaterni
 @see @ref DualComplexTransformation
 */
 typedef BasicDualQuaternionTransformation<Float> DualQuaternionTransformation;
+
+namespace Implementation {
+
+template<class T> struct Transformation<BasicDualQuaternionTransformation<T>> {
+    static Math::DualQuaternion<T> fromMatrix(const Math::Matrix4<T>& matrix) {
+        CORRADE_ASSERT(matrix.isRigidTransformation(),
+            "SceneGraph::DualQuaternionTransformation: the matrix doesn't represent rigid transformation", {});
+        return Math::DualQuaternion<T>::fromMatrix(matrix);
+    }
+
+    constexpr static Math::Matrix4<T> toMatrix(const Math::DualQuaternion<T>& transformation) {
+        return transformation.toMatrix();
+    }
+
+    static Math::DualQuaternion<T> compose(const Math::DualQuaternion<T>& parent, const Math::DualQuaternion<T>& child) {
+        return parent*child;
+    }
+
+    static Math::DualQuaternion<T> inverted(const Math::DualQuaternion<T>& transformation) {
+        return transformation.invertedNormalized();
+    }
+};
+
+}
 
 }}
 

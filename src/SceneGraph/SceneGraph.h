@@ -98,6 +98,17 @@ typedef AbstractTransformation<2, Float> AbstractTransformation2D;
 typedef AbstractTransformation<3, Float> AbstractTransformation3D;
 #endif
 
+template<UnsignedInt, class T, class = T> class AbstractTranslation;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T, class TranslationType = T> using AbstractBasicTranslation2D = AbstractTranslation<2, T, TranslationType>;
+template<class T, class TranslationType = T> using AbstractBasicTranslation3D = AbstractTranslation<3, T, TranslationType>;
+typedef AbstractBasicTranslation2D<Float> AbstractTranslation2D;
+typedef AbstractBasicTranslation3D<Float> AbstractTranslation3D;
+#else
+typedef AbstractTranslation<2, Float> AbstractTranslation2D;
+typedef AbstractTranslation<3, Float> AbstractTranslation3D;
+#endif
+
 template<class> class AbstractBasicTranslationRotation2D;
 template<class> class AbstractBasicTranslationRotation3D;
 typedef AbstractBasicTranslationRotation2D<Float> AbstractTranslationRotation2D;
@@ -185,6 +196,21 @@ typedef BasicRigidMatrixTransformation2D<Float> RigidMatrixTransformation2D;
 typedef BasicRigidMatrixTransformation3D<Float> RigidMatrixTransformation3D;
 
 template<class Transformation> class Scene;
+
+template<UnsignedInt, class T, class = T> class TranslationTransformation;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T, class TranslationType = T> using BasicTranslationTransformation2D = TranslationTransformation<2, T, TranslationType>;
+template<class T, class TranslationType = T> using BasicTranslationTransformation3D = TranslationTransformation<3, T, TranslationType>;
+typedef BasicTranslationTransformation2D<Float> TranslationTransformation2D;
+typedef BasicTranslationTransformation3D<Float> TranslationTransformation3D;
+#else
+typedef TranslationTransformation<2, Float> TranslationTransformation2D;
+typedef TranslationTransformation<3, Float> TranslationTransformation3D;
+#endif
+
+namespace Implementation {
+    template<class> struct Transformation;
+}
 
 }}
 

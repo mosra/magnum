@@ -25,47 +25,55 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::GlxApplication
+ * @brief Class @ref Magnum::Platform::GlxApplication
  */
 
-#include "AbstractXApplication.h"
-#include "GlxContextHandler.h"
+#include "Platform/AbstractXApplication.h"
 
 namespace Magnum { namespace Platform {
 
 /**
 @brief GLX application
 
-Uses GlxContextHandler. See @ref platform for brief introduction.
+Application using pure X11 and GLX. Supports keyboard and mouse handling.
+
+This application library is available on desktop OpenGL and
+@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
+depends on **X11** library and is built if `WITH_GLXAPPLICATION` is enabled in
+CMake. To use it, you need to request `%GlxApplication` component in CMake, add
+`${MAGNUM_GLXAPPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_GLXAPPLICATION_LIBRARIES}`. If no other application is requested, you
+can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section GlxApplication-usage Usage
 
-You need to implement at least drawEvent() and viewportEvent() to be able to
-draw on the screen. The subclass can be then used directly in `main()` - see
-convenience macro MAGNUM_GLXAPPLICATION_MAIN().
+You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
+able to draw on the screen. The subclass can be then used directly in `main()`
+-- see convenience macro @ref MAGNUM_GLXAPPLICATION_MAIN().
 @code
-class MyApplication: public Magnum::Platform::GlxApplication {
+class MyApplication: public Platform::GlxApplication {
     // implement required methods...
 };
 MAGNUM_GLXAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
-        explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration()): AbstractXApplication(new GlxContextHandler, arguments, configuration) {}
+        explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
         /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
         #ifndef CORRADE_GCC45_COMPATIBILITY
-        explicit GlxApplication(const Arguments& arguments, std::nullptr_t)
+        explicit GlxApplication(const Arguments& arguments, std::nullptr_t);
         #else
-        explicit GlxApplication(const Arguments& arguments, void*)
+        explicit GlxApplication(const Arguments& arguments, void*);
         #endif
-            : AbstractXApplication(new GlxContextHandler, arguments, nullptr) {}
 
     protected:
         /* Nobody will need to have (and delete) GlxApplication*, thus this is

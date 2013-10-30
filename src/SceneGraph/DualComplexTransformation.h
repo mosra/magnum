@@ -46,40 +46,8 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         /** @brief Transformation type */
         typedef Math::DualComplex<T> DataType;
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        static Math::DualComplex<T> fromMatrix(const Math::Matrix3<T>& matrix) {
-            return Math::DualComplex<T>::fromMatrix(matrix);
-        }
-
-        constexpr static Math::Matrix3<T> toMatrix(const Math::DualComplex<T>& transformation) {
-            return transformation.toMatrix();
-        }
-
-        static Math::DualComplex<T> compose(const Math::DualComplex<T>& parent, const Math::DualComplex<T>& child) {
-            return parent*child;
-        }
-
-        static Math::DualComplex<T> inverted(const Math::DualComplex<T>& transformation) {
-            return transformation.invertedNormalized();
-        }
-
-        Math::DualComplex<T> transformation() const {
-            return _transformation;
-        }
-        #endif
-
-        /**
-         * @brief Normalize rotation part
-         * @return Reference to self (for method chaining)
-         *
-         * Normalizes the rotation part to prevent rounding errors when rotating
-         * the object subsequently.
-         * @see DualComplex::normalized()
-         */
-        Object<BasicDualComplexTransformation<T>>& normalizeRotation() {
-            setTransformationInternal(_transformation.normalized());
-            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
-        }
+        /** @brief Object transformation */
+        Math::DualComplex<T> transformation() const { return _transformation; }
 
         /**
          * @brief Set transformation
@@ -92,14 +60,24 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized",
                 static_cast<Object<BasicDualComplexTransformation<T>>&>(*this));
-            setTransformationInternal(transformation);
-            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
+            return setTransformationInternal(transformation);
         }
 
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
         Object<BasicDualComplexTransformation<T>>& resetTransformation() {
-            setTransformationInternal({});
-            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
+            return setTransformationInternal({});
+        }
+
+        /**
+         * @brief Normalize rotation part
+         * @return Reference to self (for method chaining)
+         *
+         * Normalizes the rotation part to prevent rounding errors when rotating
+         * the object subsequently.
+         * @see DualComplex::normalized()
+         */
+        Object<BasicDualComplexTransformation<T>>& normalizeRotation() {
+            return setTransformationInternal(_transformation.normalized());
         }
 
         /**
@@ -115,8 +93,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized",
                 static_cast<Object<BasicDualComplexTransformation<T>>&>(*this));
-            transformInternal(transformation, type);
-            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
+            return transformInternal(transformation, type);
         }
 
         /**
@@ -124,8 +101,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
          * Same as calling transform() with DualComplex::translation().
          */
         Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::DualComplex<T>::translation(vector), type);
-            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
+            return transformInternal(Math::DualComplex<T>::translation(vector), type);
         }
 
         /**
@@ -138,8 +114,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
          * @see normalizeRotation()
          */
         Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            transformInternal(Math::DualComplex<T>::rotation(angle), type);
-            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
+            return transformInternal(Math::DualComplex<T>::rotation(angle), type);
         }
 
         /**
@@ -169,7 +144,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         }
 
         /* No assertions fired, for internal use */
-        void setTransformationInternal(const Math::DualComplex<T>& transformation) {
+        Object<BasicDualComplexTransformation<T>>& setTransformationInternal(const Math::DualComplex<T>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -177,11 +152,13 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
                 _transformation = transformation;
                 static_cast<Object<BasicDualComplexTransformation<T>>*>(this)->setDirty();
             }
+
+            return static_cast<Object<BasicDualComplexTransformation<T>>&>(*this);
         }
 
         /* No assertions fired, for internal use */
-        void transformInternal(const Math::DualComplex<T>& transformation, TransformationType type) {
-            setTransformation(type == TransformationType::Global ?
+        Object<BasicDualComplexTransformation<T>>& transformInternal(const Math::DualComplex<T>& transformation, TransformationType type) {
+            return setTransformationInternal(type == TransformationType::Global ?
                 transformation*_transformation : _transformation*transformation);
         }
 
@@ -196,6 +173,28 @@ template<class T> inline BasicDualComplexTransformation<T>::BasicDualComplexTran
 @see @ref DualQuaternionTransformation
 */
 typedef BasicDualComplexTransformation<Float> DualComplexTransformation;
+
+namespace Implementation {
+
+template<class T> struct Transformation<BasicDualComplexTransformation<T>> {
+    static Math::DualComplex<T> fromMatrix(const Math::Matrix3<T>& matrix) {
+        return Math::DualComplex<T>::fromMatrix(matrix);
+    }
+
+    constexpr static Math::Matrix3<T> toMatrix(const Math::DualComplex<T>& transformation) {
+        return transformation.toMatrix();
+    }
+
+    static Math::DualComplex<T> compose(const Math::DualComplex<T>& parent, const Math::DualComplex<T>& child) {
+        return parent*child;
+    }
+
+    static Math::DualComplex<T> inverted(const Math::DualComplex<T>& transformation) {
+        return transformation.invertedNormalized();
+    }
+};
+
+}
 
 }}
 

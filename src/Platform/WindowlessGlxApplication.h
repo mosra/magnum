@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Platform::WindowlessGlxApplication
+ * @brief Class @ref Magnum::Platform::WindowlessGlxApplication
  */
 
 #include <utility>
@@ -39,27 +39,37 @@
 #undef Always
 
 #include "Magnum.h"
-#include "Platform/AbstractContextHandler.h"
 
 namespace Magnum { namespace Platform {
 
 /**
 @brief Windowless GLX application
 
-See @ref platform for brief introduction.
+Application for offscreen rendering using pure X11 and GLX.
+
+This application library is available on desktop OpenGL and
+@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
+depends on **X11** library and is built if `WITH_WINDOWLESSGLXAPPLICATION` is
+enabled in CMake. To use it, you need to request `%WindowlessGlxApplication`
+component in CMake, add `${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to
+include path and link to `${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no
+other windowless application is requested, you can also use generic
+`${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
+`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
+@ref building, @ref cmake and @ref platform for more information.
 
 @section WindowlessGlxApplication-usage Usage
 
-Place your code into exec(). The subclass can be then used directly in
-`main()` -- see convenience macro MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
+Place your code into @ref exec(). The subclass can be then used directly in
+`main()` -- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
 @code
-class MyApplication: public Magnum::Platform::WindowlessGlxApplication {
+class MyApplication: public Platform::WindowlessGlxApplication {
     // implement required methods...
 };
 MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(MyApplication)
 @endcode
 
-If no other application header is included this class is also aliased to
+If no other application header is included, this class is also aliased to
 `Platform::WindowlessApplication` and the macro is aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
 */

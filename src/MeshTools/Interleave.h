@@ -64,7 +64,7 @@ class Interleave {
             operator()(attributes...);
 
             mesh.setVertexCount(_attributeCount);
-            buffer.setData(_attributeCount*_stride, _data, usage);
+            buffer.setData({_data, _attributeCount*_stride}, usage);
 
             delete[] _data;
         }

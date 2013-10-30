@@ -23,14 +23,9 @@
 */
 
 namespace Magnum {
+
 /** @page building Downloading and building
 @brief Guide how to download and build %Magnum on different platforms.
-
-%Magnum can be downloaded from GitHub and built either
-@ref building-compilation "manually" or using already prepared packaging files,
-currently only @ref building-arch "ArchLinux PKGBUILDs". Guide how to
-crosscompile for @ref building-win "Windows" and
-@ref building-nacl "Google Chrome Native Client" is also available.
 
 @tableofcontents
 
@@ -44,6 +39,8 @@ Minimal set of tools and libraries required for building is:
 - **Corrade** - Plugin management and utility library. See
   @ref building-corrade "Corrade download and installation guide" for more
   information.
+- **OpenAL** - By default needed by Audio library, but you can disable building
+  of it by setting `WITH_AUDIO` to `OFF` (see below).
 
 @section building-download Downloading the sources
 
@@ -53,15 +50,11 @@ compressed archive or use the command line:
 
     git clone git://github.com/mosra/magnum.git
 
-If you need toolchains for crosscompiling, run also the following commands, or,
-if you build from source archive, download snapshot of toolchains repository
-from https://github.com/mosra/toolchains and put them in `toolchains/`
-subdirectory.
-
-    git submodule init
-    git submodule update
-
 @section building-compilation Compilation, installation
+
+Relevant information about CMake usage was described in
+@ref building-corrade "Corrade download and installation guide", this guide is
+assuming you have at least basic knowledge of CMake.
 
 @subsection building-linux Via command-line (on Linux/Unix)
 
@@ -75,12 +68,7 @@ can be built and installed using these four commands:
     make
     make install
 
-The library provides a lot of CMake options (described in sections later). They
-can be passed to CMake either as `-Dname=value` parameters on command-line
-(like above) or set conveniently using `cmake-gui`:
-
-    cd build
-    cmake-gui .
+See @ref building-features "below" for additional configuration options.
 
 @subsection building-windows Using QtCreator and CMake GUI (on Windows)
 
@@ -96,14 +84,11 @@ and you won't need to explicitly specify path to each one.
 
 Then just open project's root `CMakeLists.txt` file within QtCreator. It then
 asks you where to create build directory, allows you to specify initial CMake
-parameters and then you can just press Configure and everything should be ready
-to be built. You might need to set some CMake parameters before configuring,
-they can be set with `-Dname=value`. See below for more information.
+parameters and then you can just press *Configure* and everything is be ready
+to be built.
 
-After the initial import you might want to reconfigure some CMake variables
-(more information below). Start CMake GUI, point it to the recently created
-build dir, modify the variables and press Generate. QtCreator will detect the
-changes and reparse the project accordingly.
+After the initial import you might want to reconfigure some CMake variables,
+see @ref building-features "below" for more information.
 
 For most convenient usage it's best to set `CMAKE_INSTALL_PREFIX` to directory
 where MinGW is installed (e.g. `C:/MinGW/`) and add `C:/MinGW/bin` and
@@ -112,7 +97,7 @@ within QtCreator by adding new `make install` build rule.
 
 @subsubsection building-windows-troubleshooting Windows troubleshooting
 
-If CMake isn't able to find dependencies (e.g. Corrade is not found) and you
+If CMake isn't able to find dependencies (e.g. %Corrade is not found) and you
 have installed them to MinGW directory, point to `CMAKE_FIND_ROOT_PATH` to
 MinGW installation prefix, e.g. specify `-DCMAKE_FIND_ROOT_PATH=C:/MinGW/`
 CMake parameter.
@@ -131,6 +116,12 @@ Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 %Magnum by default does not install `FindMagnum.cmake`, as you should bundle
 the module with your code instead of depending on it being in system location.
 You can install it by enabling `WITH_FIND_MODULE`.
+
+The library is constantly evolving and thus some APIs are deprecated and then
+later removed in favor of better ones. To preserve backwards compatibility,
+%Magnum is by default built with all deprecated APIs. However, to make your
+code more robust and future-proof, it's recommended to build the library with
+`BUILD_DEPRECATED` disabled.
 
 By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
 parameters you can target other platforms. Note that some features are
@@ -151,7 +142,7 @@ By default the engine is built with everything except application libraries
 (see below). Using `WITH_*` CMake parameters you can specify which parts will
 be built and which not:
 
- - `WITH_AUDIO` - Audio library. Requires **OpenAL** library.
+ - `WITH_AUDIO` - Audio library.
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
    Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
@@ -177,44 +168,52 @@ None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
 platform best:
 
-- `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication",
-  available only if targeting desktop OpenGL. Requires **GLUT** library.
-- `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication".
-  Requires **X11** and **GLX** libraries.
-- `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication",
-  available only if targeting Google Chrome Native Client (see below).
-- `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application".
-  Requires **SDL2** library.
-- `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication",
-  available only if targeting OpenGL ES (see above). Requires **X11** and **EGL**
-  libraries.
-- `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication".
-  Requires **X11** and **GLX** libraries.
+- `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
+- `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
+- `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
+- `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
+- `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
+- `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+- `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
+
+Note that [each namespace](namespaces.html) and all @ref Platform libraries
+contain more detailed information about dependencies, availability on
+particular platform and also guide how to enable given library in build and use
+it with CMake.
 
 @subsection building-tests Building and running unit tests
 
 If you want to build also unit tests (which are not built by default), enable
-`BUILD_TEST` in CMake. Unit tests use Corrade's @ref Corrade::TestSuite
+`BUILD_TESTS` in CMake. Unit tests use Corrade's @ref Corrade::TestSuite
 "TestSuite" framework and can be run either manually (the binaries are located
 in `Test/` subdirectories of build directory) or using
 
     ctest --output-on-failure
 
 in build directory. On Windows the tests require the library to be installed
-with DLLs accessible through `PATH`. See above for more information.
+with DLLs accessible through `PATH`. See
+@ref building-windows "above Windows documentation" for more information.
+
+Platforms which have windowless context creation implemented (currently only
+desktop Linux) can build also tests for OpenGL functionality. You can enable
+them with `BUILD_GL_TESTS`.
 
 @subsection building-doc Building documentation
 
 The documentation (which you are currently reading) is written in **Doxygen**
 (version 1.8 with Markdown support is used, but older versions should do good
-job too) and additionally uses **Graphviz** for class diagrams and  **TeX**
-for math formulas. The documentation can be build by running
+job too) and additionally uses **TeX** for math formulas. The documentation can
+be build by running
 
     doxygen
 
 in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
-if it doesn't exist yet.
+if it doesn't exist yet. If %Corrade with generated documentation is placed in
+`corrade` directory next to `magnum`, the documentation will be crosslinked
+with %Corrade's one. If related projects (`magnum-plugins`, `magnum-integration`
+and `magnum-examples`, see below) are places along these, their documentation
+will be also included in generated output.
 
 @section building-related Related projects
 
@@ -225,7 +224,9 @@ formats are maintained in @ref building-plugins "Plugins repository",
 Integration with various external math and physics libraries is provided by
 @ref building-integration "Integration library".
 
-@section building-arch Building ArchLinux packages
+@section building-packages Prepared packages
+
+@subsection building-packages-arch ArchLinux packages
 
 In `package/archlinux` directory is currently one PKGBUILD for Git development
 build. The package is also in AUR under the same name.
@@ -242,7 +243,22 @@ If you want to build with another compiler (e.g. Clang), run makepkg this way:
 Development PKGBUILDs can detect when Clang is used and remove unsupported CXX
 flags.
 
-@section building-win Crosscompiling for Windows using MinGW
+@section building-crosscompiling Crosscompiling
+
+For crosscompiling you need to have *both* target and native version of
+%Corrade installed, because %Corrade needs to run `corrade-rc` utility on the
+host system as part of the build process. If native version of `corrade-rc` is
+not found on the system, crosscompilation will fail.
+
+You also need to have the toolchains submodule updated. Either run the
+following commands, or, if you build from source archive, download snapshot of
+toolchains repository from https://github.com/mosra/toolchains and put the
+contents in `toolchains/` subdirectory.
+
+    git submodule init
+    git submodule update
+
+@subsection building-cross-win Crosscompiling for Windows using MinGW
 
 @note This guide is tailored mainly for crosscompiling from ArchLinux. For
 this system there is also prepared `mingw32-magnum` development package in
@@ -255,10 +271,9 @@ You will need MinGW32 versions of the compiler and all dependent libraries
 - `mingw32-runtime`
 - `mingw32-corrade`
 
-Make sure you have `toolchains` submodule updated, as
-@ref building-download "explained above". Then create build directory and run
-cmake and make. You may need to modify the `basic-mingw32.cmake` file and
-`CMAKE_INSTALL_PREFIX` to suit your distribution filesystem hierarchy.
+Then create build directory and run cmake and make. You may need to modify the
+`basic-mingw32.cmake` file and `CMAKE_INSTALL_PREFIX` to suit your distribution
+filesystem hierarchy.
 
     mkdir build-win
     cd build-win
@@ -270,20 +285,18 @@ cmake and make. You may need to modify the `basic-mingw32.cmake` file and
 Then you can install the package using `make install` to make it available for
 depending projects.
 
-@section building-nacl Compiling for Google Chrome Native Client
+@subsection building-cross-nacl Crosscompiling for Google Chrome Native Client
 
 You will need [Native Client SDK](https://developers.google.com/native-client/beta/sdk/download).
 Tested version is `pepper_22`.
 
-Make sure you have `toolchains` submodule updated, as
-@ref building-download "explained above". You can choose from either `glibc` or
-`newlib` toolchain. `Newlib` supports only static linking, thus `BUILD_STATIC`
-is always enabled. Don't forget to adapt `NACL_PREFIX` variable in
-`generic/NaCl-*-x86-32.cmake` and `generic/NaCl-*-x86-64.cmake` to path where
-your SDK is installed. Default is `/usr/nacl`. You may need to adapt also
-`NACL_TOOLCHAIN_PATH` so CMake is able to find the compiler. NaCl currently
-supports only OpenGL ES 2, thus `TARGET_GLES` and `TARGET_GLES2` is always
-enabled.
+You can choose from either `glibc` or `newlib` toolchain. `Newlib` supports
+only static linking, thus `BUILD_STATIC` is always enabled. Don't forget to
+adapt `NACL_PREFIX` variable in `generic/NaCl-*-x86-32.cmake` and
+`generic/NaCl-*-x86-64.cmake` to path where your SDK is installed. Default is
+`/usr/nacl`. You may need to adapt also `NACL_TOOLCHAIN_PATH` so CMake is able
+to find the compiler. NaCl currently supports only OpenGL ES 2, thus
+`TARGET_GLES` and `TARGET_GLES2` is always enabled.
 
 Then create build directories for x86-32 and x86-64 and run cmake and make in
 them. The toolchains need access to its platform file, so be sure to properly
@@ -318,5 +331,38 @@ for depending projects. The headers are shared by both versions.
 For ArchLinux there are also prepared package files in root, named
 `PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`.
 
+@subsection building-cross-emscripten Crosscompiling for Emscripten
+
+You will need [Emscripten](https://github.com/kripken/emscripten/wiki/Tutorial)
+installed and configured.
+
+Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in `generic/Emscripten.cmake`
+to path where Emscripten is installed. Default is `/usr/emscripten`. Emscripten
+supports dynamic only to simplify porting and they are generally slower, thus
+`BUILD_STATIC` is implicitly enabled.
+
+Then create build directory and run cmake and make in it. The toolchain needs
+access to its platform file, so be sure to properly set **absolute** path to
+`modules/` directory containing `Platform/Emscripten.cmake`. Default is
+`/usr/emscripten`. Also set `CMAKE_INSTALL_PREFIX` to value which is contained
+in `CMAKE_FIND_ROOT_PATH` in toolchain file.
+
+    mkdir -p build-emscripten
+    cd build-emscripten
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
+        -DWITH_SDL2APPLICATION=ON
+    make
+
+Then you can install the library using `make install` to make it available for
+depending projects.
+
+If you have Node.js installed, you can also build and run unit tests using
+`ctest`. See `BUILD_TESTS` above.
+
 */
+
 }

@@ -69,6 +69,7 @@ class Vector3Test: public Corrade::TestSuite::Tester {
         void scales();
         void twoComponent();
 
+        void swizzleType();
         void debug();
         void configuration();
 };
@@ -176,16 +177,25 @@ void Vector3Test::convert() {
 void Vector3Test::access() {
     Vector3 vec(1.0f, -2.0f, 5.0f);
     CORRADE_COMPARE(vec.x(), 1.0f);
+    CORRADE_COMPARE(vec.r(), 1.0f);
     CORRADE_COMPARE(vec.y(), -2.0f);
+    CORRADE_COMPARE(vec.g(), -2.0f);
     CORRADE_COMPARE(vec.z(), 5.0f);
+    CORRADE_COMPARE(vec.b(), 5.0f);
 
     constexpr Vector3 cvec(1.0f, -2.0f, 5.0f);
     constexpr Float x = cvec.x();
+    constexpr Float r = cvec.r();
     constexpr Float y = cvec.y();
+    constexpr Float g = cvec.g();
     constexpr Float z = cvec.z();
+    constexpr Float b = cvec.b();
     CORRADE_COMPARE(x, 1.0f);
+    CORRADE_COMPARE(r, 1.0f);
     CORRADE_COMPARE(y, -2.0f);
+    CORRADE_COMPARE(g, -2.0f);
     CORRADE_COMPARE(z, 5.0f);
+    CORRADE_COMPARE(b, 5.0f);
 }
 
 void Vector3Test::cross() {
@@ -222,6 +232,12 @@ void Vector3Test::twoComponent() {
     constexpr Float d = b.xy().y();
     CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
     CORRADE_COMPARE(d, 2.0f);
+}
+
+void Vector3Test::swizzleType() {
+    constexpr Vector<4, Int> orig;
+    constexpr auto b = swizzle<'y', 'z', 'a'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(b), const Vector3i>::value));
 }
 
 void Vector3Test::debug() {

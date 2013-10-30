@@ -28,11 +28,7 @@
  * @brief Class Magnum::SceneGraph::AbstractTransformation, alias Magnum::SceneGraph::AbstractBasicTransformation2D, Magnum::SceneGraph::AbstractBasicTransformation3D, typedef Magnum::SceneGraph::AbstractTransformation2D, Magnum::SceneGraph::AbstractTransformation3D, enum Magnum::SceneGraph::TransformationType
  */
 
-#include <vector>
-
-#include "DimensionTraits.h"
-#include "SceneGraph.h"
-
+#include "SceneGraph/SceneGraph.h"
 #include "SceneGraph/magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
@@ -40,15 +36,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for transformations
 
-Provides transformation implementation for Object instances. See @ref scenegraph
-for introduction.
-
-@section AbstractTransformation-subclassing Subclassing
-
-When subclassing, you have to:
-
-- Implement all members listed in **Subclass implementation** group above
-- Provide implicit (parameterless) constructor
+Provides transformation implementation for @ref Object instances.
 
 @see @ref scenegraph, @ref AbstractBasicTransformation2D,
     @ref AbstractBasicTransformation3D, @ref AbstractTransformation2D,
@@ -63,76 +51,6 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
         static const UnsignedInt Dimensions = dimensions;
 
         explicit AbstractTransformation();
-
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        /**
-         * @{ @name Subclass implementation
-         *
-         * These members must be defined by the implementation.
-         */
-
-        /**
-         * @todo Common way to call setClean() on the object after setting
-         *      transformation & disallowing transformation setting on scene,
-         *      so the implementer doesn't forget to do it? It could also
-         *      allow to hide Object::isScene() from unwanted publicity.
-         */
-
-        /**
-         * @brief Transformation data type
-         *
-         * The type must satisfy the following requirements:
-         *
-         * - Default constructor must create identity transformation
-         *
-         * Defined in subclasses.
-         */
-        typedef U DataType;
-
-        /**
-         * @brief Convert transformation to matrix
-         *
-         * Defined in subclasses.
-         */
-        static typename DimensionTraits<dimensions, T>::MatrixType toMatrix(const DataType& transformation);
-
-        /**
-         * @brief Convert transformation from matrix
-         *
-         * Defined in subclasses.
-         */
-        static DataType fromMatrix(const typename DimensionTraits<dimensions, T>::MatrixType& matrix);
-
-        /**
-         * @brief Compose transformations
-         *
-         * Defined in subclasses.
-         */
-        static DataType compose(const DataType& parent, const DataType& child);
-
-        /**
-         * @brief Inverted transformation
-         *
-         * Defined in subclasses.
-         */
-        static DataType inverted(const DataType& transformation);
-
-        /**
-         * @brief %Object transformation
-         *
-         * Relative to parent. Defined in subclasses.
-         */
-        DataType transformation() const;
-
-        /**
-         * @brief Absolute transformation
-         *
-         * Relative to root object. Defined in subclasses.
-         */
-        DataType absoluteTransformation() const;
-
-        /*@}*/
-        #endif
 
         /**
          * @brief Reset object transformation
@@ -198,7 +116,7 @@ Convenience alternative to <tt>%AbstractTransformation<3, T></tt>. See
 AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
     instead.
-@see @ref AbstractTransformation3D, @ref AbstractBasicTransformation3D
+@see @ref AbstractTransformation3D, @ref AbstractBasicTransformation2D
 */
 template<class T> using AbstractBasicTransformation3D = AbstractTransformation<3, T>;
 #endif

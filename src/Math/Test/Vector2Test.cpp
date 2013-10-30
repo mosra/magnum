@@ -26,7 +26,7 @@
 #include <TestSuite/Tester.h>
 #include <Utility/Configuration.h>
 
-#include "Math/Vector3.h"
+#include "Math/Vector3.h" /* Vector3 used in Vector2::cross() */
 
 struct Vec2 {
     float x, y;
@@ -67,7 +67,9 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void axes();
         void scales();
         void perpendicular();
+        void aspectRatio();
 
+        void swizzleType();
         void debug();
         void configuration();
 };
@@ -90,7 +92,9 @@ Vector2Test::Vector2Test() {
               &Vector2Test::axes,
               &Vector2Test::scales,
               &Vector2Test::perpendicular,
+              &Vector2Test::aspectRatio,
 
+              &Vector2Test::swizzleType,
               &Vector2Test::debug,
               &Vector2Test::configuration});
 }
@@ -203,6 +207,17 @@ void Vector2Test::perpendicular() {
     CORRADE_COMPARE(a.perpendicular(), Vector2(15.0f, 0.5f));
     CORRADE_COMPARE(Vector2::dot(a.perpendicular(), a), 0.0f);
     CORRADE_COMPARE(Vector2::xAxis().perpendicular(), Vector2::yAxis());
+}
+
+void Vector2Test::aspectRatio() {
+    const Vector2 a(3.0f, 4.0f);
+    CORRADE_COMPARE(a.aspectRatio(), 0.75f);
+}
+
+void Vector2Test::swizzleType() {
+    constexpr Vector<4, Int> orig;
+    constexpr auto a = swizzle<'y', 'a'>(orig);
+    CORRADE_VERIFY((std::is_same<decltype(a), const Vector2i>::value));
 }
 
 void Vector2Test::debug() {

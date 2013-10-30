@@ -20,7 +20,7 @@
 # components. The base library depends on Corrade and OpenGL libraries (or
 # OpenGL ES libraries). Additional dependencies are specified by the
 # components. The optional components are:
-#  Audio            - Audio library (depends on OpenAL library)
+#  Audio            - Audio library
 #  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
 #                     SceneGraph, Shaders and Shapes components)
 #  MeshTools        - MeshTools library
@@ -30,14 +30,13 @@
 #  Shapes           - Shapes library (depends on SceneGraph component)
 #  Text             - Text library (depends on TextureTools component)
 #  TextureTools     - TextureTools library
-#  GlutApplication  - GLUT application (depends on GLUT library)
-#  GlxApplication   - GLX application (depends on GLX and X11 libraries)
-#  NaClApplication  - NaCl application (only if targeting Google Chrome
-#                     Native Client)
-#  Sdl2Application  - SDL2 application (depends on SDL2 library)
-#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
-#  WindowlessGlxApplication - Windowless GLX application (depends on GLX
-#                     and X11 libraries)
+#  GlutApplication  - GLUT application
+#  GlxApplication   - GLX application
+#  NaClApplication  - NaCl application
+#  Sdl2Application  - SDL2 application
+#  XEglApplication  - X/EGL application
+#  WindowlessNaClApplication - Windowless NaCl application
+#  WindowlessGlxApplication - Windowless GLX application
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -52,11 +51,13 @@
 # / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
 # Features of found Magnum library are exposed in these variables:
-#  MAGNUM_BUILD_STATIC  - Defined if compiled as static libraries
-#  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
-#  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
-#  MAGNUM_TARGET_GLES3  - Defined if compiled for OpenGL ES 3.0
-#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
+#  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
+#   included
+#  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
+#  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
+#  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
+#  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0
+#  MAGNUM_TARGET_DESKTOP_GLES   - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
 #
 # Additionally these variables are defined for internal usage:
@@ -76,7 +77,7 @@
 #   installation directory
 #  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation
 #   directory
-#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR  - Audio omporter plugin
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR - Audio omporter plugin
 #   installation directory
 #  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake
 #   Find* modules
@@ -123,6 +124,10 @@ find_path(MAGNUM_INCLUDE_DIR
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
 
+string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_DEPRECATED" _BUILD_DEPRECATED)
+if(NOT _BUILD_DEPRECATED EQUAL -1)
+    set(MAGNUM_BUILD_DEPRECATED 1)
+endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_STATIC" _BUILD_STATIC)
 if(NOT _BUILD_STATIC EQUAL -1)
     set(MAGNUM_BUILD_STATIC 1)

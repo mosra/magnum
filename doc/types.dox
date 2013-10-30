@@ -24,15 +24,20 @@
 
 namespace Magnum {
 /** @page types Type system
+@brief Type aliases, naming and compatibility with OpenGL and GLSL types.
 
-@brief Type aliases, naming and compatibility with OpenGL and GLSL types
+-   Previous page: @ref platform
+-   Next page: @ref matrix-vector
+
+The root @ref Magnum namespace defines a few aliases for essential types. See
+its documentation for more information about usage with CMake.
 
 @section types-builtin Builtin types
 
 %Magnum provides typedefs for builtin integral and floating-point arithmetic
-types to ensure portability (e.g. Int is *always* 32bit), maintain consistency
-and reduce confusion (e.g. `std::int32_t`, `int` and `GLint` all refer to the
-same type).
+types to ensure portability (e.g. @ref Int is *always* 32bit), maintain
+consistency and reduce confusion (e.g. `std::int32_t`, `int` and `GLint` all
+refer to the same type).
 
 | %Magnum type       | Size           | Equivalent GLSL type |
 | ------------------ | -------------- | -------------------- |
@@ -52,9 +57,10 @@ types which cannot be directly passed to GLSL shaders (such as `long double`)
 have no typedefs.
 
 Types from the above table are then used to define other types. All following
-types are aliases of corresponding types in Math namespace. No suffix after type
-name means @ref Float underlying type, `ui` means @ref UnsignedInt underlying
-type, `i` is @ref Int underlying type and `d` is for @ref Double underlying type.
+types are aliases of corresponding types in @ref Math namespace. No suffix
+after type name means @ref Float underlying type, `ui` means @ref UnsignedInt
+underlying type, `i` is @ref Int underlying type and `d` is for @ref Double
+underlying type.
 
 @section types-matrix Matrix/vector types
 
@@ -65,20 +71,20 @@ type, `i` is @ref Int underlying type and `d` is for @ref Double underlying type
 | @ref Vector2i, @ref Vector3i, @ref Vector4i    | `ivec2`, `ivec3`, `ivec4` |
 | @ref Vector2d, @ref Vector3d, @ref Vector4d    | `dvec2`, `dvec3`, `dvec4` |
 
-| %Magnum matrix type               | Equivalent GLSL type                 |
-| --------------------------------- | ------------------------------------ |
-| @ref Matrix2 or @ref Matrix2d     | `mat2`/`mat2x2` or `dmat2`/`dmat2x2` |
-| @ref Matrix3 or @ref Matrix3d     | `mat3`/`mat3x3` or `dmat3`/`dmat3x3` |
-| @ref Matrix4 or @ref Matrix4d     | `mat4`/`mat4x4` or `dmat4`/`dmat4x4` |
-| @ref Matrix2x3 or @ref Matrix2x3d | `mat2x3` or `dmat2x3`                |
-| @ref Matrix3x2 or @ref Matrix3x2d | `mat3x2` or `dmat3x2`                |
-| @ref Matrix2x4 or @ref Matrix2x4d | `mat2x4` or `dmat2x4`                |
-| @ref Matrix4x2 or @ref Matrix4x2d | `mat4x2` or `dmat4x2`                |
-| @ref Matrix3x4 or @ref Matrix3x4d | `mat3x4` or `dmat3x4`                |
-| @ref Matrix4x3 or @ref Matrix4x3d | `mat4x3` or `dmat4x3`                |
+| %Magnum matrix type                                              | Equivalent GLSL type                 |
+| ---------------------------------------------------------------- | ------------------------------------ |
+| @ref Matrix2x2 or @ref Matrix2x2d                                | `mat2`/`mat2x2` or `dmat2`/`dmat2x2` |
+| @ref Matrix3 / @ref Matrix3x3 or @ref Matrix3d / @ref Matrix3x3d | `mat3`/`mat3x3` or `dmat3`/`dmat3x3` |
+| @ref Matrix4 / @ref Matrix4x4 or @ref Matrix4d / @ref Matrix4x4d | `mat4`/`mat4x4` or `dmat4`/`dmat4x4` |
+| @ref Matrix2x3 or @ref Matrix2x3d                                | `mat2x3` or `dmat2x3`                |
+| @ref Matrix3x2 or @ref Matrix3x2d                                | `mat3x2` or `dmat3x2`                |
+| @ref Matrix2x4 or @ref Matrix2x4d                                | `mat2x4` or `dmat2x4`                |
+| @ref Matrix4x2 or @ref Matrix4x2d                                | `mat4x2` or `dmat4x2`                |
+| @ref Matrix3x4 or @ref Matrix3x4d                                | `mat3x4` or `dmat3x4`                |
+| @ref Matrix4x3 or @ref Matrix4x3d                                | `mat4x3` or `dmat4x3`                |
 
 Any super- or sub-class of the same size and underlying type can be used
-equivalently (e.g. Math::Vector or Color3 instead of @ref Vector3).
+equivalently (e.g. @ref Math::Vector or @ref Color3 instead of @ref Vector3).
 
 @section types-other Other types
 
@@ -95,5 +101,7 @@ quaternion to matrix).
 For your convenience, there is also alias for class with often used constants --
 @ref Constants or @ref Constantsd.
 
+-   Previous page: @ref platform
+-   Next page: @ref matrix-vector
 */
 }

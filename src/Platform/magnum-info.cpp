@@ -101,6 +101,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_GCC47_COMPATIBILITY
     Debug() << "    CORRADE_GCC47_COMPATIBILITY";
     #endif
+    #ifdef CORRADE_BUILD_DEPRECATED
+    Debug() << "    CORRADE_BUILD_DEPRECATED";
+    #endif
     #ifdef CORRADE_BUILD_STATIC
     Debug() << "    CORRADE_BUILD_STATIC";
     #endif
@@ -115,6 +118,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     Debug() << "    CORRADE_TARGET_EMSCRIPTEN";
+    #endif
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    Debug() << "    MAGNUM_BUILD_DEPRECATED";
     #endif
     #ifdef MAGNUM_BUILD_STATIC
     Debug() << "    MAGNUM_BUILD_STATIC";

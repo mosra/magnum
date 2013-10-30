@@ -51,7 +51,7 @@ components. The base library depends on %Corrade and OpenGL libraries (or
 OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 
-- `%Audio` -- Audio library (depends on OpenAL library)
+- `%Audio` -- Audio library
 - `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
   `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
 - `%MeshTools` -- MeshTools library
@@ -65,17 +65,17 @@ The optional components are:
 Platform namespace is split into more components:
 
 - `%GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
-  (depends on GLUT library)
-- `%GlxApplication` -- @ref Platform::GlxApplication "GlxApplication" (depends
-  on GLX and X11 libraries)
+- `%GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
 - `%NaClApplication` -- @ref Platform::NaClApplication "NaClApplication"
-  (only if targeting Google Chrome Native Client)
 - `%Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
-  (depends on SDL2 library)
 - `%XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
-  (depends on EGL and X11 libraries)
+- `%WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 - `%WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
-  (depends on GLX and X11 libraries)
+
+Note that [each namespace](namespaces.html) and all @ref Platform libraries
+contain more detailed information about dependencies, availability on
+particular platform and also guide how to enable given library in build and use
+it with CMake.
 
 Example usage with specifying additional components is:
 
@@ -96,6 +96,8 @@ convenience aliases `MAGNUM_APPLICATION_LIBRARIES` /
 Features of found %Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including Magnum.h:
 
+- `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
+  included
 - `MAGNUM_BUILD_STATIC` -- Defined if built as static libraries. Default are
   shared libraries.
 - `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES

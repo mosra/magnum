@@ -26,12 +26,18 @@ namespace Magnum { namespace Shapes {
 /** @page shapes Collision detection
 @brief Collection of simple shapes for high performance collision detection.
 
+-   Previous page: @ref scenegraph
+-   Next page: @ref debug-tools
+
 The essential thing in collision detection is to define a complex object with
-collection of simple shapes, for which it is easy to detect collisions. These
-shapes can be either one-, two- or three-dimensional and they can be grouped
-together using various operations.
+collection of simple shapes, for which it is easy to detect collisions. The
+library is contained in @ref Shapes namespace, see its documentation for more
+information about building and usage with CMake.
 
 @tableofcontents
+
+These shapes can be either one-, two- or three-dimensional and they can be
+grouped together using various operations.
 
 @section shapes-collection Available shapes
 
@@ -139,6 +145,9 @@ auto shape = Shapes::Shape<Shapes::Sphere3D>(object, {{}, 23.0f});
 @endcode
 
 See also @ref scenegraph for introduction.
+
+-   Previous page: @ref scenegraph
+-   Next page: @ref debug-tools
 
 */
 }}}

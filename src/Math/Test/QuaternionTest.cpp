@@ -69,7 +69,7 @@ class QuaternionTest: public Corrade::TestSuite::Tester {
 
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
-typedef Math::Matrix<3, Float> Matrix3;
+typedef Math::Matrix<3, Float> Matrix3x3;
 typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Quaternion<Float> Quaternion;
 typedef Math::Vector3<Float> Vector3;
@@ -283,7 +283,7 @@ void QuaternionTest::matrix() {
     Vector3 axis = Vector3(1.0f, -3.0f, 5.0f).normalized();
 
     Quaternion q = Quaternion::rotation(Deg(37.0f), axis);
-    Matrix3 m = Matrix4::rotation(Deg(37.0f), axis).rotationScaling();
+    Matrix3x3 m = Matrix4::rotation(Deg(37.0f), axis).rotationScaling();
 
     /* Verify that negated quaternion gives the same rotation */
     CORRADE_COMPARE(q.toMatrix(), m);
@@ -299,7 +299,7 @@ void QuaternionTest::matrix() {
     CORRADE_COMPARE(Quaternion::fromMatrix(m), q);
 
     /* Trace < 0 */
-    Matrix3 m2 = Matrix4::rotation(Deg(130.0f), axis).rotationScaling();
+    Matrix3x3 m2 = Matrix4::rotation(Deg(130.0f), axis).rotationScaling();
     Quaternion q2 = Quaternion::rotation(Deg(130.0f), axis);
     CORRADE_VERIFY(m2.trace() < 0.0f);
     CORRADE_COMPARE(Quaternion::fromMatrix(m2), q2);

@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_AbstractContextHandler_h
-#define Magnum_Platform_AbstractContextHandler_h
+#ifndef Magnum_Platform_Implementation_GlxContextHandler_h
+#define Magnum_Platform_Implementation_GlxContextHandler_h
 /*
     This file is part of Magnum.
 
@@ -24,47 +24,48 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Class Magnum::Platform::AbstractContextHandler
- */
+#include "OpenGL.h"
+#include <GL/glx.h>
+/* undef Xlib nonsense to avoid conflicts */
+#undef Complex
+#undef None
+#undef Always
 
-namespace Magnum { namespace Platform {
+#include "AbstractContextHandler.h"
+
+#include "corradeCompatibility.h"
+
+namespace Magnum { namespace Platform { namespace Implementation {
 
 /**
-@brief Base for OpenGL context handlers
+@brief GLX context
 
-@todo GLX_MESA_query_renderer, EGL_MESA_query_renderer
+Creates OpenGL or OpenGL ES 2.0 context, if targeting OpenGL ES. Used in
+GlxApplication.
 */
-template<class Display, class VisualId, class Window> class AbstractContextHandler {
+class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Window> {
     public:
-        /**
-         * @brief Get visual ID
-         *
-         * Initializes the handler on given display and returns visual ID.
-         */
-        virtual VisualId getVisualId(Display nativeDisplay) = 0;
+        explicit GlxContextHandler();
+        ~GlxContextHandler();
 
-        explicit AbstractContextHandler();
+        VisualID getVisualId(Display* nativeDisplay) override;
+        void createContext(Window nativeWindow) override;
 
-        /**
-         * @brief Destructor
-         *
-         * Finalizes and closes the handler.
-         */
-        virtual ~AbstractContextHandler() {}
+        void makeCurrent() override {
+            glXMakeCurrent(display, window, context);
+        }
 
-        /** @brief Create context */
-        virtual void createContext(Window nativeWindow) = 0;
+        void swapBuffers() override { glXSwapBuffers(display, window); }
 
-        /** @brief Make the context current */
-        virtual void makeCurrent() = 0;
-
-        /** @brief Swap buffers */
-        virtual void swapBuffers() = 0;
+    private:
+        Display* display;
+        Window window;
+        GLXFBConfig* configs;
+        GLXContext context;
 };
 
-template<class Display, class VisualId, class Window> inline AbstractContextHandler<Display, VisualId, Window>::AbstractContextHandler() = default;
+GlxContextHandler::GlxContextHandler() = default;
 
-}}
+}}}
 
 #endif

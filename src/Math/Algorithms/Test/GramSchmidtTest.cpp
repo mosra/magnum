@@ -36,7 +36,7 @@ class GramSchmidtTest: public Corrade::TestSuite::Tester {
         void orthonormalize();
 };
 
-typedef RectangularMatrix<3, 3, Float> Matrix3;
+typedef RectangularMatrix<3, 3, Float> Matrix3x3;
 typedef Vector<3, Float> Vector3;
 
 GramSchmidtTest::GramSchmidtTest() {
@@ -45,11 +45,11 @@ GramSchmidtTest::GramSchmidtTest() {
 }
 
 void GramSchmidtTest::orthogonalize() {
-    Matrix3 m(Vector3(3.0f,  5.0f, 1.0f),
-              Vector3(4.0f,  4.0f, 7.0f),
-              Vector3(7.0f, -1.0f, -3.0f));
+    Matrix3x3 m(Vector3(3.0f,  5.0f, 1.0f),
+                Vector3(4.0f,  4.0f, 7.0f),
+                Vector3(7.0f, -1.0f, -3.0f));
 
-    Matrix3 orthogonalized = Algorithms::gramSchmidtOrthogonalize(m);
+    Matrix3x3 orthogonalized = Algorithms::gramSchmidtOrthogonalize(m);
 
     /* Verify the first vector is in direction of first original */
     CORRADE_COMPARE(orthogonalized[0], m[0]);
@@ -62,18 +62,18 @@ void GramSchmidtTest::orthogonalize() {
     CORRADE_COMPARE(Vector3::dot(orthogonalized[1], orthogonalized[2]), 0.0f);
 
     /* Just to be sure */
-    Matrix3 expected(Vector3(     3.0f,       5.0f,       1.0f),
-                     Vector3(0.657143f, -1.571429f,  5.885714f),
-                     Vector3(6.086759f,   -3.3379f, -1.570777f));
+    Matrix3x3 expected(Vector3(     3.0f,       5.0f,       1.0f),
+                       Vector3(0.657143f, -1.571429f,  5.885714f),
+                       Vector3(6.086759f,   -3.3379f, -1.570777f));
     CORRADE_COMPARE(orthogonalized, expected);
 }
 
 void GramSchmidtTest::orthonormalize() {
-    Matrix3 m(Vector3(3.0f,  5.0f, 8.0f),
-              Vector3(4.0f,  4.0f, 7.0f),
-              Vector3(7.0f, -1.0f, 8.0f));
+    Matrix3x3 m(Vector3(3.0f,  5.0f, 8.0f),
+                Vector3(4.0f,  4.0f, 7.0f),
+                Vector3(7.0f, -1.0f, 8.0f));
 
-    Matrix3 orthonormalized = Algorithms::gramSchmidtOrthonormalize(m);
+    Matrix3x3 orthonormalized = Algorithms::gramSchmidtOrthonormalize(m);
 
     /* Verify the first vector is in direction of first original */
     CORRADE_COMPARE(orthonormalized[0], m[0].normalized());
@@ -89,9 +89,9 @@ void GramSchmidtTest::orthonormalize() {
     CORRADE_COMPARE(Vector3::dot(orthonormalized[1], orthonormalized[2]), 0.0f);
 
     /* Just to be sure */
-    Matrix3 expected(Vector3( 0.303046f,  0.505076f,  0.808122f),
-                     Vector3( 0.928316f, -0.348119f, -0.130544f),
-                     Vector3(-0.215388f, -0.789754f,  0.574367f));
+    Matrix3x3 expected(Vector3( 0.303046f,  0.505076f,  0.808122f),
+                       Vector3( 0.928316f, -0.348119f, -0.130544f),
+                       Vector3(-0.215388f, -0.789754f,  0.574367f));
     CORRADE_COMPARE(orthonormalized, expected);
 }
 

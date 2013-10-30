@@ -33,11 +33,15 @@ class FlatTest: public Magnum::Test::AbstractOpenGLTester {
 
         void compile2D();
         void compile3D();
+        void compile2DTextured();
+        void compile3DTextured();
 };
 
 FlatTest::FlatTest() {
     addTests({&FlatTest::compile2D,
-              &FlatTest::compile3D});
+              &FlatTest::compile3D,
+              &FlatTest::compile2DTextured,
+              &FlatTest::compile3DTextured});
 }
 
 void FlatTest::compile2D() {
@@ -47,6 +51,16 @@ void FlatTest::compile2D() {
 
 void FlatTest::compile3D() {
     Shaders::Flat3D shader;
+    CORRADE_VERIFY(shader.validate().first);
+}
+
+void FlatTest::compile2DTextured() {
+    Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
+    CORRADE_VERIFY(shader.validate().first);
+}
+
+void FlatTest::compile3DTextured() {
+    Shaders::Flat3D shader(Shaders::Flat3D::Flag::Textured);
     CORRADE_VERIFY(shader.validate().first);
 }
 

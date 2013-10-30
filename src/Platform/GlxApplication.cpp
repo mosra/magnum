@@ -22,37 +22,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef NEW_GLSL
-#define in attribute
-#define out varying
-#endif
+#include "GlxApplication.h"
 
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform mat4 transformationProjectionMatrix;
-#else
-uniform highp mat4 transformationProjectionMatrix;
-#endif
+#include "Platform/Implementation/GlxContextHandler.h"
 
-#ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 0) in highp vec4 position;
-#else
-in highp vec4 position;
-#endif
+namespace Magnum { namespace Platform {
 
-#ifdef TEXTURED
-#ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 1) in mediump vec2 textureCoords;
-#else
-in mediump vec2 textureCoords;
-#endif
-out mediump vec2 interpolatedTextureCoords;
-#endif
+GlxApplication::GlxApplication(const Arguments& arguments, const Configuration& configuration): AbstractXApplication(new Implementation::GlxContextHandler, arguments, configuration) {}
 
-void main() {
-    gl_Position = transformationProjectionMatrix*position;
+GlxApplication::GlxApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new Implementation::GlxContextHandler, arguments, nullptr) {}
 
-    #ifdef TEXTURED
-    /* Texture coordinates, if needed */
-    interpolatedTextureCoords = textureCoords;
-    #endif
-}
+}}

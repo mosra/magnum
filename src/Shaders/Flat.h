@@ -38,18 +38,78 @@
 
 namespace Magnum { namespace Shaders {
 
-/**
-@brief Flat shader
+namespace Implementation {
+    enum class FlatFlag: UnsignedByte { Textured = 1 << 0 };
+    typedef Containers::EnumSet<FlatFlag, UnsignedByte> FlatFlags;
+}
 
-Draws whole mesh with one color.
-@see Flat2D, Flat3D
+/**
+@brief %Flat shader
+
+Draws whole mesh with given unshaded color or texture. For colored mesh you
+need to provide @ref Position attribute in your triangle mesh and call at least
+@ref setTransformationProjectionMatrix() and @ref setColor().
+
+If you want to use texture instead of color, you need to provide also
+@ref TextureCoordinates attribute. Pass @ref Flag::Textured to constructor and
+then at render time bind the texture to its respective layer instead of calling
+@ref setColor(). Example:
+@code
+Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
+
+// ...
+
+myTexture.bind(Shaders::Flat2D::TextureLayer);
+@endcode
+
+@see @ref Flat2D, @ref Flat3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
         typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
 
-        explicit Flat();
+        /**
+         * @brief Texture coordinates
+         *
+         * Used only if @ref Flag::Textured is set.
+         */
+        typedef Attribute<2, Vector2> TextureCoordinates;
+
+        enum: Int {
+            /** Layer for color texture. Used only if @ref Flag::Textured is set. */
+            TextureLayer = 0
+        };
+
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Shader flag
+         *
+         * @see @ref Flags, @ref flags()
+         */
+        enum class Flag: UnsignedByte {
+            Textured = 1 << 0   /**< The shader uses texture instead of color */
+        };
+
+        /**
+         * @brief Shader flags
+         *
+         * @see @ref flags()
+         */
+        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        #else
+        typedef Implementation::FlatFlag Flag;
+        typedef Implementation::FlatFlags Flags;
+        #endif
+
+        /**
+         * @brief Constructor
+         * @param flags     Shader flags
+         */
+        explicit Flat(Flags flags = Flags());
+
+        /** @brief Shader flags */
+        Flags flags() const { return _flags; }
 
         /**
          * @brief Set transformation and projection matrix
@@ -63,15 +123,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         /**
          * @brief Set color
          * @return Reference to self (for method chaining)
+         *
+         * Has no effect if @ref Flag::Textured is set.
          */
-        Flat<dimensions>& setColor(const Color4& color) {
-            setUniform(colorUniform, color);
-            return *this;
-        }
+        Flat<dimensions>& setColor(const Color4& color);
 
     private:
         Int transformationProjectionMatrixUniform,
             colorUniform;
+
+        Flags _flags;
 };
 
 /** @brief 2D flat shader */
@@ -79,6 +140,13 @@ typedef Flat<2> Flat2D;
 
 /** @brief 3D flat shader */
 typedef Flat<3> Flat3D;
+
+CORRADE_ENUMSET_OPERATORS(Implementation::FlatFlags)
+
+template<UnsignedInt dimensions> inline Flat<dimensions>& Flat<dimensions>::setColor(const Color4& color) {
+    if(!(_flags & Flag::Textured)) setUniform(colorUniform, color);
+    return *this;
+}
 
 }}
 

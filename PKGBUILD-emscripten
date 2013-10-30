@@ -1,0 +1,37 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=emscripten-magnum
+pkgver=dev
+pkgrel=1
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Emscripten)"
+arch=('any')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('emscripten-corrade')
+makedepends=('cmake')
+options=(!strip !buildflags)
+
+build() {
+    if [ ! -d "$startdir/build-emscripten" ] ; then
+        mkdir "$startdir/build-emscripten"
+        cd "$startdir/build-emscripten"
+
+        cmake .. \
+            -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
+            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Emscripten.cmake" \
+            -DWITH_AUDIO=OFF
+    fi
+
+    cd "$startdir/build-emscripten"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
+        -DWITH_AUDIO=OFF \
+        -DWITH_SDL2APPLICATION=ON
+    make
+}
+
+package() {
+    cd "$startdir/build-emscripten"
+    make DESTDIR="$pkgdir/" install
+}

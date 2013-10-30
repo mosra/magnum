@@ -252,7 +252,7 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
     GLint& value = Context::current()->state().shader->maxAtomicCounterBuffers[index];
 
     /* Get the value, if not already cached */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS,
         GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS,
         GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS,
@@ -287,7 +287,7 @@ Int Shader::maxAtomicCounters(const Type type) {
     GLint& value = Context::current()->state().shader->maxAtomicCounters[index];
 
     /* Get the value, if not already cached */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_ATOMIC_COUNTERS,
         GL_MAX_FRAGMENT_ATOMIC_COUNTERS,
         GL_MAX_GEOMETRY_ATOMIC_COUNTERS,
@@ -322,7 +322,7 @@ Int Shader::maxImageUniforms(const Type type) {
     GLint& value = Context::current()->state().shader->maxImageUniforms[index];
 
     /* Get the value, if not already cached */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_IMAGE_UNIFORMS,
         GL_MAX_FRAGMENT_IMAGE_UNIFORMS,
         GL_MAX_GEOMETRY_IMAGE_UNIFORMS,
@@ -357,7 +357,7 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
     GLint& value = Context::current()->state().shader->maxShaderStorageBlocks[index];
 
     /* Get the value, if not already cached */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS,
         GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS,
         GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS,
@@ -393,7 +393,7 @@ Int Shader::maxTextureImageUnits(const Type type) {
     GLint& value = Context::current()->state().shader->maxTextureImageUnits[index];
 
     /* Get the value, if not already cached */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
         GL_MAX_TEXTURE_IMAGE_UNITS,
         #ifndef MAGNUM_TARGET_GLES
@@ -432,7 +432,7 @@ Int Shader::maxUniformBlocks(const Type type) {
     GLint& value = Context::current()->state().shader->maxUniformBlocks[index];
 
     /* Get the value, if not already cached */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_UNIFORM_BLOCKS,
         GL_MAX_FRAGMENT_UNIFORM_BLOCKS,
         #ifndef MAGNUM_TARGET_GLES
@@ -474,7 +474,7 @@ Int Shader::maxUniformComponents(const Type type) {
 
     /* Get the value, if not already cached */
     #ifndef MAGNUM_TARGET_GLES2
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_UNIFORM_COMPONENTS,
         GL_MAX_FRAGMENT_UNIFORM_COMPONENTS,
         #ifndef MAGNUM_TARGET_GLES
@@ -488,7 +488,7 @@ Int Shader::maxUniformComponents(const Type type) {
         glGetIntegerv(what[index], &value);
     #else
     /* For ES2 we need to multiply _VECTORS by 4 */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_VERTEX_UNIFORM_VECTORS,
         GL_MAX_FRAGMENT_UNIFORM_VECTORS
     };
@@ -515,7 +515,7 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
     GLint& value = Context::current()->state().shader->maxCombinedUniformComponents[index];
 
     /* Get the value, if not already cached */
-    constexpr static const GLenum what[] = {
+    constexpr static GLenum what[] = {
         GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS,
         GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS,
         #ifndef MAGNUM_TARGET_GLES

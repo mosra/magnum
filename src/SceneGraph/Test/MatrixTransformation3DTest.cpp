@@ -67,23 +67,23 @@ MatrixTransformation3DTest::MatrixTransformation3DTest() {
 
 void MatrixTransformation3DTest::fromMatrix() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f})*Matrix4::scaling({2.0f, 1.4f, -2.1f});
-    CORRADE_COMPARE(MatrixTransformation3D::fromMatrix(m), m);
+    CORRADE_COMPARE(Implementation::Transformation<MatrixTransformation3D>::fromMatrix(m), m);
 }
 
 void MatrixTransformation3DTest::toMatrix() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f})*Matrix4::scaling({2.0f, 1.4f, -2.1f});
-    CORRADE_COMPARE(MatrixTransformation3D::toMatrix(m), m);
+    CORRADE_COMPARE(Implementation::Transformation<MatrixTransformation3D>::toMatrix(m), m);
 }
 
 void MatrixTransformation3DTest::compose() {
     Matrix4 parent = Matrix4::rotationX(Deg(17.0f));
     Matrix4 child = Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(MatrixTransformation3D::compose(parent, child), parent*child);
+    CORRADE_COMPARE(Implementation::Transformation<MatrixTransformation3D>::compose(parent, child), parent*child);
 }
 
 void MatrixTransformation3DTest::inverted() {
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f})*Matrix4::scaling({2.0f, 1.4f, -2.1f});
-    CORRADE_COMPARE(MatrixTransformation3D::inverted(m)*m, Matrix4());
+    CORRADE_COMPARE(Implementation::Transformation<MatrixTransformation3D>::inverted(m)*m, Matrix4());
 }
 
 void MatrixTransformation3DTest::setTransformation() {
