@@ -88,6 +88,7 @@ provide HTML markup for your application. Template one is below, you can modify
 it to your liking. The markup references two files, `EmscriptenApplication.js`
 and `WebApplication.css`, both are in `Platform/` directory in the source tree
 and are also installed into `share/magnum/` inside your Emscripten toolchain.
+Change `&lt;application&gt;` to name of your executable.
 @code
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -103,7 +104,7 @@ and are also installed into `share/magnum/` inside your Emscripten toolchain.
       <div id="status">Initialization...</div>
       <div id="statusDescription" />
       <script src="EmscriptenApplication.js"></script>
-      <script async="async" src="application.js"></script>
+      <script async="async" src="<application>.js"></script>
     </div>
   </body>
 </html>

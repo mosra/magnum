@@ -86,7 +86,7 @@ You need to provide HTML markup for your application. Template one is below,
 you can modify it to your liking. The markup references two files,
 `NaClApplication.js` and `WebApplication.css`, both are in `Platform/`
 directory in the source tree and are also installed into `share/magnum/` inside
-your NaCl toolchain.
+your NaCl toolchain. Change `&lt;application&gt;` to name of your executable.
 @code
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -98,7 +98,7 @@ your NaCl toolchain.
   <body>
     <h1>Magnum NaCl Application</h1>
     <div id="listener">
-      <embed id="module" type="application/x-nacl" src="application.nmf" />
+      <embed id="module" type="application/x-nacl" src="<application>.nmf" />
       <div id="status">Initialization...</div>
       <div id="statusDescription" />
       <script src="NaClApplication.js"></script>
@@ -115,12 +115,12 @@ The CSS file contains rudimentary style to avoid eye bleeding.
 
 The `&lt;embed&gt;` file references NMF file which you need to provide too. If
 you target @ref CORRADE_TARGET_NACL_NEWLIB "newlib", the file is pretty simple,
-for example:
+for example (change `&lt;application&gt;` to name of your executable):
 @code
 {
     "program": {
-        "x86-32": {"url": "application-x86-32.nexe"},
-        "x86-64": {"url": "application-x86-64.nexe"}
+        "x86-32": {"url": "<application>-x86-32.nexe"},
+        "x86-64": {"url": "<application>-x86-64.nexe"}
     }
 }
 @endcode
