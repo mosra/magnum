@@ -94,6 +94,7 @@ Vector3Test::Vector3Test() {
               &Vector3Test::scales,
               &Vector3Test::twoComponent,
 
+              &Vector3Test::swizzleType,
               &Vector3Test::debug,
               &Vector3Test::configuration});
 }
