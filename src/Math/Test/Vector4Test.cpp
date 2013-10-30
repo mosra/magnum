@@ -228,7 +228,13 @@ void Vector4Test::twoComponent() {
 
 void Vector4Test::swizzleType() {
     constexpr Vector4i orig;
-    constexpr auto c = swizzle<'y', 'a', 'y', 'x'>(orig);
+
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    constexpr
+    #else
+    const
+    #endif
+    auto c = swizzle<'y', 'a', 'y', 'x'>(orig);
     CORRADE_VERIFY((std::is_same<decltype(c), const Vector4i>::value));
 }
 

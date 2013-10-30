@@ -216,7 +216,13 @@ void Vector2Test::aspectRatio() {
 
 void Vector2Test::swizzleType() {
     constexpr Vector<4, Int> orig;
-    constexpr auto a = swizzle<'y', 'a'>(orig);
+
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    constexpr
+    #else
+    const
+    #endif
+    auto a = swizzle<'y', 'a'>(orig);
     CORRADE_VERIFY((std::is_same<decltype(a), const Vector2i>::value));
 }
 

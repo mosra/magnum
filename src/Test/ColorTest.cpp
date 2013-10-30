@@ -143,16 +143,36 @@ void ColorTest::swizzleType() {
     constexpr Color3 origColor3;
     constexpr BasicColor4<UnsignedByte> origColor4;
 
-    constexpr auto a = Math::swizzle<'y', 'z', 'r'>(origColor3);
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    constexpr
+    #else
+    const
+    #endif
+    auto a = Math::swizzle<'y', 'z', 'r'>(origColor3);
     CORRADE_VERIFY((std::is_same<decltype(a), const Color3>::value));
 
-    constexpr auto b = Math::swizzle<'y', 'z', 'a'>(origColor4);
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    constexpr
+    #else
+    const
+    #endif
+    auto b = Math::swizzle<'y', 'z', 'a'>(origColor4);
     CORRADE_VERIFY((std::is_same<decltype(b), const BasicColor3<UnsignedByte>>::value));
 
-    constexpr auto c = Math::swizzle<'y', 'z', 'y', 'x'>(origColor3);
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    constexpr
+    #else
+    const
+    #endif
+    auto c = Math::swizzle<'y', 'z', 'y', 'x'>(origColor3);
     CORRADE_VERIFY((std::is_same<decltype(c), const Color4>::value));
 
-    constexpr auto d = Math::swizzle<'y', 'a', 'y', 'x'>(origColor4);
+    #ifndef CORRADE_GCC45_COMPATIBILITY
+    constexpr
+    #else
+    const
+    #endif
+    auto d = Math::swizzle<'y', 'a', 'y', 'x'>(origColor4);
     CORRADE_VERIFY((std::is_same<decltype(d), const BasicColor4<UnsignedByte>>::value));
 }
 
