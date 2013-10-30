@@ -58,8 +58,14 @@ is included, to avoid ambiguity). Changing the code to use different toolkit is
 then matter of replacing only the <tt>#</tt>`include` statement.
 
 Barebone application implementation which will just clear the window to dark
-blue color:
+blue color is shown in the following code listing.
+
+@note Fully contained base application along with CMake setup is available in
+    `base` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+    repository.
+
 @code
+#include <Color.h>
 #include <DefaultFramebuffer.h>
 #include <Renderer.h>
 #include <Platform/GlutApplication.h>
@@ -117,7 +123,12 @@ contain both graphics application and command-line tools (for data preparation
 etc.).
 
 Barebone application which will just print out current OpenGL version and
-renderer string and exits:
+renderer string and exits is in the following code listing.
+
+@note Fully contained windowless application along with CMake setup is
+    available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+    repository.
+
 @code
 #include <Context.h>
 #include <Platform/WindowlessGlxApplication.h>

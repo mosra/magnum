@@ -48,6 +48,10 @@ three main components:
  - features, providing rendering capabilities, collision detection, physics
    etc.
 
+@note Fully contained applications with initial scene graph setup are available
+    in `scenegraph2D` and `scenegraph3D` branches of
+    [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository.
+
 @section scenegraph-transformation Transformations
 
 Transformation handles object position, rotation etc. and its basic property
