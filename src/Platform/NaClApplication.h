@@ -443,7 +443,7 @@ class NaClApplication::InputEvent {
         constexpr Modifiers modifiers() const { return _modifiers; }
 
         /** @brief Mouse buttons */
-        constexpr Buttons buttons() const { return Buttons(_modifiers); }
+        constexpr Buttons buttons() const { return Button(static_cast<std::uint32_t>(_modifiers)); }
 
         /**
          * @brief Set event as accepted
