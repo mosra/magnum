@@ -51,7 +51,7 @@ template<UnsignedInt dimensions, class T, class TranslationType>
 #endif
 class AbstractTranslation: public AbstractTransformation<dimensions, T> {
     public:
-        explicit AbstractTranslation() = default;
+        explicit AbstractTranslation();
 
         /**
          * @brief Translate object
@@ -68,7 +68,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         }
 
     protected:
-        ~AbstractTranslation() = default;
+        ~AbstractTranslation();
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -78,6 +78,10 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         /** @brief Polymorphic implementation for translate() */
         virtual void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type) = 0;
 };
+
+template<UnsignedInt dimensions, class T, class TranslationType> AbstractTranslation<dimensions, T, TranslationType>::AbstractTranslation() = default;
+
+template<UnsignedInt dimensions, class T, class TranslationType> AbstractTranslation<dimensions, T, TranslationType>::~AbstractTranslation() = default;
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
