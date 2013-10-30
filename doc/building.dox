@@ -298,7 +298,7 @@ to find the compiler. NaCl currently supports only OpenGL ES 2, thus
 `TARGET_GLES` and `TARGET_GLES2` is always enabled.
 
 Then create build directories for x86-32 and x86-64 and run cmake and make in
-them. The toolchains need access to its platform file, so be sure to properly
+them. The toolchains need access to the platform file, so be sure to properly
 set **absolute** path to `modules/` directory containing `Platform/NaCl.cmake`.
 Also adapt `CMAKE_INSTALL_PREFIX` to the same value as in `NACL_PREFIX` in
 toolchain file.
@@ -307,7 +307,7 @@ toolchain file.
     cd build-nacl-x86-32
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-glibc-x86-32.cmake" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON \
@@ -318,7 +318,7 @@ toolchain file.
     cd build-nacl-x86-64
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-glibc-x86-64.cmake" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON
