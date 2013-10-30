@@ -44,7 +44,7 @@ namespace Implementation {
 }
 
 /**
-@brief Flat shader
+@brief %Flat shader
 
 Draws whole mesh with given unshaded color or texture. For colored mesh you
 need to provide @ref Position attribute in your triangle mesh and call at least
