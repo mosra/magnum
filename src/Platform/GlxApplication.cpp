@@ -30,6 +30,11 @@ namespace Magnum { namespace Platform {
 
 GlxApplication::GlxApplication(const Arguments& arguments, const Configuration& configuration): AbstractXApplication(new Implementation::GlxContextHandler, arguments, configuration) {}
 
-GlxApplication::GlxApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new Implementation::GlxContextHandler, arguments, nullptr) {}
+#ifndef CORRADE_GCC45_COMPATIBILITY
+GlxApplication::GlxApplication(const Arguments& arguments, std::nullptr_t)
+#else
+GlxApplication::GlxApplication(const Arguments& arguments, void*)
+#endif
+    : AbstractXApplication(new Implementation::GlxContextHandler, arguments, nullptr) {}
 
 }}

@@ -30,6 +30,11 @@ namespace Magnum { namespace Platform {
 
 XEglApplication::XEglApplication(const Arguments& arguments, const Configuration& configuration): AbstractXApplication(new Implementation::EglContextHandler, arguments, configuration) {}
 
-XEglApplication::XEglApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new Implementation::EglContextHandler, arguments, nullptr) {}
+#ifndef CORRADE_GCC45_COMPATIBILITY
+XEglApplication::XEglApplication(const Arguments& arguments, std::nullptr_t)
+#else
+XEglApplication::XEglApplication(const Arguments& arguments, void*)
+#endif
+    : AbstractXApplication(new Implementation::EglContextHandler, arguments, nullptr) {}
 
 }}
