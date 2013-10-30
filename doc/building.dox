@@ -337,14 +337,14 @@ installed and configured.
 
 Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in `generic/Emscripten.cmake`
 to path where Emscripten is installed. Default is `/usr/emscripten`. Emscripten
-supports dynamic only to simplify porting and they are generally slower, thus
-`BUILD_STATIC` is implicitly enabled.
+supports dynamic libraries only to simplify porting and they are generally
+slower, thus `BUILD_STATIC` is implicitly enabled.
 
 Then create build directory and run cmake and make in it. The toolchain needs
 access to its platform file, so be sure to properly set **absolute** path to
-`modules/` directory containing `Platform/Emscripten.cmake`. Default is
-`/usr/emscripten`. Also set `CMAKE_INSTALL_PREFIX` to value which is contained
-in `CMAKE_FIND_ROOT_PATH` in toolchain file.
+`modules/` directory containing `Platform/Emscripten.cmake`. Also set
+`CMAKE_INSTALL_PREFIX` to value which is contained in `CMAKE_FIND_ROOT_PATH` in
+toolchain file.
 
     mkdir -p build-emscripten
     cd build-emscripten
