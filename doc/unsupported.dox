@@ -51,6 +51,12 @@ add any performance gains, is not supported in %Magnum. See also @ref deprecated
 
 /** @page deprecated-gl Deprecated OpenGL API list
 
-See also @ref unsupported.
+See also @ref unsupported and @ref deprecated.
+
+*/
+
+/** @page deprecated Deprecated list
+
+See also @ref deprecated-gl.
 
 */
