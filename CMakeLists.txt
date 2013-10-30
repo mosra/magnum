@@ -39,7 +39,7 @@ cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF 
 option(WITH_FIND_MODULE "Install FindMagnum.cmake module into CMake's module dir (might require admin privileges)" OFF)
 
 # Parts of the library
-option(WITH_AUDIO "Build Audio library" ON)
+option(WITH_AUDIO "Build Audio library" OFF)
 option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
 cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS" ON)
 cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" ON "NOT WITH_DEBUGTOOLS" ON)

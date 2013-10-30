@@ -39,8 +39,6 @@ Minimal set of tools and libraries required for building is:
 - **Corrade** - Plugin management and utility library. See
   @ref building-corrade "Corrade download and installation guide" for more
   information.
-- **OpenAL** - By default needed by Audio library, but you can disable building
-  of it by setting `WITH_AUDIO` to `OFF` (see below).
 
 @section building-download Downloading the sources
 
@@ -138,11 +136,12 @@ CMake and C++ sources, see @ref cmake and @ref src/Magnum.h for more
 information. See also @ref corrade-cmake and @ref src/Corrade.h for additional
 information.
 
-By default the engine is built with everything except application libraries
-(see below). Using `WITH_*` CMake parameters you can specify which parts will
-be built and which not:
+By default the engine is built with nearly everything except Audio library and
+application libraries (see below). Using `WITH_*` CMake parameters you can
+specify which parts will be built and which not:
 
- - `WITH_AUDIO` - Audio library.
+ - `WITH_AUDIO` - Audio library. Depends on **OpenAL** library, not built by
+   default.
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
    Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
