@@ -140,40 +140,40 @@ By default the engine is built with nearly everything except Audio library and
 application libraries (see below). Using `WITH_*` CMake parameters you can
 specify which parts will be built and which not:
 
- - `WITH_AUDIO` - Audio library. Depends on **OpenAL** library, not built by
-   default.
- - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
-   Primitives, SceneGraph, Shaders and Shapes libraries.
- - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
-   is enabled.
- - `WITH_PRIMITIVES` - Primitives library. Enabled automatically if `WITH_DEBUGTOOLS`
-   is enabled.
- - `WITH_SCENEGRAPH` - SceneGraph library. Enabled automatically if `WITH_DEBUGTOOLS`
-   or `WITH_SHAPES` is enabled.
- - `WITH_SHADERS` - Shaders library. Enabled automatically if `WITH_DEBUGTOOLS`
-   is enabled.
- - `WITH_SHAPES` - Shapes library. Enables also building of SceneGraph library.
-   Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
- - `WITH_TEXT` - Text library. Enables also building of TextureTools library.
- - `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if `WITH_TEXT`
-   or `WITH_DISTANCEFIELDCONVERTER` is enabled.
- - `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about the
-   engine and OpenGL capabilities.
- - `WITH_DISTANCEFIELDCONVERTER` - `magnum-distancefield` executable for
-   converting black&white images to distance field textures. Enables also
-   building of TextureTools library.
+-   `WITH_AUDIO` - Audio library. Depends on **OpenAL** library, not built by
+    default.
+-   `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
+    Primitives, SceneGraph, Shaders and Shapes libraries.
+-   `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if
+    `WITH_DEBUGTOOLS` is enabled.
+-   `WITH_PRIMITIVES` - Primitives library. Enabled automatically if
+    `WITH_DEBUGTOOLS` is enabled.
+-   `WITH_SCENEGRAPH` - SceneGraph library. Enabled automatically if
+    `WITH_DEBUGTOOLS` or `WITH_SHAPES` is enabled.
+-   `WITH_SHADERS` - Shaders library. Enabled automatically if `WITH_DEBUGTOOLS`
+    is enabled.
+-   `WITH_SHAPES` - Shapes library. Enables also building of SceneGraph
+    library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
+-   `WITH_TEXT` - Text library. Enables also building of TextureTools library.
+-   `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if
+    `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
+-   `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
+    the engine and OpenGL capabilities.
+-   `WITH_DISTANCEFIELDCONVERTER` - `magnum-distancefield` executable for
+    converting black&white images to distance field textures. Enables also
+    building of TextureTools library.
 
 None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
 platform best:
 
-- `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
-- `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
-- `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
-- `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
-- `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
-- `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
-- `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
+-   `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
+-   `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
+-   `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
+-   `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
+-   `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
+-   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 
 Note that [each namespace](namespaces.html) and all @ref Platform libraries
 contain more detailed information about dependencies, availability on

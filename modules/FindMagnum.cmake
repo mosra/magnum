@@ -35,8 +35,8 @@
 #  NaClApplication  - NaCl application
 #  Sdl2Application  - SDL2 application
 #  XEglApplication  - X/EGL application
-#  WindowlessNaClApplication - Windowless NaCl application
 #  WindowlessGlxApplication - Windowless GLX application
+#  WindowlessNaClApplication - Windowless NaCl application
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)

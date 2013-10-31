@@ -40,37 +40,37 @@ Basic usage is:
 This command tries to find base %Magnum library and then defines these
 variables:
 
-- `MAGNUM_FOUND` -- Whether the library was found
-- `MAGNUM_LIBRARIES` -- %Magnum library and dependent libraries
-- `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
-- `MAGNUM_PLUGINS_FONT_DIR` -- Directory with font plugins
-- `MAGNUM_PLUGINS_IMPORTER_DIR` -- Directory with importer plugins
+-   `MAGNUM_FOUND` -- Whether the library was found
+-   `MAGNUM_LIBRARIES` -- %Magnum library and dependent libraries
+-   `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
+-   `MAGNUM_PLUGINS_FONT_DIR` -- Directory with font plugins
+-   `MAGNUM_PLUGINS_IMPORTER_DIR` -- Directory with importer plugins
 
 However, this command will try to find only the base library, not the optional
 components. The base library depends on %Corrade and OpenGL libraries (or
 OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 
-- `%Audio` -- Audio library
-- `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
-  `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
-- `%MeshTools` -- MeshTools library
-- `%Primitives` -- Primitives library
-- `%SceneGraph` -- SceneGraph library
-- `%Shaders` -- Shaders library
-- `%Shapes` -- Shapes library (depends on `%SceneGraph` component)
-- `%Text` -- Text library (depends on `%TextureTools` component)
-- `%TextureTools` -- TextureTools library
+-   `%Audio` -- Audio library
+-   `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
+    `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
+-   `%MeshTools` -- MeshTools library
+-   `%Primitives` -- Primitives library
+-   `%SceneGraph` -- SceneGraph library
+-   `%Shaders` -- Shaders library
+-   `%Shapes` -- Shapes library (depends on `%SceneGraph` component)
+-   `%Text` -- Text library (depends on `%TextureTools` component)
+-   `%TextureTools` -- TextureTools library
 
 Platform namespace is split into more components:
 
-- `%GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
-- `%GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
-- `%NaClApplication` -- @ref Platform::NaClApplication "NaClApplication"
-- `%Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
-- `%XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
-- `%WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
-- `%WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `%GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
+-   `%GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
+-   `%NaClApplication` -- @ref Platform::NaClApplication "NaClApplication"
+-   `%Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
+-   `%XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
+-   `%WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `%WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 
 Note that [each namespace](namespaces.html) and all @ref Platform libraries
 contain more detailed information about dependencies, availability on
@@ -83,9 +83,9 @@ Example usage with specifying additional components is:
 
 For each component is then defined:
 
-- `MAGNUM_*_FOUND` -- Whether the component was found
-- `MAGNUM_*_LIBRARIES` -- Component library and dependent libraries
-- `MAGNUM_*_INCLUDE_DIRS` -- Include dirs of module dependencies
+-   `MAGNUM_*_FOUND` -- Whether the component was found
+-   `MAGNUM_*_LIBRARIES` -- Component library and dependent libraries
+-   `MAGNUM_*_INCLUDE_DIRS` -- Include dirs of module dependencies
 
 If exactly one `*Application` or exactly one `Windowless*Application` component
 is requested and found, its libraries and include dirs are available in
@@ -96,15 +96,15 @@ convenience aliases `MAGNUM_APPLICATION_LIBRARIES` /
 Features of found %Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including Magnum.h:
 
-- `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
-  included
-- `MAGNUM_BUILD_STATIC` -- Defined if built as static libraries. Default are
-  shared libraries.
-- `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
-- `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
-- `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
-- `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES emulation
-  on desktop OpenGL
+-   `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
+    included
+-   `MAGNUM_BUILD_STATIC` -- Defined if built as static libraries. Default are
+    shared libraries.
+-   `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
+-   `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
+-   `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
+-   `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES
+    emulation on desktop OpenGL
 
 %Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.
