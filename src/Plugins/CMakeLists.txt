@@ -22,25 +22,33 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(TgaImageConverter_SRCS
-    TgaImageConverter.cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(TgaImageConverter_HEADERS
-    TgaImageConverter.h)
+# Wrapper for creating given plugin type
+macro(add_plugin)
+    if(NOT BUILD_STATIC)
+        corrade_add_plugin(${ARGN})
+    else()
+        corrade_add_static_plugin(${ARGN})
+    endif()
+endmacro()
 
-add_library(TgaImageConverterObjects OBJECT ${TgaImageConverter_SRCS})
-set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+if(WITH_TEXT AND WITH_MAGNUMFONT)
+    add_subdirectory(MagnumFont)
+endif()
 
-add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR}
-    TgaImageConverter.conf
-    $<TARGET_OBJECTS:TgaImageConverterObjects>
-    pluginRegistrationTgaImageConverter.cpp)
-target_link_libraries(TgaImageConverter Magnum)
+if(WITH_TEXT AND WITH_MAGNUMFONTCONVERTER AND NOT MAGNUM_TARGET_GLES)
+    add_subdirectory(MagnumFontConverter)
+endif()
 
-install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
+if(WITH_TGAIMAGECONVERTER)
+    add_subdirectory(TgaImageConverter)
+endif()
 
-if(BUILD_TESTS)
-    add_library(TgaImageConverterTestLib SHARED $<TARGET_OBJECTS:TgaImageConverterObjects>)
-    target_link_libraries(TgaImageConverterTestLib Magnum)
-    add_subdirectory(Test)
+if(WITH_TGAIMPORTER)
+    add_subdirectory(TgaImporter)
+endif()
+
+if(WITH_AUDIO AND WITH_WAVAUDIOIMPORTER)
+    add_subdirectory(WavAudioImporter)
 endif()

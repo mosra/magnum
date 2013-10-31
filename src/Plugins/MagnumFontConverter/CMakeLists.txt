@@ -22,8 +22,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED Text)
-
 set(MagnumFontConverter_SOURCES
     MagnumFontConverter.cpp)
 
@@ -37,9 +35,7 @@ add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR}
     MagnumFontConverter.conf
     $<TARGET_OBJECTS:MagnumFontConverterObjects>
     pluginRegistrationMagnumFontConverter.cpp)
-target_link_libraries(MagnumFontConverter
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_TEXT_LIBRARIES})
+target_link_libraries(MagnumFontConverter Magnum MagnumText)
 
 if(WIN32)
     target_link_libraries(MagnumFontConverter TgaImageConverter)
@@ -49,9 +45,6 @@ install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUD
 
 if(BUILD_GL_TESTS)
     add_library(MagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
-    target_link_libraries(MagnumFontConverterTestLib
-        ${MAGNUM_LIBRARIES}
-        ${MAGNUM_TEXT_LIBRARIES}
-        TgaImageConverterTestLib)
+    target_link_libraries(MagnumFontConverterTestLib Magnum MagnumText TgaImageConverterTestLib)
     add_subdirectory(Test)
 endif()

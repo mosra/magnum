@@ -199,6 +199,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM
 
 add_subdirectory(Math)
 add_subdirectory(Platform)
+add_subdirectory(Plugins)
 add_subdirectory(Trade)
 
 if(WITH_AUDIO)

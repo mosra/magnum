@@ -45,8 +45,8 @@ This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled in CMake. To use
 dynamic plugin, you need to load `%WavAudioImporter` plugin from `audioimporters/`
 subdirectory of your plugin dir. To use static plugin or or use this as a
 dependency of another plugin, you need to request `%WavAudioImporter` component
-in CMake and link to `${MAGNUMPLUGINS_WAVAUDIOIMPORTER_LIBRARIES}`. See
-@ref building-plugins and @ref cmake-plugins for more information.
+in CMake and link to `${MAGNUM_WAVAUDIOIMPORTER_LIBRARIES}`. See @ref building
+and @ref cmake for more information.
 */
 class WavImporter: public AbstractImporter {
     public:

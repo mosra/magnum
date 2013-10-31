@@ -22,9 +22,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED Audio)
-
-include_directories(${MAGNUM_AUDIO_INCLUDE_DIRS})
+include_directories(${OPENAL_INCLUDE_DIR})
 
 set(WavAudioImporter_SRCS
     WavImporter.cpp)
@@ -40,12 +38,12 @@ add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR}
     WavAudioImporter.conf
     $<TARGET_OBJECTS:WavAudioImporterObjects>
     pluginRegistrationWavAudioImporter.cpp)
-target_link_libraries(WavAudioImporter ${MAGNUM_LIBRARIES} ${MAGNUM_AUDIO_LIBRARIES})
+target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
 if(BUILD_TESTS)
     add_library(WavAudioImporterTestLib STATIC $<TARGET_OBJECTS:WavAudioImporterObjects>)
-    target_link_libraries(WavAudioImporterTestLib ${MAGNUM_LIBRARIES} ${MAGNUM_AUDIO_LIBRARIES})
+    target_link_libraries(WavAudioImporterTestLib Magnum MagnumAudio)
     add_subdirectory(Test)
 endif()

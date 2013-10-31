@@ -136,9 +136,9 @@ CMake and C++ sources, see @ref cmake and @ref src/Magnum.h for more
 information. See also @ref corrade-cmake and @ref src/Corrade.h for additional
 information.
 
-By default the engine is built with nearly everything except Audio library and
-application libraries (see below). Using `WITH_*` CMake parameters you can
-specify which parts will be built and which not:
+By default the engine is built with nearly everything except Audio library,
+plugins and application libraries (see below). Using `WITH_*` CMake parameters
+you can specify which parts will be built and which not:
 
 -   `WITH_AUDIO` - Audio library. Depends on **OpenAL** library, not built by
     default.
@@ -174,6 +174,23 @@ platform best:
 -   `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
+
+Magnum also contains a set of dependency-less plugins for importing essential
+file formats. Additional plugins are provided in separate plugin repository,
+see @ref building-plugins for more information. None of the plugins is built by
+default.
+
+-   `WITH_MAGNUMFONT` -- @ref Text::MagnumFont "MagnumFont" plugin. Available
+    only if `WITH_TEXT` is enabled. Enables also building of
+    @ref Trade::TgaImporter "TgaImporter" plugin.
+-   `WITH_MAGNUMFONTCONVERTER` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
+    plugin. Available only if `WITH_TEXT` is enabled. Enables also building of
+    @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
+-   `WITH_TGAIMPORTER` -- @ref Trade::TgaImporter "TgaImporter" plugin.
+-   `WITH_TGAIMAGECONVERTER` -- @ref Trade::TgaImageConverter "TgaImageConverter"
+    plugin.
+-   `WITH_WAVAUDIOIMPORTER` -- @ref Audio::WavImporter "WavAudioImporter"
+    plugin. Available only if `WITH_AUDIO` is enabled.
 
 Note that [each namespace](namespaces.html) and all @ref Platform libraries
 contain more detailed information about dependencies, availability on

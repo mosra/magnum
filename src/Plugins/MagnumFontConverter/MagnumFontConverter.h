@@ -45,8 +45,8 @@ to read back the generated data. It depends on
 to load `%MagnumFontConverter` plugin from `fontconverters/` subdirectory of
 your plugin dir. To use static plugin or use this as a dependency of another
 plugin, you need to request `%MagnumFontConverter` component in CMake and link
-to `${MAGNUMPLUGINS_MAGNUMFONTCONVERTER_LIBRARIES}`. See @ref building-plugins
-and @ref cmake-plugins for more information.
+to `${MAGNUM_MAGNUMFONTCONVERTER_LIBRARIES}`. See @ref building and @ref cmake
+for more information.
 */
 class MagnumFontConverter: public Text::AbstractFontConverter {
     public:
