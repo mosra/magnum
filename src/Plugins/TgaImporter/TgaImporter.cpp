@@ -33,9 +33,10 @@
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
+#include "Math/Swizzle.h"
+#include "Math/Vector4.h"
 #include <Context.h>
 #include <Extensions.h>
-#include <Swizzle.h>
 #endif
 
 #include "TgaHeader.h"
@@ -146,11 +147,11 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     if(format == ColorFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data);
         std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
+            [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
     } else if(format == ColorFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data);
         std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
+            [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
     #endif
 
