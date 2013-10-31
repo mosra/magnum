@@ -26,9 +26,9 @@
 #include <Containers/Array.h>
 #include <TestSuite/Tester.h>
 #include <Utility/Directory.h>
-#include <ColorFormat.h>
-#include <Trade/ImageData.h>
 
+#include "ColorFormat.h"
+#include "Trade/ImageData.h"
 #include "TgaImporter/TgaImporter.h"
 
 #include "configure.h"

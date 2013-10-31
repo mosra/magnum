@@ -24,12 +24,13 @@
 
 #include <Utility/Directory.h>
 #include <TestSuite/Compare/File.h>
-#include <ColorFormat.h>
-#include <Extensions.h>
-#include <TextureFormat.h>
-#include <Test/AbstractOpenGLTester.h>
-#include <Text/GlyphCache.h>
-#include <Trade/ImageData.h>
+
+#include "ColorFormat.h"
+#include "Extensions.h"
+#include "TextureFormat.h"
+#include "Test/AbstractOpenGLTester.h"
+#include "Text/GlyphCache.h"
+#include "Trade/ImageData.h"
 
 #include "Text/AbstractFont.h"
 #include "MagnumFontConverter/MagnumFontConverter.h"

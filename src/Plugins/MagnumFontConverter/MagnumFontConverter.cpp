@@ -27,11 +27,12 @@
 #include <sstream>
 #include <Containers/Array.h>
 #include <Utility/Directory.h>
-#include <ColorFormat.h>
-#include <Image.h>
-#include <Text/GlyphCache.h>
-#include <Text/AbstractFont.h>
-#include <TgaImageConverter/TgaImageConverter.h>
+
+#include "ColorFormat.h"
+#include "Image.h"
+#include "Text/GlyphCache.h"
+#include "Text/AbstractFont.h"
+#include "TgaImageConverter/TgaImageConverter.h"
 
 namespace Magnum { namespace Text {
 

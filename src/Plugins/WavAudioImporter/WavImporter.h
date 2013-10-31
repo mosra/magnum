@@ -30,7 +30,8 @@
 
 #include <Containers/Array.h>
 #include <Utility/Visibility.h>
-#include <Audio/AbstractImporter.h>
+
+#include "Audio/AbstractImporter.h"
 
 namespace Magnum { namespace Audio {
 

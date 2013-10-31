@@ -28,7 +28,7 @@
  * @brief Struct Magnum::Audio::WavHeader
  */
 
-#include <Types.h>
+#include "Types.h"
 
 namespace Magnum { namespace Audio {
 

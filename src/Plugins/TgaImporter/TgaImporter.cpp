@@ -28,15 +28,16 @@
 #include <sstream>
 #include <Utility/Endianness.h>
 #include <Containers/Array.h>
-#include <ColorFormat.h>
-#include <Trade/ImageData.h>
+
+#include "ColorFormat.h"
+#include "Trade/ImageData.h"
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
 #include "Math/Swizzle.h"
 #include "Math/Vector4.h"
-#include <Context.h>
-#include <Extensions.h>
+#include "Context.h"
+#include "Extensions.h"
 #endif
 
 #include "TgaHeader.h"

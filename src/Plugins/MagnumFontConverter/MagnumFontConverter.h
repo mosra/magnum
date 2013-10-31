@@ -28,7 +28,7 @@
  * @brief Class Magnum::Text::MagnumFontConverter
  */
 
-#include <Text/AbstractFontConverter.h>
+#include "Text/AbstractFontConverter.h"
 
 namespace Magnum { namespace Text {
 

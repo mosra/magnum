@@ -25,11 +25,11 @@
 #include "MagnumFont.h"
 
 #include <sstream>
-#include <Containers/Array.h>
-#include <Utility/Directory.h>
-#include <Utility/Unicode.h>
-#include <Text/GlyphCache.h>
-#include <Trade/ImageData.h>
+#include "Containers/Array.h"
+#include "Utility/Directory.h"
+#include "Utility/Unicode.h"
+#include "Text/GlyphCache.h"
+#include "Trade/ImageData.h"
 
 #include "TgaImporter/TgaImporter.h"
 

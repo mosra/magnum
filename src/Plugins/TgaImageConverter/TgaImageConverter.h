@@ -28,7 +28,7 @@
  * @brief Class Magnum::Trade::TgaImageConverter
  */
 
-#include <Trade/AbstractImageConverter.h>
+#include "Trade/AbstractImageConverter.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #if defined(TgaImageConverter_EXPORTS) || defined(TgaImageConverterObjects_EXPORTS)

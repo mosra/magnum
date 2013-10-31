@@ -26,10 +26,11 @@
 
 #include <fstream>
 #include <tuple>
-#include <Containers/Array.h>
-#include <Utility/Endianness.h>
-#include <ColorFormat.h>
-#include <Image.h>
+
+#include "Containers/Array.h"
+#include "Utility/Endianness.h"
+#include "ColorFormat.h"
+#include "Image.h"
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>

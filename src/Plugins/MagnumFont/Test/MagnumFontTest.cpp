@@ -22,10 +22,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Test/AbstractOpenGLTester.h>
-#include <Text/GlyphCache.h>
 #include <Utility/Directory.h>
 
+#include "Test/AbstractOpenGLTester.h"
+#include "Text/GlyphCache.h"
 #include "MagnumFont/MagnumFont.h"
 
 #include "magnumFontTestConfigure.h"
