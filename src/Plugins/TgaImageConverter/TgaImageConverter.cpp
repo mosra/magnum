@@ -81,7 +81,7 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
     std::copy(image.data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));
 
     #ifdef MAGNUM_TARGET_GLES
-    if(image->format() == ColorFormat::RGB) {
+    if(image.format() == ColorFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
