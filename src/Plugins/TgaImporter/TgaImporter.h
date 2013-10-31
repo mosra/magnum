@@ -43,18 +43,25 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief TGA image importer
+@brief TGA importer plugin
 
 Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
 
-The images are imported with @ref ImageType::UnsignedByte and @ref ImageFormat::BGR,
-@ref ImageFormat::BGRA or @ref ImageFormat::Red, respectively. Grayscale images
+This plugin is built if `WITH_TGAIMPORTER` is enabled in CMake. To use dynamic
+plugin, you need to load `%TgaImporter` plugin from `importers/` subdirectory
+of your plugin dir. To use static plugin or use this as a dependency of another
+plugin, you need to request `%TgaImporter` component in CMake and link to
+`${MAGNUMPLUGINS_TGAIMPORTER_LIBRARIES}`. See @ref building-plugins and
+@ref cmake-plugins for more information.
+
+The images are imported with @ref ColorType::UnsignedByte and @ref ColorFormat::BGR,
+@ref ColorFormat::BGRA or @ref ColorFormat::Red, respectively. Grayscale images
 require extension @extension{ARB,texture_rg}.
 
-In OpenGL ES BGR and BGRA images are converted to @ref ImageFormat::RGB
-and @ref ImageFormat::RGBA. In OpenGL ES 2.0, if @es_extension{EXT,texture_rg}
-is not supported, grayscale images use @ref ImageFormat::Luminance instead of
-@ref ImageFormat::Red.
+In OpenGL ES BGR and BGRA images are converted to @ref ColorFormat::RGB
+and @ref ColorFormat::RGBA. In OpenGL ES 2.0, if @es_extension{EXT,texture_rg}
+is not supported, grayscale images use @ref ColorFormat::Luminance instead of
+@ref ColorFormat::Red.
 */
 class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
@@ -73,7 +80,7 @@ class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
         void MAGNUM_TRADE_TGAIMPORTER_LOCAL doClose() override;
         UnsignedInt MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2DCount() const override;
-        ImageData2D MAGNUM_TRADE_TGAIMPORTER_LOCAL * doImage2D(UnsignedInt id) override;
+        std::optional<ImageData2D> MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2D(UnsignedInt id) override;
 
         std::istream* in;
 };

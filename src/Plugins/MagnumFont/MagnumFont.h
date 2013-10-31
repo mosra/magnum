@@ -34,7 +34,15 @@
 namespace Magnum { namespace Text {
 
 /**
-@brief Simple bitmap font
+@brief Simple bitmap font plugin
+
+This plugin depends on @ref Trade::TgaImporter "TgaImporter" plugin and is
+built if `WITH_MAGNUMFONT` is enabled in CMake. To use dynamic plugin, you need
+to load `%MagnumFont` plugin from `fonts/` subdirectory of your plugin dir. To
+use static plugin or use this as a dependency of another plugin, you need to
+request `%MagnumFont` component in CMake and link to
+`${MAGNUMPLUGINS_MAGNUMFONT_LIBRARIES}`. See @ref building-plugins and
+@ref cmake-plugins for more information.
 
 The font consists of two files, one text file containing character and glyph
 info and one TGA file containing the glyphs in distance field format. The font
@@ -102,7 +110,7 @@ class MagnumFont: public AbstractFont {
         ~MagnumFont();
 
     private:
-        class Data;
+        struct Data;
 
         Features doFeatures() const override;
 

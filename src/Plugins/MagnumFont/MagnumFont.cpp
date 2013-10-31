@@ -106,14 +106,13 @@ void MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
         Error() << "Text::MagnumFont::openData(): cannot open image file";
         return;
     }
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     if(!image) {
         Error() << "Text::MagnumFont::openData(): cannot load image file";
         return;
     }
 
     openInternal(std::move(conf), std::move(*image));
-    delete image;
 }
 
 void MagnumFont::doOpenFile(const std::string& filename, Float) {
@@ -138,14 +137,13 @@ void MagnumFont::doOpenFile(const std::string& filename, Float) {
         Error() << "Text::MagnumFont::openFile(): cannot open image file" << imageFilename;
         return;
     }
-    Trade::ImageData2D* image = importer.image2D(0);
+    std::optional<Trade::ImageData2D> image = importer.image2D(0);
     if(!image) {
         Error() << "Text::MagnumFont::openFile(): cannot load image file";
         return;
     }
 
     openInternal(std::move(conf), std::move(*image));
-    delete image;
 }
 
 void MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image) {
@@ -229,8 +227,8 @@ std::tuple<Rectangle, Rectangle, Vector2> MagnumFontLayouter::renderGlyph(Unsign
 
     const Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/fontSize,
                                                           Vector2(rectangle.size())/fontSize);
-    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/cache.textureSize(),
-                                       Vector2(rectangle.topRight())/cache.textureSize());
+    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/Vector2(cache.textureSize()),
+                                       Vector2(rectangle.topRight())/Vector2(cache.textureSize()));
 
     /* Absolute quad position, composed from cursor position, glyph offset
        and texture position, denormalized to requested text size */

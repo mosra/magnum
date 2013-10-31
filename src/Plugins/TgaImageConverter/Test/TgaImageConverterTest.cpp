@@ -27,8 +27,8 @@
 #include <Containers/Array.h>
 #include <TestSuite/Tester.h>
 #include <Utility/Directory.h>
+#include <ColorFormat.h>
 #include <Image.h>
-#include <ImageFormat.h>
 #include <Trade/ImageData.h>
 #include <TgaImageConverter/TgaImageConverter.h>
 #include <TgaImporter/TgaImporter.h>
@@ -49,9 +49,9 @@ class TgaImageConverterTest: public TestSuite::Tester {
 
 namespace {
     #ifndef MAGNUM_TARGET_GLES
-    const Image2D original(ImageFormat::BGR, ImageType::UnsignedByte, {2, 3}, new char[18]
+    const Image2D original(ColorFormat::BGR, ColorType::UnsignedByte, {2, 3}, new char[18]
     #else
-    const Image2D original(ImageFormat::RGB, ImageType::UnsignedByte, {2, 3}, new char[18]
+    const Image2D original(ColorFormat::RGB, ColorType::UnsignedByte, {2, 3}, new char[18]
     #endif
     {
         1, 2, 3, 2, 3, 4,
@@ -68,25 +68,25 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    ImageReference2D image(ImageFormat::RG, ImageType::UnsignedByte, {}, nullptr);
+    ImageReference2D image(ColorFormat::RG, ColorType::UnsignedByte, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image format ImageFormat::RG\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image format ColorFormat::RG\n");
 }
 
 void TgaImageConverterTest::wrongType() {
-    ImageReference2D image(ImageFormat::Red, ImageType::Float, {}, nullptr);
+    ImageReference2D image(ColorFormat::Red, ColorType::Float, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image type ImageType::Float\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image type ColorType::Float\n");
 }
 
 void TgaImageConverterTest::data() {
@@ -94,16 +94,16 @@ void TgaImageConverterTest::data() {
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.openData(data));
-    Trade::ImageData2D* converted = importer.image2D(0);
+    std::optional<Trade::ImageData2D> converted = importer.image2D(0);
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(converted->format(), ImageFormat::BGR);
+    CORRADE_COMPARE(converted->format(), ColorFormat::BGR);
     #else
-    CORRADE_COMPARE(converted->format(), ImageFormat::RGB);
+    CORRADE_COMPARE(converted->format(), ColorFormat::RGB);
     #endif
-    CORRADE_COMPARE(converted->type(), ImageType::UnsignedByte);
+    CORRADE_COMPARE(converted->type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
                     std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
 }
