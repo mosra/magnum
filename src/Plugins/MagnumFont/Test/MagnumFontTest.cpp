@@ -98,6 +98,7 @@ void MagnumFontTest::layout() {
 
 void MagnumFontTest::createGlyphCache() {
     /** @todo */
+    CORRADE_SKIP("Not yet implemented");
 }
 
 }}}
