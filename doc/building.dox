@@ -39,8 +39,6 @@ Minimal set of tools and libraries required for building is:
 - **Corrade** - Plugin management and utility library. See
   @ref building-corrade "Corrade download and installation guide" for more
   information.
-- **OpenAL** - By default needed by Audio library, but you can disable building
-  of it by setting `WITH_AUDIO` to `OFF` (see below).
 
 @section building-download Downloading the sources
 
@@ -138,11 +136,12 @@ CMake and C++ sources, see @ref cmake and @ref src/Magnum.h for more
 information. See also @ref corrade-cmake and @ref src/Corrade.h for additional
 information.
 
-By default the engine is built with everything except application libraries
-(see below). Using `WITH_*` CMake parameters you can specify which parts will
-be built and which not:
+By default the engine is built with nearly everything except Audio library and
+application libraries (see below). Using `WITH_*` CMake parameters you can
+specify which parts will be built and which not:
 
- - `WITH_AUDIO` - Audio library.
+ - `WITH_AUDIO` - Audio library. Depends on **OpenAL** library, not built by
+   default.
  - `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
    Primitives, SceneGraph, Shaders and Shapes libraries.
  - `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if `WITH_DEBUGTOOLS`
@@ -299,7 +298,7 @@ to find the compiler. NaCl currently supports only OpenGL ES 2, thus
 `TARGET_GLES` and `TARGET_GLES2` is always enabled.
 
 Then create build directories for x86-32 and x86-64 and run cmake and make in
-them. The toolchains need access to its platform file, so be sure to properly
+them. The toolchains need access to the platform file, so be sure to properly
 set **absolute** path to `modules/` directory containing `Platform/NaCl.cmake`.
 Also adapt `CMAKE_INSTALL_PREFIX` to the same value as in `NACL_PREFIX` in
 toolchain file.
@@ -308,7 +307,7 @@ toolchain file.
     cd build-nacl-x86-32
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-glibc-x86-32.cmake" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON \
@@ -319,7 +318,7 @@ toolchain file.
     cd build-nacl-x86-64
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-glibc-x86-64.cmake" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON
@@ -338,14 +337,14 @@ installed and configured.
 
 Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in `generic/Emscripten.cmake`
 to path where Emscripten is installed. Default is `/usr/emscripten`. Emscripten
-supports dynamic only to simplify porting and they are generally slower, thus
-`BUILD_STATIC` is implicitly enabled.
+supports dynamic libraries only to simplify porting and they are generally
+slower, thus `BUILD_STATIC` is implicitly enabled.
 
 Then create build directory and run cmake and make in it. The toolchain needs
 access to its platform file, so be sure to properly set **absolute** path to
-`modules/` directory containing `Platform/Emscripten.cmake`. Default is
-`/usr/emscripten`. Also set `CMAKE_INSTALL_PREFIX` to value which is contained
-in `CMAKE_FIND_ROOT_PATH` in toolchain file.
+`modules/` directory containing `Platform/Emscripten.cmake`. Also set
+`CMAKE_INSTALL_PREFIX` to value which is contained in `CMAKE_FIND_ROOT_PATH` in
+toolchain file.
 
     mkdir -p build-emscripten
     cd build-emscripten
