@@ -31,11 +31,10 @@
 #include <Text/GlyphCache.h>
 #include <Trade/ImageData.h>
 
-#include "FreeTypeFont/FreeTypeFont.h"
+#include "Text/AbstractFont.h"
 #include "MagnumFontConverter/MagnumFontConverter.h"
 #include "TgaImporter/TgaImporter.h"
 
-#include "freeTypeFontTestConfigure.h"
 #include "magnumFontTestConfigure.h"
 #include "magnumFontConverterTestConfigure.h"
 
@@ -45,19 +44,11 @@ class MagnumFontConverterTest: public Magnum::Test::AbstractOpenGLTester {
     public:
         explicit MagnumFontConverterTest();
 
-        ~MagnumFontConverterTest();
-
         void exportFont();
 };
 
 MagnumFontConverterTest::MagnumFontConverterTest() {
     addTests({&MagnumFontConverterTest::exportFont});
-
-    FreeTypeFont::initialize();
-}
-
-MagnumFontConverterTest::~MagnumFontConverterTest() {
-    FreeTypeFont::finalize();
 }
 
 void MagnumFontConverterTest::exportFont() {
@@ -65,9 +56,36 @@ void MagnumFontConverterTest::exportFont() {
     Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf"));
     Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga"));
 
-    /* Open font */
-    FreeTypeFont font;
-    CORRADE_VERIFY(font.openFile(Utility::Directory::join(FREETYPEFONT_TEST_DIR, "Oxygen.ttf"), 16.0f));
+    /* Fake font with fake cache */
+    class FakeFont: public Text::AbstractFont {
+        public:
+            explicit FakeFont() { _size = 16.0f; }
+
+        private:
+            void doClose() {}
+            bool doIsOpened() const { return true; }
+            Features doFeatures() const { return {}; }
+            AbstractLayouter* doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
+
+            UnsignedInt doGlyphId(const char32_t character) {
+                switch(character) {
+                    case 'W': return 2;
+                    case 'e': return 1;
+                }
+
+                return 0;
+            }
+
+            Vector2 doGlyphAdvance(const UnsignedInt glyph) {
+                switch(glyph) {
+                    case 0: return {8, 0};
+                    case 1: return {12, 0};
+                    case 2: return {23, 0};
+                }
+
+                CORRADE_ASSERT_UNREACHABLE();
+            }
+    } font;
 
     /* Create fake cache */
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
