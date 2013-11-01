@@ -149,13 +149,13 @@ which is automatically extracted from the reference in our constructor.
 
 @section AbstractFeature-explicit-specializations Explicit template specializations
 
-The following specialization are explicitly compiled into %SceneGraph library.
-For other specializations (e.g. using Double type) you have to use
-AbstractFeature.hpp implementation file to avoid linker errors. See also
-@ref compilation-speedup-hpp for more information.
+The following specialization are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type) you have to
+use @ref AbstractFeature.hpp implementation file to avoid linker errors. See
+also @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractFeature "AbstractFeature<2, Float>"
- - @ref AbstractFeature "AbstractFeature<3, Float>"
+-   @ref AbstractFeature2D
+-   @ref AbstractFeature3D
 
 @see @ref AbstractBasicFeature2D, @ref AbstractBasicFeature3D,
     @ref AbstractFeature2D, @ref AbstractFeature3D

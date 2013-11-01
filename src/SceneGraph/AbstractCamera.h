@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractCamera, enum Magnum::SceneGraph::AspectRatioPolicy, alias Magnum::SceneGraph::AbstractBasicCamera2D, Magnum::SceneGraph::AbstractBasicCamera3D, typedef Magnum::SceneGraph::AbstractCamera2D, Magnum::SceneGraph::AbstractCamera3D
+ * @brief Class @ref Magnum::SceneGraph::AbstractCamera, enum @ref Magnum::SceneGraph::AspectRatioPolicy, alias @ref Magnum::SceneGraph::AbstractBasicCamera2D, @ref Magnum::SceneGraph::AbstractBasicCamera3D, typedef @ref Magnum::SceneGraph::AbstractCamera2D, @ref Magnum::SceneGraph::AbstractCamera3D
  */
 
 #include "Math/Matrix3.h"
@@ -39,7 +39,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera aspect ratio policy
 
-@see AbstractCamera::setAspectRatioPolicy()
+@see @ref AbstractCamera::setAspectRatioPolicy()
 */
 enum class AspectRatioPolicy: UnsignedByte {
     NotPreserved,   /**< Don't preserve aspect ratio (default) */
@@ -60,16 +60,15 @@ instead.
 
 @section AbstractCamera-explicit-specializations Explicit template specializations
 
-The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using Double type) you have to use
-AbstractCamera.hpp implementation file to avoid linker errors. See also
-relevant sections in
-@ref Camera2D-explicit-specializations "Camera2D" and
-@ref Camera3D-explicit-specializations "Camera3D" class documentation or
+The following specialization are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type) you have to
+use @ref AbstractCamera.hpp implementation file to avoid linker errors. See
+also relevant sections in @ref Camera2D-explicit-specializations "Camera2D"
+and @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractCamera "AbstractCamera<2, Float>"
- - @ref AbstractCamera "AbstractCamera<3, Float>"
+-   @ref AbstractCamera2D
+-   @ref AbstractCamera3D
 
 @see @ref scenegraph, @ref AbstractBasicCamera2D, @ref AbstractBasicCamera3D,
     @ref Drawable, @ref DrawableGroup
@@ -101,7 +100,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *
          * Projection matrix handles e.g. perspective distortion and is applied
          * as last.
-         * @see projectionSize()
+         * @see @ref projectionSize()
          */
         typename DimensionTraits<dimensions, T>::MatrixType projectionMatrix() const { return _projectionMatrix; }
 
@@ -109,7 +108,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          * @brief Size of (near) XY plane in current projection
          *
          * Returns size of near XY plane computed from projection matrix.
-         * @see projectionMatrix()
+         * @see @ref projectionMatrix()
          */
         Math::Vector2<T> projectionSize() const {
             return {T(2.0)/_projectionMatrix[0].x(), T(2.0)/_projectionMatrix[1].y()};
@@ -123,7 +122,7 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
          *
          * Stores viewport size internally and recalculates projection matrix
          * according to aspect ratio policy.
-         * @see setAspectRatioPolicy()
+         * @see @ref setAspectRatioPolicy()
          */
         virtual void setViewport(const Vector2i& size);
 

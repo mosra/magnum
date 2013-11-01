@@ -129,13 +129,13 @@ calling @ref AnimableGroup::step(), saving precious frame time.
 
 @section Animable-explicit-specializations Explicit template specializations
 
-The following specialization are explicitly compiled into %SceneGraph library.
-For other specializations (e.g. using Double type) you have to use
-Animable.hpp implementation file to avoid linker errors. See also
+The following specialization are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type) you have to
+use @ref Animable.hpp implementation file to avoid linker errors. See also
 @ref compilation-speedup-hpp for more information.
 
- - @ref Animable "Animable<2, Float>", @ref AnimableGroup "AnimableGroup<2, Float>"
- - @ref Animable "Animable<3, Float>", @ref AnimableGroup "AnimableGroup<3, Float>"
+-   @ref Animable2D, @ref AnimableGroup2D
+-   @ref Animable3D, @ref AnimableGroup3D
 
 @see @ref scenegraph, @ref BasicAnimable2D, @ref BasicAnimable3D,
     @ref Animable2D, @ref Animable3D, @ref AnimableGroup

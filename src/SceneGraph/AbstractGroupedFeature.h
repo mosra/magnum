@@ -54,13 +54,13 @@ typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
 
 @section AbstractGroupedFeature-explicit-specializations Explicit template specializations
 
-The following specialization are explicitly compiled into %SceneGraph library.
-For other specializations (e.g. using Double type) you have to use
-AbstractGroupedFeature.hpp implementation file to avoid linker errors. See also
+The following specialization are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type) you have to
+use @ref FeatureGroup.hpp implementation file to avoid linker errors. See also
 @ref compilation-speedup-hpp for more information.
 
- - @ref AbstractFeatureGroup "AbstractFeatureGroup<2, Float>"
- - @ref AbstractFeatureGroup "AbstractFeatureGroup<3, Float>"
+-   @ref FeatureGroup2D
+-   @ref FeatureGroup3D
 
 @see @ref scenegraph, @ref AbstractBasicGroupedFeature2D,
     @ref AbstractBasicGroupedFeature3D, @ref AbstractGroupedFeature2D,

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for AbstractFeature.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractFeature.h
  */
 
 #include "AbstractFeature.h"

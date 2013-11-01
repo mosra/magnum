@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for Object.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractObject.h, @ref AbstractTransformation.h and @ref Object.h
  */
 
 #include "AbstractTransformation.h"

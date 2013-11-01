@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for Animable.h and AnimableGroup.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Animable.h and @ref AnimableGroup.h
  */
 
 #include "AnimableGroup.h"
