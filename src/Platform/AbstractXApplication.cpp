@@ -168,6 +168,12 @@ int AbstractXApplication::exec() {
     return 0;
 }
 
+void AbstractXApplication::keyPressEvent(KeyEvent&) {}
+void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
+void AbstractXApplication::mousePressEvent(MouseEvent&) {}
+void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
+void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
+
 AbstractXApplication::Configuration::Configuration(): _title("Magnum X Application"), _size(800, 600) {}
 AbstractXApplication::Configuration::~Configuration() = default;
 

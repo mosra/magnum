@@ -241,6 +241,12 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     #endif
 }
 
+void Sdl2Application::keyPressEvent(KeyEvent&) {}
+void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
+void Sdl2Application::mousePressEvent(MouseEvent&) {}
+void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
+void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
+
 Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}
 Sdl2Application::Configuration::~Configuration() = default;
 

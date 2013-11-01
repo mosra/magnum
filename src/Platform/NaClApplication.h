@@ -666,13 +666,6 @@ typedef NaClApplication Application;
 CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Buttons)
 
-/* Implementations for inline functions with unused parameters */
-inline void NaClApplication::keyPressEvent(KeyEvent&) {}
-inline void NaClApplication::keyReleaseEvent(KeyEvent&) {}
-inline void NaClApplication::mousePressEvent(MouseEvent&) {}
-inline void NaClApplication::mouseReleaseEvent(MouseEvent&) {}
-inline void NaClApplication::mouseMoveEvent(MouseMoveEvent&) {}
-
 }}
 
 #endif

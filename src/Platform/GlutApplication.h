@@ -542,12 +542,6 @@ typedef GlutApplication Application;
 
 CORRADE_ENUMSET_OPERATORS(GlutApplication::MouseMoveEvent::Buttons)
 
-/* Implementations for inline functions with unused parameters */
-inline void GlutApplication::keyPressEvent(KeyEvent&) {}
-inline void GlutApplication::mousePressEvent(MouseEvent&) {}
-inline void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
-inline void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
-
 }}
 
 #endif

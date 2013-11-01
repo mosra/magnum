@@ -653,13 +653,6 @@ typedef Sdl2Application Application;
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
 
-/* Implementations for inline functions with unused parameters */
-inline void Sdl2Application::keyPressEvent(KeyEvent&) {}
-inline void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
-inline void Sdl2Application::mousePressEvent(MouseEvent&) {}
-inline void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
-inline void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
-
 }}
 
 #endif
