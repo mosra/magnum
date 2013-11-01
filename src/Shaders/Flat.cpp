@@ -81,7 +81,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
     #endif
     {
         if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureLayer);
