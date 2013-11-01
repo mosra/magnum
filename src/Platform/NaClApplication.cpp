@@ -30,6 +30,7 @@
 #include <Utility/NaClStreamBuffer.h>
 
 #include "Context.h"
+#include "Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
 
@@ -253,5 +254,8 @@ void NaClApplication::keyReleaseEvent(KeyEvent&) {}
 void NaClApplication::mousePressEvent(MouseEvent&) {}
 void NaClApplication::mouseReleaseEvent(MouseEvent&) {}
 void NaClApplication::mouseMoveEvent(MouseMoveEvent&) {}
+
+template class BasicScreen<NaClApplication>;
+template class BasicScreenedApplication<NaClApplication>;
 
 }}

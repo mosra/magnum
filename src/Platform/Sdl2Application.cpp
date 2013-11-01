@@ -29,6 +29,7 @@
 #endif
 
 #include "Context.h"
+#include "Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
 
@@ -261,5 +262,8 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifier
     modifiersLoaded = true;
     return _modifiers = fixedModifiers(SDL_GetModState());
 }
+
+template class BasicScreen<Sdl2Application>;
+template class BasicScreenedApplication<Sdl2Application>;
 
 }}

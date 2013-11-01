@@ -30,6 +30,7 @@
 
 #include <Containers/EnumSet.h>
 
+#include "Platform/Platform.h"
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
@@ -644,6 +645,8 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef Sdl2Application Application;
+typedef BasicScreen<Sdl2Application> Screen;
+typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_SDL2APPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

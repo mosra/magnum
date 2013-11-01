@@ -30,6 +30,7 @@
 
 #include <string>
 
+#include "Platform/Platform.h"
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
@@ -543,6 +544,8 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef GlutApplication Application;
+typedef BasicScreen<GlutApplication> Screen;
+typedef BasicScreenedApplication<GlutApplication> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLUTAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

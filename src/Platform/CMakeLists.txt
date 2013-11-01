@@ -22,6 +22,15 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# Headers
+set(Platform_HEADERS
+    Platform.h
+    Screen.h
+    ScreenedApplication.h
+    ScreenedApplication.hpp)
+
+install(FILES ${Platform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)

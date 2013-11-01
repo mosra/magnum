@@ -1,3 +1,5 @@
+#ifndef Magnum_Platform_Platform_h
+#define Magnum_Platform_Platform_h
 /*
     This file is part of Magnum.
 
@@ -22,18 +24,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "XEglApplication.h"
-
-#include "Platform/ScreenedApplication.hpp"
-#include "Platform/Implementation/EglContextHandler.h"
+/** @file
+ * @brief Forward declarations for @ref Magnum::Platform namespace
+ */
 
 namespace Magnum { namespace Platform {
 
-XEglApplication::XEglApplication(const Arguments& arguments, const Configuration& configuration): AbstractXApplication(new Implementation::EglContextHandler, arguments, configuration) {}
-
-XEglApplication::XEglApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new Implementation::EglContextHandler, arguments, nullptr) {}
-
-template class BasicScreen<XEglApplication>;
-template class BasicScreenedApplication<XEglApplication>;
+template<class> class BasicScreen;
+template<class> class BasicScreenedApplication;
 
 }}
+
+#endif

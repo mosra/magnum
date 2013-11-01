@@ -24,6 +24,7 @@
 
 #include "GlxApplication.h"
 
+#include "Platform/ScreenedApplication.hpp"
 #include "Platform/Implementation/GlxContextHandler.h"
 
 namespace Magnum { namespace Platform {
@@ -31,5 +32,8 @@ namespace Magnum { namespace Platform {
 GlxApplication::GlxApplication(const Arguments& arguments, const Configuration& configuration): AbstractXApplication(new Implementation::GlxContextHandler, arguments, configuration) {}
 
 GlxApplication::GlxApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new Implementation::GlxContextHandler, arguments, nullptr) {}
+
+template class BasicScreen<GlxApplication>;
+template class BasicScreenedApplication<GlxApplication>;
 
 }}
