@@ -32,8 +32,9 @@
 
 #include "Math/Vector2.h"
 #include "Magnum.h"
-#include "OpenGL.h"
 
+/* We must include our own GL headers first to avoid conflicts */
+#include "OpenGL.h"
 #include <GL/freeglut.h>
 
 namespace Magnum {
