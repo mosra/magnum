@@ -198,6 +198,14 @@ class GlutApplication {
          */
         virtual void keyPressEvent(KeyEvent& event);
 
+        /**
+         * @brief Key release event
+         *
+         * Included only for compatibility with other toolkits, doesn't get
+         * called at all.
+         */
+        virtual void keyReleaseEvent(KeyEvent& event);
+
         /*@}*/
 
         /** @{ @name Mouse handling */

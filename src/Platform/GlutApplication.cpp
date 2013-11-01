@@ -109,6 +109,7 @@ void GlutApplication::staticMouseMoveEvent(int x, int y) {
 }
 
 void GlutApplication::keyPressEvent(KeyEvent&) {}
+void GlutApplication::keyReleaseEvent(KeyEvent&) {}
 void GlutApplication::mousePressEvent(MouseEvent&) {}
 void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
