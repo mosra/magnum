@@ -344,8 +344,9 @@ Converts integral value from full range of given *unsigned* integral type to
 value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$.
 
 @note For best precision, resulting `FloatingPoint` type should be always
-    larger that `Integral` type (e.g. Double from Int, LongDouble from Long and
-    similarly for vector types).
+    larger that `Integral` type (e.g. @ref Magnum::Float "Float" from
+    @ref Magnum::Short "Short", @ref Magnum::Double "Double" from
+    @ref Magnum::Int "Int" and similarly for vector types).
 
 @attention To ensure the integral type is correctly detected when using
     literals, this function should be called with both template parameters
@@ -358,7 +359,7 @@ Float a = normalize<Float>('\xFF');
 Float b = normalize<Float, UnsignedByte>('\xFF');
 @endcode
 
-@see denormalize()
+@see @ref denormalize()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class FloatingPoint, class Integral> inline FloatingPoint normalize(const Integral& value);
@@ -393,13 +394,14 @@ Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
 integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
-    resulting `Integral` type (e.g. Double to Int, LongDouble to Long and
-    similarly for vector types).
+    resulting `Integral` type (e.g. @ref Magnum::Float "Float" to
+    @ref Magnum::Short "Short", @ref Magnum::Double "Double" to @ref Magnum::Int "Int"
+    and similarly for vector types).
 
 @attention Return value for floating point numbers outside the normalized
     range is undefined.
 
-@see normalize()
+@see @ref normalize()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, class FloatingPoint> inline Integral denormalize(const FloatingPoint& value);
