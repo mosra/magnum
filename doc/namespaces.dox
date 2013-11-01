@@ -139,6 +139,10 @@ library, you need to request `%MeshTools` component in CMake and link to
 information.
 */
 
+/** @dir Plugins
+ * @brief Basic plugins
+ */
+
 /** @dir Primitives
  * @brief Namespace Magnum::Primitives
  */
