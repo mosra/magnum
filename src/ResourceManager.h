@@ -453,9 +453,14 @@ template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::
 
 namespace Implementation {
 
+template<class T> void safeDelete(T* data) {
+    static_assert(sizeof(T) > 0, "Cannot delete pointer to incomplete type");
+    delete data;
+}
+
 template<class T> ResourceManagerData<T>::~ResourceManagerData() {
     /* Loaders are already deleted via freeLoaders() from ResourceManager */
-    delete _fallback;
+    safeDelete(_fallback);
 }
 
 template<class T> std::size_t ResourceManagerData<T>::referenceCount(const ResourceKey key) const {
@@ -509,7 +514,7 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
     /* If nothing is referencing reference-counted resource, we're done */
     if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
         Warning() << "ResourceManager: Reference-counted resource with key" << key << "isn't referenced from anywhere, deleting it immediately";
-        delete data;
+        safeDelete(data);
 
         /* Delete also already present resource (it could be here
             because previous policy could be other than
@@ -527,7 +532,7 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
         #endif
 
     /* Replace previous data */
-    delete it->second.data;
+    safeDelete(it->second.data);
     it->second.data = data;
     it->second.state = state;
     it->second.policy = policy;
@@ -535,7 +540,7 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
 }
 
 template<class T> void ResourceManagerData<T>::setFallback(T* const data) {
-    delete _fallback;
+    safeDelete(_fallback);
     _fallback = data;
 }
 
@@ -595,7 +600,7 @@ template<class T> struct ResourceManagerData<T>::Data {
 template<class T> inline ResourceManagerData<T>::Data::~Data() {
     CORRADE_ASSERT(referenceCount == 0,
         "ResourceManager: cleared/destroyed while data are still referenced", );
-    delete data;
+    safeDelete(data);
 }
 
 }
