@@ -57,8 +57,22 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
         }
 
         /**
+         * @brief Set background color
+         * @return Reference to self (for method chaining)
+         *
+         * Default is transparent black.
+         * @see @ref setColor()
+         */
+        Vector& setBackgroundColor(const Color4& color) {
+            AbstractShaderProgram::setUniform(backgroundColorUniform, color);
+            return *this;
+        }
+
+        /**
          * @brief Set fill color
          * @return Reference to self (for method chaining)
+         *
+         * @see @ref setBackgroundColor()
          */
         Vector& setColor(const Color4& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
@@ -67,6 +81,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
 
     private:
         Int transformationProjectionMatrixUniform,
+            backgroundColorUniform,
             colorUniform;
 };
 
