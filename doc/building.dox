@@ -157,11 +157,6 @@ you can specify which parts will be built and which not:
 -   `WITH_TEXT` - Text library. Enables also building of TextureTools library.
 -   `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if
     `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
--   `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
-    the engine and OpenGL capabilities.
--   `WITH_DISTANCEFIELDCONVERTER` - `magnum-distancefield` executable for
-    converting black&white images to distance field textures. Enables also
-    building of TextureTools library.
 
 None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
@@ -174,6 +169,17 @@ platform best:
 -   `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
+
+There are also a few command-line utilities. They are currently available only
+on Linux and are disabled by default:
+
+-   `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
+    the engine and OpenGL capabilities.
+-   `WITH_FONTCONVERTER` - `magnum-fontconverter` executable for converting
+    fonts to raster ones. Enables also building of Text library.
+-   `WITH_DISTANCEFIELDCONVERTER` - `magnum-distancefieldconverter` executable
+    for converting black&white images to distance field textures. Enables also
+    building of TextureTools library.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,

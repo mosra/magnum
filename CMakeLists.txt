@@ -66,6 +66,7 @@ if(UNIX OR CORRADE_TARGET_NACL)
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
 if(UNIX)
+    cmake_dependent_option(WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT TARGET_GLES" OFF)
     cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
 endif()
 

@@ -51,6 +51,21 @@ install(TARGETS MagnumText
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)
 
+if(WITH_FONTCONVERTER)
+    if(NOT UNIX OR TARGET_GLES)
+        message(FATAL_ERROR "magnum-fontconverter is not available on this platform. Set WITH_FONTCONVERTER to OFF to suppress this warning.")
+    endif()
+
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+    add_executable(magnum-fontconverter fontconverter.cpp)
+    target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+    install(TARGETS magnum-fontconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
+
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
