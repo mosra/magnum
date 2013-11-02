@@ -48,8 +48,6 @@ cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTO
 cmake_dependent_option(WITH_SHAPES "Build Shapes library" ON "NOT WITH_DEBUGTOOLS" ON)
 option(WITH_TEXT "Build Text library" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
-cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefield utility" OFF "NOT TARGET_GLES" OFF)
 
 # Application libraries
 if(CORRADE_TARGET_NACL)
@@ -61,6 +59,14 @@ else()
     cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
     cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
+endif()
+
+# Utilities (currently depending on WindowlessGlxApplication)
+if(UNIX OR CORRADE_TARGET_NACL)
+    option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
+endif()
+if(UNIX)
+    cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
 endif()
 
 # Plugins

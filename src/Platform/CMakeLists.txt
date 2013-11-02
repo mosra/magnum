@@ -178,7 +178,7 @@ endif()
 # Magnum Info
 if(WITH_MAGNUMINFO)
     if(NOT UNIX AND NOT CORRADE_TARGET_NACL)
-        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to suppress this warning.")
+        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to skip building it.")
     endif()
 
     add_executable(magnum-info magnum-info.cpp)
