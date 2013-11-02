@@ -39,7 +39,7 @@
 
 #include "configure.h"
 
-namespace Magnum {
+namespace Magnum { namespace TextureTools {
 
 class DistanceFieldConverter: public Platform::WindowlessApplication {
     public:
@@ -123,6 +123,6 @@ int DistanceFieldConverter::exec() {
     return 0;
 }
 
-}
+}}
 
-MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::DistanceFieldConverter)
+MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::TextureTools::DistanceFieldConverter)
