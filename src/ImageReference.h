@@ -48,6 +48,7 @@ to change image properties, only data pointer.
 
 Interchangeable with Image, BufferImage or Trade::ImageData.
 @see ImageReference1D, ImageReference2D, ImageReference3D
+@todo Provide const version somewhat
 */
 template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
     public:
@@ -59,9 +60,6 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * @param type              Data type of pixel data
          * @param size              %Image size
          * @param data              %Image data
-         *
-         * Note that the image data are not copied on construction, but they
-         * are deleted on class destruction.
          */
         constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
