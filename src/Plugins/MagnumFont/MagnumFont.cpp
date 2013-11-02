@@ -176,12 +176,12 @@ Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
     return glyph < _opened->glyphAdvance.size() ? _opened->glyphAdvance[glyph] : Vector2();
 }
 
-GlyphCache* MagnumFont::doCreateGlyphCache() {
+std::unique_ptr<GlyphCache> MagnumFont::doCreateGlyphCache() {
     /* Set cache image */
-    auto cache = new Text::GlyphCache(
+    std::unique_ptr<GlyphCache> cache(new Text::GlyphCache(
         _opened->conf.value<Vector2i>("originalImageSize"),
         _opened->image.size(),
-        _opened->conf.value<Vector2i>("padding"));
+        _opened->conf.value<Vector2i>("padding")));
     cache->setImage({}, _opened->image);
 
     /* Fill glyph map */
@@ -192,8 +192,8 @@ GlyphCache* MagnumFont::doCreateGlyphCache() {
     return cache;
 }
 
-AbstractLayouter* MagnumFont::doLayout(const GlyphCache& cache, Float size, const std::string& text) {
-    return new MagnumFontLayouter(_opened->glyphId, _opened->glyphAdvance, cache, this->size(), size, text);
+std::unique_ptr<AbstractLayouter> MagnumFont::doLayout(const GlyphCache& cache, Float size, const std::string& text) {
+    return std::unique_ptr<MagnumFontLayouter>(new MagnumFontLayouter(_opened->glyphId, _opened->glyphAdvance, cache, this->size(), size, text));
 }
 
 namespace {

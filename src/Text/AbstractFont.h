@@ -28,8 +28,9 @@
  * @brief Class Magnum::Text::AbstractFont, Magnum::Text::AbstractLayouter
  */
 
-#include <tuple>
+#include <memory>
 #include <string>
+#include <tuple>
 #include <PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
@@ -65,7 +66,7 @@ checked by the implementation:
     there is any file opened.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.1")
 
     public:
         /**
@@ -185,7 +186,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Other fonts support only partial glyph cache filling, see
          * @ref fillGlyphCache().
          */
-        GlyphCache* createGlyphCache();
+        std::unique_ptr<GlyphCache> createGlyphCache();
 
         /**
          * @brief Layout the text using font's own layouter
@@ -195,7 +196,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * @see fillGlyphCache(), createGlyphCache()
          */
-        AbstractLayouter* layout(const GlyphCache& cache, Float size, const std::string& text);
+        std::unique_ptr<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -262,10 +263,10 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for createGlyphCache()
          */
-        virtual GlyphCache* doCreateGlyphCache();
+        virtual std::unique_ptr<GlyphCache> doCreateGlyphCache();
 
         /** @brief Implementation for layout() */
-        virtual AbstractLayouter* doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
+        virtual std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)

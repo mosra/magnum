@@ -125,9 +125,9 @@ class MagnumFont: public AbstractFont {
 
         Vector2 doGlyphAdvance(UnsignedInt glyph) override;
 
-        GlyphCache* doCreateGlyphCache() override;
+        std::unique_ptr<GlyphCache> doCreateGlyphCache() override;
 
-        AbstractLayouter* doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
+        std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
 
         Data* _opened;
 

@@ -61,7 +61,7 @@ struct Vertex {
 }
 
 std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractTextRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text) {
-    AbstractLayouter* const layouter = font.layout(cache, size, text);
+    const auto layouter = font.layout(cache, size, text);
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
     /* Output data */
@@ -115,12 +115,11 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     std::vector<UnsignedInt> indices(layouter->glyphCount()*6);
     createIndices<UnsignedInt>(indices.data(), layouter->glyphCount());
 
-    delete layouter;
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
 std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
-    AbstractLayouter* const layouter = font.layout(cache, size, text);
+    const auto layouter = font.layout(cache, size, text);
 
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
     const UnsignedInt indexCount = layouter->glyphCount()*6;
@@ -190,7 +189,6 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, con
         .setIndexCount(indexCount)
         .setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
-    delete layouter;
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
@@ -328,7 +326,7 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
 }
 
 void AbstractTextRenderer::render(const std::string& text) {
-    AbstractLayouter* layouter = font.layout(cache, size, text);
+    const auto layouter = font.layout(cache, size, text);
 
     CORRADE_ASSERT(layouter->glyphCount() <= _capacity,
         "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );
@@ -370,8 +368,6 @@ void AbstractTextRenderer::render(const std::string& text) {
 
     /* Update index count */
     _mesh.setIndexCount(layouter->glyphCount()*6);
-
-    delete layouter;
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

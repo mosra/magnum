@@ -28,6 +28,7 @@
 #include <Utility/Directory.h>
 
 #include "Text/AbstractFontConverter.h"
+#include "Text/GlyphCache.h"
 
 #include "testConfigure.h"
 
@@ -232,8 +233,9 @@ class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
     private:
         Features doFeatures() const override { return Feature::ConvertData|Feature::ImportGlyphCache; }
 
-        GlyphCache* doImportGlyphCacheFromSingleData(const Containers::ArrayReference<const unsigned char> data) const override {
-            if(data.size() == 1 && data[0] == 0xa5) return reinterpret_cast<GlyphCache*>(0xdeadbeef);
+        std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayReference<const unsigned char> data) const override {
+            if(data.size() == 1 && data[0] == 0xa5)
+                return std::unique_ptr<GlyphCache>(reinterpret_cast<GlyphCache*>(0xdeadbeef));
             return nullptr;
         }
 };
@@ -244,15 +246,21 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     /* doImportFromData() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
     const unsigned char data[] = {0xa5};
-    GlyphCache* cache = importer.importGlyphCacheFromData({{{}, data}});
-    CORRADE_COMPARE(cache, reinterpret_cast<GlyphCache*>(0xdeadbeef));
+    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromData({{{}, data}});
+    CORRADE_COMPARE(cache.get(), reinterpret_cast<GlyphCache*>(0xdeadbeef));
+
+    /* The pointer is invalid, avoid deletion */
+    cache.release();
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFile() {
     /* doImportFromFile() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
-    GlyphCache* cache = importer.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
-    CORRADE_COMPARE(cache, reinterpret_cast<GlyphCache*>(0xdeadbeef));
+    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
+    CORRADE_COMPARE(cache.get(), reinterpret_cast<GlyphCache*>(0xdeadbeef));
+
+    /* The pointer is invalid, avoid deletion */
+    cache.release();
 }
 
 }}}

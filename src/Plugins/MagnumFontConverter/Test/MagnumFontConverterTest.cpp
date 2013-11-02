@@ -66,7 +66,7 @@ void MagnumFontConverterTest::exportFont() {
             void doClose() {}
             bool doIsOpened() const { return true; }
             Features doFeatures() const { return {}; }
-            AbstractLayouter* doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
+            std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
 
             UnsignedInt doGlyphId(const char32_t character) {
                 switch(character) {

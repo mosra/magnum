@@ -73,8 +73,8 @@ class TestFont: public Text::AbstractFont {
         UnsignedInt doGlyphId(char32_t) override { return 0; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-        AbstractLayouter* doLayout(const GlyphCache&, Float size, const std::string& text) override {
-            return new TestLayouter(size, text.size());
+        std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float size, const std::string& text) override {
+            return std::unique_ptr<AbstractLayouter>(new TestLayouter(size, text.size()));
         }
 };
 

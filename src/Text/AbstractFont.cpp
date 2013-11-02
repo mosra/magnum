@@ -28,6 +28,8 @@
 #include <Containers/Array.h>
 #include <Utility/Unicode.h>
 
+#include "Text/GlyphCache.h"
+
 namespace Magnum { namespace Text {
 
 AbstractFont::AbstractFont(): _size(0.0f) {}
@@ -136,7 +138,7 @@ void AbstractFont::doFillGlyphCache(GlyphCache&, const std::vector<char32_t>&)
     CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 
-GlyphCache* AbstractFont::createGlyphCache() {
+std::unique_ptr<GlyphCache> AbstractFont::createGlyphCache() {
     CORRADE_ASSERT(isOpened(),
         "Text::AbstractFont::createGlyphCache(): no font opened", nullptr);
     CORRADE_ASSERT(features() & Feature::PreparedGlyphCache,
@@ -145,11 +147,11 @@ GlyphCache* AbstractFont::createGlyphCache() {
     return doCreateGlyphCache();
 }
 
-GlyphCache* AbstractFont::doCreateGlyphCache() {
+std::unique_ptr<GlyphCache> AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
 }
 
-AbstractLayouter* AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
+std::unique_ptr<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
 
     return doLayout(cache, size, text);

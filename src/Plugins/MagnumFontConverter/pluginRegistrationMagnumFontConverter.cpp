@@ -25,4 +25,4 @@
 #include "MagnumFontConverter/MagnumFontConverter.h"
 
 CORRADE_PLUGIN_REGISTER(MagnumFontConverter, Magnum::Text::MagnumFontConverter,
-    "cz.mosra.magnum.Text.AbstractFontConverter/0.1")
+    "cz.mosra.magnum.Text.AbstractFontConverter/0.1.1")

@@ -28,6 +28,7 @@
  * @brief Class Magnum::Text::AbstractFontConverter
  */
 
+#include <memory>
 #include <PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
@@ -61,7 +62,7 @@ checked by the implementation:
     array passed.
 */
 class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFontConverter/0.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFontConverter/0.1.1")
 
     public:
         /**
@@ -222,7 +223,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportGlyphCacheToData()
          */
-        GlyphCache* importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data) const;
+        std::unique_ptr<GlyphCache> importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data) const;
 
         /**
          * @brief Import glyph cache from single raw data
@@ -234,7 +235,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportFontToSingleData()
          */
-        GlyphCache* importGlyphCacheFromSingleData(Containers::ArrayReference<const unsigned char> data) const;
+        std::unique_ptr<GlyphCache> importGlyphCacheFromSingleData(Containers::ArrayReference<const unsigned char> data) const;
 
         /**
          * @brief Import glyph cache from file
@@ -247,7 +248,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromData(),
          *      @ref exportGlyphCacheToFile()
          */
-        GlyphCache* importGlyphCacheFromFile(const std::string& filename) const;
+        std::unique_ptr<GlyphCache> importGlyphCacheFromFile(const std::string& filename) const;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -326,10 +327,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If the plugin doesn't have @ref Feature::MultiFile, default
          * implementation calls @ref doImportGlyphCacheFromSingleData().
          */
-        virtual GlyphCache* doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data) const;
+        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data) const;
 
         /** @brief Implementation for importGlyphCacheFromSingleData() */
-        virtual GlyphCache* doImportGlyphCacheFromSingleData(Containers::ArrayReference<const unsigned char> data) const;
+        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(Containers::ArrayReference<const unsigned char> data) const;
 
         /**
          * @brief Implementation for @ref importGlyphCacheFromFile()
@@ -338,7 +339,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * have @ref Feature::MultiFile, default implementation opens the file
          * and calls @ref doImportGlyphCacheFromSingleData() with its contents.
          */
-        virtual GlyphCache* doImportGlyphCacheFromFile(const std::string& filename) const;
+        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromFile(const std::string& filename) const;
 
     private:
         #ifndef _WIN32
