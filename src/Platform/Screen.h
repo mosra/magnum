@@ -134,12 +134,12 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
         void setPropagatedEvents(PropagatedEvents events) { _propagatedEvents = events; }
 
         /** @brief %Application holding this screen */
-        BasicScreenedApplication<Application>* application() {
-            return Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list();
+        template<class T = BasicScreenedApplication<Application>> T* application() {
+            return static_cast<T*>(Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list());
         }
         /** @overload */
-        const BasicScreenedApplication<Application>* application() const {
-            return Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list();
+        template<class T = BasicScreenedApplication<Application>> const T* application() const {
+            return static_cast<const T*>(Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list());
         }
 
         /**
