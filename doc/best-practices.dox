@@ -57,17 +57,17 @@ information.
 
 - [Best practices for 3D graphics](https://developers.google.com/native-client/beta/devguide/coding/3D-graphics#best-practices)
 
-@subsubsection best-practices-nacl-buffer-types Native Client requires unique buffer binding
+@subsection best-practices-web-buffer-types Native Client and Emscripten require unique buffer binding
 
-As noted in the above link, buffers in NaCl implementation need to be bound
-only to one unique target, i.e., @ref Buffer bound to @ref Buffer::Target::Array
-cannot be later rebound to @ref Buffer::Target::ElementArray. However, %Magnum
-by default uses any sufficient target when binding the buffer internally (e.g.
-for setting data or copying). To avoid this, set target hint to desired target,
-either in constructor or using @ref Buffer::setTargetHint().
+As noted in the above link, buffers in NaCl implementation and and also in
+WebGL need to be bound only to one unique target, i.e., @ref Buffer bound to
+@ref Buffer::Target::Array cannot be later rebound to @ref Buffer::Target::ElementArray.
+However, %Magnum by default uses any sufficient target when binding the buffer
+internally (e.g. for setting data or copying). To avoid this, set target hint
+to desired target, either in constructor or using @ref Buffer::setTargetHint().
 
 To ease up the development, @ref Mesh checks proper target hint when adding
-vertex and index buffers.
+vertex and index buffers in both Native Client and Emscripten.
 
 @section best-practices-hw Hardware-specific
 
