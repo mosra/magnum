@@ -44,12 +44,14 @@ template<class Application> void BasicScreen<Application>::mouseMoveEvent(MouseM
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::addScreen(BasicScreen<Application>& screen) {
     Containers::LinkedList<BasicScreen<Application>>::insert(&screen);
     if(frontScreen() == &screen) screen.focusEvent();
+    Application::redraw();
     return *this;
 }
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::removeScreen(BasicScreen<Application>& screen) {
     screen.blurEvent();
     Containers::LinkedList<BasicScreen<Application>>::erase(&screen);
+    Application::redraw();
     return *this;
 }
 
@@ -60,6 +62,7 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
     frontScreen()->blurEvent();
     Containers::LinkedList<BasicScreen<Application>>::move(&screen, frontScreen());
     screen.focusEvent();
+    Application::redraw();
     return *this;
 }
 
