@@ -130,6 +130,20 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
         explicit Drawable(AbstractObject<dimensions, T>& object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
 
         /**
+         * @brief Group containing this drawable
+         *
+         * If the drawable doesn't belong to any group, returns `nullptr`.
+         */
+        DrawableGroup<dimensions, T>* drawables() {
+            return AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group();
+        }
+
+        /** @overload */
+        const DrawableGroup<dimensions, T>* drawables() const {
+            return AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group();
+        }
+
+        /**
          * @brief Draw the object using given camera
          * @param transformationMatrix      %Object transformation relative
          *      to camera
