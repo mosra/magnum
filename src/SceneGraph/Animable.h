@@ -216,12 +216,28 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animabl
         }
 
         /**
-         * @brief %Animable group containing this animable
+         * @brief Group containing this animable
          *
          * If the animable doesn't belong to any group, returns `nullptr`.
          */
-        AnimableGroup<dimensions, T>* group();
-        const AnimableGroup<dimensions, T>* group() const; /**< @overload */
+        AnimableGroup<dimensions, T>* animables();
+        const AnimableGroup<dimensions, T>* animables() const; /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copydoc animables()
+         * @deprecated Use @ref Magnum::SceneGraph::Animable::animables() "animables()"
+         *      instead.
+         */
+        AnimableGroup<dimensions, T>* group() { return animables(); }
+
+        /**
+         * @copydoc animables()
+         * @deprecated Use @ref Magnum::SceneGraph::Animable::animables() "animables()"
+         *      instead.
+         */
+        const AnimableGroup<dimensions, T>* group() const { return animables(); }
+        #endif
 
     protected:
         /**
