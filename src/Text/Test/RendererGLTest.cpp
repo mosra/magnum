@@ -24,23 +24,23 @@
 
 #include "Test/AbstractOpenGLTester.h"
 #include "Text/AbstractFont.h"
-#include "Text/TextRenderer.h"
+#include "Text/Renderer.h"
 
 namespace Magnum { namespace Text { namespace Test {
 
-class TextRendererGLTest: public Magnum::Test::AbstractOpenGLTester {
+class RendererGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit TextRendererGLTest();
+        explicit RendererGLTest();
 
         void renderData();
         void renderMesh();
         void mutableText();
 };
 
-TextRendererGLTest::TextRendererGLTest() {
-    addTests({&TextRendererGLTest::renderData,
-              &TextRendererGLTest::renderMesh,
-              &TextRendererGLTest::mutableText});
+RendererGLTest::RendererGLTest() {
+    addTests({&RendererGLTest::renderData,
+              &RendererGLTest::renderMesh,
+              &RendererGLTest::mutableText});
 }
 
 namespace {
@@ -80,13 +80,13 @@ class TestFont: public Text::AbstractFont {
 
 }
 
-void TextRendererGLTest::renderData() {
+void RendererGLTest::renderData() {
     TestFont font;
     std::vector<Vector2> positions;
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
     Rectangle bounds;
-    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractTextRenderer::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc");
+    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractRenderer::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc");
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
     CORRADE_COMPARE(positions.size(), 12);
@@ -160,12 +160,12 @@ void TextRendererGLTest::renderData() {
     CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
 }
 
-void TextRendererGLTest::renderMesh() {
+void RendererGLTest::renderMesh() {
     TestFont font;
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
     Rectangle bounds;
-    std::tie(mesh, bounds) = Text::TextRenderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
+    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to verify this on ES? */
@@ -201,9 +201,9 @@ void TextRendererGLTest::renderMesh() {
     CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
 }
 
-void TextRendererGLTest::mutableText() {
+void RendererGLTest::mutableText() {
     TestFont font;
-    Text::TextRenderer2D renderer(font, *static_cast<GlyphCache*>(nullptr), 0.25f);
+    Text::Renderer2D renderer(font, *static_cast<GlyphCache*>(nullptr), 0.25f);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
     CORRADE_COMPARE(renderer.rectangle(), Rectangle());
@@ -253,4 +253,4 @@ void TextRendererGLTest::mutableText() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::TextRendererGLTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::RendererGLTest)

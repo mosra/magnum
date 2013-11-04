@@ -27,16 +27,21 @@ set(MagnumText_SRCS
     AbstractFontConverter.cpp
     DistanceFieldGlyphCache.cpp
     GlyphCache.cpp
-    TextRenderer.cpp)
+    Renderer.cpp)
 set(MagnumText_HEADERS
     AbstractFont.h
     AbstractFontConverter.h
     DistanceFieldGlyphCache.h
     GlyphCache.h
+    Renderer.h
     Text.h
-    TextRenderer.h
 
     magnumTextVisibility.h)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    set(MagnumText_HEADERS ${MagnumText_HEADERS}
+        TextRenderer.h)
+endif()
 
 add_library(MagnumText ${SHARED_OR_STATIC} ${MagnumText_SRCS})
 if(BUILD_STATIC_PIC)

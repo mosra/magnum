@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "TextRenderer.h"
+#include "Renderer.h"
 
 #include "Context.h"
 #include "Extensions.h"
@@ -60,7 +60,7 @@ struct Vertex {
 
 }
 
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractTextRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text) {
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text) {
     const auto layouter = font.layout(cache, size, text);
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
@@ -118,7 +118,7 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
-std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
+std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
     const auto layouter = font.layout(cache, size, text);
 
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
@@ -192,9 +192,9 @@ std::tuple<Mesh, Rectangle> AbstractTextRenderer::render(AbstractFont& font, con
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
     /* Finalize mesh configuration and return the result */
-    auto r = AbstractTextRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage);
+    auto r = AbstractRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage);
     Mesh& mesh = std::get<0>(r);
     mesh.addVertexBuffer(vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(
@@ -204,26 +204,26 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> TextRenderer<dimens
 }
 
 #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
-AbstractTextRenderer::BufferMapImplementation AbstractTextRenderer::bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationFull;
-AbstractTextRenderer::BufferUnmapImplementation AbstractTextRenderer::bufferUnmapImplementation = &AbstractTextRenderer::bufferUnmapImplementationDefault;
+AbstractRenderer::BufferMapImplementation AbstractRenderer::bufferMapImplementation = &AbstractRenderer::bufferMapImplementationFull;
+AbstractRenderer::BufferUnmapImplementation AbstractRenderer::bufferUnmapImplementation = &AbstractRenderer::bufferUnmapImplementationDefault;
 
-void* AbstractTextRenderer::bufferMapImplementationFull(Buffer& buffer, GLsizeiptr) {
+void* AbstractRenderer::bufferMapImplementationFull(Buffer& buffer, GLsizeiptr) {
     return buffer.map(Buffer::MapAccess::WriteOnly);
 }
 
-void* AbstractTextRenderer::bufferMapImplementationSub(Buffer& buffer, GLsizeiptr length) {
+void* AbstractRenderer::bufferMapImplementationSub(Buffer& buffer, GLsizeiptr length) {
     return buffer.mapSub(0, length, Buffer::MapAccess::WriteOnly);
 }
 
-void AbstractTextRenderer::bufferUnmapImplementationSub(Buffer& buffer) {
+void AbstractRenderer::bufferUnmapImplementationSub(Buffer& buffer) {
     buffer.unmapSub();
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
-inline void* AbstractTextRenderer::bufferMapImplementation(Buffer& buffer, GLsizeiptr length)
+inline void* AbstractRenderer::bufferMapImplementation(Buffer& buffer, GLsizeiptr length)
 #else
-void* AbstractTextRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length)
+void* AbstractRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length)
 #endif
 {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -235,9 +235,9 @@ void* AbstractTextRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizei
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
-inline void AbstractTextRenderer::bufferUnmapImplementation(Buffer& buffer)
+inline void AbstractRenderer::bufferUnmapImplementation(Buffer& buffer)
 #else
-void AbstractTextRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
+void AbstractRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
 #endif
 {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -247,18 +247,18 @@ void AbstractTextRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
     #endif
 }
 
-AbstractTextRenderer::AbstractTextRenderer(AbstractFont& font, const GlyphCache& cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
+AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
-        bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationRange;
+        bufferMapImplementation = &AbstractRenderer::bufferMapImplementationRange;
     } else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
-        bufferMapImplementation = &AbstractTextRenderer::bufferMapImplementationSub;
-        bufferUnmapImplementation = &AbstractTextRenderer::bufferUnmapImplementationSub;
+        bufferMapImplementation = &AbstractRenderer::bufferMapImplementationSub;
+        bufferUnmapImplementation = &AbstractRenderer::bufferUnmapImplementationSub;
     } else {
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::mapbuffer);
-        Warning() << "Text::TextRenderer: neither" << Extensions::GL::EXT::map_buffer_range::string()
+        Warning() << "Text::Renderer: neither" << Extensions::GL::EXT::map_buffer_range::string()
                   << "nor" << Extensions::GL::CHROMIUM::map_sub::string()
                   << "is supported, using inefficient" << Extensions::GL::OES::mapbuffer::string()
                   << "instead";
@@ -269,16 +269,16 @@ AbstractTextRenderer::AbstractTextRenderer(AbstractFont& font, const GlyphCache&
     _mesh.setPrimitive(Mesh::Primitive::Triangles);
 }
 
-AbstractTextRenderer::~AbstractTextRenderer() {}
+AbstractRenderer::~AbstractRenderer() {}
 
-template<UnsignedInt dimensions> TextRenderer<dimensions>::TextRenderer(AbstractFont& font, const GlyphCache& cache, const Float size): AbstractTextRenderer(font, cache, size) {
+template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const GlyphCache& cache, const Float size): AbstractRenderer(font, cache, size) {
     /* Finalize mesh configuration */
     _mesh.addVertexBuffer(_vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(Shaders::AbstractVector<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
 }
 
-void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
+void AbstractRenderer::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
     _capacity = glyphCount;
 
     const UnsignedInt vertexCount = glyphCount*4;
@@ -325,11 +325,11 @@ void AbstractTextRenderer::reserve(const uint32_t glyphCount, const Buffer::Usag
     bufferUnmapImplementation(_indexBuffer);
 }
 
-void AbstractTextRenderer::render(const std::string& text) {
+void AbstractRenderer::render(const std::string& text) {
     const auto layouter = font.layout(cache, size, text);
 
     CORRADE_ASSERT(layouter->glyphCount() <= _capacity,
-        "Text::TextRenderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );
+        "Text::Renderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );
 
     /* Reset rendered rectangle */
     _rectangle = {};
@@ -371,8 +371,8 @@ void AbstractTextRenderer::render(const std::string& text) {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_TEXT_EXPORT TextRenderer<2>;
-template class MAGNUM_TEXT_EXPORT TextRenderer<3>;
+template class MAGNUM_TEXT_EXPORT Renderer<2>;
+template class MAGNUM_TEXT_EXPORT Renderer<3>;
 #endif
 
 }}

@@ -45,7 +45,7 @@ Contains font glyphs prerendered into texture atlas.
 @section GlyphCache-usage Usage
 
 Create %GlyphCache object with sufficient size and then call
-AbstractFont::createGlyphCache() to fill it with glyphs.
+@ref AbstractFont::createGlyphCache() to fill it with glyphs.
 @code
 Text::AbstractFont* font;
 Text::GlyphCache* cache = new GlyphCache(Vector2i(512));
@@ -54,7 +54,7 @@ font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                               "0123456789 ");
 @endcode
 
-See TextRenderer for information about text rendering.
+See @ref Renderer for information about text rendering.
 @todo Some way for Font to negotiate or check internal texture format
 @todo Default glyph 0 with rect 0 0 0 0 will result in negative dimensions when
     nonzero padding is removed

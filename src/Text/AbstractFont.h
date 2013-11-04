@@ -45,22 +45,22 @@ namespace Magnum { namespace Text {
 
 @section AbstractFont-usage Usage
 
-First step is to open the font using open(), next step is to prerender all the
-glyphs which will be used in text rendering later, see GlyphCache for more
-information. See TextRenderer for information about text rendering.
+First step is to open the font using @ref open(), next step is to prerender all
+the glyphs which will be used in text rendering later, see @ref GlyphCache for
+more information. See @ref Renderer for information about text rendering.
 
 @section AbstractFont-subclassing Subclassing
 
-Plugin implements doFeatures(), doClose(), doCreateGlyphCache(), doLayout() and
-one or more of `doOpen*()` functions.
+Plugin implements @ref doFeatures(), @ref doClose(), @ref doCreateGlyphCache(),
+@ref doLayout() and one or more of `doOpen*()` functions.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions doOpenData(), doOpenSingleData() and doOpenFile() are called
-    after the previous file was closed, function doClose() is called only if
-    there is any file opened.
--   Functions doOpenData() and doOpenSingleData() are called only if
+-   Functions @ref doOpenData(), @ref doOpenSingleData() and @ref doOpenFile()
+    are called after the previous file was closed, function @ref doClose() is
+    called only if there is any file opened.
+-   Functions @ref doOpenData() and @ref doOpenSingleData() are called only if
     @ref Feature::OpenData is supported.
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.

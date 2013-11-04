@@ -50,7 +50,7 @@ class AbstractOpenGLTester: public TestSuite::Tester, public Platform::Windowles
 
 int AbstractOpenGLTester::zero = 0;
 
-#define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Renderer::error(), Renderer::Error::NoError)
+#define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 
 }}
 
