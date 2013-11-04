@@ -86,12 +86,18 @@ void RendererGLTest::renderData() {
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
     Rectangle bounds;
-    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractRenderer::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc");
+    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractRenderer::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", Alignment::MiddleRightIntegral);
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
     CORRADE_COMPARE(positions.size(), 12);
     CORRADE_COMPARE(textureCoordinates.size(), 12);
     CORRADE_COMPARE(indices.size(), 18);
+
+    /* Alignment offset */
+    const Vector2 offset{-5.0f, -1.0f};
+
+    /* Bounds */
+    CORRADE_COMPARE(bounds, Rectangle(Vector2{0.0f, -0.5f} + offset, Vector2{5.0f, 1.0f} + offset));
 
     /* Vertex positions and texture coordinates
        0---2
@@ -107,20 +113,20 @@ void RendererGLTest::renderData() {
           +-+ |   |
               +---+ */
     CORRADE_COMPARE(positions, (std::vector<Vector2>{
-        {0.0f,  0.5f},
-        {0.0f,  0.0f},
-        {0.75f, 0.5f},
-        {0.75f, 0.0f},
+        Vector2{0.0f,  0.5f} + offset,
+        Vector2{0.0f,  0.0f} + offset,
+        Vector2{0.75f, 0.5f} + offset,
+        Vector2{0.75f, 0.0f} + offset,
 
-        {1.0f,  0.75f},
-        {1.0f, -0.25f},
-        {2.5f,  0.75f},
-        {2.5f, -0.25f},
+        Vector2{1.0f,  0.75f} + offset,
+        Vector2{1.0f, -0.25f} + offset,
+        Vector2{2.5f,  0.75f} + offset,
+        Vector2{2.5f, -0.25f} + offset,
 
-        {2.75f,  1.0f},
-        {2.75f, -0.5f},
-        {5.0f,   1.0f},
-        {5.0f,  -0.5f}
+        Vector2{2.75f,  1.0f} + offset,
+        Vector2{2.75f, -0.5f} + offset,
+        Vector2{5.0f,   1.0f} + offset,
+        Vector2{5.0f,  -0.5f} + offset
     }));
 
     /* Texture coordinates
@@ -155,9 +161,6 @@ void RendererGLTest::renderData() {
         4,  5,  6,  5,  7,  6,
         8,  9, 10,  9, 11, 10
     }));
-
-    /* Bounds */
-    CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
 }
 
 void RendererGLTest::renderMesh() {
@@ -165,28 +168,34 @@ void RendererGLTest::renderMesh() {
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
     Rectangle bounds;
-    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
+    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw, Alignment::TopCenter);
     MAGNUM_VERIFY_NO_ERROR();
+
+    /* Alignment offset */
+    const Vector2 offset{-2.5f, -1.5f};
+
+    /* Bounds */
+    CORRADE_COMPARE(bounds, Rectangle(Vector2{0.0f, -0.5f} + offset, Vector2{5.0f, 1.0f} + offset));
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     /* Vertex buffer contents */
     Containers::Array<Float> vertices = vertexBuffer.data<Float>();
     CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
-        0.0f,  0.5f, 0.0f, 10.0f,
-        0.0f,  0.0f, 0.0f,  0.0f,
-        0.75f, 0.5f, 6.0f, 10.0f,
-        0.75f, 0.0f, 6.0f,  0.0f,
+        0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
+        0.0f + offset.x(),  0.0f + offset.y(), 0.0f,  0.0f,
+        0.75f + offset.x(), 0.5f + offset.y(), 6.0f, 10.0f,
+        0.75f + offset.x(), 0.0f + offset.y(), 6.0f,  0.0f,
 
-        1.0f,  0.75f,  6.0f, 10.0f,
-        1.0f, -0.25f,  6.0f,  0.0f,
-        2.5f,  0.75f, 12.0f, 10.0f,
-        2.5f, -0.25f, 12.0f,  0.0f,
+        1.0f + offset.x(),  0.75f + offset.y(),  6.0f, 10.0f,
+        1.0f + offset.x(), -0.25f + offset.y(),  6.0f,  0.0f,
+        2.5f + offset.x(),  0.75f + offset.y(), 12.0f, 10.0f,
+        2.5f + offset.x(), -0.25f + offset.y(), 12.0f,  0.0f,
 
-        2.75f,  1.0f, 12.0f, 10.0f,
-        2.75f, -0.5f, 12.0f,  0.0f,
-        5.0f,   1.0f, 18.0f, 10.0f,
-        5.0f,  -0.5f, 18.0f,  0.0f
+        2.75f + offset.x(),  1.0f + offset.y(), 12.0f, 10.0f,
+        2.75f + offset.x(), -0.5f + offset.y(), 12.0f,  0.0f,
+        5.0f + offset.x(),   1.0f + offset.y(), 18.0f, 10.0f,
+        5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
     }));
 
     Containers::Array<UnsignedByte> indices = indexBuffer.data<UnsignedByte>();
@@ -196,9 +205,6 @@ void RendererGLTest::renderMesh() {
         8,  9, 10,  9, 11, 10
     }));
     #endif
-
-    /* Bounds */
-    CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
 }
 
 void RendererGLTest::mutableText() {
@@ -226,6 +232,12 @@ void RendererGLTest::mutableText() {
     /* Render text */
     renderer.render("abc");
     MAGNUM_VERIFY_NO_ERROR();
+
+    /* Updated bounds */
+    CORRADE_COMPARE(renderer.rectangle(), Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
+
+    /* Aligned to line/left, no offset needed */
+
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     Containers::Array<Float> vertices = renderer.vertexBuffer().subData<Float>(0, 48);
@@ -246,9 +258,6 @@ void RendererGLTest::mutableText() {
         5.0f,  -0.5f, 18.0f,  0.0f
     }));
     #endif
-
-    /* Updated bounds */
-    CORRADE_COMPARE(renderer.rectangle(), Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
 }
 
 }}}

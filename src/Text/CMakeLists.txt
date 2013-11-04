@@ -31,6 +31,7 @@ set(MagnumText_SRCS
 set(MagnumText_HEADERS
     AbstractFont.h
     AbstractFontConverter.h
+    Alignment.h
     DistanceFieldGlyphCache.h
     GlyphCache.h
     Renderer.h

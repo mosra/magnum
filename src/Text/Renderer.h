@@ -37,6 +37,7 @@
 #include "DimensionTraits.h"
 #include "Mesh.h"
 #include "Text/Text.h"
+#include "Text/Alignment.h"
 
 #include "magnumTextVisibility.h"
 
@@ -56,11 +57,12 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * @param cache         Glyph cache
          * @param size          Font size
          * @param text          Text to render
+         * @param alignment     Text alignment
          *
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
 
         /**
          * @brief Capacity for rendered glyphs
@@ -114,9 +116,10 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * @param font          Font
          * @param cache         Glyph cache
          * @param size          Font size
+         * @param alignment     Text alignment
          */
-        explicit AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size);
-        AbstractRenderer(AbstractFont&, GlyphCache&&, Float) = delete; /**< @overload */
+        explicit AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
+        AbstractRenderer(AbstractFont&, GlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
 
         ~AbstractRenderer();
 
@@ -125,7 +128,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
     #else
     private:
     #endif
-        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment);
 
         Mesh _mesh;
         Buffer _vertexBuffer, _indexBuffer;
@@ -137,6 +140,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
         AbstractFont& font;
         const GlyphCache& cache;
         Float size;
+        Alignment _alignment;
         UnsignedInt _capacity;
         Rectangle _rectangle;
 
@@ -256,7 +260,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * Returns mesh prepared for use with @ref Shaders::AbstractVector
          * subclasses and rectangle spanning the rendered text.
          */
-        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage);
+        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment = Alignment::LineLeft);
 
         /**
          * @brief Constructor
@@ -264,8 +268,8 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param cache         Glyph cache
          * @param size          Font size
          */
-        explicit Renderer(AbstractFont& font, const GlyphCache& cache, Float size);
-        Renderer(AbstractFont&, GlyphCache&&, Float) = delete; /**< @overload */
+        explicit Renderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
+        Renderer(AbstractFont&, GlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
 
         using AbstractRenderer::render;
 };

@@ -57,13 +57,38 @@ template<class T> void createIndices(void* output, const UnsignedInt glyphCount)
     }
 }
 
+Vector2 alignmentOffset(Rectangle& bounds, Alignment alignment) {
+    const Vector2 size = bounds.size();
+    const auto value = UnsignedByte(alignment);
+
+    /** @todo What about top-down text? */
+
+    Vector2 offset;
+
+    /* Horizontal alignment */
+    if((value & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter) offset -= Vector2::xAxis(size.x()*0.5f);
+    else if((value & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight) offset -= Vector2::xAxis(size.x());
+
+    /* Vertical alignment */
+    if((value & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle) offset -= Vector2::yAxis(size.y()*0.5f);
+    else if((value & Implementation::AlignmentVertical) == Implementation::AlignmentTop) offset -= Vector2::yAxis(size.y());
+
+    /* Integer alignment */
+    if(value & Implementation::AlignmentIntegral) offset = Math::round(offset);
+
+    /* Update also the bounds */
+    bounds.bottomLeft() += offset;
+    bounds.topRight() += offset;
+    return offset;
+}
+
 struct Vertex {
     Vector2 position, texcoords;
 };
 
 }
 
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text) {
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
     const auto layouter = font.layout(cache, size, text);
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
@@ -114,6 +139,10 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
         cursorPosition += advance;
     }
 
+    /* Respect the alignment */
+    const Vector2 offset = alignmentOffset(rectangle, alignment);
+    for(auto& p: positions) p += offset;
+
     /* Create indices */
     std::vector<UnsignedInt> indices(layouter->glyphCount()*6);
     createIndices<UnsignedInt>(indices.data(), layouter->glyphCount());
@@ -121,7 +150,7 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
 }
 
-std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
+std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment) {
     const auto layouter = font.layout(cache, size, text);
 
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
@@ -160,6 +189,11 @@ std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const G
         /* Advance cursor position to next character */
         cursorPosition += advance;
     }
+
+    /* Respect the alignment */
+    const Vector2 offset = alignmentOffset(rectangle, alignment);
+    for(auto& v: vertices) v.position += offset;
+
     vertexBuffer.setData(vertices, usage);
 
     /* Fill index buffer */
@@ -195,9 +229,9 @@ std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const G
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment) {
     /* Finalize mesh configuration and return the result */
-    auto r = AbstractRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage);
+    auto r = AbstractRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
     Mesh& mesh = std::get<0>(r);
     mesh.addVertexBuffer(vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(
@@ -250,7 +284,7 @@ void AbstractRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
     #endif
 }
 
-AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _capacity(0) {
+AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _alignment(alignment), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -274,7 +308,7 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, 
 
 AbstractRenderer::~AbstractRenderer() {}
 
-template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const GlyphCache& cache, const Float size): AbstractRenderer(font, cache, size) {
+template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {
     /* Finalize mesh configuration */
     _mesh.addVertexBuffer(_vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(Shaders::AbstractVector<dimensions>::Position::Components::Two),
@@ -338,8 +372,8 @@ void AbstractRenderer::render(const std::string& text) {
     _rectangle = {};
 
     /* Map buffer for rendering */
-    Vertex* const vertices = static_cast<Vertex*>(bufferMapImplementation(_vertexBuffer,
-        layouter->glyphCount()*4*sizeof(Vertex)));
+    Containers::ArrayReference<Vertex> vertices(static_cast<Vertex*>(bufferMapImplementation(_vertexBuffer,
+        layouter->glyphCount()*4*sizeof(Vertex))), layouter->glyphCount()*4);
     CORRADE_INTERNAL_ASSERT_OUTPUT(vertices);
 
     /* Render all glyphs */
@@ -367,6 +401,11 @@ void AbstractRenderer::render(const std::string& text) {
         /* Advance cursor position to next character */
         cursorPosition += advance;
     }
+
+    /* Respect the alignment */
+    const Vector2 offset = alignmentOffset(_rectangle, _alignment);
+    for(auto& v: vertices) v.position += offset;
+
     bufferUnmapImplementation(_vertexBuffer);
 
     /* Update index count */
