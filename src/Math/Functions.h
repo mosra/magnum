@@ -211,6 +211,51 @@ template<std::size_t size, class T> Vector<size, T> abs(const Vector<size, T>& a
 }
 #endif
 
+/** @brief Nearest not larger integer */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T floor(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type floor(T a) {
+    return std::floor(a);
+}
+template<std::size_t size, class T> Vector<size, T> floor(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::floor(a[i]);
+    return out;
+}
+#endif
+
+/** @brief Round value to nearest integer */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T round(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type round(T a) {
+    return std::round(a);
+}
+template<std::size_t size, class T> Vector<size, T> round(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::round(a[i]);
+    return out;
+}
+#endif
+
+/** @brief Nearest not smaller integer */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T ceil(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type ceil(T a) {
+    return std::ceil(a);
+}
+template<std::size_t size, class T> Vector<size, T> ceil(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::ceil(a[i]);
+    return out;
+}
+#endif
+
 /**
 @brief Square root
 

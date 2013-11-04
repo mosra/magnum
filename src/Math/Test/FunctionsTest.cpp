@@ -39,6 +39,11 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void maxList();
         void sign();
         void abs();
+
+        void floor();
+        void round();
+        void ceil();
+
         void sqrt();
         void sqrtInverted();
         void clamp();
@@ -76,6 +81,11 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::maxList,
               &FunctionsTest::sign,
               &FunctionsTest::abs,
+
+              &FunctionsTest::floor,
+              &FunctionsTest::round,
+              &FunctionsTest::ceil,
+
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
               &FunctionsTest::clamp,
@@ -133,6 +143,21 @@ void FunctionsTest::abs() {
     CORRADE_COMPARE(Math::abs(-5), 5);
     CORRADE_COMPARE(Math::abs(5), 5);
     CORRADE_COMPARE(Math::abs(Vector3i(5, -3, 2)), Vector3i(5, 3, 2));
+}
+
+void FunctionsTest::floor() {
+    CORRADE_COMPARE(Math::floor(0.7f), 0.0f);
+    CORRADE_COMPARE(Math::floor(Vector3(2.3f, 0.7f, 1.5f)), Vector3(2.0f, 0.0f, 1.0f));
+}
+
+void FunctionsTest::round() {
+    CORRADE_COMPARE(Math::round(2.3f), 2.0f);
+    CORRADE_COMPARE(Math::round(Vector3(2.3f, 0.7f, 1.5f)), Vector3(2.0f, 1.0f, 2.0f));
+}
+
+void FunctionsTest::ceil() {
+    CORRADE_COMPARE(Math::ceil(2.3f), 3.0f);
+    CORRADE_COMPARE(Math::ceil(Vector3(2.3f, 0.7f, 1.5f)), Vector3(3.0f, 1.0f, 2.0f));
 }
 
 void FunctionsTest::sqrt() {
