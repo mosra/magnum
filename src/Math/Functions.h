@@ -242,10 +242,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return T(1)/std::sqrt(a);
 }
 template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<size, T>& a) {
-    Vector<size, T> out;
-    for(std::size_t i = 0; i != size; ++i)
-        out[i] = T(1)/std::sqrt(a[i]);
-    return out;
+    return Vector<size, T>(T(1))/sqrt(a);
 }
 #endif
 
@@ -265,7 +262,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
 template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::min(std::max(value[i], min), max);
+        out[i] = clamp(value[i], min, max);
     return out;
 }
 #endif
