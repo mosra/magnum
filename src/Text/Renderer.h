@@ -110,24 +110,15 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          */
         void render(const std::string& text);
 
-    protected:
-        /**
-         * @brief Constructor
-         * @param font          Font
-         * @param cache         Glyph cache
-         * @param size          Font size
-         * @param alignment     Text alignment
-         */
-        explicit AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
-        AbstractRenderer(AbstractFont&, GlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
-
-        ~AbstractRenderer();
-
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
     private:
     #endif
+        explicit MAGNUM_LOCAL AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment);
+
+        ~AbstractRenderer();
+
         static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment);
 
         Mesh _mesh;
