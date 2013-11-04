@@ -28,6 +28,10 @@
  * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::Renderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D
  */
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include "Math/Geometry/Rectangle.h"
 #include "Buffer.h"
 #include "DimensionTraits.h"
@@ -35,10 +39,6 @@
 #include "Text/Text.h"
 
 #include "magnumTextVisibility.h"
-
-#include <string>
-#include <tuple>
-#include <vector>
 
 namespace Magnum { namespace Text {
 

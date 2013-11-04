@@ -32,6 +32,9 @@
 
 namespace Magnum { namespace Text {
 
+/** @todo Move duplicate code to layouter::renderGlyph(), the implementation
+    should be in doRenderGlyph() then */
+
 namespace {
 
 template<class T> void createIndices(void* output, const UnsignedInt glyphCount) {
