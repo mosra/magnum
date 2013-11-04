@@ -564,6 +564,70 @@ template<std::size_t size, class T> inline Vector<size, T> operator/(
 }
 
 /** @relates Vector
+@brief Do modulo of integral vector and assign
+
+The computation is done in-place.
+*/
+template<std::size_t size, class Integral> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Vector<size, Integral>&
+#else
+typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
+#endif
+operator%=(Vector<size, Integral>& a, Integral b) {
+    for(std::size_t i = 0; i != size; ++i)
+        a[i] %= b;
+
+    return a;
+}
+
+/** @relates Vector
+@brief Modulo of integral vector
+*/
+template<std::size_t size, class Integral> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Vector<size, Integral>
+#else
+typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
+#endif
+operator%(const Vector<size, Integral>& a, Integral b) {
+    Vector<size, Integral> copy(a);
+    return copy %= b;
+}
+
+/** @relates Vector
+@brief Do modulo of two integral vectors and assign
+
+The computation is done in-place.
+*/
+template<std::size_t size, class Integral> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Vector<size, Integral>&
+#else
+typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>&>::type
+#endif
+operator%=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
+    for(std::size_t i = 0; i != size; ++i)
+        a[i] %= b[i];
+
+    return a;
+}
+
+/** @relates Vector
+@brief Modulo of two integral vectors
+*/
+template<std::size_t size, class Integral> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Vector<size, Integral>
+#else
+typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
+#endif
+operator%(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
+    Vector<size, Integral> copy(a);
+    return copy %= b;
+}
+
+/** @relates Vector
 @brief Bitwise NOT of integral vector
 */
 template<std::size_t size, class Integral> inline
@@ -1055,6 +1119,21 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }                                                                       \
     template<class T> inline Type<T> operator/(typename std::common_type<T>::type number, const Type<T>& vector) { \
         return number/static_cast<const Math::Vector<size, T>&>(vector);    \
+    }                                                                       \
+                                                                            \
+    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, Integral b) { \
+        static_cast<Math::Vector<size, Integral>&>(a) %= b;                 \
+        return a;                                                           \
+    }                                                                       \
+    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, Integral b) { \
+        return static_cast<const Math::Vector<size, Integral>&>(a) % b;     \
+    }                                                                       \
+    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+        static_cast<Math::Vector<size, Integral>&>(a) %= b;                 \
+        return a;                                                           \
+    }                                                                       \
+    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+        return static_cast<const Math::Vector<size, Integral>&>(a) % b;     \
     }                                                                       \
                                                                             \
     template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator~(const Type<Integral>& vector) { \
