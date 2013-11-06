@@ -115,9 +115,9 @@ class MagnumFont: public AbstractFont {
 
         bool doIsOpened() const override;
 
-        void doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float) override;
+        std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float) override;
 
-        void doOpenFile(const std::string& filename, Float) override;
+        std::pair<Float, Float> doOpenFile(const std::string& filename, Float) override;
 
         void doClose() override;
 
@@ -129,9 +129,9 @@ class MagnumFont: public AbstractFont {
 
         std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
 
-        Data* _opened;
+        std::pair<Float, Float> openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
 
-        void openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
+        Data* _opened;
 };
 
 }}

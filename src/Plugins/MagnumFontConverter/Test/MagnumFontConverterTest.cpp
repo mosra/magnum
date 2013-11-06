@@ -60,11 +60,15 @@ void MagnumFontConverterTest::exportFont() {
     /* Fake font with fake cache */
     class FakeFont: public Text::AbstractFont {
         public:
-            explicit FakeFont() { _size = 16.0f; }
+            explicit FakeFont(): _opened(false) {}
 
         private:
-            void doClose() {}
-            bool doIsOpened() const { return true; }
+            void doClose() { _opened = false; }
+            bool doIsOpened() const { return _opened; }
+            std::pair<Float, Float> doOpenFile(const std::string&, Float) {
+                _opened = true;
+                return {16.0f, 0};
+            }
             Features doFeatures() const { return {}; }
             std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
 
@@ -86,7 +90,10 @@ void MagnumFontConverterTest::exportFont() {
 
                 CORRADE_ASSERT_UNREACHABLE();
             }
+
+            bool _opened;
     } font;
+    font.openFile({}, {});
 
     /* Create fake cache */
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);

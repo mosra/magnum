@@ -67,7 +67,7 @@ checked by the implementation:
     there is any file opened.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.2")
 
     public:
         /**
@@ -150,6 +150,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /** @brief Font size */
         Float size() const { return _size; }
 
+        /** @brief Line height */
+        Float lineHeight() const { return _lineHeight; }
+
         /**
          * @brief Glyph ID for given character
          *
@@ -200,13 +203,6 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         std::unique_ptr<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
-    private:
-    #else
-    protected:
-    #endif
-        Float _size;
-
-    #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
     private:
@@ -220,22 +216,29 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for @ref openData()
          *
-         * If the plugin doesn't have @ref Feature::MultiFile, default
-         * implementation calls @ref doOpenSingleData().
+         * Return size and line height of opened font on successful opening,
+         * zeros otherwise. If the plugin doesn't have @ref Feature::MultiFile,
+         * default implementation calls @ref doOpenSingleData().
          */
-        virtual void doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
+        virtual std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
 
-        /** @brief Implementation for @ref openSingleData() */
-        virtual void doOpenSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
+        /**
+         * @brief Implementation for @ref openSingleData()
+         *
+         * Return size and line height of opened font on successful opening,
+         * zeros otherwise.
+         */
+        virtual std::pair<Float, Float> doOpenSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
 
         /**
          * @brief Implementation for @ref openFile()
          *
-         * If @ref Feature::OpenData is supported and the plugin doesn't have
-         * @ref Feature::MultiFile, default implementation opens the file and
-         * calls @ref doOpenSingleData() with its contents.
+         * Return size and line height of opened font on successful opening,
+         * zeros otherwise. If @ref Feature::OpenData is supported and the
+         * plugin doesn't have @ref Feature::MultiFile, default implementation
+         * opens the file and calls @ref doOpenSingleData() with its contents.
          */
-        virtual void doOpenFile(const std::string& filename, Float size);
+        virtual std::pair<Float, Float> doOpenFile(const std::string& filename, Float size);
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
@@ -266,6 +269,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /** @brief Implementation for @ref layout() */
         virtual std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #endif
+        Float _size, _lineHeight;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)

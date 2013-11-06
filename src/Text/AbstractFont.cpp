@@ -34,7 +34,7 @@ namespace Magnum { namespace Text {
 
 AbstractFont::AbstractFont(): _size(0.0f) {}
 
-AbstractFont::AbstractFont(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f) {}
+AbstractFont::AbstractFont(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f), _lineHeight(0.0f) {}
 
 bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
     CORRADE_ASSERT(features() & Feature::OpenData,
@@ -43,18 +43,19 @@ bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers:
         "Text::AbstractFont::openData(): no data passed", false);
 
     close();
-    doOpenData(data, size);
+    std::tie(_size, _lineHeight) = doOpenData(data, size);
+    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
     return isOpened();
 }
 
-void AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
+std::pair<Float, Float> AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
-        "Text::AbstractFont::openData(): feature advertised but not implemented", );
+        "Text::AbstractFont::openData(): feature advertised but not implemented", {});
     CORRADE_ASSERT(data.size() == 1,
-        "Text::AbstractFont::openData(): expected just one file for single-file format", );
+        "Text::AbstractFont::openData(): expected just one file for single-file format", {});
 
     close();
-    doOpenSingleData(data[0].second, size);
+    return doOpenSingleData(data[0].second, size);
 }
 
 bool AbstractFont::openSingleData(const Containers::ArrayReference<const unsigned char> data, const Float size) {
@@ -64,29 +65,31 @@ bool AbstractFont::openSingleData(const Containers::ArrayReference<const unsigne
         "Text::AbstractFont::openSingleData(): the format is not single-file", false);
 
     close();
-    doOpenSingleData(data, size);
+    std::tie(_size, _lineHeight) = doOpenSingleData(data, size);
+    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
     return isOpened();
 }
 
-void AbstractFont::doOpenSingleData(Containers::ArrayReference<const unsigned char>, Float) {
-    CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", );
+std::pair<Float, Float> AbstractFont::doOpenSingleData(Containers::ArrayReference<const unsigned char>, Float) {
+    CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", {});
 }
 
 bool AbstractFont::openFile(const std::string& filename, const Float size) {
     close();
-    doOpenFile(filename, size);
+    std::tie(_size, _lineHeight) = doOpenFile(filename, size);
+    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
     return isOpened();
 }
 
-void AbstractFont::doOpenFile(const std::string& filename, const Float size) {
+std::pair<Float, Float> AbstractFont::doOpenFile(const std::string& filename, const Float size) {
     CORRADE_ASSERT(features() & Feature::OpenData && !(features() & Feature::MultiFile),
-        "Text::AbstractFont::openFile(): not implemented", );
+        "Text::AbstractFont::openFile(): not implemented", {});
 
     /* Open file */
     std::ifstream in(filename.data(), std::ios::binary);
     if(!in.good()) {
         Error() << "Trade::AbstractFont::openFile(): cannot open file" << filename;
-        return;
+        return {};
     }
 
     /* Create array to hold file contents */
@@ -98,12 +101,14 @@ void AbstractFont::doOpenFile(const std::string& filename, const Float size) {
     in.read(reinterpret_cast<char*>(data.begin()), data.size());
     in.close();
 
-    doOpenSingleData(data, size);
+    return doOpenSingleData(data, size);
 }
 
 void AbstractFont::close() {
     if(isOpened()) {
         doClose();
+        _size = 0.0f;
+        _lineHeight = 0.0f;
         CORRADE_INTERNAL_ASSERT(!isOpened());
     }
 }
