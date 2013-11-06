@@ -160,7 +160,7 @@ std::pair<Float, Float> MagnumFont::openInternal(Utility::Configuration&& conf, 
         _opened->glyphId.emplace(c->value<char32_t>("unicode"), glyphId);
     }
 
-    return {_opened->conf.value<Float>("fontSize"), 0};
+    return {_opened->conf.value<Float>("fontSize"), _opened->conf.value<Float>("lineHeight")};
 }
 
 void MagnumFont::doClose() {

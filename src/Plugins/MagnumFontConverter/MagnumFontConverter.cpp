@@ -57,6 +57,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     configuration.setValue("originalImageSize", cache.textureSize());
     configuration.setValue("padding", cache.padding());
     configuration.setValue("fontSize", font.size());
+    configuration.setValue("lineHeight", font.lineHeight());
 
     /* Compress glyph IDs so the glyphs are in consecutive array, glyph 0
        should stay at position 0 */
