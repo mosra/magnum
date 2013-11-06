@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::AbstractFont, Magnum::Text::AbstractLayouter
+ * @brief Class @ref Magnum::Text::AbstractFont, @ref Magnum::Text::AbstractLayouter
  */
 
 #include <memory>
@@ -45,9 +45,10 @@ namespace Magnum { namespace Text {
 
 @section AbstractFont-usage Usage
 
-First step is to open the font using @ref open(), next step is to prerender all
-the glyphs which will be used in text rendering later, see @ref GlyphCache for
-more information. See @ref Renderer for information about text rendering.
+First step is to open the font using @ref openData(), @ref openSingleData() or
+@ref openFile(). Next step is to prerender all the glyphs which will be used in
+text rendering later, see @ref GlyphCache for more information. See
+@ref Renderer for information about text rendering.
 
 @section AbstractFont-subclassing Subclassing
 
@@ -72,14 +73,14 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Features supported by this importer
          *
-         * @see Features, features()
+         * @see @ref Features, @ref features()
          */
         enum class Feature: UnsignedByte {
-            /** Opening fonts from raw data using openData() */
+            /** Opening fonts from raw data using @ref openData() */
             OpenData = 1 << 0,
 
             /**
-             * The format is multi-file, thus openSingleData() convenience
+             * The format is multi-file, thus @ref openSingleData() convenience
              * function cannot be used.
              */
             MultiFile = 1 << 1,
@@ -87,7 +88,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
             /**
              * The font contains prepared glyph cache.
              *
-             * @see fillGlyphCache(), createGlyphCache()
+             * @see @ref fillGlyphCache(), @ref createGlyphCache()
              */
             PreparedGlyphCache = 1 << 2
         };
@@ -163,7 +164,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * @note This function is not meant to be used in performance-critical
          *      code, only for font observations and conversions.
-         * @see glyphId()
+         * @see @ref glyphId()
          */
         Vector2 glyphAdvance(UnsignedInt glyph);
 
@@ -194,7 +195,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size      Font size
          * @param text      %Text to layout
          *
-         * @see fillGlyphCache(), createGlyphCache()
+         * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
         std::unique_ptr<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
 
@@ -210,25 +211,25 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     #else
     private:
     #endif
-        /** @brief Implementation for features() */
+        /** @brief Implementation for @ref features() */
         virtual Features doFeatures() const = 0;
 
-        /** @brief Implementation for isOpened() */
+        /** @brief Implementation for @ref isOpened() */
         virtual bool doIsOpened() const = 0;
 
         /**
-         * @brief Implementation for openData()
+         * @brief Implementation for @ref openData()
          *
          * If the plugin doesn't have @ref Feature::MultiFile, default
          * implementation calls @ref doOpenSingleData().
          */
         virtual void doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
 
-        /** @brief Implementation for openSingleData() */
+        /** @brief Implementation for @ref openSingleData() */
         virtual void doOpenSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
 
         /**
-         * @brief Implementation for openFile()
+         * @brief Implementation for @ref openFile()
          *
          * If @ref Feature::OpenData is supported and the plugin doesn't have
          * @ref Feature::MultiFile, default implementation opens the file and
@@ -236,17 +237,17 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          */
         virtual void doOpenFile(const std::string& filename, Float size);
 
-        /** @brief Implementation for close() */
+        /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
 
-        /** @brief Implementation for glyphId() */
+        /** @brief Implementation for @ref glyphId() */
         virtual UnsignedInt doGlyphId(char32_t character) = 0;
 
-        /** @brief Implementation for glyphAdvance() */
+        /** @brief Implementation for @ref glyphAdvance() */
         virtual Vector2 doGlyphAdvance(UnsignedInt glyph) = 0;
 
         /**
-         * @brief Implementation for createGlyphCache()
+         * @brief Implementation for @ref fillGlyphCache()
          *
          * The string is converted from UTF-8 to UTF-32, unique characters are
          * *not* removed.
@@ -260,12 +261,10 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual void doFillGlyphCache(GlyphCache& cache, const std::vector<char32_t>& characters);
         #endif
 
-        /**
-         * @brief Implementation for createGlyphCache()
-         */
+        /** @brief Implementation for @ref createGlyphCache() */
         virtual std::unique_ptr<GlyphCache> doCreateGlyphCache();
 
-        /** @brief Implementation for layout() */
+        /** @brief Implementation for @ref layout() */
         virtual std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
 };
 
@@ -274,7 +273,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
 /**
 @brief Base for text layouters
 
-Returned by AbstractFont::layout().
+Returned by @ref AbstractFont::layout().
 */
 class MAGNUM_TEXT_EXPORT AbstractLayouter {
     AbstractLayouter(const AbstractLayouter&) = delete;

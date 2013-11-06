@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
+/** @file Text/Renderer.h
  * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::Renderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D
  */
 
@@ -197,8 +197,8 @@ shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectan
 glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 mesh.draw();
 @endcode
-See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&) and
-@ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, Buffer::Usage)
+See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
+@ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, Buffer::Usage, Alignment)
 for more information.
 
 While this method is sufficient for one-shot rendering of static texts, for
@@ -247,6 +247,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param vertexBuffer  %Buffer where to store vertices
          * @param indexBuffer   %Buffer where to store indices
          * @param usage         Usage of vertex and index buffer
+         * @param alignment     Text alignment
          *
          * Returns mesh prepared for use with @ref Shaders::AbstractVector
          * subclasses and rectangle spanning the rendered text.
@@ -258,6 +259,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param font          Font
          * @param cache         Glyph cache
          * @param size          Font size
+         * @param alignment     Text alignment
          */
         explicit Renderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
         Renderer(AbstractFont&, GlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */

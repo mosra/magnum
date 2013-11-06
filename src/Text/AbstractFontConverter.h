@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::AbstractFontConverter
+ * @brief Class @ref Magnum::Text::AbstractFontConverter
  */
 
 #include <memory>
@@ -44,9 +44,10 @@ Provides functionality for converting arbitrary font to different format.
 
 @section AbstractFontConverter-subclassing Subclassing
 
-Plugin implements doFeatures() and one or more of `exportTo*()` / `importFrom*()`
-functions based on what features are supported. Characters passed to font
-exporting functions are converted to list of unique UTF-32 characters.
+Plugin implements @ref doFeatures() and one or more of `exportTo*()` /
+`importFrom*()` functions based on what features are supported. Characters
+passed to font exporting functions are converted to list of unique UTF-32
+characters.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
@@ -290,7 +291,8 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @brief Implementation for @ref exportFontToFile()
          *
          * If @ref Feature::ConvertData is supported, default implementation
-         * calls doExportFontToData() and saves the result to given file(s).
+         * calls @ref doExportFontToData() and saves the result to given
+         * file(s).
          * @note On Windows uses `std::vector<char32_t>` instead of
          *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
          *      for more information.
@@ -309,7 +311,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          */
         virtual std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportGlyphCacheToData(GlyphCache& cache, const std::string& filename) const;
 
-        /** @brief Implementation for exportGlyphCacheToSingleData() */
+        /** @brief Implementation for @ref exportGlyphCacheToSingleData() */
         virtual Containers::Array<unsigned char> doExportGlyphCacheToSingleData(GlyphCache& cache) const;
 
         /**
@@ -329,7 +331,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          */
         virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data) const;
 
-        /** @brief Implementation for importGlyphCacheFromSingleData() */
+        /** @brief Implementation for @ref importGlyphCacheFromSingleData() */
         virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(Containers::ArrayReference<const unsigned char> data) const;
 
         /**

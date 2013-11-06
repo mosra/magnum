@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::GlyphCache
+ * @brief Class @ref Magnum::Text::GlyphCache
  */
 
 #include <vector>
@@ -127,8 +127,8 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          *
          * If no glyph is found, glyph `0` is returned, which is by default on
          * zero position and has zero region in texture atlas. You can reset it
-         * to some meaningful value in insert().
-         * @see padding()
+         * to some meaningful value in @ref insert().
+         * @see @ref padding()
          */
         std::pair<Vector2i, Rectanglei> operator[](UnsignedInt glyph) const {
             auto it = glyphs.find(glyph);
@@ -149,15 +149,15 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @brief Layout glyphs with given sizes to the cache
          *
          * Returns non-overlapping regions in cache texture to store glyphs.
-         * The reserved space is reused on next call to reserve() if no glyph
-         * was stored there, use insert() to store actual glyph on given
-         * position and setImage() to upload glyph image.
+         * The reserved space is reused on next call to @ref reserve() if no
+         * glyph was stored there, use @ref insert() to store actual glyph on
+         * given position and @ref setImage() to upload glyph image.
          *
          * Glyph @p sizes are expected to be without padding.
          *
          * @attention Cache size must be large enough to contain all rendered
          *      glyphs.
-         * @see padding()
+         * @see @ref padding()
          */
         std::vector<Rectanglei> reserve(const std::vector<Vector2i>& sizes);
 
@@ -167,14 +167,14 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @param position      Position relative to point on baseline
          * @param rectangle     Region in texture atlas
          *
-         * You can obtain unused non-overlapping regions with reserve(). You
-         * can't overwrite already inserted glyph, however you can reset glyph
-         * `0` to some meaningful value.
+         * You can obtain unused non-overlapping regions with @ref reserve().
+         * You can't overwrite already inserted glyph, however you can reset
+         * glyph `0` to some meaningful value.
          *
          * Glyph parameters are expected to be without padding.
          *
-         * See also setImage() to upload glyph image.
-         * @see padding()
+         * See also @ref setImage() to upload glyph image.
+         * @see @ref padding()
          */
         void insert(UnsignedInt glyph, Vector2i position, Rectanglei rectangle);
 
