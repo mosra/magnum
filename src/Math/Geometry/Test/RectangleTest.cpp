@@ -44,6 +44,8 @@ class RectangleTest: public Corrade::TestSuite::Tester {
         void compare();
         void size();
 
+        void translated();
+
         void debug();
         void configuration();
 };
@@ -62,6 +64,8 @@ RectangleTest::RectangleTest() {
               &RectangleTest::access,
               &RectangleTest::compare,
               &RectangleTest::size,
+
+              &RectangleTest::translated,
 
               &RectangleTest::debug,
               &RectangleTest::configuration});
@@ -142,6 +146,11 @@ void RectangleTest::size() {
     CORRADE_COMPARE(rect.size(), Vector2i(13, 7));
     CORRADE_COMPARE(rect.width(), 13);
     CORRADE_COMPARE(rect.height(), 7);
+}
+
+void RectangleTest::translated() {
+    CORRADE_COMPARE(Rectanglei({34, 23}, {47, 30}).translated({-17, 40}),
+                    Rectanglei({17, 63}, {30, 70}));
 }
 
 void RectangleTest::debug() {
