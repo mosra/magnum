@@ -32,9 +32,6 @@
 
 namespace Magnum { namespace Text {
 
-/** @todo Move duplicate code to layouter::renderGlyph(), the implementation
-    should be in doRenderGlyph() then */
-
 namespace {
 
 template<class T> void createIndices(void* output, const UnsignedInt glyphCount) {
@@ -103,14 +100,8 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     /* Render all glyphs */
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-        /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
-        Vector2 advance;
-        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(i);
-
-        /* Move the quad to cursor */
-        quadPosition.bottomLeft() += cursorPosition;
-        quadPosition.topRight() += cursorPosition;
+        std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, rectangle);
 
         /* 0---2
            |   |
@@ -130,13 +121,6 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
             textureCoordinates.topRight(),
             textureCoordinates.bottomRight()
         });
-
-        /* Extend rectangle with current quad bounds */
-        rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), quadPosition.bottomLeft());
-        rectangle.topRight() = Math::max(rectangle.topRight(), quadPosition.topRight());
-
-        /* Advance cursor position to next character */
-        cursorPosition += advance;
     }
 
     /* Respect the alignment */
@@ -166,14 +150,8 @@ std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const G
     /* Render all glyphs */
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-        /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
-        Vector2 advance;
-        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(i);
-
-        /* Move the quad to cursor */
-        quadPosition.bottomLeft() += cursorPosition;
-        quadPosition.topRight() += cursorPosition;
+        std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, rectangle);
 
         vertices.insert(vertices.end(), {
             {quadPosition.topLeft(), textureCoordinates.topLeft()},
@@ -181,13 +159,6 @@ std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const G
             {quadPosition.topRight(), textureCoordinates.topRight()},
             {quadPosition.bottomRight(), textureCoordinates.bottomRight()}
         });
-
-        /* Extend rectangle with current quad bounds */
-        rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), quadPosition.bottomLeft());
-        rectangle.topRight() = Math::max(rectangle.topRight(), quadPosition.topRight());
-
-        /* Advance cursor position to next character */
-        cursorPosition += advance;
     }
 
     /* Respect the alignment */
@@ -379,27 +350,14 @@ void AbstractRenderer::render(const std::string& text) {
     /* Render all glyphs */
     Vector2 cursorPosition;
     for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-        /* Position of the texture in the resulting glyph, texture coordinates */
         Rectangle quadPosition, textureCoordinates;
-        Vector2 advance;
-        std::tie(quadPosition, textureCoordinates, advance) = layouter->renderGlyph(i);
-
-        /* Move the quad to cursor */
-        quadPosition.bottomLeft() += cursorPosition;
-        quadPosition.topRight() += cursorPosition;
-
-        /* Extend rectangle with current quad bounds */
-        _rectangle.bottomLeft() = Math::min(_rectangle.bottomLeft(), quadPosition.bottomLeft());
-        _rectangle.topRight() = Math::max(_rectangle.topRight(), quadPosition.topRight());
+        std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, _rectangle);
 
         const std::size_t vertex = i*4;
         vertices[vertex]   = {quadPosition.topLeft(), textureCoordinates.topLeft()};
         vertices[vertex+1] = {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()};
         vertices[vertex+2] = {quadPosition.topRight(), textureCoordinates.topRight()};
         vertices[vertex+3] = {quadPosition.bottomRight(), textureCoordinates.bottomRight()};
-
-        /* Advance cursor position to next character */
-        cursorPosition += advance;
     }
 
     /* Respect the alignment */

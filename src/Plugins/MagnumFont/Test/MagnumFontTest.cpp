@@ -68,33 +68,34 @@ void MagnumFontTest::layout() {
     CORRADE_VERIFY(layouter);
     CORRADE_COMPARE(layouter->glyphCount(), 4);
 
+    Rectangle rectangle;
     Rectangle position;
     Rectangle textureCoordinates;
-    Vector2 advance;
 
     /* 'W' */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(0);
+    Vector2 cursorPosition;
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(0, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle({0.78125f, 1.0625f}, {1.28125f, 4.8125f}));
     CORRADE_COMPARE(textureCoordinates, Rectangle({0, 0.03125f}, {0.0625f, 0.5f}));
-    CORRADE_COMPARE(advance, Vector2(0.71875f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.71875f, 0.0f));
 
     /* 'a' (not found) */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(1);
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(1, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle());
     CORRADE_COMPARE(textureCoordinates, Rectangle());
-    CORRADE_COMPARE(advance, Vector2(0.25f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
 
     /* 'v' (not found) */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(2);
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(2, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle());
     CORRADE_COMPARE(textureCoordinates, Rectangle());
-    CORRADE_COMPARE(advance, Vector2(0.25f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
 
     /* 'e' */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(3);
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(3, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle({0.78125f, 0.375f}, {2.28125f, 1.25f}));
     CORRADE_COMPARE(textureCoordinates, Rectangle({0.0625f, 0.015625f}, {0.25f, 0.125f}));
-    CORRADE_COMPARE(advance, Vector2(0.375f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
 }
 
 void MagnumFontTest::createGlyphCache() {

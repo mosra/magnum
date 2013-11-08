@@ -162,8 +162,33 @@ std::unique_ptr<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, 
     return doLayout(cache, size, text);
 }
 
-AbstractLayouter::AbstractLayouter(): _glyphCount(0) {}
+AbstractLayouter::AbstractLayouter(UnsignedInt glyphCount): _glyphCount(glyphCount) {}
 
 AbstractLayouter::~AbstractLayouter() {}
+
+std::pair<Rectangle, Rectangle> AbstractLayouter::renderGlyph(const UnsignedInt i, Vector2& cursorPosition, Rectangle& rectangle) {
+    CORRADE_ASSERT(i < glyphCount(), "Text::AbstractLayouter::renderGlyph(): glyph index out of bounds", {});
+
+    /* Render the glyph */
+    Rectangle quadPosition, textureCoordinates;
+    Vector2 advance;
+    std::tie(quadPosition, textureCoordinates, advance) = doRenderGlyph(i);
+
+    /* Move the quad to cursor */
+    quadPosition.bottomLeft() += cursorPosition;
+    quadPosition.topRight() += cursorPosition;
+
+    /* Extend rectangle with current quad bounds. If zero size, replace it. */
+    if(!rectangle.size().isZero()) {
+        rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), quadPosition.bottomLeft());
+        rectangle.topRight() = Math::max(rectangle.topRight(), quadPosition.topRight());
+    } else rectangle = quadPosition;
+
+    /* Advance cursor position to next character */
+    cursorPosition += advance;
+
+    /* Return moved quad and unchanged texture coordinates */
+    return {quadPosition, textureCoordinates};
+}
 
 }}

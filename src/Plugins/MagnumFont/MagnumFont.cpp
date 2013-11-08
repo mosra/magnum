@@ -45,15 +45,15 @@ struct MagnumFont::Data {
 namespace {
     class MagnumFontLayouter: public AbstractLayouter {
         public:
-            explicit MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, const std::string& text);
-
-            std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) override;
+            explicit MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, std::vector<UnsignedInt>&& glyphs);
 
         private:
+            std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt i) override;
+
             const std::vector<Vector2>& glyphAdvance;
             const GlyphCache& cache;
             const Float fontSize, textSize;
-            std::vector<UnsignedInt> glyphs;
+            const std::vector<UnsignedInt> glyphs;
     };
 }
 
@@ -194,24 +194,24 @@ std::unique_ptr<GlyphCache> MagnumFont::doCreateGlyphCache() {
 }
 
 std::unique_ptr<AbstractLayouter> MagnumFont::doLayout(const GlyphCache& cache, Float size, const std::string& text) {
-    return std::unique_ptr<MagnumFontLayouter>(new MagnumFontLayouter(_opened->glyphId, _opened->glyphAdvance, cache, this->size(), size, text));
-}
-
-namespace {
-
-MagnumFontLayouter::MagnumFontLayouter(const std::unordered_map<char32_t, UnsignedInt>& glyphId, const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, const std::string& text): glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize) {
     /* Get glyph codes from characters */
+    std::vector<UnsignedInt> glyphs;
     glyphs.reserve(text.size());
     for(std::size_t i = 0; i != text.size(); ) {
         UnsignedInt codepoint;
         std::tie(codepoint, i) = Utility::Unicode::nextChar(text, i);
-        const auto it = glyphId.find(codepoint);
-        glyphs.push_back(it == glyphId.end() ? 0 : it->second);
+        const auto it = _opened->glyphId.find(codepoint);
+        glyphs.push_back(it == _opened->glyphId.end() ? 0 : it->second);
     }
-    _glyphCount = glyphs.size();
+
+    return std::unique_ptr<MagnumFontLayouter>(new MagnumFontLayouter(_opened->glyphAdvance, cache, this->size(), size, std::move(glyphs)));
 }
 
-std::tuple<Rectangle, Rectangle, Vector2> MagnumFontLayouter::renderGlyph(UnsignedInt i) {
+namespace {
+
+MagnumFontLayouter::MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, const Float fontSize, const Float textSize, std::vector<UnsignedInt>&& glyphs): AbstractLayouter(glyphs.size()), glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize), glyphs(std::move(glyphs)) {}
+
+std::tuple<Rectangle, Rectangle, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
     Vector2i position;
     Rectanglei rectangle;

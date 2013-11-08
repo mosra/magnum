@@ -47,11 +47,10 @@ namespace {
 
 class TestLayouter: public Text::AbstractLayouter {
     public:
-        explicit TestLayouter(Float size, std::size_t glyphCount): _size(size) {
-            _glyphCount = glyphCount;
-        }
+        explicit TestLayouter(Float size, std::size_t glyphCount): AbstractLayouter(glyphCount), _size(size) {}
 
-        std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) override {
+    private:
+        std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt i) override {
             return std::make_tuple(
                 Rectangle({}, Vector2(3.0f, 2.0f)*((i+1)*_size)),
                 Rectangle::fromSize({i*6.0f, 0.0f}, {6.0f, 10.0f}),
@@ -59,7 +58,6 @@ class TestLayouter: public Text::AbstractLayouter {
             );
         }
 
-    private:
         Float _size;
 };
 

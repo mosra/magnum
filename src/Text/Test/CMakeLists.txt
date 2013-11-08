@@ -29,6 +29,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp LIBRARIES Magnum MagnumText)
 corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp LIBRARIES Magnum MagnumText)
+corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumText)
 
 if(BUILD_GL_TESTS)
     corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText ${GL_TEST_LIBRARIES})

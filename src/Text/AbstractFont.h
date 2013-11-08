@@ -52,8 +52,9 @@ text rendering later, see @ref GlyphCache for more information. See
 
 @section AbstractFont-subclassing Subclassing
 
-Plugin implements @ref doFeatures(), @ref doClose(), @ref doCreateGlyphCache(),
-@ref doLayout() and one or more of `doOpen*()` functions.
+Plugin implements @ref doFeatures(), @ref doClose(), @ref doLayout(), either
+@ref doCreateGlyphCache() or @ref doFillGlyphCache() and one or more of
+`doOpen*()` functions. See also @ref AbstractLayouter for more information.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
@@ -67,7 +68,7 @@ checked by the implementation:
     there is any file opened.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.2")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.3")
 
     public:
         /**
@@ -282,6 +283,12 @@ CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
 @brief Base for text layouters
 
 Returned by @ref AbstractFont::layout().
+
+@section TextAbstractLayouter-subclassing Subclassing
+
+Plugin creates private subclass (no need to expose it to end users) and
+implements @ref doRenderGlyph(). Bounds checking on @p i is done automatically
+in the wrapping @ref renderGlyph() function.
 */
 class MAGNUM_TEXT_EXPORT AbstractLayouter {
     AbstractLayouter(const AbstractLayouter&) = delete;
@@ -290,27 +297,46 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
     AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
 
     public:
-        explicit AbstractLayouter();
-        virtual ~AbstractLayouter() = 0;
+        ~AbstractLayouter();
 
         /** @brief Count of glyphs in laid out text */
-        UnsignedInt glyphCount() const {
-            return _glyphCount;
-        }
+        UnsignedInt glyphCount() const { return _glyphCount; }
 
         /**
          * @brief Render glyph
          * @param i                 Glyph index
+         * @param cursorPosition    Cursor position
+         * @param rectangle         Bounding rectangle
          *
-         * Returns quad position, texture coordinates and advance to next
-         * glyph.
+         * The function returns pair of quad position and texture coordinates,
+         * advances @p cursorPosition to next character and updates @p rectangle
+         * with extended bounds.
          */
-        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) = 0;
+        std::pair<Rectangle, Rectangle> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Rectangle& rectangle);
+
+    protected:
+        /**
+         * @brief Constructor
+         * @param glyphCount    Count of glyphs in laid out text
+         */
+        explicit AbstractLayouter(UnsignedInt glyphCount);
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Implementation for @ref renderGlyph()
+         * @param i                 Glyph index
+         *
+         * Return quad position (relative to current cursor position), texture
+         * coordinates and advance to next glyph.
+         */
+        virtual std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt i) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
-    #else
-    protected:
     #endif
         UnsignedInt _glyphCount;
 };
