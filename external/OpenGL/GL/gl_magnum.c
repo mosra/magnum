@@ -2605,19 +2605,6 @@ static ogl_StrToExtMap ExtensionMap[8] = {
 
 static int g_extensionMapSize = 8;
 
-static ogl_StrToExtMap *FindExtEntry(const char *extensionName)
-{
-  int loop;
-  ogl_StrToExtMap *currLoc = ExtensionMap;
-  for(loop = 0; loop < g_extensionMapSize; ++loop, ++currLoc)
-  {
-  	if(strcmp(extensionName, currLoc->extensionName) == 0)
-  		return currLoc;
-  }
-
-  return NULL;
-}
-
 static void ClearExtensionVars()
 {
   ogl_ext_AMD_vertex_shader_layer = ogl_LOAD_FAILED;
@@ -2630,65 +2617,29 @@ static void ClearExtensionVars()
   ogl_ext_GREMEDY_string_marker = ogl_LOAD_FAILED;
 }
 
-
-static void LoadExtByName(const char *extensionName)
+static void LoadExts()
 {
-	ogl_StrToExtMap *entry = NULL;
-	entry = FindExtEntry(extensionName);
-	if(entry)
-	{
-		if(entry->LoadExtension)
-		{
-			int numFailed = entry->LoadExtension();
-			if(numFailed == 0)
-			{
-				*(entry->extensionVariable) = ogl_LOAD_SUCCEEDED;
-			}
-			else
-			{
-				*(entry->extensionVariable) = ogl_LOAD_SUCCEEDED + numFailed;
-			}
-		}
-		else
-		{
-			*(entry->extensionVariable) = ogl_LOAD_SUCCEEDED;
-		}
-	}
-}
-
-
-static void ProcExtsFromExtString(const char *strExtList)
-{
-	size_t iExtListLen = strlen(strExtList);
-	const char *strExtListEnd = strExtList + iExtListLen;
-	const char *strCurrPos = strExtList;
-	char strWorkBuff[256];
-
-	while(*strCurrPos)
-	{
-		/*Get the extension at our position.*/
-		int iStrLen = 0;
-		const char *strEndStr = strchr(strCurrPos, ' ');
-		int iStop = 0;
-		if(strEndStr == NULL)
-		{
-			strEndStr = strExtListEnd;
-			iStop = 1;
-		}
-
-		iStrLen = (int)((ptrdiff_t)strEndStr - (ptrdiff_t)strCurrPos);
-
-		if(iStrLen > 255)
-			return;
-
-		strncpy(strWorkBuff, strCurrPos, iStrLen);
-		strWorkBuff[iStrLen] = '\0';
-
-		LoadExtByName(strWorkBuff);
-
-		strCurrPos = strEndStr + 1;
-		if(iStop) break;
-	}
+  int loop;
+  ogl_StrToExtMap *entry = ExtensionMap;
+  for(loop = 0; loop < g_extensionMapSize; ++loop, ++entry)
+  {
+  	if(entry->LoadExtension)
+  	{
+  		int numFailed = entry->LoadExtension();
+  		if(numFailed == 0)
+  		{
+  			*(entry->extensionVariable) = ogl_LOAD_SUCCEEDED;
+  		}
+  		else
+  		{
+  			*(entry->extensionVariable) = ogl_LOAD_SUCCEEDED + numFailed;
+  		}
+  	}
+  	else
+  	{
+  		*(entry->extensionVariable) = ogl_LOAD_SUCCEEDED;
+  	}
+  }
 }
 
 int ogl_LoadFunctions()
@@ -2696,10 +2647,7 @@ int ogl_LoadFunctions()
   int numFailed = 0;
   ClearExtensionVars();
 
-  _ptrc_glGetString = (const GLubyte * (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glGetString");
-  if(!_ptrc_glGetString) return ogl_LOAD_FAILED;
-
-  ProcExtsFromExtString((const char *)_ptrc_glGetString(GL_EXTENSIONS));
+  LoadExts();
   numFailed = Load_Version_4_4();
 
   if(numFailed == 0)
