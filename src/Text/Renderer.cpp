@@ -54,45 +54,17 @@ template<class T> void createIndices(void* output, const UnsignedInt glyphCount)
     }
 }
 
-Vector2 alignmentOffset(Rectangle& bounds, Alignment alignment) {
-    const Vector2 size = bounds.size();
-    const auto value = UnsignedByte(alignment);
-
-    /** @todo What about top-down text? */
-
-    Vector2 offset;
-
-    /* Horizontal alignment */
-    if((value & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter) offset -= Vector2::xAxis(size.x()*0.5f);
-    else if((value & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight) offset -= Vector2::xAxis(size.x());
-
-    /* Vertical alignment */
-    if((value & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle) offset -= Vector2::yAxis(size.y()*0.5f);
-    else if((value & Implementation::AlignmentVertical) == Implementation::AlignmentTop) offset -= Vector2::yAxis(size.y());
-
-    /* Integer alignment */
-    if(value & Implementation::AlignmentIntegral) offset = Math::round(offset);
-
-    /* Update also the bounds */
-    bounds.bottomLeft() += offset;
-    bounds.topRight() += offset;
-    return offset;
-}
-
 struct Vertex {
-    Vector2 position, texcoords;
+    Vector2 position, textureCoordinates;
 };
 
-}
-
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
+std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
     const auto layouter = font.layout(cache, size, text);
     const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
     /* Output data */
-    std::vector<Vector2> positions, texcoords;
-    positions.reserve(vertexCount);
-    texcoords.reserve(vertexCount);
+    std::vector<Vertex> vertices;
+    vertices.reserve(vertexCount);
 
     /* Rendered rectangle */
     Rectangle rectangle;
@@ -109,50 +81,6 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
            |   |
            1---3 */
 
-        positions.insert(positions.end(), {
-            quadPosition.topLeft(),
-            quadPosition.bottomLeft(),
-            quadPosition.topRight(),
-            quadPosition.bottomRight(),
-        });
-        texcoords.insert(texcoords.end(), {
-            textureCoordinates.topLeft(),
-            textureCoordinates.bottomLeft(),
-            textureCoordinates.topRight(),
-            textureCoordinates.bottomRight()
-        });
-    }
-
-    /* Respect the alignment */
-    const Vector2 offset = alignmentOffset(rectangle, alignment);
-    for(auto& p: positions) p += offset;
-
-    /* Create indices */
-    std::vector<UnsignedInt> indices(layouter->glyphCount()*6);
-    createIndices<UnsignedInt>(indices.data(), layouter->glyphCount());
-
-    return std::make_tuple(std::move(positions), std::move(texcoords), std::move(indices), rectangle);
-}
-
-std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment) {
-    const auto layouter = font.layout(cache, size, text);
-
-    const UnsignedInt vertexCount = layouter->glyphCount()*4;
-    const UnsignedInt indexCount = layouter->glyphCount()*6;
-
-    /* Vertex buffer */
-    std::vector<Vertex> vertices;
-    vertices.reserve(vertexCount);
-
-    /* Rendered rectangle */
-    Rectangle rectangle;
-
-    /* Render all glyphs */
-    Vector2 cursorPosition;
-    for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-        Rectangle quadPosition, textureCoordinates;
-        std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, rectangle);
-
         vertices.insert(vertices.end(), {
             {quadPosition.topLeft(), textureCoordinates.topLeft()},
             {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()},
@@ -161,34 +89,74 @@ std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const G
         });
     }
 
-    /* Respect the alignment */
-    const Vector2 offset = alignmentOffset(rectangle, alignment);
-    for(auto& v: vertices) v.position += offset;
+    /* Align the rendered mesh */
+    const Vector2 renderedSize = rectangle.size();
+    Vector2 alignmentOffset;
 
-    vertexBuffer.setData(vertices, usage);
+    /** @todo What about top-down text? */
 
-    /* Fill index buffer */
+    /* Horizontal alignment */
+    if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter)
+        alignmentOffset -= Vector2::xAxis(renderedSize.x()*0.5f);
+    else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight)
+        alignmentOffset -= Vector2::xAxis(renderedSize.x());
+
+    /* Vertical alignment */
+    if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle)
+        alignmentOffset -= Vector2::yAxis(renderedSize.y()*0.5f);
+    else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentTop)
+        alignmentOffset -= Vector2::yAxis(renderedSize.y());
+
+    /* Integer alignment */
+    if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
+        alignmentOffset = Math::round(alignmentOffset);
+
+    /* Update positions and bounds */
+    rectangle = rectangle.translated(alignmentOffset);
+    for(auto& v: vertices) v.position += alignmentOffset;
+
+    return std::make_tuple(std::move(vertices), rectangle);
+}
+
+std::pair<Containers::Array<unsigned char>, Mesh::IndexType> renderIndicesInternal(const UnsignedInt glyphCount) {
+    const UnsignedInt vertexCount = glyphCount*4;
+    const UnsignedInt indexCount = glyphCount*6;
+
+    Containers::Array<unsigned char> indices;
     Mesh::IndexType indexType;
-    std::size_t indicesSize;
-    char* indices;
     if(vertexCount < 255) {
         indexType = Mesh::IndexType::UnsignedByte;
-        indicesSize = indexCount*sizeof(UnsignedByte);
-        indices = new char[indicesSize];
-        createIndices<UnsignedByte>(indices, layouter->glyphCount());
+        indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedByte));
+        createIndices<UnsignedByte>(indices, glyphCount);
     } else if(vertexCount < 65535) {
         indexType = Mesh::IndexType::UnsignedShort;
-        indicesSize = indexCount*sizeof(UnsignedShort);
-        indices = new char[indicesSize];
-        createIndices<UnsignedShort>(indices, layouter->glyphCount());
+        indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedShort));
+        createIndices<UnsignedShort>(indices, glyphCount);
     } else {
         indexType = Mesh::IndexType::UnsignedInt;
-        indicesSize = indexCount*sizeof(UnsignedInt);
-        indices = new char[indicesSize];
-        createIndices<UnsignedInt>(indices, layouter->glyphCount());
+        indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedInt));
+        createIndices<UnsignedInt>(indices, glyphCount);
     }
-    indexBuffer.setData({indices, indicesSize}, usage);
-    delete indices;
+
+    return {std::move(indices), indexType};
+}
+
+std::tuple<Mesh, Rectangle> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment) {
+    /* Render vertices and upload them */
+    std::vector<Vertex> vertices;
+    Rectangle rectangle;
+    std::tie(vertices, rectangle) = renderVerticesInternal(font, cache, size, text, alignment);
+    vertexBuffer.setData(vertices, usage);
+
+    const UnsignedInt glyphCount = vertices.size()/4;
+    const UnsignedInt vertexCount = glyphCount*4;
+    const UnsignedInt indexCount = glyphCount*6;
+
+    /* Render indices and upload them */
+    Containers::Array<unsigned char> indices;
+    Mesh::IndexType indexType;
+    std::tie(indices, indexType) = renderIndicesInternal(glyphCount);
+    indexBuffer.setData(indices, usage);
 
     /* Configure mesh except for vertex buffer (depends on dimension count, done
        in subclass) */
@@ -200,9 +168,34 @@ std::tuple<Mesh, Rectangle> AbstractRenderer::render(AbstractFont& font, const G
     return std::make_tuple(std::move(mesh), rectangle);
 }
 
+}
+
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
+    /* Render vertices */
+    std::vector<Vertex> vertices;
+    Rectangle rectangle;
+    std::tie(vertices, rectangle) = renderVerticesInternal(font, cache, size, text, alignment);
+
+    /* Deinterleave the vertices */
+    std::vector<Vector2> positions, textureCoordinates;
+    positions.reserve(vertices.size());
+    positions.reserve(textureCoordinates.size());
+    for(const auto& v: vertices) {
+        positions.push_back(v.position);
+        textureCoordinates.push_back(v.textureCoordinates);
+    }
+
+    /* Render indices */
+    const UnsignedInt glyphCount = vertices.size()/4;
+    std::vector<UnsignedInt> indices(glyphCount*6);
+    createIndices<UnsignedInt>(indices.data(), glyphCount);
+
+    return std::make_tuple(std::move(positions), std::move(textureCoordinates), std::move(indices), rectangle);
+}
+
 template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment) {
     /* Finalize mesh configuration and return the result */
-    auto r = AbstractRenderer::render(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
+    auto r = renderInternal(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
     Mesh& mesh = std::get<0>(r);
     mesh.addVertexBuffer(vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(
@@ -290,7 +283,6 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const Buffer::Usage ve
     _capacity = glyphCount;
 
     const UnsignedInt vertexCount = glyphCount*4;
-    const UnsignedInt indexCount = glyphCount*6;
 
     /* Allocate vertex buffer, reset vertex count */
     _vertexBuffer.setData({nullptr, vertexCount*sizeof(Vertex)}, vertexBufferUsage);
@@ -299,75 +291,48 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const Buffer::Usage ve
     #endif
     _mesh.setVertexCount(0);
 
-    /* Allocate index buffer, reset index count and reconfigure buffer binding */
+    /* Render indices */
+    Containers::Array<unsigned char> indexData;
     Mesh::IndexType indexType;
-    std::size_t indicesSize;
-    if(vertexCount < 255) {
-        indexType = Mesh::IndexType::UnsignedByte;
-        indicesSize = indexCount*sizeof(UnsignedByte);
-    } else if(vertexCount < 65535) {
-        indexType = Mesh::IndexType::UnsignedShort;
-        indicesSize = indexCount*sizeof(UnsignedShort);
-    } else {
-        indexType = Mesh::IndexType::UnsignedInt;
-        indicesSize = indexCount*sizeof(UnsignedInt);
-    }
-    _indexBuffer.setData({nullptr, indicesSize}, indexBufferUsage);
+    std::tie(indexData, indexType) = renderIndicesInternal(glyphCount);
+
+    /* Allocate index buffer, reset index count and reconfigure buffer binding */
+    _indexBuffer.setData({nullptr, indexData.size()}, indexBufferUsage);
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     _indexBufferData = Containers::Array<UnsignedByte>(indicesSize);
     #endif
     _mesh.setIndexCount(0)
         .setIndexBuffer(_indexBuffer, 0, indexType, 0, vertexCount);
 
-    /* Map buffer for filling */
-    void* const indices = bufferMapImplementation(_indexBuffer, indicesSize);
-    CORRADE_INTERNAL_ASSERT(indices);
-
     /* Prefill index buffer */
-    if(vertexCount < 255)
-        createIndices<UnsignedByte>(indices, glyphCount);
-    else if(vertexCount < 65535)
-        createIndices<UnsignedShort>(indices, glyphCount);
-    else
-        createIndices<UnsignedInt>(indices, glyphCount);
+    unsigned char* const indices = static_cast<unsigned char*>(bufferMapImplementation(_indexBuffer, indexData.size()));
+    CORRADE_INTERNAL_ASSERT(indices);
+    std::copy(indexData.begin(), indexData.end(), indices);
     bufferUnmapImplementation(_indexBuffer);
 }
 
 void AbstractRenderer::render(const std::string& text) {
-    const auto layouter = font.layout(cache, size, text);
-
-    CORRADE_ASSERT(layouter->glyphCount() <= _capacity,
-        "Text::Renderer::render(): capacity" << _capacity << "too small to render" << layouter->glyphCount() << "glyphs", );
-
-    /* Reset rendered rectangle */
+    /* Render vertex data */
+    std::vector<Vertex> vertexData;
     _rectangle = {};
+    std::tie(vertexData, _rectangle) = renderVerticesInternal(font, cache, size, text, _alignment);
 
-    /* Map buffer for rendering */
+    const UnsignedInt glyphCount = vertexData.size()/4;
+    const UnsignedInt vertexCount = glyphCount*4;
+    const UnsignedInt indexCount = glyphCount*6;
+
+    CORRADE_ASSERT(glyphCount <= _capacity,
+        "Text::Renderer::render(): capacity" << _capacity << "too small to render" << glyphCount << "glyphs", );
+
+    /* Interleave the data into mapped buffer*/
     Containers::ArrayReference<Vertex> vertices(static_cast<Vertex*>(bufferMapImplementation(_vertexBuffer,
-        layouter->glyphCount()*4*sizeof(Vertex))), layouter->glyphCount()*4);
+        vertexCount*sizeof(Vertex))), vertexCount);
     CORRADE_INTERNAL_ASSERT_OUTPUT(vertices);
-
-    /* Render all glyphs */
-    Vector2 cursorPosition;
-    for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-        Rectangle quadPosition, textureCoordinates;
-        std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, _rectangle);
-
-        const std::size_t vertex = i*4;
-        vertices[vertex]   = {quadPosition.topLeft(), textureCoordinates.topLeft()};
-        vertices[vertex+1] = {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()};
-        vertices[vertex+2] = {quadPosition.topRight(), textureCoordinates.topRight()};
-        vertices[vertex+3] = {quadPosition.bottomRight(), textureCoordinates.bottomRight()};
-    }
-
-    /* Respect the alignment */
-    const Vector2 offset = alignmentOffset(_rectangle, _alignment);
-    for(auto& v: vertices) v.position += offset;
-
+    std::copy(vertexData.begin(), vertexData.end(), vertices.begin());
     bufferUnmapImplementation(_vertexBuffer);
 
     /* Update index count */
-    _mesh.setIndexCount(layouter->glyphCount()*6);
+    _mesh.setIndexCount(indexCount);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

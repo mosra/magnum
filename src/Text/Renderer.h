@@ -115,11 +115,9 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
     #else
     private:
     #endif
-        explicit MAGNUM_LOCAL AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment);
+        explicit MAGNUM_TEXT_LOCAL AbstractRenderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment);
 
         ~AbstractRenderer();
-
-        static std::tuple<Mesh, Rectangle> MAGNUM_LOCAL render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment);
 
         Mesh _mesh;
         Buffer _vertexBuffer, _indexBuffer;
