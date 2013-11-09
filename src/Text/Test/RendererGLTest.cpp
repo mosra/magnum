@@ -94,8 +94,8 @@ void RendererGLTest::renderData() {
     CORRADE_COMPARE(textureCoordinates.size(), 12);
     CORRADE_COMPARE(indices.size(), 18);
 
-    /* Alignment offset */
-    const Vector2 offset{-5.0f, -1.0f};
+    /* Alignment offset. Y would be -0.25f if it wasn't integral */
+    const Vector2 offset{-5.0f, 0.0f};
 
     /* Bounds */
     CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
@@ -173,7 +173,7 @@ void RendererGLTest::renderMesh() {
     MAGNUM_VERIFY_NO_ERROR();
 
     /* Alignment offset */
-    const Vector2 offset{-2.5f, -1.5f};
+    const Vector2 offset{-2.5f, -1.0f};
 
     /* Bounds */
     CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));

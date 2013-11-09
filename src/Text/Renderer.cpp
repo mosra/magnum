@@ -123,12 +123,11 @@ std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& 
         /** @todo What about top-down text? */
 
         /* Horizontally align the rendered line */
-        const Float renderedWidth = lineRectangle.width();
         Float alignmentOffsetX = 0.0f;
         if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter)
-            alignmentOffsetX = -renderedWidth*0.5f;
+            alignmentOffsetX = -lineRectangle.left()-lineRectangle.width()*0.5f;
         else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight)
-            alignmentOffsetX = -renderedWidth;
+            alignmentOffsetX = -lineRectangle.right();
 
         /* Integer alignment */
         if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
@@ -152,12 +151,11 @@ std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& 
             pos != std::string::npos);
 
     /* Vertically align the rendered text */
-    const Float renderedHeight = rectangle.height();
     Float alignmentOffsetY = 0.0f;
     if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle)
-        alignmentOffsetY = -renderedHeight*0.5f;
+        alignmentOffsetY = -rectangle.bottom()-rectangle.height()*0.5f;
     else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentTop)
-        alignmentOffsetY = -renderedHeight;
+        alignmentOffsetY = -rectangle.top();
 
     /* Integer alignment */
     if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
