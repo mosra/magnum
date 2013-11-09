@@ -58,62 +58,114 @@ struct Vertex {
     Vector2 position, textureCoordinates;
 };
 
-std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
-    const auto layouter = font.layout(cache, size, text);
-    const UnsignedInt vertexCount = layouter->glyphCount()*4;
-
-    /* Output data */
+std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, const Alignment alignment) {
+    /* Output data, reserve memory as when the text would be ASCII-only. In
+       reality the actual vertex count will be smaller, but allocating more at
+       once is better than reallocating many times later. */
     std::vector<Vertex> vertices;
-    vertices.reserve(vertexCount);
+    vertices.reserve(text.size()*4);
 
-    /* Rendered rectangle */
+    /* Total rendered bounds, intial line position, last+1 vertex on previous line */
     Rectangle rectangle;
+    Vector2 linePosition;
+    std::size_t lastLineLastVertex = 0;
 
-    /* Render all glyphs */
-    Vector2 cursorPosition;
-    for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-        Rectangle quadPosition, textureCoordinates;
-        std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, rectangle);
+    /* Temp buffer so we don't allocate for each new line */
+    /**
+     * @todo C++1z: use std::string_view to avoid the one allocation and all
+     *      the copying altogether
+     */
+    std::string line;
+    line.reserve(text.size());
 
-        /* 0---2
-           |   |
-           |   |
-           |   |
-           1---3 */
+    /* Render each line separately and align it horizontally */
+    std::size_t pos, prevPos = 0;
+    do {
+        /* Empty line, nothing to do (the rest is done below in while expression) */
+        if((pos = text.find('\n', prevPos)) == prevPos) continue;
 
-        vertices.insert(vertices.end(), {
-            {quadPosition.topLeft(), textureCoordinates.topLeft()},
-            {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()},
-            {quadPosition.topRight(), textureCoordinates.topRight()},
-            {quadPosition.bottomRight(), textureCoordinates.bottomRight()}
-        });
-    }
+        /* Copy the line into the temp buffer */
+        line.assign(text, prevPos, pos-prevPos);
 
-    /* Align the rendered mesh */
-    const Vector2 renderedSize = rectangle.size();
-    Vector2 alignmentOffset;
+        /* Layout the line */
+        const auto layouter = font.layout(cache, size, line);
+        const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
-    /** @todo What about top-down text? */
+        /* Verify that we don't reallocate anything. The only problem might
+           arise when the layouter decides to compose one character from more
+           than one glyph (i.e. accents). Will remove the assert when this
+           issue arises. */
+        CORRADE_INTERNAL_ASSERT(vertices.size()+vertexCount <= vertices.capacity());
 
-    /* Horizontal alignment */
-    if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter)
-        alignmentOffset -= Vector2::xAxis(renderedSize.x()*0.5f);
-    else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight)
-        alignmentOffset -= Vector2::xAxis(renderedSize.x());
+        /* Bounds of rendered line */
+        Rectangle lineRectangle;
 
-    /* Vertical alignment */
+        /* Render all glyphs */
+        Vector2 cursorPosition(linePosition);
+        for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
+            Rectangle quadPosition, textureCoordinates;
+            std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, lineRectangle);
+
+            /* 0---2
+               |   |
+               |   |
+               |   |
+               1---3 */
+
+            vertices.insert(vertices.end(), {
+                {quadPosition.topLeft(), textureCoordinates.topLeft()},
+                {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()},
+                {quadPosition.topRight(), textureCoordinates.topRight()},
+                {quadPosition.bottomRight(), textureCoordinates.bottomRight()}
+            });
+        }
+
+        /** @todo What about top-down text? */
+
+        /* Horizontally align the rendered line */
+        const Float renderedWidth = lineRectangle.width();
+        Float alignmentOffsetX = 0.0f;
+        if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter)
+            alignmentOffsetX = -renderedWidth*0.5f;
+        else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight)
+            alignmentOffsetX = -renderedWidth;
+
+        /* Integer alignment */
+        if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
+            alignmentOffsetX = Math::round(alignmentOffsetX);
+
+        /* Align positions and bounds on current line */
+        lineRectangle = lineRectangle.translated(Vector2::xAxis(alignmentOffsetX));
+        for(auto it = vertices.begin()+lastLineLastVertex; it != vertices.end(); ++it)
+            it->position.x() += alignmentOffsetX;
+
+        /* Add final line bounds to total bounds, similarly to AbstractFont::renderGlyph() */
+        if(!rectangle.size().isZero()) {
+            rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), lineRectangle.bottomLeft());
+            rectangle.topRight() = Math::max(rectangle.topRight(), lineRectangle.topRight());
+        } else rectangle = lineRectangle;
+
+    /* Move to next line */
+    } while(prevPos = pos+1,
+            linePosition -= Vector2::yAxis(font.lineHeight()),
+            lastLineLastVertex = vertices.size(),
+            pos != std::string::npos);
+
+    /* Vertically align the rendered text */
+    const Float renderedHeight = rectangle.height();
+    Float alignmentOffsetY = 0.0f;
     if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle)
-        alignmentOffset -= Vector2::yAxis(renderedSize.y()*0.5f);
+        alignmentOffsetY = -renderedHeight*0.5f;
     else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentTop)
-        alignmentOffset -= Vector2::yAxis(renderedSize.y());
+        alignmentOffsetY = -renderedHeight;
 
     /* Integer alignment */
     if(UnsignedByte(alignment) & Implementation::AlignmentIntegral)
-        alignmentOffset = Math::round(alignmentOffset);
+        alignmentOffsetY = Math::round(alignmentOffsetY);
 
-    /* Update positions and bounds */
-    rectangle = rectangle.translated(alignmentOffset);
-    for(auto& v: vertices) v.position += alignmentOffset;
+    /* Align positions and bounds */
+    rectangle = rectangle.translated(Vector2::yAxis(alignmentOffsetY));
+    for(auto& v: vertices) v.position.y() += alignmentOffsetY;
 
     return std::make_tuple(std::move(vertices), rectangle);
 }

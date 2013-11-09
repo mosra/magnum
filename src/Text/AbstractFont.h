@@ -199,6 +199,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size      Font size
          * @param text      %Text to layout
          *
+         * Note that the layouters support rendering of single-line text only.
+         * See @ref Renderer class for more advanced text layouting.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
         std::unique_ptr<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);

@@ -35,12 +35,16 @@ class RendererGLTest: public Magnum::Test::AbstractOpenGLTester {
         void renderData();
         void renderMesh();
         void mutableText();
+
+        void multiline();
 };
 
 RendererGLTest::RendererGLTest() {
     addTests({&RendererGLTest::renderData,
               &RendererGLTest::renderMesh,
-              &RendererGLTest::mutableText});
+              &RendererGLTest::mutableText,
+
+              &RendererGLTest::multiline});
 }
 
 namespace {
@@ -255,6 +259,106 @@ void RendererGLTest::mutableText() {
         5.0f,  -0.5f, 18.0f,  0.0f
     }));
     #endif
+}
+
+void RendererGLTest::multiline() {
+    class Layouter: public Text::AbstractLayouter {
+        public:
+            explicit Layouter(UnsignedInt glyphs): AbstractLayouter(glyphs) {}
+
+        private:
+            std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt) override {
+                return std::make_tuple(Rectangle({}, Vector2(1.0f)), Rectangle({}, Vector2(1.0f)), Vector2::xAxis(2.0f));
+            }
+    };
+
+    class Font: public Text::AbstractFont {
+        public:
+            explicit Font(): _opened(false) {}
+
+        private:
+            Features doFeatures() const override { return {};  }
+
+            bool doIsOpened() const override { return _opened; }
+            void doClose() override { _opened = false; }
+
+            std::pair<Float, Float> doOpenFile(const std::string&, Float) {
+                _opened = true;
+                return {0, 3.0f};
+            }
+
+            UnsignedInt doGlyphId(char32_t) override { return 0; }
+            Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+
+            std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string& text) override {
+                return std::unique_ptr<AbstractLayouter>(new Layouter(text.size()));
+            }
+
+            bool _opened;
+    };
+
+    Font font;
+    font.openFile({}, 0.0f);
+    Rectangle rectangle;
+    std::vector<UnsignedInt> indices;
+    std::vector<Vector2> positions, textureCoordinates;
+    std::tie(positions, textureCoordinates, indices, rectangle) = Text::Renderer2D::render(font,
+        *static_cast<GlyphCache*>(nullptr), 0.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+
+    /* Bounds */
+    CORRADE_COMPARE(rectangle, Rectangle({-3.5f, -5.0f}, {3.5f, 5.0f}));
+
+    /* Vertices
+       [a] [b] [c] [d]
+           [e] [f]
+
+         [g] [h] [i]   */
+    CORRADE_COMPARE(positions, (std::vector<Vector2>{
+        Vector2{-3.5f,  5.0f}, Vector2{-3.5f,  4.0f}, /* a */
+        Vector2{-2.5f,  5.0f}, Vector2{-2.5f,  4.0f},
+
+        Vector2{-1.5f,  5.0f}, Vector2{-1.5f,  4.0f}, /* b */
+        Vector2{-0.5f,  5.0f}, Vector2{-0.5f,  4.0f},
+
+        Vector2{ 0.5f,  5.0f}, Vector2{ 0.5f,  4.0f}, /* c */
+        Vector2{ 1.5f,  5.0f}, Vector2{ 1.5f,  4.0f},
+
+        Vector2{ 2.5f,  5.0f}, Vector2{ 2.5f,  4.0f}, /* d */
+        Vector2{ 3.5f,  5.0f}, Vector2{ 3.5f,  4.0f},
+
+        Vector2{-1.5f,  2.0f}, Vector2{-1.5f,  1.0f}, /* e */
+        Vector2{-0.5f,  2.0f}, Vector2{-0.5f,  1.0f},
+
+        Vector2{ 0.5f,  2.0f}, Vector2{ 0.5f,  1.0f}, /* f */
+        Vector2{ 1.5f,  2.0f}, Vector2{ 1.5f,  1.0f},
+
+        Vector2{-2.5f, -4.0f}, Vector2{-2.5f, -5.0f}, /* g */
+        Vector2{-1.5f, -4.0f}, Vector2{-1.5f, -5.0f},
+
+        Vector2{-0.5f, -4.0f}, Vector2{-0.5f, -5.0f}, /* h */
+        Vector2{ 0.5f, -4.0f}, Vector2{ 0.5f, -5.0f},
+
+        Vector2{ 1.5f, -4.0f}, Vector2{ 1.5f, -5.0f}, /* i */
+        Vector2{ 2.5f, -4.0f}, Vector2{ 2.5f, -5.0f},
+    }));
+
+    /* Indices
+       0---2 0---2 5
+       |   | |  / /|
+       |   | | / / |
+       |   | |/ /  |
+       1---3 1 3---4 */
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
+         0,  1,  2,  1,  3,  2,
+         4,  5,  6,  5,  7,  6,
+         8,  9, 10,  9, 11, 10,
+        12, 13, 14, 13, 15, 14,
+        16, 17, 18, 17, 19, 18,
+        20, 21, 22, 21, 23, 22,
+        24, 25, 26, 25, 27, 26,
+        28, 29, 30, 29, 31, 30,
+        32, 33, 34, 33, 35, 34
+    }));
 }
 
 }}}
