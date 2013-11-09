@@ -62,18 +62,17 @@ class TestLayouter: public Text::AbstractLayouter {
 };
 
 class TestFont: public Text::AbstractFont {
-    public:
-        Features doFeatures() const override { return Feature::OpenData; }
+    Features doFeatures() const override { return Feature::OpenData; }
 
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
+    bool doIsOpened() const override { return true; }
+    void doClose() override {}
 
-        UnsignedInt doGlyphId(char32_t) override { return 0; }
-        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+    UnsignedInt doGlyphId(char32_t) override { return 0; }
+    Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-        std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float size, const std::string& text) override {
-            return std::unique_ptr<AbstractLayouter>(new TestLayouter(size, text.size()));
-        }
+    std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, const Float size, const std::string& text) override {
+        return std::unique_ptr<AbstractLayouter>(new TestLayouter(size, text.size()));
+    }
 };
 
 }
@@ -95,7 +94,7 @@ void RendererGLTest::renderData() {
     const Vector2 offset{-5.0f, -1.0f};
 
     /* Bounds */
-    CORRADE_COMPARE(bounds, Rectangle(Vector2{0.0f, -0.5f} + offset, Vector2{5.0f, 1.0f} + offset));
+    CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
 
     /* Vertex positions and texture coordinates
        0---2
@@ -173,7 +172,7 @@ void RendererGLTest::renderMesh() {
     const Vector2 offset{-2.5f, -1.5f};
 
     /* Bounds */
-    CORRADE_COMPARE(bounds, Rectangle(Vector2{0.0f, -0.5f} + offset, Vector2{5.0f, 1.0f} + offset));
+    CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
