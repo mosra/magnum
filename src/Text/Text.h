@@ -30,6 +30,8 @@
 
 #include "Types.h"
 
+#include <corradeConfigure.h>
+
 #include "magnumConfigure.h"
 
 namespace Magnum { namespace Text {
@@ -40,7 +42,9 @@ class AbstractLayouter;
 class DistanceFieldGlyphCache;
 class GlyphCache;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class Alignment: UnsignedByte;
+#endif
 
 class AbstractRenderer;
 template<UnsignedInt> class Renderer;
