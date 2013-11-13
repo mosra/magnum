@@ -28,14 +28,16 @@
 #include <sstream>
 #include <Utility/Endianness.h>
 #include <Containers/Array.h>
-#include <ColorFormat.h>
-#include <Trade/ImageData.h>
+
+#include "ColorFormat.h"
+#include "Trade/ImageData.h"
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
-#include <Context.h>
-#include <Extensions.h>
-#include <Swizzle.h>
+#include "Math/Swizzle.h"
+#include "Math/Vector4.h"
+#include "Context.h"
+#include "Extensions.h"
 #endif
 
 #include "TgaHeader.h"
@@ -44,11 +46,11 @@ namespace Magnum { namespace Trade {
 
 namespace {
     constexpr Math::Vector3<UnsignedByte> bgr(const Math::Vector3<UnsignedByte>& vec) {
-        return swizzle<'b', 'g', 'r'>(vec);
+        return Math::swizzle<'b', 'g', 'r'>(vec);
     }
 
     constexpr Math::Vector4<UnsignedByte> bgra(const Math::Vector4<UnsignedByte>& vec) {
-        return swizzle<'b', 'g', 'r', 'a'>(vec);
+        return Math::swizzle<'b', 'g', 'r', 'a'>(vec);
     }
 }
 

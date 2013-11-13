@@ -22,8 +22,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED Text)
-
 set(MagnumFont_SOURCES
     MagnumFont.cpp)
 
@@ -37,9 +35,7 @@ add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_INSTALL_DIR}
     MagnumFont.conf
     $<TARGET_OBJECTS:MagnumFontObjects>
     pluginRegistrationMagnumFont.cpp)
-target_link_libraries(MagnumFont
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_TEXT_LIBRARIES})
+target_link_libraries(MagnumFont Magnum MagnumText)
 
 if(WIN32)
     target_link_libraries(MagnumFont TgaImporter)
@@ -49,10 +45,6 @@ install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL
 
 if(BUILD_GL_TESTS)
     add_library(MagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
-    target_link_libraries(MagnumFontTestLib
-        ${MAGNUM_LIBRARIES}
-        ${MAGNUM_TEXT_LIBRARIES}
-        TgaImporterTestLib)
-
+    target_link_libraries(MagnumFontTestLib Magnum MagnumText TgaImporterTestLib)
     add_subdirectory(Test)
 endif()

@@ -74,7 +74,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          *
          * Used only if @ref Flag::Textured is set.
          */
-        typedef Attribute<2, Vector2> TextureCoordinates;
+        typedef Attribute<1, Vector2> TextureCoordinates;
 
         enum: Int {
             /** Layer for color texture. Used only if @ref Flag::Textured is set. */

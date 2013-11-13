@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for Animable.h and AnimableGroup.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Animable.h and @ref AnimableGroup.h
  */
 
 #include "AnimableGroup.h"
@@ -47,16 +47,16 @@ template<UnsignedInt dimensions, class T> Animable<dimensions, T>& Animable<dime
         return *this;
 
     /* Wake up the group in case no animations are running */
-    group()->wakeUp = true;
+    animables()->wakeUp = true;
     currentState = state;
     return *this;
 }
 
-template<UnsignedInt dimensions, class T> AnimableGroup<dimensions, T>* Animable<dimensions, T>::group() {
+template<UnsignedInt dimensions, class T> AnimableGroup<dimensions, T>* Animable<dimensions, T>::animables() {
     return static_cast<AnimableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
 }
 
-template<UnsignedInt dimensions, class T> const AnimableGroup<dimensions, T>* Animable<dimensions, T>::group() const {
+template<UnsignedInt dimensions, class T> const AnimableGroup<dimensions, T>* Animable<dimensions, T>::animables() const {
     return static_cast<const AnimableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>::group());
 }
 

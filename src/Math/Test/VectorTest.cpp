@@ -74,6 +74,7 @@ class VectorTest: public Corrade::TestSuite::Tester {
         void multiplyDivideIntegral();
         void multiplyDivideComponentWise();
         void multiplyDivideComponentWiseIntegral();
+        void modulo();
         void bitwise();
 
         void compare();
@@ -128,6 +129,7 @@ VectorTest::VectorTest() {
               &VectorTest::multiplyDivideIntegral,
               &VectorTest::multiplyDivideComponentWise,
               &VectorTest::multiplyDivideComponentWiseIntegral,
+              &VectorTest::modulo,
               &VectorTest::bitwise,
 
               &VectorTest::compare,
@@ -342,6 +344,15 @@ void VectorTest::multiplyDivideComponentWiseIntegral() {
     /* Using integer vector as divisor is not supported */
 }
 
+void VectorTest::modulo() {
+    typedef Math::Vector<2, Int> Vector2i;
+
+    const Vector2i a(4, 13);
+    const Vector2i b(2, 5);
+    CORRADE_COMPARE(a % 2, Vector2i(0, 1));
+    CORRADE_COMPARE(a % b, Vector2i(0, 3));
+}
+
 void VectorTest::bitwise() {
     typedef Math::Vector<2, Int> Vector2i;
 
@@ -484,9 +495,16 @@ void VectorTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(a *= c), Vec2&>::value));
     CORRADE_VERIFY((std::is_same<decltype(a /= c), Vec2&>::value));
 
-    /* Bitwise operations */
+    /* Modulo operations */
     const Vec2i ci;
     Vec2i i;
+    const Int j = {};
+    CORRADE_VERIFY((std::is_same<decltype(ci % j), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i %= j), Vec2i&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(ci % ci), Vec2i>::value));
+    CORRADE_VERIFY((std::is_same<decltype(i %= ci), Vec2i&>::value));
+
+    /* Bitwise operations */
     CORRADE_VERIFY((std::is_same<decltype(~ci), Vec2i>::value));
     CORRADE_VERIFY((std::is_same<decltype(ci & ci), Vec2i>::value));
     CORRADE_VERIFY((std::is_same<decltype(ci | ci), Vec2i>::value));
@@ -532,6 +550,10 @@ void VectorTest::subclass() {
 
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*Vec2(1.5f, -2.0f), Vec2(-3.0f, -10.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/Vec2(2.0f/3.0f, -0.5f), Vec2(-3.0f, -10.0f));
+
+    /* Modulo operations */
+    CORRADE_COMPARE(Vec2i(4, 13) % 2, Vec2i(0, 1));
+    CORRADE_COMPARE(Vec2i(4, 13) % Vec2i(2, 5), Vec2i(0, 3));
 
     /* Bitwise operations */
     CORRADE_COMPARE(~Vec2i(85, 240), Vec2i(-86, -241));

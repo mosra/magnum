@@ -26,9 +26,9 @@
 #include <Containers/Array.h>
 #include <TestSuite/Tester.h>
 #include <Utility/Directory.h>
-#include <ColorFormat.h>
-#include <Trade/ImageData.h>
 
+#include "ColorFormat.h"
+#include "Trade/ImageData.h"
 #include "TgaImporter/TgaImporter.h"
 
 #include "configure.h"
@@ -39,7 +39,7 @@ class TgaImporterTest: public TestSuite::Tester {
     public:
         TgaImporterTest();
 
-        void openInexistent();
+        void openNonexistent();
         void openShort();
         void paletted();
         void compressed();
@@ -55,7 +55,7 @@ class TgaImporterTest: public TestSuite::Tester {
 };
 
 TgaImporterTest::TgaImporterTest() {
-    addTests({&TgaImporterTest::openInexistent,
+    addTests({&TgaImporterTest::openNonexistent,
               &TgaImporterTest::openShort,
               &TgaImporterTest::paletted,
               &TgaImporterTest::compressed,
@@ -70,13 +70,13 @@ TgaImporterTest::TgaImporterTest() {
               &TgaImporterTest::file});
 }
 
-void TgaImporterTest::openInexistent() {
+void TgaImporterTest::openNonexistent() {
     std::ostringstream debug;
     Error::setOutput(&debug);
 
     TgaImporter importer;
-    CORRADE_VERIFY(!importer.openFile("inexistent.file"));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::openFile(): cannot open file inexistent.file\n");
+    CORRADE_VERIFY(!importer.openFile("nonexistent.file"));
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::openFile(): cannot open file nonexistent.file\n");
 }
 
 void TgaImporterTest::openShort() {

@@ -38,7 +38,7 @@ namespace {
     template<> constexpr const char* vertexShaderName<3>() { return "AbstractVector3D.vert"; }
 }
 
-template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationProjectionMatrixUniform(0), colorUniform(1) {
+template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationProjectionMatrixUniform(0), backgroundColorUniform(1), colorUniform(2) {
     Utility::Resource rs("MagnumShaders");
 
     /* Weird bug in GCC 4.5 - cannot use initializer list here, although the
@@ -79,6 +79,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     #endif
     {
         transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
+        backgroundColorUniform = AbstractShaderProgram::uniformLocation("backgroundColor");
         colorUniform = AbstractShaderProgram::uniformLocation("color");
     }
 

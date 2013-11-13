@@ -28,11 +28,13 @@
 #include <Containers/Array.h>
 #include <Utility/Unicode.h>
 
+#include "Text/GlyphCache.h"
+
 namespace Magnum { namespace Text {
 
 AbstractFont::AbstractFont(): _size(0.0f) {}
 
-AbstractFont::AbstractFont(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f) {}
+AbstractFont::AbstractFont(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f), _lineHeight(0.0f) {}
 
 bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
     CORRADE_ASSERT(features() & Feature::OpenData,
@@ -41,18 +43,19 @@ bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers:
         "Text::AbstractFont::openData(): no data passed", false);
 
     close();
-    doOpenData(data, size);
+    std::tie(_size, _lineHeight) = doOpenData(data, size);
+    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
     return isOpened();
 }
 
-void AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
+std::pair<Float, Float> AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
-        "Text::AbstractFont::openData(): feature advertised but not implemented", );
+        "Text::AbstractFont::openData(): feature advertised but not implemented", {});
     CORRADE_ASSERT(data.size() == 1,
-        "Text::AbstractFont::openData(): expected just one file for single-file format", );
+        "Text::AbstractFont::openData(): expected just one file for single-file format", {});
 
     close();
-    doOpenSingleData(data[0].second, size);
+    return doOpenSingleData(data[0].second, size);
 }
 
 bool AbstractFont::openSingleData(const Containers::ArrayReference<const unsigned char> data, const Float size) {
@@ -62,29 +65,31 @@ bool AbstractFont::openSingleData(const Containers::ArrayReference<const unsigne
         "Text::AbstractFont::openSingleData(): the format is not single-file", false);
 
     close();
-    doOpenSingleData(data, size);
+    std::tie(_size, _lineHeight) = doOpenSingleData(data, size);
+    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
     return isOpened();
 }
 
-void AbstractFont::doOpenSingleData(Containers::ArrayReference<const unsigned char>, Float) {
-    CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", );
+std::pair<Float, Float> AbstractFont::doOpenSingleData(Containers::ArrayReference<const unsigned char>, Float) {
+    CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", {});
 }
 
 bool AbstractFont::openFile(const std::string& filename, const Float size) {
     close();
-    doOpenFile(filename, size);
+    std::tie(_size, _lineHeight) = doOpenFile(filename, size);
+    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
     return isOpened();
 }
 
-void AbstractFont::doOpenFile(const std::string& filename, const Float size) {
+std::pair<Float, Float> AbstractFont::doOpenFile(const std::string& filename, const Float size) {
     CORRADE_ASSERT(features() & Feature::OpenData && !(features() & Feature::MultiFile),
-        "Text::AbstractFont::openFile(): not implemented", );
+        "Text::AbstractFont::openFile(): not implemented", {});
 
     /* Open file */
     std::ifstream in(filename.data(), std::ios::binary);
     if(!in.good()) {
         Error() << "Trade::AbstractFont::openFile(): cannot open file" << filename;
-        return;
+        return {};
     }
 
     /* Create array to hold file contents */
@@ -96,12 +101,14 @@ void AbstractFont::doOpenFile(const std::string& filename, const Float size) {
     in.read(reinterpret_cast<char*>(data.begin()), data.size());
     in.close();
 
-    doOpenSingleData(data, size);
+    return doOpenSingleData(data, size);
 }
 
 void AbstractFont::close() {
     if(isOpened()) {
         doClose();
+        _size = 0.0f;
+        _lineHeight = 0.0f;
         CORRADE_INTERNAL_ASSERT(!isOpened());
     }
 }
@@ -127,7 +134,7 @@ void AbstractFont::fillGlyphCache(GlyphCache& cache, const std::string& characte
     doFillGlyphCache(cache, Utility::Unicode::utf32(characters));
 }
 
-#ifndef _WIN32
+#ifndef __MINGW32__
 void AbstractFont::doFillGlyphCache(GlyphCache&, const std::u32string&)
 #else
 void AbstractFont::doFillGlyphCache(GlyphCache&, const std::vector<char32_t>&)
@@ -136,7 +143,7 @@ void AbstractFont::doFillGlyphCache(GlyphCache&, const std::vector<char32_t>&)
     CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 
-GlyphCache* AbstractFont::createGlyphCache() {
+std::unique_ptr<GlyphCache> AbstractFont::createGlyphCache() {
     CORRADE_ASSERT(isOpened(),
         "Text::AbstractFont::createGlyphCache(): no font opened", nullptr);
     CORRADE_ASSERT(features() & Feature::PreparedGlyphCache,
@@ -145,18 +152,43 @@ GlyphCache* AbstractFont::createGlyphCache() {
     return doCreateGlyphCache();
 }
 
-GlyphCache* AbstractFont::doCreateGlyphCache() {
+std::unique_ptr<GlyphCache> AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
 }
 
-AbstractLayouter* AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
+std::unique_ptr<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
 
     return doLayout(cache, size, text);
 }
 
-AbstractLayouter::AbstractLayouter(): _glyphCount(0) {}
+AbstractLayouter::AbstractLayouter(UnsignedInt glyphCount): _glyphCount(glyphCount) {}
 
 AbstractLayouter::~AbstractLayouter() {}
+
+std::pair<Rectangle, Rectangle> AbstractLayouter::renderGlyph(const UnsignedInt i, Vector2& cursorPosition, Rectangle& rectangle) {
+    CORRADE_ASSERT(i < glyphCount(), "Text::AbstractLayouter::renderGlyph(): glyph index out of bounds", {});
+
+    /* Render the glyph */
+    Rectangle quadPosition, textureCoordinates;
+    Vector2 advance;
+    std::tie(quadPosition, textureCoordinates, advance) = doRenderGlyph(i);
+
+    /* Move the quad to cursor */
+    quadPosition.bottomLeft() += cursorPosition;
+    quadPosition.topRight() += cursorPosition;
+
+    /* Extend rectangle with current quad bounds. If zero size, replace it. */
+    if(!rectangle.size().isZero()) {
+        rectangle.bottomLeft() = Math::min(rectangle.bottomLeft(), quadPosition.bottomLeft());
+        rectangle.topRight() = Math::max(rectangle.topRight(), quadPosition.topRight());
+    } else rectangle = quadPosition;
+
+    /* Advance cursor position to next character */
+    cursorPosition += advance;
+
+    /* Return moved quad and unchanged texture coordinates */
+    return {quadPosition, textureCoordinates};
+}
 
 }}

@@ -493,13 +493,6 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
         const Vector2i _position;
 };
 
-/* Implementations for inline functions with unused parameters */
-inline void AbstractXApplication::keyPressEvent(KeyEvent&) {}
-inline void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
-inline void AbstractXApplication::mousePressEvent(MouseEvent&) {}
-inline void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
-inline void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
-
 }}
 
 #endif

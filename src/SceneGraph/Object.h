@@ -56,16 +56,16 @@ Base of scene graph. Contains specific transformation implementation, takes
 care of parent/children relationship and contains features. See @ref scenegraph
 for introduction.
 
-Common usage is to typedef Object with desired transformation type to save
-unnecessary typing later, along with Scene and possibly other types, e.g.:
+Common usage is to typedef @ref Object with desired transformation type to save
+unnecessary typing later, along with @ref Scene and possibly other types, e.g.:
 @code
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 @endcode
 
-Uses Corrade::Containers::LinkedList for parent/children relationship.
+Uses @ref Corrade::Containers::LinkedList for parent/children relationship.
 Traversing through the list is done like in the following code. It is also
-possible to go in reverse order using lastChild() and previousSibling().
+possible to go in reverse order using @ref lastChild() and @ref previousSibling().
 @code
 for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
     // ...
@@ -74,21 +74,25 @@ for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
 
 @section Object-explicit-specializations Explicit template specializations
 
-The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using Double type or special transformation
-class) you have to use Object.hpp implementation file to avoid linker errors.
-See @ref compilation-speedup-hpp for more information.
+The following specialization are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type or special
+transformation class) you have to use @ref Object.hpp implementation file to
+avoid linker errors. See also relevant sections in
+@ref AbstractObject-explicit-specializations "AbstractObject" and
+@ref AbstractTransformation-explicit-specializations "AbstractTransformation"
+class documentation or @ref compilation-speedup-hpp for more information.
 
- - @ref DualComplexTransformation "Object<DualComplexTransformation<Float>>"
- - @ref DualQuaternionTransformation "Object<DualQuaternionTransformation<Float>>"
- - @ref MatrixTransformation2D "Object<MatrixTransformation2D<Float>>"
- - @ref MatrixTransformation3D "Object<MatrixTransformation3D<Float>>"
- - @ref RigidMatrixTransformation2D "Object<RigidMatrixTransformation2D<Float>>"
- - @ref RigidMatrixTransformation3D "Object<RigidMatrixTransformation3D<Float>>"
- - @ref TranslationTransformation2D "Object<TranslationTransformation2D<Float>>"
- - @ref TranslationTransformation3D "Object<TranslationTransformation3D<Float>>"
+-   @ref DualComplexTransformation "Object<DualComplexTransformation>"
+-   @ref DualQuaternionTransformation "Object<DualQuaternionTransformation>"
+-   @ref MatrixTransformation2D "Object<MatrixTransformation2D>"
+-   @ref MatrixTransformation3D "Object<MatrixTransformation3D>"
+-   @ref RigidMatrixTransformation2D "Object<RigidMatrixTransformation2D>"
+-   @ref RigidMatrixTransformation3D "Object<RigidMatrixTransformation3D>"
+-   @ref TranslationTransformation2D "Object<TranslationTransformation2D>"
+-   @ref TranslationTransformation3D "Object<TranslationTransformation3D>"
 
-@see Scene, AbstractFeature, AbstractTransformation, DebugTools::ObjectRenderer
+@see @ref Scene, @ref AbstractFeature, @ref AbstractTransformation,
+    @ref DebugTools::ObjectRenderer
 */
 template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -36,12 +36,12 @@ add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR}
     TgaImporter.conf
     $<TARGET_OBJECTS:TgaImporterObjects>
     pluginRegistrationTgaImporter.cpp)
-target_link_libraries(TgaImporter ${MAGNUM_LIBRARIES})
+target_link_libraries(TgaImporter Magnum)
 
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
 
 if(BUILD_TESTS)
     add_library(TgaImporterTestLib SHARED $<TARGET_OBJECTS:TgaImporterObjects>)
-    target_link_libraries(TgaImporterTestLib ${MAGNUM_LIBRARIES})
+    target_link_libraries(TgaImporterTestLib Magnum)
     add_subdirectory(Test)
 endif()

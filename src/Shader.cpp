@@ -31,7 +31,7 @@
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
 #include <sstream>
 #endif
 
@@ -582,7 +582,7 @@ Shader& Shader::operator=(Shader&& other) {
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
         std::ostringstream converter;
         converter << (sources.size()+1)/2;
         #endif
@@ -591,7 +591,7 @@ Shader& Shader::addSource(std::string source) {
            Source 0 is the #version string added in constructor. */
         sources.push_back("#line 1 " +
             /* This shouldn't be ambiguous. But is. */
-            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(_WIN32)
+            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(__MINGW32__)
             #ifndef CORRADE_GCC44_COMPATIBILITY
             std::to_string((sources.size()+1)/2) +
             #else

@@ -25,11 +25,12 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::AbstractFont, Magnum::Text::AbstractLayouter
+ * @brief Class @ref Magnum::Text::AbstractFont, @ref Magnum::Text::AbstractLayouter
  */
 
-#include <tuple>
+#include <memory>
 #include <string>
+#include <tuple>
 #include <PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
@@ -44,41 +45,43 @@ namespace Magnum { namespace Text {
 
 @section AbstractFont-usage Usage
 
-First step is to open the font using open(), next step is to prerender all the
-glyphs which will be used in text rendering later, see GlyphCache for more
-information. See TextRenderer for information about text rendering.
+First step is to open the font using @ref openData(), @ref openSingleData() or
+@ref openFile(). Next step is to prerender all the glyphs which will be used in
+text rendering later, see @ref GlyphCache for more information. See
+@ref Renderer for information about text rendering.
 
 @section AbstractFont-subclassing Subclassing
 
-Plugin implements doFeatures(), doClose(), doCreateGlyphCache(), doLayout() and
-one or more of `doOpen*()` functions.
+Plugin implements @ref doFeatures(), @ref doClose(), @ref doLayout(), either
+@ref doCreateGlyphCache() or @ref doFillGlyphCache() and one or more of
+`doOpen*()` functions. See also @ref AbstractLayouter for more information.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions doOpenData(), doOpenSingleData() and doOpenFile() are called
-    after the previous file was closed, function doClose() is called only if
-    there is any file opened.
--   Functions doOpenData() and doOpenSingleData() are called only if
+-   Functions @ref doOpenData(), @ref doOpenSingleData() and @ref doOpenFile()
+    are called after the previous file was closed, function @ref doClose() is
+    called only if there is any file opened.
+-   Functions @ref doOpenData() and @ref doOpenSingleData() are called only if
     @ref Feature::OpenData is supported.
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.3")
 
     public:
         /**
          * @brief Features supported by this importer
          *
-         * @see Features, features()
+         * @see @ref Features, @ref features()
          */
         enum class Feature: UnsignedByte {
-            /** Opening fonts from raw data using openData() */
+            /** Opening fonts from raw data using @ref openData() */
             OpenData = 1 << 0,
 
             /**
-             * The format is multi-file, thus openSingleData() convenience
+             * The format is multi-file, thus @ref openSingleData() convenience
              * function cannot be used.
              */
             MultiFile = 1 << 1,
@@ -86,7 +89,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
             /**
              * The font contains prepared glyph cache.
              *
-             * @see fillGlyphCache(), createGlyphCache()
+             * @see @ref fillGlyphCache(), @ref createGlyphCache()
              */
             PreparedGlyphCache = 1 << 2
         };
@@ -148,6 +151,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /** @brief Font size */
         Float size() const { return _size; }
 
+        /** @brief Line height */
+        Float lineHeight() const { return _lineHeight; }
+
         /**
          * @brief Glyph ID for given character
          *
@@ -162,7 +168,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * @note This function is not meant to be used in performance-critical
          *      code, only for font observations and conversions.
-         * @see glyphId()
+         * @see @ref glyphId()
          */
         Vector2 glyphAdvance(UnsignedInt glyph);
 
@@ -185,7 +191,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Other fonts support only partial glyph cache filling, see
          * @ref fillGlyphCache().
          */
-        GlyphCache* createGlyphCache();
+        std::unique_ptr<GlyphCache> createGlyphCache();
 
         /**
          * @brief Layout the text using font's own layouter
@@ -193,59 +199,61 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size      Font size
          * @param text      %Text to layout
          *
-         * @see fillGlyphCache(), createGlyphCache()
+         * Note that the layouters support rendering of single-line text only.
+         * See @ref Renderer class for more advanced text layouting.
+         * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
-        AbstractLayouter* layout(const GlyphCache& cache, Float size, const std::string& text);
-
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    private:
-    #else
-    protected:
-    #endif
-        Float _size;
+        std::unique_ptr<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
     private:
     #endif
-        /** @brief Implementation for features() */
+        /** @brief Implementation for @ref features() */
         virtual Features doFeatures() const = 0;
 
-        /** @brief Implementation for isOpened() */
+        /** @brief Implementation for @ref isOpened() */
         virtual bool doIsOpened() const = 0;
 
         /**
-         * @brief Implementation for openData()
+         * @brief Implementation for @ref openData()
          *
-         * If the plugin doesn't have @ref Feature::MultiFile, default
-         * implementation calls @ref doOpenSingleData().
+         * Return size and line height of opened font on successful opening,
+         * zeros otherwise. If the plugin doesn't have @ref Feature::MultiFile,
+         * default implementation calls @ref doOpenSingleData().
          */
-        virtual void doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
-
-        /** @brief Implementation for openSingleData() */
-        virtual void doOpenSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
+        virtual std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float size);
 
         /**
-         * @brief Implementation for openFile()
+         * @brief Implementation for @ref openSingleData()
          *
-         * If @ref Feature::OpenData is supported and the plugin doesn't have
-         * @ref Feature::MultiFile, default implementation opens the file and
-         * calls @ref doOpenSingleData() with its contents.
+         * Return size and line height of opened font on successful opening,
+         * zeros otherwise.
          */
-        virtual void doOpenFile(const std::string& filename, Float size);
+        virtual std::pair<Float, Float> doOpenSingleData(Containers::ArrayReference<const unsigned char> data, Float size);
 
-        /** @brief Implementation for close() */
+        /**
+         * @brief Implementation for @ref openFile()
+         *
+         * Return size and line height of opened font on successful opening,
+         * zeros otherwise. If @ref Feature::OpenData is supported and the
+         * plugin doesn't have @ref Feature::MultiFile, default implementation
+         * opens the file and calls @ref doOpenSingleData() with its contents.
+         */
+        virtual std::pair<Float, Float> doOpenFile(const std::string& filename, Float size);
+
+        /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
 
-        /** @brief Implementation for glyphId() */
+        /** @brief Implementation for @ref glyphId() */
         virtual UnsignedInt doGlyphId(char32_t character) = 0;
 
-        /** @brief Implementation for glyphAdvance() */
+        /** @brief Implementation for @ref glyphAdvance() */
         virtual Vector2 doGlyphAdvance(UnsignedInt glyph) = 0;
 
         /**
-         * @brief Implementation for createGlyphCache()
+         * @brief Implementation for @ref fillGlyphCache()
          *
          * The string is converted from UTF-8 to UTF-32, unique characters are
          * *not* removed.
@@ -253,19 +261,22 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
          *      for more information.
          */
-        #ifndef _WIN32
+        #ifndef __MINGW32__
         virtual void doFillGlyphCache(GlyphCache& cache, const std::u32string& characters);
         #else
         virtual void doFillGlyphCache(GlyphCache& cache, const std::vector<char32_t>& characters);
         #endif
 
-        /**
-         * @brief Implementation for createGlyphCache()
-         */
-        virtual GlyphCache* doCreateGlyphCache();
+        /** @brief Implementation for @ref createGlyphCache() */
+        virtual std::unique_ptr<GlyphCache> doCreateGlyphCache();
 
-        /** @brief Implementation for layout() */
-        virtual AbstractLayouter* doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
+        /** @brief Implementation for @ref layout() */
+        virtual std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #endif
+        Float _size, _lineHeight;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
@@ -273,7 +284,13 @@ CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
 /**
 @brief Base for text layouters
 
-Returned by AbstractFont::layout().
+Returned by @ref AbstractFont::layout().
+
+@section TextAbstractLayouter-subclassing Subclassing
+
+Plugin creates private subclass (no need to expose it to end users) and
+implements @ref doRenderGlyph(). Bounds checking on @p i is done automatically
+in the wrapping @ref renderGlyph() function.
 */
 class MAGNUM_TEXT_EXPORT AbstractLayouter {
     AbstractLayouter(const AbstractLayouter&) = delete;
@@ -282,27 +299,46 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
     AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
 
     public:
-        explicit AbstractLayouter();
-        virtual ~AbstractLayouter() = 0;
+        ~AbstractLayouter();
 
         /** @brief Count of glyphs in laid out text */
-        UnsignedInt glyphCount() const {
-            return _glyphCount;
-        }
+        UnsignedInt glyphCount() const { return _glyphCount; }
 
         /**
          * @brief Render glyph
          * @param i                 Glyph index
+         * @param cursorPosition    Cursor position
+         * @param rectangle         Bounding rectangle
          *
-         * Returns quad position, texture coordinates and advance to next
-         * glyph.
+         * The function returns pair of quad position and texture coordinates,
+         * advances @p cursorPosition to next character and updates @p rectangle
+         * with extended bounds.
          */
-        virtual std::tuple<Rectangle, Rectangle, Vector2> renderGlyph(UnsignedInt i) = 0;
+        std::pair<Rectangle, Rectangle> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Rectangle& rectangle);
+
+    protected:
+        /**
+         * @brief Constructor
+         * @param glyphCount    Count of glyphs in laid out text
+         */
+        explicit AbstractLayouter(UnsignedInt glyphCount);
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Implementation for @ref renderGlyph()
+         * @param i                 Glyph index
+         *
+         * Return quad position (relative to current cursor position), texture
+         * coordinates and advance to next glyph.
+         */
+        virtual std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt i) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
-    #else
-    protected:
     #endif
         UnsignedInt _glyphCount;
 };

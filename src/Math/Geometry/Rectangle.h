@@ -132,6 +132,11 @@ template<class T> class Rectangle {
         /** @brief %Rectangle height */
         constexpr T height() const { return _topRight.y() - _bottomLeft.y(); }
 
+        /** @brief Translated rectangle */
+        Rectangle<T> translated(const Vector2<T>& vec) {
+            return {_bottomLeft + vec, _topRight + vec};
+        };
+
     private:
         Vector2<T> _bottomLeft;
         Vector2<T> _topRight;

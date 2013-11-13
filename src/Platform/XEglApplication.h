@@ -28,6 +28,7 @@
  * @brief Class @ref Magnum::Platform::XEglApplication
  */
 
+#include "Platform/Platform.h"
 #include "Platform/AbstractXApplication.h"
 
 namespace Magnum { namespace Platform {
@@ -109,6 +110,8 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef XEglApplication Application;
+typedef BasicScreen<XEglApplication> Screen;
+typedef BasicScreenedApplication<XEglApplication> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_XEGLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

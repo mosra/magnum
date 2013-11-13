@@ -25,6 +25,7 @@
 #ifndef NEW_GLSL
 #define fragmentColor gl_FragColor
 #define texture texture2D
+#define in varying
 #endif
 
 #ifdef TEXTURED

@@ -7,7 +7,7 @@ arch=('any')
 url="https://github.com/mosra/magnum"
 license=('MIT')
 depends=('mingw32-runtime' 'mingw32-corrade' 'mingw32-freeglut' 'mingw32-openal')
-makedepends=('mingw32-gcc' 'cmake' 'corrade')
+makedepends=('mingw32-gcc' 'cmake' 'ninja' 'corrade')
 options=(!buildflags !strip)
 
 build() {
@@ -20,11 +20,17 @@ build() {
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32 \
-        -DWITH_GLUTAPPLICATION=ON
-    make
+        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -G Ninja
+    ninja
 }
 
 package() {
   cd "$startdir/build-win"
-  make DESTDIR="$pkgdir/" install
+  DESTDIR="$pkgdir/" ninja install
 }

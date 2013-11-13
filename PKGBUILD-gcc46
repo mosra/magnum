@@ -1,0 +1,49 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=magnum
+pkgver=dev.gcc46
+pkgrel=1
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (built with GCC 4.6)"
+arch=('i686' 'x86_64')
+url="https://github.com/mosra/magnum"
+license=('MIT')
+depends=('corrade' 'openal' 'freeglut' 'sdl2')
+makedepends=('cmake' 'ninja' 'gcc46')
+options=(!strip)
+provides=('magnum-git')
+
+build() {
+    if [ ! -d "$startdir/build-gcc46" ] ; then
+        mkdir "$startdir/build-gcc46"
+        cd "$startdir/build-gcc46"
+
+        cmake .. \
+            -DCMAKE_CXX_COMPILER=g++-4.6 \
+            -G Ninja
+    fi
+
+    cd "$startdir/build-gcc46"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_GLXAPPLICATION=ON \
+        -DWITH_SDL2APPLICATION=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -DBUILD_TESTS=TRUE
+    ninja
+}
+
+check() {
+    cd "$startdir/build-gcc46"
+    ctest --output-on-failure
+}
+
+package() {
+    cd "$startdir/build-gcc46"
+    DESTDIR="$pkgdir/" ninja install
+}

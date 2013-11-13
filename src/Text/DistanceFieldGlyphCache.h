@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::DistanceFieldGlyphCache
+ * @brief Class @ref Magnum::Text::DistanceFieldGlyphCache
  */
 
 #include "Text/GlyphCache.h"
@@ -35,13 +35,13 @@ namespace Magnum { namespace Text {
 /**
 @brief Glyph cache with distance field rendering
 
-Unlike original GlyphCache converts each binary image to distance field. It is
-not possible to use non-binary colors with this cache, internal texture format
-is red channel only.
+Unlike original @ref GlyphCache converts each binary image to distance field.
+It is not possible to use non-binary colors with this cache, internal texture
+format is red channel only.
 
 @section GlyphCache-usage Usage
 
-Usage is similar to GlyphCache, additionally you need to specify size of
+Usage is similar to @ref GlyphCache, additionally you need to specify size of
 resulting distance field texture.
 @code
 Text::AbstractFont* font;
@@ -51,7 +51,7 @@ font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                               "0123456789 ");
 @endcode
 
-@see TextureTools::distanceField()
+@see @ref TextureTools::distanceField()
 */
 class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
     public:
@@ -61,8 +61,8 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * @param size              Actual glyph cache texture size
          * @param radius            Distance field computation radius
          *
-         * See TextureTools::distanceField() for more information about the
-         * parameters. Sets internal texture format to red channel only. On
+         * See @ref TextureTools::distanceField() for more information about
+         * the parameters. Sets internal texture format to red channel only. On
          * desktop OpenGL requires @extension{ARB,texture_rg} (also part of
          * OpenGL ES 3.0), in ES2 uses @es_extension{EXT,texture_rg} if
          * available or @ref TextureFormat::RGB as fallback.

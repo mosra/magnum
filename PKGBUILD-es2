@@ -7,7 +7,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('MIT')
 depends=('corrade' 'openal')
-makedepends=('cmake')
+makedepends=('cmake' 'ninja')
 options=(!strip)
 provides=('magnum-git')
 
@@ -27,8 +27,13 @@ build() {
         -DTARGET_GLES=ON \
         -DTARGET_GLES2=ON \
         -DWITH_MAGNUMINFO=OFF \
-        -DWITH_XEGLAPPLICATION=ON
-    make
+        -DWITH_XEGLAPPLICATION=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -G Ninja
+    ninja
 }
 
 check() {
@@ -38,5 +43,5 @@ check() {
 
 package() {
     cd "$startdir/build-es2"
-    make DESTDIR="$pkgdir/" install
+    DESTDIR="$pkgdir/" ninja install
 }

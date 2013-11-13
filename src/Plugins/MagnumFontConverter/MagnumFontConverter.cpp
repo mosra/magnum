@@ -27,11 +27,12 @@
 #include <sstream>
 #include <Containers/Array.h>
 #include <Utility/Directory.h>
-#include <ColorFormat.h>
-#include <Image.h>
-#include <Text/GlyphCache.h>
-#include <Text/AbstractFont.h>
-#include <TgaImageConverter/TgaImageConverter.h>
+
+#include "ColorFormat.h"
+#include "Image.h"
+#include "Text/GlyphCache.h"
+#include "Text/AbstractFont.h"
+#include "TgaImageConverter/TgaImageConverter.h"
 
 namespace Magnum { namespace Text {
 
@@ -43,7 +44,7 @@ auto MagnumFontConverter::doFeatures() const -> Features {
     return Feature::ExportFont|Feature::ConvertData|Feature::MultiFile;
 }
 
-#ifndef _WIN32
+#ifndef __MINGW32__
 std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
 #else
 std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
@@ -56,6 +57,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     configuration.setValue("originalImageSize", cache.textureSize());
     configuration.setValue("padding", cache.padding());
     configuration.setValue("fontSize", font.size());
+    configuration.setValue("lineHeight", font.lineHeight());
 
     /* Compress glyph IDs so the glyphs are in consecutive array, glyph 0
        should stay at position 0 */

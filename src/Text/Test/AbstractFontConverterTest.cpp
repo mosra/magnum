@@ -28,6 +28,7 @@
 #include <Utility/Directory.h>
 
 #include "Text/AbstractFontConverter.h"
+#include "Text/GlyphCache.h"
 
 #include "testConfigure.h"
 
@@ -65,7 +66,7 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             GlyphExporter(std::u32string& characters): characters(characters) {}
             #else
             GlyphExporter(std::vector<char32_t>& characters): characters(characters) {}
@@ -74,7 +75,7 @@ void AbstractFontConverterTest::convertGlyphs() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override
             #else
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>& characters) const override
@@ -88,21 +89,21 @@ void AbstractFontConverterTest::convertGlyphs() {
                 #endif
             }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             std::u32string& characters;
             #else
             std::vector<char32_t>& characters;
             #endif
     };
 
-    #ifndef _WIN32
+    #ifndef __MINGW32__
     std::u32string characters;
     #else
     std::vector<char32_t> characters;
     #endif
     GlyphExporter exporter(characters);
     exporter.exportFontToSingleData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "abC01a0 ");
-    #ifndef _WIN32
+    #ifndef __MINGW32__
     CORRADE_COMPARE(characters, U" 01Cab");
     #else
     CORRADE_COMPARE(characters, (std::vector<char32_t>{
@@ -115,7 +116,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const override
             #else
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const override
@@ -141,7 +142,7 @@ void AbstractFontConverterTest::exportFontToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::u32string&) const override
             #else
             std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::vector<char32_t>&) const override
@@ -236,8 +237,9 @@ class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
     private:
         Features doFeatures() const override { return Feature::ConvertData|Feature::ImportGlyphCache; }
 
-        GlyphCache* doImportGlyphCacheFromSingleData(const Containers::ArrayReference<const unsigned char> data) const override {
-            if(data.size() == 1 && data[0] == 0xa5) return reinterpret_cast<GlyphCache*>(0xdeadbeef);
+        std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayReference<const unsigned char> data) const override {
+            if(data.size() == 1 && data[0] == 0xa5)
+                return std::unique_ptr<GlyphCache>(reinterpret_cast<GlyphCache*>(0xdeadbeef));
             return nullptr;
         }
 };
@@ -248,15 +250,21 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     /* doImportFromData() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
     const unsigned char data[] = {0xa5};
-    GlyphCache* cache = importer.importGlyphCacheFromData(std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>{{{}, data}});
-    CORRADE_COMPARE(cache, reinterpret_cast<GlyphCache*>(0xdeadbeef));
+    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromData(std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>{{{}, data}});
+    CORRADE_COMPARE(cache.get(), reinterpret_cast<GlyphCache*>(0xdeadbeef));
+
+    /* The pointer is invalid, avoid deletion */
+    cache.release();
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFile() {
     /* doImportFromFile() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
-    GlyphCache* cache = importer.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
-    CORRADE_COMPARE(cache, reinterpret_cast<GlyphCache*>(0xdeadbeef));
+    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
+    CORRADE_COMPARE(cache.get(), reinterpret_cast<GlyphCache*>(0xdeadbeef));
+
+    /* The pointer is invalid, avoid deletion */
+    cache.release();
 }
 
 }}}

@@ -42,17 +42,29 @@ namespace Magnum { namespace SceneGraph {
 @brief Base for objects
 
 Provides minimal interface for features, not depending on object transformation
-implementation. This class is not directly instantiatable, use Object subclass
-instead. See also @ref scenegraph for more information.
+implementation. This class is not directly instantiatable, use @ref Object
+subclass instead. See also @ref scenegraph for more information.
 
-Uses Corrade::Containers::LinkedList for storing features. Traversing through
-the list is done like in the following code. It is also possible to go in
-reverse order using lastFeature() and AbstractFeature::previousFeature().
+Uses @ref Corrade::Containers::LinkedList for storing features. Traversing
+through the list is done like in the following code. It is also possible to go
+in reverse order using @ref lastFeature() and @ref AbstractFeature::previousFeature().
 @code
 for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
     // ...
 }
 @endcode
+
+@section AbstractObject-explicit-specializations Explicit template specializations
+
+The following specialization are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type) you have to
+use @ref Object.hpp implementation file to avoid linker errors. See also
+relevant sections in @ref Object-explicit-specializations "Object" and
+@ref AbstractTransformation-explicit-specializations "AbstractTransformation"
+class documentation or @ref compilation-speedup-hpp for more information.
+
+-   @ref AbstractObject2D
+-   @ref AbstractObject3D
 
 @see @ref AbstractBasicObject2D, @ref AbstractBasicObject3D,
     @ref AbstractObject2D, @ref AbstractObject3D

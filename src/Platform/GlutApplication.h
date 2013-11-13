@@ -30,10 +30,12 @@
 
 #include <string>
 
+#include "Platform/Platform.h"
 #include "Math/Vector2.h"
 #include "Magnum.h"
-#include "OpenGL.h"
 
+/* We must include our own GL headers first to avoid conflicts */
+#include "OpenGL.h"
 #include <GL/freeglut.h>
 
 namespace Magnum {
@@ -201,6 +203,14 @@ class GlutApplication {
          * Called when an key is pressed. Default implementation does nothing.
          */
         virtual void keyPressEvent(KeyEvent& event);
+
+        /**
+         * @brief Key release event
+         *
+         * Included only for compatibility with other toolkits, doesn't get
+         * called at all.
+         */
+        virtual void keyReleaseEvent(KeyEvent& event);
 
         /*@}*/
 
@@ -546,6 +556,8 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef GlutApplication Application;
+typedef BasicScreen<GlutApplication> Screen;
+typedef BasicScreenedApplication<GlutApplication> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLUTAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN
@@ -553,12 +565,6 @@ typedef GlutApplication Application;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(GlutApplication::MouseMoveEvent::Buttons)
-
-/* Implementations for inline functions with unused parameters */
-inline void GlutApplication::keyPressEvent(KeyEvent&) {}
-inline void GlutApplication::mousePressEvent(MouseEvent&) {}
-inline void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
-inline void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 }}
 

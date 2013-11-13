@@ -55,15 +55,16 @@ class SingleDataFont: public Text::AbstractFont {
         bool doIsOpened() const override { return opened; }
         void doClose() override {}
 
-        void doOpenSingleData(const Containers::ArrayReference<const unsigned char> data, Float) override {
+        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayReference<const unsigned char> data, Float) override {
             opened = (data.size() == 1 && data[0] == 0xa5);
+            return {};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return 0; }
 
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-        AbstractLayouter* doLayout(const GlyphCache&, Float, const std::string&) override {
+        std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) override {
             return nullptr;
         }
 

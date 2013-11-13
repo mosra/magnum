@@ -22,6 +22,15 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# Headers
+set(Platform_HEADERS
+    Platform.h
+    Screen.h
+    ScreenedApplication.h
+    ScreenedApplication.hpp)
+
+install(FILES ${Platform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)
@@ -169,7 +178,7 @@ endif()
 # Magnum Info
 if(WITH_MAGNUMINFO)
     if(NOT UNIX AND NOT CORRADE_TARGET_NACL)
-        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to suppress this warning.")
+        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to skip building it.")
     endif()
 
     add_executable(magnum-info magnum-info.cpp)

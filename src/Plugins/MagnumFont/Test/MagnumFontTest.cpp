@@ -22,10 +22,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Test/AbstractOpenGLTester.h>
-#include <Text/GlyphCache.h>
 #include <Utility/Directory.h>
 
+#include "Test/AbstractOpenGLTester.h"
+#include "Text/GlyphCache.h"
 #include "MagnumFont/MagnumFont.h"
 
 #include "magnumFontTestConfigure.h"
@@ -51,6 +51,7 @@ void MagnumFontTest::properties() {
     MagnumFont font;
     CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
     CORRADE_COMPARE(font.size(), 16.0f);
+    CORRADE_COMPARE(font.lineHeight(), 39.7333f);
     CORRADE_COMPARE(font.glyphAdvance(font.glyphId(U'W')), Vector2(23.0f, 0.0f));
 }
 
@@ -63,41 +64,43 @@ void MagnumFontTest::layout() {
     cache.insert(font.glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
     cache.insert(font.glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
 
-    AbstractLayouter* layouter = font.layout(cache, 0.5f, "Wave");
+    auto layouter = font.layout(cache, 0.5f, "Wave");
     CORRADE_VERIFY(layouter);
     CORRADE_COMPARE(layouter->glyphCount(), 4);
 
+    Rectangle rectangle;
     Rectangle position;
     Rectangle textureCoordinates;
-    Vector2 advance;
 
     /* 'W' */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(0);
+    Vector2 cursorPosition;
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(0, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle({0.78125f, 1.0625f}, {1.28125f, 4.8125f}));
     CORRADE_COMPARE(textureCoordinates, Rectangle({0, 0.03125f}, {0.0625f, 0.5f}));
-    CORRADE_COMPARE(advance, Vector2(0.71875f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.71875f, 0.0f));
 
     /* 'a' (not found) */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(1);
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(1, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle());
     CORRADE_COMPARE(textureCoordinates, Rectangle());
-    CORRADE_COMPARE(advance, Vector2(0.25f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
 
     /* 'v' (not found) */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(2);
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(2, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle());
     CORRADE_COMPARE(textureCoordinates, Rectangle());
-    CORRADE_COMPARE(advance, Vector2(0.25f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.25f, 0.0f));
 
     /* 'e' */
-    std::tie(position, textureCoordinates, advance) = layouter->renderGlyph(3);
+    std::tie(position, textureCoordinates) = layouter->renderGlyph(3, cursorPosition = {}, rectangle);
     CORRADE_COMPARE(position, Rectangle({0.78125f, 0.375f}, {2.28125f, 1.25f}));
     CORRADE_COMPARE(textureCoordinates, Rectangle({0.0625f, 0.015625f}, {0.25f, 0.125f}));
-    CORRADE_COMPARE(advance, Vector2(0.375f, 0.0f));
+    CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
 }
 
 void MagnumFontTest::createGlyphCache() {
     /** @todo */
+    CORRADE_SKIP("Not yet implemented");
 }
 
 }}}

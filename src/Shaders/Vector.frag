@@ -29,8 +29,10 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1) uniform vec4 color;
+layout(location = 1) uniform vec4 backgroundColor;
+layout(location = 2) uniform vec4 color;
 #else
+uniform lowp vec4 backgroundColor;
 uniform lowp vec4 color;
 #endif
 
@@ -48,5 +50,5 @@ out lowp vec4 fragmentColor;
 
 void main() {
     lowp float intensity = texture(vectorTexture, fragmentTextureCoordinates).r;
-    fragmentColor = intensity*color;
+    fragmentColor = mix(backgroundColor, color, intensity);
 }

@@ -28,8 +28,8 @@
  * @brief Class Magnum::Text::MagnumFont
  */
 
-#include <Text/AbstractFont.h>
-#include <Trade/Trade.h>
+#include "Text/AbstractFont.h"
+#include "Trade/Trade.h"
 
 namespace Magnum { namespace Text {
 
@@ -40,9 +40,8 @@ This plugin depends on @ref Trade::TgaImporter "TgaImporter" plugin and is
 built if `WITH_MAGNUMFONT` is enabled in CMake. To use dynamic plugin, you need
 to load `%MagnumFont` plugin from `fonts/` subdirectory of your plugin dir. To
 use static plugin or use this as a dependency of another plugin, you need to
-request `%MagnumFont` component in CMake and link to
-`${MAGNUMPLUGINS_MAGNUMFONT_LIBRARIES}`. See @ref building-plugins and
-@ref cmake-plugins for more information.
+request `%MagnumFont` component in CMake and link to `${MAGNUM_MAGNUMFONT_LIBRARIES}`.
+See @ref building and @ref cmake for more information.
 
 The font consists of two files, one text file containing character and glyph
 info and one TGA file containing the glyphs in distance field format. The font
@@ -116,9 +115,9 @@ class MagnumFont: public AbstractFont {
 
         bool doIsOpened() const override;
 
-        void doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float) override;
+        std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float) override;
 
-        void doOpenFile(const std::string& filename, Float) override;
+        std::pair<Float, Float> doOpenFile(const std::string& filename, Float) override;
 
         void doClose() override;
 
@@ -126,13 +125,13 @@ class MagnumFont: public AbstractFont {
 
         Vector2 doGlyphAdvance(UnsignedInt glyph) override;
 
-        GlyphCache* doCreateGlyphCache() override;
+        std::unique_ptr<GlyphCache> doCreateGlyphCache() override;
 
-        AbstractLayouter* doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
+        std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
+
+        std::pair<Float, Float> openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
 
         Data* _opened;
-
-        void openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
 };
 
 }}

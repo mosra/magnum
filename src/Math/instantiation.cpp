@@ -58,23 +58,23 @@ template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum:
 
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
-#ifndef _WIN32
+#ifndef __MINGW32__
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
 #endif
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
-#ifndef _WIN32
+#ifndef __MINGW32__
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
 #endif
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
-#ifndef _WIN32
+#ifndef __MINGW32__
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
 #endif
 #ifndef MAGNUM_TARGET_GLES
 template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
 template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
-#ifndef _WIN32
+#ifndef __MINGW32__
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
 #endif
 #endif

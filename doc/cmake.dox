@@ -40,42 +40,71 @@ Basic usage is:
 This command tries to find base %Magnum library and then defines these
 variables:
 
-- `MAGNUM_FOUND` -- Whether the library was found
-- `MAGNUM_LIBRARIES` -- %Magnum library and dependent libraries
-- `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
-- `MAGNUM_PLUGINS_FONT_DIR` -- Directory with font plugins
-- `MAGNUM_PLUGINS_IMPORTER_DIR` -- Directory with importer plugins
+-   `MAGNUM_FOUND` -- Whether the library was found
+-   `MAGNUM_LIBRARIES` -- %Magnum library and dependent libraries
+-   `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
+-   `MAGNUM_PLUGINS_DIR` -- Base directory with plugins. You can modify it
+    (e.g. set it to `.` when deploying on Windows with plugins stored
+    relatively to the executable), the following `MAGNUM_PLUGINS_*_DIR`
+    variables depend on it.
+-   `MAGNUM_PLUGINS_INCLUDE_DIR  -- Include dir with plugins
+-   `MAGNUM_PLUGINS_FONT_DIR` -- Directory with font plugins
+-   `MAGNUM_PLUGINS_FONTCONVERTER_DIR` -- Directory with font converter plugins
+-   `MAGNUM_PLUGINS_IMAGECONVERTER_DIR` -- Directory with image converter
+    plugins
+-   `MAGNUM_PLUGINS_IMPORTER_DIR` -- Directory with importer plugins
+-   `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR` -- Directory with audio importer plugins
 
 However, this command will try to find only the base library, not the optional
 components. The base library depends on %Corrade and OpenGL libraries (or
 OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 
-- `%Audio` -- Audio library
-- `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
-  `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
-- `%MeshTools` -- MeshTools library
-- `%Primitives` -- Primitives library
-- `%SceneGraph` -- SceneGraph library
-- `%Shaders` -- Shaders library
-- `%Shapes` -- Shapes library (depends on `%SceneGraph` component)
-- `%Text` -- Text library (depends on `%TextureTools` component)
-- `%TextureTools` -- TextureTools library
+-   `%Audio` -- Audio library
+-   `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
+    `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
+-   `%MeshTools` -- MeshTools library
+-   `%Primitives` -- Primitives library
+-   `%SceneGraph` -- SceneGraph library
+-   `%Shaders` -- Shaders library
+-   `%Shapes` -- Shapes library (depends on `%SceneGraph` component)
+-   `%Text` -- Text library (depends on `%TextureTools` component)
+-   `%TextureTools` -- TextureTools library
 
 Platform namespace is split into more components:
 
-- `%GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
-- `%GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
-- `%NaClApplication` -- @ref Platform::NaClApplication "NaClApplication"
-- `%Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
-- `%XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
-- `%WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
-- `%WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `%GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
+-   `%GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
+-   `%NaClApplication` -- @ref Platform::NaClApplication "NaClApplication"
+-   `%Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
+-   `%XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
+-   `%WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `%WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 
-Note that [each namespace](namespaces.html) and all @ref Platform libraries
-contain more detailed information about dependencies, availability on
-particular platform and also guide how to enable given library in build and use
-it with CMake.
+The library also contains a set of plugins for importing essential file
+formats. Additional plugins are provided in separate plugin repository, see
+@ref cmake-plugins for more information. If you are going to use dynamic
+plugins (the default) via plugin manager, they don't need to be handled via
+CMake. The manager will look for them at runtime at specified location and
+loads them dynamically. However, if they are built as static (see
+@ref building-plugins for more information), they need to be linked into the
+executable and then explicitly imported. Also if you are going to use them as
+dependencies, you need to find the dependency and then link to it.
+
+-   `MagnumFont` -- @ref Text::MagnumFont "MagnumFont" plugin (depends on
+    `%Text` component and `TgaImporter` plugin)
+-   `MagnumFontConverter` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
+    plugin (depends on `%Text` component and `%TgaImageConverter` plugin)
+-   `TgaImageConverter` -- @ref Trade::TgaImageConverter "TgaImageConverter"
+    plugin
+-   `TgaImporter` -- @ref Trade::TgaImporter "TgaImporter" plugin
+-   `WavAudioImporter` -- @ref Audio::WavImporter "WavAudioImporter" plugin
+    (depends on `%Audio` component)
+
+Note that [each namespace](namespaces.html), all @ref Platform libraries and
+each plugin class contain more detailed information about dependencies,
+availability on particular platform and also guide how to enable given library
+in build and use it with CMake.
 
 Example usage with specifying additional components is:
 
@@ -83,9 +112,9 @@ Example usage with specifying additional components is:
 
 For each component is then defined:
 
-- `MAGNUM_*_FOUND` -- Whether the component was found
-- `MAGNUM_*_LIBRARIES` -- Component library and dependent libraries
-- `MAGNUM_*_INCLUDE_DIRS` -- Include dirs of module dependencies
+-   `MAGNUM_*_FOUND` -- Whether the component was found
+-   `MAGNUM_*_LIBRARIES` -- Component library and dependent libraries
+-   `MAGNUM_*_INCLUDE_DIRS` -- Include dirs of module dependencies
 
 If exactly one `*Application` or exactly one `Windowless*Application` component
 is requested and found, its libraries and include dirs are available in
@@ -96,15 +125,15 @@ convenience aliases `MAGNUM_APPLICATION_LIBRARIES` /
 Features of found %Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including Magnum.h:
 
-- `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
-  included
-- `MAGNUM_BUILD_STATIC` -- Defined if built as static libraries. Default are
-  shared libraries.
-- `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
-- `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
-- `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
-- `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES emulation
-  on desktop OpenGL
+-   `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
+    included
+-   `MAGNUM_BUILD_STATIC` -- Defined if built as static libraries. Default are
+    shared libraries.
+-   `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
+-   `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
+-   `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
+-   `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES
+    emulation on desktop OpenGL
 
 %Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.

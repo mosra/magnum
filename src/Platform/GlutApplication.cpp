@@ -26,6 +26,8 @@
 
 #include "Context.h"
 
+#include "Platform/ScreenedApplication.hpp"
+
 namespace Magnum { namespace Platform {
 
 GlutApplication* GlutApplication::instance = nullptr;
@@ -115,7 +117,16 @@ void GlutApplication::staticMouseMoveEvent(int x, int y) {
     instance->mouseMoveEvent(e);
 }
 
+void GlutApplication::keyPressEvent(KeyEvent&) {}
+void GlutApplication::keyReleaseEvent(KeyEvent&) {}
+void GlutApplication::mousePressEvent(MouseEvent&) {}
+void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
+void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
+
 GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600), _sampleCount(0) {}
 GlutApplication::Configuration::~Configuration() = default;
+
+template class BasicScreen<GlutApplication>;
+template class BasicScreenedApplication<GlutApplication>;
 
 }}

@@ -61,6 +61,8 @@ template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation2D<
 template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation3D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<2, Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<3, Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<2, Float, Int>>;
+template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<3, Float, Int>>;
 #endif
 
 }}

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for FeatureGroup.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for @ref FeatureGroup.h
  */
 
 #include "FeatureGroup.h"

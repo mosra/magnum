@@ -27,11 +27,12 @@
 #include <Containers/Array.h>
 #include <TestSuite/Tester.h>
 #include <Utility/Directory.h>
-#include <ColorFormat.h>
-#include <Image.h>
-#include <Trade/ImageData.h>
-#include <TgaImageConverter/TgaImageConverter.h>
-#include <TgaImporter/TgaImporter.h>
+
+#include "ColorFormat.h"
+#include "Image.h"
+#include "Trade/ImageData.h"
+#include "TgaImageConverter/TgaImageConverter.h"
+#include "TgaImporter/TgaImporter.h"
 
 #include "configure.h"
 

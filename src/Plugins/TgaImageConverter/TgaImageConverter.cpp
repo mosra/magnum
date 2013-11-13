@@ -26,14 +26,16 @@
 
 #include <fstream>
 #include <tuple>
-#include <Containers/Array.h>
-#include <Utility/Endianness.h>
-#include <ColorFormat.h>
-#include <Image.h>
+
+#include "Containers/Array.h"
+#include "Utility/Endianness.h"
+#include "ColorFormat.h"
+#include "Image.h"
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
-#include <Swizzle.h>
+#include "Math/Swizzle.h"
+#include "Math/Vector4.h"
 #endif
 
 #include "TgaImporter/TgaHeader.h"
@@ -81,14 +83,14 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
     std::copy(image.data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));
 
     #ifdef MAGNUM_TARGET_GLES
-    if(image->format() == ColorFormat::RGB) {
+    if(image.format() == ColorFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r'>(pixel); });
+            [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
     } else if(image.format() == ColorFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return swizzle<'b', 'g', 'r', 'a'>(pixel); });
+            [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
     #endif
 

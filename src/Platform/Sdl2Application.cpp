@@ -29,6 +29,7 @@
 #endif
 
 #include "Context.h"
+#include "Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
 
@@ -248,6 +249,12 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     #endif
 }
 
+void Sdl2Application::keyPressEvent(KeyEvent&) {}
+void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
+void Sdl2Application::mousePressEvent(MouseEvent&) {}
+void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
+void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
+
 Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}
 Sdl2Application::Configuration::~Configuration() = default;
 
@@ -262,5 +269,8 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifier
     modifiersLoaded = true;
     return _modifiers = fixedModifiers(SDL_GetModState());
 }
+
+template class BasicScreen<Sdl2Application>;
+template class BasicScreenedApplication<Sdl2Application>;
 
 }}

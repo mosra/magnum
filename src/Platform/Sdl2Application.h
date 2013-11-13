@@ -30,6 +30,7 @@
 
 #include <Containers/EnumSet.h>
 
+#include "Platform/Platform.h"
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
@@ -656,6 +657,8 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef Sdl2Application Application;
+typedef BasicScreen<Sdl2Application> Screen;
+typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_SDL2APPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN
@@ -664,13 +667,6 @@ typedef Sdl2Application Application;
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
-
-/* Implementations for inline functions with unused parameters */
-inline void Sdl2Application::keyPressEvent(KeyEvent&) {}
-inline void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
-inline void Sdl2Application::mousePressEvent(MouseEvent&) {}
-inline void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
-inline void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
 
 }}
 

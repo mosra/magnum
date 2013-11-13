@@ -35,12 +35,12 @@ add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR}
     TgaImageConverter.conf
     $<TARGET_OBJECTS:TgaImageConverterObjects>
     pluginRegistrationTgaImageConverter.cpp)
-target_link_libraries(TgaImageConverter ${MAGNUM_LIBRARIES})
+target_link_libraries(TgaImageConverter Magnum)
 
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 
 if(BUILD_TESTS)
     add_library(TgaImageConverterTestLib SHARED $<TARGET_OBJECTS:TgaImageConverterObjects>)
-    target_link_libraries(TgaImageConverterTestLib ${MAGNUM_LIBRARIES})
+    target_link_libraries(TgaImageConverterTestLib Magnum)
     add_subdirectory(Test)
 endif()

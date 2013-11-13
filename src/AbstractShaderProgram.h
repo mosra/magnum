@@ -132,10 +132,20 @@ layout(location = 0, index = 0) out vec4 color;
 layout(location = 1, index = 1) out vec3 normal;
 @endcode
 
-If you don't have the required extension, you can use functions
-bindAttributeLocation() and bindFragmentDataLocation() /
-bindFragmentDataLocationIndexed() between attaching the shaders and linking
-the program:
+If you don't have the required extension, declare the attributes without
+`layout()` qualifier and use functions @ref bindAttributeLocation() and
+@ref bindFragmentDataLocation() / @ref bindFragmentDataLocationIndexed() between
+attaching the shaders and linking the program. Note that additional syntax
+changes may be needed for GLSL 1.20 and GLSL ES 1.0.
+@code
+in vec4 position;
+in vec3 normal;
+in vec2 textureCoordinates;
+@endcode
+@code
+out vec4 color;
+out vec3 normal;
+@endcode
 @code
 // Shaders attached...
 
@@ -174,8 +184,14 @@ layout(location = 0) uniform mat4 transformation;
 layout(location = 1) uniform mat4 projection;
 @endcode
 
-If you don't have the required extension, you can get uniform location using
-uniformLocation() after linking stage:
+If you don't have the required extension, declare the uniforms without the
+`layout()` qualifier and get uniform location using @ref uniformLocation()
+*after* linking stage. Note that additional syntax changes may be needed for
+GLSL 1.20 and GLSL ES 1.0.
+@code
+uniform mat4 transformation;
+uniform mat4 projection;
+@endcode
 @code
 Int transformationUniform = uniformLocation("transformation");
 Int projectionUniform = uniformLocation("projection");
@@ -199,7 +215,13 @@ layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
 
 If you don't have the required extension (or if you want to change the layer
-later), you can set the texture layer uniform using setUniform(Int, Int):
+later), declare the uniforms without the `layout()` qualifier and set the
+texture layer uniform using @ref setUniform(Int, Int). Note that additional
+syntax changes may be needed for GLSL 1.20 and GLSL ES 1.0.
+@code
+uniform sampler2D diffuseTexture;
+uniform sampler2D specularTexture;
+@endcode
 @code
 setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
 setUniform(SpecularTextureUniform, SpecularTextureLayer);

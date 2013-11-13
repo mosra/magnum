@@ -37,6 +37,7 @@
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
+#include "Platform/Platform.h"
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
@@ -669,6 +670,8 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef NaClApplication Application;
+typedef BasicScreen<NaClApplication> Screen;
+typedef BasicScreenedApplication<NaClApplication> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_NACLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN
@@ -677,13 +680,6 @@ typedef NaClApplication Application;
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(NaClApplication::InputEvent::Buttons)
-
-/* Implementations for inline functions with unused parameters */
-inline void NaClApplication::keyPressEvent(KeyEvent&) {}
-inline void NaClApplication::keyReleaseEvent(KeyEvent&) {}
-inline void NaClApplication::mousePressEvent(MouseEvent&) {}
-inline void NaClApplication::mouseReleaseEvent(MouseEvent&) {}
-inline void NaClApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 }}
 

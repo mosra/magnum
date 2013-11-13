@@ -7,7 +7,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('MIT')
 depends=('corrade' 'openal')
-makedepends=('cmake')
+makedepends=('cmake' 'ninja')
 options=(!strip)
 provides=('magnum-git')
 
@@ -29,8 +29,13 @@ build() {
         -DTARGET_DESKTOP_GLES=ON \
         -DWITH_MAGNUMINFO=ON \
         -DWITH_GLXAPPLICATION=ON \
-        -DWITH_WINDOWLESSGLXAPPLICATION=ON
-    make
+        -DWITH_WINDOWLESSGLXAPPLICATION=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -G Ninja
+    ninja
 }
 
 check() {
@@ -40,5 +45,5 @@ check() {
 
 package() {
     cd "$startdir/build-es2desktop"
-    make DESTDIR="$pkgdir/" install
+    DESTDIR="$pkgdir/" ninja install
 }

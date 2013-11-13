@@ -24,6 +24,7 @@
 
 #include "XEglApplication.h"
 
+#include "Platform/ScreenedApplication.hpp"
 #include "Platform/Implementation/EglContextHandler.h"
 
 namespace Magnum { namespace Platform {
@@ -36,5 +37,8 @@ XEglApplication::XEglApplication(const Arguments& arguments, std::nullptr_t)
 XEglApplication::XEglApplication(const Arguments& arguments, void*)
 #endif
     : AbstractXApplication(new Implementation::EglContextHandler, arguments, nullptr) {}
+
+template class BasicScreen<XEglApplication>;
+template class BasicScreenedApplication<XEglApplication>;
 
 }}

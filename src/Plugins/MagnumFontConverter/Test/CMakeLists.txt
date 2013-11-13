@@ -25,12 +25,10 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumFontConverterTestConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumFontConverterTestConfigure.h)
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../FreeTypeFont/Test/
-                    ${CMAKE_CURRENT_BINARY_DIR}/../../MagnumFont/Test/
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../MagnumFont/Test/
                     ${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp LIBRARIES
     MagnumFontConverterTestLib
-    FreeTypeFontTestLib
     TgaImporterTestLib
     ${GL_TEST_LIBRARIES})

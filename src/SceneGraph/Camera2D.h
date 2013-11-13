@@ -46,12 +46,13 @@ camera.setProjection({4.0f/3.0f, 1.0f})
 
 @section Camera2D-explicit-specializations Explicit template specializations
 
-The following specialization are explicitly compiled into SceneGraph library.
-For other specializations (e.g. using Double type) you have to use Camera2D.hpp
-implementation file to avoid linker errors. See @ref compilation-speedup-hpp
-for more information.
+The following specialization are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type) you have to
+use @ref Camera2D.hpp implementation file to avoid linker errors. See also
+relevant section in @ref AbstractCamera-explicit-specializations "AbstractCamera"
+class documentation or @ref compilation-speedup-hpp for more information.
 
- - @ref BasicCamera2D "BasicCamera2D<Float>"
+-   @ref Camera2D
 
 @see @ref scenegraph, @ref Camera2D, @ref BasicCamera3D, @ref Drawable,
     @ref DrawableGroup

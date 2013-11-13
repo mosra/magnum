@@ -211,6 +211,51 @@ template<std::size_t size, class T> Vector<size, T> abs(const Vector<size, T>& a
 }
 #endif
 
+/** @brief Nearest not larger integer */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T floor(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type floor(T a) {
+    return std::floor(a);
+}
+template<std::size_t size, class T> Vector<size, T> floor(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::floor(a[i]);
+    return out;
+}
+#endif
+
+/** @brief Round value to nearest integer */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T round(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type round(T a) {
+    return std::round(a);
+}
+template<std::size_t size, class T> Vector<size, T> round(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::round(a[i]);
+    return out;
+}
+#endif
+
+/** @brief Nearest not smaller integer */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline T ceil(const T& a);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type ceil(T a) {
+    return std::ceil(a);
+}
+template<std::size_t size, class T> Vector<size, T> ceil(const Vector<size, T>& a) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::ceil(a[i]);
+    return out;
+}
+#endif
+
 /**
 @brief Square root
 
@@ -242,10 +287,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return T(1)/std::sqrt(a);
 }
 template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<size, T>& a) {
-    Vector<size, T> out;
-    for(std::size_t i = 0; i != size; ++i)
-        out[i] = T(1)/std::sqrt(a[i]);
-    return out;
+    return Vector<size, T>(T(1))/sqrt(a);
 }
 #endif
 
@@ -265,7 +307,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
 template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::min(std::max(value[i], min), max);
+        out[i] = clamp(value[i], min, max);
     return out;
 }
 #endif
@@ -344,8 +386,9 @@ Converts integral value from full range of given *unsigned* integral type to
 value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$.
 
 @note For best precision, resulting `FloatingPoint` type should be always
-    larger that `Integral` type (e.g. Double from Int, LongDouble from Long and
-    similarly for vector types).
+    larger that `Integral` type (e.g. @ref Magnum::Float "Float" from
+    @ref Magnum::Short "Short", @ref Magnum::Double "Double" from
+    @ref Magnum::Int "Int" and similarly for vector types).
 
 @attention To ensure the integral type is correctly detected when using
     literals, this function should be called with both template parameters
@@ -358,7 +401,7 @@ Float a = normalize<Float>('\xFF');
 Float b = normalize<Float, UnsignedByte>('\xFF');
 @endcode
 
-@see denormalize()
+@see @ref denormalize()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class FloatingPoint, class Integral> inline FloatingPoint normalize(const Integral& value);
@@ -393,13 +436,14 @@ Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
 integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
-    resulting `Integral` type (e.g. Double to Int, LongDouble to Long and
-    similarly for vector types).
+    resulting `Integral` type (e.g. @ref Magnum::Float "Float" to
+    @ref Magnum::Short "Short", @ref Magnum::Double "Double" to @ref Magnum::Int "Int"
+    and similarly for vector types).
 
 @attention Return value for floating point numbers outside the normalized
     range is undefined.
 
-@see normalize()
+@see @ref normalize()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, class FloatingPoint> inline Integral denormalize(const FloatingPoint& value);
