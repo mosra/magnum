@@ -63,9 +63,17 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
        should stay at position 0 */
     std::unordered_map<UnsignedInt, UnsignedInt> glyphIdMap;
     glyphIdMap.reserve(cache.glyphCount());
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     glyphIdMap.emplace(0, 0);
+    #else
+    glyphIdMap.insert({0, 0});
+    #endif
     for(const std::pair<UnsignedInt, std::pair<Vector2i, Rectanglei>>& glyph: cache)
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         glyphIdMap.emplace(glyph.first, glyphIdMap.size());
+        #else
+        glyphIdMap.insert({glyph.first, glyphIdMap.size()});
+        #endif
 
     /** @todo Save only glyphs contained in @p characters */
 
