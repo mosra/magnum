@@ -83,11 +83,6 @@ class AbstractXApplication {
         void exit() { flags |= Flag::Exit; }
 
     protected:
-        /**
-         * @brief Destructor
-         *
-         * Deletes context and destroys the window.
-         */
         /* Nobody will need to have (and delete) AbstractXApplication*, thus
            this is faster than public pure virtual destructor */
         ~AbstractXApplication();
