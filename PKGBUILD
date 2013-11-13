@@ -27,6 +27,7 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_AUDIO=ON \
         -DWITH_GLUTAPPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_SDL2APPLICATION=ON \
@@ -35,7 +36,11 @@ build() {
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
-        -DBUILD_TESTS=TRUE \
+        -DWITH_DISTANCEFIELDCONVERTER=ON \
+        -DWITH_FONTCONVERTER=ON \
+        -DWITH_MAGNUMINFO=ON \
+        -DBUILD_TESTS=ON \
+        -DBUILD_GL_TESTS=ON \
         -G Ninja
     ninja
 }
