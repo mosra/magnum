@@ -41,6 +41,12 @@ template<class Application> void BasicScreen<Application>::mousePressEvent(Mouse
 template<class Application> void BasicScreen<Application>::mouseReleaseEvent(MouseEvent&) {}
 template<class Application> void BasicScreen<Application>::mouseMoveEvent(MouseMoveEvent&) {}
 
+template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration): Application(arguments, configuration) {}
+
+template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): Application(arguments, nullptr) {}
+
+template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() = default;
+
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::addScreen(BasicScreen<Application>& screen) {
     Containers::LinkedList<BasicScreen<Application>>::insert(&screen);
     if(frontScreen() == &screen) screen.focusEvent();

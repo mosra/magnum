@@ -40,9 +40,7 @@ class AbstractLayouter;
 class DistanceFieldGlyphCache;
 class GlyphCache;
 
-#ifndef MAGNUM_GCC46_COMPATIBILITY
 enum class Alignment: UnsignedByte;
-#endif
 
 class AbstractRenderer;
 template<UnsignedInt> class Renderer;

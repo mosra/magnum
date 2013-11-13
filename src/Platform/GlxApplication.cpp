@@ -38,6 +38,8 @@ GlxApplication::GlxApplication(const Arguments& arguments, void*)
 #endif
     : AbstractXApplication(new Implementation::GlxContextHandler, arguments, nullptr) {}
 
+GlxApplication::~GlxApplication() = default;
+
 template class BasicScreen<GlxApplication>;
 template class BasicScreenedApplication<GlxApplication>;
 

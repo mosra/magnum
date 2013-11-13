@@ -38,6 +38,8 @@ XEglApplication::XEglApplication(const Arguments& arguments, void*)
 #endif
     : AbstractXApplication(new Implementation::EglContextHandler, arguments, nullptr) {}
 
+XEglApplication::~XEglApplication() = default;
+
 template class BasicScreen<XEglApplication>;
 template class BasicScreenedApplication<XEglApplication>;
 

@@ -160,7 +160,7 @@ class Sdl2Application {
     protected:
         /* Nobody will need to have (and delete) Sdl2Application*, thus this is
            faster than public pure virtual destructor */
-        virtual ~Sdl2Application();
+        ~Sdl2Application();
 
         /** @copydoc GlutApplication::createContext() */
         void createContext(const Configuration& configuration);
