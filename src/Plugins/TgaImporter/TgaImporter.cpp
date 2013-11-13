@@ -44,6 +44,7 @@
 
 namespace Magnum { namespace Trade {
 
+#ifdef MAGNUM_TARGET_GLES
 namespace {
     constexpr Math::Vector3<UnsignedByte> bgr(const Math::Vector3<UnsignedByte>& vec) {
         return Math::swizzle<'b', 'g', 'r'>(vec);
@@ -53,6 +54,7 @@ namespace {
         return Math::swizzle<'b', 'g', 'r', 'a'>(vec);
     }
 }
+#endif
 
 TgaImporter::TgaImporter(): in(nullptr) {}
 
