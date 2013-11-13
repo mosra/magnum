@@ -66,7 +66,7 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             GlyphExporter(std::u32string& characters): characters(characters) {}
             #else
             GlyphExporter(std::vector<char32_t>& characters): characters(characters) {}
@@ -75,7 +75,7 @@ void AbstractFontConverterTest::convertGlyphs() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override
             #else
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>& characters) const override
@@ -85,21 +85,21 @@ void AbstractFontConverterTest::convertGlyphs() {
                 return nullptr;
             }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             std::u32string& characters;
             #else
             std::vector<char32_t>& characters;
             #endif
     };
 
-    #ifndef _WIN32
+    #ifndef __MINGW32__
     std::u32string characters;
     #else
     std::vector<char32_t> characters;
     #endif
     GlyphExporter exporter(characters);
     exporter.exportFontToSingleData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "abC01a0 ");
-    #ifndef _WIN32
+    #ifndef __MINGW32__
     CORRADE_COMPARE(characters, U" 01Cab");
     #else
     CORRADE_COMPARE(characters, (std::vector<char32_t>{
@@ -112,7 +112,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const override
             #else
             Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const override
@@ -138,7 +138,7 @@ void AbstractFontConverterTest::exportFontToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
 
-            #ifndef _WIN32
+            #ifndef __MINGW32__
             std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::u32string&) const override
             #else
             std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::vector<char32_t>&) const override

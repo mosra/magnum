@@ -45,7 +45,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFo
     return doExportFontToData(font, cache, filename, uniqueUnicode(characters));
 }
 
-#ifndef _WIN32
+#ifndef __MINGW32__
 std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
 #else
 std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
@@ -68,7 +68,7 @@ Containers::Array<unsigned char> AbstractFontConverter::exportFontToSingleData(A
     return doExportFontToSingleData(font, cache, uniqueUnicode(characters));
 }
 
-#ifndef _WIN32
+#ifndef __MINGW32__
 Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const
 #else
 Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const
@@ -85,7 +85,7 @@ bool AbstractFontConverter::exportFontToFile(AbstractFont& font, GlyphCache& cac
     return doExportFontToFile(font, cache, filename, uniqueUnicode(characters));
 }
 
-#ifndef _WIN32
+#ifndef __MINGW32__
 bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
 #else
 bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
@@ -231,14 +231,14 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromFile(co
     return doImportGlyphCacheFromSingleData(data);
 }
 
-#ifndef _WIN32
+#ifndef __MINGW32__
 std::u32string AbstractFontConverter::uniqueUnicode(const std::string& characters)
 #else
 std::vector<char32_t> AbstractFontConverter::uniqueUnicode(const std::string& characters)
 #endif
 {
     /* Convert UTF-8 to UTF-32 */
-    #ifndef _WIN32
+    #ifndef __MINGW32__
     std::u32string result = Utility::Unicode::utf32(characters);
     #else
     std::vector<char32_t> result = Utility::Unicode::utf32(characters);

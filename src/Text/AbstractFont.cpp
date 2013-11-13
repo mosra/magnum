@@ -134,7 +134,7 @@ void AbstractFont::fillGlyphCache(GlyphCache& cache, const std::string& characte
     doFillGlyphCache(cache, Utility::Unicode::utf32(characters));
 }
 
-#ifndef _WIN32
+#ifndef __MINGW32__
 void AbstractFont::doFillGlyphCache(GlyphCache&, const std::u32string&)
 #else
 void AbstractFont::doFillGlyphCache(GlyphCache&, const std::vector<char32_t>&)

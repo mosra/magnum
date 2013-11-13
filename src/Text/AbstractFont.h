@@ -261,7 +261,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
          *      for more information.
          */
-        #ifndef _WIN32
+        #ifndef __MINGW32__
         virtual void doFillGlyphCache(GlyphCache& cache, const std::u32string& characters);
         #else
         virtual void doFillGlyphCache(GlyphCache& cache, const std::vector<char32_t>& characters);
