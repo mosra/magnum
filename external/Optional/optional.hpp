@@ -230,11 +230,19 @@ struct is_not_optional<optional<T>>
 };
 
 
+#if !OPTIONAL_GCC45_COMPATIBILITY
 constexpr struct trivial_init_t{} trivial_init{};
+#else
+const struct trivial_init_t{} trivial_init{};
+#endif
 
 
 // 20.5.6, In-place construction
+#if !OPTIONAL_GCC45_COMPATIBILITY
 constexpr struct in_place_t{} in_place{};
+#else
+const struct in_place_t{} in_place{};
+#endif
 
 
 // 20.5.7, Disengaged state indicator
@@ -243,7 +251,11 @@ struct nullopt_t
   struct init{};
   constexpr nullopt_t(init){};
 };
+#if !OPTIONAL_GCC45_COMPATIBILITY
 constexpr nullopt_t nullopt{nullopt_t::init{}};
+#else
+const nullopt_t nullopt{nullopt_t::init{}};
+#endif
 
 
 // 20.5.8, class bad_optional_access
@@ -301,7 +313,11 @@ struct storage_t
 };
 #endif
 
+#if !OPTIONAL_GCC45_COMPATIBILITY
 constexpr struct only_set_initialized_t{} only_set_initialized{};
+#else
+const struct only_set_initialized_t{} only_set_initialized{};
+#endif
 
 
 template <class T>
