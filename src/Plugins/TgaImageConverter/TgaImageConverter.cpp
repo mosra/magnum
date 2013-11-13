@@ -60,12 +60,20 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
     #endif
     {
         Error() << "Trade::TgaImageConverter::convertToData(): unsupported image format" << image.format();
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         return nullptr;
+        #else
+        return {};
+        #endif
     }
 
     if(image.type() != ColorType::UnsignedByte) {
         Error() << "Trade::TgaImageConverter::convertToData(): unsupported image type" << image.type();
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         return nullptr;
+        #else
+        return {};
+        #endif
     }
 
     /* Initialize data buffer */

@@ -240,7 +240,7 @@ class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
         std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayReference<const unsigned char> data) const override {
             if(data.size() == 1 && data[0] == 0xa5)
                 return std::unique_ptr<GlyphCache>(reinterpret_cast<GlyphCache*>(0xdeadbeef));
-            return nullptr;
+            return {};
         }
 };
 

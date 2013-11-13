@@ -145,19 +145,19 @@ void AbstractFont::doFillGlyphCache(GlyphCache&, const std::vector<char32_t>&)
 
 std::unique_ptr<GlyphCache> AbstractFont::createGlyphCache() {
     CORRADE_ASSERT(isOpened(),
-        "Text::AbstractFont::createGlyphCache(): no font opened", nullptr);
+        "Text::AbstractFont::createGlyphCache(): no font opened", {});
     CORRADE_ASSERT(features() & Feature::PreparedGlyphCache,
-        "Text::AbstractFont::createGlyphCache(): feature not supported", nullptr);
+        "Text::AbstractFont::createGlyphCache(): feature not supported", {});
 
     return doCreateGlyphCache();
 }
 
 std::unique_ptr<GlyphCache> AbstractFont::doCreateGlyphCache() {
-    CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
+    CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", {});
 }
 
 std::unique_ptr<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
-    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", {});
 
     return doLayout(cache, size, text);
 }

@@ -70,7 +70,7 @@ void MagnumFontConverterTest::exportFont() {
                 return {16.0f, 39.7333f};
             }
             Features doFeatures() const { return {}; }
-            std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
+            std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return {}; }
 
             UnsignedInt doGlyphId(const char32_t character) {
                 switch(character) {
