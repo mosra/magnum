@@ -31,7 +31,7 @@
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
 #include <sstream>
 #endif
 
@@ -582,7 +582,7 @@ Shader& Shader::operator=(Shader&& other) {
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(_WIN32)
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
         std::ostringstream converter;
         converter << (sources.size()+1)/2;
         #endif
@@ -590,7 +590,7 @@ Shader& Shader::addSource(std::string source) {
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
         sources.push_back("#line 1 " +
-            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(_WIN32)
+            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(__MINGW32__)
             std::to_string((sources.size()+1)/2) +
             #else
             converter.str() +
