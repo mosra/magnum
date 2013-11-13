@@ -7,7 +7,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('MIT')
 depends=('corrade' 'openal' 'sdl2' 'freeglut')
-makedepends=('cmake')
+makedepends=('cmake' 'ninja')
 provides=('magnum-git')
 
 build() {
@@ -30,8 +30,9 @@ build() {
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
-        -DBUILD_TESTS=TRUE
-    make
+        -DBUILD_TESTS=TRUE \
+        -G Ninja
+    ninja
 }
 
 check() {
@@ -41,5 +42,5 @@ check() {
 
 package() {
     cd "$startdir/build"
-    make DESTDIR="$pkgdir/" install
+    DESTDIR="$pkgdir/" ninja install
 }

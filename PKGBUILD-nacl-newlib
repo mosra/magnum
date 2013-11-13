@@ -7,7 +7,7 @@ arch=('any')
 url="https://github.com/mosra/magnum"
 license=('MIT')
 depends=('nacl-corrade')
-makedepends=('nacl-sdk' 'cmake')
+makedepends=('nacl-sdk' 'cmake' 'corrade' 'ninja')
 options=(!buildflags !strip)
 
 build() {
@@ -29,8 +29,9 @@ build() {
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
-        -DLIB_SUFFIX=/32
-    make
+        -DLIB_SUFFIX=/32 \
+        -G Ninja
+    ninja
 
     # Build 64bit
     mkdir -p "$startdir/build-nacl-newlib-x86-64"
@@ -49,14 +50,15 @@ build() {
         -DWITH_MAGNUMFONTCONVERTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
-        -DWITH_WAVAUDIOIMPORTER=ON
-    make
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -G Ninja
+    ninja
 }
 
 package() {
     # Install 32bit
     cd "$startdir/build-nacl-newlib-x86-32"
-    make DESTDIR="$pkgdir/" install
+    DESTDIR="$pkgdir/" ninja install
 
     # Strip 32bit binaries
     /usr/nacl/toolchain/linux_x86_newlib/bin/i686-nacl-strip ${pkgdir}/usr/nacl/bin/*x86-32.nexe
@@ -64,7 +66,7 @@ package() {
     # Install 64bit (the headers will be overwritten, but they are (and should
     # be) the same for both versions
     cd "$startdir/build-nacl-newlib-x86-64"
-    make DESTDIR="$pkgdir/" install
+    DESTDIR="$pkgdir/" ninja install
 
     # Strip 64bit binaries
     /usr/nacl/toolchain/linux_x86_newlib/bin/x86_64-nacl-strip ${pkgdir}/usr/nacl/bin/*x86-64.nexe

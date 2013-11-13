@@ -7,7 +7,7 @@ arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('emscripten-corrade')
-makedepends=('cmake')
+makedepends=('cmake' 'ninja')
 options=(!strip !buildflags)
 
 build() {
@@ -18,7 +18,8 @@ build() {
         cmake .. \
             -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
             -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Emscripten.cmake" \
-            -DWITH_AUDIO=OFF
+            -DWITH_AUDIO=OFF \
+            -G Ninja
     fi
 
     cd "$startdir/build-emscripten"
@@ -32,10 +33,10 @@ build() {
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON
-    make
+    ninja
 }
 
 package() {
     cd "$startdir/build-emscripten"
-    make DESTDIR="$pkgdir/" install
+    DESTDIR="$pkgdir/" ninja install
 }
