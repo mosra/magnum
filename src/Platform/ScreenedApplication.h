@@ -94,10 +94,10 @@ template<class Application> class BasicScreenedApplication: public Application, 
 
     public:
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments, const Configuration&) */
-        BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = Application::Configuration()): Application(arguments, configuration) {}
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = Application::Configuration()): Application(arguments, configuration) {}
 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): Application(arguments, nullptr) {}
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): Application(arguments, nullptr) {}
 
         /**
          * @brief Add screen to application
