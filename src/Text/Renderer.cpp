@@ -163,7 +163,8 @@ std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& 
 
     /* Align positions and bounds */
     rectangle = rectangle.translated(Vector2::yAxis(alignmentOffsetY));
-    for(auto& v: vertices) v.position.y() += alignmentOffsetY;
+    for(auto it = vertices.begin(); it != vertices.end(); ++it)
+        it->position.y() += alignmentOffsetY;
 
     return std::make_tuple(std::move(vertices), rectangle);
 }
@@ -230,7 +231,8 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     std::vector<Vector2> positions, textureCoordinates;
     positions.reserve(vertices.size());
     positions.reserve(textureCoordinates.size());
-    for(const auto& v: vertices) {
+    for(auto it = vertices.begin(); it != vertices.end(); ++it) {
+        const Vertex& v = *it;
         positions.push_back(v.position);
         textureCoordinates.push_back(v.textureCoordinates);
     }

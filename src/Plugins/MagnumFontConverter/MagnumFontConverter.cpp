@@ -68,22 +68,24 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     #else
     glyphIdMap.insert({0, 0});
     #endif
-    for(const std::pair<UnsignedInt, std::pair<Vector2i, Rectanglei>>& glyph: cache)
+    for(auto it = cache.begin(); it != cache.end(); ++it)
         #ifndef CORRADE_GCC46_COMPATIBILITY
-        glyphIdMap.emplace(glyph.first, glyphIdMap.size());
+        glyphIdMap.emplace(it->first, glyphIdMap.size());
         #else
-        glyphIdMap.insert({glyph.first, glyphIdMap.size()});
+        glyphIdMap.insert({it->first, glyphIdMap.size()});
         #endif
 
     /** @todo Save only glyphs contained in @p characters */
 
     /* Inverse map from new glyph IDs to old ones */
     std::vector<UnsignedInt> inverseGlyphIdMap(glyphIdMap.size());
-    for(const std::pair<UnsignedInt, UnsignedInt>& map: glyphIdMap)
-        inverseGlyphIdMap[map.second] = map.first;
+    for(auto it = glyphIdMap.begin(); it != glyphIdMap.end(); ++it)
+        inverseGlyphIdMap[it->second] = it->first;
 
     /* Character->glyph map, map glyph IDs to new ones */
-    for(const char32_t c: characters) {
+    for(auto it = characters.begin(); it != characters.end(); ++it) {
+        const char32_t c = *it;
+
         Utility::ConfigurationGroup* group = configuration.addGroup("char");
         const UnsignedInt glyphId = font.glyphId(c);
         group->setValue("unicode", c);
@@ -96,7 +98,9 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     /* Save glyph properties in order which preserves their IDs, remove padding
        from the values so they aren't added twice when using the font later */
     /** @todo Some better way to handle this padding stuff */
-    for(UnsignedInt oldGlyphId: inverseGlyphIdMap) {
+    for(auto it = inverseGlyphIdMap.begin(); it != inverseGlyphIdMap.end(); ++it) {
+        const UnsignedInt oldGlyphId = *it;
+
         std::pair<Vector2i, Rectanglei> glyph = cache[oldGlyphId];
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
         group->setValue("advance", font.glyphAdvance(oldGlyphId));
