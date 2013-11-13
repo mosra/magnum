@@ -43,7 +43,12 @@ template<class Application> void BasicScreen<Application>::mouseMoveEvent(MouseM
 
 template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration): Application(arguments, configuration) {}
 
-template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): Application(arguments, nullptr) {}
+#ifndef CORRADE_GCC45_COMPATIBILITY
+template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t):
+#else
+template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, void*):
+#endif
+    Application(arguments, nullptr) {}
 
 template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() = default;
 

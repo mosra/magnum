@@ -97,7 +97,11 @@ template<class Application> class BasicScreenedApplication: public Application, 
         explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = Application::Configuration());
 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
+        #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t);
+        #else
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, void*);
+        #endif
 
         /**
          * @brief Add screen to application
