@@ -82,8 +82,6 @@ class GlxApplication: public AbstractXApplication {
         ~GlxApplication();
 };
 
-GlxApplication::~GlxApplication() = default;
-
 /** @hideinitializer
 @brief Entry point for GLX-based applications
 @param className Class name

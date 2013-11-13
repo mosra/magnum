@@ -83,8 +83,6 @@ class XEglApplication: public AbstractXApplication {
         ~XEglApplication();
 };
 
-XEglApplication::~XEglApplication() = default;
-
 /** @hideinitializer
 @brief Entry point for X/EGL-based applications
 @param className Class name
