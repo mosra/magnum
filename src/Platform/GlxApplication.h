@@ -75,7 +75,7 @@ class GlxApplication: public AbstractXApplication {
     protected:
         /* Nobody will need to have (and delete) GlxApplication*, thus this is
            faster than public pure virtual destructor */
-        ~GlxApplication() = default;
+        ~GlxApplication();
 };
 
 /** @hideinitializer

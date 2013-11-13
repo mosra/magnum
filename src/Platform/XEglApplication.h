@@ -76,7 +76,7 @@ class XEglApplication: public AbstractXApplication {
     protected:
         /* Nobody will need to have (and delete) XEglApplication*, thus this is
            faster than public pure virtual destructor */
-        ~XEglApplication() = default;
+        ~XEglApplication();
 };
 
 /** @hideinitializer
