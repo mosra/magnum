@@ -36,6 +36,10 @@
 namespace Magnum { namespace Text {
 
 struct MagnumFont::Data {
+    #ifdef CORRADE_GCC46_COMPATIBILITY
+    explicit Data(Utility::Configuration&& conf, Trade::ImageData2D&& image, std::unordered_map<char32_t, UnsignedInt>&& glyphId, std::vector<Vector2>&& glyphAdvance): conf(std::move(conf)), image(std::move(image)), glyphId(std::move(glyphId)), glyphAdvance(std::move(glyphAdvance)) {}
+    #endif
+
     Utility::Configuration conf;
     Trade::ImageData2D image;
     std::unordered_map<char32_t, UnsignedInt> glyphId;
