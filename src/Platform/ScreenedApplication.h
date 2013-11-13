@@ -94,10 +94,10 @@ template<class Application> class BasicScreenedApplication: public Application, 
 
     public:
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments, const Configuration&) */
-        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = Application::Configuration()): Application(arguments, configuration) {}
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = Application::Configuration());
 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): Application(arguments, nullptr) {}
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t);
 
         /**
          * @brief Add screen to application
@@ -157,6 +157,10 @@ template<class Application> class BasicScreenedApplication: public Application, 
         }
 
     protected:
+        /* Nobody will need to have (and delete) ScreenedApplication*, thus
+           this is faster than public pure virtual destructor */
+        ~BasicScreenedApplication();
+
         /**
          * @brief Global viewport event
          *
