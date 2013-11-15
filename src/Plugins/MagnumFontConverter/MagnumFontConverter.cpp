@@ -62,7 +62,9 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     /* Compress glyph IDs so the glyphs are in consecutive array, glyph 0
        should stay at position 0 */
     std::unordered_map<UnsignedInt, UnsignedInt> glyphIdMap;
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     glyphIdMap.reserve(cache.glyphCount());
+    #endif
     #ifndef CORRADE_GCC46_COMPATIBILITY
     glyphIdMap.emplace(0, 0);
     #else
