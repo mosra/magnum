@@ -22,6 +22,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(OpenAL REQUIRED)
+
 include_directories(${OPENAL_INCLUDE_DIR})
 
 set(WavAudioImporter_SRCS
