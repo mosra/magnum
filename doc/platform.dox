@@ -190,7 +190,7 @@ constructor. Using method chaining it can be done conveniently like this:
 MyApplication::MyApplication(int& argc, char** argv):
     Platform::Application(argc, argv, Configuration()
         .setTitle("My Application")
-        .setSize({800, 600})
+        .setSize({800, 600}))
 {
     // ...
 }

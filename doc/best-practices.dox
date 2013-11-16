@@ -77,11 +77,11 @@ vertex and index buffers in both Native Client and Emscripten.
 
 @subsection best-practices-powervr PowerVR hardware
 
-- [PowerVR Performance Recommendations](http://www.imgtec.com/powervr/insider/docs/PowerVR.Performance%20Recommendations.1.0.28.External.pdf) [PDF]
+- [PowerVR Performance Recommendations](https://github.com/burningsun/pecker_framework/blob/master/参考资料/PowerVR.Performance%20Recommendations.pdf?raw=true) [PDF]
 
 @subsection best-practices-tegra NVidia Tegra hardware
 
-- [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/data/Optimize_OpenGL_ES_2_0_Performance_for_Tegra.html)
+- [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/index.html#GLES2_Perf_Main.html)
 
 */
 }
