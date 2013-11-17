@@ -113,11 +113,9 @@ class Interleave {
 
         /* Fill gap with zeros */
         std::size_t writeOne(char* startingOffset, std::size_t gap) {
-            char* data = new char[gap]();
             for(std::size_t i = 0; i != _attributeCount; ++i)
-                memcpy(startingOffset+i*_stride, data, gap);
+                std::memset(startingOffset+i*_stride, 0, gap);
 
-            delete[] data;
             return gap;
         }
 
