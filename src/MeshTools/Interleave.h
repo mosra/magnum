@@ -106,7 +106,7 @@ class Interleave {
         template<class T>  typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOne(char* startingOffset, const T& attributeList) {
             auto it = attributeList.begin();
             for(std::size_t i = 0; i != _attributeCount; ++i, ++it)
-                memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
+                std::memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
 
             return sizeof(typename T::value_type);
         }
