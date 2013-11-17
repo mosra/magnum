@@ -49,16 +49,18 @@ class TgaImageConverterTest: public TestSuite::Tester {
 };
 
 namespace {
-    #ifndef MAGNUM_TARGET_GLES
-    const Image2D original(ColorFormat::BGR, ColorType::UnsignedByte, {2, 3}, new char[18]
-    #else
-    const Image2D original(ColorFormat::RGB, ColorType::UnsignedByte, {2, 3}, new char[18]
-    #endif
-    {
+    /** @todo `const` when ImageReference is sane */
+    char originalData[] = {
         1, 2, 3, 2, 3, 4,
         3, 4, 5, 4, 5, 6,
         5, 6, 7, 6, 7, 8
-    });
+    };
+
+    #ifndef MAGNUM_TARGET_GLES
+    const ImageReference2D original(ColorFormat::BGR, ColorType::UnsignedByte, {2, 3}, originalData);
+    #else
+    const ImageReference2D original(ColorFormat::RGB, ColorType::UnsignedByte, {2, 3}, originalData);
+    #endif
 }
 
 TgaImageConverterTest::TgaImageConverterTest() {
