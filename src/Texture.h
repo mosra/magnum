@@ -227,7 +227,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Creates one OpenGL texture.
          * @see @fn_gl{GenTextures}
          */
-        explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(static_cast<GLenum>(target)) {}
+        explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(GLenum(target)) {}
 
         /** @brief %Texture target */
         constexpr Target target() const { return static_cast<Target>(_target); }

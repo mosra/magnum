@@ -534,7 +534,7 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
 #endif
 
 Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
-    _id = glCreateShader(static_cast<GLenum>(_type));
+    _id = glCreateShader(GLenum(_type));
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES

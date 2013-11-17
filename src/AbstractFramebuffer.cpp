@@ -112,7 +112,7 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
         state->readBinding = state->drawBinding = _id;
     } else CORRADE_ASSERT_UNREACHABLE();
 
-    glBindFramebuffer(static_cast<GLenum>(target), _id);
+    glBindFramebuffer(GLenum(target), _id);
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
@@ -144,7 +144,7 @@ void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer&
     destination.bindInternal(FramebufferTarget::Draw);
     /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), static_cast<GLbitfield>(mask), static_cast<GLenum>(filter));
+    glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
     static_cast<void>(sourceRectangle);
     static_cast<void>(destinationRectangle);
@@ -183,7 +183,7 @@ void AbstractFramebuffer::clear(FramebufferClearMask mask) {
     #else
     bindInternal(drawTarget);
     #endif
-    glClear(static_cast<GLbitfield>(mask));
+    glClear(GLbitfield(mask));
 }
 
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D& image) {
@@ -377,17 +377,17 @@ void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
 #endif
 
 void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES3
 void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     /** @todo Enable when extension wrangler for ES is available */
     #ifndef MAGNUM_TARGET_GLES
-    glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), dataSize, data);
+    glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), dataSize, data);
     #else
     CORRADE_INTERNAL_ASSERT(false);
-    //glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), static_cast<GLenum>(format), static_cast<GLenum>(type), data);
+    //glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
     static_cast<void>(offset);
     static_cast<void>(size);
     static_cast<void>(format);

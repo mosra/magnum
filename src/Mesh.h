@@ -639,8 +639,8 @@ class MAGNUM_EXPORT Mesh {
                 (this->*attributePointerImplementation)(Attribute{
                     &buffer,
                     location+i,
-                    static_cast<GLint>(attribute.components()),
-                    static_cast<GLenum>(attribute.dataType()),
+                    GLint(attribute.components()),
+                    GLenum(attribute.dataType()),
                     bool(attribute.dataOptions() & AbstractShaderProgram::Attribute<location, T>::DataOption::Normalized),
                     offset,
                     stride
@@ -652,8 +652,8 @@ class MAGNUM_EXPORT Mesh {
             (this->*attributeIPointerImplementation)(IntegerAttribute{
                 &buffer,
                 location,
-                static_cast<GLint>(attribute.components()),
-                static_cast<GLenum>(attribute.dataType()),
+                GLint(attribute.components()),
+                GLenum(attribute.dataType()),
                 offset,
                 stride
             });
@@ -665,8 +665,8 @@ class MAGNUM_EXPORT Mesh {
                 (this->*attributeLPointerImplementation)(LongAttribute{
                     &buffer,
                     location+i,
-                    static_cast<GLint>(attribute.components()),
-                    static_cast<GLenum>(attribute.dataType()),
+                    GLint(attribute.components()),
+                    GLenum(attribute.dataType()),
                     offset,
                     stride
                 });

@@ -48,7 +48,7 @@ DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
     GLenum* _attachments = new GLenum[max+1];
     std::fill_n(_attachments, max, GL_NONE);
     for(const auto& attachment: attachments)
-        _attachments[attachment.first] = static_cast<GLenum>(attachment.second);
+        _attachments[attachment.first] = GLenum(attachment.second);
 
     (this->*drawBuffersImplementation)(max+1, _attachments);
     delete[] _attachments;

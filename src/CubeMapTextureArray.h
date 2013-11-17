@@ -118,7 +118,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * See Texture::imageSize() for more information.
          */
         Vector3i imageSize(Coordinate coordinate, Int level) {
-            return DataHelper<3>::imageSize(this, GL_TEXTURE_CUBE_MAP_POSITIVE_X + static_cast<GLenum>(coordinate), level);
+            return DataHelper<3>::imageSize(this, GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(coordinate), level);
         }
 
         /**

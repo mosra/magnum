@@ -291,7 +291,7 @@ class SampleQuery: public AbstractQuery {
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         void beginConditionalRender(ConditionalRenderMode mode) {
-            glBeginConditionalRender(id(), static_cast<GLenum>(mode));
+            glBeginConditionalRender(id(), GLenum(mode));
         }
 
         /**

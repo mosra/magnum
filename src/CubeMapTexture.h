@@ -116,7 +116,7 @@ class CubeMapTexture: public AbstractTexture {
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         Vector2i imageSize(Coordinate coordinate, Int level) {
-            return DataHelper<2>::imageSize(this, static_cast<GLenum>(coordinate), level);
+            return DataHelper<2>::imageSize(this, GLenum(coordinate), level);
         }
         #endif
 
@@ -171,14 +171,14 @@ class CubeMapTexture: public AbstractTexture {
          * See Texture::setImage() for more information.
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
-            DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
+            DataHelper<2>::setImage(this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
-            DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
+            DataHelper<2>::setImage(this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
         #endif
@@ -194,14 +194,14 @@ class CubeMapTexture: public AbstractTexture {
          * See Texture::setSubImage() for more information.
          */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image) {
-            DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
-            DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
             return *this;
         }
         #endif

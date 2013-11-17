@@ -216,7 +216,7 @@ class MAGNUM_EXPORT AbstractTexture {
          *      with @def_gl{TEXTURE_MAG_FILTER}
          */
         AbstractTexture& setMagnificationFilter(Sampler::Filter filter) {
-            (this->*parameteriImplementation)(GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
+            (this->*parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
             return *this;
         }
 
@@ -478,7 +478,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
     static Math::Vector<1, GLint> imageSize(AbstractTexture* texture, GLenum target, GLint level);
 
     static void setWrapping(AbstractTexture* texture, const Array1D<Sampler::Wrapping>& wrapping) {
-        (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
+        (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
     }
 
     static void setStorage(AbstractTexture* texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
