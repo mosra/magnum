@@ -24,6 +24,8 @@
 
 #include "Source.h"
 
+#include <Containers/Array.h>
+
 #include "Audio/Buffer.h"
 
 namespace Magnum { namespace Audio {
@@ -37,8 +39,8 @@ Source& Source::setBuffer(Buffer* buffer) {
 
 namespace {
 
-const ALuint* sourceIds(const std::initializer_list<Source*>& sources) {
-    ALuint* const ids = new ALuint[sources.size()];
+Containers::Array<ALuint> sourceIds(const std::initializer_list<Source*>& sources) {
+    Containers::Array<ALuint> ids(sources.size());
     for(auto it = sources.begin(); it != sources.end(); ++it) {
         CORRADE_INTERNAL_ASSERT(*it);
         ids[it-sources.begin()] = (*it)->id();
@@ -46,8 +48,8 @@ const ALuint* sourceIds(const std::initializer_list<Source*>& sources) {
     return ids;
 }
 
-const ALuint* sourceIds(const std::vector<Source*>& sources) {
-    ALuint* const ids = new ALuint[sources.size()];
+Containers::Array<ALuint> sourceIds(const std::vector<Source*>& sources) {
+    Containers::Array<ALuint> ids(sources.size());
     for(auto it = sources.begin(); it != sources.end(); ++it) {
         CORRADE_INTERNAL_ASSERT(*it);
         ids[it-sources.begin()] = (*it)->id();
@@ -56,55 +58,45 @@ const ALuint* sourceIds(const std::vector<Source*>& sources) {
 }
 
 }
-
-/** @todo Okay, this is too much code copying even for me */
 
 void Source::play(std::initializer_list<Source*> sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourcePlayv(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourcePlayv(ids.size(), ids);
 }
 
 void Source::play(const std::vector<Source*>& sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourcePlayv(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourcePlayv(ids.size(), ids);
 }
 
 void Source::pause(std::initializer_list<Source*> sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourcePausev(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourcePausev(ids.size(), ids);
 }
 
 void Source::pause(const std::vector<Source*>& sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourcePausev(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourcePausev(ids.size(), ids);
 }
 
 void Source::stop(std::initializer_list<Source*> sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourceStopv(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourceStopv(ids.size(), ids);
 }
 
 void Source::stop(const std::vector<Source*>& sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourceStopv(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourceStopv(ids.size(), ids);
 }
 
 void Source::rewind(std::initializer_list<Source*> sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourceRewindv(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourceRewindv(ids.size(), ids);
 }
 
 void Source::rewind(const std::vector<Source*>& sources) {
-    const ALuint* const ids = sourceIds(sources);
-    alSourceRewindv(sources.size(), ids);
-    delete[] ids;
+    const auto ids = sourceIds(sources);
+    alSourceRewindv(ids.size(), ids);
 }
 
 Debug operator<<(Debug debug, const Source::State value) {
