@@ -24,6 +24,7 @@
 
 #include <TestSuite/Tester.h>
 
+#include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Shapes/Point.h"
 #include "Shapes/AxisAlignedBox.h"
@@ -44,6 +45,8 @@ class CompositionTest: public TestSuite::Tester {
         void multipleUnary();
         void hierarchy();
         void empty();
+
+        void transformed();
 };
 
 CompositionTest::CompositionTest() {
@@ -52,7 +55,9 @@ CompositionTest::CompositionTest() {
               &CompositionTest::ored,
               &CompositionTest::multipleUnary,
               &CompositionTest::hierarchy,
-              &CompositionTest::empty});
+              &CompositionTest::empty,
+
+              &CompositionTest::transformed});
 }
 
 void CompositionTest::negated() {
@@ -123,6 +128,18 @@ void CompositionTest::empty() {
     CORRADE_COMPARE(a.size(), 0);
 
     VERIFY_NOT_COLLIDES(a, Shapes::Sphere2D({}, 1.0f));
+}
+
+void CompositionTest::transformed() {
+    const Shapes::Composition2D a = Shapes::Sphere2D({}, 1.0f) &&
+        (Shapes::Point2D(Vector2::xAxis(1.5f)) || !Shapes::AxisAlignedBox2D({}, Vector2(0.5f)));
+
+    const Shapes::Composition2D b = a.transformed(Matrix3::translation({1.5f, -7.0f}));
+    CORRADE_COMPARE(b.get<Shapes::Sphere2D>(0).position(), Vector2(1.5f, -7.0f));
+    CORRADE_COMPARE(b.get<Shapes::Sphere2D>(0).radius(), 1.0f);
+    CORRADE_COMPARE(b.get<Shapes::Point2D>(1).position(), Vector2(3.0f, -7.0f));
+    CORRADE_COMPARE(b.get<Shapes::AxisAlignedBox2D>(2).min(), Vector2(1.5f, -7.0f));
+    CORRADE_COMPARE(b.get<Shapes::AxisAlignedBox2D>(2).max(), Vector2(2.0f, -6.5f));
 }
 
 }}}
