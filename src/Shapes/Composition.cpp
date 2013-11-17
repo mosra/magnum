@@ -59,7 +59,7 @@ Because these values are relative to parent, they don't need to be modified
 when concatenating.
 */
 
-template<UnsignedInt dimensions> Composition<dimensions>::Composition(const Composition<dimensions>& other) {
+template<UnsignedInt dimensions> Composition<dimensions>::Composition(const Composition<dimensions>& other): _shapes(other._shapes.size()), _nodes(other._nodes.size()) {
     copyShapes(0, other);
     copyNodes(0, other);
 }
