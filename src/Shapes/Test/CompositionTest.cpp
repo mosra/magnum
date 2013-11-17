@@ -46,6 +46,8 @@ class CompositionTest: public TestSuite::Tester {
         void hierarchy();
         void empty();
 
+        void copy();
+        void move();
         void transformed();
 };
 
@@ -57,6 +59,8 @@ CompositionTest::CompositionTest() {
               &CompositionTest::hierarchy,
               &CompositionTest::empty,
 
+              &CompositionTest::copy,
+              &CompositionTest::move,
               &CompositionTest::transformed});
 }
 
@@ -128,6 +132,45 @@ void CompositionTest::empty() {
     CORRADE_COMPARE(a.size(), 0);
 
     VERIFY_NOT_COLLIDES(a, Shapes::Sphere2D({}, 1.0f));
+}
+
+void CompositionTest::copy() {
+    const Shapes::Composition3D a = Shapes::Sphere3D({}, 1.0f) &&
+        (Shapes::Point3D(Vector3::xAxis(1.5f)) || !Shapes::AxisAlignedBox3D({}, Vector3(0.5f)));
+
+    /* Copy constructor */
+    const Shapes::Composition3D b(a);
+    CORRADE_COMPARE(b.size(), 3);
+    CORRADE_COMPARE(b.get<Shapes::AxisAlignedBox3D>(2).max(), Vector3(0.5f));
+
+    /* Copy assignment */
+    Shapes::Composition3D c;
+    c = a;
+    CORRADE_COMPARE(c.size(), 3);
+    CORRADE_COMPARE(c.get<Shapes::Point3D>(1).position(), Vector3::xAxis(1.5f));
+}
+
+void CompositionTest::move() {
+    {
+        Shapes::Composition3D a = Shapes::Sphere3D({}, 1.0f) &&
+            (Shapes::Point3D(Vector3::xAxis(1.5f)) || !Shapes::AxisAlignedBox3D({}, Vector3(0.5f)));
+
+        /* Move constructor */
+        const Shapes::Composition3D b(std::move(a));
+        CORRADE_COMPARE(a.size(), 0);
+        CORRADE_COMPARE(b.size(), 3);
+        CORRADE_COMPARE(b.get<Shapes::Point3D>(1).position(), Vector3::xAxis(1.5f));
+    } {
+        Shapes::Composition3D a = Shapes::Sphere3D({}, 1.0f) &&
+            (Shapes::Point3D(Vector3::xAxis(1.5f)) || !Shapes::AxisAlignedBox3D({}, Vector3(0.5f)));
+
+        /* Move assignment */
+        Shapes::Composition3D b;
+        b = std::move(a);
+        CORRADE_COMPARE(a.size(), 0);
+        CORRADE_COMPARE(b.size(), 3);
+        CORRADE_COMPARE(b.get<Shapes::AxisAlignedBox3D>(2).max(), Vector3(0.5f));
+    }
 }
 
 void CompositionTest::transformed() {
