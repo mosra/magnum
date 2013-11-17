@@ -50,23 +50,14 @@ data updates.
 @section Buffer-data Data updating
 
 Default way to set or update buffer data with setData() or setSubData() is to
-explicitly specify data size and pass the pointer to it:
+use @ref Corrade::Containers::ArrayReference. See its documentation for more
+information about automatic conversions etc.
 @code
-Buffer buffer;
-Vector3* data = new Vector3[200];
-buffer.setData(200*sizeof(Vector3), data, Buffer::Usage::StaticDraw);
-@endcode
-Howewer, in some cases, you have the data in fixed-size array with size known
-at compile time. There is an convenient overload which detects the size of
-passed array, so you don't have to repeat it:
-@code
-Vector3 data[] = {
-    // ...
-};
+Containers::ArrayReference<Vector3> data;
 buffer.setData(data, Buffer::Usage::StaticDraw);
 @endcode
-There is also overload for array-like containers from STL, such as `std::vector` or
-`std::array`:
+There is also overload for array-like containers from STL, such as `std::vector`
+or `std::array`:
 @code
 std::vector<Vector3> data;
 buffer.setData(data, Buffer::Usage::StaticDraw);
@@ -75,12 +66,12 @@ buffer.setData(data, Buffer::Usage::StaticDraw);
 @subsection Buffer-data-mapping Memory mapping
 
 %Buffer data can be also updated asynchronously. First you need to allocate
-the buffer to desired size by passing `nullptr` to setData(), e.g.:
+the buffer to desired size by passing `nullptr` to @ref setData(), e.g.:
 @code
-buffer.setData(200*sizeof(Vector3)), nullptr, Buffer::Usage::StaticDraw);
+buffer.setData({nullptr, 200*sizeof(Vector3)}, Buffer::Usage::StaticDraw);
 @endcode
 Then you can map the buffer to client memory and operate with the memory
-directly. After you are done with the operation, call unmap() to unmap the
+directly. After you are done with the operation, call @ref unmap() to unmap the
 buffer again.
 @code
 Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer));
@@ -89,8 +80,8 @@ for(std::size_t i = 0; i != 200; ++i)
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 If you are updating only a few discrete portions of the buffer, you can use
-@ref MapFlag::FlushExplicit and flushMappedRange() to reduce number of memory
-operations performed by OpenGL on unmapping. Example:
+@ref MapFlag::FlushExplicit and @ref flushMappedRange() to reduce number of
+memory operations performed by OpenGL on unmapping. Example:
 @code
 Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
 for(std::size_t i: {7, 27, 56, 128}) {
