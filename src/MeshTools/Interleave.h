@@ -42,31 +42,31 @@ namespace Implementation {
 
 class Interleave {
     public:
-        Interleave(): _attributeCount(0), _stride(0), _data(nullptr) {}
+        Interleave(): _attributeCount(0), _stride(0) {}
 
-        template<class ...T> std::tuple<std::size_t, std::size_t, char*> operator()(const T&... attributes) {
+        template<class ...T> std::tuple<std::size_t, std::size_t, Containers::Array<char>> operator()(const T&... attributes) {
             /* Compute buffer size and stride */
             _attributeCount = attributeCount(attributes...);
+            Containers::Array<char> data;
             if(_attributeCount && _attributeCount != ~std::size_t(0)) {
                 _stride = stride(attributes...);
 
                 /* Create output buffer */
-                _data = new char[_attributeCount*_stride];
+                data = Containers::Array<char>(_attributeCount*_stride);
 
                 /* Save the data */
-                write(_data, attributes...);
+                write(data.begin(), attributes...);
             }
 
-            return std::make_tuple(_attributeCount, _stride, _data);
+            return std::make_tuple(_attributeCount, _stride, std::move(data));
         }
 
         template<class ...T> void operator()(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const T&... attributes) {
-            operator()(attributes...);
+            Containers::Array<char> data;
+            std::tie(std::ignore, std::ignore, data) = operator()(attributes...);
 
             mesh.setVertexCount(_attributeCount);
-            buffer.setData({_data, _attributeCount*_stride}, usage);
-
-            delete[] _data;
+            buffer.setData({data, _attributeCount*_stride}, usage);
         }
 
         /* Specialization for only one attribute array */
@@ -126,7 +126,6 @@ class Interleave {
 
         std::size_t _attributeCount;
         std::size_t _stride;
-        char* _data;
 };
 
 }
@@ -146,11 +145,9 @@ std::vector<Vector4> positions;
 std::vector<Vector2> textureCoordinates;
 std::size_t attributeCount;
 std::size_t stride;
-char* data;
+Containers::Array<char> data;
 std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, textureCoordinates);
-std::size_t dataSize = attributeCount*stride;
 // ...
-delete[] data;
 @endcode
 
 It's often desirable to align data for one vertex on 32bit boundaries. To
@@ -161,7 +158,7 @@ std::vector<GLushort> weights;
 std::vector<BasicColor3<GLubyte>> vertexColors;
 std::size_t attributeCount;
 std::size_t stride;
-char* data;
+Containers::Array<char> data;
 std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
 @endcode
 This way vertex stride is 24 bytes, without gaps it would be 21 bytes, causing
@@ -178,7 +175,7 @@ See also interleave(Mesh*, Buffer*, Buffer::Usage, const T&...),
 which writes the interleaved array directly into buffer of given mesh.
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& first, const U&... next) {
+template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, Containers::Array<char>>>::type interleave(const T& first, const U&... next) {
     return Implementation::Interleave()(first, next...);
 }
 

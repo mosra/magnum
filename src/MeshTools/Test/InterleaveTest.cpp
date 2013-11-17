@@ -84,7 +84,7 @@ void InterleaveTest::strideGaps() {
 void InterleaveTest::write() {
     std::size_t attributeCount;
     std::size_t stride;
-    char* data;
+    Containers::Array<char> data;
     std::tie(attributeCount, stride, data) = MeshTools::interleave(
         std::vector<Byte>{0, 1, 2},
         std::vector<Int>{3, 4, 5},
@@ -92,28 +92,25 @@ void InterleaveTest::write() {
 
     CORRADE_COMPARE(attributeCount, std::size_t(3));
     CORRADE_COMPARE(stride, std::size_t(7));
-    std::size_t size = attributeCount*stride;
     if(!Utility::Endianness::isBigEndian()) {
-        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
+        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
             0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00,
             0x01, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00,
             0x02, 0x05, 0x00, 0x00, 0x00, 0x08, 0x00
         }));
     } else {
-        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
+        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07,
             0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08
         }));
     }
-
-    delete[] data;
 }
 
 void InterleaveTest::writeGaps() {
     std::size_t attributeCount;
     std::size_t stride;
-    char* data;
+    Containers::Array<char> data;
     std::tie(attributeCount, stride, data) = MeshTools::interleave(
         std::vector<Byte>{0, 1, 2}, 3,
         std::vector<Int>{3, 4, 5},
@@ -121,25 +118,22 @@ void InterleaveTest::writeGaps() {
 
     CORRADE_COMPARE(attributeCount, std::size_t(3));
     CORRADE_COMPARE(stride, std::size_t(12));
-    std::size_t size = attributeCount*stride;
 
     if(!Utility::Endianness::isBigEndian()) {
         /*  byte, _____________gap, int___________________, short_____, _______gap */
-        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
+        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
             0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
             0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
             0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00
         }));
     } else {
         /*  byte, _____________gap, ___________________int, _____short, _______gap */
-        CORRADE_COMPARE(std::vector<char>(data, data+size), (std::vector<char>{
+        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x06, 0x00, 0x00,
             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x07, 0x00, 0x00,
             0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08, 0x00, 0x00
         }));
     }
-
-    delete[] data;
 }
 
 }}}
