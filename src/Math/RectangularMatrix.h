@@ -164,8 +164,20 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see operator[]
          */
-        T* data() { return _data[0].data(); }
-        constexpr const T* data() const { return _data[0].data(); } /**< @overload */
+        T* data()
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        &
+        #endif
+        { return _data[0].data(); }
+
+        /** @overload */
+        constexpr const T* data()
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        const &
+        #else
+        const
+        #endif
+        { return _data[0].data(); }
 
         /**
          * @brief %Matrix column
