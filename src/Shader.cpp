@@ -25,6 +25,7 @@
 #include "Shader.h"
 
 #include <fstream>
+#include <Containers/Array.h>
 #include <Utility/Assert.h>
 
 #include "Extensions.h"
@@ -625,17 +626,21 @@ Shader& Shader::addFile(const std::string& filename) {
 bool Shader::compile() {
     CORRADE_ASSERT(sources.size() > 1, "Shader::compile(): no files added", false);
 
-    /* Array of sources */
-    const GLchar** _sources = new const GLchar*[sources.size()];
-    for(std::size_t i = 0; i != sources.size(); ++i)
-        _sources[i] = static_cast<const GLchar*>(sources[i].c_str());
+    /* Array of source string pointers and their lengths */
+    /** @todo Use `Containers::::ArrayTuple` to avoid one allocation if it ever
+        gets to be implemented (we need properly aligned memory too) */
+    Containers::Array<const GLchar*> pointers(sources.size());
+    Containers::Array<GLint> sizes(sources.size());
+    for(std::size_t i = 0; i != sources.size(); ++i) {
+        pointers[i] = static_cast<const GLchar*>(sources[i].data());
+        sizes[i] = sources[i].size();
+    }
 
     /* Create shader and set its source */
-    glShaderSource(_id, sources.size(), _sources, nullptr);
+    glShaderSource(_id, sources.size(), pointers, sizes);
 
     /* Compile shader */
     glCompileShader(_id);
-    delete _sources;
 
     /* Check compilation status */
     GLint success, logLength;
