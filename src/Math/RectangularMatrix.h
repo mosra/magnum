@@ -159,7 +159,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of `size*size` length in column-major
+         * @return One-dimensional array of `cols*rows` length in column-major
          *      order.
          *
          * @see operator[]

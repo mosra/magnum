@@ -180,7 +180,7 @@ template<std::size_t size, class T> class Vector {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of `size*size` length.
+         * @return One-dimensional array of `size` length.
          *
          * @see operator[]()
          */
