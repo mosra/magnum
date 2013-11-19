@@ -41,7 +41,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current()->supportedVersion({Version::GL310, Version::GL300, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     #else
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
