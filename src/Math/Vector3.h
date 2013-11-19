@@ -53,7 +53,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @endcode
          * @see yAxis(), zAxis(), xScale(), Matrix4::right()
          */
-        constexpr static Vector3<T> xAxis(T length = T(1)) { return {length, T(), T()}; }
+        constexpr static Vector3<T> xAxis(T length = T(1)) { return {length, T(0), T(0)}; }
 
         /**
          * @brief %Vector in direction of Y axis (up)
@@ -61,7 +61,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xAxis() for more information.
          * @see yScale(), Matrix4::up()
          */
-        constexpr static Vector3<T> yAxis(T length = T(1)) { return {T(), length, T()}; }
+        constexpr static Vector3<T> yAxis(T length = T(1)) { return {T(0), length, T(0)}; }
 
         /**
          * @brief %Vector in direction of Z axis (backward)
@@ -69,7 +69,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xAxis() for more information.
          * @see zScale(), Matrix4::backward()
          */
-        constexpr static Vector3<T> zAxis(T length = T(1)) { return {T(), T(), length}; }
+        constexpr static Vector3<T> zAxis(T length = T(1)) { return {T(0), T(0), length}; }
 
         /**
          * @brief Scaling vector in direction of X axis (width)
