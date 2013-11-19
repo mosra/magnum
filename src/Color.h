@@ -136,9 +136,16 @@ template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::
 /**
 @brief Three-component (RGB) color
 
-The class can store both floating-point (normalized) and integral
-(denormalized) representation of color. You can convert between these two
-representations using fromNormalized() and fromDenormalized().
+The class can store either floating-point (normalized) or integral
+(denormalized) representation of color. Note that constructor conversion
+between different types (like in @ref Math::Vector "Vector" classes) doesn't do
+any (de)normalization, you should use @ref Math::normalize() and
+@ref Math::denormalize() instead, for example:
+@code
+typedef BasicColor3<UnsignedByte> Color3ub;
+Color3 a(1.0f, 0.5f, 0.75f);
+auto b = Math::denormalize<Color3ub>(a); // b == {255, 127, 191}
+@endcode
 
 Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
@@ -196,7 +203,13 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          */
         constexpr /*implicit*/ BasicColor3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
-        /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
+        /**
+         * @copydoc Math::Vector::Vector(const Vector<size, U>&)
+         *
+         * @attention This function doesn't do any (de)normalization, use
+         *      @ref Math::normalize() and @ref Math::denormalize() instead.
+         *      See class documentation for more information.
+         */
         template<class U> constexpr explicit BasicColor3(const Math::Vector<3, U>& other): Math::Vector3<T>(other) {}
 
         /** @brief Copy constructor */
@@ -323,7 +336,13 @@ class BasicColor4: public Math::Vector4<T> {
            is fairly common, nearly always with A set to 1 */
         constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
-        /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
+        /**
+         * @copydoc Math::Vector::Vector(const Vector<size, U>&)
+         *
+         * @attention This function doesn't do any (de)normalization, use
+         *      @ref Math::normalize() and @ref Math::denormalize() instead.
+         *      See @ref BasicColor3 class documentation for more information.
+         */
         template<class U> constexpr explicit BasicColor4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
 
         /** @brief Copy constructor */
