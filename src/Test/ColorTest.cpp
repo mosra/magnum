@@ -51,8 +51,8 @@ class ColorTest: public TestSuite::Tester {
         void configuration();
 };
 
-typedef Magnum::BasicColor3<UnsignedByte> Color3ub;
-typedef Magnum::BasicColor4<UnsignedByte> Color4ub;
+typedef BasicColor3<UnsignedByte> Color3ub;
+typedef BasicColor4<UnsignedByte> Color4ub;
 
 ColorTest::ColorTest() {
     addTests({&ColorTest::fromHue,

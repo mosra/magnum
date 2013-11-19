@@ -111,10 +111,9 @@ void Vector2Test::constructDefault() {
 
 void Vector2Test::constructOneValue() {
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector2 a(3.0f);
-    #else
-    Vector2 a(3.0f); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vector2 a(3.0f);
     CORRADE_COMPARE(a, Vector2(3.0f, 3.0f));
 
     /* Implicit conversion is not allowed */
@@ -124,10 +123,9 @@ void Vector2Test::constructOneValue() {
 void Vector2Test::constructConversion() {
     constexpr Vector2 a(1.5f, 2.5f);
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector2i b(a);
-    #else
-    Vector2i b(a); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vector2i b(a);
     CORRADE_COMPARE(b, Vector2i(1, 2));
 
     /* Implicit conversion is not allowed */

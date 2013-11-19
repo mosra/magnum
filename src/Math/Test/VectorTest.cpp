@@ -175,10 +175,9 @@ void VectorTest::constructDefault() {
 
 void VectorTest::constructOneValue() {
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector4 a(7.25f);
-    #else
-    Vector4 a(7.25f); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vector4 a(7.25f);
 
     CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
 
@@ -197,10 +196,9 @@ void VectorTest::constructOneComponent() {
 void VectorTest::constructConversion() {
     constexpr Vector4 a(1.3f, 2.7f, -15.0f, 7.0f);
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector4i b(a);
-    #else
-    Vector4i b(a); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vector4i b(a);
 
     CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
 

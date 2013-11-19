@@ -145,7 +145,6 @@ template<class T> class Vector3: public Vector<3, T> {
         /** @brief Copy constructor */
         constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
 
-
         /**
          * @brief X component
          *
