@@ -53,7 +53,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @endcode
          * @see yAxis(), zAxis(), xScale(), Matrix4::right()
          */
-        constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
+        constexpr static Vector3<T> xAxis(T length = T(1)) { return {length, T(), T()}; }
 
         /**
          * @brief %Vector in direction of Y axis (up)
@@ -61,7 +61,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xAxis() for more information.
          * @see yScale(), Matrix4::up()
          */
-        constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
+        constexpr static Vector3<T> yAxis(T length = T(1)) { return {T(), length, T()}; }
 
         /**
          * @brief %Vector in direction of Z axis (backward)
@@ -69,7 +69,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xAxis() for more information.
          * @see zScale(), Matrix4::backward()
          */
-        constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
+        constexpr static Vector3<T> zAxis(T length = T(1)) { return {T(), T(), length}; }
 
         /**
          * @brief Scaling vector in direction of X axis (width)
@@ -80,7 +80,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @endcode
          * @see yScale(), zScale(), xAxis()
          */
-        constexpr static Vector3<T> xScale(T scale) { return Vector3<T>(scale, T(1), T(1)); }
+        constexpr static Vector3<T> xScale(T scale) { return {scale, T(1), T(1)}; }
 
         /**
          * @brief Scaling vector in direction of Y axis (height)
@@ -88,7 +88,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xScale() for more information.
          * @see yAxis()
          */
-        constexpr static Vector3<T> yScale(T scale) { return Vector3<T>(T(1), scale, T(1)); }
+        constexpr static Vector3<T> yScale(T scale) { return {T(1), scale, T(1)}; }
 
         /**
          * @brief Scaling vector in direction of Z axis (depth)
@@ -96,7 +96,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * See xScale() for more information.
          * @see zAxis()
          */
-        constexpr static Vector3<T> zScale(T scale) { return Vector3<T>(T(1), T(1), scale); }
+        constexpr static Vector3<T> zScale(T scale) { return {T(1), T(1), scale}; }
 
         /**
          * @brief Cross product
