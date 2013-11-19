@@ -34,6 +34,14 @@ class ColorTest: public TestSuite::Tester {
     public:
         ColorTest();
 
+        void construct();
+        void constructDefault();
+        void constructOneValue();
+        void constructParts();
+        void constructConversion();
+        void constructNormalization();
+        void constructCopy();
+
         void fromHue();
         void fromSaturation();
         void fromValue();
@@ -55,7 +63,15 @@ typedef BasicColor3<UnsignedByte> Color3ub;
 typedef BasicColor4<UnsignedByte> Color4ub;
 
 ColorTest::ColorTest() {
-    addTests({&ColorTest::fromHue,
+    addTests({&ColorTest::construct,
+              &ColorTest::constructDefault,
+              &ColorTest::constructOneValue,
+              &ColorTest::constructParts,
+              &ColorTest::constructConversion,
+              &ColorTest::constructNormalization,
+              &ColorTest::constructCopy,
+
+              &ColorTest::fromHue,
               &ColorTest::fromSaturation,
               &ColorTest::fromValue,
 
@@ -70,6 +86,99 @@ ColorTest::ColorTest() {
               &ColorTest::swizzleType,
               &ColorTest::debug,
               &ColorTest::configuration});
+}
+
+void ColorTest::construct() {
+    constexpr Color3 a = {1.0f, 0.5f, 0.75f};
+    CORRADE_COMPARE(a, Vector3(1.0f, 0.5f, 0.75f));
+
+    constexpr Color4 b = {1.0f, 0.5f, 0.75f, 0.5f};
+    CORRADE_COMPARE(b, Vector4(1.0f, 0.5f, 0.75f, 0.5f));
+
+    /* Default alpha */
+    constexpr Color4 c = {1.0f, 0.5f, 0.75f};
+    constexpr Color4ub d = {10, 25, 176};
+    CORRADE_COMPARE(c, Vector4(1.0f, 0.5f, 0.75f, 1.0f));
+    CORRADE_COMPARE(d, Math::Vector4<UnsignedByte>(10, 25, 176, 255));
+}
+
+void ColorTest::constructDefault() {
+    constexpr Vector3 a;
+    CORRADE_COMPARE(a, Color3(0.0f, 0.0f, 0.0f));
+
+    constexpr Color4 b;
+    constexpr Color4ub c;
+    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 1.0f));
+    CORRADE_COMPARE(c, Color4ub(0, 0, 0, 255));
+}
+
+void ColorTest::constructOneValue() {
+    constexpr Color3 a(0.25f);
+    CORRADE_COMPARE(a, Color3(0.25f, 0.25f, 0.25f));
+
+    constexpr Color4 b(0.25f, 0.5f);
+    CORRADE_COMPARE(b, Color4(0.25f, 0.25f, 0.25f, 0.5f));
+
+    /* Default alpha */
+    constexpr Color4 c(0.25f);
+    constexpr Color4ub d(67);
+    CORRADE_COMPARE(c, Color4(0.25f, 0.25f, 0.25f, 1.0f));
+    CORRADE_COMPARE(d, Color4ub(67, 67, 67, 255));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Color3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Float, Color4>::value));
+}
+
+void ColorTest::constructParts() {
+    constexpr Color3 a(1.0f, 0.5f, 0.75f);
+
+    constexpr Color4 b = {a, 0.25f};
+    CORRADE_COMPARE(b, Color4(1.0f, 0.5f, 0.75f, 0.25f));
+
+    /* Default alpha */
+    constexpr Color3ub c(10, 25, 176);
+    constexpr Color4 d = a;
+    constexpr Color4ub e = c;
+    CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 1.0f));
+    CORRADE_COMPARE(e, Color4ub(10, 25, 176, 255));
+}
+
+void ColorTest::constructConversion() {
+    typedef BasicColor3<Double> Color3d;
+    typedef BasicColor4<Double> Color4d;
+
+    constexpr Color3 a(1.0f, 0.5f, 0.75f);
+    constexpr Color3d b(a);
+    CORRADE_COMPARE(b, Color3d(1.0, 0.5, 0.75));
+
+    constexpr Color4 c(1.0f, 0.5f, 0.75f, 0.25f);
+    constexpr Color4d d(c);
+    CORRADE_COMPARE(d, Color4d(1.0, 0.5, 0.75, 0.25));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Color3, Color3d>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Color4, Color4d>::value));
+}
+
+void ColorTest::constructNormalization() {
+    constexpr Color3 a(1.0f, 0.5f, 0.75f);
+    auto b = Math::denormalize<Color3ub>(a);
+    CORRADE_COMPARE(b, Color3ub(255, 127, 191));
+
+    constexpr Color4 c(1.0f, 0.5f, 0.75f, 0.25f);
+    auto d = Math::denormalize<Color4ub>(c);
+    CORRADE_COMPARE(d, Color4ub(255, 127, 191, 63));
+}
+
+void ColorTest::constructCopy() {
+    constexpr Math::Vector<3, Float> a(1.0f, 0.5f, 0.75f);
+    constexpr Color3 b(a);
+    CORRADE_COMPARE(b, Color3(1.0f, 0.5f, 0.75f));
+
+    constexpr Math::Vector<4, Float> c(1.0f, 0.5f, 0.75f, 0.25f);
+    constexpr Color4 d(c);
+    CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
 }
 
 void ColorTest::fromHue() {
