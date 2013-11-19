@@ -157,6 +157,72 @@ range @f$ [0.0, 1.0] @f$.
    impossible to explicitly instantiate */
 template<class T> class BasicColor3: public Math::Vector3<T> {
     public:
+        /**
+         * @brief Red color
+         *
+         * Convenience alternative to e.g. `%Color3(red, 0.0f, 0.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::xAxis().
+         * @see @ref green(), @ref blue(), @ref cyan()
+         */
+        constexpr static BasicColor3<T> red(T red = Implementation::fullChannel<T>()) {
+            return Math::Vector3<T>::xAxis(red);
+        }
+
+        /**
+         * @brief Green color
+         *
+         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::yAxis().
+         * @see @ref red(), @ref blue(), @ref magenta()
+         */
+        constexpr static BasicColor3<T> green(T green = Implementation::fullChannel<T>()) {
+            return Math::Vector3<T>::yAxis(green);
+        }
+
+        /**
+         * @brief Blue color
+         *
+         * Convenience alternative to e.g. `%Color3(0.0f, 0.0f, blue)`. With
+         * floating-point underlying type equivalent to @ref Vector3::zAxis().
+         * @see @ref red(), @ref green(), @ref yellow()
+         */
+        constexpr static BasicColor3<T> blue(T blue = Implementation::fullChannel<T>()) {
+            return Math::Vector3<T>::zAxis(blue);
+        }
+
+        /**
+         * @brief Cyan color
+         *
+         * Convenience alternative to e.g. `%Color3(red, 1.0f, 1.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::xScale().
+         * @see @ref magenta(), @ref yellow(), @ref red()
+         */
+        constexpr static BasicColor3<T> cyan(T red = T(0)) {
+            return {red, Implementation::fullChannel<T>(), Implementation::fullChannel<T>()};
+        }
+
+        /**
+         * @brief Magenta color
+         *
+         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::yScale().
+         * @see @ref cyan(), @ref yellow(), @ref green()
+         */
+        constexpr static BasicColor3<T> magenta(T green = T(0)) {
+            return {Implementation::fullChannel<T>(), green, Implementation::fullChannel<T>()};
+        }
+
+        /**
+         * @brief Yellow color
+         *
+         * Convenience alternative to `%Color3(0.0f, 0.0f, yellow)`. With
+         * floating-point underlying type equivalent to @ref Vector3::zScale().
+         * @see @ref cyan(), @ref magenta(), @ref red()
+         */
+        constexpr static BasicColor3<T> yellow(T blue = T(0)) {
+            return {Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), blue};
+        }
+
         /** @brief Corresponding floating-point type for HSV computation */
         typedef typename Math::TypeTraits<T>::FloatingPointType FloatingPointType;
 
@@ -288,6 +354,66 @@ class BasicColor4: public Math::Vector4<T> {
 
         /** @copydoc BasicColor3::HSV */
         typedef typename BasicColor3<T>::HSV HSV;
+
+        /**
+         * @brief Red color
+         *
+         * Convenience alternative to e.g. `%Color4(red, 0.0f, 0.0f, alpha)`.
+         * @see @ref green(), @ref blue(), @ref cyan()
+         */
+        constexpr static BasicColor4<T> red(T red = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
+            return {red, T(0), T(0), alpha};
+        }
+
+        /**
+         * @brief Green color
+         *
+         * Convenience alternative to e.g. `%Color4(0.0f, green, 0.0f, alpha)`.
+         * @see @ref red(), @ref blue(), @ref magenta()
+         */
+        constexpr static BasicColor4<T> green(T green = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
+            return {T(0), green, T(0), alpha};
+        }
+
+        /**
+         * @brief Blue color
+         *
+         * Convenience alternative to e.g. `%Color4(0.0f, 0.0f, blue, alpha)`.
+         * @see @ref red(), @ref green(), @ref yellow()
+         */
+        constexpr static BasicColor4<T> blue(T blue = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
+            return {T(0), T(0), blue, alpha};
+        }
+
+        /**
+         * @brief Cyan color
+         *
+         * Convenience alternative to e.g. `%Color4(red, 1.0f, 1.0f, alpha)`.
+         * @see @ref magenta(), @ref yellow(), @ref red()
+         */
+        constexpr static BasicColor4<T> cyan(T red = T(0), T alpha = Implementation::fullChannel<T>()) {
+            return {red, Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), alpha};
+        }
+
+        /**
+         * @brief Magenta color
+         *
+         * Convenience alternative to e.g. `%Color4(1.0f, green, 1.0f, alpha)`.
+         * @see @ref cyan(), @ref yellow(), @ref green()
+         */
+        constexpr static BasicColor4<T> magenta(T green = T(0), T alpha = Implementation::fullChannel<T>()) {
+            return {Implementation::fullChannel<T>(), green, Implementation::fullChannel<T>(), alpha};
+        }
+
+        /**
+         * @brief Yellow color
+         *
+         * Convenience alternative to e.g. `%Color4(1.0f, 1.0f, blue, alpha)`.
+         * @see @ref cyan(), @ref magenta(), @ref red()
+         */
+        constexpr static BasicColor4<T> yellow(T blue = T(0), T alpha = Implementation::fullChannel<T>()) {
+            return {Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), blue, alpha};
+        }
 
         /**
          * @copydoc BasicColor3::fromHSV()

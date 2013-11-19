@@ -42,6 +42,8 @@ class ColorTest: public TestSuite::Tester {
         void constructNormalization();
         void constructCopy();
 
+        void colors();
+
         void fromHue();
         void fromSaturation();
         void fromValue();
@@ -70,6 +72,8 @@ ColorTest::ColorTest() {
               &ColorTest::constructConversion,
               &ColorTest::constructNormalization,
               &ColorTest::constructCopy,
+
+              &ColorTest::colors,
 
               &ColorTest::fromHue,
               &ColorTest::fromSaturation,
@@ -179,6 +183,33 @@ void ColorTest::constructCopy() {
     constexpr Math::Vector<4, Float> c(1.0f, 0.5f, 0.75f, 0.25f);
     constexpr Color4 d(c);
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
+}
+
+void ColorTest::colors() {
+    CORRADE_COMPARE(Color3ub::red(75), Color3ub(75, 0, 0));
+    CORRADE_COMPARE(Color3ub::green(75), Color3ub(0, 75, 0));
+    CORRADE_COMPARE(Color3ub::blue(75), Color3ub(0, 0, 75));
+
+    CORRADE_COMPARE(Color3ub::cyan(75), Color3ub(75, 255, 255));
+    CORRADE_COMPARE(Color3ub::magenta(75), Color3ub(255, 75, 255));
+    CORRADE_COMPARE(Color3ub::yellow(75), Color3ub(255, 255, 75));
+
+    CORRADE_COMPARE(Color4ub::red(75, 138), Color4ub(75, 0, 0, 138));
+    CORRADE_COMPARE(Color4ub::green(75, 138), Color4ub(0, 75, 0, 138));
+    CORRADE_COMPARE(Color4ub::blue(75, 138), Color4ub(0, 0, 75, 138));
+
+    CORRADE_COMPARE(Color4ub::cyan(75, 138), Color4ub(75, 255, 255, 138));
+    CORRADE_COMPARE(Color4ub::magenta(75, 138), Color4ub(255, 75, 255, 138));
+    CORRADE_COMPARE(Color4ub::yellow(75, 138), Color4ub(255, 255, 75, 138));
+
+    /* Default alpha */
+    CORRADE_COMPARE(Color4ub::red(75), Color4ub(75, 0, 0, 255));
+    CORRADE_COMPARE(Color4ub::green(75), Color4ub(0, 75, 0, 255));
+    CORRADE_COMPARE(Color4ub::blue(75), Color4ub(0, 0, 75, 255));
+
+    CORRADE_COMPARE(Color4ub::cyan(75), Color4ub(75, 255, 255, 255));
+    CORRADE_COMPARE(Color4ub::magenta(75), Color4ub(255, 75, 255, 255));
+    CORRADE_COMPARE(Color4ub::yellow(75), Color4ub(255, 255, 75, 255));
 }
 
 void ColorTest::fromHue() {
