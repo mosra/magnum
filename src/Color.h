@@ -123,11 +123,11 @@ template<class T> inline typename BasicColor3<T>::HSV toHSV(typename std::enable
     return toHSV<typename BasicColor3<T>::FloatingPointType>(Math::normalize<BasicColor3<typename BasicColor3<T>::FloatingPointType>>(color));
 }
 
-/* Default alpha value */
-template<class T> inline constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type defaultAlpha() {
+/* Value for full channel (1.0f for floats, 255 for unsigned byte) */
+template<class T> inline constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
 }
-template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::value, T>::type defaultAlpha() {
+template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
     return std::numeric_limits<T>::max();
 }
 
@@ -281,7 +281,7 @@ class BasicColor4: public Math::Vector4<T> {
          * @param a     Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr static BasicColor4<T> fromHSV(HSV hsv, T a = Implementation::defaultAlpha<T>()) {
+        constexpr static BasicColor4<T> fromHSV(HSV hsv, T a = Implementation::fullChannel<T>()) {
             return BasicColor4<T>(Implementation::fromHSV<T>(hsv), a);
         }
         /** @overload */
@@ -295,14 +295,14 @@ class BasicColor4: public Math::Vector4<T> {
          * RGB components are set to zero, A component is set to 1.0 for
          * floating-point types and maximum positive value for integral types.
          */
-        constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
+        constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::fullChannel<T>()) {}
 
         /**
          * @copydoc BasicColor3::BasicColor3(T)
          * @param alpha Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr explicit BasicColor4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
+        constexpr explicit BasicColor4(T rgb, T alpha = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
 
         /**
          * @brief Constructor
@@ -312,7 +312,7 @@ class BasicColor4: public Math::Vector4<T> {
          * @param a     A value, defaults to 1.0 for floating-point types and
          *      maximum positive value for integral types.
          */
-        constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
+        constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(r, g, b, a) {}
 
         /**
          * @brief Constructor
@@ -321,7 +321,7 @@ class BasicColor4: public Math::Vector4<T> {
          */
         /* Not marked as explicit, because conversion from BasicColor3 to BasicColor4
            is fairly common, nearly always with A set to 1 */
-        constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
         /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
         template<class U> constexpr explicit BasicColor4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
