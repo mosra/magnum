@@ -202,14 +202,18 @@ void ColorTest::colors() {
     CORRADE_COMPARE(Color4ub::magenta(75, 138), Color4ub(255, 75, 255, 138));
     CORRADE_COMPARE(Color4ub::yellow(75, 138), Color4ub(255, 255, 75, 138));
 
-    /* Default alpha */
-    CORRADE_COMPARE(Color4ub::red(75), Color4ub(75, 0, 0, 255));
-    CORRADE_COMPARE(Color4ub::green(75), Color4ub(0, 75, 0, 255));
-    CORRADE_COMPARE(Color4ub::blue(75), Color4ub(0, 0, 75, 255));
+    /* Default values */
+    CORRADE_COMPARE(Color3ub::red(), Color3ub(255, 0, 0));
+    CORRADE_COMPARE(Color3ub::green(), Color3ub(0, 255, 0));
+    CORRADE_COMPARE(Color3ub::blue(), Color3ub(0, 0, 255));
 
-    CORRADE_COMPARE(Color4ub::cyan(75), Color4ub(75, 255, 255, 255));
-    CORRADE_COMPARE(Color4ub::magenta(75), Color4ub(255, 75, 255, 255));
-    CORRADE_COMPARE(Color4ub::yellow(75), Color4ub(255, 255, 75, 255));
+    CORRADE_COMPARE(Color4ub::red(), Color4ub(255, 0, 0, 255));
+    CORRADE_COMPARE(Color4ub::green(), Color4ub(0, 255, 0, 255));
+    CORRADE_COMPARE(Color4ub::blue(), Color4ub(0, 0, 255, 255));
+
+    CORRADE_COMPARE(Color4ub::cyan(), Color4ub(0, 255, 255, 255));
+    CORRADE_COMPARE(Color4ub::magenta(), Color4ub(255, 0, 255, 255));
+    CORRADE_COMPARE(Color4ub::yellow(), Color4ub(255, 255, 0, 255));
 }
 
 void ColorTest::fromHue() {
