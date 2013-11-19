@@ -122,7 +122,7 @@ void Vector3Test::constructOneValue() {
 
 void Vector3Test::constructParts() {
     constexpr Vector2 a(1.0f, 2.0f);
-    constexpr Vector3 b(a, 3.0f);
+    constexpr Vector3 b = {a, 3.0f};
     CORRADE_COMPARE(b, Vector3(1.0f, 2.0f, 3.0f));
 }
 

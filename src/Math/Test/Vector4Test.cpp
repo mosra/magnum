@@ -119,7 +119,7 @@ void Vector4Test::constructOneValue() {
 
 void Vector4Test::constructParts() {
     constexpr Vector3 a(1.0f, 2.0f, 3.0f);
-    constexpr Vector4 b(a, 4.0f);
+    constexpr Vector4 b = {a, 4.0f};
     CORRADE_COMPARE(b, Vector4(1.0f, 2.0f, 3.0f, 4.0f));
 }
 
