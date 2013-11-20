@@ -77,7 +77,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * OpenGL 3.1, OpenGL ES 3.0 and newer this value is provided by the
          * shader itself, so the attribute is not needed.
          */
-        typedef Attribute<1, Float> VertexIndex;
+        typedef Attribute<3, Float> VertexIndex;
 
         /**
          * @brief %Flag

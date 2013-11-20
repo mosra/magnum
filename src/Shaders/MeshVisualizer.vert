@@ -42,7 +42,7 @@ in highp vec4 position;
 #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
 #if (!defined(GL_ES) && __VERSION__ < 140) || (defined(GL_ES) && __VERSION__ < 300)
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 1) in lowp float vertexIndex;
+layout(location = 3) in lowp float vertexIndex;
 #else
 in lowp float vertexIndex;
 #endif
