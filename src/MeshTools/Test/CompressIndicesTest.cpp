@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Containers/Array.h>
 #include <TestSuite/Tester.h>
 #include <Utility/Endianness.h>
 

@@ -24,11 +24,12 @@
 
 #include "DefaultFramebuffer.h"
 
-#include "Context.h"
+#include <Containers/Array.h>
 
+#include "Context.h"
+#include "Extensions.h"
 #include "Implementation/State.h"
 #include "Implementation/FramebufferState.h"
-#include "Extensions.h"
 
 namespace Magnum {
 

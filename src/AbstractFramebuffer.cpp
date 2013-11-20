@@ -199,7 +199,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Ima
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, Buffer::Usage usage) {
+void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
     #else

@@ -86,19 +86,19 @@ void BufferGLTest::data() {
 
     /* Plain array */
     constexpr Int data[] = {2, 7, 5, 13, 25};
-    buffer.setData({data, 5}, Buffer::Usage::StaticDraw);
+    buffer.setData({data, 5}, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL vector */
     std::vector<Int> data2{2, 7, 5, 13, 25};
-    buffer.setData(data2, Buffer::Usage::StaticDraw);
+    buffer.setData(data2, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL array */
     std::array<Int, 5> data3{{2, 7, 5, 13, 25}};
-    buffer.setData(data3, Buffer::Usage::StaticDraw);
+    buffer.setData(data3, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
@@ -152,7 +152,7 @@ void BufferGLTest::map() {
     Buffer buffer;
 
     constexpr char data[] = {2, 7, 5, 13, 25};
-    buffer.setData(data, Buffer::Usage::StaticDraw);
+    buffer.setData(data, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES2
     char* contents = reinterpret_cast<char*>(buffer.map(Buffer::MapAccess::ReadWrite));
@@ -213,7 +213,7 @@ void BufferGLTest::mapRange() {
 
     constexpr char data[] = {2, 7, 5, 13, 25};
     Buffer buffer;
-    buffer.setData(data, Buffer::Usage::StaticDraw);
+    buffer.setData(data, BufferUsage::StaticDraw);
 
     char* contents = reinterpret_cast<char*>(buffer.map(1, 4, Buffer::MapFlag::Read|Buffer::MapFlag::Write));
     MAGNUM_VERIFY_NO_ERROR();
@@ -244,7 +244,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
 
     constexpr char data[] = {2, 7, 5, 13, 25};
     Buffer buffer;
-    buffer.setData(data, Buffer::Usage::StaticDraw);
+    buffer.setData(data, BufferUsage::StaticDraw);
 
     /* Map, set byte, don't flush and unmap */
     char* contents = reinterpret_cast<char*>(buffer.map(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
@@ -277,10 +277,10 @@ void BufferGLTest::mapRangeExplicitFlush() {
 void BufferGLTest::copy() {
     Buffer buffer1;
     constexpr char data[] = {2, 7, 5, 13, 25};
-    buffer1.setData(data, Buffer::Usage::StaticDraw);
+    buffer1.setData(data, BufferUsage::StaticDraw);
 
     Buffer buffer2;
-    buffer2.setData({nullptr, 5}, Buffer::Usage::StaticDraw);
+    buffer2.setData({nullptr, 5}, BufferUsage::StaticDraw);
 
     Buffer::copy(buffer1, buffer2, 1, 2, 3);
     MAGNUM_VERIFY_NO_ERROR();
@@ -303,7 +303,7 @@ void BufferGLTest::invalidate() {
 
     Buffer buffer;
     constexpr char data[] = {2, 7, 5, 13, 25};
-    buffer.setData(data, Buffer::Usage::StaticDraw);
+    buffer.setData(data, BufferUsage::StaticDraw);
 
     /* Just test that no errors are emitted */
 

@@ -79,10 +79,10 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
 
-    vertexBuffer->setData(positions, Buffer::Usage::StaticDraw);
+    vertexBuffer->setData(positions, BufferUsage::StaticDraw);
     ResourceManager::instance().set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    indexBuffer->setData(indices, Buffer::Usage::StaticDraw);
+    indexBuffer->setData(indices, BufferUsage::StaticDraw);
     ResourceManager::instance().set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     Mesh* mesh = new Mesh;

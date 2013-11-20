@@ -95,7 +95,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * Initially zero capacity is reserved.
          * @see @ref capacity()
          */
-        void reserve(UnsignedInt glyphCount, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage);
+        void reserve(UnsignedInt glyphCount, BufferUsage vertexBufferUsage, BufferUsage indexBufferUsage);
 
         /**
          * @brief Render text
@@ -250,7 +250,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * Returns mesh prepared for use with @ref Shaders::AbstractVector
          * subclasses and rectangle spanning the rendered text.
          */
-        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment = Alignment::LineLeft);
+        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment = Alignment::LineLeft);
 
         /**
          * @brief Constructor

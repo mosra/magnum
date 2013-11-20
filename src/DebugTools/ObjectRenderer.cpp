@@ -158,10 +158,10 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
     Mesh* mesh = new Mesh;
 
-    MeshTools::interleave(*mesh, *vertexBuffer, Buffer::Usage::StaticDraw, Renderer<dimensions>::positions, Renderer<dimensions>::colors);
+    MeshTools::interleave(*mesh, *vertexBuffer, BufferUsage::StaticDraw, Renderer<dimensions>::positions, Renderer<dimensions>::colors);
     ResourceManager::instance().set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    indexBuffer->setData(Renderer<dimensions>::indices, Buffer::Usage::StaticDraw);
+    indexBuffer->setData(Renderer<dimensions>::indices, BufferUsage::StaticDraw);
     ResourceManager::instance().set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     mesh->setPrimitive(Mesh::Primitive::Lines)

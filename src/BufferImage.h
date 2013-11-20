@@ -81,7 +81,7 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
          *
          * @see Buffer::setData()
          */
-        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, Buffer::Usage usage);
+        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage);
 
     private:
         Math::Vector<Dimensions, Int> _size;

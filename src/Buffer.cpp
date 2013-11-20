@@ -258,12 +258,12 @@ void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr
 }
 #endif
 
-void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
+void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
     glBufferData(GLenum(bindInternal(_targetHint)), size, data, GLenum(usage));
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
+void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
     glNamedBufferDataEXT(_id, size, data, GLenum(usage));
 }
 #endif

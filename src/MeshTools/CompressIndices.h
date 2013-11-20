@@ -30,7 +30,6 @@
 
 #include <tuple>
 
-#include "Buffer.h"
 #include "Mesh.h"
 
 #include "magnumMeshToolsVisibility.h"
@@ -72,7 +71,7 @@ Mesh::setIndexCount() and Mesh::setIndexBuffer() on your own.
 
 @see MeshTools::interleave()
 */
-void MAGNUM_MESHTOOLS_EXPORT compressIndices(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const std::vector<UnsignedInt>& indices);
+void MAGNUM_MESHTOOLS_EXPORT compressIndices(Mesh& mesh, Buffer& buffer, BufferUsage usage, const std::vector<UnsignedInt>& indices);
 
 }}
 

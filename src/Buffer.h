@@ -25,7 +25,7 @@
 */
 
 /** @file /Buffer.h
- * @brief Class Magnum::Buffer
+ * @brief Class @ref Magnum::Buffer, enum @ref Magnum::BufferUsage
  */
 
 #include <cstddef>
@@ -40,6 +40,85 @@
 #include "magnumVisibility.h"
 
 namespace Magnum {
+
+/**
+ * @brief %Buffer usage
+ *
+ * @see @ref Buffer::setData(Containers::ArrayReference, BufferUsage)
+ */
+enum class BufferUsage: GLenum {
+    /**
+     * Set once by the application and used infrequently for drawing.
+     */
+    StreamDraw = GL_STREAM_DRAW,
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * Set once as output from an OpenGL command and used infequently
+     * for drawing.
+     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+     *      is available in OpenGL ES 2.0.
+     */
+    StreamRead = GL_STREAM_READ,
+
+    /**
+     * Set once as output from an OpenGL command and used infrequently
+     * for drawing or copying to other buffers.
+     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+     *      is available in OpenGL ES 2.0.
+     */
+    StreamCopy = GL_STREAM_COPY,
+    #endif
+
+    /**
+     * Set once by the application and used frequently for drawing.
+     */
+    StaticDraw = GL_STATIC_DRAW,
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * Set once as output from an OpenGL command and queried many
+     * times by the application.
+     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+     *      is available in OpenGL ES 2.0.
+     */
+    StaticRead = GL_STATIC_READ,
+
+    /**
+     * Set once as output from an OpenGL command and used frequently
+     * for drawing or copying to other buffers.
+     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+     *      is available in OpenGL ES 2.0.
+     */
+    StaticCopy = GL_STATIC_COPY,
+    #endif
+
+    /**
+     * Updated frequently by the application and used frequently
+     * for drawing or copying to other images.
+     */
+    DynamicDraw = GL_DYNAMIC_DRAW
+
+    #ifndef MAGNUM_TARGET_GLES2
+    ,
+
+    /**
+     * Updated frequently as output from OpenGL command and queried
+     * many times from the application.
+     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
+     *      is available in OpenGL ES 2.0.
+     */
+    DynamicRead = GL_DYNAMIC_READ,
+
+    /**
+     * Updated frequently as output from OpenGL command and used
+     * frequently for drawing or copying to other images.
+     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
+     *      is available in OpenGL ES 2.0.
+     */
+    DynamicCopy = GL_DYNAMIC_COPY
+    #endif
+};
 
 /**
 @brief %Buffer
@@ -227,84 +306,13 @@ class MAGNUM_EXPORT Buffer {
             #endif
         };
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief %Buffer usage
-         *
-         * @see setData(GLsizeiptr, const GLvoid*, Usage)
+         * @copybrief BufferUsage
+         * @deprecated Use @ref Magnum::BufferUsage "BufferUsage" instead.
          */
-        enum class Usage: GLenum {
-            /**
-             * Set once by the application and used infrequently for drawing.
-             */
-            StreamDraw = GL_STREAM_DRAW,
-
-            #ifndef MAGNUM_TARGET_GLES2
-            /**
-             * Set once as output from an OpenGL command and used infequently
-             * for drawing.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
-             *      is available in OpenGL ES 2.0.
-             */
-            StreamRead = GL_STREAM_READ,
-
-            /**
-             * Set once as output from an OpenGL command and used infrequently
-             * for drawing or copying to other buffers.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
-             *      is available in OpenGL ES 2.0.
-             */
-            StreamCopy = GL_STREAM_COPY,
-            #endif
-
-            /**
-             * Set once by the application and used frequently for drawing.
-             */
-            StaticDraw = GL_STATIC_DRAW,
-
-            #ifndef MAGNUM_TARGET_GLES2
-            /**
-             * Set once as output from an OpenGL command and queried many
-             * times by the application.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
-             *      is available in OpenGL ES 2.0.
-             */
-            StaticRead = GL_STATIC_READ,
-
-            /**
-             * Set once as output from an OpenGL command and used frequently
-             * for drawing or copying to other buffers.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
-             *      is available in OpenGL ES 2.0.
-             */
-            StaticCopy = GL_STATIC_COPY,
-            #endif
-
-            /**
-             * Updated frequently by the application and used frequently
-             * for drawing or copying to other images.
-             */
-            DynamicDraw = GL_DYNAMIC_DRAW
-
-            #ifndef MAGNUM_TARGET_GLES2
-            ,
-
-            /**
-             * Updated frequently as output from OpenGL command and queried
-             * many times from the application.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
-             *      is available in OpenGL ES 2.0.
-             */
-            DynamicRead = GL_DYNAMIC_READ,
-
-            /**
-             * Updated frequently as output from OpenGL command and used
-             * frequently for drawing or copying to other images.
-             * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
-             *      is available in OpenGL ES 2.0.
-             */
-            DynamicCopy = GL_DYNAMIC_COPY
-            #endif
-        };
+        typedef BufferUsage Usage;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES3
         /**
@@ -643,7 +651,7 @@ class MAGNUM_EXPORT Buffer {
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData} or
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
-        Buffer& setData(Containers::ArrayReference<const void> data, Usage usage) {
+        Buffer& setData(Containers::ArrayReference<const void> data, BufferUsage usage) {
             (this->*dataImplementation)(data.size(), data, usage);
             return *this;
         }
@@ -667,13 +675,13 @@ class MAGNUM_EXPORT Buffer {
          *
          * @see setData(GLsizeiptr, const GLvoid*, Usage)
          */
-        template<class T> Buffer& setData(const std::vector<T>& data, Usage usage) {
+        template<class T> Buffer& setData(const std::vector<T>& data, BufferUsage usage) {
             setData({data.data(), data.size()}, usage);
             return *this;
         }
 
         /** @overload */
-        template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, Usage usage) {
+        template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, BufferUsage usage) {
             setData({data.data(), data.size()}, usage);
             return *this;
         }
@@ -905,10 +913,10 @@ class MAGNUM_EXPORT Buffer {
         static GetSubDataImplementation getSubDataImplementation;
         #endif
 
-        typedef void(Buffer::*DataImplementation)(GLsizeiptr, const GLvoid*, Usage);
-        void MAGNUM_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Usage usage);
+        typedef void(Buffer::*DataImplementation)(GLsizeiptr, const GLvoid*, BufferUsage);
+        void MAGNUM_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, Usage usage);
+        void MAGNUM_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
         static DataImplementation dataImplementation;
 

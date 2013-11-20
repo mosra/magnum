@@ -475,6 +475,7 @@ template<class T> class Array1D;
 template<class T> class Array2D;
 template<class T> class Array3D;
 
+enum class BufferUsage: GLenum;
 class Buffer;
 
 #ifndef MAGNUM_TARGET_GLES2

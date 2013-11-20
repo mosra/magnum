@@ -155,7 +155,7 @@ class CubeMapTexture: public AbstractTexture {
          * information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        void image(Coordinate coordinate, Int level, BufferImage2D& image, Buffer::Usage usage) {
+        void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage) {
             AbstractTexture::image<2>(GLenum(coordinate), level, image, usage);
         }
         #endif

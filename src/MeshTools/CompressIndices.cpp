@@ -26,8 +26,10 @@
 
 #include <cstring>
 #include <algorithm>
+#include <Containers/Array.h>
 
 #include "Math/Functions.h"
+#include "Buffer.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -69,7 +71,7 @@ std::tuple<std::size_t, Mesh::IndexType, Containers::Array<char>> compressIndice
     return compressIndicesInternal(indices, *std::max_element(indices.begin(), indices.end()));
 }
 
-void compressIndices(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const std::vector<UnsignedInt>& indices) {
+void compressIndices(Mesh& mesh, Buffer& buffer, BufferUsage usage, const std::vector<UnsignedInt>& indices) {
     auto minmax = std::minmax_element(indices.begin(), indices.end());
 
     /** @todo Performance hint when range can be represented by smaller value? */

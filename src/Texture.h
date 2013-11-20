@@ -339,7 +339,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * See image(Int, Image&) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        void image(Int level, BufferImage<dimensions>& image, Buffer::Usage usage) {
+        void image(Int level, BufferImage<dimensions>& image, BufferUsage usage) {
             AbstractTexture::image<dimensions>(_target, level, image, usage);
         }
         #endif

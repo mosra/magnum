@@ -27,7 +27,7 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, Buffer::Usage usage) {
+template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage) {
     _format = format;
     _type = type;
     _size = size;

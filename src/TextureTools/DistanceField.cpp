@@ -25,8 +25,10 @@
 #include "TextureTools/DistanceField.h"
 
 #include <Utility/Resource.h>
+
 #include "Math/Geometry/Rectangle.h"
 #include "AbstractShaderProgram.h"
+#include "Buffer.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
 #include "Mesh.h"
@@ -189,7 +191,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectan
             Vector2(-1.0, -3.0),
             Vector2( 3.0,  1.0)
         };
-        buffer.setData(triangle, Buffer::Usage::StaticDraw);
+        buffer.setData(triangle, BufferUsage::StaticDraw);
         mesh.addVertexBuffer(buffer, 0, DistanceFieldShader::Position());
     }
 

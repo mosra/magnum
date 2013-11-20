@@ -169,7 +169,7 @@ void RendererGLTest::renderMesh() {
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
     Rectangle bounds;
-    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw, Alignment::TopCenter);
+    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
     MAGNUM_VERIFY_NO_ERROR();
 
     /* Alignment offset */
@@ -216,7 +216,7 @@ void RendererGLTest::mutableText() {
     CORRADE_COMPARE(renderer.rectangle(), Rectangle());
 
     /* Reserve some capacity */
-    renderer.reserve(4, Buffer::Usage::StaticDraw, Buffer::Usage::StaticDraw);
+    renderer.reserve(4, BufferUsage::StaticDraw, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 4);
     /** @todo How to verify this on ES? */

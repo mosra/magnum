@@ -31,7 +31,8 @@
 #include <Containers/EnumSet.h>
 
 #include "Math/Geometry/Rectangle.h"
-#include "Buffer.h"
+#include "Magnum.h"
+#include "OpenGL.h"
 
 namespace Magnum {
 
@@ -296,7 +297,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
-        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, Buffer::Usage usage);
+        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage);
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT

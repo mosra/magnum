@@ -29,9 +29,6 @@
  */
 
 #include "Array.h"
-#ifndef MAGNUM_TARGET_GLES2
-#include "Buffer.h"
-#endif
 #include "Color.h"
 #include "Sampler.h"
 
@@ -320,7 +317,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt dimensions> void image(GLenum target, GLint level, Image<dimensions>& image);
-        template<UnsignedInt dimensions> void image(GLenum target, GLint level, BufferImage<dimensions>& image, Buffer::Usage usage);
+        template<UnsignedInt dimensions> void image(GLenum target, GLint level, BufferImage<dimensions>& image, BufferUsage usage);
         #endif
 
         GLenum _target;

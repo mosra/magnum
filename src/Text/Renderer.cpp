@@ -191,7 +191,7 @@ std::pair<Containers::Array<unsigned char>, Mesh::IndexType> renderIndicesIntern
     return {std::move(indices), indexType};
 }
 
-std::tuple<Mesh, Rectangle> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment) {
+std::tuple<Mesh, Rectangle> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
     /* Render vertices and upload them */
     std::vector<Vertex> vertices;
     Rectangle rectangle;
@@ -243,7 +243,7 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(std::move(positions), std::move(textureCoordinates), std::move(indices), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
     /* Finalize mesh configuration and return the result */
     auto r = renderInternal(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
     Mesh& mesh = std::get<0>(r);
@@ -329,7 +329,7 @@ template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& fo
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
 }
 
-void AbstractRenderer::reserve(const uint32_t glyphCount, const Buffer::Usage vertexBufferUsage, const Buffer::Usage indexBufferUsage) {
+void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vertexBufferUsage, const BufferUsage indexBufferUsage) {
     _capacity = glyphCount;
 
     const UnsignedInt vertexCount = glyphCount*4;
