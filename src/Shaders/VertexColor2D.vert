@@ -39,7 +39,7 @@ uniform highp mat3 transformationProjectionMatrix;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = 0) in highp vec2 position;
-layout(location = 1) in lowp vec3 color;
+layout(location = 3) in lowp vec3 color;
 #else
 in highp vec2 position;
 in lowp vec3 color;

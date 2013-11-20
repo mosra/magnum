@@ -50,7 +50,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
 
         /** @brief Vertex color */
-        typedef Attribute<1, Color3> Color;
+        typedef Attribute<3, Color3> Color;
 
         explicit VertexColor();
 
