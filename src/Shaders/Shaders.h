@@ -44,6 +44,8 @@ template<UnsignedInt> class Flat;
 typedef Flat<2> Flat2D;
 typedef Flat<3> Flat3D;
 
+/* Generic is used only statically */
+
 class MeshVisualizer;
 class Phong;
 

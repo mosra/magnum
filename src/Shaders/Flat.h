@@ -30,9 +30,9 @@
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "AbstractShaderProgram.h"
 #include "Color.h"
 #include "DimensionTraits.h"
+#include "Shaders/Generic.h"
 
 #include "magnumShadersVisibility.h"
 
@@ -67,14 +67,14 @@ myTexture.bind(Shaders::Flat2D::TextureLayer);
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
+        typedef typename Generic<dimensions>::Position Position;
 
         /**
          * @brief Texture coordinates
          *
          * Used only if @ref Flag::Textured is set.
          */
-        typedef Attribute<1, Vector2> TextureCoordinates;
+        typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
         enum: Int {
             /** Layer for color texture. Used only if @ref Flag::Textured is set. */
