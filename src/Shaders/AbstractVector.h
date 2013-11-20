@@ -29,7 +29,6 @@
  */
 
 #include "AbstractShaderProgram.h"
-#include "Color.h"
 #include "DimensionTraits.h"
 
 namespace Magnum { namespace Shaders {
