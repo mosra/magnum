@@ -37,7 +37,7 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief Phong shader
+@brief %Phong shader
 
 Uses ambient, diffuse and specular color or texture. For colored mesh you need
 to provide @ref Position and @ref Normal attributes in your triangle mesh and
