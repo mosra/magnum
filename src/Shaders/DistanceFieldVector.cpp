@@ -49,6 +49,7 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
 
     Shader frag(version, Shader::Type::Vertex);
     frag.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     AbstractShaderProgram::attachShader(frag);

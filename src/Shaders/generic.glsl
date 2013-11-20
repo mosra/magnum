@@ -22,37 +22,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef NEW_GLSL
-#define in attribute
-#define out varying
-#endif
-
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform mat4 transformationProjectionMatrix;
-#else
-uniform highp mat4 transformationProjectionMatrix;
-#endif
-
-#ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = POSITION_ATTRIBUTE_LOCATION) in highp vec4 position;
-#else
-in highp vec4 position;
-#endif
-
-#ifdef TEXTURED
-#ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoords;
-#else
-in mediump vec2 textureCoords;
-#endif
-out mediump vec2 interpolatedTextureCoords;
-#endif
-
-void main() {
-    gl_Position = transformationProjectionMatrix*position;
-
-    #ifdef TEXTURED
-    /* Texture coordinates, if needed */
-    interpolatedTextureCoords = textureCoords;
-    #endif
-}
+#define POSITION_ATTRIBUTE_LOCATION 0
+#define TEXTURECOORDINATES_ATTRIBUTE_LOCATION 1
+#define NORMAL_ATTRIBUTE_LOCATION 2

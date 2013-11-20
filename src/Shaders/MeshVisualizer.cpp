@@ -56,6 +56,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     vert.compile();

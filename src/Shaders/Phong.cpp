@@ -43,6 +43,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     Shader vert(version, Shader::Type::Vertex);
     vert.addSource(flags ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);

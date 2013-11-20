@@ -49,6 +49,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
 
     Shader vert(version, Shader::Type::Vertex);
     vert.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     AbstractShaderProgram::attachShader(vert);

@@ -34,7 +34,7 @@ uniform highp mat4 transformationProjectionMatrix;
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 0) highp in vec4 position;
+layout(location = POSITION_ATTRIBUTE_LOCATION) highp in vec4 position;
 #else
 in highp vec4 position;
 #endif

@@ -34,8 +34,8 @@ uniform highp mat3 transformationProjectionMatrix;
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 0) in highp vec2 position;
-layout(location = 1) in mediump vec2 textureCoordinates;
+layout(location = POSITION_ATTRIBUTE_LOCATION) in highp vec2 position;
+layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoordinates;
 #else
 in highp vec2 position;
 in mediump vec2 textureCoordinates;

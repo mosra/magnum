@@ -49,6 +49,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     Shader vert(version, Shader::Type::Vertex);
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
