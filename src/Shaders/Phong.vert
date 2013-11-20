@@ -41,7 +41,7 @@ uniform highp vec3 light;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = 0) in highp vec4 position;
-layout(location = 1) in mediump vec3 normal;
+layout(location = 2) in mediump vec3 normal;
 #else
 in highp vec4 position;
 in mediump vec3 normal;
@@ -49,7 +49,7 @@ in mediump vec3 normal;
 
 #ifdef TEXTURED
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 2) in mediump vec2 textureCoords;
+layout(location = 1) in mediump vec2 textureCoords;
 #else
 in mediump vec2 textureCoords;
 #endif

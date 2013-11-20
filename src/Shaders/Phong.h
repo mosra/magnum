@@ -59,7 +59,7 @@ myDiffuseTexture.bind(Shaders::Phong::DiffuseTextureLayer);
 class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position; /**< @brief Vertex position */
-        typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
+        typedef Attribute<2, Vector3> Normal;   /**< @brief Normal direction */
 
         /**
          * @brief Texture coordinates
@@ -67,7 +67,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * Used only if one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
          * or @ref Flag::SpecularTexture is set.
          */
-        typedef Attribute<2, Vector2> TextureCoordinates;
+        typedef Attribute<1, Vector2> TextureCoordinates;
 
         enum: Int {
             /**
