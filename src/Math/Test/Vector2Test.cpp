@@ -199,8 +199,7 @@ void Vector2Test::perpendicular() {
 }
 
 void Vector2Test::aspectRatio() {
-    const Vector2 a(3.0f, 4.0f);
-    CORRADE_COMPARE(a.aspectRatio(), 0.75f);
+    CORRADE_COMPARE(Vector2(3.0f, 4.0f).aspectRatio(), 0.75f);
 }
 
 void Vector2Test::swizzleType() {
