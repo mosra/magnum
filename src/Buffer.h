@@ -44,7 +44,7 @@ namespace Magnum {
 /**
  * @brief %Buffer usage
  *
- * @see @ref Buffer::setData(Containers::ArrayReference, BufferUsage)
+ * @see @ref Buffer::setData(Containers::ArrayReference<const void>, BufferUsage)
  */
 enum class BufferUsage: GLenum {
     /**

@@ -216,7 +216,7 @@ layout(binding = 1) uniform sampler2D specularTexture;
 
 If you don't have the required extension (or if you want to change the layer
 later), declare the uniforms without the `layout()` qualifier and set the
-texture layer uniform using @ref setUniform(Int, const T&) "setUniform(Int, Int)".
+texture layer uniform using @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
 Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES
 1.0.
 @code
@@ -230,9 +230,11 @@ setUniform(SpecularTextureUniform, SpecularTextureLayer);
 
 @see @ref Shader::maxTextureImageUnits()
 @requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
-    texture layer binding instead of using @ref setUniform(Int, const T&) "setUniform(Int, Int)".
+    texture layer binding instead of using
+    @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
 @requires_gl Explicit texture layer binding is not supported in OpenGL ES. Use
-    @ref setUniform(Int, const T&) "setUniform(Int, Int)" instead.
+    @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
+    instead.
 
 @section AbstractShaderProgram-rendering-workflow Rendering workflow
 

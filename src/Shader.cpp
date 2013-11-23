@@ -627,7 +627,7 @@ bool Shader::compile() {
     CORRADE_ASSERT(sources.size() > 1, "Shader::compile(): no files added", false);
 
     /* Array of source string pointers and their lengths */
-    /** @todo Use `Containers::::ArrayTuple` to avoid one allocation if it ever
+    /** @todo Use `Containers::ArrayTuple` to avoid one allocation if it ever
         gets to be implemented (we need properly aligned memory too) */
     Containers::Array<const GLchar*> pointers(sources.size());
     Containers::Array<GLint> sizes(sources.size());
