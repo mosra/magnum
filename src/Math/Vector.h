@@ -514,14 +514,14 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Minimal value in the vector
          *
-         * @see Math::min()
+         * @see @ref Math::min(), @ref Vector2::minmax()
          */
         T min() const;
 
         /**
          * @brief Maximal value in the vector
          *
-         * @see Math::max()
+         * @see @ref Math::max(), @ref Vector2::minmax()
          */
         T max() const;
 
