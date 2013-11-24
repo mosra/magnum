@@ -117,7 +117,10 @@ void ColorTest::constructDefault() {
 }
 
 void ColorTest::constructOneValue() {
-    constexpr Color3 a(0.25f);
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Color3 a(0.25f);
     CORRADE_COMPARE(a, Color3(0.25f, 0.25f, 0.25f));
 
     constexpr Color4 b(0.25f, 0.5f);
