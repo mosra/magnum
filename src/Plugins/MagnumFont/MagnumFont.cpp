@@ -148,7 +148,7 @@ std::pair<Float, Float> MagnumFont::doOpenFile(const std::string& filename, Floa
 
 std::pair<Float, Float> MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image) {
     /* Everything okay, save the data internally */
-    _opened = new Data{std::move(conf), std::move(image), {}, {}};
+    _opened = new Data{std::move(conf), std::move(image), std::unordered_map<char32_t, UnsignedInt>{}, {}};
 
     /* Glyph advances */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
