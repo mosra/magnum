@@ -156,11 +156,17 @@ void ColorTest::constructConversion() {
     typedef BasicColor4<UnsignedByte> Color4ub;
 
     constexpr Color3 a(10.1f, 12.5f, 0.75f);
-    constexpr Color3ub b(a);
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Color3ub b(a);
     CORRADE_COMPARE(b, Color3ub(10, 12, 0));
 
     constexpr Color4 c(10.1f, 12.5f, 0.75f, 5.25f);
-    constexpr Color4ub d(c);
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr /* Not constexpr under GCC < 4.7 */
+    #endif
+    Color4ub d(c);
     CORRADE_COMPARE(d, Color4ub(10, 12, 0, 5));
 
     /* Implicit conversion is not allowed */
