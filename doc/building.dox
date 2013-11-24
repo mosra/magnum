@@ -253,10 +253,13 @@ Integration with various external math and physics libraries is provided by
 In `package/archlinux` directory is currently one PKGBUILD for Git development
 build. The package is also in AUR under the same name.
 
-There are also a few development PKGBUILDs in project root, which allow you to
-build and install the package directly from source tree without downloading
-anything. The native PKGBUILD also contains `check()` function which will run
-all unit tests before packaging.
+There are also a few development PKGBUILDs in `package/archlinux`, which allow
+you to build and install the package directly from source tree without
+downloading anything. The native PKGBUILDs also contain `check()` function
+which will run all unit tests before packaging. You need to build them from
+project root:
+
+    makepkg -p package/archlinux/<file>
 
 If you want to build with another compiler (e.g. Clang), run makepkg this way:
 
