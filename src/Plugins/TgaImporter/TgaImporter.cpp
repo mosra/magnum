@@ -121,7 +121,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
 
     /* Grayscale */
     } else if(header.imageType == 3) {
-        #ifdef MAGNUM_TARGET_GLES
+        #ifdef MAGNUM_TARGET_GLES2
         format = Context::current() && Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
             ColorFormat::Red : ColorFormat::Luminance;
         #else
