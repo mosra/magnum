@@ -57,7 +57,7 @@ if(WITH_DISTANCEFIELDCONVERTER)
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
-    target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+    target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication  ${CORRADE_PLUGINMANAGER_LIBRARIES} ${X11_LIBRARIES})
     install(TARGETS magnum-distancefieldconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 endif()
 
