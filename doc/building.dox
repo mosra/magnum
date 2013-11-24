@@ -385,6 +385,30 @@ depending projects.
 If you have Node.js installed, you can also build and run unit tests using
 `ctest`. See `BUILD_TESTS` above.
 
+@section building-ci-jenkins Jenkins Continuous Integration
+
+In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
+containing job configuration, one for build and non-GL tests and the other for
+GL tests only. Setup your Jenkins server, enable the **Git** and
+**Text-finder** plugin and download the CLI application from here:
+
+    http://your-jenkins-server/cli
+
+Then add new jobs or update existing ones (replace `<command>` with `create-job`
+or `update-job`).
+
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum < jenkins.xml
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-GLTests < jenkins-gltests.xml
+
+Build is done using **Ninja** build system and everything possible is enabled,
+thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects that
+**GCC** >=4.8.2, 4.7, 4.6 and **Clang** are installed and there are **OpenGL**,
+**OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to compile the
+library with every combination of them. You can add/remove the axes in
+`axes/hudson.matrix.TextAxis` or via the web interface later.
+
+Magnum-GLTests depend on active X11 session, thus they should be run from
+Jenkins instance running on graphical user session.
 */
 
 }
