@@ -261,13 +261,6 @@ project root:
 
     makepkg -p package/archlinux/<file>
 
-If you want to build with another compiler (e.g. Clang), run makepkg this way:
-
-    CXX=clang++ makepkg
-
-Development PKGBUILDs can detect when Clang is used and remove unsupported CXX
-flags.
-
 @section building-crosscompiling Crosscompiling
 
 For crosscompiling you need to have *both* target and native version of
