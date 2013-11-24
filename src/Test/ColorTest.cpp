@@ -149,20 +149,20 @@ void ColorTest::constructParts() {
 }
 
 void ColorTest::constructConversion() {
-    typedef BasicColor3<Double> Color3d;
-    typedef BasicColor4<Double> Color4d;
+    typedef BasicColor3<UnsignedByte> Color3ub;
+    typedef BasicColor4<UnsignedByte> Color4ub;
 
-    constexpr Color3 a(1.0f, 0.5f, 0.75f);
-    constexpr Color3d b(a);
-    CORRADE_COMPARE(b, Color3d(1.0, 0.5, 0.75));
+    constexpr Color3 a(10.1f, 12.5f, 0.75f);
+    constexpr Color3ub b(a);
+    CORRADE_COMPARE(b, Color3ub(10, 12, 0));
 
-    constexpr Color4 c(1.0f, 0.5f, 0.75f, 0.25f);
-    constexpr Color4d d(c);
-    CORRADE_COMPARE(d, Color4d(1.0, 0.5, 0.75, 0.25));
+    constexpr Color4 c(10.1f, 12.5f, 0.75f, 5.25f);
+    constexpr Color4ub d(c);
+    CORRADE_COMPARE(d, Color4ub(10, 12, 0, 5));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Color3, Color3d>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Color4, Color4d>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Color3, Color3ub>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Color4, Color4ub>::value));
 }
 
 void ColorTest::constructNormalization() {
