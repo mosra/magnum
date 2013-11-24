@@ -22,50 +22,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Shaders/MeshVisualizer.h"
+#include "Shaders/DistanceFieldVector.h"
 #include "Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class MeshVisualizerTest: public Magnum::Test::AbstractOpenGLTester {
+class DistanceFieldVectorGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit MeshVisualizerTest();
+        explicit DistanceFieldVectorGLTest();
 
-        void compile();
-        void compileWireframeGeometryShader();
-        void compileWireframeNoGeometryShader();
+        void compile2D();
+        void compile3D();
 };
 
-MeshVisualizerTest::MeshVisualizerTest() {
-    addTests({&MeshVisualizerTest::compile,
-              &MeshVisualizerTest::compileWireframeGeometryShader,
-              &MeshVisualizerTest::compileWireframeNoGeometryShader});
+DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
+    addTests({&DistanceFieldVectorGLTest::compile2D,
+              &DistanceFieldVectorGLTest::compile3D});
 }
 
-void MeshVisualizerTest::compile() {
-    Shaders::MeshVisualizer shader;
+void DistanceFieldVectorGLTest::compile2D() {
+    Shaders::DistanceFieldVector2D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void MeshVisualizerTest::compileWireframeGeometryShader() {
-    #ifdef MAGNUM_TARGET_GLES
-    CORRADE_SKIP("Geometry shader is not available in OpenGL ES");
-    #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not supported"));
-
-    Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
-    CORRADE_VERIFY(shader.validate().first);
-    #endif
-}
-
-void MeshVisualizerTest::compileWireframeNoGeometryShader() {
-    Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);
+void DistanceFieldVectorGLTest::compile3D() {
+    Shaders::DistanceFieldVector3D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorGLTest)

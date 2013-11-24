@@ -22,34 +22,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Shaders/DistanceFieldVector.h"
+#include "Shaders/Vector.h"
 #include "Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class DistanceFieldVectorTest: public Magnum::Test::AbstractOpenGLTester {
+class VectorGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit DistanceFieldVectorTest();
+        explicit VectorGLTest();
 
         void compile2D();
         void compile3D();
 };
 
-DistanceFieldVectorTest::DistanceFieldVectorTest() {
-    addTests({&DistanceFieldVectorTest::compile2D,
-              &DistanceFieldVectorTest::compile3D});
+VectorGLTest::VectorGLTest() {
+    addTests({&VectorGLTest::compile2D,
+              &VectorGLTest::compile3D});
 }
 
-void DistanceFieldVectorTest::compile2D() {
-    Shaders::DistanceFieldVector2D shader;
+void VectorGLTest::compile2D() {
+    Shaders::Vector2D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void DistanceFieldVectorTest::compile3D() {
-    Shaders::DistanceFieldVector3D shader;
+void VectorGLTest::compile3D() {
+    Shaders::Vector3D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorGLTest)

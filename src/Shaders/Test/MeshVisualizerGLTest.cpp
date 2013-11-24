@@ -22,34 +22,50 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Shaders/VertexColor.h"
+#include "Context.h"
+#include "Extensions.h"
+#include "Shaders/MeshVisualizer.h"
 #include "Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class VertexColorTest: public Magnum::Test::AbstractOpenGLTester {
+class MeshVisualizerGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit VertexColorTest();
+        explicit MeshVisualizerGLTest();
 
-        void compile2D();
-        void compile3D();
+        void compile();
+        void compileWireframeGeometryShader();
+        void compileWireframeNoGeometryShader();
 };
 
-VertexColorTest::VertexColorTest() {
-    addTests({&VertexColorTest::compile2D,
-              &VertexColorTest::compile3D});
+MeshVisualizerGLTest::MeshVisualizerGLTest() {
+    addTests({&MeshVisualizerGLTest::compile,
+              &MeshVisualizerGLTest::compileWireframeGeometryShader,
+              &MeshVisualizerGLTest::compileWireframeNoGeometryShader});
 }
 
-void VertexColorTest::compile2D() {
-    Shaders::VertexColor2D shader;
+void MeshVisualizerGLTest::compile() {
+    Shaders::MeshVisualizer shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void VertexColorTest::compile3D() {
-    Shaders::VertexColor3D shader;
+void MeshVisualizerGLTest::compileWireframeGeometryShader() {
+    #ifdef MAGNUM_TARGET_GLES
+    CORRADE_SKIP("Geometry shader is not available in OpenGL ES");
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not supported"));
+
+    Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
+    CORRADE_VERIFY(shader.validate().first);
+    #endif
+}
+
+void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
+    Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerGLTest)

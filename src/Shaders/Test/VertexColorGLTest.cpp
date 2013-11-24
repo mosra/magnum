@@ -22,48 +22,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Shaders/Flat.h"
+#include "Shaders/VertexColor.h"
 #include "Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class FlatTest: public Magnum::Test::AbstractOpenGLTester {
+class VertexColorGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit FlatTest();
+        explicit VertexColorGLTest();
 
         void compile2D();
         void compile3D();
-        void compile2DTextured();
-        void compile3DTextured();
 };
 
-FlatTest::FlatTest() {
-    addTests({&FlatTest::compile2D,
-              &FlatTest::compile3D,
-              &FlatTest::compile2DTextured,
-              &FlatTest::compile3DTextured});
+VertexColorGLTest::VertexColorGLTest() {
+    addTests({&VertexColorGLTest::compile2D,
+              &VertexColorGLTest::compile3D});
 }
 
-void FlatTest::compile2D() {
-    Shaders::Flat2D shader;
+void VertexColorGLTest::compile2D() {
+    Shaders::VertexColor2D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void FlatTest::compile3D() {
-    Shaders::Flat3D shader;
-    CORRADE_VERIFY(shader.validate().first);
-}
-
-void FlatTest::compile2DTextured() {
-    Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
-    CORRADE_VERIFY(shader.validate().first);
-}
-
-void FlatTest::compile3DTextured() {
-    Shaders::Flat3D shader(Shaders::Flat3D::Flag::Textured);
+void VertexColorGLTest::compile3D() {
+    Shaders::VertexColor3D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorGLTest)

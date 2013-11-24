@@ -27,9 +27,9 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class PhongTest: public Magnum::Test::AbstractOpenGLTester {
+class PhongGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit PhongTest();
+        explicit PhongGLTest();
 
         void compile();
         void compileAmbientTexture();
@@ -41,57 +41,57 @@ class PhongTest: public Magnum::Test::AbstractOpenGLTester {
         void compileAmbientDiffuseSpecularTexture();
 };
 
-PhongTest::PhongTest() {
-    addTests({&PhongTest::compile,
-              &PhongTest::compileAmbientTexture,
-              &PhongTest::compileDiffuseTexture,
-              &PhongTest::compileSpecularTexture,
-              &PhongTest::compileAmbientDiffuseTexture,
-              &PhongTest::compileAmbientSpecularTexture,
-              &PhongTest::compileDiffuseSpecularTexture,
-              &PhongTest::compileAmbientDiffuseSpecularTexture});
+PhongGLTest::PhongGLTest() {
+    addTests({&PhongGLTest::compile,
+              &PhongGLTest::compileAmbientTexture,
+              &PhongGLTest::compileDiffuseTexture,
+              &PhongGLTest::compileSpecularTexture,
+              &PhongGLTest::compileAmbientDiffuseTexture,
+              &PhongGLTest::compileAmbientSpecularTexture,
+              &PhongGLTest::compileDiffuseSpecularTexture,
+              &PhongGLTest::compileAmbientDiffuseSpecularTexture});
 }
 
-void PhongTest::compile() {
+void PhongGLTest::compile() {
     Shaders::Phong shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void PhongTest::compileAmbientTexture() {
+void PhongGLTest::compileAmbientTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture);
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void PhongTest::compileDiffuseTexture() {
+void PhongGLTest::compileDiffuseTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture);
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void PhongTest::compileSpecularTexture() {
+void PhongGLTest::compileSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::SpecularTexture);
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void PhongTest::compileAmbientDiffuseTexture() {
+void PhongGLTest::compileAmbientDiffuseTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture);
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void PhongTest::compileAmbientSpecularTexture() {
+void PhongGLTest::compileAmbientSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::SpecularTexture);
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void PhongTest::compileDiffuseSpecularTexture() {
+void PhongGLTest::compileDiffuseSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void PhongTest::compileAmbientDiffuseSpecularTexture() {
+void PhongGLTest::compileAmbientDiffuseSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongGLTest)
