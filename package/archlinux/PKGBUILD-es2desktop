@@ -18,17 +18,19 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DBUILD_TESTS=ON \
         -DTARGET_GLES=ON \
         -DTARGET_GLES2=ON \
         -DTARGET_DESKTOP_GLES=ON \
-        -DWITH_MAGNUMINFO=ON \
+        -DWITH_AUDIO=ON \
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
+        -DWITH_MAGNUMINFO=ON \
+        -DBUILD_TESTS=ON \
+        -DBUILD_GL_TESTS=ON \
         -G Ninja
     ninja
 }
