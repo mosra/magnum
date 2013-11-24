@@ -68,7 +68,7 @@ if(WITH_FONTCONVERTER)
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(magnum-fontconverter fontconverter.cpp)
-    target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessGlxApplication  ${CORRADE_PLUGINMANAGER_LIBRARIES} ${X11_LIBRARIES})
+    target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
     install(TARGETS magnum-fontconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 endif()
 
