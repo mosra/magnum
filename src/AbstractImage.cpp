@@ -61,13 +61,9 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
         case ColorType::UnsignedShort565Rev:
         #endif
         case ColorType::UnsignedShort4444:
-        #ifndef MAGNUM_TARGET_GLES3
         case ColorType::UnsignedShort4444Rev:
-        #endif
         case ColorType::UnsignedShort5551:
-        #ifndef MAGNUM_TARGET_GLES3
         case ColorType::UnsignedShort1555Rev:
-        #endif
             return 2;
         #ifndef MAGNUM_TARGET_GLES
         case ColorType::UnsignedInt8888:
@@ -123,9 +119,7 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
         #ifndef MAGNUM_TARGET_GLES2
         case ColorFormat::RGBAInteger:
         #endif
-        #ifndef MAGNUM_TARGET_GLES3
         case ColorFormat::BGRA:
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         case ColorFormat::BGRAInteger:
         #endif
@@ -133,9 +127,7 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
 
         /* Handled above */
         case ColorFormat::DepthComponent:
-        #ifndef MAGNUM_TARGET_GLES3
         case ColorFormat::StencilIndex:
-        #endif
         case ColorFormat::DepthStencil:
             CORRADE_ASSERT_UNREACHABLE();
     }

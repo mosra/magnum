@@ -38,9 +38,7 @@ Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Rende
 #else
 Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
 #endif
-#ifndef MAGNUM_TARGET_GLES3
 Renderer::GraphicsResetStatusImplementation Renderer::graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationDefault;
-#endif
 
 void Renderer::setFeature(const Feature feature, const bool enabled) {
     enabled ? glEnable(GLenum(feature)) : glDisable(GLenum(feature));
@@ -162,7 +160,6 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES3
 Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
     ResetNotificationStrategy& strategy = Context::current()->state().renderer->resetNotificationStrategy;
 
@@ -176,7 +173,6 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
 
     return strategy;
 }
-#endif
 
 void Renderer::initializeContextBasedFunctionality(Context& context) {
     #ifndef MAGNUM_TARGET_GLES
@@ -187,7 +183,6 @@ void Renderer::initializeContextBasedFunctionality(Context& context) {
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES3
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
     #else
@@ -202,9 +197,6 @@ void Renderer::initializeContextBasedFunctionality(Context& context) {
 
         graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationRobustness;
     }
-    #else
-    static_cast<void>(context);
-    #endif
 
     /* Set some "corporate identity" */
     setClearColor(Color3(0.125f));
@@ -220,7 +212,6 @@ void Renderer::clearDepthfImplementationES(const GLfloat depth) {
     glClearDepthf(depth);
 }
 
-#ifndef MAGNUM_TARGET_GLES3
 Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationDefault() {
     return GraphicsResetStatus::NoError;
 }
@@ -234,7 +225,6 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
     CORRADE_INTERNAL_ASSERT(false);
     #endif
 }
-#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, const Renderer::Error value) {
@@ -246,17 +236,14 @@ Debug operator<<(Debug debug, const Renderer::Error value) {
         _c(InvalidOperation)
         _c(InvalidFramebufferOperation)
         _c(OutOfMemory)
-        #ifndef MAGNUM_TARGET_GLES3
         _c(StackUnderflow)
         _c(StackOverflow)
-        #endif
         #undef _c
     }
 
     return debug << "Renderer::Error::(invalid)";
 }
 
-#ifndef MAGNUM_TARGET_GLES3
 Debug operator<<(Debug debug, const Renderer::ResetNotificationStrategy value) {
     switch(value) {
         #define _c(value) case Renderer::ResetNotificationStrategy::value: return debug << "Renderer::ResetNotificationStrategy::" #value;
@@ -280,7 +267,6 @@ Debug operator<<(Debug debug, const Renderer::GraphicsResetStatus value) {
 
     return debug << "Renderer::ResetNotificationStrategy::(invalid)";
 }
-#endif
 #endif
 
 }

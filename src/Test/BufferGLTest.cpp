@@ -143,7 +143,6 @@ void BufferGLTest::data() {
     #endif
 }
 
-#ifndef MAGNUM_TARGET_GLES3
 void BufferGLTest::map() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::mapbuffer>())
@@ -177,7 +176,6 @@ void BufferGLTest::map() {
     CORRADE_COMPARE(changedContents[3], 107);
     #endif
 }
-#endif
 
 #ifdef MAGNUM_TARGET_GLES2
 void BufferGLTest::mapSub() {

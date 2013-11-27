@@ -107,7 +107,6 @@ class MAGNUM_EXPORT Sampler {
              */
             ClampToEdge = GL_CLAMP_TO_EDGE,
 
-            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with setBorderColor()).
@@ -117,7 +116,6 @@ class MAGNUM_EXPORT Sampler {
             ClampToBorder = GL_CLAMP_TO_BORDER,
             #else
             ClampToBorder = GL_CLAMP_TO_BORDER_NV,
-            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
@@ -134,7 +132,6 @@ class MAGNUM_EXPORT Sampler {
             #endif
         };
 
-        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Max supported anisotropy
          *
@@ -153,7 +150,6 @@ class MAGNUM_EXPORT Sampler {
          *      instead.
          */
         static Float maxSupportedAnisotropy() { return maxAnisotropy(); }
-        #endif
         #endif
 };
 

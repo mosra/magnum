@@ -277,7 +277,6 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context& context) 
     else readTarget = drawTarget = FramebufferTarget::ReadDraw;
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES3
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
     #else
@@ -295,9 +294,6 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context& context) 
         readImplementation = &AbstractFramebuffer::readImplementationRobustness;
         #endif
     }
-    #else
-    static_cast<void>(context);
-    #endif
 }
 
 GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
@@ -380,7 +376,6 @@ void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, cons
     glReadPixels(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
-#ifndef MAGNUM_TARGET_GLES3
 void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     /** @todo Enable when extension wrangler for ES is available */
     #ifndef MAGNUM_TARGET_GLES
@@ -396,6 +391,5 @@ void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, c
     static_cast<void>(data);
     #endif
 }
-#endif
 
 }

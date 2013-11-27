@@ -49,9 +49,7 @@ Debug operator<<(Debug debug, const ColorFormat value) {
         #ifndef MAGNUM_TARGET_GLES
         _c(BGR)
         #endif
-        #ifndef MAGNUM_TARGET_GLES3
         _c(BGRA)
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(RedInteger)
         #ifndef MAGNUM_TARGET_GLES
@@ -67,9 +65,7 @@ Debug operator<<(Debug debug, const ColorFormat value) {
         #endif
         #endif
         _c(DepthComponent)
-        #ifndef MAGNUM_TARGET_GLES3
         _c(StencilIndex)
-        #endif
         _c(DepthStencil)
         #undef _c
     }
@@ -103,13 +99,9 @@ Debug operator<<(Debug debug, const ColorType value) {
         _c(UnsignedShort565Rev)
         #endif
         _c(UnsignedShort4444)
-        #ifndef MAGNUM_TARGET_GLES3
         _c(UnsignedShort4444Rev)
-        #endif
         _c(UnsignedShort5551)
-        #ifndef MAGNUM_TARGET_GLES3
         _c(UnsignedShort1555Rev)
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(UnsignedInt8888)
         _c(UnsignedInt8888Rev)

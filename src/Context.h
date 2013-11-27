@@ -154,7 +154,6 @@ class MAGNUM_EXPORT Context {
          * @see Flags, flags()
          */
         enum class Flag: GLint {
-            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Debug context
              * @requires_gl43 %Extension @es_extension{KHR,debug}
@@ -164,7 +163,6 @@ class MAGNUM_EXPORT Context {
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
             #else
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT_KHR,
-            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES

@@ -428,7 +428,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
         }
-        #ifndef MAGNUM_TARGET_GLES3
         Texture<Dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
@@ -437,7 +436,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
-        #endif
         Texture<Dimensions>& generateMipmap() {
             AbstractTexture::generateMipmap();
             return *this;

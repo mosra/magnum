@@ -366,9 +366,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RGB5:
         #endif
         case TextureFormat::RGB565:
-        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::RGB10:
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGB12:
         #endif
@@ -376,9 +374,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::R11FG11FB10F:
         case TextureFormat::RGB9E5:
         #endif
-        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::SRGB:
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8:
         #endif
@@ -421,9 +417,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGBA12:
         #endif
-        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::SRGBAlpha:
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8Alpha8:
         #endif
@@ -455,9 +449,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::DepthComponent:
         case TextureFormat::DepthComponent16:
         case TextureFormat::DepthComponent24:
-        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::DepthComponent32:
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::DepthComponent32F:
         #endif
@@ -501,10 +493,8 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::Luminance:
         case TextureFormat::LuminanceAlpha:
         #endif
-        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::SRGB:
         case TextureFormat::SRGBAlpha:
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8:
         case TextureFormat::SRGB8Alpha8:
@@ -619,9 +609,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RGB565:
             return ColorType::UnsignedShort565;
 
-        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::RGB10:
-        #endif
         case TextureFormat::RGB10A2:
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB10A2UI:
@@ -640,9 +628,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
 
         case TextureFormat::DepthComponent:
         case TextureFormat::DepthComponent24:
-        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::DepthComponent32:
-        #endif
             return ColorType::UnsignedInt;
 
         #ifndef MAGNUM_TARGET_GLES2

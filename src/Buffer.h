@@ -314,7 +314,6 @@ class MAGNUM_EXPORT Buffer {
         typedef BufferUsage Usage;
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Memory mapping access
          *
@@ -322,9 +321,7 @@ class MAGNUM_EXPORT Buffer {
          *      instead, as it has more complete set of features.
          * @see map(MapAccess), mapSub()
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} or
-         *      @es_extension{CHROMIUM,map_sub} in OpenGL ES 2.0, use
-         *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
-         *      in OpenGL ES 3.0 instead.
+         *      @es_extension{CHROMIUM,map_sub}
          */
         enum class MapAccess: GLenum {
             #ifndef MAGNUM_TARGET_GLES
@@ -352,7 +349,6 @@ class MAGNUM_EXPORT Buffer {
             ReadWrite = GL_READ_WRITE
             #endif
         };
-        #endif
 
         /**
          * @brief Memory mapping flag
@@ -763,7 +759,6 @@ class MAGNUM_EXPORT Buffer {
         }
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Map buffer to client memory
          * @param access    Access
@@ -784,7 +779,6 @@ class MAGNUM_EXPORT Buffer {
         void* map(MapAccess access) {
             return (this->*mapImplementation)(access);
         }
-        #endif
 
         #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
@@ -941,14 +935,12 @@ class MAGNUM_EXPORT Buffer {
         #endif
         static InvalidateSubImplementation invalidateSubImplementation;
 
-        #ifndef MAGNUM_TARGET_GLES3
         typedef void*(Buffer::*MapImplementation)(MapAccess);
         void MAGNUM_LOCAL * mapImplementationDefault(MapAccess access);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL * mapImplementationDSA(MapAccess access);
         #endif
         static MapImplementation mapImplementation;
-        #endif
 
         typedef void*(Buffer::*MapRangeImplementation)(GLintptr, GLsizeiptr, MapFlags);
         void MAGNUM_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);

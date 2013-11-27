@@ -123,7 +123,6 @@ enum class ColorFormat: GLenum {
     BGR = GL_BGR,
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * Floating-point BGRA.
      * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra}
@@ -134,7 +133,6 @@ enum class ColorFormat: GLenum {
     BGRA = GL_BGRA,
     #else
     BGRA = GL_BGRA_EXT,
-    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -221,7 +219,6 @@ enum class ColorFormat: GLenum {
      */
     DepthComponent = GL_DEPTH_COMPONENT,
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * Stencil index.
      * @requires_gl44 %Extension @extension{ARB,texture_stencil8} for texture
@@ -234,7 +231,6 @@ enum class ColorFormat: GLenum {
     StencilIndex = GL_STENCIL_INDEX,
     #else
     StencilIndex = 0x1901,
-    #endif
     #endif
 
     /**
@@ -361,7 +357,6 @@ enum class ColorType: GLenum {
      */
     UnsignedShort4444 = GL_UNSIGNED_SHORT_4_4_4_4,
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * ABGR, unsigned short, each component 4bit.
      * @requires_es_extension For framebuffer reading only, extension
@@ -372,7 +367,6 @@ enum class ColorType: GLenum {
     #else
     UnsignedShort4444Rev = GL_UNSIGNED_SHORT_4_4_4_4_REV_EXT,
     #endif
-    #endif
 
     /**
      * RGBA, unsigned short, each RGB component 5bit, alpha component 1bit.
@@ -380,7 +374,6 @@ enum class ColorType: GLenum {
      */
     UnsignedShort5551 = GL_UNSIGNED_SHORT_5_5_5_1,
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * ABGR, unsigned short, each RGB component 5bit, alpha component 1bit.
      * @requires_es_extension For framebuffer reading only, extension
@@ -390,7 +383,6 @@ enum class ColorType: GLenum {
     UnsignedShort1555Rev = GL_UNSIGNED_SHORT_1_5_5_5_REV,
     #else
     UnsignedShort1555Rev = GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT,
-    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES

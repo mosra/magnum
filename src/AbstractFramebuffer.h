@@ -360,9 +360,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
         static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        #ifndef MAGNUM_TARGET_GLES3
         static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        #endif
         static ReadImplementation MAGNUM_LOCAL readImplementation;
 };
 

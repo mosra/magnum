@@ -217,7 +217,6 @@ class MAGNUM_EXPORT AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Set border color
          * @return Reference to self (for method chaining)
@@ -259,7 +258,6 @@ class MAGNUM_EXPORT AbstractTexture {
             (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
             return *this;
         }
-        #endif
 
         /**
          * @brief Invalidate texture image
