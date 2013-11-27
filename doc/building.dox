@@ -250,7 +250,7 @@ Integration with various external math and physics libraries is provided by
 
 @subsection building-packages-arch ArchLinux packages
 
-In `package/archlinux` directory is currently one PKGBUILD for Git development
+In `package/archlinux` directory is currently one package for Git development
 build. The package is also in AUR under the same name.
 
 There are also a few development PKGBUILDs in `package/archlinux`, which allow
