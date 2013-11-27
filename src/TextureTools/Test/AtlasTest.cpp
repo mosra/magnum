@@ -76,7 +76,7 @@ void AtlasTest::createPadding() {
 }
 
 void AtlasTest::createEmpty() {
-    std::vector<Rectanglei> atlas = TextureTools::atlas({}, {});
+    std::vector<Rectanglei> atlas = TextureTools::atlas({}, std::vector<Vector2i>{});
     CORRADE_VERIFY(atlas.empty());
 }
 

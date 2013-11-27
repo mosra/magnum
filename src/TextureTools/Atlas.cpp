@@ -30,7 +30,7 @@
 namespace Magnum { namespace TextureTools {
 
 std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding) {
-    if(sizes.empty()) return {};
+    if(sizes.empty()) return std::vector<Rectanglei>{};
 
     /* Size of largest texture */
     Vector2i maxSize;

@@ -80,7 +80,7 @@ void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& 
 
 std::vector<Rectanglei> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
     CORRADE_ASSERT((glyphs.size() == 1 && glyphs.at(0) == std::pair<Vector2i, Rectanglei>()),
-        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
+        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", std::vector<Rectanglei>{});
     glyphs.reserve(glyphs.size() + sizes.size());
     return TextureTools::atlas(_size, sizes, _padding);
 }

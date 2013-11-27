@@ -38,7 +38,7 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
         {0.0f, 1.0f}
     });
 
-    return Trade::MeshData3D(Mesh::Primitive::TriangleStrip, {}, {{
+    return Trade::MeshData3D(Mesh::Primitive::TriangleStrip, std::vector<UnsignedInt>{}, {{
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {-1.0f, -1.0f, 0.0f},
@@ -52,12 +52,12 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
 }
 
 Trade::MeshData3D Plane::wireframe() {
-    return Trade::MeshData3D(Mesh::Primitive::LineLoop, {}, {{
+    return Trade::MeshData3D(Mesh::Primitive::LineLoop, std::vector<UnsignedInt>{}, {{
         {-1.0f, -1.0f, 0.0f},
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {-1.0f, 1.0f, 0.0f}
-    }}, {}, {});
+    }}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{});
 }
 
 }}
