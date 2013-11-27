@@ -168,7 +168,7 @@ class MAGNUM_EXPORT Context {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Context with robust buffer access
-             * @requires_extension %Extension @extension{EXT,robustness}
+             * @requires_extension %Extension @extension{ARB,robustness}
              * @requires_es_extension %Extension @es_extension{EXT,robustness}
              * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
