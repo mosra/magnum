@@ -46,6 +46,7 @@
         <string>g++-4.7</string>
         <string>g++-4.6</string>
         <string>clang++</string>
+        <string>clang++-libc++</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
@@ -76,8 +77,12 @@
     <hudson.tasks.Shell>
       <command>
 <![CDATA[
-mkdir -p build-${compiler}-${libraries}-${compatibility}-${gl}
-cd build-${compiler}-${libraries}-${compatibility}-${gl}
+if [ ${compiler} = "clang++-libc++" ] ; then
+    compiler_binary=clang++
+    compiler_flags=(-DCMAKE_CXX_FLAGS="-std=c++11 -stdlib=libc++" -DCMAKE_EXE_LINKER_FLAGS=-lc++abi)
+else
+    compiler_binary=${compiler}
+fi
 
 if [ ${libraries} = "static" ] ; then
     static_build_flag="-DBUILD_STATIC=ON -DBUILD_STATIC_PIC=ON"
@@ -106,11 +111,15 @@ elif [ ${gl} = "es3" ] ; then
     windowless_flag=OFF
 fi
 
+mkdir -p build-${compiler}-${libraries}-${compatibility}-${gl}
+cd build-${compiler}-${libraries}-${compatibility}-${gl}
+
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/${compiler}-${libraries} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/${compiler}-${libraries}-${compatibility}-${gl} \
-    -DCMAKE_CXX_COMPILER=${compiler} \
+    -DCMAKE_CXX_COMPILER=${compiler_binary} \
+    "${compiler_flags[@]}" \
     -DBUILD_TESTS=ON \
     -DBUILD_GL_TESTS=${windowless_flag} \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \
