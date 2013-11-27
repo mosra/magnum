@@ -79,6 +79,8 @@
 <![CDATA[
 cd build-${compiler}-${libraries}-${compatibility}-${gl}
 
+ninja
+
 ctest --output-on-failure -R GLTest || true
 ]]>
     </command>
