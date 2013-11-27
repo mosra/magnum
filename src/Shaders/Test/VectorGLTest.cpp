@@ -25,6 +25,10 @@
 #include "Shaders/Vector.h"
 #include "Test/AbstractOpenGLTester.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+#include "Shaders/magnumShadersResourceImport.hpp"
+#endif
+
 namespace Magnum { namespace Shaders { namespace Test {
 
 class VectorGLTest: public Magnum::Test::AbstractOpenGLTester {

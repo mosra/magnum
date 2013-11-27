@@ -25,6 +25,10 @@
 #include "Shaders/VertexColor.h"
 #include "Test/AbstractOpenGLTester.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+#include "Shaders/magnumShadersResourceImport.hpp"
+#endif
+
 namespace Magnum { namespace Shaders { namespace Test {
 
 class VertexColorGLTest: public Magnum::Test::AbstractOpenGLTester {
