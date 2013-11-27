@@ -136,7 +136,7 @@ void Renderbuffer::storageMultisampleImplementationANGLE(GLsizei, RenderbufferFo
 
 void Renderbuffer::storageMultisampleImplementationNV(GLsizei, RenderbufferFormat, const Vector2i&) {
     CORRADE_INTERNAL_ASSERT(false);
-    //glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, internalFormat, size.x(), size.y());
+    //glRenderbufferStorageMultisampleNV(GL_RENDERBUFFER, samples, internalFormat, size.x(), size.y());
 }
 #endif
 
