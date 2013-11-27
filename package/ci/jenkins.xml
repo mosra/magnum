@@ -107,6 +107,7 @@ elif [ ${gl} = "es3" ] ; then
 fi
 
 cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/${compiler}-${libraries} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/${compiler}-${libraries}-${compatibility}-${gl} \
     -DCMAKE_CXX_COMPILER=${compiler} \
