@@ -50,6 +50,7 @@ class RangeTest: public Corrade::TestSuite::Tester {
         void center();
 
         void translated();
+        void padded();
 
         void subclassTypes();
         void subclass();
@@ -80,6 +81,7 @@ RangeTest::RangeTest() {
               &RangeTest::center,
 
               &RangeTest::translated,
+              &RangeTest::padded,
 
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
@@ -282,6 +284,14 @@ void RangeTest::translated() {
     CORRADE_COMPARE(a.size(), b.size());
 }
 
+void RangeTest::padded() {
+    Range2Di a({34, 23}, {47, 30});
+    Range2Di b({31, 28}, {50, 25});
+
+    CORRADE_COMPARE(a.padded({3, -5}), b);
+    CORRADE_COMPARE(a.center(), b.center());
+}
+
 template<class T> class BasicRect: public Math::Range<2, T> {
     public:
         template<class ...U> BasicRect(U&&... args): Math::Range<2, T>{std::forward<U>(args)...} {}
@@ -297,6 +307,7 @@ void RangeTest::subclassTypes() {
 
     const Recti r;
     CORRADE_VERIFY((std::is_same<decltype(r.translated(a)), Recti>::value));
+    CORRADE_VERIFY((std::is_same<decltype(r.padded(a)), Recti>::value));
 }
 
 void RangeTest::subclass() {
@@ -305,6 +316,8 @@ void RangeTest::subclass() {
 
     CORRADE_COMPARE(Recti(Vector2i{34, 23}, Vector2i{47, 30}).translated({-17, 40}),
                     Recti(Vector2i{17, 63}, Vector2i{30, 70}));
+    CORRADE_COMPARE(Recti(Vector2i{34, 23}, Vector2i{47, 30}).padded({3, -5}),
+                    Recti(Vector2i{31, 28}, Vector2i{50, 25}));
 }
 
 void RangeTest::debug() {

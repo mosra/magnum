@@ -143,8 +143,18 @@ template<UnsignedInt dimensions, class T> class Range {
          *
          * Translates the minimal and maximal coordinates by given amount. Size
          * remains the same.
+         * @see @ref padded()
          */
         Range<dimensions, T> translated(const VectorType& vector) const;
+
+        /**
+         * @brief Padded rage
+         *
+         * Translates the minimal and maximal coordinates by given amount.
+         * Center remains the same.
+         * @see @ref translated()
+         */
+        Range<dimensions, T> padded(const VectorType& padding) const;
 
     private:
         VectorType _min, _max;
@@ -157,6 +167,9 @@ template<UnsignedInt dimensions, class T> class Range {
     }                                                                       \
     Type<T> translated(const VectorType<T>& vector) const {                 \
         return Range<dimensions, T>::translated(vector);                    \
+    }                                                                       \
+    Type<T> padded(const VectorType<T>& padding) const {                    \
+        return Range<dimensions, T>::padded(padding);                       \
     }
 #endif
 
@@ -435,6 +448,10 @@ template<UnsignedInt dimensions, class T> Corrade::Utility::Debug operator<<(Cor
 
 template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::translated(const VectorType& vector) const {
     return {_min + vector, _max + vector};
+}
+
+template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::padded(const VectorType& padding) const {
+    return {_min - padding, _max + padding};
 }
 
 }}
