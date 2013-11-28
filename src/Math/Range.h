@@ -125,9 +125,18 @@ template<UnsignedInt dimensions, class T> class Range {
          *
          * @see @ref min(), @ref max(), @ref Range2D::sizeX(),
          *      @ref Range2D::sizeY(), @ref Range3D::sizeX(),
-         *      @ref Range3D::sizeY(), @ref Range3D::sizeZ()
+         *      @ref Range3D::sizeY(), @ref Range3D::sizeZ(), @ref center()
          */
         VectorType size() const { return _max - _min; }
+
+        /**
+         * @brief Range center
+         *
+         * @see @ref Range2D::centerX(), @ref Range2D::centerY(),
+         *      @ref Range3D::centerX(), @ref Range3D::centerY(),
+         *      @ref Range3D::centerZ(), @ref size()
+         */
+        VectorType center() const { return (_min + _max)/T(2); }
 
         /**
          * @brief Translated range
@@ -240,6 +249,24 @@ template<class T> class Range2D: public Range<2, T> {
          */
         T sizeY() const {
             return Range<2, T>::max().y() - Range<2, T>::min().y();
+        }
+
+        /**
+         * @brief %Range center on X axis
+         *
+         * @see @ref center()
+         */
+        T centerX() const {
+            return (Range<2, T>::min().x() + Range<2, T>::max().x())/T(2);
+        }
+
+        /**
+         * @brief %Range center on Y axis
+         *
+         * @see @ref center()
+         */
+        T centerY() const {
+            return (Range<2, T>::min().y() + Range<2, T>::max().y())/T(2);
         }
 
         MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(2, Range2D, Vector2)
@@ -360,6 +387,34 @@ template<class T> class Range3D: public Range<3, T> {
          */
         T sizeZ() const {
             return Range<3, T>::max().z() - Range<3, T>::min().z();
+        }
+
+        /**
+         *
+         * @brief %Range center on X axis
+         *
+         * @see @ref center()
+         */
+        T centerX() const {
+            return (Range<3, T>::min().x() + Range<3, T>::max().x())/T(2);
+        }
+
+        /**
+         * @brief %Range center on Y axis
+         *
+         * @see @ref center()
+         */
+        T centerY() const {
+            return (Range<3, T>::min().y() + Range<3, T>::max().y())/T(2);
+        }
+
+        /**
+         * @brief %Range center on Z axis
+         *
+         * @see @ref center()
+         */
+        T centerZ() const {
+            return (Range<3, T>::min().z() + Range<3, T>::max().z())/T(2);
         }
 
         MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(3, Range3D, Vector3)

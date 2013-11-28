@@ -47,6 +47,7 @@ class RangeTest: public Corrade::TestSuite::Tester {
         void access();
         void compare();
         void size();
+        void center();
 
         void translated();
 
@@ -76,6 +77,7 @@ RangeTest::RangeTest() {
               &RangeTest::access,
               &RangeTest::compare,
               &RangeTest::size,
+              &RangeTest::center,
 
               &RangeTest::translated,
 
@@ -253,6 +255,23 @@ void RangeTest::size() {
     CORRADE_COMPARE(cube.sizeX(), 13);
     CORRADE_COMPARE(cube.sizeY(), 7);
     CORRADE_COMPARE(cube.sizeZ(), 29);
+}
+
+void RangeTest::center() {
+    const Range1Di line(34, 47);
+    const Range2Di rect({34, 23}, {47, 30});
+    const Range3Di cube({34, 23, -17}, {47, 30, 12});
+
+    CORRADE_COMPARE(line.center(), 40);
+    CORRADE_COMPARE(rect.center(), Vector2i(40, 26));
+    CORRADE_COMPARE(cube.center(), Vector3i(40, 26, -2));
+
+    CORRADE_COMPARE(rect.centerX(), 40);
+    CORRADE_COMPARE(rect.centerY(), 26);
+
+    CORRADE_COMPARE(cube.centerX(), 40);
+    CORRADE_COMPARE(cube.centerY(), 26);
+    CORRADE_COMPARE(cube.centerZ(), -2);
 }
 
 void RangeTest::translated() {
