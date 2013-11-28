@@ -156,6 +156,14 @@ template<UnsignedInt dimensions, class T> class Range {
          */
         Range<dimensions, T> padded(const VectorType& padding) const;
 
+        /**
+         * @brief Scaled range
+         *
+         * Multiplies the minimal and maximal coordinates by given amount.
+         * @see @ref padded()
+         */
+        Range<dimensions, T> scaled(const VectorType& scaling) const;
+
     private:
         VectorType _min, _max;
 };
@@ -170,6 +178,9 @@ template<UnsignedInt dimensions, class T> class Range {
     }                                                                       \
     Type<T> padded(const VectorType<T>& padding) const {                    \
         return Range<dimensions, T>::padded(padding);                       \
+    }                                                                       \
+    Type<T> scaled(const VectorType<T>& scaling) const {                    \
+        return Range<dimensions, T>::scaled(scaling);                       \
     }
 #endif
 
@@ -452,6 +463,10 @@ template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions,
 
 template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::padded(const VectorType& padding) const {
     return {_min - padding, _max + padding};
+}
+
+template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::scaled(const VectorType& scaling) const {
+    return {_min*scaling, _max*scaling};
 }
 
 }}
