@@ -65,7 +65,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     invalidateImplementation(attachments.size(), _attachments);
 }
 
-void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
+void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
@@ -80,7 +80,7 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
     /* Initial framebuffer size */
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
-    defaultFramebuffer._viewport = state->viewport = Rectanglei::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
+    defaultFramebuffer._viewport = state->viewport = Range2Di::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
 
     /* Fake initial glViewport() call for ApiTrace */
     #ifndef MAGNUM_TARGET_GLES

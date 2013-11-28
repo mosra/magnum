@@ -50,7 +50,7 @@ Padding is added twice to each size and the atlas is laid out so the padding
 don't overlap. Returned sizes are the same as original sizes, i.e. without the
 padding.
 */
-std::vector<Rectanglei> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding = Vector2i());
+std::vector<Range2Di> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding = Vector2i());
 
 }}
 

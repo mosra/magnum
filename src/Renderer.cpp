@@ -24,8 +24,8 @@
 
 #include "Renderer.h"
 
+#include "Math/Range.h"
 #include "Color.h"
-#include "Math/Geometry/Rectangle.h"
 #include "Context.h"
 #include "Extensions.h"
 #include "Implementation/State.h"
@@ -94,8 +94,8 @@ void Renderer::setPointSize(const Float size) {
 }
 #endif
 
-void Renderer::setScissor(const Rectanglei& rectangle) {
-    glScissor(rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
+void Renderer::setScissor(const Range2Di& rectangle) {
+    glScissor(rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }
 
 void Renderer::setStencilFunction(const PolygonFacing facing, const StencilFunction function, const Int referenceValue, const UnsignedInt mask) {

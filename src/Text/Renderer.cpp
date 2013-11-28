@@ -58,7 +58,7 @@ struct Vertex {
     Vector2 position, textureCoordinates;
 };
 
-std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, const Alignment alignment) {
+std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, const Alignment alignment) {
     /* Output data, reserve memory as when the text would be ASCII-only. In
        reality the actual vertex count will be smaller, but allocating more at
        once is better than reallocating many times later. */
@@ -66,7 +66,7 @@ std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& 
     vertices.reserve(text.size()*4);
 
     /* Total rendered bounds, intial line position, last+1 vertex on previous line */
-    Rectangle rectangle;
+    Range2D rectangle;
     Vector2 linePosition;
     std::size_t lastLineLastVertex = 0;
 
@@ -98,12 +98,12 @@ std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& 
         CORRADE_INTERNAL_ASSERT(vertices.size()+vertexCount <= vertices.capacity());
 
         /* Bounds of rendered line */
-        Rectangle lineRectangle;
+        Range2D lineRectangle;
 
         /* Render all glyphs */
         Vector2 cursorPosition(linePosition);
         for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-            Rectangle quadPosition, textureCoordinates;
+            Range2D quadPosition, textureCoordinates;
             std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, lineRectangle);
 
             /* 0---2
@@ -125,7 +125,7 @@ std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& 
         /* Horizontally align the rendered line */
         Float alignmentOffsetX = 0.0f;
         if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentCenter)
-            alignmentOffsetX = -lineRectangle.left()-lineRectangle.width()*0.5f;
+            alignmentOffsetX = -lineRectangle.centerX();
         else if((UnsignedByte(alignment) & Implementation::AlignmentHorizontal) == Implementation::AlignmentRight)
             alignmentOffsetX = -lineRectangle.right();
 
@@ -153,7 +153,7 @@ std::tuple<std::vector<Vertex>, Rectangle> renderVerticesInternal(AbstractFont& 
     /* Vertically align the rendered text */
     Float alignmentOffsetY = 0.0f;
     if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentMiddle)
-        alignmentOffsetY = -rectangle.bottom()-rectangle.height()*0.5f;
+        alignmentOffsetY = -rectangle.centerY();
     else if((UnsignedByte(alignment) & Implementation::AlignmentVertical) == Implementation::AlignmentTop)
         alignmentOffsetY = -rectangle.top();
 
@@ -191,10 +191,10 @@ std::pair<Containers::Array<unsigned char>, Mesh::IndexType> renderIndicesIntern
     return {std::move(indices), indexType};
 }
 
-std::tuple<Mesh, Rectangle> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
+std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
     /* Render vertices and upload them */
     std::vector<Vertex> vertices;
-    Rectangle rectangle;
+    Range2D rectangle;
     std::tie(vertices, rectangle) = renderVerticesInternal(font, cache, size, text, alignment);
     vertexBuffer.setData(vertices, usage);
 
@@ -220,10 +220,10 @@ std::tuple<Mesh, Rectangle> renderInternal(AbstractFont& font, const GlyphCache&
 
 }
 
-std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
+std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> AbstractRenderer::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment) {
     /* Render vertices */
     std::vector<Vertex> vertices;
-    Rectangle rectangle;
+    Range2D rectangle;
     std::tie(vertices, rectangle) = renderVerticesInternal(font, cache, size, text, alignment);
 
     /* Deinterleave the vertices */
@@ -243,7 +243,7 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(std::move(positions), std::move(textureCoordinates), std::move(indices), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Rectangle> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
+template<UnsignedInt dimensions> std::tuple<Mesh, Range2D> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
     /* Finalize mesh configuration and return the result */
     auto r = renderInternal(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
     Mesh& mesh = std::get<0>(r);

@@ -25,7 +25,7 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "TextureTools/Atlas.h"
 
 namespace Magnum { namespace TextureTools { namespace Test {
@@ -48,35 +48,35 @@ AtlasTest::AtlasTest() {
 }
 
 void AtlasTest::create() {
-    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 64}, {
+    std::vector<Range2Di> atlas = TextureTools::atlas({64, 64}, {
         {12, 18},
         {32, 15},
         {23, 25}
     });
 
     CORRADE_COMPARE(atlas.size(), 3);
-    CORRADE_COMPARE(atlas, (std::vector<Rectanglei>{
-        Rectanglei::fromSize({0, 0}, {12, 18}),
-        Rectanglei::fromSize({32, 0}, {32, 15}),
-        Rectanglei::fromSize({0, 25}, {23, 25})}));
+    CORRADE_COMPARE(atlas, (std::vector<Range2Di>{
+        Range2Di::fromSize({0, 0}, {12, 18}),
+        Range2Di::fromSize({32, 0}, {32, 15}),
+        Range2Di::fromSize({0, 25}, {23, 25})}));
 }
 
 void AtlasTest::createPadding() {
-    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 64}, {
+    std::vector<Range2Di> atlas = TextureTools::atlas({64, 64}, {
         {8, 16},
         {28, 13},
         {19, 23}
     }, {2, 1});
 
     CORRADE_COMPARE(atlas.size(), 3);
-    CORRADE_COMPARE(atlas, (std::vector<Rectanglei>{
-        Rectanglei::fromSize({2, 1}, {8, 16}),
-        Rectanglei::fromSize({34, 1}, {28, 13}),
-        Rectanglei::fromSize({2, 26}, {19, 23})}));
+    CORRADE_COMPARE(atlas, (std::vector<Range2Di>{
+        Range2Di::fromSize({2, 1}, {8, 16}),
+        Range2Di::fromSize({34, 1}, {28, 13}),
+        Range2Di::fromSize({2, 26}, {19, 23})}));
 }
 
 void AtlasTest::createEmpty() {
-    std::vector<Rectanglei> atlas = TextureTools::atlas({}, std::vector<Vector2i>{});
+    std::vector<Range2Di> atlas = TextureTools::atlas({}, std::vector<Vector2i>{});
     CORRADE_VERIFY(atlas.empty());
 }
 
@@ -84,7 +84,7 @@ void AtlasTest::createTooSmall() {
     std::ostringstream o;
     Error::setOutput(&o);
 
-    std::vector<Rectanglei> atlas = TextureTools::atlas({64, 32}, {
+    std::vector<Range2Di> atlas = TextureTools::atlas({64, 32}, {
         {8, 16},
         {21, 13},
         {19, 29}

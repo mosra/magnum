@@ -139,7 +139,7 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
     #endif
 }
 
-void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
+void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
     /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
@@ -153,7 +153,7 @@ void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer&
     #endif
 }
 
-AbstractFramebuffer& AbstractFramebuffer::setViewport(const Rectanglei& rectangle) {
+AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle) {
     _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
@@ -174,7 +174,7 @@ void AbstractFramebuffer::setViewportInternal() {
 
     /* Update the state and viewport */
     state->viewport = _viewport;
-    glViewport(_viewport.left(), _viewport.bottom(), _viewport.width(), _viewport.height());
+    glViewport(_viewport.left(), _viewport.bottom(), _viewport.sizeX(), _viewport.sizeY());
 }
 
 void AbstractFramebuffer::clear(FramebufferClearMask mask) {
@@ -227,10 +227,10 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
     #endif
 }
 
-void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments, const Rectanglei& rectangle) {
+void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments, const Range2Di& rectangle) {
     /** @todo Re-enable when extension wrangler is available for ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
+    glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
     #else
     //glDiscardSubFramebufferEXT(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
     static_cast<void>(count);

@@ -327,11 +327,19 @@ typedef Math::Range2D<Int> Range2Di;
 /** @brief Signed integer 3D range */
 typedef Math::Range3D<Int> Range3Di;
 
-/** @brief Float rectangle */
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief Range2D
+@deprecated Use @ref Magnum::Range2D instead.
+*/
 typedef Math::Geometry::Rectangle<Float> Rectangle;
 
-/** @brief Signed integer rectangle */
+/**
+@copybrief Range2Di
+@deprecated Use @ref Magnum::Range2Di instead.
+*/
 typedef Math::Geometry::Rectangle<Int> Rectanglei;
+#endif
 
 /*@}*/
 
@@ -483,8 +491,13 @@ typedef Math::Range2D<Double> Range2Dd;
 /** @brief Double 3D range */
 typedef Math::Range3D<Double> Range3Dd;
 
-/** @brief Double rectangle */
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief Range2Dd
+@deprecated Use @ref Magnum::Range2Dd instead.
+*/
 typedef Math::Geometry::Rectangle<Double> Rectangled;
+#endif
 
 /*@}*/
 #endif

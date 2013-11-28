@@ -52,7 +52,7 @@ namespace {
             explicit MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, std::vector<UnsignedInt>&& glyphs);
 
         private:
-            std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt i) override;
+            std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override;
 
             const std::vector<Vector2>& glyphAdvance;
             const GlyphCache& cache;
@@ -196,7 +196,7 @@ std::unique_ptr<GlyphCache> MagnumFont::doCreateGlyphCache() {
     /* Fill glyph map */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
     for(std::size_t i = 0; i != glyphs.size(); ++i)
-        cache->insert(i, glyphs[i]->value<Vector2i>("position"), glyphs[i]->value<Rectanglei>("rectangle"));
+        cache->insert(i, glyphs[i]->value<Vector2i>("position"), glyphs[i]->value<Range2Di>("rectangle"));
 
     return cache;
 }
@@ -219,27 +219,23 @@ namespace {
 
 MagnumFontLayouter::MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, const Float fontSize, const Float textSize, std::vector<UnsignedInt>&& glyphs): AbstractLayouter(glyphs.size()), glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize), glyphs(std::move(glyphs)) {}
 
-std::tuple<Rectangle, Rectangle, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
+std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
     Vector2i position;
-    Rectanglei rectangle;
+    Range2Di rectangle;
     std::tie(position, rectangle) = cache[glyphs[i]];
 
-    const Rectangle texturePosition = Rectangle::fromSize(Vector2(position)/fontSize,
-                                                          Vector2(rectangle.size())/fontSize);
-    const Rectangle textureCoordinates(Vector2(rectangle.bottomLeft())/Vector2(cache.textureSize()),
-                                       Vector2(rectangle.topRight())/Vector2(cache.textureSize()));
+    /* Normalized texture coordinates */
+    const auto textureCoordinates = Range2D(rectangle).scaled(1.0f/Vector2(cache.textureSize()));
 
-    /* Absolute quad position, composed from cursor position, glyph offset
-       and texture position, denormalized to requested text size */
-    Rectangle quadPosition = Rectangle::fromSize(
-        Vector2(texturePosition.left(), texturePosition.bottom())*textSize,
-        texturePosition.size()*textSize);
+    /* Quad rectangle, computed from texture rectangle, denormalized to
+       requested text size */
+    const auto quadRectangle = Range2D(Range2Di::fromSize(position, rectangle.size())).scaled(Vector2(textSize/fontSize));
 
     /* Advance for given glyph, denormalized to requested text size */
     const Vector2 advance = glyphAdvance[glyphs[i]]*textSize/fontSize;
 
-    return std::make_tuple(quadPosition, textureCoordinates, advance);
+    return std::make_tuple(quadRectangle, textureCoordinates, advance);
 }
 
 }

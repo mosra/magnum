@@ -290,7 +290,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * Generates new OpenGL framebuffer.
          * @see setViewport(), @fn_gl{GenFramebuffers}
          */
-        explicit Framebuffer(const Rectanglei& viewport);
+        explicit Framebuffer(const Range2Di& viewport);
 
         /**
          * @brief Destructor
@@ -389,7 +389,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
          *      Use clear() instead where the extension is not supported.
          */
-        void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle);
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 
         /**
          * @brief Map given color attachment for reading
@@ -503,7 +503,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Framebuffer& setViewport(const Rectanglei& rectangle) {
+        Framebuffer& setViewport(const Range2Di& rectangle) {
             AbstractFramebuffer::setViewport(rectangle);
             return *this;
         }

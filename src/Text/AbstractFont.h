@@ -314,7 +314,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
          * advances @p cursorPosition to next character and updates @p rectangle
          * with extended bounds.
          */
-        std::pair<Rectangle, Rectangle> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Rectangle& rectangle);
+        std::pair<Range2D, Range2D> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle);
 
     protected:
         /**
@@ -335,7 +335,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
          * Return quad position (relative to current cursor position), texture
          * coordinates and advance to next glyph.
          */
-        virtual std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt i) = 0;
+        virtual std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

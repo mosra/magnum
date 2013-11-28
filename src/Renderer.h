@@ -414,7 +414,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see @ref Feature::ScissorTest, @fn_gl{Scissor}
          */
-        static void setScissor(const Rectanglei& rectangle);
+        static void setScissor(const Range2Di& rectangle);
 
         /*@}*/
 

@@ -82,9 +82,11 @@ template<class T> using Range1D = Range<1, T>;
 template<class> class Range2D;
 template<class> class Range3D;
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 namespace Geometry {
     template<class> class Rectangle;
 }
+#endif
 
 }}
 

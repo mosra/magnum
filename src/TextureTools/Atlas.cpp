@@ -25,19 +25,19 @@
 #include "Atlas.h"
 
 #include "Math/Functions.h"
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 
 namespace Magnum { namespace TextureTools {
 
-std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding) {
-    if(sizes.empty()) return std::vector<Rectanglei>{};
+std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding) {
+    if(sizes.empty()) return std::vector<Range2Di>{};
 
     /* Size of largest texture */
     Vector2i maxSize;
     for(const Vector2i& size: sizes)
         maxSize = Math::max(maxSize, size);
 
-    std::vector<Rectanglei> atlas;
+    std::vector<Range2Di> atlas;
 
     /* Columns and rows */
     const Vector2i paddedSize = maxSize+2*padding;
@@ -53,7 +53,7 @@ std::vector<Rectanglei> atlas(const Vector2i& atlasSize, const std::vector<Vecto
 
     atlas.reserve(sizes.size());
     for(std::size_t i = 0; i != sizes.size(); ++i)
-        atlas.push_back(Rectanglei::fromSize(Vector2i(i%gridSize.x(), i/gridSize.x())*paddedSize+padding, sizes[i]));
+        atlas.push_back(Range2Di::fromSize(Vector2i(i%gridSize.x(), i/gridSize.x())*paddedSize+padding, sizes[i]));
 
     return atlas;
 }

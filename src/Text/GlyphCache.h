@@ -31,7 +31,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "Texture.h"
 #include "Text/magnumTextVisibility.h"
 
@@ -130,18 +130,18 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * to some meaningful value in @ref insert().
          * @see @ref padding()
          */
-        std::pair<Vector2i, Rectanglei> operator[](UnsignedInt glyph) const {
+        std::pair<Vector2i, Range2Di> operator[](UnsignedInt glyph) const {
             auto it = glyphs.find(glyph);
             return it == glyphs.end() ? glyphs.at(0) : it->second;
         }
 
         /** @brief Iterator access to cache data */
-        std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>>::const_iterator begin() const {
+        std::unordered_map<UnsignedInt, std::pair<Vector2i, Range2Di>>::const_iterator begin() const {
             return glyphs.begin();
         }
 
         /** @brief Iterator access to cache data */
-        std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>>::const_iterator end() const {
+        std::unordered_map<UnsignedInt, std::pair<Vector2i, Range2Di>>::const_iterator end() const {
             return glyphs.end();
         }
 
@@ -159,7 +159,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          *      glyphs.
          * @see @ref padding()
          */
-        std::vector<Rectanglei> reserve(const std::vector<Vector2i>& sizes);
+        std::vector<Range2Di> reserve(const std::vector<Vector2i>& sizes);
 
         /**
          * @brief Insert glyph to cache
@@ -176,7 +176,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * See also @ref setImage() to upload glyph image.
          * @see @ref padding()
          */
-        void insert(UnsignedInt glyph, Vector2i position, Rectanglei rectangle);
+        void insert(UnsignedInt glyph, Vector2i position, Range2Di rectangle);
 
         /**
          * @brief Set cache image
@@ -193,7 +193,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
         Vector2i _size, _padding;
         Texture2D _texture;
 
-        std::unordered_map<UnsignedInt, std::pair<Vector2i, Rectanglei>> glyphs;
+        std::unordered_map<UnsignedInt, std::pair<Vector2i, Range2Di>> glyphs;
 };
 
 }}

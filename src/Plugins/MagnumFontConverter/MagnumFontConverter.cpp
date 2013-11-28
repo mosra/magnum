@@ -68,7 +68,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     #else
     glyphIdMap.insert({0, 0});
     #endif
-    for(const std::pair<UnsignedInt, std::pair<Vector2i, Rectanglei>>& glyph: cache)
+    for(const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: cache)
         #ifndef CORRADE_GCC46_COMPATIBILITY
         glyphIdMap.emplace(glyph.first, glyphIdMap.size());
         #else
@@ -97,11 +97,11 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
        from the values so they aren't added twice when using the font later */
     /** @todo Some better way to handle this padding stuff */
     for(UnsignedInt oldGlyphId: inverseGlyphIdMap) {
-        std::pair<Vector2i, Rectanglei> glyph = cache[oldGlyphId];
+        std::pair<Vector2i, Range2Di> glyph = cache[oldGlyphId];
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
         group->setValue("advance", font.glyphAdvance(oldGlyphId));
         group->setValue("position", glyph.first+cache.padding());
-        group->setValue("rectangle", Rectanglei(glyph.second.bottomLeft()+cache.padding(),
+        group->setValue("rectangle", Range2Di(glyph.second.bottomLeft()+cache.padding(),
                                                 glyph.second.topRight()-cache.padding()));
     }
 

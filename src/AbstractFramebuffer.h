@@ -207,7 +207,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
          */
-        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
 
         /**
          * @brief Copy block of pixels
@@ -224,7 +224,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
          */
-        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& rectangle, FramebufferBlitMask mask) {
+        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& rectangle, FramebufferBlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
         }
 
@@ -242,7 +242,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void bind(FramebufferTarget target);
 
         /** @brief Viewport rectangle */
-        Rectanglei viewport() const { return _viewport; }
+        Range2Di viewport() const { return _viewport; }
 
         /**
          * @brief Set viewport
@@ -253,7 +253,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * rectangle.
          * @see @ref maxViewportSize(), @fn_gl{Viewport}
          */
-        AbstractFramebuffer& setViewport(const Rectanglei& rectangle);
+        AbstractFramebuffer& setViewport(const Range2Di& rectangle);
 
         /**
          * @brief Clear specified buffers in framebuffer
@@ -330,10 +330,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         static ReadBufferImplementation readBufferImplementation;
 
         void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments);
-        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments, const Rectanglei& rectangle);
+        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments, const Range2Di& rectangle);
 
         GLuint _id;
-        Rectanglei _viewport;
+        Range2Di _viewport;
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);

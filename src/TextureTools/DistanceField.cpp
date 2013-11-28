@@ -26,7 +26,7 @@
 
 #include <Utility/Resource.h>
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"
 #include "Extensions.h"
@@ -131,9 +131,9 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
 
 }
 #ifndef MAGNUM_TARGET_GLES
-void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i&)
+void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i&)
 #else
-void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i& imageSize)
+void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i& imageSize)
 #endif
 {
     #ifndef MAGNUM_TARGET_GLES

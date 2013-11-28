@@ -24,4 +24,3 @@
 
 corrade_add_test(MathGeometryDistanceTest DistanceTest.cpp)
 corrade_add_test(MathGeometryIntersectionTest IntersectionTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test(MathGeometryRectangleTest RectangleTest.cpp LIBRARIES MagnumMathTestLib)
