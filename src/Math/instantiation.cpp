@@ -24,6 +24,7 @@
 
 #include "Math/DualComplex.h"
 #include "Math/DualQuaternion.h"
+#include "Math/Range.h"
 
 namespace Corrade { namespace Utility {
 
@@ -77,6 +78,15 @@ template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
 #ifndef __MINGW32__
 template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
 #endif
+#endif
+
+template struct ConfigurationValue<Magnum::Math::Range<2, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Range<2, Magnum::Int>>;
+template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Int>>;
+#ifndef MAGNUM_TARGET_GLES
+template struct ConfigurationValue<Magnum::Math::Range<2, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Double>>;
 #endif
 #endif
 

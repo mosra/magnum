@@ -301,6 +301,32 @@ typedef Math::Deg<Float> Deg;
 /** @brief Angle in float radians */
 typedef Math::Rad<Float> Rad;
 
+/** @brief Float 1D range */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Range1D<Float> Range1D;
+#else
+typedef Math::Range<1, Float> Range1D;
+#endif
+
+/** @brief Float 2D range */
+typedef Math::Range2D<Float> Range2D;
+
+/** @brief Float 3D range */
+typedef Math::Range3D<Float> Range3D;
+
+/** @brief Signed integer 1D range */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Range1D<Int> Range1Di;
+#else
+typedef Math::Range<1, Int> Range1Di;
+#endif
+
+/** @brief Signed integer 2D range */
+typedef Math::Range2D<Int> Range2Di;
+
+/** @brief Signed integer 3D range */
+typedef Math::Range3D<Int> Range3Di;
+
 /** @brief Float rectangle */
 typedef Math::Geometry::Rectangle<Float> Rectangle;
 
@@ -443,6 +469,19 @@ typedef Math::Deg<Double> Degd;
 
 /** @brief Angle in double radians */
 typedef Math::Rad<Double> Radd;
+
+/** @brief Double 1D range */
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Range1D<Double> Range1Dd;
+#else
+typedef Math::Range<1, Double> Range1Dd;
+#endif
+
+/** @brief Double 2D range */
+typedef Math::Range2D<Double> Range2Dd;
+
+/** @brief Double 3D range */
+typedef Math::Range3D<Double> Range3Dd;
 
 /** @brief Double rectangle */
 typedef Math::Geometry::Rectangle<Double> Rectangled;

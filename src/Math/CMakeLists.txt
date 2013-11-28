@@ -37,6 +37,7 @@ set(MagnumMath_HEADERS
     Matrix3.h
     Matrix4.h
     Quaternion.h
+    Range.h
     RectangularMatrix.h
     Swizzle.h
     Unit.h
