@@ -357,6 +357,7 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vert
     /* Prefill index buffer */
     unsigned char* const indices = static_cast<unsigned char*>(bufferMapImplementation(_indexBuffer, indexData.size()));
     CORRADE_INTERNAL_ASSERT(indices);
+    /** @todo Emscripten: it can be done without this copying altogether */
     std::copy(indexData.begin(), indexData.end(), indices);
     bufferUnmapImplementation(_indexBuffer);
 }
