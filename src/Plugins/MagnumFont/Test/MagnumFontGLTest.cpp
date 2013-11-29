@@ -32,22 +32,22 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class MagnumFontTest: public Magnum::Test::AbstractOpenGLTester {
+class MagnumFontGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit MagnumFontTest();
+        explicit MagnumFontGLTest();
 
         void properties();
         void layout();
         void createGlyphCache();
 };
 
-MagnumFontTest::MagnumFontTest() {
-    addTests({&MagnumFontTest::properties,
-              &MagnumFontTest::layout,
-              &MagnumFontTest::createGlyphCache});
+MagnumFontGLTest::MagnumFontGLTest() {
+    addTests({&MagnumFontGLTest::properties,
+              &MagnumFontGLTest::layout,
+              &MagnumFontGLTest::createGlyphCache});
 }
 
-void MagnumFontTest::properties() {
+void MagnumFontGLTest::properties() {
     MagnumFont font;
     CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
     CORRADE_COMPARE(font.size(), 16.0f);
@@ -55,7 +55,7 @@ void MagnumFontTest::properties() {
     CORRADE_COMPARE(font.glyphAdvance(font.glyphId(U'W')), Vector2(23.0f, 0.0f));
 }
 
-void MagnumFontTest::layout() {
+void MagnumFontGLTest::layout() {
     MagnumFont font;
     CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
@@ -98,11 +98,11 @@ void MagnumFontTest::layout() {
     CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
 }
 
-void MagnumFontTest::createGlyphCache() {
+void MagnumFontGLTest::createGlyphCache() {
     /** @todo */
     CORRADE_SKIP("Not yet implemented");
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontGLTest)
