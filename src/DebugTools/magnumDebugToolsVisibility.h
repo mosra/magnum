@@ -26,10 +26,16 @@
 
 #include <Utility/Visibility.h>
 
-#ifdef MagnumDebugTools_EXPORTS
-    #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
+#include "magnumConfigure.h"
+
+#ifndef MAGNUM_BUILD_STATIC
+    #ifdef MagnumDebugTools_EXPORTS
+        #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
 #else
-    #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
+    #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #endif

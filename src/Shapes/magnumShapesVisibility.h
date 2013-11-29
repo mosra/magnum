@@ -26,10 +26,16 @@
 
 #include <Utility/Visibility.h>
 
-#ifdef MagnumShapes_EXPORTS
-    #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_EXPORT
+#include "magnumConfigure.h"
+
+#ifndef MAGNUM_BUILD_STATIC
+    #ifdef MagnumShapes_EXPORTS
+        #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
 #else
-    #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_IMPORT
+    #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 #define MAGNUM_SHAPES_LOCAL CORRADE_VISIBILITY_LOCAL
 

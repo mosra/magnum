@@ -26,10 +26,16 @@
 
 #include <Utility/Visibility.h>
 
-#ifdef MagnumTextureTools_EXPORTS
-    #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
+#include "magnumConfigure.h"
+
+#ifndef MAGNUM_BUILD_STATIC
+    #ifdef MagnumTextureTools_EXPORTS
+        #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
 #else
-    #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
+    #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #endif
