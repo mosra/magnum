@@ -30,7 +30,7 @@
 
 #include <Containers/EnumSet.h>
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "Magnum.h"
 #include "OpenGL.h"
 
