@@ -204,13 +204,13 @@ See @ref Range for more information.
 template<class T> class Range2D: public Range<2, T> {
     public:
         /** @copydoc Range() */
-        constexpr Range2D() = default;
+        constexpr /*implicit*/ Range2D() {}
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
-        constexpr Range2D(const Vector2<T>& min, const Vector2<T>& max): Range<2, T>(min, max) {}
+        constexpr /*implicit*/ Range2D(const Vector2<T>& min, const Vector2<T>& max): Range<2, T>(min, max) {}
 
         /** @copydoc Range(const Range&) */
-        constexpr Range2D(const Range<2, T>& other): Range<2, T>(other) {}
+        constexpr /*implicit*/ Range2D(const Range<2, T>& other): Range<2, T>(other) {}
 
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range2D(const Range2D<U>& other): Range<2, T>(other) {}
@@ -305,13 +305,13 @@ See @ref Range for more information.
 template<class T> class Range3D: public Range<3, T> {
     public:
         /** @copydoc Range() */
-        constexpr Range3D() = default;
+        constexpr /*implicit*/ Range3D() {}
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
-        constexpr Range3D(const Vector3<T>& min, const Vector3<T>& max): Range<3, T>(min, max) {}
+        constexpr /*implicit*/ Range3D(const Vector3<T>& min, const Vector3<T>& max): Range<3, T>(min, max) {}
 
         /** @copydoc Range(const Range&) */
-        constexpr Range3D(const Range<3, T>& other): Range<3, T>(other) {}
+        constexpr /*implicit*/ Range3D(const Range<3, T>& other): Range<3, T>(other) {}
 
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range3D(const Range3D<U>& other): Range<3, T>(other) {}
