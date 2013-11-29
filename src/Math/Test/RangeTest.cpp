@@ -64,10 +64,18 @@ class RangeTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
+typedef Math::Range1D<Float> Range1D;
+#else
 typedef Math::Range<1, Float> Range1D;
+#endif
 typedef Math::Range2D<Float> Range2D;
 typedef Math::Range3D<Float> Range3D;
+#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Range1D<Int> Range1Di;
+#else
+typedef Math::Range<1, Int> Range1Di;
+#endif
 typedef Math::Range2D<Int> Range2Di;
 typedef Math::Range3D<Int> Range3Di;
 typedef Vector2<Int> Vector2i;
