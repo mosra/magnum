@@ -41,6 +41,10 @@ install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_
 
 if(BUILD_TESTS)
     add_library(TgaImageConverterTestLib SHARED $<TARGET_OBJECTS:TgaImageConverterObjects>)
-    target_link_libraries(TgaImageConverterTestLib Magnum)
+    # Otherwise llvm-link complains about multiply defined Debug::globalOutput.
+    # TODO: can this be done properly?
+    if(NOT CORRADE_TARGET_EMSCRIPTEN)
+        target_link_libraries(TgaImageConverterTestLib Magnum)
+    endif()
     add_subdirectory(Test)
 endif()
