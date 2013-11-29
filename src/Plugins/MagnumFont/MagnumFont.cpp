@@ -233,7 +233,7 @@ std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const Un
     const auto quadRectangle = Range2D(Range2Di::fromSize(position, rectangle.size())).scaled(Vector2(textSize/fontSize));
 
     /* Advance for given glyph, denormalized to requested text size */
-    const Vector2 advance = glyphAdvance[glyphs[i]]*textSize/fontSize;
+    const Vector2 advance = glyphAdvance[glyphs[i]]*(textSize/fontSize);
 
     return std::make_tuple(quadRectangle, textureCoordinates, advance);
 }
