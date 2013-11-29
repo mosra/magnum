@@ -349,7 +349,7 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vert
     /* Allocate index buffer, reset index count and reconfigure buffer binding */
     _indexBuffer.setData({nullptr, indexData.size()}, indexBufferUsage);
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    _indexBufferData = Containers::Array<UnsignedByte>(indicesSize);
+    _indexBufferData = Containers::Array<UnsignedByte>(indexData.size());
     #endif
     _mesh.setIndexCount(0)
         .setIndexBuffer(_indexBuffer, 0, indexType, 0, vertexCount);
