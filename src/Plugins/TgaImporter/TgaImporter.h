@@ -29,7 +29,8 @@
  */
 
 #include <Utility/Visibility.h>
-#include <Trade/AbstractImporter.h>
+
+#include "Trade/AbstractImporter.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #if defined(TgaImporter_EXPORTS) || defined(TgaImporterObjects_EXPORTS)
