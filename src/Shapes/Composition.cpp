@@ -65,8 +65,13 @@ template<UnsignedInt dimensions> Composition<dimensions>::Composition(const Comp
 }
 
 template<UnsignedInt dimensions> Composition<dimensions>::Composition(Composition<dimensions>&& other): _shapes(std::move(other._shapes)), _nodes(std::move(other._nodes)) {
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     other._shapes = nullptr;
     other._nodes = nullptr;
+    #else
+    other._shapes = {};
+    other._nodes = {};
+    #endif
 }
 
 template<UnsignedInt dimensions> Composition<dimensions>::~Composition() {
@@ -98,7 +103,11 @@ template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions
 template<UnsignedInt dimensions> void Composition<dimensions>::copyShapes(const std::size_t offset, Composition<dimensions>&& other) {
     CORRADE_INTERNAL_ASSERT(_shapes.size() >= other._shapes.size()+offset);
     std::move(other._shapes.begin(), other._shapes.end(), _shapes.begin()+offset);
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     other._shapes = nullptr;
+    #else
+    other._shapes = {};
+    #endif
 }
 
 template<UnsignedInt dimensions> void Composition<dimensions>::copyShapes(const std::size_t offset, const Composition<dimensions>& other) {
