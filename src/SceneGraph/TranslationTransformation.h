@@ -112,7 +112,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
 
     protected:
         /* Allow construction only from Object */
-        explicit TranslationTransformation() = default;
+        explicit TranslationTransformation();
 
     private:
         void doResetTransformation() override final { resetTransformation(); }
@@ -123,6 +123,8 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
 
         typename DimensionTraits<dimensions, TranslationType>::VectorType _transformation;
 };
+
+template<UnsignedInt dimensions, class T, class TranslationType> inline TranslationTransformation<dimensions, T, TranslationType>::TranslationTransformation() = default;
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
