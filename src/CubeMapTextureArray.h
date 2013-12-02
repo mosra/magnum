@@ -26,7 +26,7 @@
 
 #ifndef MAGNUM_TARGET_GLES
 /** @file
- * @brief Class Magnum::CubeMapTextureArray
+ * @brief Class @ref Magnum::CubeMapTextureArray
  */
 #endif
 
@@ -38,26 +38,23 @@ namespace Magnum {
 /**
 @brief Cube map texture array
 
-See CubeMapTexture documentation for introduction.
+See @ref CubeMapTexture documentation for introduction.
 
 @section CubeMapTextureArray-usage Usage
 
-Common usage is to specify each layer and face separately using setSubImage().
+Common usage is to specify each layer and face separately using @ref setSubImage().
 You have to allocate the memory for all layers and faces first either by
-calling setStorage() or by passing properly sized empty Image to setImage().
-Example: array with 16 layers of cube map faces, each face consisting of six
-64x64 images:
+calling @ref setStorage() or by passing properly sized empty image to
+@ref setImage(). Example: array with 16 layers of cube map faces, each face
+consisting of six 64x64 images:
 @code
-Image3D dummy({64, 64, 16*6}, ColorFormat::RGBA, ColorType::UnsignedByte, nullptr);
-
 CubeMapTextureArray texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
     .setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 16});
 
 for(std::size_t i = 0; i != 16; ++i) {
-    void* dataPositiveX = ...;
-    Image2D imagePositiveX({64, 64}, ColorFormat::RGBA, ColorType::UnsignedByte, imagePositiveX);
+    Image2D imagePositiveX(ColorFormat::RGBA, ColorType::UnsignedByte, {64, 64}, data);
     // ...
     texture.setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, {}, imagePositiveX);
     texture.setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, {}, imageNegativeX);
@@ -67,13 +64,13 @@ for(std::size_t i = 0; i != 16; ++i) {
 // ...
 @endcode
 
-The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `samplerCubeArray`, `samplerCubeArrayShadow`,
+The texture is bound to layer specified by shader via @ref bind(). In shader,
+the texture is used via `samplerCubeArray`, `samplerCubeArrayShadow`,
 `isamplerCubeArray` or `usamplerCubeArray`. Unlike in classic textures,
 coordinates for cube map texture arrays is signed four-part vector. First three
 parts define vector from the center of the cube which intersects with one of
 the six sides of the cube map, fourth part is layer in the array. See also
-AbstractShaderProgram for more information about usage in shaders.
+@ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTexture,
     @ref Texture, @ref BufferTexture
@@ -103,7 +100,7 @@ class CubeMapTextureArray: public AbstractTexture {
         /**
          * @brief Set wrapping
          *
-         * See Texture::setWrapping() for more information.
+         * See @ref Texture::setWrapping() for more information.
          */
         CubeMapTextureArray& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
@@ -115,7 +112,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param coordinate        Coordinate
          * @param level             Mip level
          *
-         * See Texture::imageSize() for more information.
+         * See @ref Texture::imageSize() for more information.
          */
         Vector3i imageSize(Coordinate coordinate, Int level) {
             return DataHelper<3>::imageSize(this, GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(coordinate), level);
@@ -124,7 +121,7 @@ class CubeMapTextureArray: public AbstractTexture {
         /**
          * @brief Set storage
          *
-         * See Texture::setStorage() for more information.
+         * See @ref Texture::setStorage() for more information.
          */
         CubeMapTextureArray& setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
             DataHelper<3>::setStorage(this, _target, levels, internalFormat, size);
@@ -138,7 +135,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param level             Mip level
          * @param image             %Image where to put the data
          *
-         * See Texture::image(Int, Image&) for more information.
+         * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         void image(Coordinate coordinate, Int level, Image3D& image) {
@@ -152,11 +149,11 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * See Texture::image(Int, BufferImage&, Buffer::Usage) for more
+         * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        void image(Coordinate coordinate, Int level, BufferImage3D& image, Buffer::Usage usage) {
+        void image(Coordinate coordinate, Int level, BufferImage3D& image, BufferUsage usage) {
             AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_POSITIVE_X + GLenum(coordinate), level, image, usage);
         }
         #endif
@@ -165,15 +162,15 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             Image, ImageReference, BufferImage or
-         *      Trade::ImageData of the same dimension count
+         * @param image             @ref Image, @ref ImageReference, @ref BufferImage
+         *      or @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
          * Sets texture image data from three-dimensional image for all cube
          * faces for all layers. Each group of 6 2D images is one cube map
          * layer. The images are ordered the same way as Coordinate enum.
          *
-         * See Texture::setImage() for more information.
+         * See @ref Texture::setImage() for more information.
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
             DataHelper<3>::setImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
@@ -190,8 +187,8 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set texture image 3D subdata
          * @param level         Mip level
          * @param offset        Offset where to put data in the texture
-         * @param image         Image3D, ImageReference3D, BufferImage3D or
-         *      Trade::ImageData3D
+         * @param image         @ref Image3D, @ref ImageReference3D, @ref BufferImage3D
+         *      or @ref Trade::ImageData3D
          * @return Reference to self (for method chaining)
          *
          * Sets texture image subdata for more than one level/face at once.
@@ -199,11 +196,9 @@ class CubeMapTextureArray: public AbstractTexture {
          * Z coordinate of @p offset specifies layer and cube map face. If
          * you want to start at given face in layer *n*, you have to specify
          * Z coordinate as @f$ 6n + i @f$, where i is face index as specified
-         * in Coordinate enum.
+         * in @ref Coordinate enum.
          *
-         * See Texture::setSubImage() for more information.
-         *
-         * @see setSubImage(Int, Coordinate, Int, const Math::Vector<2, Int>&, const Image*)
+         * See @ref Texture::setSubImage() for more information.
          */
         CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image) {
             DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
@@ -223,10 +218,10 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param size              Size of invalidated data
          *
          * Z coordinate is equivalent to layer * 6 + number of texture face,
-         * i.e. @ref Coordinate "Coordinate::PositiveX" is `0` and so on, in
-         * the same order as in the enum.
+         * i.e. @ref Coordinate::PositiveX is `0` and so on, in the same order
+         * as in the enum.
          *
-         * See Texture::invalidateSubImage() for more information.
+         * See @ref Texture::invalidateSubImage() for more information.
          */
         void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
             DataHelper<3>::invalidateSubImage(this, level, offset, size);

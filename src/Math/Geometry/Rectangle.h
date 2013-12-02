@@ -36,7 +36,7 @@ namespace Magnum { namespace Math { namespace Geometry {
 
 /**
 @copybrief Math::Range2D
-@deprecated Use @ref Math::Range2D instead.
+@deprecated Use @ref Magnum::Math::Range2D instead.
 */
 template<class T> class Rectangle: public Range2D<T> {
     public:

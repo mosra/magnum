@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::interleave()
+ * @brief Function @ref Magnum::MeshTools::interleave()
  */
 
 #include <cstring>
@@ -171,7 +171,7 @@ possible performance loss.
     for) and function `size()` returning count of elements. In most cases it
     will be `std::vector` or `std::array`.
 
-See also interleave(Mesh*, Buffer*, Buffer::Usage, const T&...),
+See also @ref interleave(Mesh&, Buffer&, BufferUsage, const T&...),
 which writes the interleaved array directly into buffer of given mesh.
 */
 /* enable_if to avoid clash with overloaded function below */
@@ -186,9 +186,9 @@ template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Me
 @param usage        Vertex buffer usage
 @param attributes   Attribute arrays and gaps
 
-The same as interleave(const T&, const U&...), but this function writes the
+The same as @ref interleave(const T&, const U&...), but this function writes the
 output to given array buffer and updates vertex count in the mesh accordingly,
-so you don't have to call Mesh::setVertexCount() on your own.
+so you don't have to call @ref Mesh::setVertexCount() on your own.
 
 @attention Setting primitive type and binding the attributes to shader is left
     to user - see @ref Mesh-configuration "Mesh documentation".
@@ -196,11 +196,11 @@ so you don't have to call Mesh::setVertexCount() on your own.
 For only one attribute array this function is convenient equivalent to the
 following, without any performance loss:
 @code
-buffer->setData(attribute, usage);
-mesh->setVertexCount(attribute.size());
+buffer.setData(attribute, usage);
+mesh.setVertexCount(attribute.size());
 @endcode
 
-@see MeshTools::compressIndices()
+@see @ref MeshTools::compressIndices()
 */
 template<class ...T> inline void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);

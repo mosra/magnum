@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Texture, typedef Magnum::Texture1D, Magnum::Texture2D, Magnum::Texture3D
+ * @brief Class @ref Magnum::Texture, typedef @ref Magnum::Texture1D, @ref Magnum::Texture2D, @ref Magnum::Texture3D
  */
 
 #include "AbstractTexture.h"
@@ -37,16 +37,15 @@ namespace Magnum {
 @brief %Texture
 
 Template class for one- to three-dimensional textures. See also
-AbstractTexture documentation for more information.
+@ref AbstractTexture documentation for more information.
 
 @section Texture-usage Usage
 
 Common usage is to fully configure all texture parameters and then set the
-data from e.g. Image. Example configuration of high quality texture with
+data from e.g. @ref Image. Example configuration of high quality texture with
 trilinear anisotropic filtering, i.e. the best you can ask for:
 @code
-void* data;
-Image2D image({4096, 4096}, ColorFormat::RGBA, ColorType::UnsignedByte, data);
+Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {4096, 4096}, data);
 
 Texture2D texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
@@ -54,22 +53,23 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setWrapping(Sampler::Wrapping::ClampToEdge)
     .setMaxAnisotropy(Sampler::maxAnisotropy())
     .setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
-    .setSubImage(0, {}, &image)
+    .setSubImage(0, {}, image)
     .generateMipmap();
 @endcode
 
 @attention Don't forget to fully configure the texture before use. Note that
-    default configuration (if setMinificationFilter() is not called with
-    another value) is to use mipmaps, so be sure to either call setMinificationFilter(),
-    explicitly specify all mip levels with setStorage() and setImage() or call
-    generateMipmap(). If using rectangle texture, you must also call
-    setWrapping(), because the initial value is not supported on rectangle
-    textures. See also setMagnificationFilter() and setBorderColor().
+    default configuration (if @ref setMinificationFilter() is not called with
+    another value) is to use mipmaps, so be sure to either call @ref setMinificationFilter(),
+    explicitly specify all mip levels with @ref setStorage() and @ref setImage()
+    or call @ref generateMipmap(). If using rectangle texture, you must also
+    call @ref setWrapping(), because the initial value is not supported on
+    rectangle textures. See also @ref setMagnificationFilter() and
+    @ref setBorderColor().
 
-The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `sampler2D` and friends, see @ref Target enum documentation
-for more information. See also AbstractShaderProgram documentation for more
-information about usage in shaders.
+The texture is bound to layer specified by shader via @ref bind(). In shader,
+the texture is used via `sampler2D` and friends, see @ref Target enum
+documentation for more information. See also AbstractShaderProgram
+documentation for more information about usage in shaders.
 
 @section Texture-array Texture arrays
 
@@ -77,10 +77,10 @@ You can create texture arrays by passing
 @ref Target::Texture1DArray "Texture2D::Target::Texture1DArray" or
 @ref Target::Texture2DArray "Texture3D::Target::Texture2DArray" to constructor.
 
-It is possible to specify each layer separately using setSubImage(), but you
-have to allocate the memory for all layers first either by calling setStorage()
-or by passing properly sized empty Image to setImage(). Example: 2D texture
-array with 16 layers of 64x64 images:
+It is possible to specify each layer separately using @ref setSubImage(), but
+you have to allocate the memory for all layers first either by calling
+@ref setStorage() or by passing properly sized empty image to @ref setImage().
+Example: 2D texture array with 16 layers of 64x64 images:
 @code
 Texture3D texture(Texture3D::Target::Texture2DArray);
 texture.setMagnificationFilter(Sampler::Filter::Linear)
@@ -88,8 +88,8 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setStorage(levels, TextureFormat::RGBA8, {64, 64,16});
 
 for(std::size_t i = 0; i != 16; ++i) {
-    void* data = ...;
-    Image2D image({64, 64}, ColorFormat::RGBA, ColorType::UnsignedByte, image);
+    // ...
+    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {64, 64}, data[i]);
     texture.setSubImage(0, Vector3i::zAxis(i), image);
 }
 
@@ -97,8 +97,8 @@ for(std::size_t i = 0; i != 16; ++i) {
 @endcode
 
 Similar approach can be used for any other texture types (e.g. setting
-Texture3D data using 2D layers, Texture2D data using one-dimensional chunks
-etc.).
+@ref Texture3D data using 2D layers, @ref Texture2D data using one-dimensional
+chunks etc.).
 
 @requires_gl30 %Extension @extension{EXT,texture_array} for texture arrays.
 @requires_gles30 %Array textures are not available in OpenGL ES 2.0.
@@ -130,8 +130,8 @@ documentation for more information.
     textures.
 @requires_gl Rectangle textures are not available in OpenGL ES.
 
-@see Texture1D, Texture2D, Texture3D, CubeMapTexture, CubeMapTextureArray,
-    BufferTexture
+@see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref CubeMapTexture,
+    @ref CubeMapTextureArray, @ref BufferTexture
 @todo @extension{AMD,sparse_texture}
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
@@ -224,7 +224,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      is `Target::Texture1D`, `Target::Texture2D` or
          *      `Target::Texture3D` based on dimension count.
          *
-         * Creates one OpenGL texture.
+         * Creates new OpenGL texture.
          * @see @fn_gl{GenTextures}
          */
         explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(GLenum(target)) {}
@@ -281,13 +281,14 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Specifies entire structure of a texture at once, removing the need
          * for additional consistency checks and memory reallocations when
          * updating the data later. After calling this function the texture
-         * is immutable and calling setStorage() or setImage() is not allowed.
+         * is immutable and calling @ref setStorage() or @ref setImage() is not
+         * allowed.
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation. If
          * OpenGL 4.2, @extension{ARB,texture_storage}, OpenGL ES 3.0 or @es_extension{EXT,texture_storage}
          * in OpenGL ES 2.0 is not available, the feature is emulated with
-         * sequence of setImage() calls.
+         * sequence of @ref setImage() calls.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
@@ -310,7 +311,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             %Image where to put the data
          *
          * %Image parameters like format and type of pixel data are taken from
-         * given image, image size is taken from the texture using imageSize().
+         * given image, image size is taken from the texture using
+         * @ref imageSize().
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation. If
@@ -336,7 +338,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * See image(Int, Image&) for more information.
+         * See @ref image(Int, Image&) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         void image(Int level, BufferImage<dimensions>& image, BufferUsage usage) {
@@ -352,8 +354,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * For better performance when generating mipmaps using
-         * generateMipmap() or calling setImage() more than once use
-         * setStorage() and setSubImage() instead.
+         * @ref generateMipmap() or calling @ref setImage() more than once use
+         * @ref setStorage() and @ref setSubImage() instead.
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
@@ -385,9 +387,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
-         * @see setStorage(), setImage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         *      and @fn_gl{TexSubImage1D}/@fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
-         *      or @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}/
+         * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexSubImage1D}/
+         *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D} or
+         *      @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
@@ -412,7 +415,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
          * is not available, this function does nothing.
-         * @see invalidateImage(), @fn_gl{InvalidateTexSubImage}
+         * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
         void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::invalidateSubImage(this, level, offset, size);

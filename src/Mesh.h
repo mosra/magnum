@@ -83,7 +83,7 @@ Mesh mesh;
 static constexpr Vector3 positions[30] = {
     // ...
 };
-vertexBuffer.setData(positions, Buffer::Usage::StaticDraw);
+vertexBuffer.setData(positions, BufferUsage::StaticDraw);
 
 // Set primitive and vertex count, add the buffer and specify its layout
 mesh.setPrimitive(Mesh::Primitive::Triangles)
@@ -100,7 +100,7 @@ Buffer vertexBuffer;
 Mesh mesh;
 
 // Fill vertex buffer with interleaved position and normal data
-MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
+MeshTools::interleave(mesh, buffer, BufferUsage::StaticDraw,
     plane.positions(0), plane.normals(0));
 
 // Set primitive and specify layout of interleaved vertex buffer, vertex count
@@ -126,13 +126,13 @@ Mesh mesh;
 static constexpr Vector3 positions[300] = {
     // ...
 };
-vertexBuffer.setData(positions, Buffer::Usage::StaticDraw);
+vertexBuffer.setData(positions, BufferUsage::StaticDraw);
 
 // Fill index buffer with index data
 static constexpr GLubyte indices[75] = {
     // ...
 };
-indexBuffer.setData(indices, Buffer::Usage::StaticDraw);
+indexBuffer.setData(indices, BufferUsage::StaticDraw);
 
 // Set primitive, index count, specify the buffers
 mesh.setPrimitive(Mesh::Primitive::Triangles)
@@ -148,11 +148,11 @@ Buffer vertexBuffer, indexBuffer;
 Mesh mesh;
 
 // Fill vertex buffer with interleaved position and normal data
-MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
+MeshTools::interleave(mesh, vertexBuffer, BufferUsage::StaticDraw,
     cube.positions(0), cube.normals(0));
 
 // Fill index buffer with compressed index data
-MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw,
+MeshTools::compressIndices(mesh, indexBuffer, BufferUsage::StaticDraw,
     cube.indices());
 
 // Set primitive and specify layout of interleaved vertex buffer. Index count
@@ -192,7 +192,7 @@ Buffer colorBuffer;
 GLubyte colors[4*30] = {
     // ...
 };
-colorBuffer.setData(colors, Buffer::Usage::StaticDraw);
+colorBuffer.setData(colors, BufferUsage::StaticDraw);
 
 // Specify layout of color buffer -- BGRA, each component unsigned byte and we
 // want to normalize them from [0, 255] to [0.0f, 1.0f]
@@ -241,7 +241,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Primitive type
          *
-         * @see primitive(), setPrimitive()
+         * @see @ref primitive(), @ref setPrimitive()
          */
         enum class Primitive: GLenum {
             /** Single points. */
@@ -315,7 +315,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Index type
          *
-         * @see setIndexBuffer(), indexSize()
+         * @see @ref setIndexBuffer(), @ref indexSize()
          */
         enum class IndexType: GLenum {
             UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
@@ -365,7 +365,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Size of given index type
          *
-         * @see indexSize() const
+         * @see @ref indexSize() const
          */
         static std::size_t indexSize(IndexType type);
 
@@ -374,8 +374,8 @@ class MAGNUM_EXPORT Mesh {
          * @param primitive     Primitive type
          *
          * Creates mesh with no vertex buffers and zero vertex count.
-         * @see setPrimitive(), setVertexCount(), @fn_gl{GenVertexArrays} (if
-         *      @extension{APPLE,vertex_array_object} is available)
+         * @see @ref setPrimitive(), @ref setVertexCount(), @fn_gl{GenVertexArrays}
+         *      (if @extension{APPLE,vertex_array_object} is available)
          */
         explicit Mesh(Primitive primitive = Primitive::Triangles);
 
@@ -402,7 +402,7 @@ class MAGNUM_EXPORT Mesh {
         /**
          * @brief Index size
          *
-         * @see indexSize(IndexType)
+         * @see @ref indexSize(IndexType)
          */
         std::size_t indexSize() const { return indexSize(_indexType); }
 
@@ -429,7 +429,8 @@ class MAGNUM_EXPORT Mesh {
          * @return Reference to self (for method chaining)
          *
          * Default is zero.
-         * @see setPrimitive(), addVertexBuffer(), MeshTools::interleave()
+         * @see @ref setPrimitive(), @ref addVertexBuffer(),
+         *      @ref MeshTools::interleave()
          */
         Mesh& setVertexCount(Int vertexCount) {
             _vertexCount = vertexCount;
@@ -444,7 +445,7 @@ class MAGNUM_EXPORT Mesh {
          * @return Reference to self (for method chaining)
          *
          * Default is zero.
-         * @see setIndexBuffer(), MeshTools::compressIndices()
+         * @see @ref setIndexBuffer(), @ref MeshTools::compressIndices()
          */
         Mesh& setIndexCount(Int count) {
             _indexCount = count;
@@ -469,34 +470,34 @@ class MAGNUM_EXPORT Mesh {
          * position and normal, so you have to skip weight and texture
          * coordinate in each vertex:
          * @code
-           Buffer buffer;
-           Mesh mesh;
-           mesh.addVertexBuffer(buffer, 76, // initial array offset
-               4,                           // skip vertex weight (Float)
-               Shaders::Phong::Position(),  // vertex position
-               8,                           // skip texture coordinates (Vector2)
-               Shaders::Phong::Normal());   // vertex normal
-           @endcode
+         * Buffer buffer;
+         * Mesh mesh;
+         * mesh.addVertexBuffer(buffer, 76, // initial array offset
+         *     4,                           // skip vertex weight (Float)
+         *     Shaders::Phong::Position(),  // vertex position
+         *     8,                           // skip texture coordinates (Vector2)
+         *     Shaders::Phong::Normal());   // vertex normal
+         * @endcode
          *
          * You can also achieve the same effect by calling @ref addVertexBuffer()
          * more times with explicitly specified gaps before and after the
          * attributes. This can be used for e.g. runtime-dependent
          * configuration, as it isn't dependent on the variadic template:
-           @code
-           mesh.addVertexBuffer(buffer, 76, 4, Shaders::Phong::Position(), 20)
-               .addVertexBuffer(buffer, 76, 24, Shaders::Phong::Normal(), 0);
-           @endcode
+         * @code
+         * mesh.addVertexBuffer(buffer, 76, 4, Shaders::Phong::Position(), 20)
+         *     .addVertexBuffer(buffer, 76, 24, Shaders::Phong::Normal(), 0);
+         * @endcode
          *
          * If specifying more than one attribute, the function assumes that
          * the array is interleaved. Adding non-interleaved vertex buffer can
          * be done by specifying one attribute at a time with specific offset.
          * Above example with weight, position, texture coordinate and normal
          * arrays one after another (non-interleaved):
-           @code
-           Int vertexCount = 352;
-           mesh.addVertexBuffer(buffer, 76 + 4*vertexCount, Shaders::Phong::Position())
-               .addVertexBuffer(buffer, 76 + 24*vertexCount, Shaders::Phong::Normal());
-           @endcode
+         * @code
+         * Int vertexCount = 352;
+         * mesh.addVertexBuffer(buffer, 76 + 4*vertexCount, Shaders::Phong::Position())
+         *     .addVertexBuffer(buffer, 76 + 24*vertexCount, Shaders::Phong::Normal());
+         * @endcode
          *
          * @attention The buffer passed as parameter is not managed by the
          *      mesh, you must ensure it will exist for whole lifetime of the
@@ -528,10 +529,10 @@ class MAGNUM_EXPORT Mesh {
          * The smaller range is specified with @p start and @p end the less
          * memory operations are needed (and possibly some optimizations),
          * improving draw performance. Specifying `0` for both parameters
-         * behaves the same as setIndexBuffer(Buffer*, GLintptr, IndexType).
+         * behaves the same as @ref setIndexBuffer(Buffer&, GLintptr, IndexType).
          * On OpenGL ES 2.0 this function behaves always as
-         * setIndexBuffer(Buffer*, GLintptr, IndexType), as this functionality
-         * is not available there.
+         * @ref setIndexBuffer(Buffer&, GLintptr, IndexType), as this
+         * functionality is not available there.
          * @see @ref maxElementsIndices(), @ref maxElementsVertices(),
          *      @ref setIndexCount(), @ref MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
@@ -546,7 +547,7 @@ class MAGNUM_EXPORT Mesh {
          * @param type          Index data type
          * @return Reference to self (for method chaining)
          *
-         * Prefer to use setIndexBuffer(Buffer*, GLintptr, IndexType, UnsignedInt, UnsignedInt)
+         * Prefer to use @ref setIndexBuffer(Buffer&, GLintptr, IndexType, UnsignedInt, UnsignedInt)
          * for better performance.
          * @see setIndexCount(), MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if

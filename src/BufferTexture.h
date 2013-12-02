@@ -26,7 +26,7 @@
 
 #ifndef MAGNUM_TARGET_GLES
 /** @file
- * @brief Class Magnum::BufferTexture, enum Magnum::BufferTextureFormat
+ * @brief Class @ref Magnum::BufferTexture, enum @ref Magnum::BufferTextureFormat
  */
 #endif
 
@@ -38,7 +38,7 @@ namespace Magnum {
 /**
 @brief Internal buffer texture format
 
-@see BufferTexture
+@see @ref BufferTexture
 */
 enum class BufferTextureFormat: GLenum {
     /** Red component, normalized unsigned byte. */
@@ -153,14 +153,14 @@ enum class BufferTextureFormat: GLenum {
 /**
 @brief %Buffer texture
 
-This texture is, unlike classic textures such as Texture or CubeMapTexture,
-used as simple data source, without any unnecessary interpolation and
-wrapping methods.
+This texture is, unlike classic textures such as @ref Texture or
+@ref CubeMapTexture, used as simple data source, without any unnecessary
+interpolation and wrapping methods.
 
 @section BufferTexture-usage Usage
 
 %Texture data are stored in buffer and after binding the buffer to the texture
-using setBuffer(), you can fill the buffer at any time using data setting
+using @ref setBuffer(), you can fill the buffer at any time using data setting
 functions in Buffer itself.
 
 Note that the buffer is not managed (e.g. deleted on destruction) by the
@@ -177,23 +177,24 @@ texture.setBuffer(BufferTextureFormat::RGB32F, buffer);
 constexpr static Vector3 data[] = {
     // ...
 };
-buffer.setData(data, Buffer::Usage::StaticDraw);
+buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 
-The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `samplerBuffer`, `isamplerBuffer` or `usamplerBuffer`.
+The texture is bound to layer specified by shader via @ref bind(). In shader,
+the texture is used via `samplerBuffer`, `isamplerBuffer` or `usamplerBuffer`.
 Unlike in classic textures, coordinates for buffer textures are integer
-coordinates passed to `texelFetch()`. See also AbstractShaderProgram
+coordinates passed to `texelFetch()`. See also @ref AbstractShaderProgram
 documentation for more information.
 
 @section BufferTexture-performance-optimization Performance optimizations
-If extension @extension{EXT,direct_state_access} is available, setBuffer()
-functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
-@fn_gl{BindTexture}. See @ref AbstractTexture-performance-optimization
-"relevant section in AbstractTexture documentation" and respective function
-documentation for more information.
 
-@see Texture, CubeMapTexture, CubeMapTextureArray
+If extension @extension{EXT,direct_state_access} is available, @ref setBuffer()
+functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
+@fn_gl{BindTexture}. See
+@ref AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
+and respective function documentation for more information.
+
+@see @ref Texture, @ref CubeMapTexture, @ref CubeMapTextureArray
 @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
@@ -217,8 +218,8 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @param buffer            %Buffer with data
          *
          * Binds given buffer to this texture. The buffer itself can be then
-         * filled with data of proper format at any time using Buffer own data
-         * setting functions.
+         * filled with data of proper format at any time using @ref Buffer "Buffer"'s
+         * own data setting functions.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
          *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
@@ -234,7 +235,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @param size              Data size
          *
          * Binds range of given buffer to this texture. The buffer itself can
-         * be then filled with data of proper format at any time using Buffer
+         * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
          * own data setting functions.
          * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}

@@ -186,7 +186,7 @@ Mesh mesh;
 // Render the text
 Range2D rectangle;
 std::tie(mesh, rectangle) = Text::Renderer2D::render(*font, cache, 0.15f,
-    "Hello World!", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
+    "Hello World!", vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
 
 // Draw white text centered on the screen
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
@@ -196,7 +196,7 @@ glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 mesh.draw();
 @endcode
 See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
-@ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, Buffer::Usage, Alignment)
+@ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, BufferUsage, Alignment)
 for more information.
 
 While this method is sufficient for one-shot rendering of static texts, for
@@ -209,7 +209,7 @@ Shaders::VectorShader2D shader;
 
 // Initialize renderer and reserve memory for enough glyphs
 Text::Renderer2D renderer(*font, cache, 0.15f);
-renderer.reserve(32, Buffer::Usage::DynamicDraw, Buffer::Usage::StaticDraw);
+renderer.reserve(32, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
 
 // Update the text occasionally
 renderer.render("Hello World Countdown: 10");

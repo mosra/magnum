@@ -42,78 +42,72 @@
 namespace Magnum {
 
 /**
- * @brief %Buffer usage
- *
- * @see @ref Buffer::setData(Containers::ArrayReference<const void>, BufferUsage)
- */
+@brief %Buffer usage
+
+@see @ref Buffer, @ref Buffer::setData(Containers::ArrayReference<const void>, BufferUsage)
+*/
 enum class BufferUsage: GLenum {
-    /**
-     * Set once by the application and used infrequently for drawing.
-     */
+    /** Set once by the application and used infrequently for drawing. */
     StreamDraw = GL_STREAM_DRAW,
 
     #ifndef MAGNUM_TARGET_GLES2
     /**
-     * Set once as output from an OpenGL command and used infequently
-     * for drawing.
-     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+     * Set once as output from an OpenGL command and used infequently for
+     * drawing.
+     * @requires_gles30 Only @ref Magnum::BufferUsage::StreamDraw "BufferUsage::StreamDraw"
      *      is available in OpenGL ES 2.0.
      */
     StreamRead = GL_STREAM_READ,
 
     /**
-     * Set once as output from an OpenGL command and used infrequently
-     * for drawing or copying to other buffers.
-     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StreamDraw"
+     * Set once as output from an OpenGL command and used infrequently for
+     * drawing or copying to other buffers.
+     * @requires_gles30 Only @ref Magnum::BufferUsage::StreamDraw "BufferUsage::StreamDraw"
      *      is available in OpenGL ES 2.0.
      */
     StreamCopy = GL_STREAM_COPY,
     #endif
 
-    /**
-     * Set once by the application and used frequently for drawing.
-     */
+    /** Set once by the application and used frequently for drawing. */
     StaticDraw = GL_STATIC_DRAW,
 
     #ifndef MAGNUM_TARGET_GLES2
     /**
-     * Set once as output from an OpenGL command and queried many
-     * times by the application.
-     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+     * Set once as output from an OpenGL command and queried many times by the
+     * application.
+     * @requires_gles30 Only @ref Magnum::BufferUsage::StaticDraw "BufferUsage::StaticDraw"
      *      is available in OpenGL ES 2.0.
      */
     StaticRead = GL_STATIC_READ,
 
     /**
-     * Set once as output from an OpenGL command and used frequently
-     * for drawing or copying to other buffers.
-     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::StaticDraw"
+     * Set once as output from an OpenGL command and used frequently for
+     * drawing or copying to other buffers.
+     * @requires_gles30 Only @ref Magnum::BufferUsage::StaticDraw "BufferUsage::StaticDraw"
      *      is available in OpenGL ES 2.0.
      */
     StaticCopy = GL_STATIC_COPY,
     #endif
 
     /**
-     * Updated frequently by the application and used frequently
-     * for drawing or copying to other images.
+     * Updated frequently by the application and used frequently for drawing or
+     * copying to other images.
      */
-    DynamicDraw = GL_DYNAMIC_DRAW
+    DynamicDraw = GL_DYNAMIC_DRAW,
 
     #ifndef MAGNUM_TARGET_GLES2
-    ,
-
     /**
-     * Updated frequently as output from OpenGL command and queried
-     * many times from the application.
-     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
+     * Updated frequently as output from OpenGL command and queried many times
+     * from the application.
+     * @requires_gles30 Only @ref Magnum::BufferUsage::DynamicDraw "BufferUsage::DynamicDraw"
      *      is available in OpenGL ES 2.0.
      */
     DynamicRead = GL_DYNAMIC_READ,
 
     /**
-     * Updated frequently as output from OpenGL command and used
-     * frequently for drawing or copying to other images.
-     * @requires_gles30 Only @ref Magnum::Buffer::Usage "Usage::DynamicDraw"
+     * Updated frequently as output from OpenGL command and used frequently for
+     * drawing or copying to other images.
+     * @requires_gles30 Only @ref Magnum::BufferUsage::DynamicDraw "BufferUsage::DynamicDraw"
      *      is available in OpenGL ES 2.0.
      */
     DynamicCopy = GL_DYNAMIC_COPY
@@ -128,18 +122,18 @@ data updates.
 
 @section Buffer-data Data updating
 
-Default way to set or update buffer data with setData() or setSubData() is to
-use @ref Corrade::Containers::ArrayReference. See its documentation for more
-information about automatic conversions etc.
+Default way to set or update buffer data with @ref setData() or @ref setSubData()
+is to use @ref Corrade::Containers::ArrayReference. See its documentation for
+more information about automatic conversions etc.
 @code
 Containers::ArrayReference<Vector3> data;
-buffer.setData(data, Buffer::Usage::StaticDraw);
+buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 There is also overload for array-like containers from STL, such as `std::vector`
 or `std::array`:
 @code
 std::vector<Vector3> data;
-buffer.setData(data, Buffer::Usage::StaticDraw);
+buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 
 @subsection Buffer-data-mapping Memory mapping
@@ -147,7 +141,7 @@ buffer.setData(data, Buffer::Usage::StaticDraw);
 %Buffer data can be also updated asynchronously. First you need to allocate
 the buffer to desired size by passing `nullptr` to @ref setData(), e.g.:
 @code
-buffer.setData({nullptr, 200*sizeof(Vector3)}, Buffer::Usage::StaticDraw);
+buffer.setData({nullptr, 200*sizeof(Vector3)}, BufferUsage::StaticDraw);
 @endcode
 Then you can map the buffer to client memory and operate with the memory
 directly. After you are done with the operation, call @ref unmap() to unmap the
@@ -174,20 +168,21 @@ CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 
 The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl{BindBuffer}. If the buffer is already bound to some target, functions
-copy(), setData(), setSubData(), map(), flushMappedRange() and unmap() use
-that target instead of binding the buffer to some specific target. You can
-also use setTargetHint() to possibly reduce unnecessary rebinding. %Buffer
-limits and implementation-defined values (such as @ref maxVertexAttributeBindings())
-are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
+@ref copy(), @ref setData(), @ref setSubData(), @ref map(), @ref flushMappedRange()
+and @ref unmap() use that target instead of binding the buffer to some specific
+target. You can also use @ref setTargetHint() to possibly reduce unnecessary
+rebinding. %Buffer limits and implementation-defined values (such as
+@ref maxVertexAttributeBindings()) are cached, so repeated queries don't result
+in repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, functions
-copy(), setData(), setSubData(), map(), flushMappedRange() and unmap() use DSA
-functions to avoid unnecessary calls to @fn_gl{BindBuffer}. See their
-respective documentation for more information.
+@ref copy(), @ref setData(), @ref setSubData(), @ref map(), @ref flushMappedRange()
+and @ref unmap() use DSA functions to avoid unnecessary calls to
+@fn_gl{BindBuffer}. See their respective documentation for more information.
 
-You can use functions invalidateData() and invalidateSubData() if you don't
-need buffer data anymore to avoid unnecessary memory operations performed by
-OpenGL in order to preserve the data. If running on OpenGL ES or extension
+You can use functions @ref invalidateData() and @ref invalidateSubData() if you
+don't need buffer data anymore to avoid unnecessary memory operations performed
+by OpenGL in order to preserve the data. If running on OpenGL ES or extension
 @extension{ARB,invalidate_subdata} is not available, these functions do
 nothing.
 
@@ -201,7 +196,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief %Buffer target
          *
-         * @see bind(Target), unbind(Target)
+         * @see @ref bind(Target), @ref unbind(Target)
          */
         enum class Target: GLenum {
             /** Used for storing vertex attributes. */
@@ -218,7 +213,7 @@ class MAGNUM_EXPORT Buffer {
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
-             * Source for copies. See copy().
+             * Source for copies. See @ref copy().
              * @requires_gl31 %Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
@@ -226,7 +221,7 @@ class MAGNUM_EXPORT Buffer {
             CopyRead = GL_COPY_READ_BUFFER,
 
             /**
-             * Target for copies. See copy().
+             * Target for copies. See @ref copy().
              * @requires_gl31 %Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
@@ -319,7 +314,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
-         * @see map(MapAccess), mapSub()
+         * @see @ref map(MapAccess), @ref mapSub()
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} or
          *      @es_extension{CHROMIUM,map_sub}
          */
@@ -333,9 +328,7 @@ class MAGNUM_EXPORT Buffer {
             ReadOnly = GL_READ_ONLY,
             #endif
 
-            /**
-             * Map buffer for writing only.
-             */
+            /** Map buffer for writing only. */
             #ifdef MAGNUM_TARGET_GLES
             WriteOnly = GL_WRITE_ONLY_OES
             #else
@@ -353,7 +346,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Memory mapping flag
          *
-         * @see MapFlags, map(GLintptr, GLsizeiptr, MapFlags)
+         * @see @ref MapFlags, @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
          */
@@ -373,9 +366,9 @@ class MAGNUM_EXPORT Buffer {
             #endif
 
             /**
-             * Previous contents of the entire buffer may be discarded. May
-             * not be used in combination with @ref MapFlag::Read.
-             * @see invalidateData()
+             * Previous contents of the entire buffer may be discarded. May not
+             * be used in combination with @ref MapFlag::Read.
+             * @see @ref invalidateData()
              */
             #ifndef MAGNUM_TARGET_GLES2
             InvalidateBuffer = GL_MAP_INVALIDATE_BUFFER_BIT,
@@ -384,9 +377,9 @@ class MAGNUM_EXPORT Buffer {
             #endif
 
             /**
-             * Previous contents of mapped range may be discarded. May not
-             * be used in combination with @ref MapFlag::Read.
-             * @see invalidateSubData()
+             * Previous contents of mapped range may be discarded. May not be
+             * used in combination with @ref MapFlag::Read.
+             * @see @ref invalidateSubData()
              */
             #ifndef MAGNUM_TARGET_GLES2
             InvalidateRange = GL_MAP_INVALIDATE_RANGE_BIT,
@@ -396,8 +389,8 @@ class MAGNUM_EXPORT Buffer {
 
             /**
              * Only one or more discrete subranges of the mapping will be
-             * modified. See flushMappedRange() for more information. May only
-             * be used in conjuction with @ref MapFlag::Write.
+             * modified. See @ref flushMappedRange() for more information. May
+             * only be used in conjuction with @ref MapFlag::Write.
              */
             #ifndef MAGNUM_TARGET_GLES2
             FlushExplicit = GL_MAP_FLUSH_EXPLICIT_BIT,
@@ -419,7 +412,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Memory mapping flags
          *
-         * @see map(GLintptr, GLsizeiptr, MapFlags)
+         * @see @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
          */
@@ -511,7 +504,7 @@ class MAGNUM_EXPORT Buffer {
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * buffers aren't already bound somewhere, they are bound to
-         * `Target::CopyRead` and `Target::CopyWrite` before the copy is
+         * @ref Target::CopyRead and @ref Target::CopyWrite before the copy is
          * performed.
          * @see @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData} or
          *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
@@ -525,10 +518,10 @@ class MAGNUM_EXPORT Buffer {
 
         /**
          * @brief Constructor
-         * @param targetHint    Target hint, see setTargetHint() for more
+         * @param targetHint    Target hint, see @ref setTargetHint() for more
          *      information
          *
-         * Generates new OpenGL buffer.
+         * Creates new OpenGL buffer.
          * @see @fn_gl{GenBuffers}
          */
         explicit Buffer(Target targetHint = Target::Array);
@@ -565,11 +558,11 @@ class MAGNUM_EXPORT Buffer {
          *
          * If @extension{EXT,direct_state_access} is not available, the buffer
          * must be internally bound to some target before any operation. You
-         * can specify target which will always be used when binding the
-         * buffer internally, possibly saving some calls to @fn_gl{BindBuffer}.
+         * can specify target which will always be used when binding the buffer
+         * internally, possibly saving some calls to @fn_gl{BindBuffer}.
          *
-         * Default target hint is `Target::Array`.
-         * @see setData(), setSubData()
+         * Default target hint is @ref Target::Array.
+         * @see @ref setData(), @ref setSubData()
          * @todo Target::ElementArray cannot be used when no VAO is bound -
          *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
          *      ... damned GL state
@@ -610,7 +603,8 @@ class MAGNUM_EXPORT Buffer {
          * Returns data of whole buffer. If @extension{EXT,direct_state_access}
          * is not available and the buffer is not already bound somewhere, it
          * is bound to hinted target before the operation.
-         * @see size(), subData(), setData(), @fn_gl{BindBuffer} and @fn_gl{GetBufferParameter} or
+         * @see @ref size(), @ref subData(), @ref setData(), @fn_gl{BindBuffer}
+         *      and @fn_gl{GetBufferParameter} or
          *      @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access}
          *      with @def_gl{BUFFER_SIZE}, @fn_gl{GetBufferSubData} or
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access}
@@ -627,8 +621,9 @@ class MAGNUM_EXPORT Buffer {
          * Returns data of given buffer portion. If @extension{EXT,direct_state_access}
          * is not available and the buffer is not already bound somewhere, it
          * is bound to hinted target before the operation.
-         * @see size(), data(), setSubData(), @fn_gl{BindBuffer} and @fn_gl{GetBufferSubData}
-         *      or @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access}
+         * @see @ref size(), @ref data(), @ref setSubData(), @fn_gl{BindBuffer}
+         *      and @fn_gl{GetBufferSubData} or
+         *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access}
          * @requires_gl %Buffer data queries are not available in OpenGL ES.
          *      Use @ref Magnum::Buffer::map() "map()" instead.
          */
@@ -644,8 +639,8 @@ class MAGNUM_EXPORT Buffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData} or
-         *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
+         * @see @ref setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData}
+         *      or @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
         Buffer& setData(Containers::ArrayReference<const void> data, BufferUsage usage) {
             (this->*dataImplementation)(data.size(), data, usage);
@@ -655,22 +650,15 @@ class MAGNUM_EXPORT Buffer {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set buffer data
-         * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, Usage) "setData(Containers::ArrayReference<const void>, Usage)"
+         * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, BufferUsage) "setData(Containers::ArrayReference<const void>, BufferUsage)"
          *      instead.
          */
-        Buffer& setData(GLsizeiptr size, const GLvoid* data, Usage usage) {
+        Buffer& setData(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
             return setData({data, std::size_t(size)}, usage);
         }
         #endif
 
-        /**
-         * @brief Set buffer data
-         * @param data      Vector with data
-         * @param usage     %Buffer usage
-         * @return Reference to self (for method chaining)
-         *
-         * @see setData(GLsizeiptr, const GLvoid*, Usage)
-         */
+        /** @overload */
         template<class T> Buffer& setData(const std::vector<T>& data, BufferUsage usage) {
             setData({data.data(), data.size()}, usage);
             return *this;
@@ -691,7 +679,7 @@ class MAGNUM_EXPORT Buffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
+         * @see @ref setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
          *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
         Buffer& setSubData(GLintptr offset, Containers::ArrayReference<const void> data) {
@@ -710,14 +698,7 @@ class MAGNUM_EXPORT Buffer {
         }
         #endif
 
-        /**
-         * @brief Set buffer subdata
-         * @param offset    Offset in the buffer
-         * @param data      Vector with data
-         * @return Reference to self (for method chaining)
-         *
-         * @see setSubData(GLintptr, GLsizeiptr, const GLvoid*)
-         */
+        /** @overload */
         template<class T> Buffer& setSubData(GLintptr offset, const std::vector<T>& data) {
             setSubData(offset, {data.data(), data.size()});
             return *this;
@@ -792,7 +773,8 @@ class MAGNUM_EXPORT Buffer {
          * target before the operation.
          * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead, as it has more complete set of features.
-         * @see unmapSub(), setTargetHint(), @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
+         * @see @ref unmapSub(), @ref setTargetHint(),
+         *      @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
          *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead.
@@ -805,8 +787,8 @@ class MAGNUM_EXPORT Buffer {
          * @brief Map buffer to client memory
          * @param offset    Offset into the buffer
          * @param length    Length of the mapped memory
-         * @param flags     Flags. At least @ref MapFlag::Read or @ref MapFlag::Write
-         *      must be specified.
+         * @param flags     Flags. At least @ref MapFlag::Read or
+         *      @ref MapFlag::Write must be specified.
          * @return Pointer to buffer data
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -829,13 +811,13 @@ class MAGNUM_EXPORT Buffer {
          * @return Reference to self (for method chaining)
          *
          * Flushes specified subsection of mapped range. Use only if you called
-         * map() with @ref MapFlag::FlushExplicit flag. See
+         * @ref map() with @ref MapFlag::FlushExplicit flag. See
          * @ref Buffer-data-mapping "class documentation" for usage example.
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{FlushMappedBufferRange}
+         * @see @ref setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{FlushMappedBufferRange}
          *      or @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
@@ -851,7 +833,7 @@ class MAGNUM_EXPORT Buffer {
          *      the buffer was mapped (e.g. after screen was resized), `true`
          *      otherwise.
          *
-         * Unmaps buffer previously mapped with map(), invalidating the
+         * Unmaps buffer previously mapped with @ref map(), invalidating the
          * pointer returned by these functions. If @extension{EXT,direct_state_access}
          * is not available and the buffer is not already bound somewhere, it
          * is bound to hinted target before the operation.
@@ -867,7 +849,7 @@ class MAGNUM_EXPORT Buffer {
         /**
          * @brief Unmap portion of buffer
          *
-         * Unmaps portion of buffer previously mapped with mapSub(),
+         * Unmaps portion of buffer previously mapped with @ref mapSub(),
          * invalidating the pointer returned by the function.
          * @see @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
