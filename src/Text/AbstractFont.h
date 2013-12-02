@@ -43,6 +43,10 @@ namespace Magnum { namespace Text {
 /**
 @brief Base for font plugins
 
+Provides interface for opening fonts, filling glyph cache and layouting the
+glyphs. See @ref plugins for more information and `*Font` classes in @ref Text
+namespace for available font plugins.
+
 @section AbstractFont-usage Usage
 
 First step is to open the font using @ref openData(), @ref openSingleData() or

@@ -38,6 +38,10 @@ namespace Magnum { namespace Audio {
 /**
 @brief Base for audio importer plugins
 
+Provides interface for importing various audio formats. See @ref plugins for
+more information and `*Importer` classes in @ref Audio namespace for available
+importer plugins.
+
 @section Audio-AbstractImporter-subclassing Subclassing
 
 Plugin implements function doFeatures(), doIsOpened(), one of or both

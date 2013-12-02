@@ -1,0 +1,205 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page plugins Loading and using plugins
+@brief Extending %Magnum with additional functionality
+
+-   Previous page: @ref transformations
+-   Next page: @ref scenegraph
+
+The base %Magnum library contains math support, scene graph implementation and
+is able to interact with graphics and audio hardware. However, the base library
+doesn't provide any functions for dealing with specific file formats, as there
+are simply too many formats to have them included directly in the library.
+Instead, the library provides plugin API and you can load plugin which will
+then be able to read or write the particular file format.
+
+@tableofcontents
+
+The @ref building "Magnum repository" contains a few basic plugins for opening
+the some formats, such as TGA images or WAV audio files. These plugins are
+included because the file formats are so simple that no external library is
+needed for loading their contents and thus they are suitable for quick demos
+and prototyping without dealing with additional dependencies.
+
+Additional plugins (such as importers for PNG and JPEG images, FreeType fonts
+etc.) are available in @ref building-plugins "Magnum Plugins" repository.
+Majority of these plugins depends on external libraries, thus some of them
+might not be available on all platforms.
+
+@section plugins-types Plugin interfaces
+
+%Magnum contains these plugin interfaces:
+
+-   @ref Trade::AbstractImporter -- importers for general 2D and 3D scene,
+    mesh, material, texture and image data. See `*Importer` classes in
+    @ref Trade namespace for available importer plugins. These are installed in
+    `MAGNUM_PLUGINS_IMPORTER_DIR` directory.
+-   @ref Trade::AbstractImageConverter -- conversion among various image
+    formats. See `*ImageConverter` classes in @ref Trade namespace for list of
+    available image converter plugins. These are installed in
+    `MAGNUM_PLUGINS_IMAGECONVERTER_DIR` directory.
+-   @ref Text::AbstractFont -- font loading and glyph layouting. See `*Font`
+    classes in @ref Text namespace for available font plugins. These are
+    installed in `MAGNUM_PLUGINS_FONT_DIR` directory.
+-   @ref Text::AbstractFontConverter -- font and glyph cache conversion. See
+    `*FontConverter` classes in @ref Text namespace for available font
+    converter plugins. These are installed in `MAGNUM_PLUGINS_FONTCONVERTER_DIR`
+    directory.
+-   @ref Audio::AbstractImporter -- importers for audio formats. See
+    `*Importer` classes in @ref Audio namespace for available audio importer
+    plugins. These are installed in `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`
+    directory.
+
+@section plugins-loading Loading and instantiating the plugins
+
+To load the plugins, you need to instantiate @ref Corrade::PluginManager::Manager
+for given plugin interface, for example @ref Trade::AbstractImporter. You must
+set particular plugin directory, from which the manager will load and
+instantiate the plugins. To save you from hardcoding the value into your
+application source, the plugin directory is provided as `MAGNUM_PLUGINS_DIR`
+CMake variable. The default is set to %Magnum install location, but you can
+change it through CMake to anything else. The `MAGNUM_PLUGINS_IMPORTER_DIR`,
+`MAGNUM_PLUGINS_IMAGECONVERTER_DIR`, `MAGNUM_PLUGINS_FONT_DIR`,
+`MAGNUM_PLUGINS_FONTCONVERTER_DIR`, `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`
+variables depend on `MAGNUM_PLUGINS_DIR`, so if you modify that variable, the
+changes will be reflected in these variables too. See @ref cmake for additional
+information.
+
+You can provide the variable to your sources using CMake configuration file.
+Create `configure.h.cmake` file in your source directory with contents similar
+to these:
+@code
+#define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DIR}"
+@endcode
+
+Then process the file in your `CMakeLists.txt`. The result
+(`${MAGNUM_PLUGINS_IMPORTER_DIR}` gets replaced with the actual value) is put
+into build directory, so don't forget to add it to include path:
+@code
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+@endcode
+
+Then you can instantiate the manager, load particular plugin and create an
+instance of it. Keep in mind that the manager instance must exist for whole
+lifetime of all plugin instances created from it.
+@code
+#include "configure.h"
+
+// ...
+
+{
+    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded)) {
+        Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
+        std::exit(1);
+    }
+    std::unique_ptr<Trade::AbstractImporter> tgaImporter = manager.instance("TgaImporter");
+    if(!tgaImporter) {
+        Error() << "Cannot instantiate TgaImporter plugin";
+        std::exit(2);
+    }
+
+    // Use the plugin...
+
+    // At the end of the scope the tgaImporter instance gets deleted and then
+    // the manager automatically unloads the plugin on destruction
+}
+@endcode
+
+@section plugins-dependencies Plugin dependencies
+
+Some plugins have dependencies, for example the @ref Text::MagnumFont "MagnumFont"
+plugin needs to load the glyph atlas using @ref Trade::TgaImporter "TgaImporter"
+plugin. The dependency loading is done automatically, but you need to create
+instance of corresponding plugin manager in particular plugin dir so the
+dependency can be found. Example:
+@code
+PluginManager::Manager<Trade::AbstractImporter> importerManager(MAGNUM_PLUGINS_IMPORTER_DIR);
+PluginManager::Manager<Text::AbstractFont> fontManager(MAGNUM_PLUGINS_FONT_DIR);
+
+// As a side effect TgaImporter is loaded by importerManager
+fontManager.load("MagnumFont");
+@endcode
+
+@section plugins-static Static plugins
+
+By default all plugins are built as dynamic ones, i.e. they are separate
+binary which gets linked in at runtime. This is good for reducing memory
+consumption, as the code is loaded in memory only for the time it is needed.
+However, if you want to port to platform which does not support dynamic linking
+or you simply want to have the plugin loaded at all times, you can use static
+plugins.
+
+The plugins are built as static if `BUILD_STATIC` CMake parameter is enabled
+(see @ref building and @ref building-plugins for more information). The actual
+usage is basically the same as above, but you need to explicitly find the
+plugin and link it into the executable in your `CMakeLists.txt`. See @ref cmake
+and @ref cmake-plugins for additional information.
+@code
+find_package(Magnum REQUIRED TgaImporter)
+
+add_executable(MyApp ...)
+target_link_libraries(MyApp ... ${MAGNUM_TGAIMPORTER_LIBRARIES})
+@endcode
+
+The only user-visible behavioral change will be that
+@ref Corrade::PluginManager::AbstractManager::load() "PluginManager::Manager::load()"
+will return @ref Corrade::PluginManager::LoadState::Static "PluginManager::LoadState::Static"
+instead of @ref Corrade::PluginManager::LoadState::Loaded "PluginManager::LoadState::Loaded",
+but there is no need to change the above code, as it will work for both dynamic
+and static case.
+
+If you link the plugin into dynamic library or executable, it will register
+itself automatically, but if you want to link the plugin into static library,
+you need to register it yourself with @ref CORRADE_PLUGIN_IMPORT() in some
+function which will be executed before you use the plugin. See the macro
+documentation for information about automatic importing and namespace issues.
+@code
+int main(int argc, char** argv) {
+    CORRADE_PLUGIN_IMPORT(TgaImporter)
+
+    // ...
+}
+@endcode
+
+@section plugins-develop Developing your own plugins
+
+See class documentation of particular plugin interfaces for more information
+about subclassing. The %Corrade's @ref plugin-management "plugin management tutorial"
+contains more information about plugin compilation and registering.
+
+If you want to develop a plugin which depends on another, you need to find the
+original plugin, add its include dirs to include path and link to it, similarly
+to how static plugins are found above. See @ref cmake and @ref cmake-plugins
+for more information.
+
+-   Previous page: @ref transformations
+-   Next page: @ref scenegraph
+
+*/
+}

@@ -30,6 +30,7 @@ namespace Magnum {
 - @subpage types -- @copybrief types
 - @subpage matrix-vector -- @copybrief matrix-vector
 - @subpage transformations -- @copybrief transformations
+- @subpage plugins -- @copybrief plugins
 - @subpage scenegraph -- @copybrief scenegraph
 - @subpage shapes -- @copybrief shapes
 - @subpage debug-tools -- @copybrief debug-tools

@@ -40,7 +40,8 @@ namespace Magnum { namespace Trade {
 @brief Base for image converter plugins
 
 Provides functionality for converting images between various internal formats
-or compressing them.
+or compressing them. See @ref plugins for more information and `*ImageConverter`
+classes in @ref Trade namespace for available image converter plugins.
 
 @section AbstractImageConverter-subclassing Subclassing
 

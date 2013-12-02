@@ -43,8 +43,9 @@ namespace Magnum { namespace Trade {
 /**
 @brief Base for importer plugins
 
-Importer is used for importing data like scenes, lights, objects, images,
-textures etc.
+Provides interface for importing 2D/3D scene, mesh, material, texture and image
+data. See @ref plugins for more information and `*Importer` classes in
+@ref Trade namespace for available importer plugins.
 
 @section AbstractImporter-subclassing Subclassing
 
