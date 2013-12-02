@@ -51,12 +51,13 @@ namespace Magnum { namespace Trade {
 Supports images with format @ref ColorFormat::BGR, @ref ColorFormat::BGRA or
 @ref ColorFormat::Red and type @ref ColorType::UnsignedByte.
 
-This plugin is built if `WITH_TGAIMAGECONVERTER` is enabled in CMake. To use
-dynamic plugin, you need to load `%TgaImageConverter` plugin from
-`imageconverters/` subdirectory of your plugin dir. To use static plugin or use
-this as a dependency of another plugin, you need to request `%TgaImageConverter`
-component in CMake and link to `${MAGNUM_TGAIMAGECONVERTER_LIBRARIES}`. See
-@ref building and @ref cmake for more information.
+This plugin is built if `WITH_TGAIMAGECONVERTER` is enabled when building
+%Magnum. To use dynamic plugin, you need to load `%TgaImageConverter` plugin
+from `MAGNUM_PLUGINS_IMAGECONVERTER_DIR`. To use static plugin or use this as a
+dependency of another plugin, you need to request `%TgaImageConverter`
+component of `%Magnum` package in CMake and link to
+`${MAGNUM_TGAIMAGECONVERTER_LIBRARIES}`. See @ref building, @ref cmake and
+@ref plugins for more information.
 */
 class MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:

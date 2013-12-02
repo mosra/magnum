@@ -27,7 +27,7 @@ namespace Magnum { namespace Math {
 @brief Introduction to essential operations on vectors and points.
 
 -   Previous page: @ref matrix-vector
--   Next page: @ref scenegraph
+-   Next page: @ref plugins
 
 Transformations are essential operations involved in scene management -- object
 relations, hierarchies, animations etc. They extend basic vectors and matrices
@@ -318,6 +318,6 @@ transformation = transformation.normalized();
 @endcode
 
 -   Previous page: @ref matrix-vector
--   Next page: @ref scenegraph
+-   Next page: @ref plugins
 */
 }}

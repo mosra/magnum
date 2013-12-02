@@ -40,7 +40,9 @@ namespace Magnum { namespace Text {
 /**
 @brief Base for font converter plugins
 
-Provides functionality for converting arbitrary font to different format.
+Provides functionality for converting arbitrary font to different format. See
+@ref plugins for more information and `*FontConverter` classes in @ref Text
+namespace for available font converter plugins.
 
 @section AbstractFontConverter-subclassing Subclassing
 

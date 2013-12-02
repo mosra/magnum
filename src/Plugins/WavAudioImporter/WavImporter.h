@@ -42,12 +42,12 @@ Supports mono and stereo PCM files with 8 or 16 bits per channel. The files are
 imported with @ref Buffer::Format::Mono8, @ref Buffer::Format::Mono16,
 @ref Buffer::Format::Stereo8 or @ref Buffer::Format::Stereo16, respectively.
 
-This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled in CMake. To use
-dynamic plugin, you need to load `%WavAudioImporter` plugin from `audioimporters/`
-subdirectory of your plugin dir. To use static plugin or or use this as a
+This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
+%Magnum. To use dynamic plugin, you need to load `%WavAudioImporter` plugin
+from `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`. To use static plugin or use this as a
 dependency of another plugin, you need to request `%WavAudioImporter` component
-in CMake and link to `${MAGNUM_WAVAUDIOIMPORTER_LIBRARIES}`. See @ref building
-and @ref cmake for more information.
+of `%Magnum` package in CMake and link to `${MAGNUM_WAVAUDIOIMPORTER_LIBRARIES}`.
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class WavImporter: public AbstractImporter {
     public:

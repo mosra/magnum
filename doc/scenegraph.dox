@@ -26,7 +26,7 @@ namespace Magnum { namespace SceneGraph {
 /** @page scenegraph Using scene graph
 @brief Overview of scene management capabilities.
 
--   Previous page: @ref transformations
+-   Previous page: @ref plugins
 -   Next page: @ref shapes
 
 %Scene graph provides way to hiearchically manage your objects, their
@@ -304,7 +304,7 @@ On destruction, Object3D destructor is called first, deleting MyFeature,
 which is wrong, because MyFeature is in the same object. After that (if the
 program didn't already crash) destructor of MyFeature is called (again).
 
--   Previous page: @ref transformations
+-   Previous page: @ref plugins
 -   Next page: @ref shapes
 */
 }}

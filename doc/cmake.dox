@@ -47,7 +47,7 @@ variables:
     (e.g. set it to `.` when deploying on Windows with plugins stored
     relatively to the executable), the following `MAGNUM_PLUGINS_*_DIR`
     variables depend on it.
--   `MAGNUM_PLUGINS_INCLUDE_DIR  -- Include dir with plugins
+-   `MAGNUM_PLUGINS_INCLUDE_DIR` -- Include dir with plugins
 -   `MAGNUM_PLUGINS_FONT_DIR` -- Directory with font plugins
 -   `MAGNUM_PLUGINS_FONTCONVERTER_DIR` -- Directory with font converter plugins
 -   `MAGNUM_PLUGINS_IMAGECONVERTER_DIR` -- Directory with image converter
