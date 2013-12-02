@@ -110,6 +110,10 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
             return static_cast<Object<TranslationTransformation<dimensions, T, TranslationType>>&>(*this);
         }
 
+    protected:
+        /* Allow construction only from Object */
+        explicit TranslationTransformation() = default;
+
     private:
         void doResetTransformation() override final { resetTransformation(); }
 
