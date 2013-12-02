@@ -233,6 +233,33 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc
 }
 @endcode
 
+@section platform-custom Using custom platform toolkits
+
+In case you want to use some not-yet-supported toolkit or you don't want to use
+the wrappers in @ref Platform namespace, you can initialize %Magnum manually.
+All you need is to create OpenGL context and then create instance of
+@ref Context class, which will take care of proper initialization and feature
+detection. The instance must be alive for whole application lifetime. Example
+`main()` function with manual initialization:
+@code
+int main(int argc, char** argv) {
+    // Create OpenGL context ...
+
+    {
+        // Initialize Magnum
+        Context context;
+
+        // open window, enter main loop...
+
+        // Magnum context gets destroyed
+    }
+
+    // delete OpenGL context ...
+
+    return 0;
+}
+@endcode
+
 -   Next page: @ref types
 */
 }}

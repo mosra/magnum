@@ -25,7 +25,7 @@
 */
 
 /** @file /Context.h
- * @brief Enum Magnum::Version, class Magnum::Context, Magnum::Extension, macro MAGNUM_ASSERT_VERSION_SUPPORTED(), MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+ * @brief Class @ref Magnum::Context, @ref Magnum::Extension, enum @ref Magnum::Version, macro @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
  */
 
 #include <cstdlib>
@@ -48,7 +48,7 @@ namespace Implementation {
 /**
 @brief OpenGL version
 
-@see Context, MAGNUM_ASSERT_VERSION_SUPPORTED()
+@see @ref Context, @ref MAGNUM_ASSERT_VERSION_SUPPORTED()
 */
 enum class Version: Int {
     None = 0xFFFF,                  /**< @brief Unspecified */
@@ -102,8 +102,8 @@ Encapsulates runtime information about OpenGL extension, such as name string,
 minimal required OpenGL version and version in which the extension was adopted
 to core.
 
-See also Extensions namespace, which contain compile-time information about
-OpenGL extensions.
+See also @ref Extensions namespace, which contain compile-time information
+about OpenGL extensions.
 */
 class MAGNUM_EXPORT Extension {
     friend class Context;
@@ -133,12 +133,13 @@ class MAGNUM_EXPORT Extension {
 };
 
 /**
-@brief OpenGL context
+@brief Magnum context
 
 Provides access to version and extension information. Instance available
-through Context::current() is automatically created during construction of
-*Application classes in Platform namespace so you can safely assume that the
-instance is available during whole lifetime of *Application object.
+through @ref Context::current() is automatically created during construction of
+*Application classes in @ref Platform namespace. You can safely assume that the
+instance is available during whole lifetime of *Application object. See
+@ref platform documentation for more information about engine setup.
 @todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature?
     (here or where?)
 */
@@ -152,7 +153,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Context flag
          *
-         * @see Flags, flags()
+         * @see @ref Flags, @ref flags()
          */
         enum class Flag: GLint {
             /**
@@ -181,15 +182,15 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Context flags
          *
-         * @see flags()
+         * @see @ref flags()
          */
         typedef Containers::EnumSet<Flag, GLint> Flags;
 
         /**
          * @brief Constructor
          *
-         * Constructed automatically, see class documentation for more
-         * information.
+         * Does initial setup, detects available features and enables them
+         * throughout the engine.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
          *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
@@ -204,24 +205,24 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief OpenGL version
          *
-         * @see majorVersion(), minorVersion(), versionString(),
-         *      shadingLanguageVersionString()
+         * @see @ref majorVersion(), @ref minorVersion(), @ref versionString(),
+         *      @ref shadingLanguageVersionString()
          */
         Version version() const { return _version; }
 
         /**
          * @brief Major OpenGL version (e.g. `4`)
          *
-         * @see minorVersion(), version(), versionString(),
-         *      shadingLanguageVersionString()
+         * @see @ref minorVersion(), @ref version(), @ref versionString(),
+         *      @ref shadingLanguageVersionString()
          */
         Int majorVersion() const { return _majorVersion; }
 
         /**
          * @brief Minor OpenGL version (e.g. `3`)
          *
-         * @see majorVersion(), version(), versionString(),
-         *      shadingLanguageVersionString()
+         * @see @ref majorVersion(), @ref version(), @ref versionString(),
+         *      @ref shadingLanguageVersionString()
          */
         Int minorVersion() const { return _minorVersion; }
 
@@ -230,7 +231,7 @@ class MAGNUM_EXPORT Context {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
-         * @see rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
+         * @see @ref rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
          */
         std::string vendorString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VENDOR));
@@ -241,7 +242,7 @@ class MAGNUM_EXPORT Context {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
-         * @see vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
+         * @see @ref vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
         std::string rendererString() const {
             return reinterpret_cast<const char*>(glGetString(GL_RENDERER));
@@ -252,8 +253,8 @@ class MAGNUM_EXPORT Context {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
-         * @see shadingLanguageVersionString(), version(), @fn_gl{GetString}
-         *      with @def_gl{VERSION}
+         * @see @ref shadingLanguageVersionString(), @ref version(),
+         *      @fn_gl{GetString} with @def_gl{VERSION}
          */
         std::string versionString() const {
             return reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -264,7 +265,7 @@ class MAGNUM_EXPORT Context {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
-         * @see versionString(), version(), @fn_gl{GetString} with
+         * @see @ref versionString(), @ref version(), @fn_gl{GetString} with
          *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
         std::string shadingLanguageVersionString() const {
@@ -276,8 +277,9 @@ class MAGNUM_EXPORT Context {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
-         * @see versionString(), version(), @fn_gl{Get} with @def_gl{NUM_SHADING_LANGUAGE_VERSIONS},
-         *      @fn_gl{GetString} with @def_gl{SHADING_LANGUAGE_VERSION}
+         * @see @ref versionString(), @ref version(), @fn_gl{Get} with
+         *      @def_gl{NUM_SHADING_LANGUAGE_VERSIONS}, @fn_gl{GetString} with
+         *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
@@ -289,8 +291,7 @@ class MAGNUM_EXPORT Context {
          *
          * The list contains only extensions from OpenGL versions newer than
          * the current.
-         *
-         * @see isExtensionSupported(), Extension::extensions()
+         * @see @ref isExtensionSupported(), @ref Extension::extensions()
          */
         const std::vector<Extension>& supportedExtensions() const {
             return _supportedExtensions;
@@ -299,7 +300,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Whether given OpenGL version is supported
          *
-         * @see supportedVersion(), MAGNUM_ASSERT_VERSION_SUPPORTED()
+         * @see @ref supportedVersion(), @ref MAGNUM_ASSERT_VERSION_SUPPORTED()
          */
         bool isVersionSupported(Version version) const {
             return _version >= version;
@@ -309,7 +310,7 @@ class MAGNUM_EXPORT Context {
          * @brief Get supported OpenGL version
          *
          * Returns first supported OpenGL version from passed list. Convenient
-         * equivalent to subsequent isVersionSupported() calls, e.g.:
+         * equivalent to subsequent @ref isVersionSupported() calls, e.g.:
          * @code
          * Version v = isVersionSupported(Version::GL330) ? Version::GL330 : Version::GL210;
          * Version v = supportedVersion({Version::GL330, Version::GL210});
@@ -325,8 +326,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Whether given extension is supported
          *
-         * %Extensions usable with this function are listed in Extensions
-         * namespace in header Extensions.h. Example usage:
+         * %Extensions usable with this function are listed in @ref Extensions
+         * namespace in header @ref Extensions.h. Example usage:
          * @code
          * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
          *     // draw fancy detailed model
@@ -335,8 +336,8 @@ class MAGNUM_EXPORT Context {
          * }
          * @endcode
          *
-         * @see isExtensionSupported(const Extension&) const,
-         *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+         * @see @ref isExtensionSupported(const Extension&) const,
+         *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
         template<class T> bool isExtensionSupported() const {
             return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
@@ -368,8 +369,8 @@ class MAGNUM_EXPORT Context {
          * hardware, but for general usage prefer isExtensionSupported() const,
          * as it does most operations in compile time.
          *
-         * @see supportedExtensions(), Extension::extensions(),
-         *      MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+         * @see @ref supportedExtensions(), @ref Extension::extensions(),
+         *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
         bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(extension._coreVersion) || (isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index]);
@@ -407,8 +408,8 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 @endcode
 
 @see @ref Magnum::Context::isVersionSupported() "Context::isVersionSupported()",
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(), CORRADE_ASSERT(),
-    CORRADE_INTERNAL_ASSERT()
+    @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(), @ref CORRADE_ASSERT(),
+    @ref CORRADE_INTERNAL_ASSERT()
 */
 #ifdef CORRADE_NO_ASSERT
 #define MAGNUM_ASSERT_VERSION_SUPPORTED(version) do {} while(0)
@@ -437,8 +438,8 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 @endcode
 
 @see @ref Magnum::Context::isExtensionSupported() "Context::isExtensionSupported()",
-    MAGNUM_ASSERT_VERSION_SUPPORTED(), CORRADE_ASSERT(),
-    CORRADE_INTERNAL_ASSERT()
+    @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref CORRADE_ASSERT(),
+    @ref CORRADE_INTERNAL_ASSERT()
 */
 #ifdef CORRADE_NO_ASSERT
 #define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension) do {} while(0)
