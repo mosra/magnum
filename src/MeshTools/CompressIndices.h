@@ -32,6 +32,10 @@
 
 #include "Mesh.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Buffer.h"
+#endif
+
 #include "magnumMeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {

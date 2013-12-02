@@ -527,7 +527,9 @@ template<class T> class Array1D;
 template<class T> class Array2D;
 template<class T> class Array3D;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class BufferUsage: GLenum;
+#endif
 class Buffer;
 
 #ifndef MAGNUM_TARGET_GLES2

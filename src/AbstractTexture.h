@@ -33,6 +33,7 @@
 #include "Sampler.h"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Buffer.h"
 #include "ImageFormat.h"
 #include "TextureFormat.h"
 #endif
