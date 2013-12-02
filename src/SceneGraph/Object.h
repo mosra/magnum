@@ -95,6 +95,7 @@ class documentation or @ref compilation-speedup-hpp for more information.
 
 @see @ref Scene, @ref AbstractFeature, @ref AbstractTransformation,
     @ref DebugTools::ObjectRenderer
+@todo Test (and fix) that hpp works also on Windows
 */
 template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
