@@ -36,7 +36,7 @@
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
 #include "Buffer.h"
-#include "ImageFormat.h"
+#include "ColorFormat.h"
 #endif
 
 namespace Magnum {

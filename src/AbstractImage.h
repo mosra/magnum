@@ -34,7 +34,7 @@
 #include "magnumVisibility.h"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
-#include "ImageFormat.h"
+#include "ColorFormat.h"
 #endif
 
 namespace Magnum {
