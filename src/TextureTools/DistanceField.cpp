@@ -25,8 +25,10 @@
 #include "TextureTools/DistanceField.h"
 
 #include <Utility/Resource.h>
-#include "Math/Geometry/Rectangle.h"
+
+#include "Math/Range.h"
 #include "AbstractShaderProgram.h"
+#include "Buffer.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
 #include "Mesh.h"
@@ -129,9 +131,9 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
 
 }
 #ifndef MAGNUM_TARGET_GLES
-void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i&)
+void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i&)
 #else
-void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectangle, const Int radius, const Vector2i& imageSize)
+void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i& imageSize)
 #endif
 {
     #ifndef MAGNUM_TARGET_GLES
@@ -189,7 +191,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Rectanglei& rectan
             Vector2(-1.0, -3.0),
             Vector2( 3.0,  1.0)
         };
-        buffer.setData(triangle, Buffer::Usage::StaticDraw);
+        buffer.setData(triangle, BufferUsage::StaticDraw);
         mesh.addVertexBuffer(buffer, 0, DistanceFieldShader::Position());
     }
 

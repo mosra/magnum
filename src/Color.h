@@ -123,11 +123,11 @@ template<class T> inline typename BasicColor3<T>::HSV toHSV(typename std::enable
     return toHSV<typename BasicColor3<T>::FloatingPointType>(Math::normalize<BasicColor3<typename BasicColor3<T>::FloatingPointType>>(color));
 }
 
-/* Default alpha value */
-template<class T> inline constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type defaultAlpha() {
+/* Value for full channel (1.0f for floats, 255 for unsigned byte) */
+template<class T> inline constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
 }
-template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::value, T>::type defaultAlpha() {
+template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
     return std::numeric_limits<T>::max();
 }
 
@@ -136,9 +136,16 @@ template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::
 /**
 @brief Three-component (RGB) color
 
-The class can store both floating-point (normalized) and integral
-(denormalized) representation of color. You can convert between these two
-representations using fromNormalized() and fromDenormalized().
+The class can store either floating-point (normalized) or integral
+(denormalized) representation of color. Note that constructor conversion
+between different types (like in @ref Math::Vector "Vector" classes) doesn't do
+any (de)normalization, you should use @ref Math::normalize() and
+@ref Math::denormalize() instead, for example:
+@code
+typedef BasicColor3<UnsignedByte> Color3ub;
+Color3 a(1.0f, 0.5f, 0.75f);
+auto b = Math::denormalize<Color3ub>(a); // b == {255, 127, 191}
+@endcode
 
 Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
@@ -150,6 +157,72 @@ range @f$ [0.0, 1.0] @f$.
    impossible to explicitly instantiate */
 template<class T> class BasicColor3: public Math::Vector3<T> {
     public:
+        /**
+         * @brief Red color
+         *
+         * Convenience alternative to e.g. `%Color3(red, 0.0f, 0.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::xAxis().
+         * @see @ref green(), @ref blue(), @ref cyan()
+         */
+        constexpr static BasicColor3<T> red(T red = Implementation::fullChannel<T>()) {
+            return Math::Vector3<T>::xAxis(red);
+        }
+
+        /**
+         * @brief Green color
+         *
+         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::yAxis().
+         * @see @ref red(), @ref blue(), @ref magenta()
+         */
+        constexpr static BasicColor3<T> green(T green = Implementation::fullChannel<T>()) {
+            return Math::Vector3<T>::yAxis(green);
+        }
+
+        /**
+         * @brief Blue color
+         *
+         * Convenience alternative to e.g. `%Color3(0.0f, 0.0f, blue)`. With
+         * floating-point underlying type equivalent to @ref Vector3::zAxis().
+         * @see @ref red(), @ref green(), @ref yellow()
+         */
+        constexpr static BasicColor3<T> blue(T blue = Implementation::fullChannel<T>()) {
+            return Math::Vector3<T>::zAxis(blue);
+        }
+
+        /**
+         * @brief Cyan color
+         *
+         * Convenience alternative to e.g. `%Color3(red, 1.0f, 1.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::xScale().
+         * @see @ref magenta(), @ref yellow(), @ref red()
+         */
+        constexpr static BasicColor3<T> cyan(T red = T(0)) {
+            return {red, Implementation::fullChannel<T>(), Implementation::fullChannel<T>()};
+        }
+
+        /**
+         * @brief Magenta color
+         *
+         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * floating-point underlying type equivalent to @ref Vector3::yScale().
+         * @see @ref cyan(), @ref yellow(), @ref green()
+         */
+        constexpr static BasicColor3<T> magenta(T green = T(0)) {
+            return {Implementation::fullChannel<T>(), green, Implementation::fullChannel<T>()};
+        }
+
+        /**
+         * @brief Yellow color
+         *
+         * Convenience alternative to `%Color3(0.0f, 0.0f, yellow)`. With
+         * floating-point underlying type equivalent to @ref Vector3::zScale().
+         * @see @ref cyan(), @ref magenta(), @ref red()
+         */
+        constexpr static BasicColor3<T> yellow(T blue = T(0)) {
+            return {Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), blue};
+        }
+
         /** @brief Corresponding floating-point type for HSV computation */
         typedef typename Math::TypeTraits<T>::FloatingPointType FloatingPointType;
 
@@ -196,7 +269,13 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          */
         constexpr /*implicit*/ BasicColor3(T r, T g, T b): Math::Vector3<T>(r, g, b) {}
 
-        /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
+        /**
+         * @copydoc Math::Vector::Vector(const Vector<size, U>&)
+         *
+         * @attention This function doesn't do any (de)normalization, use
+         *      @ref Math::normalize() and @ref Math::denormalize() instead.
+         *      See class documentation for more information.
+         */
         template<class U> constexpr explicit BasicColor3(const Math::Vector<3, U>& other): Math::Vector3<T>(other) {}
 
         /** @brief Copy constructor */
@@ -277,11 +356,71 @@ class BasicColor4: public Math::Vector4<T> {
         typedef typename BasicColor3<T>::HSV HSV;
 
         /**
+         * @brief Red color
+         *
+         * Convenience alternative to e.g. `%Color4(red, 0.0f, 0.0f, alpha)`.
+         * @see @ref green(), @ref blue(), @ref cyan()
+         */
+        constexpr static BasicColor4<T> red(T red = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
+            return {red, T(0), T(0), alpha};
+        }
+
+        /**
+         * @brief Green color
+         *
+         * Convenience alternative to e.g. `%Color4(0.0f, green, 0.0f, alpha)`.
+         * @see @ref red(), @ref blue(), @ref magenta()
+         */
+        constexpr static BasicColor4<T> green(T green = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
+            return {T(0), green, T(0), alpha};
+        }
+
+        /**
+         * @brief Blue color
+         *
+         * Convenience alternative to e.g. `%Color4(0.0f, 0.0f, blue, alpha)`.
+         * @see @ref red(), @ref green(), @ref yellow()
+         */
+        constexpr static BasicColor4<T> blue(T blue = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
+            return {T(0), T(0), blue, alpha};
+        }
+
+        /**
+         * @brief Cyan color
+         *
+         * Convenience alternative to e.g. `%Color4(red, 1.0f, 1.0f, alpha)`.
+         * @see @ref magenta(), @ref yellow(), @ref red()
+         */
+        constexpr static BasicColor4<T> cyan(T red = T(0), T alpha = Implementation::fullChannel<T>()) {
+            return {red, Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), alpha};
+        }
+
+        /**
+         * @brief Magenta color
+         *
+         * Convenience alternative to e.g. `%Color4(1.0f, green, 1.0f, alpha)`.
+         * @see @ref cyan(), @ref yellow(), @ref green()
+         */
+        constexpr static BasicColor4<T> magenta(T green = T(0), T alpha = Implementation::fullChannel<T>()) {
+            return {Implementation::fullChannel<T>(), green, Implementation::fullChannel<T>(), alpha};
+        }
+
+        /**
+         * @brief Yellow color
+         *
+         * Convenience alternative to e.g. `%Color4(1.0f, 1.0f, blue, alpha)`.
+         * @see @ref cyan(), @ref magenta(), @ref red()
+         */
+        constexpr static BasicColor4<T> yellow(T blue = T(0), T alpha = Implementation::fullChannel<T>()) {
+            return {Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), blue, alpha};
+        }
+
+        /**
          * @copydoc BasicColor3::fromHSV()
          * @param a     Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr static BasicColor4<T> fromHSV(HSV hsv, T a = Implementation::defaultAlpha<T>()) {
+        constexpr static BasicColor4<T> fromHSV(HSV hsv, T a = Implementation::fullChannel<T>()) {
             return BasicColor4<T>(Implementation::fromHSV<T>(hsv), a);
         }
         /** @overload */
@@ -295,14 +434,14 @@ class BasicColor4: public Math::Vector4<T> {
          * RGB components are set to zero, A component is set to 1.0 for
          * floating-point types and maximum positive value for integral types.
          */
-        constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::defaultAlpha<T>()) {}
+        constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::fullChannel<T>()) {}
 
         /**
          * @copydoc BasicColor3::BasicColor3(T)
          * @param alpha Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr explicit BasicColor4(T rgb, T alpha = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
+        constexpr explicit BasicColor4(T rgb, T alpha = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
 
         /**
          * @brief Constructor
@@ -312,7 +451,7 @@ class BasicColor4: public Math::Vector4<T> {
          * @param a     A value, defaults to 1.0 for floating-point types and
          *      maximum positive value for integral types.
          */
-        constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(r, g, b, a) {}
+        constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(r, g, b, a) {}
 
         /**
          * @brief Constructor
@@ -321,9 +460,15 @@ class BasicColor4: public Math::Vector4<T> {
          */
         /* Not marked as explicit, because conversion from BasicColor3 to BasicColor4
            is fairly common, nearly always with A set to 1 */
-        constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = Implementation::defaultAlpha<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
-        /** @copydoc Math::Vector::Vector(const Vector<size, U>&) */
+        /**
+         * @copydoc Math::Vector::Vector(const Vector<size, U>&)
+         *
+         * @attention This function doesn't do any (de)normalization, use
+         *      @ref Math::normalize() and @ref Math::denormalize() instead.
+         *      See @ref BasicColor3 class documentation for more information.
+         */
         template<class U> constexpr explicit BasicColor4(const Math::Vector<4, U>& other): Math::Vector4<T>(other) {}
 
         /** @brief Copy constructor */

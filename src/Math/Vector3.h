@@ -51,25 +51,26 @@ template<class T> class Vector3: public Vector<3, T> {
          * Matrix4::translation(Vector3::xAxis(5.0f)); // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
          * Matrix4::rotation(30.0_degf, Vector3::xAxis()); // same as Matrix::rotation(30.0_degf, {1.0f, 0.0f, 0.0f});
          * @endcode
-         * @see yAxis(), zAxis(), xScale(), Matrix4::right()
+         * @see @ref yAxis(), @ref zAxis(), @ref xScale(), @ref Color3::red(),
+         *      @ref Matrix4::right()
          */
-        constexpr static Vector3<T> xAxis(T length = T(1)) { return Vector3<T>(length, T(), T()); }
+        constexpr static Vector3<T> xAxis(T length = T(1)) { return {length, T(0), T(0)}; }
 
         /**
          * @brief %Vector in direction of Y axis (up)
          *
-         * See xAxis() for more information.
-         * @see yScale(), Matrix4::up()
+         * See @ref xAxis() for more information.
+         * @see @ref yScale(), @ref Color3::green(), @ref Matrix4::up()
          */
-        constexpr static Vector3<T> yAxis(T length = T(1)) { return Vector3<T>(T(), length, T()); }
+        constexpr static Vector3<T> yAxis(T length = T(1)) { return {T(0), length, T(0)}; }
 
         /**
          * @brief %Vector in direction of Z axis (backward)
          *
-         * See xAxis() for more information.
-         * @see zScale(), Matrix4::backward()
+         * See @ref xAxis() for more information.
+         * @see @ref zScale(), @ref Color3::blue(), @ref Matrix4::backward()
          */
-        constexpr static Vector3<T> zAxis(T length = T(1)) { return Vector3<T>(T(), T(), length); }
+        constexpr static Vector3<T> zAxis(T length = T(1)) { return {T(0), T(0), length}; }
 
         /**
          * @brief Scaling vector in direction of X axis (width)
@@ -78,25 +79,25 @@ template<class T> class Vector3: public Vector<3, T> {
          * @code
          * Matrix4::scaling(Vector3::xScale(-2.0f)); // same as Matrix4::scaling({-2.0f, 1.0f, 1.0f});
          * @endcode
-         * @see yScale(), zScale(), xAxis()
+         * @see @ref yScale(), @ref zScale(), @ref Color3::cyan(), @ref xAxis()
          */
-        constexpr static Vector3<T> xScale(T scale) { return Vector3<T>(scale, T(1), T(1)); }
+        constexpr static Vector3<T> xScale(T scale) { return {scale, T(1), T(1)}; }
 
         /**
          * @brief Scaling vector in direction of Y axis (height)
          *
-         * See xScale() for more information.
-         * @see yAxis()
+         * See @ref xScale() for more information.
+         * @see @ref yAxis(), @ref Color3::magenta()
          */
-        constexpr static Vector3<T> yScale(T scale) { return Vector3<T>(T(1), scale, T(1)); }
+        constexpr static Vector3<T> yScale(T scale) { return {T(1), scale, T(1)}; }
 
         /**
          * @brief Scaling vector in direction of Z axis (depth)
          *
-         * See xScale() for more information.
-         * @see zAxis()
+         * See @ref xScale() for more information.
+         * @see @ref zAxis(), @ref Color3::yellow()
          */
-        constexpr static Vector3<T> zScale(T scale) { return Vector3<T>(T(1), T(1), scale); }
+        constexpr static Vector3<T> zScale(T scale) { return {T(1), T(1), scale}; }
 
         /**
          * @brief Cross product
@@ -148,7 +149,6 @@ template<class T> class Vector3: public Vector<3, T> {
 
         /** @brief Copy constructor */
         constexpr Vector3(const Vector<3, T>& other): Vector<3, T>(other) {}
-
 
         /**
          * @brief X component

@@ -29,8 +29,9 @@
  */
 
 #include <cstddef>
+#include <corradeConfigure.h>
 
-#include "corradeConfigure.h"
+#include "Types.h"
 
 namespace Magnum { namespace Math {
 
@@ -74,9 +75,18 @@ template<class> class Vector2;
 template<class> class Vector3;
 template<class> class Vector4;
 
+template<UnsignedInt, class> class Range;
+#ifndef CORRADE_GCC46_COMPATIBILITY
+template<class T> using Range1D = Range<1, T>;
+#endif
+template<class> class Range2D;
+template<class> class Range3D;
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 namespace Geometry {
     template<class> class Rectangle;
 }
+#endif
 
 }}
 

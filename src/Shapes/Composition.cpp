@@ -59,42 +59,30 @@ Because these values are relative to parent, they don't need to be modified
 when concatenating.
 */
 
-template<UnsignedInt dimensions> Composition<dimensions>::Composition(const Composition<dimensions>& other): _shapeCount(other._shapeCount), _nodeCount(other._nodeCount) {
+template<UnsignedInt dimensions> Composition<dimensions>::Composition(const Composition<dimensions>& other): _shapes(other._shapes.size()), _nodes(other._nodes.size()) {
     copyShapes(0, other);
     copyNodes(0, other);
 }
 
-template<UnsignedInt dimensions> Composition<dimensions>::Composition(Composition<dimensions>&& other): _shapeCount(other._shapeCount), _nodeCount(other._nodeCount), _shapes(other._shapes), _nodes(other._nodes) {
+template<UnsignedInt dimensions> Composition<dimensions>::Composition(Composition<dimensions>&& other): _shapes(std::move(other._shapes)), _nodes(std::move(other._nodes)) {
     other._shapes = nullptr;
-    other._shapeCount = 0;
-
     other._nodes = nullptr;
-    other._nodeCount = 0;
 }
 
 template<UnsignedInt dimensions> Composition<dimensions>::~Composition() {
-    for(std::size_t i = 0; i != _shapeCount; ++i)
+    for(std::size_t i = 0; i != _shapes.size(); ++i)
         delete _shapes[i];
-
-    delete[] _shapes;
-    delete[] _nodes;
 }
 
 template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions>::operator=(const Composition<dimensions>& other) {
-    for(std::size_t i = 0; i != _shapeCount; ++i)
+    for(std::size_t i = 0; i != _shapes.size(); ++i)
         delete _shapes[i];
 
-    if(_shapeCount != other._shapeCount) {
-        delete[] _shapes;
-        _shapeCount = other._shapeCount;
-        _shapes = new Implementation::AbstractShape<dimensions>*[_shapeCount];
-    }
+    if(_shapes.size() != other._shapes.size())
+        _shapes = Containers::Array<Implementation::AbstractShape<dimensions>*>(other._shapes.size());
 
-    if(_nodeCount != other._nodeCount) {
-        delete[] _nodes;
-        _nodeCount = other._nodeCount;
-        _nodes = new Node[_nodeCount];
-    }
+    if(_nodes.size() != other._nodes.size())
+        _nodes = Containers::Array<Node>(other._nodes.size());
 
     copyShapes(0, other);
     copyNodes(0, other);
@@ -102,33 +90,32 @@ template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions
 }
 
 template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions>::operator=(Composition<dimensions>&& other) {
-    std::swap(other._shapeCount, _shapeCount);
-    std::swap(other._nodeCount, _nodeCount);
     std::swap(other._shapes, _shapes);
     std::swap(other._nodes, _nodes);
     return *this;
 }
 
 template<UnsignedInt dimensions> void Composition<dimensions>::copyShapes(const std::size_t offset, Composition<dimensions>&& other) {
-    std::move(other._shapes, other._shapes+other._shapeCount, _shapes+offset);
-    delete[] other._shapes;
+    CORRADE_INTERNAL_ASSERT(_shapes.size() >= other._shapes.size()+offset);
+    std::move(other._shapes.begin(), other._shapes.end(), _shapes.begin()+offset);
     other._shapes = nullptr;
-    other._shapeCount = 0;
 }
 
 template<UnsignedInt dimensions> void Composition<dimensions>::copyShapes(const std::size_t offset, const Composition<dimensions>& other) {
-    for(std::size_t i = 0; i != other._shapeCount; ++i)
-        _shapes[i+offset] = other._shapes[i]->clone();
+    CORRADE_INTERNAL_ASSERT(_shapes.size() >= other._shapes.size()+offset);
+    for(Implementation::AbstractShape<dimensions> * const* i = other._shapes.begin(), ** o = _shapes.begin()+offset; i != other._shapes.end(); ++i, ++o)
+        *o = (*i)->clone();
 }
 
 template<UnsignedInt dimensions> void Composition<dimensions>::copyNodes(std::size_t offset, const Composition<dimensions>& other) {
-    std::copy(other._nodes, other._nodes+other._nodeCount, _nodes+offset);
+    CORRADE_INTERNAL_ASSERT(_nodes.size() >= other._nodes.size()+offset);
+    std::copy(other._nodes.begin(), other._nodes.end(), _nodes.begin()+offset);
 }
 
 template<UnsignedInt dimensions> Composition<dimensions> Composition<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
     Composition<dimensions> out(*this);
-    for(std::size_t i = 0; i != _shapeCount; ++i)
-        _shapes[i]->transform(matrix, out._shapes[i]);
+    for(Implementation::AbstractShape<dimensions> * const* i = _shapes.begin(), * const* o = out._shapes.begin(); i != _shapes.end(); ++i, ++o)
+        (*i)->transform(matrix, *o);
     return out;
 }
 
@@ -136,7 +123,7 @@ template<UnsignedInt dimensions> bool Composition<dimensions>::collides(const Im
     /* Empty group */
     if(shapeBegin == shapeEnd) return false;
 
-    CORRADE_INTERNAL_ASSERT(node < _nodeCount && shapeBegin < shapeEnd);
+    CORRADE_INTERNAL_ASSERT(node < _nodes.size() && shapeBegin < shapeEnd);
 
     /* Collision on the left child. If the node is leaf one (no left child
        exists), do it directly, recurse instead. */

@@ -23,10 +23,10 @@
 #
 
 if(BUILD_GL_TESTS)
-    corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
-    corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
-    corrade_add_test(ShadersMeshVisualizerTest MeshVisualizerTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
-    corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
-    corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
-    corrade_add_test(ShadersVertexColorTest VertexColorTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersMeshVisualizerGLTest MeshVisualizerGLTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersPhongGLTest PhongGLTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersVectorGLTest VectorGLTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShadersVertexColorGLTest VertexColorGLTest.cpp LIBRARIES MagnumShaders ${GL_TEST_LIBRARIES})
 endif()

@@ -24,6 +24,7 @@
 
 #include "GlxContextHandler.h"
 
+#include <cstdlib>
 #include <GL/glxext.h>
 #include <Utility/Debug.h>
 

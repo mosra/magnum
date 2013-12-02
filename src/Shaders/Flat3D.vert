@@ -34,14 +34,14 @@ uniform highp mat4 transformationProjectionMatrix;
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 0) in highp vec4 position;
+layout(location = POSITION_ATTRIBUTE_LOCATION) in highp vec4 position;
 #else
 in highp vec4 position;
 #endif
 
 #ifdef TEXTURED
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 1) in mediump vec2 textureCoords;
+layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoords;
 #else
 in mediump vec2 textureCoords;
 #endif

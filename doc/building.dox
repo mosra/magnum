@@ -250,20 +250,16 @@ Integration with various external math and physics libraries is provided by
 
 @subsection building-packages-arch ArchLinux packages
 
-In `package/archlinux` directory is currently one PKGBUILD for Git development
+In `package/archlinux` directory is currently one package for Git development
 build. The package is also in AUR under the same name.
 
-There are also a few development PKGBUILDs in project root, which allow you to
-build and install the package directly from source tree without downloading
-anything. The native PKGBUILD also contains `check()` function which will run
-all unit tests before packaging.
+There are also a few development PKGBUILDs in `package/archlinux`, which allow
+you to build and install the package directly from source tree without
+downloading anything. The native PKGBUILDs also contain `check()` function
+which will run all unit tests before packaging. You need to build them from
+project root:
 
-If you want to build with another compiler (e.g. Clang), run makepkg this way:
-
-    CXX=clang++ makepkg
-
-Development PKGBUILDs can detect when Clang is used and remove unsupported CXX
-flags.
+    makepkg -p package/archlinux/<file>
 
 @section building-crosscompiling Crosscompiling
 
@@ -385,6 +381,38 @@ depending projects.
 If you have Node.js installed, you can also build and run unit tests using
 `ctest`. See `BUILD_TESTS` above.
 
+@section building-ci-jenkins Jenkins Continuous Integration
+
+In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
+containing job configuration, one for build and non-GL tests and the other for
+GL tests only. Setup your Jenkins server, enable the **Git** and
+**Text-finder** plugin and download the CLI application from here:
+
+    http://your-jenkins-server/cli
+
+Then add new jobs or update existing ones (replace `<command>` with `create-job`
+or `update-job`).
+
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum < jenkins.xml
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-GLTests < jenkins-gltests.xml
+
+Build is done using **Ninja** build system and everything possible is enabled,
+thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects that
+**GCC** >=4.8.2, 4.7, 4.6 and **Clang** are installed and there are **OpenGL**,
+**OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to compile the
+library with every combination of them. You can add/remove the axes in
+`axes/hudson.matrix.TextAxis` or via the web interface later.
+
+Magnum-GLTests depend on active X11 session, thus they should be run from
+Jenkins instance running on graphical user session.
+
+There is also MinGW32 and Emscripten configuration, add or update them with the
+commands below. See @ref building-crosscompiling for more information about
+setting up the crosscompilers and `toolchains/` submodule. For Emscripten you
+need also **Node.js** installed to run the tests.
+
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-MinGW32 < jenkins-mingw32.xml
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Emscripten < jenkins-emscripten.xml
 */
 
 }

@@ -1,8 +1,8 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum
-pkgver=dev.es2desktop
+pkgver=dev.es3
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (desktop OpenGL ES 2.0 version)"
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (OpenGL ES 3.0 version)"
 arch=('i686' 'x86_64')
 url="https://github.com/mosra/magnum"
 license=('MIT')
@@ -12,38 +12,31 @@ options=(!strip)
 provides=('magnum-git')
 
 build() {
-    mkdir -p "$startdir/build-es2desktop"
-    cd "$startdir/build-es2desktop"
-
-    if [ "$CXX" = clang++ ] ; then
-        newcxxflags=$(echo $CXXFLAGS | sed s/--param=ssp-buffer-size=4//g)
-        export CXXFLAGS="$newcxxflags"
-    fi
+    mkdir -p "$startdir/build-es3"
+    cd "$startdir/build-es3"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DBUILD_TESTS=ON \
         -DTARGET_GLES=ON \
-        -DTARGET_GLES2=ON \
-        -DTARGET_DESKTOP_GLES=ON \
-        -DWITH_MAGNUMINFO=ON \
-        -DWITH_GLXAPPLICATION=ON \
-        -DWITH_WINDOWLESSGLXAPPLICATION=ON \
+        -DTARGET_GLES2=OFF \
+        -DWITH_AUDIO=ON \
+        -DWITH_XEGLAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
+        -DBUILD_TESTS=ON \
         -G Ninja
     ninja
 }
 
 check() {
-    cd "$startdir/build-es2desktop"
+    cd "$startdir/build-es3"
     ctest --output-on-failure
 }
 
 package() {
-    cd "$startdir/build-es2desktop"
+    cd "$startdir/build-es3"
     DESTDIR="$pkgdir/" ninja install
 }

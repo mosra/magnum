@@ -22,17 +22,38 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/Geometry/Rectangle.h"
+#include "Shaders/VertexColor.h"
+#include "Test/AbstractOpenGLTester.h"
 
-namespace Corrade { namespace Utility {
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Int>>;
-template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::UnsignedInt>>;
-#ifndef MAGNUM_TARGET_GLES
-template struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Double>>;
-#endif
+#ifdef MAGNUM_BUILD_STATIC
+#include "Shaders/magnumShadersResourceImport.hpp"
 #endif
 
-}}
+namespace Magnum { namespace Shaders { namespace Test {
+
+class VertexColorGLTest: public Magnum::Test::AbstractOpenGLTester {
+    public:
+        explicit VertexColorGLTest();
+
+        void compile2D();
+        void compile3D();
+};
+
+VertexColorGLTest::VertexColorGLTest() {
+    addTests({&VertexColorGLTest::compile2D,
+              &VertexColorGLTest::compile3D});
+}
+
+void VertexColorGLTest::compile2D() {
+    Shaders::VertexColor2D shader;
+    CORRADE_VERIFY(shader.validate().first);
+}
+
+void VertexColorGLTest::compile3D() {
+    Shaders::VertexColor3D shader;
+    CORRADE_VERIFY(shader.validate().first);
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorGLTest)

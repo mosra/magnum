@@ -68,6 +68,7 @@ class Vector2Test: public Corrade::TestSuite::Tester {
         void scales();
         void perpendicular();
         void aspectRatio();
+        void minmax();
 
         void swizzleType();
         void debug();
@@ -93,6 +94,7 @@ Vector2Test::Vector2Test() {
               &Vector2Test::scales,
               &Vector2Test::perpendicular,
               &Vector2Test::aspectRatio,
+              &Vector2Test::minmax,
 
               &Vector2Test::swizzleType,
               &Vector2Test::debug,
@@ -115,10 +117,9 @@ void Vector2Test::constructDefault() {
 
 void Vector2Test::constructOneValue() {
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector2 a(3.0f);
-    #else
-    Vector2 a(3.0f); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vector2 a(3.0f);
     CORRADE_COMPARE(a, Vector2(3.0f, 3.0f));
 
     /* Implicit conversion is not allowed */
@@ -128,10 +129,9 @@ void Vector2Test::constructOneValue() {
 void Vector2Test::constructConversion() {
     constexpr Vector2 a(1.5f, 2.5f);
     #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr Vector2i b(a);
-    #else
-    Vector2i b(a); /* Not constexpr under GCC < 4.7 */
+    constexpr /* Not constexpr under GCC < 4.7 */
     #endif
+    Vector2i b(a);
     CORRADE_COMPARE(b, Vector2i(1, 2));
 
     /* Implicit conversion is not allowed */
@@ -210,8 +210,13 @@ void Vector2Test::perpendicular() {
 }
 
 void Vector2Test::aspectRatio() {
-    const Vector2 a(3.0f, 4.0f);
-    CORRADE_COMPARE(a.aspectRatio(), 0.75f);
+    CORRADE_COMPARE(Vector2(3.0f, 4.0f).aspectRatio(), 0.75f);
+}
+
+void Vector2Test::minmax() {
+    const auto expected = std::make_pair(-5.0f, 4.0f);
+    CORRADE_COMPARE(Vector2(-5.0f, 4.0f).minmax(), expected);
+    CORRADE_COMPARE(Vector2(4.0f, -5.0f).minmax(), expected);
 }
 
 void Vector2Test::swizzleType() {

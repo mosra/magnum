@@ -25,7 +25,7 @@
 #include <Utility/Arguments.h>
 #include <PluginManager/Manager.h>
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "ColorFormat.h"
 #include "Image.h"
 #include "Renderer.h"

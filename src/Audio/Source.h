@@ -560,7 +560,7 @@ inline Source& Source::operator=(Source&& other) {
     return *this;
 }
 
-auto Source::state() const -> State {
+inline auto Source::state() const -> State {
     ALint state;
     alGetSourcei(_id, AL_SOURCE_STATE, &state);
     return State(state);

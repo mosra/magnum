@@ -51,7 +51,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @endcode
          * @see yAxis(), xScale(), Matrix3::right()
          */
-        constexpr static Vector2<T> xAxis(T length = T(1)) { return Vector2<T>(length, T()); }
+        constexpr static Vector2<T> xAxis(T length = T(1)) { return {length, T(0)}; }
 
         /**
          * @brief %Vector in direction of Y axis (up)
@@ -59,7 +59,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * See xAxis() for more information.
          * @see yScale(), Matrix3::up()
          */
-        constexpr static Vector2<T> yAxis(T length = T(1)) { return Vector2<T>(T(), length); }
+        constexpr static Vector2<T> yAxis(T length = T(1)) { return {T(0), length}; }
 
         /**
          * @brief Scaling vector in direction of X axis (width)
@@ -70,7 +70,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @endcode
          * @see yScale(), xAxis()
          */
-        constexpr static Vector2<T> xScale(T scale) { return Vector2<T>(scale, T(1)); }
+        constexpr static Vector2<T> xScale(T scale) { return {scale, T(1)}; }
 
         /**
          * @brief Scaling vector in direction of Y axis (height)
@@ -78,7 +78,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * See xScale() for more information.
          * @see yAxis()
          */
-        constexpr static Vector2<T> yScale(T scale) { return Vector2<T>(T(1), scale); }
+        constexpr static Vector2<T> yScale(T scale) { return {T(1), scale}; }
 
         /**
          * @brief 2D cross product
@@ -146,6 +146,15 @@ template<class T> class Vector2: public Vector<2, T> {
          * @f]
          */
         T aspectRatio() const { return x()/y(); }
+
+        /**
+         * @brief Minimum and maximum value
+         *
+         * @see @ref min(), @ref max(), @ref Math::minmax()
+         */
+        std::pair<T, T> minmax() const {
+            return x() < y() ? std::make_pair(x(), y()) : std::make_pair(y(), x());
+        }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 };

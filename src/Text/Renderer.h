@@ -32,7 +32,7 @@
 #include <tuple>
 #include <vector>
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "Buffer.h"
 #include "DimensionTraits.h"
 #include "Mesh.h"
@@ -62,7 +62,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
          */
-        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
+        static std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>, Range2D> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Alignment alignment = Alignment::LineLeft);
 
         /**
          * @brief Capacity for rendered glyphs
@@ -72,7 +72,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
         UnsignedInt capacity() const { return _capacity; }
 
         /** @brief Rectangle spanning the rendered text */
-        Rectangle rectangle() const { return _rectangle; }
+        Range2D rectangle() const { return _rectangle; }
 
         /** @brief Vertex buffer */
         Buffer& vertexBuffer() { return _vertexBuffer; }
@@ -95,7 +95,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * Initially zero capacity is reserved.
          * @see @ref capacity()
          */
-        void reserve(UnsignedInt glyphCount, Buffer::Usage vertexBufferUsage, Buffer::Usage indexBufferUsage);
+        void reserve(UnsignedInt glyphCount, BufferUsage vertexBufferUsage, BufferUsage indexBufferUsage);
 
         /**
          * @brief Render text
@@ -131,7 +131,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
         Float size;
         Alignment _alignment;
         UnsignedInt _capacity;
-        Rectangle _rectangle;
+        Range2D _rectangle;
 
         #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
         typedef void*(*BufferMapImplementation)(Buffer&, GLsizeiptr);
@@ -184,9 +184,9 @@ Buffer vertexBuffer, indexBuffer;
 Mesh mesh;
 
 // Render the text
-Rectangle rectangle;
+Range2D rectangle;
 std::tie(mesh, rectangle) = Text::Renderer2D::render(*font, cache, 0.15f,
-    "Hello World!", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw);
+    "Hello World!", vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
 
 // Draw white text centered on the screen
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
@@ -196,7 +196,7 @@ glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
 mesh.draw();
 @endcode
 See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
-@ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, Buffer::Usage, Alignment)
+@ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, BufferUsage, Alignment)
 for more information.
 
 While this method is sufficient for one-shot rendering of static texts, for
@@ -209,7 +209,7 @@ Shaders::VectorShader2D shader;
 
 // Initialize renderer and reserve memory for enough glyphs
 Text::Renderer2D renderer(*font, cache, 0.15f);
-renderer.reserve(32, Buffer::Usage::DynamicDraw, Buffer::Usage::StaticDraw);
+renderer.reserve(32, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
 
 // Update the text occasionally
 renderer.render("Hello World Countdown: 10");
@@ -250,7 +250,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * Returns mesh prepared for use with @ref Shaders::AbstractVector
          * subclasses and rectangle spanning the rendered text.
          */
-        static std::tuple<Mesh, Rectangle> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, Buffer::Usage usage, Alignment alignment = Alignment::LineLeft);
+        static std::tuple<Mesh, Range2D> render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment = Alignment::LineLeft);
 
         /**
          * @brief Constructor

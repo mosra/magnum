@@ -71,7 +71,7 @@ void TgaImporter::doOpenData(const Containers::ArrayReference<const unsigned cha
 }
 
 void TgaImporter::doOpenFile(const std::string& filename) {
-    in = new std::ifstream(filename.c_str());
+    in = new std::ifstream(filename);
     if(in->good()) return;
 
     Error() << "Trade::TgaImporter::openFile(): cannot open file" << filename;
@@ -133,7 +133,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
 
     /* Grayscale */
     } else if(header.imageType == 3) {
-        #ifdef MAGNUM_TARGET_GLES
+        #ifdef MAGNUM_TARGET_GLES2
         format = Context::current() && Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
             ColorFormat::Red : ColorFormat::Luminance;
         #else

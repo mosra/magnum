@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::CubeMapTexture
+ * @brief Class @ref Magnum::CubeMapTexture
  */
 
 #include "AbstractTexture.h"
@@ -49,12 +49,12 @@ turned upside down (+Y is top):
 
 @section CubeMapTexture-usage Basic usage
 
-See Texture documentation for introduction.
+See @ref Texture documentation for introduction.
 
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. set of Image objects:
 @code
-Image2D positiveX({256, 256}, ColorFormat::RGBA, ColorType::UnsignedByte, dataPositiveX);
+Image2D positiveX(ColorFormat::RGBA, ColorType::UnsignedByte, {256, 256}, data);
 // ...
 
 CubeMapTexture texture;
@@ -66,11 +66,11 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
 @endcode
 
-The texture is bound to layer specified by shader via bind(). In shader, the
-texture is used via `samplerCube`, `samplerCubeShadow`, `isamplerCube` or
+The texture is bound to layer specified by shader via @ref bind(). In shader,
+the texture is used via `samplerCube`, `samplerCubeShadow`, `isamplerCube` or
 `usamplerCube`. Unlike in classic textures, coordinates for cube map textures
 is signed three-part vector from the center of the cube, which intersects one
-of the six sides of the cube map. See also AbstractShaderProgram for more
+of the six sides of the cube map. See also @ref AbstractShaderProgram for more
 information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTextureArray,
@@ -99,7 +99,7 @@ class CubeMapTexture: public AbstractTexture {
         /**
          * @brief Set wrapping
          *
-         * See Texture::setWrapping() for more information.
+         * See @ref Texture::setWrapping() for more information.
          */
         CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(this, wrapping);
@@ -112,18 +112,18 @@ class CubeMapTexture: public AbstractTexture {
          * @param coordinate        Coordinate
          * @param level             Mip level
          *
-         * See Texture::imageSize() for more information.
+         * See @ref Texture::imageSize() for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         Vector2i imageSize(Coordinate coordinate, Int level) {
-            return DataHelper<2>::imageSize(this, static_cast<GLenum>(coordinate), level);
+            return DataHelper<2>::imageSize(this, GLenum(coordinate), level);
         }
         #endif
 
         /**
          * @brief Set storage
          *
-         * See Texture::setStorage() for more information.
+         * See @ref Texture::setStorage() for more information.
          */
         CubeMapTexture& setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
             DataHelper<2>::setStorage(this, _target, levels, internalFormat, size);
@@ -137,7 +137,7 @@ class CubeMapTexture: public AbstractTexture {
          * @param level             Mip level
          * @param image             %Image where to put the data
          *
-         * See Texture::image(Int, Image&) for more information.
+         * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         void image(Coordinate coordinate, Int level, Image2D& image) {
@@ -151,11 +151,11 @@ class CubeMapTexture: public AbstractTexture {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * See Texture::image(Int, BufferImage&, Buffer::Usage) for more
+         * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        void image(Coordinate coordinate, Int level, BufferImage2D& image, Buffer::Usage usage) {
+        void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage) {
             AbstractTexture::image<2>(GLenum(coordinate), level, image, usage);
         }
         #endif
@@ -168,17 +168,17 @@ class CubeMapTexture: public AbstractTexture {
          * @param image             %Image
          * @return Reference to self (for method chaining)
          *
-         * See Texture::setImage() for more information.
+         * See @ref Texture::setImage() for more information.
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
-            DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
+            DataHelper<2>::setImage(this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
-            DataHelper<2>::setImage(this, static_cast<GLenum>(coordinate), level, internalFormat, image);
+            DataHelper<2>::setImage(this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
         #endif
@@ -191,17 +191,17 @@ class CubeMapTexture: public AbstractTexture {
          * @param image             %Image
          * @return Reference to self (for method chaining)
          *
-         * See Texture::setSubImage() for more information.
+         * See @ref Texture::setSubImage() for more information.
          */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image) {
-            DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
-            DataHelper<2>::setSubImage(this, static_cast<GLenum>(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
             return *this;
         }
         #endif
@@ -232,7 +232,6 @@ class CubeMapTexture: public AbstractTexture {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
         }
-        #ifndef MAGNUM_TARGET_GLES3
         CubeMapTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
@@ -241,7 +240,6 @@ class CubeMapTexture: public AbstractTexture {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
-        #endif
         CubeMapTexture& generateMipmap() {
             AbstractTexture::generateMipmap();
             return *this;

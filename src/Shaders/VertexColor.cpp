@@ -44,7 +44,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
        same thing works in PhongShader flawlessly*/
     #ifndef CORRADE_GCC45_COMPATIBILITY
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current()->supportedVersion({Version::GL310, Version::GL300, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     #else
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
@@ -59,6 +59,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
 
     Shader vert(version, Shader::Type::Vertex);
     vert.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);

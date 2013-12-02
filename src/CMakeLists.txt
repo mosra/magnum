@@ -166,8 +166,7 @@ endif()
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Functions.cpp
-    Math/instantiation.cpp
-    Math/Geometry/instantiation.cpp)
+    Math/instantiation.cpp)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
@@ -185,8 +184,8 @@ if(BUILD_STATIC_PIC)
     set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 set(Magnum_LIBS
-    ${CORRADE_UTILITY_LIBRARY}
-    ${CORRADE_PLUGINMANAGER_LIBRARY})
+    ${CORRADE_UTILITY_LIBRARIES}
+    ${CORRADE_PLUGINMANAGER_LIBRARIES})
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     set(Magnum_LIBS ${Magnum_LIBS} ${OPENGL_gl_LIBRARY})
 elseif(TARGET_GLES2)

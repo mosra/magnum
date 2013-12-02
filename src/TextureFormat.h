@@ -521,7 +521,6 @@ enum class TextureFormat: GLenum {
      */
     RGB565 = GL_RGB565,
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * RGB, each component normalized unsigned 10bit.
      * @requires_es_extension %Extension @es_extension{OES,required_internalformat}
@@ -531,7 +530,6 @@ enum class TextureFormat: GLenum {
     RGB10 = GL_RGB10,
     #else
     RGB10 = GL_RGB10_EXT,
-    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -560,21 +558,17 @@ enum class TextureFormat: GLenum {
     RGB9E5 = GL_RGB9_E5,
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * sRGB, normalized unsigned, size implementation-dependent.
      * @todo is this allowed in core?
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, i.e. @ref Magnum::TextureFormat "TextureFormat::SRGB8".
-     * @requires_es_extension %Extension @es_extension{EXT,sRGB} in OpenGL ES
-     *      2.0, use @ref Magnum::TextureFormat "TextureFormat::SRGB8" in
-     *      OpenGL ES 3.0 instead.
+     * @requires_es_extension %Extension @es_extension{EXT,sRGB}
      */
     #ifndef MAGNUM_TARGET_GLES
     SRGB = GL_SRGB,
     #else
     SRGB = GL_SRGB_EXT,
-    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -635,21 +629,17 @@ enum class TextureFormat: GLenum {
     RGBA12 = GL_RGBA12,
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * sRGBA, normalized unsigned, size implementation-dependent.
      * @todo is this allowed in core?
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, i.e. @ref Magnum::TextureFormat "TextureFormat::SRGB8Alpha8".
-     * @requires_es_extension %Extension @es_extension{EXT,sRGB} in OpenGL ES
-     *      2.0, use @ref Magnum::TextureFormat "TextureFormat::SRGB8Alpha8" in
-     *      OpenGL ES 3.0 instead.
+     * @requires_es_extension %Extension @es_extension{EXT,sRGB}
      */
     #ifndef MAGNUM_TARGET_GLES
     SRGBAlpha = GL_SRGB_ALPHA,
     #else
     SRGBAlpha = GL_SRGB_ALPHA_EXT,
-    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -777,18 +767,16 @@ enum class TextureFormat: GLenum {
     DepthComponent24 = GL_DEPTH_COMPONENT24_OES,
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES3
     /**
      * Depth component, 32bit.
      * @requires_es_extension %Extension (@es_extension{OES,required_internalformat},
      *      @es_extension{OES,depth_texture} and @es_extension{OES,depth32}) or
      *      (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture})
      */
-    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
     DepthComponent32 = GL_DEPTH_COMPONENT32,
     #else
     DepthComponent32 = GL_DEPTH_COMPONENT32_OES,
-    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2

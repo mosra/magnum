@@ -109,7 +109,7 @@ void WireframeSpheroid::cylinder() {
 }
 
 Trade::MeshData3D WireframeSpheroid::finalize() {
-    return Trade::MeshData3D(Mesh::Primitive::Lines, std::move(_indices), {std::move(_positions)}, {}, {});
+    return Trade::MeshData3D(Mesh::Primitive::Lines, std::move(_indices), {std::move(_positions)}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{});
 }
 
 }}}

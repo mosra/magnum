@@ -22,34 +22,38 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Shaders/VertexColor.h"
+#include "Shaders/DistanceFieldVector.h"
 #include "Test/AbstractOpenGLTester.h"
+
+#ifdef MAGNUM_BUILD_STATIC
+#include "Shaders/magnumShadersResourceImport.hpp"
+#endif
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class VertexColorTest: public Magnum::Test::AbstractOpenGLTester {
+class DistanceFieldVectorGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit VertexColorTest();
+        explicit DistanceFieldVectorGLTest();
 
         void compile2D();
         void compile3D();
 };
 
-VertexColorTest::VertexColorTest() {
-    addTests({&VertexColorTest::compile2D,
-              &VertexColorTest::compile3D});
+DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
+    addTests({&DistanceFieldVectorGLTest::compile2D,
+              &DistanceFieldVectorGLTest::compile3D});
 }
 
-void VertexColorTest::compile2D() {
-    Shaders::VertexColor2D shader;
+void DistanceFieldVectorGLTest::compile2D() {
+    Shaders::DistanceFieldVector2D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void VertexColorTest::compile3D() {
-    Shaders::VertexColor3D shader;
+void DistanceFieldVectorGLTest::compile3D() {
+    Shaders::DistanceFieldVector3D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorGLTest)

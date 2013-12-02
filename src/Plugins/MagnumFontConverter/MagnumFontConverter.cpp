@@ -103,11 +103,11 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     for(auto it = inverseGlyphIdMap.begin(); it != inverseGlyphIdMap.end(); ++it) {
         const UnsignedInt oldGlyphId = *it;
 
-        std::pair<Vector2i, Rectanglei> glyph = cache[oldGlyphId];
+        std::pair<Vector2i, Range2Di> glyph = cache[oldGlyphId];
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
         group->setValue("advance", font.glyphAdvance(oldGlyphId));
         group->setValue("position", glyph.first+cache.padding());
-        group->setValue("rectangle", Rectanglei(glyph.second.bottomLeft()+cache.padding(),
+        group->setValue("rectangle", Range2Di(glyph.second.bottomLeft()+cache.padding(),
                                                 glyph.second.topRight()-cache.padding()));
     }
 

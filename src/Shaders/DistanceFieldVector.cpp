@@ -44,7 +44,7 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     /* Weird bug in GCC 4.5 - cannot use initializer list here, although the
        same thing works in PhongShader flawlessly */
     #ifndef MAGNUM_TARGET_GLES
-    std::initializer_list<Version> vs{Version::GL310, Version::GL300, Version::GL210};
+    std::initializer_list<Version> vs{Version::GL320, Version::GL310, Version::GL300, Version::GL210};
     #else
     std::initializer_list<Version> vs{Version::GLES300, Version::GLES200};
     #endif
@@ -52,6 +52,7 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
 
     Shader frag(version, Shader::Type::Vertex);
     frag.addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     AbstractShaderProgram::attachShader(frag);

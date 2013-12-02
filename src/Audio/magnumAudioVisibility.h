@@ -26,10 +26,16 @@
 
 #include <Utility/Visibility.h>
 
-#ifdef MagnumAudio_EXPORTS
-    #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_EXPORT
+#include "magnumConfigure.h"
+
+#ifndef MAGNUM_BUILD_STATIC
+    #ifdef MagnumAudio_EXPORTS
+        #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
 #else
-    #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_IMPORT
+    #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #endif

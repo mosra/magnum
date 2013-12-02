@@ -82,7 +82,7 @@ Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
     MeshTools::removeDuplicates(indices, positions);
 
     std::vector<Vector3> normals(positions);
-    return Trade::MeshData3D(Mesh::Primitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)}, {});
+    return Trade::MeshData3D(Mesh::Primitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)}, std::vector<std::vector<Vector2>>{});
 }
 
 }}

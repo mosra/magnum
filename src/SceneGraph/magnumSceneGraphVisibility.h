@@ -26,10 +26,16 @@
 
 #include <Utility/Visibility.h>
 
-#if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)
-    #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_EXPORT
+#include "magnumConfigure.h"
+
+#ifndef MAGNUM_BUILD_STATIC
+    #if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)
+        #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
 #else
-    #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_IMPORT
+    #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 #define MAGNUM_SCENEGRAPH_LOCAL CORRADE_VISIBILITY_LOCAL
 

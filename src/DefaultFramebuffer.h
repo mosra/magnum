@@ -349,7 +349,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      available only in OpenGL ES 3.0.
          */
         DefaultFramebuffer& mapForDraw(DrawAttachment attachment) {
-            (this->*drawBufferImplementation)(static_cast<GLenum>(attachment));
+            (this->*drawBufferImplementation)(GLenum(attachment));
             return *this;
         }
         #endif
@@ -367,7 +367,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         DefaultFramebuffer& mapForRead(ReadAttachment attachment) {
-            (this->*readBufferImplementation)(static_cast<GLenum>(attachment));
+            (this->*readBufferImplementation)(GLenum(attachment));
             return *this;
         }
 
@@ -400,11 +400,11 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
          *      Use clear() instead where the extension is not supported.
          */
-        void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle);
+        void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        DefaultFramebuffer& setViewport(const Rectanglei& rectangle) {
+        DefaultFramebuffer& setViewport(const Range2Di& rectangle) {
             AbstractFramebuffer::setViewport(rectangle);
             return *this;
         }

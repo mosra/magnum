@@ -28,9 +28,6 @@
 #include "SceneGraph/TranslationTransformation.h"
 #include "SceneGraph/Scene.h"
 
-/* For Object2Di */
-#include "SceneGraph/Object.hpp"
-
 namespace Magnum { namespace SceneGraph { namespace Test {
 
 typedef Object<TranslationTransformation2D> Object2D;
@@ -134,7 +131,7 @@ void TranslationTransformationTest::translate() {
 }
 
 void TranslationTransformationTest::integral() {
-    typedef Object<TranslationTransformation<2, Float, Short>> Object2Di;
+    typedef Object<TranslationTransformation<2, Float, Int>> Object2Di;
 
     Object2Di o;
     o.translate({3, -7});

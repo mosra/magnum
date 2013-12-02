@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "Magnum.h"
 #include "OpenGL.h"
 
@@ -42,7 +42,7 @@ struct FramebufferState {
     #ifndef MAGNUM_TARGET_GLES
     GLint maxDualSourceDrawBuffers;
     #endif
-    Rectanglei viewport;
+    Range2Di viewport;
     Vector2i maxViewportSize;
 };
 

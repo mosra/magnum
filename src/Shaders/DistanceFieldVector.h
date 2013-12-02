@@ -30,6 +30,8 @@
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
+#include "Color.h"
+#include "DimensionTraits.h"
 #include "AbstractVector.h"
 
 #include "magnumShadersVisibility.h"

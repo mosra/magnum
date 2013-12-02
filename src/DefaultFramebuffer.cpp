@@ -24,11 +24,12 @@
 
 #include "DefaultFramebuffer.h"
 
-#include "Context.h"
+#include <Containers/Array.h>
 
+#include "Context.h"
+#include "Extensions.h"
 #include "Implementation/State.h"
 #include "Implementation/FramebufferState.h"
-#include "Extensions.h"
 
 namespace Magnum {
 
@@ -45,37 +46,32 @@ DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
 
     /* Create linear array from associative */
     /** @todo C++14: use VLA to avoid heap allocation */
-    GLenum* _attachments = new GLenum[max+1];
-    std::fill_n(_attachments, max, GL_NONE);
+    static_assert(GL_NONE == 0, "Expecting zero GL_NONE for zero-initialization");
+    auto _attachments = Containers::Array<GLenum>::zeroInitialized(max+1);
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
-        _attachments[it->first] = static_cast<GLenum>(it->second);
+        _attachments[it->first] = GLenum(it->second);
 
     (this->*drawBuffersImplementation)(max+1, _attachments);
-    delete[] _attachments;
     return *this;
 }
 #endif
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
     /** @todo C++14: use VLA to avoid heap allocation */
-    GLenum* _attachments = new GLenum[attachments.size()];
+    Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
     invalidateImplementation(attachments.size(), _attachments);
-
-    delete[] _attachments;
 }
 
-void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
+void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
-    GLenum* _attachments = new GLenum[attachments.size()];
+    Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
     invalidateImplementation(attachments.size(), _attachments, rectangle);
-
-    delete[] _attachments;
 }
 
 void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
@@ -84,7 +80,7 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
     /* Initial framebuffer size */
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
-    defaultFramebuffer._viewport = state->viewport = Rectanglei::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
+    defaultFramebuffer._viewport = state->viewport = Range2Di::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
 
     /* Fake initial glViewport() call for ApiTrace */
     #ifndef MAGNUM_TARGET_GLES

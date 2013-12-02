@@ -83,7 +83,11 @@ class MAGNUM_EXPORT MeshData2D {
         std::vector<UnsignedInt>& indices();
         const std::vector<UnsignedInt>& indices() const; /**< @overload */
 
-        /** @brief Count of position arrays */
+        /**
+         * @brief Count of position arrays
+         *
+         * There is always at least one.
+         */
         UnsignedInt positionArrayCount() const { return _positions.size(); }
 
         /**
@@ -94,6 +98,9 @@ class MAGNUM_EXPORT MeshData2D {
          */
         std::vector<Vector2>& positions(UnsignedInt id);
         const std::vector<Vector2>& positions(UnsignedInt id) const; /**< @overload */
+
+        /** @brief Whether the data contain any 2D texture coordinates */
+        bool hasTextureCoords2D() const { return !_textureCoords2D.empty(); }
 
         /** @brief Count of 2D texture coordinate arrays */
         UnsignedInt textureCoords2DArrayCount() const { return _textureCoords2D.size(); }

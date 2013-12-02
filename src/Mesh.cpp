@@ -169,17 +169,17 @@ void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, 
 
     /* Non-indexed mesh */
     if(!indexCount)
-        glDrawArrays(static_cast<GLenum>(_primitive), firstVertex, vertexCount);
+        glDrawArrays(GLenum(_primitive), firstVertex, vertexCount);
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Indexed mesh with specified range */
     else if(indexEnd)
-        glDrawRangeElements(static_cast<GLenum>(_primitive), indexStart, indexEnd, indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+        glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, indexCount, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
     #endif
 
     /* Indexed mesh without specified range */
     else
-        glDrawElements(static_cast<GLenum>(_primitive), indexCount, static_cast<GLenum>(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+        glDrawElements(GLenum(_primitive), indexCount, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
 
     (this->*unbindImplementation)();
 }

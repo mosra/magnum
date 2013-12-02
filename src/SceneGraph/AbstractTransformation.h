@@ -85,7 +85,11 @@ template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Abstrac
 
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::~AbstractTransformation() = default;
 
-/** @brief Transformation type */
+/**
+@brief Transformation type
+
+@todo Get rid of this in favor of separate function for each type (less branching)
+*/
 enum class TransformationType: UnsignedByte {
     /** Global transformation, applied after all other transformations. */
     Global = 0x00,

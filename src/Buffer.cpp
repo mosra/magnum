@@ -44,9 +44,7 @@ Buffer::DataImplementation Buffer::dataImplementation = &Buffer::dataImplementat
 Buffer::SubDataImplementation Buffer::subDataImplementation = &Buffer::subDataImplementationDefault;
 Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
 Buffer::InvalidateSubImplementation Buffer::invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
-#ifndef MAGNUM_TARGET_GLES3
 Buffer::MapImplementation Buffer::mapImplementation = &Buffer::mapImplementationDefault;
-#endif
 Buffer::MapRangeImplementation Buffer::mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
 Buffer::FlushMappedRangeImplementation Buffer::flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
 Buffer::UnmapImplementation Buffer::unmapImplementation = &Buffer::unmapImplementationDefault;
@@ -170,7 +168,7 @@ void Buffer::bind(Target target, GLuint id) {
 
     /* Bind the buffer otherwise */
     bound = id;
-    glBindBuffer(static_cast<GLenum>(target), id);
+    glBindBuffer(GLenum(target), id);
 }
 
 Buffer::Target Buffer::bindInternal(Target hint) {
@@ -187,7 +185,7 @@ Buffer::Target Buffer::bindInternal(Target hint) {
 
     /* Bind the buffer to hint target otherwise */
     hintBinding = _id;
-    glBindBuffer(static_cast<GLenum>(hint), _id);
+    glBindBuffer(GLenum(hint), _id);
     return hint;
 }
 
@@ -206,7 +204,7 @@ void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAc
     /** @todo Enable also in Emscripten (?) when extension wrangler is available */
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
-    return _mappedBuffer = glMapBufferSubDataCHROMIUM(static_cast<GLenum>(bindInternal(_targetHint)), offset, length, GLenum(access));
+    return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
     #else
     CORRADE_INTERNAL_ASSERT(false);
     static_cast<void>(offset);
@@ -228,7 +226,7 @@ void Buffer::unmapSub() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-    glCopyBufferSubData(static_cast<GLenum>(read.bindInternal(Target::CopyRead)), static_cast<GLenum>(write.bindInternal(Target::CopyWrite)), readOffset, writeOffset, size);
+    glCopyBufferSubData(GLenum(read.bindInternal(Target::CopyRead)), GLenum(write.bindInternal(Target::CopyWrite)), readOffset, writeOffset, size);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -258,18 +256,18 @@ void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr
 }
 #endif
 
-void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
-    glBufferData(static_cast<GLenum>(bindInternal(_targetHint)), size, data, static_cast<GLenum>(usage));
+void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
+    glBufferData(GLenum(bindInternal(_targetHint)), size, data, GLenum(usage));
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, Buffer::Usage usage) {
-    glNamedBufferDataEXT(_id, size, data, static_cast<GLenum>(usage));
+void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
+    glNamedBufferDataEXT(_id, size, data, GLenum(usage));
 }
 #endif
 
 void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-    glBufferSubData(static_cast<GLenum>(bindInternal(_targetHint)), offset, size, data);
+    glBufferSubData(GLenum(bindInternal(_targetHint)), offset, size, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -294,11 +292,10 @@ void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) 
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES3
 void* Buffer::mapImplementationDefault(MapAccess access) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    return glMapBuffer(static_cast<GLenum>(bindInternal(_targetHint)), GLenum(access));
+    return glMapBuffer(GLenum(bindInternal(_targetHint)), GLenum(access));
     #else
     static_cast<void>(access);
     return nullptr;
@@ -310,12 +307,11 @@ void* Buffer::mapImplementationDSA(MapAccess access) {
     return glMapNamedBufferEXT(_id, GLenum(access));
 }
 #endif
-#endif
 
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
-    return glMapBufferRange(static_cast<GLenum>(bindInternal(_targetHint)), offset, length, GLenum(access));
+    return glMapBufferRange(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
@@ -333,7 +329,7 @@ void* Buffer::mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapF
 void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
-    glFlushMappedBufferRange(static_cast<GLenum>(bindInternal(_targetHint)), offset, length);
+    glFlushMappedBufferRange(GLenum(bindInternal(_targetHint)), offset, length);
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
@@ -349,7 +345,7 @@ void Buffer::flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr lengt
 bool Buffer::unmapImplementationDefault() {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
-    return glUnmapBuffer(static_cast<GLenum>(bindInternal(_targetHint)));
+    return glUnmapBuffer(GLenum(bindInternal(_targetHint)));
     #else
     return false;
     #endif

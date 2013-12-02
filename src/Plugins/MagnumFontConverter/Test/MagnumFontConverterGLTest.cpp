@@ -41,18 +41,18 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class MagnumFontConverterTest: public Magnum::Test::AbstractOpenGLTester {
+class MagnumFontConverterGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit MagnumFontConverterTest();
+        explicit MagnumFontConverterGLTest();
 
         void exportFont();
 };
 
-MagnumFontConverterTest::MagnumFontConverterTest() {
-    addTests({&MagnumFontConverterTest::exportFont});
+MagnumFontConverterGLTest::MagnumFontConverterGLTest() {
+    addTests({&MagnumFontConverterGLTest::exportFont});
 }
 
-void MagnumFontConverterTest::exportFont() {
+void MagnumFontConverterGLTest::exportFont() {
     /* Remove previously created files */
     Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf"));
     Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga"));
@@ -123,4 +123,4 @@ void MagnumFontConverterTest::exportFont() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterGLTest)

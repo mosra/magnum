@@ -110,11 +110,9 @@ class MAGNUM_EXPORT AbstractQuery {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> bool MAGNUM_EXPORT AbstractQuery::result<bool>();
 template<> UnsignedInt MAGNUM_EXPORT AbstractQuery::result<UnsignedInt>();
-#ifndef MAGNUM_TARGET_GLES3
 template<> Int MAGNUM_EXPORT AbstractQuery::result<Int>();
 template<> UnsignedLong MAGNUM_EXPORT AbstractQuery::result<UnsignedLong>();
 template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
-#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -291,7 +289,7 @@ class SampleQuery: public AbstractQuery {
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         void beginConditionalRender(ConditionalRenderMode mode) {
-            glBeginConditionalRender(id(), static_cast<GLenum>(mode));
+            glBeginConditionalRender(id(), GLenum(mode));
         }
 
         /**
@@ -307,7 +305,6 @@ class SampleQuery: public AbstractQuery {
         #endif
 };
 
-#ifndef MAGNUM_TARGET_GLES3
 /**
 @brief Query for elapsed time
 
@@ -374,7 +371,6 @@ class TimeQuery: public AbstractQuery {
             AbstractQuery::begin(GLenum(target));
         }
 };
-#endif
 
 }
 

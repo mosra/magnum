@@ -43,23 +43,24 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     /* Weird bug in GCC 4.5 - cannot use initializer list here, although the
        same thing works in PhongShader flawlessly */
     #ifndef MAGNUM_TARGET_GLES
-    std::initializer_list<Version> vs{Version::GL310, Version::GL300, Version::GL210};
+    std::initializer_list<Version> vs{Version::GL320, Version::GL310, Version::GL300, Version::GL210};
     #else
     std::initializer_list<Version> vs{Version::GLES300, Version::GLES200};
     #endif
     Version version = Context::current()->supportedVersion(vs);
 
-    Shader vert(version, Shader::Type::Fragment);
+    Shader vert(version, Shader::Type::Vertex);
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("Flat.frag"));
+        .addSource(rs.get("generic.glsl"))
+        .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(version, Shader::Type::Vertex);
+    Shader frag(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>()));
+        .addSource(rs.get("Flat.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
 

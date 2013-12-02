@@ -34,10 +34,8 @@ class RendererTest: public TestSuite::Tester {
         explicit RendererTest();
 
         void debugError();
-        #ifndef MAGNUM_TARGET_GLES3
         void debugResetNotificationStrategy();
         void debugGraphicsResetStatus();
-        #endif
 };
 
 RendererTest::RendererTest() {
@@ -51,7 +49,6 @@ void RendererTest::debugError() {
     CORRADE_COMPARE(out.str(), "Renderer::Error::InvalidOperation\n");
 }
 
-#ifndef MAGNUM_TARGET_GLES3
 void RendererTest::debugResetNotificationStrategy() {
     std::ostringstream out;
 
@@ -65,7 +62,6 @@ void RendererTest::debugGraphicsResetStatus() {
     Debug(&out) << Renderer::GraphicsResetStatus::GuiltyContextReset;
     CORRADE_COMPARE(out.str(), "Renderer::GraphicsResetStatus::GuiltyContextReset\n");
 }
-#endif
 
 }}
 

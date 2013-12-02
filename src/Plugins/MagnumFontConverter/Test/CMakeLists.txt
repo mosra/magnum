@@ -28,7 +28,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumFontConverterTestConfigure.h.cm
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../MagnumFont/Test/
                     ${CMAKE_CURRENT_BINARY_DIR})
 
-corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp LIBRARIES
+corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp LIBRARIES
     MagnumFontConverterTestLib
     TgaImporterTestLib
     ${GL_TEST_LIBRARIES})

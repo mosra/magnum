@@ -25,6 +25,7 @@
 #include "Shader.h"
 
 #include <fstream>
+#include <Containers/Array.h>
 #include <Utility/Assert.h>
 
 #include "Extensions.h"
@@ -534,7 +535,7 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
 #endif
 
 Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
-    _id = glCreateShader(static_cast<GLenum>(_type));
+    _id = glCreateShader(GLenum(_type));
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
@@ -609,7 +610,7 @@ Shader& Shader::addSource(std::string source) {
 
 Shader& Shader::addFile(const std::string& filename) {
     /* Open file */
-    std::ifstream file(filename.c_str());
+    std::ifstream file(filename);
     CORRADE_ASSERT(file.good(), "Shader file " << '\'' + filename + '\'' << " cannot be opened.", *this);
 
     /* Get size of shader and initialize buffer */
@@ -630,17 +631,21 @@ Shader& Shader::addFile(const std::string& filename) {
 bool Shader::compile() {
     CORRADE_ASSERT(sources.size() > 1, "Shader::compile(): no files added", false);
 
-    /* Array of sources */
-    const GLchar** _sources = new const GLchar*[sources.size()];
-    for(std::size_t i = 0; i != sources.size(); ++i)
-        _sources[i] = static_cast<const GLchar*>(sources[i].c_str());
+    /* Array of source string pointers and their lengths */
+    /** @todo Use `Containers::ArrayTuple` to avoid one allocation if it ever
+        gets to be implemented (we need properly aligned memory too) */
+    Containers::Array<const GLchar*> pointers(sources.size());
+    Containers::Array<GLint> sizes(sources.size());
+    for(std::size_t i = 0; i != sources.size(); ++i) {
+        pointers[i] = static_cast<const GLchar*>(sources[i].data());
+        sizes[i] = sources[i].size();
+    }
 
     /* Create shader and set its source */
-    glShaderSource(_id, sources.size(), _sources, nullptr);
+    glShaderSource(_id, sources.size(), pointers, sizes);
 
     /* Compile shader */
     glCompileShader(_id);
-    delete _sources;
 
     /* Check compilation status */
     GLint success, logLength;

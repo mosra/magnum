@@ -56,8 +56,8 @@
     #else
         #include <OpenGL/GLES2/gl2platform.h>
         #include <OpenGL/GLES2/gl2.h>
-        #include <OpenGL/GLES2/gl2ext.h>
     #endif
+    #include <OpenGL/GLES2/gl2ext.h>
 #endif
 
 #endif

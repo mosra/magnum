@@ -78,16 +78,16 @@ void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& 
     glyphs.insert({0, {}});
 }
 
-std::vector<Rectanglei> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
-    CORRADE_ASSERT((glyphs.size() == 1 && glyphs.at(0) == std::pair<Vector2i, Rectanglei>()),
-        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
+std::vector<Range2Di> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
+    CORRADE_ASSERT((glyphs.size() == 1 && glyphs.at(0) == std::pair<Vector2i, Range2Di>()),
+        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", std::vector<Range2Di>{});
     #ifndef CORRADE_GCC44_COMPATIBILITY
     glyphs.reserve(glyphs.size() + sizes.size());
     #endif
     return TextureTools::atlas(_size, sizes, _padding);
 }
 
-void GlyphCache::insert(const UnsignedInt glyph, Vector2i position, Rectanglei rectangle) {
+void GlyphCache::insert(const UnsignedInt glyph, Vector2i position, Range2Di rectangle) {
     position -= _padding;
     rectangle.bottomLeft() -= _padding;
     rectangle.topRight() += _padding;

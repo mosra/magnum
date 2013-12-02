@@ -45,7 +45,6 @@ static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
     "Unsupported constants for GL texture filtering");
 #undef filter_or
 
-#ifndef MAGNUM_TARGET_GLES3
 Float Sampler::maxAnisotropy() {
     GLfloat& value = Context::current()->state().texture->maxAnisotropy;
 
@@ -58,7 +57,6 @@ Float Sampler::maxAnisotropy() {
 
     return value;
 }
-#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, const Sampler::Filter value) {
@@ -90,9 +88,7 @@ Debug operator<<(Debug debug, const Sampler::Wrapping value) {
         _c(Repeat)
         _c(MirroredRepeat)
         _c(ClampToEdge)
-        #ifndef MAGNUM_TARGET_GLES3
         _c(ClampToBorder)
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(MirrorClampToEdge)
         #endif

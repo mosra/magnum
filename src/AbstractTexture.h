@@ -25,13 +25,10 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractTexture
+ * @brief Class @ref Magnum::AbstractTexture
  */
 
 #include "Array.h"
-#ifndef MAGNUM_TARGET_GLES2
-#include "Buffer.h"
-#endif
 #include "Color.h"
 #include "Sampler.h"
 
@@ -45,8 +42,9 @@ namespace Magnum {
 /**
 @brief Base for textures
 
-See Texture, CubeMapTexture and CubeMapTextureArray documentation for more
-information and usage examples.
+Encapsulates one OpenGL texture object. See @ref Texture, @ref CubeMapTexture
+and @ref CubeMapTextureArray documentation for more information and usage
+examples.
 
 @section AbstractTexture-performance-optimization Performance optimizations and security
 
@@ -57,15 +55,15 @@ affect active bindings in user layers. %Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
 repeated queries don't result in repeated @fn_gl{Get} calls.
 
-If extension @extension{EXT,direct_state_access} is available, bind() uses DSA
-function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all texture
-configuration and data updating functions use DSA functions to avoid
+If extension @extension{EXT,direct_state_access} is available, @ref bind() uses
+DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all
+texture configuration and data updating functions use DSA functions to avoid
 unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
 respective function documentation for more information.
 
 If extension @extension{ARB,robustness} is available, image reading operations
-(such as Texture::image()) are protected from buffer overflow. However, if both
-@extension{EXT,direct_state_access} and @extension{ARB,robustness} are
+(such as @ref Texture::image()) are protected from buffer overflow. However, if
+both @extension{EXT,direct_state_access} and @extension{ARB,robustness} are
 available, the DSA version is used, because it is better for performance and
 there isn't any function combining both features.
 
@@ -84,11 +82,12 @@ OpenGL ES 3.0 or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
 available, the feature is emulated with sequence of @ref Texture::setImage() "setImage()"
 calls.
 
-You can use functions invalidateImage() and @ref Texture::invalidateSubImage() "invalidateSubImage()"
-if you don't need texture data anymore to avoid unnecessary memory operations
-performed by OpenGL in order to preserve the data. If running on OpenGL ES or
-extension @extension{ARB,invalidate_subdata} is not available, these functions
-do nothing.
+You can use functions @ref invalidateImage() and
+@ref Texture::invalidateSubImage() "invalidateSubImage()" if you don't need
+texture data anymore to avoid unnecessary memory operations performed by OpenGL
+in order to preserve the data. If running on OpenGL ES or extension
+@extension{ARB,invalidate_subdata} is not available, these functions do
+nothing.
 
 @todo all texture [level] parameters, global texture parameters
 @todo Add glPixelStore encapsulation
@@ -190,8 +189,8 @@ class MAGNUM_EXPORT AbstractTexture {
          * @brief Set minification filter
          * @param filter        Filter
          * @param mipmap        Mipmap filtering. If set to anything else than
-         *      BaseMipLevel, make sure textures for all mip levels are set or
-         *      call generateMipmap().
+         *      @ref Sampler::Mipmap::Base, make sure textures for all mip
+         *      levels are set or call @ref generateMipmap().
          * @return Reference to self (for method chaining)
          *
          * Sets filter used when the object pixel size is smaller than the
@@ -221,11 +220,10 @@ class MAGNUM_EXPORT AbstractTexture {
          *      with @def_gl{TEXTURE_MAG_FILTER}
          */
         AbstractTexture& setMagnificationFilter(Sampler::Filter filter) {
-            (this->*parameteriImplementation)(GL_TEXTURE_MAG_FILTER, static_cast<GLint>(filter));
+            (this->*parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Set border color
          * @return Reference to self (for method chaining)
@@ -267,7 +265,6 @@ class MAGNUM_EXPORT AbstractTexture {
             (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
             return *this;
         }
-        #endif
 
         /**
          * @brief Invalidate texture image
@@ -325,7 +322,7 @@ class MAGNUM_EXPORT AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt dimensions> void image(GLenum target, GLint level, Image<dimensions>& image);
-        template<UnsignedInt dimensions> void image(GLenum target, GLint level, BufferImage<dimensions>& image, Buffer::Usage usage);
+        template<UnsignedInt dimensions> void image(GLenum target, GLint level, BufferImage<dimensions>& image, BufferUsage usage);
         #endif
 
         GLenum _target;
@@ -483,7 +480,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
     static Math::Vector<1, GLint> imageSize(AbstractTexture* texture, GLenum target, GLint level);
 
     static void setWrapping(AbstractTexture* texture, const Array1D<Sampler::Wrapping>& wrapping) {
-        (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapping.x()));
+        (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
     }
 
     static void setStorage(AbstractTexture* texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {

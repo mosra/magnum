@@ -414,7 +414,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see @ref Feature::ScissorTest, @fn_gl{Scissor}
          */
-        static void setScissor(const Rectanglei& rectangle);
+        static void setScissor(const Range2Di& rectangle);
 
         /*@}*/
 
@@ -895,13 +895,12 @@ class MAGNUM_EXPORT Renderer {
             /** There is not enough memory left to execute the command. */
             OutOfMemory = GL_OUT_OF_MEMORY,
 
-            #ifndef MAGNUM_TARGET_GLES3
             /**
              * Given operation would cause an internal stack to underflow.
              * @requires_gl43 %Extension @extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension2{KHR,debug,debug}
              */
-            #ifndef MAGNUM_TARGET_GLES2
+            #ifndef MAGNUM_TARGET_GLES
             StackUnderflow = GL_STACK_UNDERFLOW,
             #else
             StackUnderflow = GL_STACK_UNDERFLOW_KHR,
@@ -912,11 +911,10 @@ class MAGNUM_EXPORT Renderer {
              * @requires_gl43 %Extension @extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension2{KHR,debug,debug}
              */
-            #ifndef MAGNUM_TARGET_GLES2
+            #ifndef MAGNUM_TARGET_GLES
             StackOverflow = GL_STACK_OVERFLOW
             #else
             StackOverflow = GL_STACK_OVERFLOW_KHR
-            #endif
             #endif
         };
 
@@ -930,7 +928,6 @@ class MAGNUM_EXPORT Renderer {
          */
         static Error error() { return static_cast<Error>(glGetError()); }
 
-        #ifndef MAGNUM_TARGET_GLES3
         /**
          * @brief Graphics reset notification strategy
          *
@@ -1016,7 +1013,6 @@ class MAGNUM_EXPORT Renderer {
         static GraphicsResetStatus graphicsResetStatus() {
             return graphicsResetStatusImplementation();
         }
-        #endif
 
         /*@}*/
 
@@ -1030,24 +1026,20 @@ class MAGNUM_EXPORT Renderer {
         static void MAGNUM_LOCAL clearDepthfImplementationES(GLfloat depth);
         static ClearDepthfImplementation clearDepthfImplementation;
 
-        #ifndef MAGNUM_TARGET_GLES3
         typedef GraphicsResetStatus(*GraphicsResetStatusImplementation)();
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationDefault();
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationRobustness();
         static GraphicsResetStatusImplementation graphicsResetStatusImplementation;
-        #endif
 };
 
 /** @debugoperator{Renderer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::Error value);
 
-#ifndef MAGNUM_TARGET_GLES3
 /** @debugoperator{Renderer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::ResetNotificationStrategy value);
 
 /** @debugoperator{Renderer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::GraphicsResetStatus value);
-#endif
 
 }
 

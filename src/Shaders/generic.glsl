@@ -22,34 +22,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Shaders/Vector.h"
-#include "Test/AbstractOpenGLTester.h"
-
-namespace Magnum { namespace Shaders { namespace Test {
-
-class VectorTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit VectorTest();
-
-        void compile2D();
-        void compile3D();
-};
-
-VectorTest::VectorTest() {
-    addTests({&VectorTest::compile2D,
-              &VectorTest::compile3D});
-}
-
-void VectorTest::compile2D() {
-    Shaders::Vector2D shader;
-    CORRADE_VERIFY(shader.validate().first);
-}
-
-void VectorTest::compile3D() {
-    Shaders::Vector3D shader;
-    CORRADE_VERIFY(shader.validate().first);
-}
-
-}}}
-
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorTest)
+#define POSITION_ATTRIBUTE_LOCATION 0
+#define TEXTURECOORDINATES_ATTRIBUTE_LOCATION 1
+#define NORMAL_ATTRIBUTE_LOCATION 2

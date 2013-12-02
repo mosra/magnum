@@ -34,7 +34,7 @@ uniform highp mat4 transformationProjectionMatrix;
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 0) highp in vec4 position;
+layout(location = POSITION_ATTRIBUTE_LOCATION) highp in vec4 position;
 #else
 in highp vec4 position;
 #endif
@@ -42,7 +42,7 @@ in highp vec4 position;
 #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
 #if (!defined(GL_ES) && __VERSION__ < 140) || (defined(GL_ES) && __VERSION__ < 300)
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 1) in lowp float vertexIndex;
+layout(location = 3) in lowp float vertexIndex;
 #else
 in lowp float vertexIndex;
 #endif

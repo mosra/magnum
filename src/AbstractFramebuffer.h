@@ -30,8 +30,9 @@
 
 #include <Containers/EnumSet.h>
 
-#include "Math/Geometry/Rectangle.h"
-#include "Buffer.h"
+#include "Math/Range.h"
+#include "Magnum.h"
+#include "OpenGL.h"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
 #include "ImageFormat.h"
@@ -210,7 +211,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
          */
-        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& sourceRectangle, const Rectanglei& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
 
         /**
          * @brief Copy block of pixels
@@ -227,7 +228,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
          */
-        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Rectanglei& rectangle, FramebufferBlitMask mask) {
+        static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& rectangle, FramebufferBlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
         }
 
@@ -245,7 +246,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void bind(FramebufferTarget target);
 
         /** @brief Viewport rectangle */
-        Rectanglei viewport() const { return _viewport; }
+        Range2Di viewport() const { return _viewport; }
 
         /**
          * @brief Set viewport
@@ -256,7 +257,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * rectangle.
          * @see @ref maxViewportSize(), @fn_gl{Viewport}
          */
-        AbstractFramebuffer& setViewport(const Rectanglei& rectangle);
+        AbstractFramebuffer& setViewport(const Range2Di& rectangle);
 
         /**
          * @brief Clear specified buffers in framebuffer
@@ -300,7 +301,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */
-        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, Buffer::Usage usage);
+        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage);
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -333,10 +334,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         static ReadBufferImplementation readBufferImplementation;
 
         void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments);
-        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments, const Rectanglei& rectangle);
+        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments, const Range2Di& rectangle);
 
         GLuint _id;
-        Rectanglei _viewport;
+        Range2Di _viewport;
 
     private:
         static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
@@ -363,9 +364,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
         static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        #ifndef MAGNUM_TARGET_GLES3
         static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        #endif
         static ReadImplementation MAGNUM_LOCAL readImplementation;
 };
 

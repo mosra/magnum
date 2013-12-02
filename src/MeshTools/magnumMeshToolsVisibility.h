@@ -26,10 +26,16 @@
 
 #include <Utility/Visibility.h>
 
-#if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
-    #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
+#include "magnumConfigure.h"
+
+#ifndef MAGNUM_BUILD_STATIC
+    #if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
+        #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
 #else
-    #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
+    #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #endif

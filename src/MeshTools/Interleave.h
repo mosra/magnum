@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::interleave()
+ * @brief Function @ref Magnum::MeshTools::interleave()
  */
 
 #include <cstring>
@@ -42,35 +42,35 @@ namespace Implementation {
 
 class Interleave {
     public:
-        Interleave(): _attributeCount(0), _stride(0), _data(nullptr) {}
+        Interleave(): _attributeCount(0), _stride(0) {}
 
-        template<class ...T> std::tuple<std::size_t, std::size_t, char*> operator()(const T&... attributes) {
+        template<class ...T> std::tuple<std::size_t, std::size_t, Containers::Array<char>> operator()(const T&... attributes) {
             /* Compute buffer size and stride */
             _attributeCount = attributeCount(attributes...);
+            Containers::Array<char> data;
             if(_attributeCount && _attributeCount != ~std::size_t(0)) {
                 _stride = stride(attributes...);
 
                 /* Create output buffer */
-                _data = new char[_attributeCount*_stride];
+                data = Containers::Array<char>(_attributeCount*_stride);
 
                 /* Save the data */
-                write(_data, attributes...);
+                write(data.begin(), attributes...);
             }
 
-            return std::make_tuple(_attributeCount, _stride, _data);
+            return std::make_tuple(_attributeCount, _stride, std::move(data));
         }
 
-        template<class ...T> void operator()(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const T&... attributes) {
-            operator()(attributes...);
+        template<class ...T> void operator()(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
+            Containers::Array<char> data;
+            std::tie(std::ignore, std::ignore, data) = operator()(attributes...);
 
             mesh.setVertexCount(_attributeCount);
-            buffer.setData(Containers::ArrayReference<const void>{_data, _attributeCount*_stride}, usage);
-
-            delete[] _data;
+            buffer.setData({data, _attributeCount*_stride}, usage);
         }
 
         /* Specialization for only one attribute array */
-        template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type operator()(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const T& attribute) {
+        template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type operator()(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
             mesh.setVertexCount(attribute.size());
             buffer.setData(attribute, usage);
         }
@@ -106,18 +106,16 @@ class Interleave {
         template<class T>  typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOne(char* startingOffset, const T& attributeList) {
             auto it = attributeList.begin();
             for(std::size_t i = 0; i != _attributeCount; ++i, ++it)
-                memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
+                std::memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
 
             return sizeof(typename T::value_type);
         }
 
         /* Fill gap with zeros */
         std::size_t writeOne(char* startingOffset, std::size_t gap) {
-            char* data = new char[gap]();
             for(std::size_t i = 0; i != _attributeCount; ++i)
-                memcpy(startingOffset+i*_stride, data, gap);
+                std::memset(startingOffset+i*_stride, 0, gap);
 
-            delete[] data;
             return gap;
         }
 
@@ -128,7 +126,6 @@ class Interleave {
 
         std::size_t _attributeCount;
         std::size_t _stride;
-        char* _data;
 };
 
 }
@@ -148,11 +145,9 @@ std::vector<Vector4> positions;
 std::vector<Vector2> textureCoordinates;
 std::size_t attributeCount;
 std::size_t stride;
-char* data;
+Containers::Array<char> data;
 std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, textureCoordinates);
-std::size_t dataSize = attributeCount*stride;
 // ...
-delete[] data;
 @endcode
 
 It's often desirable to align data for one vertex on 32bit boundaries. To
@@ -163,7 +158,7 @@ std::vector<GLushort> weights;
 std::vector<BasicColor3<GLubyte>> vertexColors;
 std::size_t attributeCount;
 std::size_t stride;
-char* data;
+Containers::Array<char> data;
 std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
 @endcode
 This way vertex stride is 24 bytes, without gaps it would be 21 bytes, causing
@@ -176,11 +171,11 @@ possible performance loss.
     for) and function `size()` returning count of elements. In most cases it
     will be `std::vector` or `std::array`.
 
-See also interleave(Mesh*, Buffer*, Buffer::Usage, const T&...),
+See also @ref interleave(Mesh&, Buffer&, BufferUsage, const T&...),
 which writes the interleaved array directly into buffer of given mesh.
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, char*>>::type interleave(const T& first, const U&... next) {
+template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, Containers::Array<char>>>::type interleave(const T& first, const U&... next) {
     return Implementation::Interleave()(first, next...);
 }
 
@@ -191,9 +186,9 @@ template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Me
 @param usage        Vertex buffer usage
 @param attributes   Attribute arrays and gaps
 
-The same as interleave(const T&, const U&...), but this function writes the
+The same as @ref interleave(const T&, const U&...), but this function writes the
 output to given array buffer and updates vertex count in the mesh accordingly,
-so you don't have to call Mesh::setVertexCount() on your own.
+so you don't have to call @ref Mesh::setVertexCount() on your own.
 
 @attention Setting primitive type and binding the attributes to shader is left
     to user - see @ref Mesh-configuration "Mesh documentation".
@@ -201,13 +196,13 @@ so you don't have to call Mesh::setVertexCount() on your own.
 For only one attribute array this function is convenient equivalent to the
 following, without any performance loss:
 @code
-buffer->setData(attribute, usage);
-mesh->setVertexCount(attribute.size());
+buffer.setData(attribute, usage);
+mesh.setVertexCount(attribute.size());
 @endcode
 
-@see MeshTools::compressIndices()
+@see @ref MeshTools::compressIndices()
 */
-template<class ...T> inline void interleave(Mesh& mesh, Buffer& buffer, Buffer::Usage usage, const T&... attributes) {
+template<class ...T> inline void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);
 }
 

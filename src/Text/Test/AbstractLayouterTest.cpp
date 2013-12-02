@@ -24,7 +24,7 @@
 
 #include <TestSuite/Tester.h>
 
-#include "Math/Geometry/Rectangle.h"
+#include "Math/Range.h"
 #include "Text/AbstractFont.h"
 
 namespace Magnum { namespace Text { namespace Test {
@@ -46,38 +46,38 @@ void AbstractLayouterTest::renderGlyph() {
             explicit Layouter(): AbstractLayouter(3) {}
 
         private:
-            std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt) override {
-                return std::make_tuple(Rectangle({1.0f, 0.5f}, {1.1f, 1.0f}),
-                                       Rectangle({0.3f, 1.1f}, {-0.5f, 0.7f}),
+            std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
+                return std::make_tuple(Range2D({1.0f, 0.5f}, {1.1f, 1.0f}),
+                                       Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}),
                                        Vector2(2.0f, -1.0f));
             }
     };
 
     /* Rectangle of zero size shouldn't be merged, but replaced */
-    Rectangle rectangle({-1.0f, -1.0f}, {-1.0f, -1.0f});
+    Range2D rectangle({-1.0f, -1.0f}, {-1.0f, -1.0f});
     Vector2 cursorPosition(1.0f, 2.0f);
 
     Layouter l;
-    Rectangle quadPosition;
-    Rectangle textureCoords;
+    Range2D quadPosition;
+    Range2D textureCoords;
 
     std::tie(quadPosition, textureCoords) = l.renderGlyph(0, cursorPosition, rectangle);
-    CORRADE_COMPARE(quadPosition, Rectangle({2.0f, 2.5f}, {2.1f, 3.0f}));
-    CORRADE_COMPARE(textureCoords, Rectangle({0.3f, 1.1f}, {-0.5f, 0.7f}));
+    CORRADE_COMPARE(quadPosition, Range2D({2.0f, 2.5f}, {2.1f, 3.0f}));
+    CORRADE_COMPARE(textureCoords, Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}));
     CORRADE_COMPARE(cursorPosition, Vector2(3.0f, 1.0f));
-    CORRADE_COMPARE(rectangle, Rectangle({2.0f, 2.5f}, {2.1f, 3.0f}));
+    CORRADE_COMPARE(rectangle, Range2D({2.0f, 2.5f}, {2.1f, 3.0f}));
 
     std::tie(quadPosition, textureCoords) = l.renderGlyph(1, cursorPosition, rectangle);
-    CORRADE_COMPARE(quadPosition, Rectangle({4.0f, 1.5f}, {4.1f, 2.0f}));
-    CORRADE_COMPARE(textureCoords, Rectangle({0.3f, 1.1f}, {-0.5f, 0.7f}));
+    CORRADE_COMPARE(quadPosition, Range2D({4.0f, 1.5f}, {4.1f, 2.0f}));
+    CORRADE_COMPARE(textureCoords, Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}));
     CORRADE_COMPARE(cursorPosition, Vector2(5.0f, 0.0f));
-    CORRADE_COMPARE(rectangle, Rectangle({2.0f, 1.5f}, {4.1f, 3.0f}));
+    CORRADE_COMPARE(rectangle, Range2D({2.0f, 1.5f}, {4.1f, 3.0f}));
 
     std::tie(quadPosition, textureCoords) = l.renderGlyph(2, cursorPosition, rectangle);
-    CORRADE_COMPARE(quadPosition, Rectangle({6.0f, 0.5f}, {6.1f, 1.0f}));
-    CORRADE_COMPARE(textureCoords, Rectangle({0.3f, 1.1f}, {-0.5f, 0.7f}));
+    CORRADE_COMPARE(quadPosition, Range2D({6.0f, 0.5f}, {6.1f, 1.0f}));
+    CORRADE_COMPARE(textureCoords, Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}));
     CORRADE_COMPARE(cursorPosition, Vector2(7.0f, -1.0f));
-    CORRADE_COMPARE(rectangle, Rectangle({2.0f, 0.5f}, {6.1f, 3.0f}));
+    CORRADE_COMPARE(rectangle, Range2D({2.0f, 0.5f}, {6.1f, 3.0f}));
 }
 
 }}}

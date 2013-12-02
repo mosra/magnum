@@ -30,6 +30,7 @@
 
 #include <type_traits>
 #include <utility>
+#include <Containers/Array.h>
 #include <Utility/Assert.h>
 
 #include "DimensionTraits.h"
@@ -95,7 +96,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
          *
          * Creates empty hierarchy.
          */
-        explicit Composition(): _shapeCount(0), _nodeCount(0), _shapes(nullptr), _nodes(nullptr) {}
+        explicit Composition() {}
 
         /**
          * @brief Unary operation constructor
@@ -130,7 +131,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         Composition<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
 
         /** @brief Count of shapes in the hierarchy */
-        std::size_t size() const { return _shapeCount; }
+        std::size_t size() const { return _shapes.size(); }
 
         /** @brief Type of shape at given position */
         Type type(std::size_t i) const { return _shapes[i]->type(); }
@@ -154,7 +155,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         };
 
         bool collides(const Implementation::AbstractShape<dimensions>& a) const {
-            return collides(a, 0, 0, _shapeCount);
+            return collides(a, 0, 0, _shapes.size());
         }
 
         bool collides(const Implementation::AbstractShape<dimensions>& a, std::size_t node, std::size_t shapeBegin, std::size_t shapeEnd) const;
@@ -163,13 +164,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
             return 1;
         }
         constexpr static std::size_t shapeCount(const Composition<dimensions>& hierarchy) {
-            return hierarchy._shapeCount;
+            return hierarchy._shapes.size();
         }
         template<class T> constexpr static std::size_t nodeCount(const T&) {
             return 0;
         }
         constexpr static std::size_t nodeCount(const Composition<dimensions>& hierarchy) {
-            return hierarchy._nodeCount;
+            return hierarchy._nodes.size();
         }
 
         template<class T> void copyShapes(std::size_t offset, const T& shape) {
@@ -181,9 +182,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         template<class T> void copyNodes(std::size_t, const T&) {}
         void copyNodes(std::size_t offset, const Composition<dimensions>& other);
 
-        std::size_t _shapeCount, _nodeCount;
-        Implementation::AbstractShape<dimensions>** _shapes;
-        Node* _nodes;
+        Containers::Array<Implementation::AbstractShape<dimensions>*> _shapes;
+        Containers::Array<Node> _nodes;
 };
 
 /** @brief Two-dimensional shape hierarchy */
@@ -255,7 +255,7 @@ template<class T, class U> inline auto operator||(T&& a, U&& b) -> enableIfAreSh
 #undef enableIfAreShapeType
 #endif
 
-template<UnsignedInt dimensions> template<class T> Composition<dimensions>::Composition(CompositionOperation operation, T&& a): _shapeCount(shapeCount(a)), _nodeCount(nodeCount(a)+1), _shapes(new Implementation::AbstractShape<dimensions>*[_shapeCount]), _nodes(new Node[_nodeCount]) {
+template<UnsignedInt dimensions> template<class T> Composition<dimensions>::Composition(CompositionOperation operation, T&& a): _shapes(shapeCount(a)), _nodes(nodeCount(a)+1) {
     CORRADE_ASSERT(operation == CompositionOperation::Not,
         "Shapes::Composition::Composition(): unary operation expected", );
     _nodes[0].operation = operation;
@@ -267,7 +267,7 @@ template<UnsignedInt dimensions> template<class T> Composition<dimensions>::Comp
     copyShapes(0, std::forward<T>(a));
 }
 
-template<UnsignedInt dimensions> template<class T, class U> Composition<dimensions>::Composition(CompositionOperation operation, T&& a, U&& b): _shapeCount(shapeCount(a) + shapeCount(b)), _nodeCount(nodeCount(a) + nodeCount(b) + 1), _shapes(new Implementation::AbstractShape<dimensions>*[_shapeCount]), _nodes(new Node[_nodeCount]) {
+template<UnsignedInt dimensions> template<class T, class U> Composition<dimensions>::Composition(CompositionOperation operation, T&& a, U&& b): _shapes(shapeCount(a) + shapeCount(b)), _nodes(nodeCount(a) + nodeCount(b) + 1) {
     CORRADE_ASSERT(operation != CompositionOperation::Not,
         "Shapes::Composition::Composition(): binary operation expected", );
     _nodes[0].operation = operation;

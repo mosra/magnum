@@ -30,14 +30,16 @@
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "AbstractVector.h"
+#include "Color.h"
+#include "DimensionTraits.h"
+#include "Shaders/AbstractVector.h"
 
 #include "magnumShadersVisibility.h"
 
 namespace Magnum { namespace Shaders {
 
 /**
-@brief Vector shader
+@brief %Vector shader
 
 Renders vector art in plain grayscale form. See also DistanceFieldVector
 for more advanced effects.

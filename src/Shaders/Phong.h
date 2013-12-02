@@ -29,15 +29,15 @@
  */
 
 #include "Math/Matrix4.h"
-#include "AbstractShaderProgram.h"
 #include "Color.h"
+#include "Shaders/Generic.h"
 
 #include "magnumShadersVisibility.h"
 
 namespace Magnum { namespace Shaders {
 
 /**
-@brief Phong shader
+@brief %Phong shader
 
 Uses ambient, diffuse and specular color or texture. For colored mesh you need
 to provide @ref Position and @ref Normal attributes in your triangle mesh and
@@ -58,8 +58,8 @@ myDiffuseTexture.bind(Shaders::Phong::DiffuseTextureLayer);
 */
 class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector3> Position; /**< @brief Vertex position */
-        typedef Attribute<1, Vector3> Normal;   /**< @brief Normal direction */
+        typedef Generic3D::Position Position;   /**< @brief Vertex position */
+        typedef Generic3D::Normal Normal;       /**< @brief Normal direction */
 
         /**
          * @brief Texture coordinates
@@ -67,7 +67,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * Used only if one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
          * or @ref Flag::SpecularTexture is set.
          */
-        typedef Attribute<2, Vector2> TextureCoordinates;
+        typedef Generic3D::TextureCoordinates TextureCoordinates;
 
         enum: Int {
             /**

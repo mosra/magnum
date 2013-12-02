@@ -22,34 +22,52 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Shaders/DistanceFieldVector.h"
+#include "Shaders/Flat.h"
 #include "Test/AbstractOpenGLTester.h"
+
+#ifdef MAGNUM_BUILD_STATIC
+#include "Shaders/magnumShadersResourceImport.hpp"
+#endif
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class DistanceFieldVectorTest: public Magnum::Test::AbstractOpenGLTester {
+class FlatGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit DistanceFieldVectorTest();
+        explicit FlatGLTest();
 
         void compile2D();
         void compile3D();
+        void compile2DTextured();
+        void compile3DTextured();
 };
 
-DistanceFieldVectorTest::DistanceFieldVectorTest() {
-    addTests({&DistanceFieldVectorTest::compile2D,
-              &DistanceFieldVectorTest::compile3D});
+FlatGLTest::FlatGLTest() {
+    addTests({&FlatGLTest::compile2D,
+              &FlatGLTest::compile3D,
+              &FlatGLTest::compile2DTextured,
+              &FlatGLTest::compile3DTextured});
 }
 
-void DistanceFieldVectorTest::compile2D() {
-    Shaders::DistanceFieldVector2D shader;
+void FlatGLTest::compile2D() {
+    Shaders::Flat2D shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void DistanceFieldVectorTest::compile3D() {
-    Shaders::DistanceFieldVector3D shader;
+void FlatGLTest::compile3D() {
+    Shaders::Flat3D shader;
+    CORRADE_VERIFY(shader.validate().first);
+}
+
+void FlatGLTest::compile2DTextured() {
+    Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
+    CORRADE_VERIFY(shader.validate().first);
+}
+
+void FlatGLTest::compile3DTextured() {
+    Shaders::Flat3D shader(Shaders::Flat3D::Flag::Textured);
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatGLTest)

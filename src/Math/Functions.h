@@ -25,8 +25,9 @@
 */
 
 #include <cmath>
-#include <type_traits>
 #include <limits>
+#include <type_traits>
+#include <utility>
 
 #include "Math/Vector.h"
 
@@ -124,7 +125,7 @@ perform the operations component-wise.
 /**
 @brief Minimum
 
-@see min(), clamp(), Vector::min()
+@see @ref max(), @ref minmax(), @ref clamp(), @ref Vector::min()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T min(T a, T b);
@@ -151,7 +152,7 @@ template<class T> inline T min(std::initializer_list<T> list) {
 /**
 @brief Maximum
 
-@see max(), clamp(), Vector::max()
+@see @ref min(), @ref minmax(), @ref clamp(), @ref Vector::max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T max(const T& a, const T& b);
@@ -174,6 +175,25 @@ template<class T> inline T max(std::initializer_list<T> list) {
         out = max(out, *it);
     return out;
 }
+
+/**
+@brief Minimum and maximum of two values
+
+@see @ref min(), @ref max(), @ref clamp(), @ref Vector2::minmax()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline std::pair<T, T> minmax(const T& a, const T& b);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, std::pair<T, T>>::type minmax(T a, T b) {
+    return a < b ? std::make_pair(a, b) : std::make_pair(b, a);
+}
+template<std::size_t size, class T> std::pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
+    std::pair<Vector<size, T>, Vector<size, T>> out{a, b};
+    for(std::size_t i = 0; i != size; ++i)
+        if(out.first[i] > out.second[i]) std::swap(out.first[i], out.second[i]);
+    return out;
+}
+#endif
 
 /**
 @brief Sign

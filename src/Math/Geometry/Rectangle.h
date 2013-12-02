@@ -25,162 +25,48 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Geometry::Rectangle
+ * @brief Class @ref Magnum::Math::Geometry::Rectangle
+ * @deprecated Use @ref Math/Range.h instead.
  */
 
-#include "Math/Vector2.h"
+#include "Math/Range.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum { namespace Math { namespace Geometry {
 
 /**
-@brief %Rectangle
-
-Helper class for storing axis-aligned rectangles consisting of bottom left and
-top right corner positions with origin in bottom left. Bottom/left positions
-are inclusive, while top/right positions are exclusive.
-@see Magnum::Rectangle, Magnum::Rectanglei, Magnum::Rectangled
-@todo rename to Range, make it generic for one, two and three dimensions, add translated(), padded()...
-@todo move outside Math?
+@copybrief Math::Range2D
+@deprecated Use @ref Magnum::Math::Range2D instead.
 */
-template<class T> class Rectangle {
-    template<class> friend class Rectangle;
-
+template<class T> class Rectangle: public Range2D<T> {
     public:
-        /**
-         * Create rectangle from position and size
-         * @param bottomLeft    Bottom left rectangle corner
-         * @param size          %Rectangle size
-         */
-        static Rectangle<T> fromSize(const Vector2<T>& bottomLeft, const Vector2<T>& size) {
-            return {bottomLeft, bottomLeft+size};
-        }
+        /** @copydoc Range2D() */
+        constexpr Rectangle() = default;
 
-        /**
-         * @brief Construct zero rectangle
-         *
-         * Construct zero-area rectangle positioned at origin.
-         */
-        constexpr Rectangle() {}
+        /** @copydoc Range2D(const VectorType&, const VectorType&) */
+        constexpr Rectangle(const Vector2<T>& min, const Vector2<T>& max): Range2D<T>(min, max) {}
 
-        /** @brief Construct rectangle from two corners */
-        constexpr Rectangle(const Vector2<T>& bottomLeft, const Vector2<T>& topRight): _bottomLeft(bottomLeft), _topRight(topRight) {}
+        /** @copydoc Range2D(const Range&) */
+        constexpr Rectangle(const Range<2, T>& other): Range2D<T>(other) {}
 
-        /**
-         * @brief Construct rectangle from another of different type
-         *
-         * Performs only default casting on the values, no rounding or
-         * anything else. Example usage:
-         * @code
-         * Rectangle<Float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
-         * Rectangle<Byte> integral(floatingPoint); // {{1, 2}, {-15, 7}}
-         * @endcode
-         */
-        template<class U> constexpr explicit Rectangle(const Rectangle<U>& other): _bottomLeft(other._bottomLeft), _topRight(other._topRight) {}
+        /** @copydoc Range2D(const Range<dimensions, U>&) */
+        template<class U> constexpr explicit Rectangle(const Range2D<U>& other): Range2D<T>(other) {}
 
-        /** @brief Copy constructor */
-        constexpr Rectangle(const Rectangle<T>&) = default;
+        /** @copydoc Range2D::sizeX() */
+        T width() const { return Range2D<T>::sizeX(); }
 
-        /** @brief Assignment operator */
-        Rectangle<T>& operator=(const Rectangle<T>&) = default;
-
-        /** @brief Equality operator */
-        constexpr bool operator==(const Rectangle<T>& other) const {
-            return _bottomLeft == other._bottomLeft && _topRight == other._topRight;
-        }
-
-        /** @brief Non-equality operator */
-        constexpr bool operator!=(const Rectangle<T>& other) const {
-            return !operator==(other);
-        }
-
-        /** @brief Bottom left corner */
-        Vector2<T>& bottomLeft() { return _bottomLeft; }
-        constexpr Vector2<T> bottomLeft() const { return _bottomLeft; } /**< @overload */
-
-        /** @brief Bottom right corner */
-        constexpr Vector2<T> bottomRight() const { return {_topRight.x(), _bottomLeft.y()}; } /**< @overload */
-
-        /** @brief Top left corner */
-        constexpr Vector2<T> topLeft() const { return {_bottomLeft.x(), _topRight.y()}; } /**< @overload */
-
-        /** @brief Top right corner */
-        Vector2<T>& topRight() { return _topRight; }
-        constexpr Vector2<T> topRight() const { return _topRight; } /**< @overload */
-
-        /** @brief Bottom edge */
-        T& bottom() { return _bottomLeft.y(); }
-        constexpr T bottom() const { return _bottomLeft.y(); } /**< @overload */
-
-        /** @brief Top edge */
-        T& top() { return _topRight.y(); }
-        constexpr T top() const { return _topRight.y(); } /**< @overload */
-
-        /** @brief Left edge */
-        T& left() { return _bottomLeft.x(); }
-        constexpr T left() const { return _bottomLeft.x(); } /**< @overload */
-
-        /** @brief Right edge */
-        T& right() { return _topRight.x(); }
-        constexpr T right() const { return _topRight.x(); } /**< @overload */
-
-        /** @brief %Rectangle size */
-        constexpr Vector2<T> size() const { return _topRight-_bottomLeft; }
-
-        /** @brief %Rectangle width */
-        constexpr T width() const { return _topRight.x() - _bottomLeft.x(); }
-
-        /** @brief %Rectangle height */
-        constexpr T height() const { return _topRight.y() - _bottomLeft.y(); }
-
-        /** @brief Translated rectangle */
-        Rectangle<T> translated(const Vector2<T>& vec) {
-            return {_bottomLeft + vec, _topRight + vec};
-        };
-
-    private:
-        Vector2<T> _bottomLeft;
-        Vector2<T> _topRight;
+        /** @copydoc Range2D::sizeY() */
+        T height() const { return Range2D<T>::sizeY(); }
 };
-
-/** @debugoperator{Magnum::Math::Geometry::Rectangle} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Rectangle<T>& value) {
-    debug << "Rectangle({";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << value.left() << ", " << value.bottom() << "}, {" << value.right() << ", " << value.top() << "})";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
-}
 
 }}}
 
 namespace Corrade { namespace Utility {
-
-/** @configurationvalue{Magnum::Math::Geometry::Rectangle} */
-template<class T> struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<T>> {
-    ConfigurationValue() = delete;
-
-    /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Geometry::Rectangle<T>& value, const ConfigurationValueFlags flags) {
-        return ConfigurationValue<Magnum::Math::Vector<4, T>>::toString(
-            reinterpret_cast<const Magnum::Math::Vector<4, T>&>(value), flags);
-    }
-
-    /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Geometry::Rectangle<T> fromString(const std::string& stringValue, const ConfigurationValueFlags flags) {
-        const auto vec = ConfigurationValue<Magnum::Math::Vector<4, T>>::fromString(stringValue, flags);
-        return {{vec[0], vec[1]}, {vec[2], vec[3]}};
-    }
-};
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::UnsignedInt>>;
-#ifndef MAGNUM_TARGET_GLES
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Geometry::Rectangle<Magnum::Double>>;
-#endif
-#endif
-
+    /** @configurationvalue{Magnum::Math::Geometry::Rectangle} */
+    template<class T> struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<T>>: public ConfigurationValue<Magnum::Math::Range2D<T>> {};
 }}
+#else
+#error
+#endif
 
 #endif

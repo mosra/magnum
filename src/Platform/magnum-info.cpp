@@ -354,13 +354,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES3
     if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
         _h(EXT::texture_filter_anisotropic)
 
         _l(Sampler::maxAnisotropy())
     }
-    #endif
 
     #undef _l
     #undef _h

@@ -46,7 +46,7 @@ template<UnsignedInt dimensions> void create(typename MeshData<dimensions>::Type
 template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
     /* Vertex buffer */
     Buffer* buffer = new Buffer(Buffer::Target::Array);
-    buffer->setData(data.positions(0), Buffer::Usage::StaticDraw);
+    buffer->setData(data.positions(0), BufferUsage::StaticDraw);
     ResourceManager::instance().set(vertexBufferResource.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Mesh configuration */
@@ -60,7 +60,7 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, data.indices());
+        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data.indices());
         ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 }
@@ -68,7 +68,7 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
 template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
     /* Vertex buffer */
     Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
-    vertexBuffer->setData(data.positions(0), Buffer::Usage::StaticDraw);
+    vertexBuffer->setData(data.positions(0), BufferUsage::StaticDraw);
     ResourceManager::instance().set(vertexBufferResource.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Mesh configuration */
@@ -82,7 +82,7 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, data.indices());
+        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data.indices());
         ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 }

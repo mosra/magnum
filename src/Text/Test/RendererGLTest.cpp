@@ -54,10 +54,10 @@ class TestLayouter: public Text::AbstractLayouter {
         explicit TestLayouter(Float size, std::size_t glyphCount): AbstractLayouter(glyphCount), _size(size) {}
 
     private:
-        std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt i) override {
+        std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override {
             return std::make_tuple(
-                Rectangle({}, Vector2(3.0f, 2.0f)*((i+1)*_size)),
-                Rectangle::fromSize({i*6.0f, 0.0f}, {6.0f, 10.0f}),
+                Range2D({}, Vector2(3.0f, 2.0f)*((i+1)*_size)),
+                Range2D::fromSize({i*6.0f, 0.0f}, {6.0f, 10.0f}),
                 (Vector2::xAxis((i+1)*3.0f)+Vector2(1.0f, -1.0f))*_size
             );
         }
@@ -86,7 +86,7 @@ void RendererGLTest::renderData() {
     std::vector<Vector2> positions;
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
-    Rectangle bounds;
+    Range2D bounds;
     std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractRenderer::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", Alignment::MiddleRightIntegral);
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
@@ -98,7 +98,7 @@ void RendererGLTest::renderData() {
     const Vector2 offset{-5.0f, 0.0f};
 
     /* Bounds */
-    CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
+    CORRADE_COMPARE(bounds, Range2D({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
 
     /* Vertex positions and texture coordinates
        0---2
@@ -168,15 +168,15 @@ void RendererGLTest::renderMesh() {
     TestFont font;
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
-    Rectangle bounds;
-    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, Buffer::Usage::StaticDraw, Alignment::TopCenter);
+    Range2D bounds;
+    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
     MAGNUM_VERIFY_NO_ERROR();
 
     /* Alignment offset */
     const Vector2 offset{-2.5f, -1.0f};
 
     /* Bounds */
-    CORRADE_COMPARE(bounds, Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
+    CORRADE_COMPARE(bounds, Range2D({0.0f, -0.5f}, {5.0f, 1.0f}).translated(offset));
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -213,10 +213,10 @@ void RendererGLTest::mutableText() {
     Text::Renderer2D renderer(font, *static_cast<GlyphCache*>(nullptr), 0.25f);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
-    CORRADE_COMPARE(renderer.rectangle(), Rectangle());
+    CORRADE_COMPARE(renderer.rectangle(), Range2D());
 
     /* Reserve some capacity */
-    renderer.reserve(4, Buffer::Usage::StaticDraw, Buffer::Usage::StaticDraw);
+    renderer.reserve(4, BufferUsage::StaticDraw, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 4);
     /** @todo How to verify this on ES? */
@@ -235,7 +235,7 @@ void RendererGLTest::mutableText() {
     MAGNUM_VERIFY_NO_ERROR();
 
     /* Updated bounds */
-    CORRADE_COMPARE(renderer.rectangle(), Rectangle({0.0f, -0.5f}, {5.0f, 1.0f}));
+    CORRADE_COMPARE(renderer.rectangle(), Range2D({0.0f, -0.5f}, {5.0f, 1.0f}));
 
     /* Aligned to line/left, no offset needed */
 
@@ -267,8 +267,8 @@ void RendererGLTest::multiline() {
             explicit Layouter(UnsignedInt glyphs): AbstractLayouter(glyphs) {}
 
         private:
-            std::tuple<Rectangle, Rectangle, Vector2> doRenderGlyph(UnsignedInt) override {
-                return std::make_tuple(Rectangle({}, Vector2(1.0f)), Rectangle({}, Vector2(1.0f)), Vector2::xAxis(2.0f));
+            std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
+                return std::make_tuple(Range2D({}, Vector2(1.0f)), Range2D({}, Vector2(1.0f)), Vector2::xAxis(2.0f));
             }
     };
 
@@ -299,14 +299,14 @@ void RendererGLTest::multiline() {
 
     Font font;
     font.openFile({}, 0.0f);
-    Rectangle rectangle;
+    Range2D rectangle;
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
     std::tie(positions, textureCoordinates, indices, rectangle) = Text::Renderer2D::render(font,
         *static_cast<GlyphCache*>(nullptr), 0.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
 
     /* Bounds */
-    CORRADE_COMPARE(rectangle, Rectangle({-3.5f, -5.0f}, {3.5f, 5.0f}));
+    CORRADE_COMPARE(rectangle, Range2D({-3.5f, -5.0f}, {3.5f, 5.0f}));
 
     /* Vertices
        [a] [b] [c] [d]

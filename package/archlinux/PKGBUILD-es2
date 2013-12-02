@@ -15,23 +15,18 @@ build() {
     mkdir -p "$startdir/build-es2"
     cd "$startdir/build-es2"
 
-    if [ "$CXX" = clang++ ] ; then
-        newcxxflags=$(echo $CXXFLAGS | sed s/--param=ssp-buffer-size=4//g)
-        export CXXFLAGS="$newcxxflags"
-    fi
-
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DBUILD_TESTS=ON \
         -DTARGET_GLES=ON \
         -DTARGET_GLES2=ON \
-        -DWITH_MAGNUMINFO=OFF \
+        -DWITH_AUDIO=ON \
         -DWITH_XEGLAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
+        -DBUILD_TESTS=ON \
         -G Ninja
     ninja
 }

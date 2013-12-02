@@ -91,13 +91,12 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     return result;
 }
 
-#ifndef MAGNUM_TARGET_GLES3
 template<> Int AbstractQuery::result<Int>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
     /** @todo Re-enable when extension wrangler is available for ES */
     Int result;
-    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
     #else
     CORRADE_INTERNAL_ASSERT(false);
@@ -111,7 +110,7 @@ template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
 
     /** @todo Re-enable when extension wrangler is available for ES */
     UnsignedLong result;
-    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
     #else
     CORRADE_INTERNAL_ASSERT(false);
@@ -125,7 +124,7 @@ template<> Long AbstractQuery::result<Long>() {
 
     /** @todo Re-enable when extension wrangler is available for ES */
     Long result;
-    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
     #else
     CORRADE_INTERNAL_ASSERT(false);
@@ -133,7 +132,6 @@ template<> Long AbstractQuery::result<Long>() {
     #endif
     return result;
 }
-#endif
 #endif
 
 void AbstractQuery::begin(GLenum target) {

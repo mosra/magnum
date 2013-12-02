@@ -80,7 +80,7 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageRefere
         .setImage(0, internalFormat, image);
 
     /* Create distance field from input texture */
-    TextureTools::distanceField(input, texture(), Rectanglei::fromSize(offset*scale, image.size()*scale), radius, image.size());
+    TextureTools::distanceField(input, texture(), Range2Di::fromSize(offset*scale, image.size()*scale), radius, image.size());
 }
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image) {

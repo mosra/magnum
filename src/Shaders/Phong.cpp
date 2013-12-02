@@ -35,7 +35,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current()->supportedVersion({Version::GL310, Version::GL300, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     #else
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
@@ -43,6 +43,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     Shader vert(version, Shader::Type::Vertex);
     vert.addSource(flags ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);

@@ -30,9 +30,9 @@
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "AbstractShaderProgram.h"
 #include "Color.h"
 #include "DimensionTraits.h"
+#include "Shaders/Generic.h"
 
 #include "magnumShadersVisibility.h"
 
@@ -47,10 +47,10 @@ Draws vertex-colored mesh.
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
+        typedef typename Generic<dimensions>::Position Position;
 
         /** @brief Vertex color */
-        typedef Attribute<1, Color3> Color;
+        typedef Attribute<3, Color3> Color;
 
         explicit VertexColor();
 

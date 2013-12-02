@@ -37,6 +37,7 @@ set(MagnumShaders_HEADERS
     DistanceFieldVector.h
     AbstractVector.h
     Flat.h
+    Generic.h
     MeshVisualizer.h
     Phong.h
     Shaders.h

@@ -27,29 +27,33 @@
 #include "Shaders/MeshVisualizer.h"
 #include "Test/AbstractOpenGLTester.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+#include "Shaders/magnumShadersResourceImport.hpp"
+#endif
+
 namespace Magnum { namespace Shaders { namespace Test {
 
-class MeshVisualizerTest: public Magnum::Test::AbstractOpenGLTester {
+class MeshVisualizerGLTest: public Magnum::Test::AbstractOpenGLTester {
     public:
-        explicit MeshVisualizerTest();
+        explicit MeshVisualizerGLTest();
 
         void compile();
         void compileWireframeGeometryShader();
         void compileWireframeNoGeometryShader();
 };
 
-MeshVisualizerTest::MeshVisualizerTest() {
-    addTests({&MeshVisualizerTest::compile,
-              &MeshVisualizerTest::compileWireframeGeometryShader,
-              &MeshVisualizerTest::compileWireframeNoGeometryShader});
+MeshVisualizerGLTest::MeshVisualizerGLTest() {
+    addTests({&MeshVisualizerGLTest::compile,
+              &MeshVisualizerGLTest::compileWireframeGeometryShader,
+              &MeshVisualizerGLTest::compileWireframeNoGeometryShader});
 }
 
-void MeshVisualizerTest::compile() {
+void MeshVisualizerGLTest::compile() {
     Shaders::MeshVisualizer shader;
     CORRADE_VERIFY(shader.validate().first);
 }
 
-void MeshVisualizerTest::compileWireframeGeometryShader() {
+void MeshVisualizerGLTest::compileWireframeGeometryShader() {
     #ifdef MAGNUM_TARGET_GLES
     CORRADE_SKIP("Geometry shader is not available in OpenGL ES");
     #else
@@ -61,11 +65,11 @@ void MeshVisualizerTest::compileWireframeGeometryShader() {
     #endif
 }
 
-void MeshVisualizerTest::compileWireframeNoGeometryShader() {
+void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);
     CORRADE_VERIFY(shader.validate().first);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerGLTest)

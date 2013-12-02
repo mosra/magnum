@@ -154,7 +154,7 @@ auto b = Matrix4::reflection(axis.normalized());
 Scaling and reflection is also done relative to origin, you can use method
 mentioned above to scale or reflect around arbitrary point.
 
-Sscaling and reflection can be (to some extent) also represented by complex
+Scaling and reflection can be (to some extent) also represented by complex
 numbers and quaternions, but it has some bad properties and would make some
 operations more expensive, so it's not implemented.
 

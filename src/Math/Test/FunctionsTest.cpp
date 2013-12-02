@@ -37,6 +37,7 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void minList();
         void max();
         void maxList();
+        void minmax();
         void sign();
         void abs();
 
@@ -79,6 +80,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::minList,
               &FunctionsTest::max,
               &FunctionsTest::maxList,
+              &FunctionsTest::minmax,
               &FunctionsTest::sign,
               &FunctionsTest::abs,
 
@@ -130,6 +132,18 @@ void FunctionsTest::maxList() {
     CORRADE_COMPARE(Math::max({Vector3i(5, -3, 2),
                                Vector3i(-2, 14, 7),
                                Vector3i(9, -5, 18)}), Vector3i(9, 14, 18));
+}
+
+void FunctionsTest::minmax() {
+    const auto expectedScalar = std::make_pair(-5.0f, 4.0f);
+    CORRADE_COMPARE(Math::minmax(-5.0f, 4.0f), expectedScalar);
+    CORRADE_COMPARE(Math::minmax(4.0f, -5.0f), expectedScalar);
+
+    const Vector3 a(5.0f, -4.0f, 1.0f);
+    const Vector3 b(7.0f, -3.0f, 1.0f);
+    const std::pair<Vector3, Vector3> expectedVector{{5.0f, -4.0f, 1.0f}, {7.0f, -3.0f, 1.0f}};
+    CORRADE_COMPARE_AS(Math::minmax(a, b), expectedVector, std::pair<Vector3, Vector3>);
+    CORRADE_COMPARE_AS(Math::minmax(b, a), expectedVector, std::pair<Vector3, Vector3>);
 }
 
 void FunctionsTest::sign() {

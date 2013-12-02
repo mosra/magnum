@@ -71,7 +71,7 @@ Int Framebuffer::maxColorAttachments() {
     return value;
 }
 
-Framebuffer::Framebuffer(const Rectanglei& viewport) {
+Framebuffer::Framebuffer(const Range2Di& viewport) {
     _viewport = viewport;
 
     glGenFramebuffers(1, &_id);
@@ -94,36 +94,31 @@ Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt
 
     /* Create linear array from associative */
     /** @todo C++14: use VLA to avoid heap allocation */
-    GLenum* _attachments = new GLenum[max+1];
-    std::fill_n(_attachments, max, GL_NONE);
+    static_assert(GL_NONE == 0, "Expecting zero GL_NONE for zero-initialization");
+    auto _attachments = Containers::Array<GLenum>::zeroInitialized(max+1);
     for(auto it = attachments.begin(); it != attachments.end(); ++it)
         _attachments[it->first] = GLenum(it->second);
 
     (this->*drawBuffersImplementation)(max+1, _attachments);
-    delete[] _attachments;
     return *this;
 }
 
 void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
     /** @todo C++14: use VLA to avoid heap allocation */
-    GLenum* _attachments = new GLenum[attachments.size()];
+    Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
     invalidateImplementation(attachments.size(), _attachments);
-
-    delete[] _attachments;
 }
 
-void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Rectanglei& rectangle) {
+void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
-    GLenum* _attachments = new GLenum[attachments.size()];
+    Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
     invalidateImplementation(attachments.size(), _attachments, rectangle);
-
-    delete[] _attachments;
 }
 
 Framebuffer& Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int mipLevel) {
@@ -157,7 +152,7 @@ void Framebuffer::renderbufferImplementationDSA(BufferAttachment attachment, Ren
 }
 
 void Framebuffer::texture1DImplementationDefault(BufferAttachment attachment, Texture1D& texture, GLint mipLevel) {
-    glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), static_cast<GLenum>(texture.target()), texture.id(), mipLevel);
+    glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), GLenum(texture.target()), texture.id(), mipLevel);
 }
 
 void Framebuffer::texture1DImplementationDSA(BufferAttachment attachment, Texture1D& texture, GLint mipLevel) {
@@ -179,7 +174,7 @@ void Framebuffer::texture3DImplementationDefault(BufferAttachment attachment, Te
     /** @todo Check for texture target compatibility */
     /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
     #ifndef MAGNUM_TARGET_GLES
-    glFramebufferTexture3D(GLenum(bindInternal()), GLenum(attachment), static_cast<GLenum>(texture.target()), texture.id(), mipLevel, layer);
+    glFramebufferTexture3D(GLenum(bindInternal()), GLenum(attachment), GLenum(texture.target()), texture.id(), mipLevel, layer);
     #else
     static_cast<void>(attachment);
     static_cast<void>(texture);

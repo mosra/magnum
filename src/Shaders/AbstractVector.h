@@ -28,9 +28,7 @@
  * @brief Class Magnum::Shaders::AbstractVector, typedef Magnum::Shaders::AbstractVector2D, Magnum::Shaders::AbstractVector3D
  */
 
-#include "AbstractShaderProgram.h"
-#include "Color.h"
-#include "DimensionTraits.h"
+#include "Shaders/Generic.h"
 
 namespace Magnum { namespace Shaders {
 
@@ -42,10 +40,10 @@ namespace Magnum { namespace Shaders {
 template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
+        typedef typename Generic<dimensions>::Position Position;
 
         /** @brief Texture coordinates */
-        typedef Attribute<1, Vector2> TextureCoordinates;
+        typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
         enum: Int {
             VectorTextureLayer = 16 /**< Layer for vector texture */

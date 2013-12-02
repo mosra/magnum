@@ -43,6 +43,10 @@ template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~Abstra
 
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 
+template<class Transformation> Object<Transformation>::Object(Object<Transformation>* parent): counter(0xFFFFu), flags(Flag::Dirty) {
+    setParent(parent);
+}
+
 /* `= default` causes linker errors in GCC 4.4 */
 template<class Transformation> Object<Transformation>::~Object() {}
 
@@ -195,7 +199,7 @@ computed and recursively concatenated together. Resulting transformations for
 joints which were originally in `object` list is then returned.
 */
 template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
-    CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", {});
+    CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", std::vector<typename Transformation::DataType>{});
 
     /* Remember object count for later */
     std::size_t objectCount = objects.size();
@@ -218,7 +222,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     const Scene<Transformation>* scene = this->scene();
 
     /* Nearest common ancestor not yet implemented - assert this is done on scene */
-    CORRADE_ASSERT(scene == this, "SceneGraph::Object::transformationMatrices(): currently implemented only for Scene", {});
+    CORRADE_ASSERT(scene == this, "SceneGraph::Object::transformationMatrices(): currently implemented only for Scene", std::vector<typename Transformation::DataType>{});
 
     /* Mark all objects up the hierarchy as visited */
     auto it = objects.begin();
@@ -236,7 +240,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 
         /* If this is root object, remove from list */
         if(!parent) {
-            CORRADE_ASSERT(*it == scene, "SceneGraph::Object::transformations(): the objects are not part of the same tree", {});
+            CORRADE_ASSERT(*it == scene, "SceneGraph::Object::transformations(): the objects are not part of the same tree", std::vector<typename Transformation::DataType>{});
             it = objects.erase(it);
 
         /* Parent is an joint or already visited - remove current from list */
@@ -247,7 +251,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
                list of joint objects */
             if(!(parent->flags & Flag::Joint)) {
                 CORRADE_ASSERT(jointObjects.size() < 0xFFFFu,
-                               "SceneGraph::Object::transformations(): too large scene", {});
+                               "SceneGraph::Object::transformations(): too large scene", std::vector<typename Transformation::DataType>{});
                 CORRADE_INTERNAL_ASSERT(parent->counter == 0xFFFFu);
                 parent->counter = jointObjects.size();
                 parent->flags |= Flag::Joint;
