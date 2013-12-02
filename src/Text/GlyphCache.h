@@ -176,7 +176,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * See also @ref setImage() to upload glyph image.
          * @see @ref padding()
          */
-        void insert(UnsignedInt glyph, Vector2i position, Range2Di rectangle);
+        void insert(UnsignedInt glyph, const Vector2i& position, const Range2Di& rectangle);
 
         /**
          * @brief Set cache image

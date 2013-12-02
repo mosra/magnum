@@ -66,7 +66,7 @@ class Interleave {
             std::tie(std::ignore, std::ignore, data) = operator()(attributes...);
 
             mesh.setVertexCount(_attributeCount);
-            buffer.setData({data, _attributeCount*_stride}, usage);
+            buffer.setData(data, usage);
         }
 
         /* Specialization for only one attribute array */

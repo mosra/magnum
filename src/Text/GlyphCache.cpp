@@ -87,16 +87,14 @@ std::vector<Range2Di> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
     return TextureTools::atlas(_size, sizes, _padding);
 }
 
-void GlyphCache::insert(const UnsignedInt glyph, Vector2i position, Range2Di rectangle) {
-    position -= _padding;
-    rectangle.bottomLeft() -= _padding;
-    rectangle.topRight() += _padding;
+void GlyphCache::insert(const UnsignedInt glyph, const Vector2i& position, const Range2Di& rectangle) {
+    const std::pair<Vector2i, Range2Di> glyphData = {position-_padding, rectangle.padded(_padding)};
 
     /* Overwriting "Not Found" glyph */
-    if(glyph == 0) glyphs[0] = {position, rectangle};
+    if(glyph == 0) glyphs[0] = glyphData;
 
     /* Inserting new glyph */
-    else CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({glyph, {position, rectangle}}).second);
+    else CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({glyph, glyphData}).second);
 }
 
 void GlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {

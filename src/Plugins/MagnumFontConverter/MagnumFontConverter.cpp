@@ -107,8 +107,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
         Utility::ConfigurationGroup* group = configuration.addGroup("glyph");
         group->setValue("advance", font.glyphAdvance(oldGlyphId));
         group->setValue("position", glyph.first+cache.padding());
-        group->setValue("rectangle", Range2Di(glyph.second.bottomLeft()+cache.padding(),
-                                                glyph.second.topRight()-cache.padding()));
+        group->setValue("rectangle", glyph.second.padded(-cache.padding()));
     }
 
     std::ostringstream confOut;
