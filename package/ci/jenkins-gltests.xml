@@ -19,7 +19,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>*/master</name>
+        <name>compatibility</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -37,7 +37,7 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
-  <customWorkspace>Magnum</customWorkspace>
+  <customWorkspace>Magnum-Compatibility</customWorkspace>
   <axes>
     <hudson.matrix.TextAxis>
       <name>compiler</name>
@@ -45,6 +45,8 @@
         <string>g++</string>
         <string>g++-4.7</string>
         <string>g++-4.6</string>
+        <string>g++-4.5</string>
+        <string>g++-4.4</string>
         <string>clang++</string>
         <string>clang++-libc++</string>
       </values>

@@ -19,7 +19,7 @@
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>*/master</name>
+        <name>compatibility</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -37,7 +37,7 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
-  <customWorkspace>Magnum</customWorkspace>
+  <customWorkspace>Magnum-Compatibility</customWorkspace>
   <axes>
     <hudson.matrix.TextAxis>
       <name>compiler</name>
@@ -45,6 +45,8 @@
         <string>g++</string>
         <string>g++-4.7</string>
         <string>g++-4.6</string>
+        <string>g++-4.5</string>
+        <string>g++-4.4</string>
         <string>clang++</string>
         <string>clang++-libc++</string>
       </values>
@@ -116,9 +118,9 @@ cd build-${compiler}-${libraries}-${compatibility}-${gl}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/${compiler}-${libraries} \
-    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/${compiler}-${libraries}-${compatibility}-${gl} \
-    -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/${compiler}-${libraries}/lib;${JENKINS_HOME}/filesystem/${compiler}-${libraries}-${compatibility}-${gl}/lib" \
+    -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries} \
+    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl} \
+    -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}/lib;${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl}/lib" \
     -DCMAKE_CXX_COMPILER=${compiler_binary} \
     "${compiler_flags[@]}" \
     -DBUILD_TESTS=ON \
@@ -149,7 +151,7 @@ ninja install
   </builders>
   <publishers>
     <hudson.tasks.BuildTrigger>
-      <childProjects>Magnum-GLTests</childProjects>
+      <childProjects>Magnum-Compatibility-GLTests</childProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>

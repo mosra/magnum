@@ -393,15 +393,15 @@ GL tests only. Setup your Jenkins server, enable the **Git** and
 Then add new jobs or update existing ones (replace `<command>` with `create-job`
 or `update-job`).
 
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum < jenkins.xml
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-GLTests < jenkins-gltests.xml
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Compatibility < jenkins.xml
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Compatibility-GLTests < jenkins-gltests.xml
 
 Build is done using **Ninja** build system and everything possible is enabled,
 thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects that
-**GCC** >=4.8.2, 4.7, 4.6 and **Clang** are installed and there are **OpenGL**,
-**OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to compile the
-library with every combination of them. You can add/remove the axes in
-`axes/hudson.matrix.TextAxis` or via the web interface later.
+**GCC** >=4.8.2, 4.7, 4.6, 4.5, 4.4 and **Clang** are installed and there are
+**OpenGL**, **OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to
+compile the library with every combination of them. You can add/remove the axes
+in `axes/hudson.matrix.TextAxis` or via the web interface later.
 
 Magnum-GLTests depend on active X11 session, thus they should be run from
 Jenkins instance running on graphical user session.
