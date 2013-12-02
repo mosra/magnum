@@ -403,8 +403,8 @@ thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects that
 compile the library with every combination of them. You can add/remove the axes
 in `axes/hudson.matrix.TextAxis` or via the web interface later.
 
-Magnum-GLTests depend on active X11 session, thus they should be run from
-Jenkins instance running on graphical user session.
+Magnum-Compatibility-GLTests depend on active X11 session, thus they should be
+run from Jenkins instance running on graphical user session.
 
 There is also MinGW32 and Emscripten configuration, add or update them with the
 commands below. See @ref building-crosscompiling for more information about
