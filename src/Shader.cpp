@@ -605,7 +605,7 @@ Shader& Shader::addSource(std::string source) {
 
 Shader& Shader::addFile(const std::string& filename) {
     /* Open file */
-    std::ifstream file(filename.c_str());
+    std::ifstream file(filename);
     CORRADE_ASSERT(file.good(), "Shader file " << '\'' + filename + '\'' << " cannot be opened.", *this);
 
     /* Get size of shader and initialize buffer */
