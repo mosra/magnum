@@ -43,6 +43,10 @@ template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~Abstra
 
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 
+template<class Transformation> Object<Transformation>::Object(Object<Transformation>* parent): counter(0xFFFFu), flags(Flag::Dirty) {
+    setParent(parent);
+}
+
 template<class Transformation> Object<Transformation>::~Object() = default;
 
 template<class Transformation> Scene<Transformation>* Object<Transformation>::scene() {

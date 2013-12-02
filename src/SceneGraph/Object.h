@@ -117,9 +117,7 @@ template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public Abs
          * @brief Constructor
          * @param parent    Parent object
          */
-        explicit Object(Object<Transformation>* parent = nullptr): counter(0xFFFFu), flags(Flag::Dirty) {
-            setParent(parent);
-        }
+        explicit Object(Object<Transformation>* parent = nullptr);
 
         /**
          * @brief Destructor
