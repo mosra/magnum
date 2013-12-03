@@ -115,7 +115,13 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          */
         static const Section otherSection = 0;
 
-        explicit Profiler(): enabled(false), measureDuration(60), currentFrame(0), frameCount(0), sections{"Other"}, currentSection(otherSection) {}
+        explicit Profiler(): enabled(false), measureDuration(60), currentFrame(0), frameCount(0),
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            sections{"Other"},
+            #else
+            sections({"Other"}),
+            #endif
+            currentSection(otherSection) {}
 
         /**
          * @brief Set measure duration
