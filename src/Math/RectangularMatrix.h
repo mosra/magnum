@@ -417,7 +417,9 @@ Convenience alternative to <tt>%RectangularMatrix<2, 3, T></tt>. See
     instead.
 @see @ref Magnum::Matrix2x3, @ref Magnum::Matrix2x3d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
+#endif
 
 /**
 @brief Matrix with 3 columns and 2 rows
@@ -428,7 +430,9 @@ Convenience alternative to <tt>%RectangularMatrix<3, 2, T></tt>. See
     instead.
 @see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
+#endif
 
 /**
 @brief Matrix with 2 columns and 4 rows
@@ -439,7 +443,9 @@ Convenience alternative to <tt>%RectangularMatrix<2, 4, T></tt>. See
     instead.
 @see @ref Magnum::Matrix2x4, @ref Magnum::Matrix2x4d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
+#endif
 
 /**
 @brief Matrix with 4 columns and 2 rows
@@ -450,7 +456,9 @@ Convenience alternative to <tt>%RectangularMatrix<4, 2, T></tt>. See
     instead.
 @see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
+#endif
 
 /**
 @brief Matrix with 3 columns and 4 rows
@@ -461,7 +469,9 @@ Convenience alternative to <tt>%RectangularMatrix<3, 4, T></tt>. See
     instead.
 @see @ref Magnum::Matrix3x4, @ref Magnum::Matrix3x4d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
+#endif
 
 /**
 @brief Matrix with 4 columns and 3 rows
@@ -472,7 +482,9 @@ Convenience alternative to <tt>%RectangularMatrix<4, 3, T></tt>. See
     instead.
 @see @ref Magnum::Matrix4x3, @ref Magnum::Matrix4x3d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
+#endif
 #endif
 
 /** @relates RectangularMatrix

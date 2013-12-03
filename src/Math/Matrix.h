@@ -193,7 +193,9 @@ information.
 @note Not available on GCC < 4.7. Use <tt>%Matrix<2, T></tt> instead.
 @see @ref Magnum::Matrix2x2, @ref Magnum::Matrix2x2d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix2x2 = Matrix<2, T>;
+#endif
 
 /**
 @brief 3x3 matrix
@@ -204,7 +206,9 @@ additional functions for transformations in 2D.
 @note Not available on GCC < 4.7. Use <tt>%Matrix<3, T></tt> instead.
 @see @ref Magnum::Matrix3x3, @ref Magnum::Matrix3x3d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix3x3 = Matrix<3, T>;
+#endif
 
 /**
 @brief 4x4 matrix
@@ -215,7 +219,9 @@ additional functions for transformations in 3D.
 @note Not available on GCC < 4.7. Use <tt>%Matrix<3, T></tt> instead.
 @see @ref Magnum::Matrix4x4, @ref Magnum::Matrix4x4d
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Matrix4x4 = Matrix<4, T>;
+#endif
 #endif
 
 MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)

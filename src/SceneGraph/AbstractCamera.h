@@ -172,7 +172,9 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see @ref AbstractCamera2D, @ref AbstractBasicCamera3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using AbstractBasicCamera2D = AbstractCamera<2, T>;
+#endif
 #endif
 
 /**
@@ -181,7 +183,9 @@ template<class T> using AbstractBasicCamera2D = AbstractCamera<2, T>;
 @see @ref AbstractCamera3D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 typedef AbstractBasicCamera2D<Float> AbstractCamera2D;
+#endif
 #else
 typedef AbstractCamera<2, Float> AbstractCamera2D;
 #endif
@@ -195,7 +199,9 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
 @see @ref AbstractCamera3D, @ref AbstractBasicCamera2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using AbstractBasicCamera3D = AbstractCamera<3, T>;
+#endif
 #endif
 
 /**

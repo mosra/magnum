@@ -93,12 +93,14 @@ See @ref AbstractTranslation for more information.
     instead.
 @see @ref AbstractTranslation2D, @ref AbstractBasicTranslation3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class TranslationType = T>
 #else
 template<class T, class TranslationType>
 #endif
 using AbstractBasicTranslation2D = AbstractTranslation<2, T, TranslationType>;
+#endif
 #endif
 
 /**
@@ -122,12 +124,14 @@ See @ref AbstractTranslation for more information.
     instead.
 @see @ref AbstractTranslation3D, @ref AbstractBasicTranslation2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class TranslationType = T>
 #else
 template<class T, class TranslationType>
 #endif
 using AbstractBasicTranslation3D = AbstractTranslation<3, T, TranslationType>;
+#endif
 #endif
 
 /**

@@ -192,7 +192,9 @@ Convenience alternative to <tt>%Range<1, T></tt>. See @ref Range for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Range<1, T></tt> instead.
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using Range1D = Range<1, T>;
+#endif
 #endif
 
 /**

@@ -81,7 +81,9 @@ more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<2, T></tt> instead.
 @see @ref AnimableGroup2D, @ref BasicAnimableGroup3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using BasicAnimableGroup2D = AnimableGroup<2, T>;
+#endif
 #endif
 
 /**
@@ -90,7 +92,9 @@ template<class T> using BasicAnimableGroup2D = AnimableGroup<2, T>;
 @see @ref AnimableGroup3D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 typedef BasicAnimableGroup2D<Float> AnimableGroup2D;
+#endif
 #else
 typedef AnimableGroup<2, Float> AnimableGroup2D;
 #endif
@@ -104,7 +108,9 @@ more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<3, T></tt> instead.
 @see @ref AnimableGroup3D, @ref BasicAnimableGroup2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
+#endif
 #endif
 
 /**
@@ -113,7 +119,9 @@ template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
 @see @ref AnimableGroup2D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 typedef BasicAnimableGroup3D<Float> AnimableGroup3D;
+#endif
 #else
 typedef AnimableGroup<3, Float> AnimableGroup3D;
 #endif

@@ -124,7 +124,9 @@ AbstractGroupedFeature for more information.
     instead.
 @see @ref FeatureGroup2D, @ref BasicFeatureGroup3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Feature, class T> using BasicFeatureGroup2D = FeatureGroup<2, Feature, T>;
+#endif
 
 /**
 @brief Base feature group for two-dimensional float scenes
@@ -135,7 +137,9 @@ AbstractGroupedFeature for more information.
     instead.
 @see @ref FeatureGroup3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Feature> using FeatureGroup2D = BasicFeatureGroup2D<Feature, Float>;
+#endif
 
 /**
 @brief Base feature group for three-dimensional scenes
@@ -146,7 +150,9 @@ AbstractGroupedFeature for more information.
     instead.
 @see @ref FeatureGroup3D, @ref BasicFeatureGroup2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Feature, class T> using BasicFeatureGroup3D = FeatureGroup<3, Feature, T>;
+#endif
 
 /**
 @brief Base feature group for three-dimensional float scenes
@@ -157,7 +163,9 @@ AbstractGroupedFeature for more information.
     instead.
 @see @ref FeatureGroup2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Feature> using FeatureGroup3D = BasicFeatureGroup3D<Feature, Float>;
+#endif
 #endif
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>::~FeatureGroup() {

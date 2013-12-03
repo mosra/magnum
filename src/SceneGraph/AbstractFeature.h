@@ -304,7 +304,9 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<2, T></tt> instead.
 @see @ref AbstractFeature2D, @ref AbstractBasicFeature3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using AbstractBasicFeature2D = AbstractFeature<2, T>;
+#endif
 #endif
 
 /**
@@ -313,7 +315,9 @@ template<class T> using AbstractBasicFeature2D = AbstractFeature<2, T>;
 @see @ref AbstractFeature3D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 typedef AbstractBasicFeature2D<Float> AbstractFeature2D;
+#endif
 #else
 typedef AbstractFeature<2, Float> AbstractFeature2D;
 #endif
@@ -327,7 +331,9 @@ for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
 @see AbstractFeature2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using AbstractBasicFeature3D = AbstractFeature<3, T>;
+#endif
 #endif
 
 /**
@@ -336,7 +342,9 @@ template<class T> using AbstractBasicFeature3D = AbstractFeature<3, T>;
 @see @ref AbstractFeature2D
 */
 #ifndef CORRADE_GCC46_COMPATIBILITY
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 typedef AbstractBasicFeature3D<Float> AbstractFeature3D;
+#endif
 #else
 typedef AbstractFeature<3, Float> AbstractFeature3D;
 #endif

@@ -116,7 +116,9 @@ AbstractGroupedFeature for more information.
     instead.
 @see @ref AbstractGroupedFeature2D, @ref AbstractBasicGroupedFeature3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Derived, class T> using AbstractBasicGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
+#endif
 
 /**
 @brief Base grouped feature for two-dimensional float scenes
@@ -127,7 +129,9 @@ See AbstractGroupedFeature for more information.
     instead.
 @see @ref AbstractGroupedFeature3D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFeature2D<Derived, Float>;
+#endif
 
 /**
 @brief Base grouped feature for three-dimensional scenes
@@ -138,7 +142,9 @@ AbstractGroupedFeature for more information.
     instead.
 @see @ref AbstractGroupedFeature3D, @ref AbstractBasicGroupedFeature2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Derived, class T> using AbstractBasicGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
+#endif
 
 /**
 @brief Base grouped feature for three-dimensional float scenes
@@ -149,7 +155,9 @@ See AbstractGroupedFeature for more information.
     instead.
 @see @ref AbstractGroupedFeature2D
 */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class Derived> using AbstractGroupedFeature3D = AbstractBasicGroupedFeature3D<Derived, Float>;
+#endif
 #endif
 
 }}
