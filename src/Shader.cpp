@@ -24,6 +24,7 @@
 
 #include "Shader.h"
 
+#include <algorithm> /* std::max(), needed by MSVC */
 #include <fstream>
 #include <Containers/Array.h>
 #include <Utility/Assert.h>

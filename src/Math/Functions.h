@@ -25,6 +25,7 @@
 */
 
 #include <cmath>
+#include <algorithm> /* std::max(), needed by MSVC */
 #include <limits>
 #include <type_traits>
 #include <utility>
