@@ -21,7 +21,11 @@
 # define REQUIRES(...) typename enable_if<__VA_ARGS__::value, bool>::type = false
 
 # if defined __clang__
-#  define OPTIONAL_HAS_USING 1
+#  if (__clang_major__ >= 3)
+#   define OPTIONAL_HAS_USING 1
+#  else
+#   define OPTIONAL_HAS_USING 0
+#  endif
 #  if (__clang_major__ > 2) || (__clang_major__ == 2) && (__clang_minor__ >= 9)
 #   define OPTIONAL_HAS_THIS_RVALUE_REFS 1
 #  else
