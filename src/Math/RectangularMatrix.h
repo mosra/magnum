@@ -114,7 +114,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @todo Creating matrix from arbitrary combination of matrices with n rows
          */
         #ifndef CORRADE_GCC45_COMPATIBILITY
-        template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data{first, next...} {
+        template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{first, next...}
+            #else
+            _data({first, next...})
+            #endif
+        {
         #else
         template<class ...U> /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data() {
             constructInternal({first, next...});
@@ -389,7 +395,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         #ifndef CORRADE_GCC45_COMPATIBILITY
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{Vector<rows, T>(matrix[sequence])...} {}
+            #else
+            _data({Vector<rows, T>(matrix[sequence])...}) {}
+            #endif
         #else
         template<class U, std::size_t ...sequence> explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data() {
             constructInternal({Vector<rows, T>(matrix[sequence])...});
@@ -404,7 +415,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
         #endif
 
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         Vector<rows, T> _data[cols];
+        #else
+        std::array<Vector<rows, T>, cols> _data;
+        #endif
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY

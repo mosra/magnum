@@ -441,7 +441,12 @@ class BasicColor4: public Math::Vector4<T> {
          * @param alpha Alpha value, defaults to 1.0 for floating-point types
          *      and maximum positive value for integral types.
          */
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         constexpr explicit BasicColor4(T rgb, T alpha = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
+        #else
+        template<class U = T, class = typename std::enable_if<std::is_floating_point<T>::value, T>::type> constexpr explicit BasicColor4(T rgb, T alpha = T(1)): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
+        template<class U = T, class V = T, class = typename std::enable_if<std::is_integral<T>::value, T>::type> constexpr explicit BasicColor4(T rgb, T alpha = std::numeric_limits<T>::max()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
+        #endif
 
         /**
          * @brief Constructor
@@ -451,7 +456,12 @@ class BasicColor4: public Math::Vector4<T> {
          * @param a     A value, defaults to 1.0 for floating-point types and
          *      maximum positive value for integral types.
          */
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(r, g, b, a) {}
+        #else
+        template<class U = T, class = typename std::enable_if<std::is_floating_point<T>::value, T>::type> constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = T(1)): Math::Vector4<T>(r, g, b, a) {}
+        template<class U = T, class V = T, class = typename std::enable_if<std::is_integral<T>::value, T>::type> constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = std::numeric_limits<T>::max()): Math::Vector4<T>(r, g, b, a) {}
+        #endif
 
         /**
          * @brief Constructor
@@ -460,7 +470,12 @@ class BasicColor4: public Math::Vector4<T> {
          */
         /* Not marked as explicit, because conversion from BasicColor3 to BasicColor4
            is fairly common, nearly always with A set to 1 */
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        #else
+        template<class U = T, class = typename std::enable_if<std::is_floating_point<T>::value, T>::type> constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = T(1)): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        template<class U = T, class V = T, class = typename std::enable_if<std::is_integral<T>::value, T>::type> constexpr /*implicit*/ BasicColor4(const Math::Vector3<T>& rgb, T a = std::numeric_limits<T>::max()): Math::Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        #endif
 
         /**
          * @copydoc Math::Vector::Vector(const Vector<size, U>&)

@@ -33,6 +33,10 @@
 #include "Math/BoolVector.h" /* for Math::Implementation::Sequence */
 #include "Magnum.h"
 
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
+#include <array>
+#endif
+
 namespace Magnum {
 
 /**
@@ -107,9 +111,18 @@ template<UnsignedInt dimensions, class T> class Array {
     private:
 
         /* Implementation for Array<dimensions, T>::Array(U) */
-        template<std::size_t ...sequence> constexpr explicit Array(Math::Implementation::Sequence<sequence...>, T value): _data{Math::Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Array(Math::Implementation::Sequence<sequence...>, T value):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{Math::Implementation::repeat(value, sequence)...} {}
+            #else
+            _data({Math::Implementation::repeat(value, sequence)...}) {}
+            #endif
 
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         T _data[dimensions];
+        #else
+        std::array<T, dimensions> _data;
+        #endif
 };
 
 /**

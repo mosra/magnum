@@ -40,6 +40,10 @@
 
 #include "magnumVisibility.h"
 
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
+#include <array>
+#endif
+
 namespace Magnum { namespace Math {
 
 namespace Implementation {
@@ -122,7 +126,12 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> constexpr /*implicit*/ Vector(T first, U... next);
         #else
-        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {}
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{first, next...} {}
+            #else
+            _data({first, next...}) {}
+            #endif
         #endif
 
         /** @brief Construct vector with one value for all fields */
@@ -198,7 +207,11 @@ template<std::size_t size, class T> class Vector {
         #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
         &
         #endif
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         { return _data; }
+        #else
+        { return _data.data(); }
+        #endif
 
         /** @overload */
         constexpr const T* data()
@@ -207,7 +220,11 @@ template<std::size_t size, class T> class Vector {
         #else
         const
         #endif
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         { return _data; }
+        #else
+        { return _data.data(); }
+        #endif
 
         /**
          * @brief Value at given position
@@ -537,12 +554,26 @@ template<std::size_t size, class T> class Vector {
 
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector): _data{T(vector._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{T(vector._data[sequence])...} {}
+            #else
+            _data({T(vector._data[sequence])...}) {}
+            #endif
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{Implementation::repeat(value, sequence)...} {}
+            #else
+            _data({Implementation::repeat(value, sequence)...}) {}
+            #endif
 
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         T _data[size];
+        #else
+        std::array<T, size> _data;
+        #endif
 };
 
 /** @relates Vector
