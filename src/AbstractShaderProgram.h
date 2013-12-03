@@ -1345,7 +1345,7 @@ template<std::size_t cols> struct SizedVectorAttribute {
 };
 template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1 };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1354,7 +1354,7 @@ template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
 };
 template<> struct SizedAttribute<1, 2>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1, Two = 2 };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1363,7 +1363,7 @@ template<> struct SizedAttribute<1, 2>: SizedVectorAttribute<1> {
 };
 template<> struct SizedAttribute<1, 3>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1, Two = 2, Three = 3 };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1372,7 +1372,7 @@ template<> struct SizedAttribute<1, 3>: SizedVectorAttribute<1> {
 };
 template<> struct SizedAttribute<1, 4>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1, Two = 2, Three = 3, Four = 4 };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1388,7 +1388,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 4>::Components val
 template<std::size_t rows> struct SizedMatrixAttribute;
 template<> struct SizedMatrixAttribute<2> {
     enum class Components: GLint { Two   = 2 };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1397,7 +1397,7 @@ template<> struct SizedMatrixAttribute<2> {
 };
 template<> struct SizedMatrixAttribute<3> {
     enum class Components: GLint { Three = 3 };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1406,7 +1406,7 @@ template<> struct SizedMatrixAttribute<3> {
 };
 template<> struct SizedMatrixAttribute<4> {
     enum class Components: GLint { Four  = 4 };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1454,7 +1454,7 @@ struct FloatAttribute {
         Double = GL_DOUBLE
         #endif
     };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1486,7 +1486,7 @@ struct IntAttribute {
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT
     };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1506,7 +1506,7 @@ struct UnsignedIntAttribute {
     typedef UnsignedInt Type;
 
     typedef IntAttribute::DataType DataType;
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1530,7 +1530,7 @@ struct DoubleAttribute {
     enum class DataType: GLenum {
         Double = GL_DOUBLE
     };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1560,7 +1560,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
         BGRA = GL_BGRA
         #endif
     };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
@@ -1590,7 +1590,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
         Int2101010Rev = GL_INT_2_10_10_10_REV
         #endif
     };
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static
     #else
     static const
