@@ -195,14 +195,14 @@ template<std::size_t size, class T> class Vector {
          * @see operator[]()
          */
         T* data()
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
         &
         #endif
         { return _data; }
 
         /** @overload */
         constexpr const T* data()
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
         const &
         #else
         const
