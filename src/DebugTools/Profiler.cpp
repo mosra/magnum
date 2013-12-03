@@ -121,7 +121,7 @@ void Profiler::printStatistics() {
     Debug() << "Statistics for last" << measureDuration << "frames:";
     for(std::size_t i = 0; i != sections.size(); ++i)
         Debug() << " " << sections[totalSorted[i]] << duration_cast<microseconds>(totalData[totalSorted[i]]).count()/frameCount
-                #ifndef CORRADE_GCC44_COMPATIBILITY
+                #if !defined(CORRADE_GCC44_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
                 << u8"µs";
                 #else
                 << "µs";
