@@ -134,7 +134,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         Float shininess() const { return _shininess; }
 
     private:
-        #ifndef CORRADE_GCC45_COMPATIBILITY
+        #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
         union Source {
             Source() {}
 
