@@ -45,7 +45,7 @@ namespace Math {
 
     /** @todoc Remove `ifndef` when Doxygen is able to handle operator"" */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    #ifndef CORRADE_GCC46_COMPATIBILITY
+    #if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     #ifndef MAGNUM_TARGET_GLES
     constexpr Rad<Double> operator "" _rad(long double);
     constexpr Deg<Double> operator "" _deg(long double);
@@ -502,7 +502,7 @@ typedef Math::Geometry::Rectangle<Double> Rectangled;
 /*@}*/
 #endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
+#if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
 /* Using angle literals from Math namespace */
 #ifndef MAGNUM_TARGET_GLES
 using Math::operator "" _deg;

@@ -146,7 +146,7 @@ template<class T> class Deg: public Unit<Deg, T> {
         constexpr /*implicit*/ Deg(Unit<Rad, T> value);
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
+#if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
 #ifndef MAGNUM_TARGET_GLES
 /** @relates Deg
 @brief Double-precision degree value literal
@@ -157,7 +157,7 @@ Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see Magnum::operator""_deg(), operator""_degf(), operator""_rad()
-@note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
+@note Not available on GCC < 4.7 and MSVC 2013. Use Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
@@ -172,7 +172,7 @@ Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
 Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
-@note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
+@note Not available on GCC < 4.7 and MSVC 2013. Use Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
@@ -209,14 +209,14 @@ template<class T> class Rad: public Unit<Rad, T> {
         constexpr /*implicit*/ Rad(Unit<Deg, T> value);
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
+#if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
 #ifndef MAGNUM_TARGET_GLES
 /** @relates Rad
 @brief Double-precision radian value literal
 
 See operator""_rad() for more information.
 @see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
-@note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
+@note Not available on GCC < 4.7 and MSVC 2013. Use Rad::Rad(T) instead.
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
 #endif
@@ -226,7 +226,7 @@ constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(v
 
 See operator""_degf() for more information.
 @see Magnum::operator""_radf(), operator""_rad(), operator""_degf()
-@note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
+@note Not available on GCC < 4.7 and MSVC 2013. Use Rad::Rad(T) instead.
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 #endif
