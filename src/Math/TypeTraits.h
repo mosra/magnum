@@ -34,7 +34,7 @@
 
 /** @brief Precision when testing floats for equality */
 #ifndef FLOAT_EQUALITY_PRECISION
-#define FLOAT_EQUALITY_PRECISION 1.0e-6
+#define FLOAT_EQUALITY_PRECISION 1.0e-6f
 #endif
 
 /** @brief Precision when testing doubles for equality */
@@ -47,7 +47,7 @@
 @todo some proper value please
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
-#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-18
+#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-18l
 #endif
 
 namespace Magnum { namespace Math {
