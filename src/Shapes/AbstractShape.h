@@ -58,7 +58,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
     #endif
 
     public:
-        enum: UnsignedInt {
+        enum
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
+        : UnsignedInt
+        #endif
+        {
             Dimensions = dimensions /**< Dimension count */
         };
 
