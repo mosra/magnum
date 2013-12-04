@@ -104,7 +104,7 @@ void AngleTest::construct() {
 }
 
 void AngleTest::literals() {
-    #ifndef CORRADE_GCC46_COMPATIBILITY
+    #if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     #ifndef MAGNUM_TARGET_GLES
     constexpr auto a = 25.0_deg;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));
