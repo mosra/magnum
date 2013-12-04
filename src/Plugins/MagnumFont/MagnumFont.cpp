@@ -170,7 +170,8 @@ std::pair<Float, Float> MagnumFont::openInternal(Utility::Configuration&& conf, 
         #endif
     }
 
-    return {_opened->conf.value<Float>("fontSize"), _opened->conf.value<Float>("lineHeight")};
+    /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
+    return std::make_pair(_opened->conf.value<Float>("fontSize"), _opened->conf.value<Float>("lineHeight"));
 }
 
 void MagnumFont::doClose() {

@@ -42,7 +42,8 @@ Trade::MeshData3D Crosshair3D::wireframe() {
         {-1.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f},
         { 0.0f, -1.0f,  0.0f}, {0.0f, 1.0f, 0.0f},
         { 0.0f,  0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}
-    }}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{});
+    /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
+    }}, std::vector<std::vector<Vector3>>(), std::vector<std::vector<Vector2>>());
 }
 
 }}

@@ -31,8 +31,9 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Circle::solid(UnsignedInt segments) {
+    /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::solid(): segments must be >= 3",
-        Trade::MeshData2D(Mesh::Primitive::TriangleFan, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector2>>{}, std::vector<std::vector<Vector2>>{}));
+        Trade::MeshData2D(Mesh::Primitive::TriangleFan, std::vector<UnsignedInt>(), std::vector<std::vector<Vector2>>(), std::vector<std::vector<Vector2>>()));
 
     std::vector<Vector2> positions;
     positions.reserve(segments+1);
@@ -51,8 +52,9 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
 }
 
 Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
+    /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::wireframe(): segments must be >= 3",
-        Trade::MeshData2D(Mesh::Primitive::LineLoop, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector2>>{}, std::vector<std::vector<Vector2>>{}));
+        Trade::MeshData2D(Mesh::Primitive::LineLoop, std::vector<UnsignedInt>(), std::vector<std::vector<Vector2>>(), std::vector<std::vector<Vector2>>()));
 
     std::vector<Vector2> positions;
     positions.reserve(segments);

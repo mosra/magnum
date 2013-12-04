@@ -34,7 +34,8 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength) {
-    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData2D(Mesh::Primitive::Lines, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector2>>{}, std::vector<std::vector<Vector2>>{}));
+    /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData2D(Mesh::Primitive::Lines, std::vector<UnsignedInt>(), std::vector<std::vector<Vector2>>(), std::vector<std::vector<Vector2>>()));
 
     std::vector<Vector2> positions;
     positions.reserve(hemisphereRings*4+2+(cylinderRings-1)*2);
@@ -89,7 +90,8 @@ Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt 
 }
 
 Trade::MeshData3D Capsule3D::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords) {
-    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{}));
+    /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData3D(Mesh::Primitive::Triangles, std::vector<UnsignedInt>(), std::vector<std::vector<Vector3>>(), std::vector<std::vector<Vector3>>(), std::vector<std::vector<Vector2>>()));
 
     Implementation::Spheroid capsule(segments, textureCoords == TextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
@@ -123,7 +125,8 @@ Trade::MeshData3D Capsule3D::solid(UnsignedInt hemisphereRings, UnsignedInt cyli
 }
 
 Trade::MeshData3D Capsule3D::wireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
-    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Capsule::wireframe(): improper parameters", Trade::MeshData3D(Mesh::Primitive::Lines, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{}));
+    /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Capsule::wireframe(): improper parameters", Trade::MeshData3D(Mesh::Primitive::Lines, std::vector<UnsignedInt>(), std::vector<std::vector<Vector3>>(), std::vector<std::vector<Vector3>>(), std::vector<std::vector<Vector2>>()));
 
     Implementation::WireframeSpheroid capsule(segments/4);
 
