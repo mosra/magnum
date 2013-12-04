@@ -40,10 +40,6 @@
 
 #include "magnumVisibility.h"
 
-#ifdef CORRADE_MSVC2013_COMPATIBILITY
-#include <array>
-#endif
-
 namespace Magnum { namespace Math {
 
 namespace Implementation {

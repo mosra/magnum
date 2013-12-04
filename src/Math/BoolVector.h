@@ -33,6 +33,10 @@
 
 #include "Types.h"
 
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
+#include <array>
+#endif
+
 namespace Magnum { namespace Math {
 
 namespace Implementation {
@@ -79,7 +83,12 @@ template<std::size_t size> class BoolVector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class ...T> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next);
         #else
-        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next): _data{first, UnsignedByte(next)...} {}
+        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{first, UnsignedByte(next)...} {}
+            #else
+            _data({first, UnsignedByte(next)...}) {}
+            #endif
         #endif
 
         /** @brief Construct boolean vector with one value for all fields */
@@ -107,8 +116,22 @@ template<std::size_t size> class BoolVector {
          *
          * @see operator[](), set()
          */
-        UnsignedByte* data() { return _data; }
-        constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
+        UnsignedByte* data() {
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            return _data;
+            #else
+            return _data.data();
+            #endif
+        }
+
+        /** @overload */
+        constexpr const UnsignedByte* data() const {
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            return _data;
+            #else
+            return _data.data();
+            #endif
+        }
 
         /** @brief Bit at given position */
         constexpr bool operator[](std::size_t i) const {
@@ -211,9 +234,18 @@ template<std::size_t size> class BoolVector {
         };
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit BoolVector(Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit BoolVector(Implementation::Sequence<sequence...>, UnsignedByte value):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{Implementation::repeat(value, sequence)...} {}
+            #else
+            _data({Implementation::repeat(value, sequence)...}) {}
+            #endif
 
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         UnsignedByte _data[(size-1)/8+1];
+        #else
+        std::array<UnsignedByte, (size-1)/8+1> _data;
+        #endif
 };
 
 /** @debugoperator{Magnum::Math::BoolVector} */

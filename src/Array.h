@@ -69,7 +69,12 @@ template<UnsignedInt dimensions, class T> class Array {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> constexpr /*implicit*/ Array(T first, U... next);
         #else
-        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == dimensions, T>::type> constexpr /*implicit*/ Array(T first, U... next): _data{first, next...} {}
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == dimensions, T>::type> constexpr /*implicit*/ Array(T first, U... next):
+            #ifndef CORRADE_MSVC2013_COMPATIBILITY
+            _data{first, next...} {}
+            #else
+            _data({first, next...}) {}
+            #endif
         #endif
 
         /** @brief Construct array with one value for all fields */
