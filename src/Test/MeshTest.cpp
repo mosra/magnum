@@ -41,7 +41,7 @@ class MeshTest: public TestSuite::Tester {
 };
 
 MeshTest::MeshTest() {
-    addTests({&MeshTest::debugPrimitive,
+    addTests<MeshTest>({&MeshTest::debugPrimitive,
               &MeshTest::debugIndexType,
               &MeshTest::configurationPrimitive,
               &MeshTest::configurationIndexType});

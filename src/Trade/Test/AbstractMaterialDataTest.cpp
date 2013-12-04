@@ -37,7 +37,7 @@ class AbstractMaterialDataTest: public TestSuite::Tester {
 };
 
 AbstractMaterialDataTest::AbstractMaterialDataTest() {
-    addTests({&AbstractMaterialDataTest::debug});
+    addTests<AbstractMaterialDataTest>({&AbstractMaterialDataTest::debug});
 }
 
 void AbstractMaterialDataTest::debug() {

@@ -37,7 +37,7 @@ class ShapeImplementationTest: public TestSuite::Tester {
 };
 
 ShapeImplementationTest::ShapeImplementationTest() {
-    addTests({&ShapeImplementationTest::debug});
+    addTests<ShapeImplementationTest>({&ShapeImplementationTest::debug});
 }
 
 void ShapeImplementationTest::debug() {

@@ -39,7 +39,7 @@ class GenerateFlatNormalsTest: public TestSuite::Tester {
 };
 
 GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
-    addTests({&GenerateFlatNormalsTest::wrongIndexCount,
+    addTests<GenerateFlatNormalsTest>({&GenerateFlatNormalsTest::wrongIndexCount,
               &GenerateFlatNormalsTest::generate});
 }
 

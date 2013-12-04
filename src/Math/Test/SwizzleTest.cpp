@@ -41,7 +41,7 @@ class SwizzleTest: public Corrade::TestSuite::Tester {
 typedef Vector<4, Int> Vector4i;
 
 SwizzleTest::SwizzleTest() {
-    addTests({&SwizzleTest::components,
+    addTests<SwizzleTest>({&SwizzleTest::components,
               &SwizzleTest::constants,
               &SwizzleTest::rgba,
               &SwizzleTest::sizes});

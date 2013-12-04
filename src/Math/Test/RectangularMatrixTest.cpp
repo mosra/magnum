@@ -103,7 +103,7 @@ typedef Vector<3, Int> Vector3i;
 typedef Vector<2, Int> Vector2i;
 
 RectangularMatrixTest::RectangularMatrixTest() {
-    addTests({&RectangularMatrixTest::construct,
+    addTests<RectangularMatrixTest>({&RectangularMatrixTest::construct,
               &RectangularMatrixTest::constructDefault,
               &RectangularMatrixTest::constructConversion,
               &RectangularMatrixTest::constructFromData,

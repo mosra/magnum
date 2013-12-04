@@ -40,7 +40,7 @@ class LineSegmentRendererTest: public TestSuite::Tester {
 };
 
 LineSegmentRendererTest::LineSegmentRendererTest() {
-    addTests({&LineSegmentRendererTest::line2D,
+    addTests<LineSegmentRendererTest>({&LineSegmentRendererTest::line2D,
               &LineSegmentRendererTest::line3D});
 }
 

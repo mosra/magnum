@@ -42,7 +42,7 @@ class CapsuleRendererTest: public TestSuite::Tester {
 };
 
 CapsuleRendererTest::CapsuleRendererTest() {
-    addTests({&CapsuleRendererTest::zeroLength2D,
+    addTests<CapsuleRendererTest>({&CapsuleRendererTest::zeroLength2D,
               &CapsuleRendererTest::common2D,
 
               &CapsuleRendererTest::zeroLength3D,

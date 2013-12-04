@@ -43,7 +43,7 @@ class AbstractImageConverterTest: public TestSuite::Tester {
 };
 
 AbstractImageConverterTest::AbstractImageConverterTest() {
-    addTests({&AbstractImageConverterTest::exportToFile});
+    addTests<AbstractImageConverterTest>({&AbstractImageConverterTest::exportToFile});
 }
 
 void AbstractImageConverterTest::exportToFile() {

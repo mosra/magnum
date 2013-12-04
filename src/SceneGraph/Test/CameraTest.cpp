@@ -53,7 +53,7 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 CameraTest::CameraTest() {
-    addTests({&CameraTest::fixAspectRatio,
+    addTests<CameraTest>({&CameraTest::fixAspectRatio,
               &CameraTest::defaultProjection2D,
               &CameraTest::defaultProjection3D,
               &CameraTest::projectionSize2D,

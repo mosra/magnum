@@ -37,7 +37,7 @@ class FramebufferTest: public TestSuite::Tester {
 };
 
 FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::debugStatus});
+    addTests<FramebufferTest>({&FramebufferTest::debugStatus});
 }
 
 void FramebufferTest::debugStatus() {

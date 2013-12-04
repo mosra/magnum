@@ -43,7 +43,7 @@ class TransformTest: public TestSuite::Tester {
 };
 
 TransformTest::TransformTest() {
-    addTests({&TransformTest::transformVectors2D,
+    addTests<TransformTest>({&TransformTest::transformVectors2D,
               &TransformTest::transformVectors3D,
 
               &TransformTest::transformPoints2D,

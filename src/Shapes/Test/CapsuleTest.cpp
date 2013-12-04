@@ -44,7 +44,7 @@ class CapsuleTest: public TestSuite::Tester {
 };
 
 CapsuleTest::CapsuleTest() {
-    addTests({&CapsuleTest::transformed,
+    addTests<CapsuleTest>({&CapsuleTest::transformed,
               &CapsuleTest::collisionPoint,
               &CapsuleTest::collisionSphere});
 }

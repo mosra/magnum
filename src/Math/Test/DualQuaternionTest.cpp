@@ -69,7 +69,7 @@ typedef Math::Quaternion<Float> Quaternion;
 typedef Math::Vector3<Float> Vector3;
 
 DualQuaternionTest::DualQuaternionTest() {
-    addTests({&DualQuaternionTest::construct,
+    addTests<DualQuaternionTest>({&DualQuaternionTest::construct,
               &DualQuaternionTest::constructDefault,
               &DualQuaternionTest::constructFromVector,
               &DualQuaternionTest::constructCopy,

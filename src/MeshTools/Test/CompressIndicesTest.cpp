@@ -40,7 +40,7 @@ class CompressIndicesTest: public TestSuite::Tester {
 };
 
 CompressIndicesTest::CompressIndicesTest() {
-    addTests({&CompressIndicesTest::compressChar,
+    addTests<CompressIndicesTest>({&CompressIndicesTest::compressChar,
               &CompressIndicesTest::compressShort,
               &CompressIndicesTest::compressInt});
 }

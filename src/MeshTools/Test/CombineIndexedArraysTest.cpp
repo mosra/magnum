@@ -40,7 +40,7 @@ class CombineIndexedArraysTest: public TestSuite::Tester {
 };
 
 CombineIndexedArraysTest::CombineIndexedArraysTest() {
-    addTests({&CombineIndexedArraysTest::wrongIndexCount,
+    addTests<CombineIndexedArraysTest>({&CombineIndexedArraysTest::wrongIndexCount,
               &CombineIndexedArraysTest::combine});
 }
 

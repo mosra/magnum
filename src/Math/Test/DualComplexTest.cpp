@@ -71,7 +71,7 @@ typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Vector2<Float> Vector2;
 
 DualComplexTest::DualComplexTest() {
-    addTests({&DualComplexTest::construct,
+    addTests<DualComplexTest>({&DualComplexTest::construct,
               &DualComplexTest::constructDefault,
               &DualComplexTest::constructFromVector,
               &DualComplexTest::constructCopy,

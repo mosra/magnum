@@ -52,7 +52,7 @@ class RigidMatrixTransformation3DTest: public TestSuite::Tester {
 };
 
 RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
-    addTests({&RigidMatrixTransformation3DTest::fromMatrix,
+    addTests<RigidMatrixTransformation3DTest>({&RigidMatrixTransformation3DTest::fromMatrix,
               &RigidMatrixTransformation3DTest::toMatrix,
               &RigidMatrixTransformation3DTest::compose,
               &RigidMatrixTransformation3DTest::inverted,

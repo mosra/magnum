@@ -42,7 +42,7 @@ class ForceRendererTest: public TestSuite::Tester {
 };
 
 ForceRendererTest::ForceRendererTest() {
-    addTests({&ForceRendererTest::zero2D,
+    addTests<ForceRendererTest>({&ForceRendererTest::zero2D,
               &ForceRendererTest::common2D,
 
               &ForceRendererTest::zero3D,

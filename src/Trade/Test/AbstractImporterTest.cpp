@@ -40,7 +40,7 @@ class AbstractImporterTest: public TestSuite::Tester {
 };
 
 AbstractImporterTest::AbstractImporterTest() {
-    addTests({&AbstractImporterTest::openFile});
+    addTests<AbstractImporterTest>({&AbstractImporterTest::openFile});
 }
 
 void AbstractImporterTest::openFile() {

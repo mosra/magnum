@@ -37,7 +37,7 @@ class AbstractLayouterTest: public TestSuite::Tester {
 };
 
 AbstractLayouterTest::AbstractLayouterTest() {
-    addTests({&AbstractLayouterTest::renderGlyph});
+    addTests<AbstractLayouterTest>({&AbstractLayouterTest::renderGlyph});
 }
 
 void AbstractLayouterTest::renderGlyph() {

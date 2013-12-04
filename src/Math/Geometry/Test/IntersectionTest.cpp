@@ -41,7 +41,7 @@ typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
 
 IntersectionTest::IntersectionTest() {
-    addTests({&IntersectionTest::planeLine,
+    addTests<IntersectionTest>({&IntersectionTest::planeLine,
               &IntersectionTest::lineLine});
 }
 

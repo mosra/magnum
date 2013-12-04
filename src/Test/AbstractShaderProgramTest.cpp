@@ -49,7 +49,7 @@ class AbstractShaderProgramTest: public TestSuite::Tester {
 };
 
 AbstractShaderProgramTest::AbstractShaderProgramTest() {
-    addTests({&AbstractShaderProgramTest::attributeScalar,
+    addTests<AbstractShaderProgramTest>({&AbstractShaderProgramTest::attributeScalar,
               &AbstractShaderProgramTest::attributeScalarInt,
               &AbstractShaderProgramTest::attributeScalarUnsignedInt,
               &AbstractShaderProgramTest::attributeScalarDouble,

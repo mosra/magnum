@@ -41,7 +41,7 @@ class AbstractFontTest: public TestSuite::Tester {
 };
 
 AbstractFontTest::AbstractFontTest() {
-    addTests({&AbstractFontTest::openSingleData,
+    addTests<AbstractFontTest>({&AbstractFontTest::openSingleData,
               &AbstractFontTest::openFile});
 }
 

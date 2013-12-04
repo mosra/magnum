@@ -55,7 +55,7 @@ class TgaImporterTest: public TestSuite::Tester {
 };
 
 TgaImporterTest::TgaImporterTest() {
-    addTests({&TgaImporterTest::openNonexistent,
+    addTests<TgaImporterTest>({&TgaImporterTest::openNonexistent,
               &TgaImporterTest::openShort,
               &TgaImporterTest::paletted,
               &TgaImporterTest::compressed,

@@ -71,7 +71,7 @@ constexpr static Matrix5x8f af(
 static const Vector5f expectedf(std::sqrt(1248.0f), 0.0f, 20.0f, std::sqrt(384.0f), 0.0f);
 
 SvdTest::SvdTest() {
-    addTests({&SvdTest::testDouble,
+    addTests<SvdTest>({&SvdTest::testDouble,
               &SvdTest::testFloat});
 }
 

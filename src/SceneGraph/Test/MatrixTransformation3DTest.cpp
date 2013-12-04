@@ -51,7 +51,7 @@ class MatrixTransformation3DTest: public TestSuite::Tester {
 };
 
 MatrixTransformation3DTest::MatrixTransformation3DTest() {
-    addTests({&MatrixTransformation3DTest::fromMatrix,
+    addTests<MatrixTransformation3DTest>({&MatrixTransformation3DTest::fromMatrix,
               &MatrixTransformation3DTest::toMatrix,
               &MatrixTransformation3DTest::compose,
               &MatrixTransformation3DTest::inverted,

@@ -41,7 +41,7 @@ class UVSphereTest: public TestSuite::Tester {
 };
 
 UVSphereTest::UVSphereTest() {
-    addTests({&UVSphereTest::solidWithoutTextureCoords,
+    addTests<UVSphereTest>({&UVSphereTest::solidWithoutTextureCoords,
               &UVSphereTest::solidWithTextureCoords,
               &UVSphereTest::wireframe});
 }

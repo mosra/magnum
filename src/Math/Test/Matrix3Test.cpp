@@ -95,7 +95,7 @@ typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector2<Float> Vector2;
 
 Matrix3Test::Matrix3Test() {
-    addTests({&Matrix3Test::construct,
+    addTests<Matrix3Test>({&Matrix3Test::construct,
               &Matrix3Test::constructIdentity,
               &Matrix3Test::constructZero,
               &Matrix3Test::constructConversion,

@@ -47,7 +47,7 @@ inline Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
 }
 
 SubdivideTest::SubdivideTest() {
-    addTests({&SubdivideTest::wrongIndexCount,
+    addTests<SubdivideTest>({&SubdivideTest::wrongIndexCount,
               &SubdivideTest::subdivide});
 }
 

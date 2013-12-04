@@ -64,7 +64,7 @@ namespace {
 }
 
 TgaImageConverterTest::TgaImageConverterTest() {
-    addTests({&TgaImageConverterTest::wrongFormat,
+    addTests<TgaImageConverterTest>({&TgaImageConverterTest::wrongFormat,
               &TgaImageConverterTest::wrongType,
 
               &TgaImageConverterTest::data});

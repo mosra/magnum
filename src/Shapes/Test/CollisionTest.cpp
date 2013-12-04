@@ -38,7 +38,7 @@ class CollisionTest: public TestSuite::Tester {
 };
 
 CollisionTest::CollisionTest() {
-    addTests({&CollisionTest::boolConversion,
+    addTests<CollisionTest>({&CollisionTest::boolConversion,
               &CollisionTest::flipped});
 }
 

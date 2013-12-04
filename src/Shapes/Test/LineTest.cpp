@@ -38,7 +38,7 @@ class LineTest: public TestSuite::Tester {
 };
 
 LineTest::LineTest() {
-    addTests({&LineTest::transformed});
+    addTests<LineTest>({&LineTest::transformed});
 }
 
 void LineTest::transformed() {

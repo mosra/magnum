@@ -80,7 +80,7 @@ typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Int> Vector2i;
 
 Vector2Test::Vector2Test() {
-    addTests({&Vector2Test::construct,
+    addTests<Vector2Test>({&Vector2Test::construct,
               &Vector2Test::constructDefault,
               &Vector2Test::constructOneValue,
               &Vector2Test::constructConversion,

@@ -39,7 +39,7 @@ class AbstractImageTest: public TestSuite::Tester {
 };
 
 AbstractImageTest::AbstractImageTest() {
-    addTests({&AbstractImageTest::debugFormat,
+    addTests<AbstractImageTest>({&AbstractImageTest::debugFormat,
               &AbstractImageTest::debugType});
 }
 

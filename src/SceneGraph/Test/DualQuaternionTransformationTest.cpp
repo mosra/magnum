@@ -51,7 +51,7 @@ class DualQuaternionTransformationTest: public TestSuite::Tester {
 };
 
 DualQuaternionTransformationTest::DualQuaternionTransformationTest() {
-    addTests({&DualQuaternionTransformationTest::fromMatrix,
+    addTests<DualQuaternionTransformationTest>({&DualQuaternionTransformationTest::fromMatrix,
               &DualQuaternionTransformationTest::toMatrix,
               &DualQuaternionTransformationTest::compose,
               &DualQuaternionTransformationTest::inverted,

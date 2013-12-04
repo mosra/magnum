@@ -49,7 +49,7 @@ typedef Math::Rad<Double> Radd;
 #endif
 
 AngleTest::AngleTest() {
-    addTests({&AngleTest::construct,
+    addTests<AngleTest>({&AngleTest::construct,
               &AngleTest::literals,
               &AngleTest::conversion,
 

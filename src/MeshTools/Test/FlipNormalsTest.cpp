@@ -40,7 +40,7 @@ class FlipNormalsTest: public TestSuite::Tester {
 };
 
 FlipNormalsTest::FlipNormalsTest() {
-    addTests({&FlipNormalsTest::wrongIndexCount,
+    addTests<FlipNormalsTest>({&FlipNormalsTest::wrongIndexCount,
               &FlipNormalsTest::flipFaceWinding,
               &FlipNormalsTest::flipNormals});
 }

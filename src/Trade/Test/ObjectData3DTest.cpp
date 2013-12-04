@@ -37,7 +37,7 @@ class ObjectData3DTest: public TestSuite::Tester {
 };
 
 ObjectData3DTest::ObjectData3DTest() {
-    addTests({&ObjectData3DTest::debug});
+    addTests<ObjectData3DTest>({&ObjectData3DTest::debug});
 }
 
 void ObjectData3DTest::debug() {

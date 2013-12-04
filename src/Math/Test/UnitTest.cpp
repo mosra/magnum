@@ -43,7 +43,7 @@ class UnitTest: public Corrade::TestSuite::Tester {
 };
 
 UnitTest::UnitTest() {
-    addTests({&UnitTest::construct,
+    addTests<UnitTest>({&UnitTest::construct,
               &UnitTest::constructDefault,
               &UnitTest::constructConversion,
               &UnitTest::compare,

@@ -40,7 +40,7 @@ class AxisAlignedBoxTest: public TestSuite::Tester {
 };
 
 AxisAlignedBoxTest::AxisAlignedBoxTest() {
-    addTests({&AxisAlignedBoxTest::transformed,
+    addTests<AxisAlignedBoxTest>({&AxisAlignedBoxTest::transformed,
               &AxisAlignedBoxTest::collisionPoint});
 }
 

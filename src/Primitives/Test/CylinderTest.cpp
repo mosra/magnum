@@ -41,7 +41,7 @@ class CylinderTest: public TestSuite::Tester {
 };
 
 CylinderTest::CylinderTest() {
-    addTests({&CylinderTest::solidWithoutAnything,
+    addTests<CylinderTest>({&CylinderTest::solidWithoutAnything,
               &CylinderTest::solidWithTextureCoordsAndCaps,
               &CylinderTest::wireframe});
 }

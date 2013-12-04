@@ -39,7 +39,7 @@ class ImageTest: public TestSuite::Tester {
 };
 
 ImageTest::ImageTest() {
-    addTests({&ImageTest::moveConstructor,
+    addTests<ImageTest>({&ImageTest::moveConstructor,
               &ImageTest::moveAssignment,
               &ImageTest::toReference});
 }

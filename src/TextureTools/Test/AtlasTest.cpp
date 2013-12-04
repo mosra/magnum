@@ -41,7 +41,7 @@ class AtlasTest: public TestSuite::Tester {
 };
 
 AtlasTest::AtlasTest() {
-    addTests({&AtlasTest::create,
+    addTests<AtlasTest>({&AtlasTest::create,
               &AtlasTest::createPadding,
               &AtlasTest::createEmpty,
               &AtlasTest::createTooSmall});

@@ -76,7 +76,7 @@ typedef Math::Vector3<Byte> Vector3b;
 typedef Math::Vector3<Int> Vector3i;
 
 FunctionsTest::FunctionsTest() {
-    addTests({&FunctionsTest::min,
+    addTests<FunctionsTest>({&FunctionsTest::min,
               &FunctionsTest::minList,
               &FunctionsTest::max,
               &FunctionsTest::maxList,

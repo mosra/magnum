@@ -38,7 +38,7 @@ class RemoveDuplicatesTest: public TestSuite::Tester {
 typedef Math::Vector<1, int> Vector1;
 
 RemoveDuplicatesTest::RemoveDuplicatesTest() {
-    addTests({&RemoveDuplicatesTest::cleanMesh});
+    addTests<RemoveDuplicatesTest>({&RemoveDuplicatesTest::cleanMesh});
 }
 
 void RemoveDuplicatesTest::cleanMesh() {

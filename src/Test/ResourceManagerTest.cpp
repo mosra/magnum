@@ -61,7 +61,7 @@ typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
-    addTests({&ResourceManagerTest::state,
+    addTests<ResourceManagerTest>({&ResourceManagerTest::state,
               &ResourceManagerTest::stateFallback,
               &ResourceManagerTest::stateDisallowed,
               &ResourceManagerTest::basic,

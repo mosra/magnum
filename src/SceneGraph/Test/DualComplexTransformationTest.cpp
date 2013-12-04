@@ -51,7 +51,7 @@ class DualComplexTransformationTest: public TestSuite::Tester {
 };
 
 DualComplexTransformationTest::DualComplexTransformationTest() {
-    addTests({&DualComplexTransformationTest::fromMatrix,
+    addTests<DualComplexTransformationTest>({&DualComplexTransformationTest::fromMatrix,
               &DualComplexTransformationTest::toMatrix,
               &DualComplexTransformationTest::compose,
               &DualComplexTransformationTest::inverted,

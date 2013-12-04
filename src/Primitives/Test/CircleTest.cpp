@@ -39,7 +39,7 @@ class CircleTest: public TestSuite::Tester {
 };
 
 CircleTest::CircleTest() {
-    addTests({&CircleTest::solid,
+    addTests<CircleTest>({&CircleTest::solid,
               &CircleTest::wireframe});
 }
 

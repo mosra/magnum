@@ -38,7 +38,7 @@ class IcosphereTest: public TestSuite::Tester {
 };
 
 IcosphereTest::IcosphereTest() {
-    addTests({&IcosphereTest::count});
+    addTests<IcosphereTest>({&IcosphereTest::count});
 }
 
 void IcosphereTest::count() {

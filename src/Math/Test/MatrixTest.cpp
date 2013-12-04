@@ -91,7 +91,7 @@ typedef Vector<3, Float> Vector3;
 typedef Math::Constants<Float> Constants;
 
 MatrixTest::MatrixTest() {
-    addTests({&MatrixTest::construct,
+    addTests<MatrixTest>({&MatrixTest::construct,
               &MatrixTest::constructIdentity,
               &MatrixTest::constructZero,
               &MatrixTest::constructConversion,

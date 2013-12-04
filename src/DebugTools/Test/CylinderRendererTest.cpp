@@ -42,7 +42,7 @@ class CylinderRendererTest: public TestSuite::Tester {
 };
 
 CylinderRendererTest::CylinderRendererTest() {
-    addTests({&CylinderRendererTest::zeroLength2D,
+    addTests<CylinderRendererTest>({&CylinderRendererTest::zeroLength2D,
               &CylinderRendererTest::common2D,
 
               &CylinderRendererTest::zeroLength3D,

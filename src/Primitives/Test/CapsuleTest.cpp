@@ -47,7 +47,7 @@ class CapsuleTest: public TestSuite::Tester {
 };
 
 CapsuleTest::CapsuleTest() {
-    addTests({&CapsuleTest::wireframe2D,
+    addTests<CapsuleTest>({&CapsuleTest::wireframe2D,
               &CapsuleTest::solid3DWithoutTextureCoords,
               &CapsuleTest::solid3DWithTextureCoords,
               &CapsuleTest::wireframe3D});

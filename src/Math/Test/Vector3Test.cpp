@@ -79,7 +79,7 @@ typedef Math::Vector3<Int> Vector3i;
 typedef Math::Vector2<Float> Vector2;
 
 Vector3Test::Vector3Test() {
-    addTests({&Vector3Test::construct,
+    addTests<Vector3Test>({&Vector3Test::construct,
               &Vector3Test::constructDefault,
               &Vector3Test::constructOneValue,
               &Vector3Test::constructParts,

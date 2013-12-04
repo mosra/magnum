@@ -37,7 +37,7 @@ class DuplicateTest: public TestSuite::Tester {
 };
 
 DuplicateTest::DuplicateTest() {
-    addTests({&DuplicateTest::duplicate});
+    addTests<DuplicateTest>({&DuplicateTest::duplicate});
 }
 
 void DuplicateTest::duplicate() {

@@ -102,7 +102,7 @@ typedef Math::Matrix<3, Float> Matrix3x3;
 typedef Math::Vector3<Float> Vector3;
 
 Matrix4Test::Matrix4Test() {
-    addTests({&Matrix4Test::construct,
+    addTests<Matrix4Test>({&Matrix4Test::construct,
               &Matrix4Test::constructIdentity,
               &Matrix4Test::constructZero,
               &Matrix4Test::constructConversion,

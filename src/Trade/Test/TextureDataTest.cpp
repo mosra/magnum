@@ -37,7 +37,7 @@ class TextureDataTest: public TestSuite::Tester {
 };
 
 TextureDataTest::TextureDataTest() {
-    addTests({&TextureDataTest::debug});
+    addTests<TextureDataTest>({&TextureDataTest::debug});
 }
 
 void TextureDataTest::debug() {

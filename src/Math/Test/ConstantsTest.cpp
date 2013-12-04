@@ -38,7 +38,7 @@ class ConstantsTest: public Corrade::TestSuite::Tester {
 };
 
 ConstantsTest::ConstantsTest() {
-    addTests({&ConstantsTest::constantsFloat,
+    addTests<ConstantsTest>({&ConstantsTest::constantsFloat,
               &ConstantsTest::constantsDouble});
 }
 

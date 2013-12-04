@@ -52,7 +52,7 @@ class CompositionTest: public TestSuite::Tester {
 };
 
 CompositionTest::CompositionTest() {
-    addTests({&CompositionTest::negated,
+    addTests<CompositionTest>({&CompositionTest::negated,
               &CompositionTest::anded,
               &CompositionTest::ored,
               &CompositionTest::multipleUnary,

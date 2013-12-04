@@ -52,7 +52,7 @@ class DualTest: public Corrade::TestSuite::Tester {
 typedef Math::Dual<Float> Dual;
 
 DualTest::DualTest() {
-    addTests({&DualTest::construct,
+    addTests<DualTest>({&DualTest::construct,
               &DualTest::constructDefault,
               &DualTest::constructCopy,
 

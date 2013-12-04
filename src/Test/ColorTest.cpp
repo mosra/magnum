@@ -65,7 +65,7 @@ typedef BasicColor3<UnsignedByte> Color3ub;
 typedef BasicColor4<UnsignedByte> Color4ub;
 
 ColorTest::ColorTest() {
-    addTests({&ColorTest::construct,
+    addTests<ColorTest>({&ColorTest::construct,
               &ColorTest::constructDefault,
               &ColorTest::constructOneValue,
               &ColorTest::constructParts,

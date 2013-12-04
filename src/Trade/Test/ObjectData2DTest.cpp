@@ -37,7 +37,7 @@ class ObjectData2DTest: public TestSuite::Tester {
 };
 
 ObjectData2DTest::ObjectData2DTest() {
-    addTests({&ObjectData2DTest::debug});
+    addTests<ObjectData2DTest>({&ObjectData2DTest::debug});
 }
 
 void ObjectData2DTest::debug() {

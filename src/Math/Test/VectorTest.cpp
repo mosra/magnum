@@ -109,7 +109,7 @@ typedef Vector<4, Float> Vector4;
 typedef Vector<4, Int> Vector4i;
 
 VectorTest::VectorTest() {
-    addTests({&VectorTest::construct,
+    addTests<VectorTest>({&VectorTest::construct,
               &VectorTest::constructFromData,
               &VectorTest::constructDefault,
               &VectorTest::constructOneValue,

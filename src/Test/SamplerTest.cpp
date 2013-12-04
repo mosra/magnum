@@ -39,7 +39,7 @@ class SamplerTest: public TestSuite::Tester {
 };
 
 SamplerTest::SamplerTest() {
-    addTests({&SamplerTest::debugFilter,
+    addTests<SamplerTest>({&SamplerTest::debugFilter,
               &SamplerTest::debugMipmap,
               &SamplerTest::debugWrapping});
 }

@@ -41,7 +41,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
 SceneTest::SceneTest() {
-    addTests({&SceneTest::transformation,
+    addTests<SceneTest>({&SceneTest::transformation,
               &SceneTest::parent});
 }
 

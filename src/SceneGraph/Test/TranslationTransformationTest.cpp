@@ -51,7 +51,7 @@ class TranslationTransformationTest: public TestSuite::Tester {
 };
 
 TranslationTransformationTest::TranslationTransformationTest() {
-    addTests({&TranslationTransformationTest::fromMatrix,
+    addTests<TranslationTransformationTest>({&TranslationTransformationTest::fromMatrix,
               &TranslationTransformationTest::toMatrix,
               &TranslationTransformationTest::compose,
               &TranslationTransformationTest::inverted,

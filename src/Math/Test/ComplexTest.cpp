@@ -65,7 +65,7 @@ class ComplexTest: public Corrade::TestSuite::Tester {
 };
 
 ComplexTest::ComplexTest() {
-    addTests({&ComplexTest::construct,
+    addTests<ComplexTest>({&ComplexTest::construct,
               &ComplexTest::constructDefault,
               &ComplexTest::constructFromVector,
               &ComplexTest::constructCopy,

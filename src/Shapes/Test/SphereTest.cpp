@@ -47,7 +47,7 @@ class SphereTest: public TestSuite::Tester {
 };
 
 SphereTest::SphereTest() {
-    addTests({&SphereTest::transformed,
+    addTests<SphereTest>({&SphereTest::transformed,
               &SphereTest::collisionPoint,
               &SphereTest::collisionPointInverted,
               &SphereTest::collisionLine,

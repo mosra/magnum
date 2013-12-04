@@ -82,7 +82,7 @@ typedef Vector2<Int> Vector2i;
 typedef Vector3<Int> Vector3i;
 
 RangeTest::RangeTest() {
-    addTests({&RangeTest::construct,
+    addTests<RangeTest>({&RangeTest::construct,
               &RangeTest::constructDefault,
               &RangeTest::constructFromSize,
               &RangeTest::constructConversion,

@@ -38,7 +38,7 @@ class BoxTest: public TestSuite::Tester {
 };
 
 BoxTest::BoxTest() {
-    addTests({&BoxTest::transformed});
+    addTests<BoxTest>({&BoxTest::transformed});
 }
 
 void BoxTest::transformed() {

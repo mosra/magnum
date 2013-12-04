@@ -42,7 +42,7 @@ class TypeTraitsTest: public Corrade::TestSuite::Tester {
 };
 
 TypeTraitsTest::TypeTraitsTest() {
-    addTests({&TypeTraitsTest::equalsIntegral,
+    addTests<TypeTraitsTest>({&TypeTraitsTest::equalsIntegral,
               &TypeTraitsTest::equalsFloatingPoint});
 }
 

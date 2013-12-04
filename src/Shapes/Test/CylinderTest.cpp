@@ -44,7 +44,7 @@ class CylinderTest: public TestSuite::Tester {
 };
 
 CylinderTest::CylinderTest() {
-    addTests({&CylinderTest::transformed,
+    addTests<CylinderTest>({&CylinderTest::transformed,
               &CylinderTest::collisionPoint,
               &CylinderTest::collisionSphere});
 }

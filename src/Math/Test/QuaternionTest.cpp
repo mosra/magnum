@@ -76,7 +76,7 @@ typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector4<Float> Vector4;
 
 QuaternionTest::QuaternionTest() {
-    addTests({&QuaternionTest::construct,
+    addTests<QuaternionTest>({&QuaternionTest::construct,
               &QuaternionTest::constructDefault,
               &QuaternionTest::constructFromVector,
               &QuaternionTest::constructCopy,

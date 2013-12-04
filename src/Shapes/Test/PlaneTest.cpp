@@ -41,7 +41,7 @@ class PlaneTest: public TestSuite::Tester {
 };
 
 PlaneTest::PlaneTest() {
-    addTests({&PlaneTest::transformed,
+    addTests<PlaneTest>({&PlaneTest::transformed,
               &PlaneTest::collisionLine,
               &PlaneTest::collisionLineSegment});
 }

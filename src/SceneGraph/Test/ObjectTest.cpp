@@ -65,7 +65,7 @@ class CachingObject: public Object3D, AbstractFeature3D {
 };
 
 ObjectTest::ObjectTest() {
-    addTests({&ObjectTest::parenting,
+    addTests<ObjectTest>({&ObjectTest::parenting,
               &ObjectTest::scene,
               &ObjectTest::setParentKeepTransformation,
               &ObjectTest::absoluteTransformation,

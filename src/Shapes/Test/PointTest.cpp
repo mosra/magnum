@@ -38,7 +38,7 @@ class PointTest: public TestSuite::Tester {
 };
 
 PointTest::PointTest() {
-    addTests({&PointTest::transformed});
+    addTests<PointTest>({&PointTest::transformed});
 }
 
 void PointTest::transformed() {

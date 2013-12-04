@@ -51,7 +51,7 @@ class AbstractFontConverterTest: public TestSuite::Tester {
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {
-    addTests({&AbstractFontConverterTest::convertGlyphs,
+    addTests<AbstractFontConverterTest>({&AbstractFontConverterTest::convertGlyphs,
 
               &AbstractFontConverterTest::exportFontToSingleData,
               &AbstractFontConverterTest::exportFontToFile,
