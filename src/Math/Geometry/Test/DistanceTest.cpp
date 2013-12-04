@@ -84,7 +84,7 @@ void DistanceTest::linePoint3D() {
                     Constants::sqrt2()/Constants::sqrt3());
 
     /* Check that 3D implementation gives the same result as 2D implementation */
-    CORRADE_COMPARE(Distance::linePoint(a, {1.0f, 1.0f, 0.0f}, Vector3(1.0f, 0.0f, 0.0f)),
+    CORRADE_COMPARE(Distance::linePoint(a, Vector3(1.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f)),
                     1.0f/Constants::sqrt2());
 }
 
@@ -110,9 +110,9 @@ void DistanceTest::lineSegmentPoint2D() {
                     1.0f);
 
     /* Point next to the line segment */
-    CORRADE_COMPARE(Distance::lineSegmentPoint(a, b, {1.0f, 0.0f}),
+    CORRADE_COMPARE(Distance::lineSegmentPoint(a, b, Vector2(1.0f, 0.0f)),
                     1.0f/Constants::sqrt2());
-    CORRADE_COMPARE(Distance::lineSegmentPointSquared(a, b, {1.0f, 0.0f}),
+    CORRADE_COMPARE(Distance::lineSegmentPointSquared(a, b, Vector2(1.0f, 0.0f)),
                     0.5f);
 
     /* Point outside the line segment, closer to A */
@@ -145,7 +145,7 @@ void DistanceTest::lineSegmentPoint3D() {
                     1.0f);
 
     /* Point next to the line segment */
-    CORRADE_COMPARE(Distance::lineSegmentPoint(a, b, {1.0f, 0.0f, 1.0f}),
+    CORRADE_COMPARE(Distance::lineSegmentPoint(a, b, Vector3(1.0f, 0.0f, 1.0f)),
                     Constants::sqrt2()/Constants::sqrt3());
 
     /* Point outside the line segment, closer to A */
