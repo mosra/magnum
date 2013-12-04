@@ -97,7 +97,7 @@ decomposition and least squares solutions"*.
 template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatrix<cols, rows, T>, Vector<cols, T>, Matrix<cols, T>> svd(RectangularMatrix<cols, rows, T> m) {
     static_assert(rows >= cols, "Unsupported matrix aspect ratio");
     constexpr T tol = Implementation::smallestDelta<T>()/TypeTraits<T>::epsilon();
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     static_assert(T(1)+TypeTraits<T>::epsilon() > T(1), "Epsilon too small");
     static_assert(tol > T(0), "Tol too small");
     #else

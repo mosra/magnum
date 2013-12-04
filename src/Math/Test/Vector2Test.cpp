@@ -222,7 +222,7 @@ void Vector2Test::minmax() {
 void Vector2Test::swizzleType() {
     constexpr Vector<4, Int> orig;
 
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr
     #else
     const

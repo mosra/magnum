@@ -227,7 +227,7 @@ void Vector4Test::twoComponent() {
 void Vector4Test::swizzleType() {
     constexpr Vector4i orig;
 
-    #ifndef CORRADE_GCC45_COMPATIBILITY
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr
     #else
     const
