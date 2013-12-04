@@ -103,8 +103,11 @@ void AbstractFontConverterTest::convertGlyphs() {
     #endif
     GlyphExporter exporter(characters);
     exporter.exportFontToSingleData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "abC01a0 ");
-    #ifndef __MINGW32__
+    #if !defined(__MINGW32__) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     CORRADE_COMPARE(characters, U" 01Cab");
+    #elif defined(CORRADE_MSVC2013_COMPATIBILITY)
+    CORRADE_COMPARE(characters, (std::u32string{
+            ' ', '0', '1', 'C', 'a', 'b'}));
     #else
     CORRADE_COMPARE(characters, (std::vector<char32_t>{
             U' ', U'0', U'1', U'C', U'a', U'b'}));
