@@ -319,7 +319,8 @@ void RangeTest::scaled() {
 
 template<class T> class BasicRect: public Math::Range<2, T> {
     public:
-        template<class ...U> BasicRect(U&&... args): Math::Range<2, T>{std::forward<U>(args)...} {}
+        /* MSVC 2013 can't cope with {} here */
+        template<class ...U> BasicRect(U&&... args): Math::Range<2, T>(std::forward<U>(args)...) {}
 
         MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(2, BasicRect, Vector2)
 };

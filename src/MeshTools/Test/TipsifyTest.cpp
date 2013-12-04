@@ -56,7 +56,8 @@ class TipsifyTest: public TestSuite::Tester {
 
 */
 
-TipsifyTest::TipsifyTest(): indices{
+/* MSVC 2013 can't cope with only {} here */
+TipsifyTest::TipsifyTest(): indices({
     4, 1, 0,
     10, 9, 13,
     6, 3, 2,
@@ -79,8 +80,8 @@ TipsifyTest::TipsifyTest(): indices{
     14, 11, 10,
 
     16, 17, 18
-}, vertexCount(19) {
-    addTests({&TipsifyTest::buildAdjacency,
+}), vertexCount(19) {
+    addTests<TipsifyTest>({&TipsifyTest::buildAdjacency,
               &TipsifyTest::tipsify});
 }
 

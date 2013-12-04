@@ -455,7 +455,8 @@ void VectorTest::angle() {
 
 template<class T> class BasicVec2: public Math::Vector<2, T> {
     public:
-        template<class ...U> BasicVec2(U&&... args): Math::Vector<2, T>{std::forward<U>(args)...} {}
+        /* MSVC 2013 can't cope with {} here */
+        template<class ...U> BasicVec2(U&&... args): Math::Vector<2, T>(std::forward<U>(args)...) {}
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, BasicVec2)
 };
