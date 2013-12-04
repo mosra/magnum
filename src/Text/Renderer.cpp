@@ -55,6 +55,9 @@ template<class T> void createIndices(void* output, const UnsignedInt glyphCount)
 }
 
 struct Vertex {
+    #ifdef CORRADE_MSVC2013_COMPATIBILITY
+    Vertex(const Vector2& position, const Vector2& textureCoordinates): position(position), textureCoordinates(textureCoordinates) {}
+    #endif
     Vector2 position, textureCoordinates;
 };
 
