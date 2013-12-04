@@ -138,7 +138,12 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @todo Different drawing style for inverted shapes? (marking the "inside" somehow)
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions, Float> {
+    /* MSVC can't cope with <> here */
+    #ifndef CORRADE_MSVC2013_COMPATIBILITY
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>&, const Shapes::Implementation::AbstractShape<dimensions>&);
+    #else
+    template<UnsignedInt dimensions_> friend void Implementation::createDebugMesh(ShapeRenderer<dimensions_>&, const Shapes::Implementation::AbstractShape<dimensions_>&);
+    #endif
 
     public:
         /**

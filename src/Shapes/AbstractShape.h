@@ -50,7 +50,12 @@ brief introduction.
 @see AbstractShape2D, AbstractShape3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float> {
+    /* MSVC can't cope with <> here */
+    #ifndef CORRADE_MSVC2013_COMPATIBILITY
     friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const AbstractShape<dimensions>&);
+    #else
+    template<UnsignedInt dimensions_> friend const Implementation::AbstractShape<dimensions_>& Implementation::getAbstractShape(const Shapes::AbstractShape<dimensions_>&);
+    #endif
 
     public:
         enum: UnsignedInt {

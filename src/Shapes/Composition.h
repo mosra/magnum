@@ -64,8 +64,14 @@ enum class CompositionOperation: UnsignedByte {
 Result of logical operations on shapes. See @ref shapes for brief introduction.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
+    /* MSVC can't cope with <> here */
+    #ifndef CORRADE_MSVC2013_COMPATIBILITY
     friend Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(Composition<dimensions>&, std::size_t);
     friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const Composition<dimensions>&, std::size_t);
+    #else
+    template<UnsignedInt dimensions_> friend Implementation::AbstractShape<dimensions_>& Implementation::getAbstractShape(Composition<dimensions_>&, std::size_t);
+    template<UnsignedInt dimensions_> friend const Implementation::AbstractShape<dimensions_>& Implementation::getAbstractShape(const Composition<dimensions_>&, std::size_t);
+    #endif
     friend struct Implementation::ShapeHelper<Composition<dimensions>>;
 
     public:
