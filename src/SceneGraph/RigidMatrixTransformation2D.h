@@ -134,17 +134,6 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
             return transformInternal(Math::Matrix3<T>::reflection(normal), type);
         }
 
-        /**
-         * @brief Move object in stacking order
-         * @param under     Sibling object under which to move or `nullptr`,
-         *      if you want to move it above all.
-         * @return Reference to self (for method chaining)
-         */
-        Object<BasicRigidMatrixTransformation2D<T>>& move(Object<BasicRigidMatrixTransformation2D<T>>* under) {
-            static_cast<Object<BasicRigidMatrixTransformation2D>*>(this)->Containers::template LinkedList<Object<BasicRigidMatrixTransformation2D<T>>>::move(this, under);
-            return static_cast<Object<BasicRigidMatrixTransformation2D<T>>&>(*this);
-        }
-
     protected:
         /* Allow construction only from Object */
         explicit BasicRigidMatrixTransformation2D() = default;
