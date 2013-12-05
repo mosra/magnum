@@ -527,7 +527,7 @@ template<std::size_t size, class T> class Vector {
 
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<sizeof...(sequence), U>& vector): _data{T(vector._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector): _data{T(vector._data[sequence])...} {}
 
         /* Implementation for Vector<size, T>::Vector(U) */
         template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
