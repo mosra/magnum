@@ -76,7 +76,7 @@ void UnitTest::constructDefault() {
 }
 
 void UnitTest::constructConversion() {
-    constexpr Seci a(25.0);
+    constexpr Seci a(25);
     constexpr Sec b(a);
     CORRADE_COMPARE(b, Sec(25.0f));
 
