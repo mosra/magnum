@@ -121,7 +121,7 @@ template<class Vertex, std::size_t vertexSize> void RemoveDuplicates<Vertex, ver
             /* Index of a vertex in vertexSize-dimensional table */
             std::size_t index[vertexSize];
             for(std::size_t ii = 0; ii != vertexSize; ++ii)
-                index[ii] = (vertices[*it][ii]+moved[ii]-min[ii])/epsilon;
+                index[ii] = std::size_t((vertices[*it][ii]+moved[ii]-min[ii])/epsilon);
 
             /* Try inserting the vertex into table, if it already
                exists, change vertex pointer of the face to already

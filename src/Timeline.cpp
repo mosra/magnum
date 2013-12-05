@@ -51,11 +51,11 @@ void Timeline::nextFrame() {
     if(!running) return;
 
     auto now = high_resolution_clock::now();
-    UnsignedInt duration = duration_cast<microseconds>(now-_previousFrameTime).count();
+    auto duration = UnsignedInt(duration_cast<microseconds>(now-_previousFrameTime).count());
     _previousFrameDuration = duration/1e6f;
 
     if(_previousFrameDuration < _minimalFrameTime) {
-        Utility::sleep(_minimalFrameTime*1000 - duration/1000);
+        Utility::sleep(std::size_t(_minimalFrameTime*1000) - duration/1000);
         now = high_resolution_clock::now();
         _previousFrameDuration = duration_cast<microseconds>(now-_previousFrameTime).count()/1e6f;
     }

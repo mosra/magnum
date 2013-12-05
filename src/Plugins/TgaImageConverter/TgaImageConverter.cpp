@@ -70,15 +70,15 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
     }
 
     /* Initialize data buffer */
-    const UnsignedByte pixelSize = image.pixelSize();
+    const auto pixelSize = UnsignedByte(image.pixelSize());
     auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image.size().product());
 
     /* Fill header */
     auto header = reinterpret_cast<TgaHeader*>(data.begin());
     header->imageType = image.format() == ColorFormat::Red ? 3 : 2;
     header->bpp = pixelSize*8;
-    header->width = Utility::Endianness::littleEndian(image.size().x());
-    header->height = Utility::Endianness::littleEndian(image.size().y());
+    header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
+    header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
 
     /* Fill data */
     std::copy(image.data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));

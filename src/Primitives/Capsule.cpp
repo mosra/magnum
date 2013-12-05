@@ -46,7 +46,7 @@ Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt 
 
     /* Bottom hemisphere */
     for(UnsignedInt i = 0; i != hemisphereRings; ++i) {
-        const Rad angle((i+1)*angleIncrement);
+        const Rad angle(Float(i+1)*angleIncrement);
         const Float x = Math::sin(angle);
         const Float y = -Math::cos(angle)-halfLength;
         positions.insert(positions.end(), {{-x, y}, {x, y}});
@@ -60,7 +60,7 @@ Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt 
 
     /* Top hemisphere */
     for(UnsignedInt i = 0; i != hemisphereRings; ++i) {
-        const Rad angle(i*angleIncrement);
+        const Rad angle(Float(i)*angleIncrement);
         const Float x = Math::cos(angle);
         const Float y = Math::sin(angle)+halfLength;
         positions.insert(positions.end(), {{-x, y}, {x, y}});

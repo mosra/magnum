@@ -212,7 +212,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
            with different counter */
         if(objects[i]->counter != 0xFFFFu) continue;
 
-        objects[i]->counter = i;
+        objects[i]->counter = UnsignedShort(i);
         objects[i]->flags |= Flag::Joint;
     }
     std::vector<Object<Transformation>*> jointObjects(objects);
@@ -252,7 +252,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
                 CORRADE_ASSERT(jointObjects.size() < 0xFFFFu,
                                "SceneGraph::Object::transformations(): too large scene", std::vector<typename Transformation::DataType>{});
                 CORRADE_INTERNAL_ASSERT(parent->counter == 0xFFFFu);
-                parent->counter = jointObjects.size();
+                parent->counter = UnsignedShort(jointObjects.size());
                 parent->flags |= Flag::Joint;
                 jointObjects.push_back(parent);
             }

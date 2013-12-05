@@ -51,7 +51,7 @@ template<template<class> class Derived, class T> class Unit {
         constexpr explicit Unit(T value): value(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> constexpr explicit Unit(Unit<Derived, U> value): value(value.value) {}
+        template<class U> constexpr explicit Unit(Unit<Derived, U> value): value(T(value.value)) {}
 
         /** @brief Explicit conversion to underlying type */
         constexpr explicit operator T() const { return value; }
