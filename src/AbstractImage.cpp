@@ -133,7 +133,6 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
     }
 
     CORRADE_ASSERT_UNREACHABLE();
-    return 0;
 }
 
 }
