@@ -62,7 +62,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
          * @see @ref Vector2::xAxis(), @ref Vector2::yAxis(), @ref Vector3::xAxis(),
          *      @ref Vector3::yAxis(), @ref Vector3::zAxis()
          */
-        AbstractTranslation<dimensions, T>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type = TransformationType::Global) {
+        AbstractTranslation<dimensions, T, TranslationType>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type = TransformationType::Global) {
             doTranslate(vector, type);
             return *this;
         }

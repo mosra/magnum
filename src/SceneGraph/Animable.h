@@ -140,7 +140,7 @@ use @ref Animable.hpp implementation file to avoid linker errors. See also
 @see @ref scenegraph, @ref BasicAnimable2D, @ref BasicAnimable3D,
     @ref Animable2D, @ref Animable3D, @ref AnimableGroup
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT Animable: public AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T> {
+template<UnsignedInt dimensions, class T> class Animable: public AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T> {
     friend class AnimableGroup<dimensions, T>;
 
     public:
@@ -386,6 +386,11 @@ typedef BasicAnimable3D<Float> Animable3D;
 #endif
 #else
 typedef Animable<3, Float> Animable3D;
+#endif
+
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT Animable<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT Animable<3, Float>;
 #endif
 
 }}

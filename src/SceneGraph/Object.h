@@ -90,14 +90,11 @@ class documentation or @ref compilation-speedup-hpp for more information.
 -   @ref RigidMatrixTransformation3D "Object<RigidMatrixTransformation3D>"
 -   @ref TranslationTransformation2D "Object<TranslationTransformation2D>"
 -   @ref TranslationTransformation3D "Object<TranslationTransformation3D>"
--   @ref BasicTranslationTransformation2D "Object<BasicTranslationTransformation2D<Float, Int>>"
--   @ref BasicTranslationTransformation3D "Object<BasicTranslationTransformation3D<Float, Int>>"
 
 @see @ref Scene, @ref AbstractFeature, @ref AbstractTransformation,
     @ref DebugTools::ObjectRenderer
-@todo Test (and fix) that hpp works also on Windows
 */
-template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
+template<class Transformation> class Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
     , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif

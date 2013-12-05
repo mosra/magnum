@@ -73,7 +73,7 @@ and @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @see @ref scenegraph, @ref AbstractBasicCamera2D, @ref AbstractBasicCamera3D,
     @ref Drawable, @ref DrawableGroup
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
+template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }
@@ -213,6 +213,11 @@ template<class T> using AbstractBasicCamera3D = AbstractCamera<3, T>;
 typedef AbstractBasicCamera3D<Float> AbstractCamera3D;
 #else
 typedef AbstractCamera<3, Float> AbstractCamera3D;
+#endif
+
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<3, Float>;
 #endif
 
 }}

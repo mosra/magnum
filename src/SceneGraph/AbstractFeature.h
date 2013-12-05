@@ -160,7 +160,7 @@ also @ref compilation-speedup-hpp for more information.
 @see @ref AbstractBasicFeature2D, @ref AbstractBasicFeature3D,
     @ref AbstractFeature2D, @ref AbstractFeature3D
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature
+template<UnsignedInt dimensions, class T> class AbstractFeature
     #ifndef DOXYGEN_GENERATING_OUTPUT
     : private Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
     #endif
@@ -347,6 +347,11 @@ typedef AbstractBasicFeature3D<Float> AbstractFeature3D;
 #endif
 #else
 typedef AbstractFeature<3, Float> AbstractFeature3D;
+#endif
+
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
 #endif
 
 }}

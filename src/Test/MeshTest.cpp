@@ -63,7 +63,7 @@ void MeshTest::configurationPrimitive() {
     Utility::Configuration c;
 
     c.setValue("primitive", Mesh::Primitive::LineStrip);
-    CORRADE_COMPARE(c.value<std::string>("primitive"), "LineStrip");
+    CORRADE_COMPARE(c.value("primitive"), "LineStrip");
     CORRADE_COMPARE(c.value<Mesh::Primitive>("primitive"), Mesh::Primitive::LineStrip);
 }
 
@@ -71,7 +71,7 @@ void MeshTest::configurationIndexType() {
     Utility::Configuration c;
 
     c.setValue("type", Mesh::IndexType::UnsignedByte);
-    CORRADE_COMPARE(c.value<std::string>("type"), "UnsignedByte");
+    CORRADE_COMPARE(c.value("type"), "UnsignedByte");
     CORRADE_COMPARE(c.value<Mesh::IndexType>("type"), Mesh::IndexType::UnsignedByte);
 }
 

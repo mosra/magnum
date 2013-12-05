@@ -25,6 +25,7 @@
 #include <sstream>
 #include <TestSuite/Tester.h>
 
+#include "SceneGraph/Object.hpp"
 #include "SceneGraph/TranslationTransformation.h"
 #include "SceneGraph/Scene.h"
 
@@ -131,11 +132,11 @@ void TranslationTransformationTest::translate() {
 }
 
 void TranslationTransformationTest::integral() {
-    typedef Object<TranslationTransformation<2, Float, Int>> Object2Di;
+    typedef Object<TranslationTransformation<2, Float, Short>> Object2Di;
 
     Object2Di o;
     o.translate({3, -7});
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({3, -7}));
+    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({3.0f, -7.0f}));
 }
 
 }}}

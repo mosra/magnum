@@ -218,6 +218,10 @@ template<class T> struct Transformation<BasicMatrixTransformation3D<T>> {
 
 }
 
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation3D<Float>>;
+#endif
+
 }}
 
 #endif

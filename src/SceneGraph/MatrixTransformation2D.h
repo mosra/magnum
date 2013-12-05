@@ -117,17 +117,6 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
             return transform(Math::Matrix3<T>::reflection(normal), type);
         }
 
-        /**
-         * @brief Move object in stacking order
-         * @param under     Sibling object under which to move or `nullptr`,
-         *      if you want to move it above all.
-         * @return Reference to self (for method chaining)
-         */
-        Object<BasicMatrixTransformation2D<T>>& move(Object<BasicMatrixTransformation2D<T>>* under) {
-            static_cast<Object<BasicMatrixTransformation2D>*>(this)->Containers::template LinkedList<Object<BasicMatrixTransformation2D<T>>>::move(this, under);
-            return static_cast<Object<BasicMatrixTransformation2D<T>>&>(*this);
-        }
-
     protected:
         /* Allow construction only from Object */
         explicit BasicMatrixTransformation2D();
@@ -180,6 +169,10 @@ template<class T> struct Transformation<BasicMatrixTransformation2D<T>> {
 };
 
 }
+
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation2D<Float>>;
+#endif
 
 }}
 

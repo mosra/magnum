@@ -57,7 +57,7 @@ class documentation or @ref compilation-speedup-hpp for more information.
 @see @ref scenegraph, @ref Camera2D, @ref BasicCamera3D, @ref Drawable,
     @ref DrawableGroup
 */
-template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractCamera<2, T> {
+template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
     public:
         /**
          * @brief Constructor
@@ -104,6 +104,10 @@ template<class T> class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D: public AbstractC
 @see @ref Camera3D
 */
 typedef BasicCamera2D<Float> Camera2D;
+
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D<Float>;
+#endif
 
 }}
 
