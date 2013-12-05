@@ -894,7 +894,7 @@ typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_po
 #endif
 operator*=(Vector<size, Integral>& vector, FloatingPoint number) {
     for(std::size_t i = 0; i != size; ++i)
-        vector[i] *= number;
+        vector[i] = Integral(vector[i]*number);
 
     return vector;
 }
@@ -945,7 +945,7 @@ typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_po
 #endif
 operator/=(Vector<size, Integral>& vector, FloatingPoint number) {
     for(std::size_t i = 0; i != size; ++i)
-        vector[i] /= number;
+        vector[i] = Integral(vector[i]/number);
 
     return vector;
 }
@@ -981,7 +981,7 @@ typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_po
 #endif
 operator*=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
     for(std::size_t i = 0; i != size; ++i)
-        a[i] *= b[i];
+        a[i] = Integral(a[i]*b[i]);
 
     return a;
 }
@@ -1034,7 +1034,7 @@ typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_po
 #endif
 operator/=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
     for(std::size_t i = 0; i != size; ++i)
-        a[i] /= b[i];
+        a[i] = Integral(a[i]/b[i]);
 
     return a;
 }

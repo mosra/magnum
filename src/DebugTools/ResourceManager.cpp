@@ -35,7 +35,11 @@
 
 namespace Magnum {
 
+#ifndef _WIN32
 template class ResourceManager<AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
+#else
+template class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager<AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
+#endif
 
 namespace DebugTools {
 

@@ -45,7 +45,7 @@ template<class T> typename std::enable_if<std::is_floating_point<T>::value, Basi
     std::tie(hue, saturation, value) = hsv;
 
     /* Remove repeats */
-    hue -= int(hue.toUnderlyingType()/T(360))*Math::Deg<T>(360);
+    hue -= Math::floor(hue.toUnderlyingType()/T(360))*Math::Deg<T>(360);
     if(hue < Math::Deg<T>(0)) hue += Math::Deg<T>(360);
 
     int h = int(hue.toUnderlyingType()/T(60)) % 6;

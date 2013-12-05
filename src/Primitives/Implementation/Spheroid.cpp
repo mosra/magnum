@@ -44,12 +44,12 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
     Rad segmentAngleIncrement(2*Constants::pi()/segments);
     Float x, y, z;
     for(UnsignedInt i = 0; i != count; ++i) {
-        Rad ringAngle = startRingAngle + i*ringAngleIncrement;
+        Rad ringAngle = startRingAngle + Float(i)*ringAngleIncrement;
         x = z = Math::cos(ringAngle);
         y = Math::sin(ringAngle);
 
         for(UnsignedInt j = 0; j != segments; ++j) {
-            Rad segmentAngle = j*segmentAngleIncrement;
+            Rad segmentAngle = Float(j)*segmentAngleIncrement;
             positions.push_back({x*Math::sin(segmentAngle), centerY+y, z*Math::cos(segmentAngle)});
             normals.push_back({x*Math::sin(segmentAngle), y, z*Math::cos(segmentAngle)});
 
@@ -70,7 +70,7 @@ void Spheroid::cylinderVertexRings(UnsignedInt count, Float startY, Float yIncre
     Rad segmentAngleIncrement(2*Constants::pi()/segments);
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
-            Rad segmentAngle = j*segmentAngleIncrement;
+            Rad segmentAngle = Float(j)*segmentAngleIncrement;
             positions.push_back({Math::sin(segmentAngle), startY, Math::cos(segmentAngle)});
             normals.push_back({Math::sin(segmentAngle), 0.0f, Math::cos(segmentAngle)});
 
@@ -144,7 +144,7 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
     Rad segmentAngleIncrement(2*Constants::pi()/segments);
 
     for(UnsignedInt i = 0; i != segments; ++i) {
-        Rad segmentAngle = i*segmentAngleIncrement;
+        Rad segmentAngle = Float(i)*segmentAngleIncrement;
         positions.push_back({Math::sin(segmentAngle), y, Math::cos(segmentAngle)});
         normals.push_back(normal);
 

@@ -129,7 +129,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         }
 
         void doRotate(Math::Rad<T> angle, TransformationType type) override final {
-            doRotate(angle, type);
+            rotate(angle, type);
         }
 
         /* No assertions fired, for internal use */

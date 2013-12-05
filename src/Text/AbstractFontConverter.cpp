@@ -249,7 +249,7 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromFile(co
 
     /* Create array to hold file contents */
     in.seekg(0, std::ios::end);
-    Containers::Array<unsigned char> data(in.tellg());
+    Containers::Array<unsigned char> data(std::size_t(in.tellg()));
 
     /* Read data, close */
     in.seekg(0, std::ios::beg);

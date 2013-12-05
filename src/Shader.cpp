@@ -616,7 +616,7 @@ Shader& Shader::addFile(const std::string& filename) {
 
     /* Get size of shader and initialize buffer */
     file.seekg(0, std::ios::end);
-    std::string source(file.tellg(), '\0');
+    std::string source(std::size_t(file.tellg()), '\0');
 
     /* Read data, close */
     file.seekg(0, std::ios::beg);

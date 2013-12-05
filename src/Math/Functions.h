@@ -286,12 +286,12 @@ template<std::size_t size, class T> Vector<size, T> ceil(const Vector<size, T>& 
 template<class T> inline T sqrt(const T& a);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type sqrt(T a) {
-    return std::sqrt(a);
+    return T(std::sqrt(a));
 }
 template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& a) {
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::sqrt(a[i]);
+        out[i] = T(std::sqrt(a[i]));
     return out;
 }
 #endif
@@ -350,7 +350,7 @@ The interpolation for vectors is done as in following, similarly for scalars: @f
 template<class T, class U> inline T lerp(const T& a, const T& b, U t);
 #else
 template<class T, class U> inline T lerp(T a, T b, U t) {
-    return (U(1) - t)*a + t*b;
+    return T((U(1) - t)*a + t*b);
 }
 template<std::size_t size, class T, class U> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
     return (U(1) - t)*a + t*b;
@@ -472,7 +472,7 @@ template<class Integral, class FloatingPoint> inline Integral denormalize(const 
 template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<FloatingPoint>::value, Integral>::type denormalize(FloatingPoint value) {
     static_assert(std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value,
                   "Math::denormalize(): denormalization must be done from floating-point to integral type");
-    return value*std::numeric_limits<Integral>::max();
+    return Integral(value*std::numeric_limits<Integral>::max());
 }
 template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<typename Integral::Type>::value, Integral>::type denormalize(const FloatingPoint& value) {
     static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
