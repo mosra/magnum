@@ -136,7 +136,7 @@ void TranslationTransformationTest::integral() {
 
     Object2Di o;
     o.translate({3, -7});
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({3, -7}));
+    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({3.0f, -7.0f}));
 }
 
 }}}
