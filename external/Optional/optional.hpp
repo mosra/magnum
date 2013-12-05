@@ -195,7 +195,7 @@ template <class T> inline constexpr typename std::remove_reference<T>::type&& co
   # elif defined __GNUC__
     _assert(expr, file, line);
   # elif defined _MSC_VER
-    _CrtDbgReport(_CRT_ASSERT, file, line, expr);
+    _CrtDbgReport(_CRT_ASSERT, file, line, expr, "");
   # else
   #   error UNSUPPORTED COMPILER
   # endif
@@ -230,11 +230,15 @@ T* static_addressof(T& ref)
   return std::addressof(ref);
 }
 #else
+# if (defined _MSC_VER) && _MSC_VER >= 1800
+    // leave it; our metafunctions are already defined.
+# else
 template <typename T>
 T* addressof(T& ref)
 {
   return reinterpret_cast<T*>(&const_cast<char&>(reinterpret_cast<const volatile char&>(ref)));
 }
+#endif
 template <typename T>
 T* static_addressof(T& ref)
 {
@@ -420,7 +424,7 @@ struct constexpr_optional_base
 };
 #endif
 
-# if OPTIONAL_HAS_USING
+# if OPTIONAL_HAS_USING && OPTIONAL_HAS_CONSTEXPR_NOEXCEPT
 template <class T>
 using OptionalBase = typename std::conditional<
     std::is_trivially_destructible<T>::value,
