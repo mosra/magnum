@@ -73,7 +73,7 @@ and @ref Camera3D-explicit-specializations "Camera3D" class documentation or
 @see @ref scenegraph, @ref AbstractBasicCamera2D, @ref AbstractBasicCamera3D,
     @ref Drawable, @ref DrawableGroup
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera: public AbstractFeature<dimensions, T> {
+template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractFeature<dimensions, T> {
     public:
         /** @brief Aspect ratio policy */
         AspectRatioPolicy aspectRatioPolicy() const { return _aspectRatioPolicy; }

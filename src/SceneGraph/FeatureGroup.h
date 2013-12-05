@@ -41,7 +41,7 @@ namespace Magnum { namespace SceneGraph {
 
 See @ref FeatureGroup.
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup {
+template<UnsignedInt dimensions, class T> class AbstractFeatureGroup {
     template<UnsignedInt, class, class> friend class FeatureGroup;
 
     explicit AbstractFeatureGroup();

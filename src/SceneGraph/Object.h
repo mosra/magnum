@@ -97,7 +97,7 @@ class documentation or @ref compilation-speedup-hpp for more information.
     @ref DebugTools::ObjectRenderer
 @todo Test (and fix) that hpp works also on Windows
 */
-template<class Transformation> class MAGNUM_SCENEGRAPH_EXPORT Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
+template<class Transformation> class Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT
     , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif

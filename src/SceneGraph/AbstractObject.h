@@ -69,7 +69,7 @@ class documentation or @ref compilation-speedup-hpp for more information.
 @see @ref AbstractBasicObject2D, @ref AbstractBasicObject3D,
     @ref AbstractObject2D, @ref AbstractObject3D
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractObject
+template<UnsignedInt dimensions, class T> class AbstractObject
     #ifndef DOXYGEN_GENERATING_OUTPUT
     : private Containers::LinkedList<AbstractFeature<dimensions, T>>
     #endif

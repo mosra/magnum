@@ -52,7 +52,7 @@ use @ref Object.hpp implementation file to avoid linker errors. See
     @ref AbstractBasicTransformation3D, @ref AbstractTransformation2D,
     @ref AbstractTransformation3D
 */
-template<UnsignedInt dimensions, class T> class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation {
+template<UnsignedInt dimensions, class T> class AbstractTransformation {
     public:
         /** @brief Underlying floating-point type */
         typedef T Type;
