@@ -146,7 +146,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         }
 
         void doRotate(Math::Rad<T> angle, TransformationType type) override final {
-            doRotate(angle, type);
+            rotate(angle, type);
         }
 
         /* No assertions fired, for internal use */

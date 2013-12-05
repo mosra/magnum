@@ -129,7 +129,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         void doRotate(Math::Rad<T> angle, TransformationType type) override final {
-            doRotate(angle, type);
+            rotate(angle, type);
         }
 
         void doScale(const Math::Vector2<T>& vector, TransformationType type) override final {
