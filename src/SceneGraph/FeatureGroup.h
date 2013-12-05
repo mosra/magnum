@@ -182,6 +182,11 @@ template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions
     return *this;
 }
 
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<3, Float>;
+#endif
+
 }}
 
 #endif

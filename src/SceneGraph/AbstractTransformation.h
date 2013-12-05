@@ -144,6 +144,11 @@ typedef AbstractBasicTransformation3D<Float> AbstractTransformation3D;
 typedef AbstractTransformation<3, Float> AbstractTransformation3D;
 #endif
 
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<3, Float>;
+#endif
+
 }}
 
 #endif

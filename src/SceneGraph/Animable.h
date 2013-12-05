@@ -380,6 +380,11 @@ typedef BasicAnimable3D<Float> Animable3D;
 typedef Animable<3, Float> Animable3D;
 #endif
 
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT Animable<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT Animable<3, Float>;
+#endif
+
 }}
 
 #endif

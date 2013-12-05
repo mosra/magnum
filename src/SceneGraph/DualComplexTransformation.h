@@ -183,6 +183,10 @@ template<class T> struct Transformation<BasicDualComplexTransformation<T>> {
 
 }
 
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualComplexTransformation<Float>>;
+#endif
+
 }}
 
 #endif

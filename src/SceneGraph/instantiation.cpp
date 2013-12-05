@@ -38,37 +38,44 @@
 
 namespace Magnum { namespace SceneGraph {
 
+/* On Windows the instantiations are already marked with extern template */
+#ifndef _WIN32
+#define MAGNUM_SCENEGRAPH_EXPORT_HPP MAGNUM_SCENEGRAPH_EXPORT
+#else
+#define MAGNUM_SCENEGRAPH_EXPORT_HPP
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractObject<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractObject<3, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractObject<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractObject<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractTransformation<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractTransformation<3, Float>;
 
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractFeature<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractFeature<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractFeatureGroup<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractFeatureGroup<3, Float>;
 
-template class MAGNUM_SCENEGRAPH_EXPORT Animable<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT Animable<3, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Animable<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Animable<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AnimableGroup<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AnimableGroup<3, Float>;
 
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<2, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<3, Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D<Float>;
-template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D<Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractCamera<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractCamera<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicCamera2D<Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicCamera3D<Float>;
 
-template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualComplexTransformation<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualQuaternionTransformation<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation2D<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation3D<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation2D<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation3D<Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<2, Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<3, Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<2, Float, Int>>;
-template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<3, Float, Int>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicDualComplexTransformation<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicDualQuaternionTransformation<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicMatrixTransformation2D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicMatrixTransformation3D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicRigidMatrixTransformation2D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicRigidMatrixTransformation3D<Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<2, Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<3, Float>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<2, Float, Int>>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<3, Float, Int>>;
 #endif
 
 }}

@@ -141,6 +141,10 @@ template<class T> class BasicCamera3D: public AbstractCamera<3, T> {
 */
 typedef BasicCamera3D<Float> Camera3D;
 
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D<Float>;
+#endif
+
 }}
 
 #endif

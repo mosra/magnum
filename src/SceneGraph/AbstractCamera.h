@@ -209,6 +209,11 @@ typedef AbstractBasicCamera3D<Float> AbstractCamera3D;
 typedef AbstractCamera<3, Float> AbstractCamera3D;
 #endif
 
+#ifdef _WIN32
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<3, Float>;
+#endif
+
 }}
 
 #endif
