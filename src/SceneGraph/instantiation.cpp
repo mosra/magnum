@@ -23,6 +23,7 @@
 */
 
 #include "SceneGraph/AbstractFeature.hpp"
+#include "SceneGraph/Animable.hpp"
 #include "SceneGraph/Camera2D.hpp"
 #include "SceneGraph/Camera3D.hpp"
 #include "SceneGraph/DualComplexTransformation.h"
@@ -47,6 +48,11 @@ template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<3, Float>;
+
+template class MAGNUM_SCENEGRAPH_EXPORT Animable<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT Animable<3, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<3, Float>;
 
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<3, Float>;
