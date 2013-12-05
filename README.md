@@ -87,7 +87,6 @@ Minimal dependencies
     >= 3.1. On Windows you can use **MinGW**, Visual Studio compiler still
     lacks some needed features.
 *   **CMake** >= 2.8.8
-*   **GLEW** - OpenGL extension wrangler (only if targeting desktop OpenGL)
 *   **Corrade** - Plugin management and utility library. You can get it at
     https://github.com/mosra/corrade.
 
