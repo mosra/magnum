@@ -31,14 +31,17 @@ namespace Magnum {
 
 Minimal set of tools and libraries required for building is:
 
-- C++ compiler with good C++11 support. Currently there are two compilers
-  which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
-  >= 3.1. On Windows you can use **MinGW**, Visual Studio compiler still lacks
-  some needed features.
-- **CMake** >= 2.8.8
-- **Corrade** - Plugin management and utility library. See
-  @ref building-corrade "Corrade download and installation guide" for more
-  information.
+-   C++ compiler with good C++11 support. Currently there are two compilers
+    which are tested to have everything needed: **GCC** >= 4.6 and **Clang**
+    >= 3.1. On Windows you can use **MinGW**. GCC 4.5, 4.4 and **MSVC** 2013
+    support involves some ugly workarounds and thus is available only in
+    `compatibility` branch.
+-   **CMake** >= 2.8.8
+-   **Corrade** - Plugin management and utility library. See
+    @ref building-corrade "Corrade download and installation guide" for more
+    information.
+
+Note that full feature set is available only on GCC 4.8.1 and Clang 3.1.
 
 @section building-download Downloading the sources
 
@@ -47,6 +50,12 @@ repository with your favorite IDE or Git GUI, download currrent snapshot as
 compressed archive or use the command line:
 
     git clone git://github.com/mosra/magnum.git
+
+If you need to use the `compatibility` branch, check it out as following from
+the cloned repository or download the particular archive from
+https://github.com/mosra/magnum/tree/compatibility.
+
+    git checkout compatibility
 
 @section building-compilation Compilation, installation
 
