@@ -209,8 +209,6 @@ template<UnsignedInt dimensions, class T, class TranslationType> struct Transfor
 #ifdef _WIN32
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<2, Float>>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<3, Float>>;
-extern template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<2, Float, Int>>;
-extern template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<3, Float, Int>>;
 #endif
 
 }}

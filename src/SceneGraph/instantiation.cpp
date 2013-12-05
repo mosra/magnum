@@ -74,8 +74,6 @@ template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicRigidMatrixTransformatio
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicRigidMatrixTransformation3D<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<2, Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<3, Float>>;
-template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<2, Float, Int>>;
-template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<TranslationTransformation<3, Float, Int>>;
 #endif
 
 }}
