@@ -256,7 +256,11 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          */
         /* `objects` passed by copy intentionally (to allow move from
            transformationMatrices() and avoid copy in the function itself) */
+        #ifndef CORRADE_MSVC2013_COMPATIBILITY
         std::vector<typename Transformation::DataType> transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+        #else
+        std::vector<typename Transformation::DataType> transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = Transformation::DataType()) const;
+        #endif
 
         /*@}*/
 
