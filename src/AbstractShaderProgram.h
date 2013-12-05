@@ -1321,9 +1321,9 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
         constexpr DataOptions dataOptions() const { return _dataOptions; }
 
     private:
-        const Components _components;
-        const DataType _dataType;
-        const DataOptions _dataOptions;
+        Components _components;
+        DataType _dataType;
+        DataOptions _dataOptions;
 };
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
