@@ -282,7 +282,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     for(auto i: jointObjects) {
         /* All not-already cleaned objects (...duplicate occurences) should
            have joint mark */
-        CORRADE_INTERNAL_ASSERT(i->counter = 0xFFFFu || i->flags & Flag::Joint);
+        CORRADE_INTERNAL_ASSERT(i->counter == 0xFFFFu || i->flags & Flag::Joint);
         i->flags &= ~Flag::Joint;
         i->counter = 0xFFFFu;
     }
