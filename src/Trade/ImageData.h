@@ -70,12 +70,18 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         /** @brief Destructor */
         ~ImageData() { delete[] _data; }
 
-        /**
-         * @brief Conversion to reference
-         *
-         * @todo GCC 4.8: don't allow this on rvalue-ref
-         */
-        /*implicit*/ operator ImageReference<dimensions>() const;
+        /** @brief Conversion to reference */
+        /*implicit*/ operator ImageReference<dimensions>()
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        const &;
+        #else
+        const;
+        #endif
+
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        /** @overload */
+        /*implicit*/ operator ImageReference<dimensions>() const && = delete;
+        #endif
 
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
@@ -110,7 +116,13 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensi
     return *this;
 }
 
-template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>() const {
+template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>()
+#ifndef CORRADE_GCC47_COMPATIBILITY
+const &
+#else
+const
+#endif
+{
     return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
 }
 

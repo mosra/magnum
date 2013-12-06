@@ -71,13 +71,22 @@ void ImageTest::moveAssignment() {
 
 void ImageTest::toReference() {
     unsigned char* data = new unsigned char[3];
-    Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    const Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     ImageReference2D b = a;
     CORRADE_COMPARE(b.format(), ColorFormat::Red);
     CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_VERIFY(b.data() == data);
+
+    CORRADE_VERIFY((std::is_convertible<const Image2D&, ImageReference2D>::value));
+    {
+        #ifdef CORRADE_GCC47_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
+        #endif
+        CORRADE_VERIFY(!(std::is_convertible<const Image2D, ImageReference2D>::value));
+        CORRADE_VERIFY(!(std::is_convertible<const Image2D&&, ImageReference2D>::value));
+    }
 }
 
 }}
