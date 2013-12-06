@@ -26,7 +26,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 /** @file
- * @brief Class Magnum::BufferImage, typedef Magnum::BufferImage1D, Magnum::BufferImage2D, Magnum::BufferImage3D
+ * @brief Class @ref Magnum::BufferImage, typedef @ref Magnum::BufferImage1D, @ref Magnum::BufferImage2D, @ref Magnum::BufferImage3D
  */
 #endif
 
@@ -41,9 +41,9 @@ namespace Magnum {
 /**
 @brief %Buffer image
 
-Stores image data in GPU memory. Interchangeable with Image, ImageReference or
-Trade::ImageData.
-@see BufferImage1D, BufferImage2D, BufferImage3D, Buffer
+Stores image data in GPU memory. Interchangeable with @ref Image,
+@ref ImageReference or @ref Trade::ImageData.
+@see @ref BufferImage1D, @ref BufferImage2D, @ref BufferImage3D, @ref Buffer
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 */
 template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public AbstractImage {
@@ -55,8 +55,8 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          *
-         * Dimensions and buffer are empty, call setData() to fill the image
-         * with data.
+         * Dimensions and buffer are empty, call @ref setData() to fill the
+         * image with data.
          */
         explicit BufferImage(ColorFormat format, ColorType type): AbstractImage(format, type) {
             _buffer.setTargetHint(Buffer::Target::PixelPack);
@@ -78,8 +78,7 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
-         *
-         * @see Buffer::setData()
+         * @see @ref Buffer::setData()
          */
         void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage);
 

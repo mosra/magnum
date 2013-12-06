@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::ImageData
+ * @brief Class @ref Magnum::Trade::ImageData, typedef @ref Magnum::Trade::ImageData1D, @ref Magnum::Trade::ImageData2D, @ref Magnum::Trade::ImageData3D
  */
 
 #include "ImageReference.h"
@@ -35,9 +35,9 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Image data
 
-Access to image data provided by AbstractImporter subclasses. Interchangeable
-with Image, ImageReference or BufferImage.
-@see ImageData1D, ImageData2D, ImageData3D
+Access to image data provided by @ref AbstractImporter subclasses.
+Interchangeable with @ref Image, @ref ImageReference or @ref BufferImage.
+@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */
 template<UnsignedInt dimensions> class ImageData: public AbstractImage {
     public:

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::ImageReference
+ * @brief Class @ref Magnum::ImageReference, typedef @ref Magnum::ImageReference1D, @ref Magnum::ImageReference2D, @ref Magnum::ImageReference3D
  */
 
 #include "Math/Vector3.h"
@@ -40,14 +40,14 @@ namespace Magnum {
 Adds information about dimensions, color components and component type to some
 data in memory.
 
-Unlike Image, this class doesn't delete the data on destruction, so it is
+Unlike @ref Image, this class doesn't delete the data on destruction, so it is
 targeted for wrapping data which are either stored in stack/constant memory
 (and shouldn't be deleted) or they are managed by someone else and have the
 same properties for each frame, such as video stream. Thus it is not possible
 to change image properties, only data pointer.
 
-Interchangeable with Image, BufferImage or Trade::ImageData.
-@see ImageReference1D, ImageReference2D, ImageReference3D
+Interchangeable with @ref Image, @ref BufferImage or @ref Trade::ImageData.
+@see @ref ImageReference1D, @ref ImageReference2D, @ref ImageReference3D
 */
 template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
     public:
@@ -68,8 +68,8 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * @param type              Data type of pixel data
          * @param size              %Image size
          *
-         * Data pointer is set to zero, call setData() to fill the image with
-         * data.
+         * Data pointer is set to `nullptr`, call @ref setData() to fill the
+         * image with data.
          */
         constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
