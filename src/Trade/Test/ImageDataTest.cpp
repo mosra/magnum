@@ -36,12 +36,14 @@ class ImageDataTest: public TestSuite::Tester {
         void moveConstructor();
         void moveAssignment();
         void toReference();
+        void release();
 };
 
 ImageDataTest::ImageDataTest() {
     addTests({&ImageDataTest::moveConstructor,
               &ImageDataTest::moveAssignment,
-              &ImageDataTest::toReference});
+              &ImageDataTest::toReference,
+              &ImageDataTest::release});
 }
 
 void ImageDataTest::moveConstructor() {
@@ -87,6 +89,15 @@ void ImageDataTest::toReference() {
         CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D, ImageReference2D>::value));
         CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D&&, ImageReference2D>::value));
     }
+}
+
+void ImageDataTest::release() {
+    unsigned char data[] = {'b', 'e', 'e', 'r'};
+    ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
+    const unsigned char* const pointer = a.release();
+    CORRADE_COMPARE(pointer, data);
+    CORRADE_VERIFY(!a.data());
+    CORRADE_VERIFY(a.size().isZero());
 }
 
 }}}

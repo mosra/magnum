@@ -96,7 +96,11 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
-        /** @brief Pointer to raw data */
+        /**
+         * @brief Pointer to raw data
+         *
+         * @see @ref release()
+         */
         unsigned char* data() { return _data; }
         const unsigned char* data() const { return _data; } /**< @overload */
 
@@ -109,8 +113,18 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          *
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
+         * @see @ref release()
          */
         void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data);
+
+        /**
+         * @brief Release data storage
+         *
+         * Returns the data pointer and resets internal state to default.
+         * Deleting the returned array is user responsibility.
+         * @see @ref setData()
+         */
+        unsigned char* release();
 
     private:
         Math::Vector<Dimensions, Int> _size;
@@ -146,6 +160,14 @@ const
 #endif
 {
     return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
+}
+
+template<UnsignedInt dimensions> inline unsigned char* Image<dimensions>::release() {
+    /** @todo I need `std::exchange` NOW. */
+    unsigned char* const data = _data;
+    _size = {};
+    _data = nullptr;
+    return data;
 }
 
 }
