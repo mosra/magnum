@@ -48,7 +48,6 @@ to change image properties, only data pointer.
 
 Interchangeable with Image, BufferImage or Trade::ImageData.
 @see ImageReference1D, ImageReference2D, ImageReference3D
-@todo Provide const version somewhat
 */
 template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
     public:
@@ -61,7 +60,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * @param size              %Image size
          * @param data              %Image data
          */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -78,8 +77,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
         constexpr typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @brief Pointer to raw data */
-        unsigned char* data() { return _data; }
-        constexpr const unsigned char* data() const { return _data; } /**< @overload */
+        constexpr const unsigned char* data() const { return _data; }
 
         /**
          * @brief Set image data
@@ -89,13 +87,13 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * passed in constructor. The data are not copied nor deleted on
          * destruction.
          */
-        void setData(void* data) {
-            _data = reinterpret_cast<unsigned char*>(data);
+        void setData(const void* data) {
+            _data = reinterpret_cast<const unsigned char*>(data);
         }
 
     private:
         Math::Vector<Dimensions, Int> _size;
-        unsigned char* _data;
+        const unsigned char* _data;
 };
 
 /** @brief One-dimensional image wrapper */
