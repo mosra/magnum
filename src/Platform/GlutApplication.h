@@ -102,6 +102,18 @@ class GlutApplication {
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit GlutApplication(const Arguments& arguments, std::nullptr_t);
 
+        /** @brief Copying is not allowed */
+        GlutApplication(const GlutApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        GlutApplication(GlutApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        GlutApplication& operator=(const GlutApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        GlutApplication& operator=(GlutApplication&&) = delete;
+
         /** @copydoc Sdl2Application::exec() */
         int exec() {
             glutMainLoop();

@@ -111,6 +111,18 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t);
 
+        /** @brief Copying is not allowed */
+        WindowlessNaClApplication(const WindowlessNaClApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessNaClApplication(WindowlessNaClApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        WindowlessNaClApplication& operator=(const WindowlessNaClApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessNaClApplication& operator=(WindowlessNaClApplication&&) = delete;
+
         /**
          * @brief Execute application
          * @return Value for returning from `main()`.

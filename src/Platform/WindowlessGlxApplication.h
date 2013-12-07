@@ -95,6 +95,18 @@ class WindowlessGlxApplication {
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t);
 
+        /** @brief Copying is not allowed */
+        WindowlessGlxApplication(const WindowlessGlxApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessGlxApplication(WindowlessGlxApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        WindowlessGlxApplication& operator=(const WindowlessGlxApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessGlxApplication& operator=(WindowlessGlxApplication&&) = delete;
+
         /**
          * @brief Execute application
          * @return Value for returning from `main()`.

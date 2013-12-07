@@ -73,6 +73,18 @@ class AbstractXApplication {
         class MouseEvent;
         class MouseMoveEvent;
 
+        /** @brief Copying is not allowed */
+        AbstractXApplication(const AbstractXApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        AbstractXApplication(AbstractXApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        AbstractXApplication& operator=(const AbstractXApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        AbstractXApplication& operator=(AbstractXApplication&&) = delete;
+
         /**
          * @brief Execute main loop
          * @return Value for returning from `main()`.

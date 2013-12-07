@@ -160,6 +160,18 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit NaClApplication(const Arguments& arguments, std::nullptr_t);
 
+        /** @brief Copying is not allowed */
+        NaClApplication(const NaClApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        NaClApplication(NaClApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        NaClApplication& operator=(const NaClApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        NaClApplication& operator=(NaClApplication&&) = delete;
+
         /** @brief Whether the application runs fullscreen */
         bool isFullscreen();
 

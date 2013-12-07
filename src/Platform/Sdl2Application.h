@@ -161,6 +161,18 @@ class Sdl2Application {
          */
         explicit Sdl2Application(const Arguments& arguments, std::nullptr_t);
 
+        /** @brief Copying is not allowed */
+        Sdl2Application(const Sdl2Application&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2Application(Sdl2Application&&) = delete;
+
+        /** @brief Copying is not allowed */
+        Sdl2Application& operator=(const Sdl2Application&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2Application& operator=(Sdl2Application&&) = delete;
+
         /**
          * @brief Execute main loop
          * @return Value for returning from `main()`.
