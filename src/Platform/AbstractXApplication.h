@@ -238,12 +238,6 @@ class AbstractXApplication::Configuration {
     @ref mouseMoveEvent()
 */
 class AbstractXApplication::InputEvent {
-    InputEvent(const InputEvent&) = delete;
-    InputEvent(InputEvent&&) = delete;
-    InputEvent& operator=(const InputEvent&) = delete;
-    InputEvent& operator=(InputEvent&&) = delete;
-
-    public:
     public:
         /**
          * @brief %Modifier
@@ -310,6 +304,18 @@ class AbstractXApplication::InputEvent {
          * @see @ref buttons()
          */
         typedef Containers::EnumSet<Button, unsigned int> Buttons;
+
+        /** @brief Copying is not allowed */
+        InputEvent(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent(InputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        InputEvent& operator=(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent& operator=(InputEvent&&) = delete;
 
         /** @copydoc Sdl2Application::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }

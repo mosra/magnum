@@ -377,11 +377,6 @@ propagated to the browser.
     @ref mouseMoveEvent()
 */
 class NaClApplication::InputEvent {
-    InputEvent(const InputEvent&) = delete;
-    InputEvent(InputEvent&&) = delete;
-    InputEvent& operator=(const InputEvent&) = delete;
-    InputEvent& operator=(InputEvent&&) = delete;
-
     public:
         /**
          * @brief %Modifier
@@ -449,6 +444,18 @@ class NaClApplication::InputEvent {
          * @see @ref buttons()
          */
         typedef Containers::EnumSet<Button, std::uint32_t> Buttons;
+
+        /** @brief Copying is not allowed */
+        InputEvent(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent(InputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        InputEvent& operator=(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent& operator=(InputEvent&&) = delete;
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }

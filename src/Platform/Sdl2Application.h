@@ -454,11 +454,6 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
     @ref mouseMoveEvent()
 */
 class Sdl2Application::InputEvent {
-    InputEvent(const InputEvent&) = delete;
-    InputEvent(InputEvent&&) = delete;
-    InputEvent& operator=(const InputEvent&) = delete;
-    InputEvent& operator=(InputEvent&&) = delete;
-
     public:
         /**
          * @brief %Modifier
@@ -483,6 +478,18 @@ class Sdl2Application::InputEvent {
          *      @ref MouseMoveEvent::modifiers()
          */
         typedef Containers::EnumSet<Modifier, Uint16> Modifiers;
+
+        /** @brief Copying is not allowed */
+        InputEvent(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent(InputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        InputEvent& operator=(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent& operator=(InputEvent&&) = delete;
 
         /**
          * @brief Set event as accepted
