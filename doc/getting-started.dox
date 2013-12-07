@@ -94,17 +94,12 @@ class MyApplication: public Platform::Application {
     public:
         explicit MyApplication(const Arguments& arguments);
 
-    protected:
-        void viewportEvent(const Vector2i& size) override;
+    private:
         void drawEvent() override;
 };
 
 MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {
     // TODO: Add your initialization code here
-}
-
-void MyApplication::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
 }
 
 void MyApplication::drawEvent() {
@@ -118,10 +113,10 @@ void MyApplication::drawEvent() {
 MAGNUM_APPLICATION_MAIN(MyApplication)
 @endcode
 
-The application essentially does nothing, just clears properly sized screen
-framebuffer to default (black) color and then does buffer swap to actually
-display it on the screen. `CMakeLists.txt` finds %Magnum, sets up compiler
-flags, creates the executable and links it to all needed libraries:
+The application essentially does nothing, just clears screen framebuffer to
+default (dark gray) color and then does buffer swap to actually display it on
+the screen. `CMakeLists.txt` finds %Magnum, sets up compiler flags, creates the
+executable and links it to all needed libraries:
 @code
 find_package(Magnum REQUIRED GlutApplication)
 
@@ -181,9 +176,8 @@ Debug() << "Hello! This application is running on" << Context::current()->versio
 
 After rebuilding and starting the application, the clear color changes to
 blueish one and something like this would be printed to the console:
-@code
-Hello! This application is running on OpenGL 3.3 using Geforce GT 330M
-@endcode
+
+> Hello! This application is running on OpenGL 3.3 using Geforce GT 330M
 
 @image html getting-started-blue.png
 @image latex getting-started-blue.png
