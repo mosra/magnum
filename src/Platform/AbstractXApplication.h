@@ -137,10 +137,7 @@ class AbstractXApplication {
     #else
     protected:
     #endif
-        /* These two are split to avoid "invalid use of incomplete type" when
-           using default argument for configuration */
         explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
 
         explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
 

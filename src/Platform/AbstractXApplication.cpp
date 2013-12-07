@@ -42,12 +42,6 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
     createContext(configuration);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
-    createContext({});
-}
-#endif
-
 AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
 void AbstractXApplication::createContext(const Configuration& configuration) {
