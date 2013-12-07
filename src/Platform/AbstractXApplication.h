@@ -193,7 +193,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 @brief %Configuration
 
 Double-buffered OpenGL context.
-@see @ref GlxApplication::GlxApplication(), @ref XeglApplication::XEglApplication(),
+@see @ref GlxApplication::GlxApplication(), @ref XEglApplication::XEglApplication(),
     @ref createContext(), @ref tryCreateContext()
 @todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
 */
