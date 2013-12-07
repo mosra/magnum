@@ -26,6 +26,7 @@
 
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/cpp/completion_callback.h>
+#include <Utility/Assert.h>
 #include <Utility/NaClStreamBuffer.h>
 
 #include "Context.h"
@@ -110,6 +111,10 @@ WindowlessNaClApplication::~WindowlessNaClApplication() {
 
 bool WindowlessNaClApplication::Init(uint32_t , const char* , const char*) {
     return exec() == 0;
+}
+
+void WindowlessNaClApplication::Graphics3DContextLost() {
+    CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
 }
 
 }}

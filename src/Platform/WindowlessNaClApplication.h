@@ -35,7 +35,6 @@
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
-#include "Math/Vector2.h"
 #include "Magnum.h"
 
 #include "corradeCompatibility.h"
@@ -132,9 +131,7 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
     private:
         struct ConsoleDebugOutput;
 
-        void Graphics3DContextLost() override {
-            CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
-        }
+        void Graphics3DContextLost() override;
 
         bool Init(std::uint32_t, const char*, const char*) override;
 
