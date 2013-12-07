@@ -89,10 +89,7 @@ void Sdl2Application::initialize() {
 }
 
 void Sdl2Application::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::Sdl2Application::createContext(): cannot create context:" << SDL_GetError();
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
@@ -115,10 +112,13 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     if(!(window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|flags)))
+            SDL_WINDOW_OPENGL|flags))) {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
         return false;
+    }
 
     if(!(context = SDL_GL_CreateContext(window))) {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
         SDL_DestroyWindow(window);
         window = nullptr;
         return false;

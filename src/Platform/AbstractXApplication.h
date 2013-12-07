@@ -90,6 +90,9 @@ class AbstractXApplication {
         /** @copydoc Sdl2Application::createContext() */
         void createContext(const Configuration& configuration);
 
+        /** @copydoc Sdl2Application::tryCreateContext() */
+        bool tryCreateContext(const Configuration& configuration);
+
         /** @{ @name Drawing functions */
 
         /** @copydoc Sdl2Application::viewportEvent() */

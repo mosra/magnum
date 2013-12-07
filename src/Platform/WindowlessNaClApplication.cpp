@@ -68,10 +68,7 @@ WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments,
 }
 
 void WindowlessNaClApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::WindowlessNaClApplication::createContext(): cannot create context";
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
@@ -88,13 +85,16 @@ bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
 
     graphics = new pp::Graphics3D(this, attributes);
     if(graphics->is_null()) {
+        Error() << "Platform::WindowlessNaClApplication::tryCreateContext(): cannot create context";
         delete graphics;
         graphics = nullptr;
         return false;
     }
     if(!BindGraphics(*graphics)) {
         Error() << "Platform::WindowlessNaClApplication::tryCreateContext(): cannot bind graphics";
-        std::exit(1);
+        delete graphics;
+        graphics = nullptr;
+        return false;
     }
 
     glSetCurrentContextPPAPI(graphics->pp_resource());

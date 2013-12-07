@@ -69,10 +69,7 @@ NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): In
 }
 
 void NaClApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::NaClApplication::createContext(): cannot create context";
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool NaClApplication::tryCreateContext(const Configuration& configuration) {
@@ -93,13 +90,16 @@ bool NaClApplication::tryCreateContext(const Configuration& configuration) {
 
     graphics = new pp::Graphics3D(this, attributes);
     if(graphics->is_null()) {
+        Error() << "Platform::NaClApplication::tryCreateContext(): cannot create context";
         delete graphics;
         graphics = nullptr;
         return false;
     }
     if(!BindGraphics(*graphics)) {
         Error() << "Platform::NaClApplication::tryCreateContext(): cannot bind graphics";
-        std::exit(1);
+        delete graphics;
+        graphics = nullptr;
+        return false;
     }
 
     fullscreen = new pp::Fullscreen(this);

@@ -109,6 +109,9 @@ class WindowlessGlxApplication {
         /** @copydoc Sdl2Application::createContext() */
         void createContext(const Configuration& configuration);
 
+        /** @copydoc Sdl2Application::tryCreateContext() */
+        bool tryCreateContext(const Configuration& configuration);
+
     private:
         Display* display;
         GLXContext context;

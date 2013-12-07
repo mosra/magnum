@@ -51,7 +51,11 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
 AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
 void AbstractXApplication::createContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!c, "AbstractXApplication::createContext(): context already created", );
+    if(!tryCreateContext(configuration)) std::exit(1);
+}
+
+bool AbstractXApplication::tryCreateContext(const Configuration& configuration) {
+    CORRADE_ASSERT(!c, "AbstractXApplication::tryCreateContext(): context already created", );
 
     viewportSize = configuration.size();
 
@@ -67,8 +71,8 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
     visTemplate.visualid = visualId;
     visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
-        Error() << "Cannot get X visual";
-        std::exit(1);
+        Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot get X visual";
+        return false;
     }
 
     /* Create X Window */
@@ -97,6 +101,7 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
     contextHandler->makeCurrent();
 
     c = new Context;
+    return true;
 }
 
 AbstractXApplication::~AbstractXApplication() {

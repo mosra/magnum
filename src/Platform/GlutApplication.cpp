@@ -60,10 +60,7 @@ void GlutApplication::initialize(int& argc, char** argv) {
 }
 
 void GlutApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::GlutApplication::createContext(): cannot create context";
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool GlutApplication::tryCreateContext(const Configuration& configuration) {
@@ -76,8 +73,10 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
 
     glutInitDisplayMode(flags);
     glutInitWindowSize(configuration.size().x(), configuration.size().y());
-    if(!glutCreateWindow(configuration.title().data()))
+    if(!glutCreateWindow(configuration.title().data())) {
+        Error() << "Platform::GlutApplication::tryCreateContext(): cannot create context";
         return false;
+    }
     glutReshapeFunc(staticViewportEvent);
     glutSpecialFunc(staticKeyEvent);
     glutMouseFunc(staticMouseEvent);
