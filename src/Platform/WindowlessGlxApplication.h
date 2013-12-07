@@ -133,11 +133,6 @@ class WindowlessGlxApplication {
     @ref tryCreateContext()
 */
 class WindowlessGlxApplication::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         /*implicit*/ Configuration();
         ~Configuration();

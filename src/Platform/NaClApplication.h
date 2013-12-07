@@ -318,11 +318,6 @@ Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref NaClApplication(), @ref createContext()
 */
 class NaClApplication::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         constexpr /*implicit*/ Configuration(): _size(640, 480), _sampleCount(0) {}
 

@@ -341,11 +341,6 @@ depth buffer.
 @see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
 */
 class Sdl2Application::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         /**
          * @brief Window flag

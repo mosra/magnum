@@ -236,11 +236,6 @@ Double-buffered RGBA window with depth and stencil buffers.
 @see @ref GlutApplication(), @ref createContext(), @ref tryCreateContext()
 */
 class GlutApplication::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         /*implicit*/ Configuration();
         ~Configuration();

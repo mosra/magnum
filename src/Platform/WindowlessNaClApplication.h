@@ -153,11 +153,6 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
     @ref tryCreateContext()
 */
 class WindowlessNaClApplication::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         constexpr /*implicit*/ Configuration() {}
 };
