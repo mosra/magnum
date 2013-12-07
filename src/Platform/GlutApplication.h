@@ -187,7 +187,7 @@ class GlutApplication {
          * Marks the window for redrawing, resulting in call to drawEvent()
          * in the next iteration.
          */
-        virtual void redraw() { glutPostRedisplay(); }
+        void redraw() { glutPostRedisplay(); }
 
         /*@}*/
 
