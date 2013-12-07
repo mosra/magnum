@@ -104,12 +104,10 @@ within QtCreator by adding new `make install` build rule.
 
 @subsubsection building-windows-troubleshooting Windows troubleshooting
 
-If CMake isn't able to find dependencies (e.g. %Corrade is not found) and you
-have installed them to MinGW directory, point to `CMAKE_FIND_ROOT_PATH` to
-MinGW installation prefix, e.g. specify `-DCMAKE_FIND_ROOT_PATH=C:/MinGW/`
-CMake parameter.
-
-See also Corrade's @ref building-corrade-windows-troubleshooting "troubleshooting section".
+If CMake isn't able to find dependencies (e.g. %Corrade is not found), point
+`CMAKE_FIND_ROOT_PATH` and `CMAKE_INSTALL_PREFIX` to installation prefix of
+dependency libraries, e.g. specify `-DCMAKE_FIND_ROOT_PATH=C:/MinGW/` CMake
+parameter.
 
 @subsection building-features Enabling or disabling features
 

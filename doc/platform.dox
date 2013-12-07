@@ -55,7 +55,8 @@ directly in `main()`, but for convenience and portability it's better to use
 To simplify the porting, the library provides `Platform::Application` typedef
 and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
 is included, to avoid ambiguity). Changing the code to use different toolkit is
-then matter of replacing only the <tt>#</tt>`include` statement.
+then matter of replacing only the <tt>#</tt>`include` statement (and changing
+one line in CMake build script, as you see later).
 
 Barebone application implementation which will just clear the window to dark
 blue color is shown in the following code listing.
@@ -76,6 +77,7 @@ class MyApplication: public Platform::Application {
     public:
         MyApplication(const Arguments& arguments);
 
+    private:
         void viewportEvent(const Vector2i& viewport) override;
         void drawEvent() override;
 };
@@ -166,8 +168,9 @@ to it.
 Again, to simplify porting, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_WAPPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`, `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
 only if only one application (windowless application) component is requested to
-avoid ambiguity. Changing the code to use different toolkit is then matter of
-replacing only the requested `*Application` component.
+avoid ambiguity. Changing the build script to use different toolkit is then
+matter of replacing only the requested `*Application` component (and one
+<tt>#</tt>`include` line in the actual code, as said above).
 
 @code
 find_package(Magnum REQUIRED GlutApplication)
