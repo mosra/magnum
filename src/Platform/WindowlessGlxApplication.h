@@ -134,8 +134,7 @@ class WindowlessGlxApplication {
 */
 class WindowlessGlxApplication::Configuration {
     public:
-        /*implicit*/ Configuration();
-        ~Configuration();
+        constexpr /*implicit*/ Configuration() {}
 };
 
 /** @hideinitializer

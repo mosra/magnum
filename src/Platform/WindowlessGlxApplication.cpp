@@ -119,7 +119,4 @@ WindowlessGlxApplication::~WindowlessGlxApplication() {
     glXDestroyContext(display, context);
 }
 
-WindowlessGlxApplication::Configuration::Configuration() = default;
-WindowlessGlxApplication::Configuration::~Configuration() = default;
-
 }}
