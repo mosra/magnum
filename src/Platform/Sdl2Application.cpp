@@ -68,7 +68,7 @@ Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configur
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
     initialize();
-    createContext({});
+    createContext();
 }
 #endif
 
@@ -87,6 +87,8 @@ void Sdl2Application::initialize() {
         std::exit(1);
     }
 }
+
+void Sdl2Application::createContext() { createContext({}); }
 
 void Sdl2Application::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) std::exit(1);

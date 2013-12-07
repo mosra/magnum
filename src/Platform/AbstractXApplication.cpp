@@ -44,6 +44,8 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
 
 AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
+void AbstractXApplication::createContext() { createContext({}); }
+
 void AbstractXApplication::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) std::exit(1);
 }

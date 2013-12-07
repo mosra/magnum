@@ -107,7 +107,13 @@ class WindowlessGlxApplication {
         ~WindowlessGlxApplication();
 
         /** @copydoc Sdl2Application::createContext() */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void createContext(const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
         void createContext(const Configuration& configuration);
+        void createContext();
+        #endif
 
         /** @copydoc Sdl2Application::tryCreateContext() */
         bool tryCreateContext(const Configuration& configuration);

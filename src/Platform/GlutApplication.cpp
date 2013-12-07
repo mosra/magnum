@@ -42,7 +42,7 @@ GlutApplication::GlutApplication(const Arguments& arguments, const Configuration
 #ifndef DOXYGEN_GENERATING_OUTPUT
 GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
     initialize(arguments.argc, arguments.argv);
-    createContext({});
+    createContext();
 }
 #endif
 
@@ -58,6 +58,8 @@ void GlutApplication::initialize(int& argc, char** argv) {
     glutInit(&argc, argv);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 }
+
+void GlutApplication::createContext() { createContext({}); }
 
 void GlutApplication::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) std::exit(1);

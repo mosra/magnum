@@ -182,7 +182,13 @@ class Sdl2Application {
          * constructor itself. The program exits if the context cannot be
          * created, see @ref tryCreateContext() for an alternative.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void createContext(const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
         void createContext(const Configuration& configuration);
+        void createContext();
+        #endif
 
         /**
          * @brief Try to create context with given configuration

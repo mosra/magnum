@@ -60,13 +60,15 @@ NaClApplication::NaClApplication(const Arguments& arguments, const Configuration
 #ifndef DOXYGEN_GENERATING_OUTPUT
 NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
-    createContext({});
+    createContext();
 }
 #endif
 
 NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr)  {
     debugOutput = new ConsoleDebugOutput(this);
 }
+
+void NaClApplication::createContext() { createContext({}); }
 
 void NaClApplication::createContext(const Configuration& configuration) {
     if(!tryCreateContext(configuration)) std::exit(1);

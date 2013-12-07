@@ -70,7 +70,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     /* Create context after parsing arguments, so the help can be displayed
        without creating context */
-    createContext({});
+    createContext();
     Context* c = Context::current();
 
     /* Pass debug output as messages to JavaScript */
