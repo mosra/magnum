@@ -161,6 +161,11 @@ template<class Application> class BasicScreenedApplication: public Application, 
            this is faster than public pure virtual destructor */
         ~BasicScreenedApplication();
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
         /**
          * @brief Global viewport event
          *

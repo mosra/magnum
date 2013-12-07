@@ -137,19 +137,24 @@ class GlutApplication {
         /** @copydoc Sdl2Application::tryCreateContext() */
         bool tryCreateContext(const Configuration& configuration);
 
-        /** @{ @name Drawing functions */
-
-        /** @copydoc Sdl2Application::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size) = 0;
-
-        /** @copydoc Sdl2Application::drawEvent() */
-        virtual void drawEvent() = 0;
+        /** @{ @name Screen handling */
 
         /** @copydoc Sdl2Application::swapBuffers() */
         void swapBuffers() { glutSwapBuffers(); }
 
         /** @copydoc Sdl2Application::redraw() */
         void redraw() { glutPostRedisplay(); }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @copydoc Sdl2Application::viewportEvent() */
+        virtual void viewportEvent(const Vector2i& size) = 0;
+
+        /** @copydoc Sdl2Application::drawEvent() */
+        virtual void drawEvent() = 0;
 
         /*@}*/
 
@@ -201,7 +206,11 @@ class GlutApplication {
             glutWarpPointer(position.x(), position.y());
         }
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
+    #else
+    private:
+    #endif
         /** @copydoc Sdl2Application::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);
 

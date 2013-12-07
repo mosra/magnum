@@ -210,8 +210,28 @@ class Sdl2Application {
          */
         bool tryCreateContext(const Configuration& configuration);
 
-        /** @{ @name Drawing functions */
+        /** @{ @name Screen handling */
 
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
+        void swapBuffers();
+
+        /**
+         * @brief Redraw immediately
+         *
+         * Marks the window for redrawing, resulting in call to @ref drawEvent()
+         * in the next iteration.
+         */
+        void redraw() { flags |= Flag::Redraw; }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
         /**
          * @brief Viewport event
          *
@@ -235,21 +255,6 @@ class Sdl2Application {
          * you want to draw immediately again, call also @ref redraw().
          */
         virtual void drawEvent() = 0;
-
-        /**
-         * @brief Swap buffers
-         *
-         * Paints currently rendered framebuffer on screen.
-         */
-        void swapBuffers();
-
-        /**
-         * @brief Redraw immediately
-         *
-         * Marks the window for redrawing, resulting in call to @ref drawEvent()
-         * in the next iteration.
-         */
-        void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
 
@@ -281,12 +286,16 @@ class Sdl2Application {
          * @brief Enable or disable mouse locking
          *
          * When mouse is locked, the cursor is hidden and only
-         * MouseMoveEvent::relativePosition() is changing, absolute position
-         * stays the same.
+         * @ref MouseMoveEvent::relativePosition() is changing, absolute
+         * position stays the same.
          */
         void setMouseLocked(bool enabled);
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
+    #else
+    private:
+    #endif
         /**
          * @brief Mouse press event
          *

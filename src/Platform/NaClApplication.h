@@ -172,19 +172,6 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /** @brief Moving is not allowed */
         NaClApplication& operator=(NaClApplication&&) = delete;
 
-        /** @brief Whether the application runs fullscreen */
-        bool isFullscreen();
-
-        /**
-         * @brief Set fullscreen
-         * @return `False` if switch to opposite mode is in progress or if the
-         *      switch is not possible, `true` otherwise.
-         *
-         * The switch is done asynchronously, during the switch no event
-         * processing is done.
-         */
-        bool setFullscreen(bool enabled);
-
     protected:
         /* Nobody will need to have (and delete) NaClApplication*, thus this is
            faster than public pure virtual destructor */
@@ -202,19 +189,39 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         /** @copydoc Sdl2Application::tryCreateContext() */
         bool tryCreateContext(const Configuration& configuration);
 
-        /** @{ @name Drawing functions */
+        /** @{ @name Screen handling */
 
-        /** @copydoc Sdl2Application::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size) = 0;
+    public:
+        /** @brief Whether the application runs fullscreen */
+        bool isFullscreen();
 
-        /** @copydoc Sdl2Application::drawEvent() */
-        virtual void drawEvent() = 0;
+        /**
+         * @brief Set fullscreen
+         * @return `False` if switch to opposite mode is in progress or if the
+         *      switch is not possible, `true` otherwise.
+         *
+         * The switch is done asynchronously, during the switch no event
+         * processing is done.
+         */
+        bool setFullscreen(bool enabled);
 
+    protected:
         /** @copydoc Sdl2Application::swapBuffers() */
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
         void redraw() { flags |= Flag::Redraw; }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @copydoc Sdl2Application::viewportEvent() */
+        virtual void viewportEvent(const Vector2i& size) = 0;
+
+        /** @copydoc Sdl2Application::drawEvent() */
+        virtual void drawEvent() = 0;
 
         /*@}*/
 
@@ -255,7 +262,11 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
          */
         void setMouseLocked(bool enabled);
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
+    #else
+    private:
+    #endif
         /**
          * @brief Mouse press event
          *
