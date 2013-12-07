@@ -90,15 +90,7 @@ class GlutApplication {
         class MouseEvent;
         class MouseMoveEvent;
 
-        /**
-         * @brief Default constructor
-         * @param arguments     Application arguments
-         * @param configuration %Configuration
-         *
-         * Creates application with default or user-specified configuration.
-         * See Configuration for more information. The program exits if the
-         * context cannot be created, see below for an alternative.
-         */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit GlutApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -107,19 +99,10 @@ class GlutApplication {
         explicit GlutApplication(const Arguments& arguments);
         #endif
 
-        /**
-         * @brief Constructor
-         * @param arguments     Application arguments
-         *
-         * Unlike above, the context is not created and must be created later
-         * with createContext() or tryCreateContext().
-         */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit GlutApplication(const Arguments& arguments, std::nullptr_t);
 
-        /**
-         * @brief Execute main loop
-         * @return Value for returning from `main()`.
-         */
+        /** @copydoc Sdl2Application::exec() */
         int exec() {
             glutMainLoop();
             return 0;
@@ -130,74 +113,31 @@ class GlutApplication {
            faster than public pure virtual destructor */
         ~GlutApplication();
 
-        /**
-         * @brief Create context with given configuration
-         *
-         * Must be called if and only if the context wasn't created by the
-         * constructor itself. The program exits if the context cannot be
-         * created, see tryCreateContext() for an alternative.
-         */
+        /** @copydoc Sdl2Application::createContext() */
         void createContext(const Configuration& configuration);
 
-        /**
-         * @brief Try to create context with given configuration
-         *
-         * Unlike createContext() returns `false` if the context cannot be
-         * created, `true` otherwise.
-         */
+        /** @copydoc Sdl2Application::tryCreateContext() */
         bool tryCreateContext(const Configuration& configuration);
 
         /** @{ @name Drawing functions */
 
-        /**
-         * @brief Viewport event
-         *
-         * Called when window size changes. You should pass the new size to
-         * DefaultFramebuffer::setViewport() and possibly elsewhere (cameras,
-         * other framebuffers...).
-         *
-         * Note that this function might not get called at all if the window
-         * size doesn't change. You are responsible for configuring the initial
-         * state yourself, viewport of default framebuffer can be retrieved
-         * from @ref DefaultFramebuffer::viewport().
-         */
+        /** @copydoc Sdl2Application::viewportEvent() */
         virtual void viewportEvent(const Vector2i& size) = 0;
 
-        /**
-         * @brief Draw event
-         *
-         * Called when the screen is redrawn. You should clean the framebuffer
-         * using Framebuffer::clear() and then add your own drawing functions,
-         * such as calling SceneGraph::AbstractCamera::draw(). After drawing
-         * is finished, call swapBuffers(). If you want to draw immediately
-         * again, call also redraw().
-         */
+        /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /**
-         * @brief Swap buffers
-         *
-         * Paints currently rendered framebuffer on screen.
-         */
+        /** @copydoc Sdl2Application::swapBuffers() */
         void swapBuffers() { glutSwapBuffers(); }
 
-        /**
-         * @brief Redraw immediately
-         *
-         * Marks the window for redrawing, resulting in call to drawEvent()
-         * in the next iteration.
-         */
+        /** @copydoc Sdl2Application::redraw() */
         void redraw() { glutPostRedisplay(); }
 
         /*@}*/
 
         /** @{ @name Keyboard handling */
 
-        /**
-         * @brief Key press event
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
+        /** @copydoc Sdl2Application::keyPressEvent() */
         virtual void keyPressEvent(KeyEvent& event);
 
         /**
@@ -226,7 +166,7 @@ class GlutApplication {
         /**
          * @brief Enable or disable mouse tracking
          *
-         * When mouse tracking is enabled, mouseMoveEvent() is called even
+         * When mouse tracking is enabled, @ref mouseMoveEvent() is called even
          * when no button is pressed. Mouse tracking is disabled by default.
          */
         void setMouseTracking(bool enabled) {
@@ -244,20 +184,10 @@ class GlutApplication {
         }
 
     protected:
-        /**
-         * @brief Mouse press event
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
+        /** @copydoc Sdl2Application::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);
 
-        /**
-         * @brief Mouse release event
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
+        /** @copydoc Sdl2Application::mouseReleaseEvent() */
         virtual void mouseReleaseEvent(MouseEvent& event);
 
         /**
@@ -265,7 +195,7 @@ class GlutApplication {
          *
          * Called when any mouse button is pressed and mouse is moved. Default
          * implementation does nothing.
-         * @see setMouseTracking()
+         * @see @ref setMouseTracking()
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
@@ -297,7 +227,7 @@ class GlutApplication {
 @brief %Configuration
 
 Double-buffered RGBA window with depth and stencil buffers.
-@see GlutApplication(), createContext()
+@see @ref GlutApplication(), @ref createContext(), @ref tryCreateContext()
 */
 class GlutApplication::Configuration {
     Configuration(const Configuration&) = delete;
@@ -362,8 +292,8 @@ class GlutApplication::Configuration {
 /**
 @brief Base for input events
 
-@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), mousePressEvent(),
-    mouseReleaseEvent(), mouseMoveEvent()
+@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
+    @ref mousePressEvent(), @ref mouseReleaseEvent(), @ref mouseMoveEvent()
 */
 class GlutApplication::InputEvent {
     InputEvent(const InputEvent&) = delete;
@@ -372,15 +302,10 @@ class GlutApplication::InputEvent {
     InputEvent& operator=(InputEvent&&) = delete;
 
     public:
-        /**
-         * @brief Set event as accepted
-         *
-         * If the event is ignored (i.e., not set as accepted), it might be
-         * propagated elsewhere. By default is each event ignored.
-         */
+        /** @copydoc Sdl2Application::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @brief Whether the event is accepted */
+        /** @copydoc Sdl2Application::InputEvent::isAccepted() */
         constexpr bool isAccepted() const { return _accepted; }
 
     protected:
@@ -395,7 +320,7 @@ class GlutApplication::InputEvent {
 /**
 @brief Key event
 
-@see keyPressEvent()
+@see @ref keyPressEvent()
 */
 class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
     friend class GlutApplication;
@@ -404,7 +329,7 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
         /**
          * @brief Key
          *
-         * @see key()
+         * @see @ref key()
          */
         enum class Key: int {
             Up = GLUT_KEY_UP,               /**< Up arrow */
@@ -445,7 +370,7 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
 /**
 @brief Mouse event
 
-@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
     friend class GlutApplication;
@@ -454,7 +379,7 @@ class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
         /**
          * @brief Mouse button
          *
-         * @see button()
+         * @see @ref button()
          */
         enum class Button: int {
             Left = GLUT_LEFT_BUTTON,        /**< Left button */
@@ -480,7 +405,7 @@ class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
 /**
 @brief Mouse move event
 
-@see MouseEvent, mouseMoveEvent()
+@see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
     friend class GlutApplication;
@@ -489,7 +414,7 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
         /**
          * @brief Mouse button
          *
-         * @see Buttons, buttons()
+         * @see @ref Buttons, @ref buttons()
          */
         enum class Button: UnsignedByte {
             /**
@@ -502,7 +427,7 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
         /**
          * @brief Set of mouse buttons
          *
-         * @see buttons()
+         * @see @ref buttons()
          */
         typedef Containers::EnumSet<Button, UnsignedByte> Buttons;
 
@@ -523,9 +448,9 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
 @brief Entry point for GLUT-based applications
 @param className Class name
 
-Can be with GlutApplication subclasses used as equivalent to the following
-code to achieve better portability, see @ref portability-applications for more
-information.
+Can be with @ref Magnum::Platform::GlutApplication "Platform::GlutApplication"
+subclasses used as equivalent to the following code to achieve better
+portability, see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

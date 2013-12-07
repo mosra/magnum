@@ -87,21 +87,21 @@ class AbstractXApplication {
            this is faster than public pure virtual destructor */
         ~AbstractXApplication();
 
-        /** @copydoc GlutApplication::createContext() */
+        /** @copydoc Sdl2Application::createContext() */
         void createContext(const Configuration& configuration);
 
         /** @{ @name Drawing functions */
 
-        /** @copydoc GlutApplication::viewportEvent() */
+        /** @copydoc Sdl2Application::viewportEvent() */
         virtual void viewportEvent(const Vector2i& size) = 0;
 
-        /** @copydoc GlutApplication::drawEvent() */
+        /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /** @copydoc GlutApplication::swapBuffers() */
+        /** @copydoc Sdl2Application::swapBuffers() */
         void swapBuffers();
 
-        /** @copydoc GlutApplication::redraw() */
+        /** @copydoc Sdl2Application::redraw() */
         void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
@@ -170,7 +170,8 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 @brief %Configuration
 
 Double-buffered OpenGL context.
-@see AbstractXApplication(), createContext()
+@see @ref GlxApplication(), @ref XEglApplication(), @ref createContext(),
+    @ref tryCreateContext()
 @todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
 */
 class AbstractXApplication::Configuration {
@@ -219,8 +220,9 @@ class AbstractXApplication::Configuration {
 /**
 @brief Base for input events
 
-@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), keyReleaseEvent(),
-    mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
+@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
+    @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
+    @ref mouseMoveEvent()
 */
 class AbstractXApplication::InputEvent {
     InputEvent(const InputEvent&) = delete;
@@ -233,7 +235,7 @@ class AbstractXApplication::InputEvent {
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, modifiers()
+         * @see @ref Modifiers, @ref modifiers()
          */
         enum class Modifier: unsigned int {
             Shift = ShiftMask,          /**< Shift */
@@ -274,7 +276,7 @@ class AbstractXApplication::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see modifiers()
+         * @see @ref modifiers()
          */
         typedef Containers::EnumSet<Modifier, unsigned int> Modifiers;
 
@@ -296,10 +298,10 @@ class AbstractXApplication::InputEvent {
          */
         typedef Containers::EnumSet<Button, unsigned int> Buttons;
 
-        /** @copydoc GlutApplication::InputEvent::setAccepted() */
+        /** @copydoc Sdl2Application::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @copydoc GlutApplication::InputEvent::isAccepted() */
+        /** @copydoc Sdl2Application::InputEvent::isAccepted() */
         constexpr bool isAccepted() const { return _accepted; }
 
         /** @brief Modifiers */
@@ -326,7 +328,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
 /**
 @brief Key event
 
-@see keyPressEvent(), keyReleaseEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
     friend class AbstractXApplication;
@@ -335,7 +337,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
         /**
          * @brief Key
          *
-         * @see key()
+         * @see @ref key()
          */
         enum class Key: KeySym {
             Enter = XK_Return,          /**< Enter */
@@ -426,7 +428,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 /**
 @brief Mouse event
 
-@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
     friend class AbstractXApplication;
@@ -435,7 +437,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
         /**
          * @brief Mouse button
          *
-         * @see button()
+         * @see @ref button()
          */
         enum class Button: unsigned int {
             Left = Button1,         /**< Left button */
@@ -461,7 +463,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
 /**
 @brief Mouse move event
 
-@see MouseEvent, mouseMoveEvent()
+@see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
     friend class AbstractXApplication;

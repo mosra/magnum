@@ -83,7 +83,7 @@ class WindowlessGlxApplication {
 
         class Configuration;
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -92,7 +92,7 @@ class WindowlessGlxApplication {
         explicit WindowlessGlxApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t);
 
         /**
@@ -106,7 +106,7 @@ class WindowlessGlxApplication {
            thus this is faster than public pure virtual destructor */
         ~WindowlessGlxApplication();
 
-        /** @copydoc GlutApplication::createContext() */
+        /** @copydoc Sdl2Application::createContext() */
         void createContext(const Configuration& configuration);
 
     private:
@@ -120,7 +120,8 @@ class WindowlessGlxApplication {
 /**
 @brief %Configuration
 
-@see WindowlessGlxApplication(), createContext()
+@see @ref WindowlessGlxApplication(), @ref createContext(),
+    @ref tryCreateContext()
 */
 class WindowlessGlxApplication::Configuration {
     Configuration(const Configuration&) = delete;
@@ -137,7 +138,8 @@ class WindowlessGlxApplication::Configuration {
 @brief Entry point for windowless GLX application
 @param className Class name
 
-Can be used as equivalent to the following code to achieve better portability,
+Can be used with @ref Magnum::Platform::WindowlessGlxApplication "Platform::WindowlessGlxApplication"
+subclasses as equivalent to the following code to achieve better portability,
 see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {

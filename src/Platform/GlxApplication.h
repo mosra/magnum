@@ -66,10 +66,10 @@ to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, const Configuration&) */
         explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, std::nullptr_t) */
         explicit GlxApplication(const Arguments& arguments, std::nullptr_t);
 
     protected:
@@ -82,9 +82,9 @@ class GlxApplication: public AbstractXApplication {
 @brief Entry point for GLX-based applications
 @param className Class name
 
-Can be used with GlxApplication subclasses as equivalent to the following code
-to achieve better portability, see @ref portability-applications for more
-information.
+Can be used with @ref Magnum::Platform::GlxApplication "Platform::GlxApplication"
+subclasses as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

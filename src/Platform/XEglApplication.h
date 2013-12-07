@@ -67,10 +67,10 @@ to simplify porting.
 */
 class XEglApplication: public AbstractXApplication {
     public:
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, const Configuration&) */
         explicit XEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, std::nullptr_t) */
         explicit XEglApplication(const Arguments& arguments, std::nullptr_t);
 
     protected:
@@ -83,9 +83,9 @@ class XEglApplication: public AbstractXApplication {
 @brief Entry point for X/EGL-based applications
 @param className Class name
 
-Can be used with XEglApplication subclasses as equivalent to the following code
-to achieve better portability, see @ref portability-applications for more
-information.
+Can be used with @ref Magnum::Platform::XEglApplication "Platform::XEglApplication"
+subclasses as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

@@ -148,7 +148,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         class MouseEvent;
         class MouseMoveEvent;
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit NaClApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -157,7 +157,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         explicit NaClApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit NaClApplication(const Arguments& arguments, std::nullptr_t);
 
         /** @brief Whether the application runs fullscreen */
@@ -178,24 +178,24 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
            faster than public pure virtual destructor */
         ~NaClApplication();
 
-        /** @copydoc GlutApplication::createContext() */
+        /** @copydoc Sdl2Application::createContext() */
         void createContext(const Configuration& configuration);
 
-        /** @copydoc GlutApplication::tryCreateContext() */
+        /** @copydoc Sdl2Application::tryCreateContext() */
         bool tryCreateContext(const Configuration& configuration);
 
         /** @{ @name Drawing functions */
 
-        /** @copydoc GlutApplication::viewportEvent() */
+        /** @copydoc Sdl2Application::viewportEvent() */
         virtual void viewportEvent(const Vector2i& size) = 0;
 
-        /** @copydoc GlutApplication::drawEvent() */
+        /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /** @copydoc GlutApplication::swapBuffers() */
+        /** @copydoc Sdl2Application::swapBuffers() */
         void swapBuffers();
 
-        /** @copydoc GlutApplication::redraw() */
+        /** @copydoc Sdl2Application::redraw() */
         void redraw() { flags |= Flag::Redraw; }
 
         /*@}*/
@@ -232,8 +232,8 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
          * @brief Enable or disable mouse locking
          *
          * When mouse is locked, the cursor is hidden and only
-         * MouseMoveEvent::relativePosition() is changing, absolute position
-         * stays the same.
+         * @ref MouseMoveEvent::relativePosition() is changing, absolute
+         * position stays the same.
          */
         void setMouseLocked(bool enabled);
 
@@ -309,7 +309,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 @brief %Configuration
 
 Double-buffered RGBA canvas with depth and stencil buffers.
-@see NaClApplication(), createContext()
+@see @ref NaClApplication(), @ref createContext()
 */
 class NaClApplication::Configuration {
     Configuration(const Configuration&) = delete;
@@ -357,10 +357,11 @@ class NaClApplication::Configuration {
 /**
 @brief Base for input events
 
-If you accept the event, call setAccepted(), otherwise the event will be
+If you accept the event, call @ref setAccepted(), otherwise the event will be
 propagated to the browser.
-@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), keyReleaseEvent(),
-    mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
+@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
+    @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
+    @ref mouseMoveEvent()
 */
 class NaClApplication::InputEvent {
     InputEvent(const InputEvent&) = delete;
@@ -373,7 +374,7 @@ class NaClApplication::InputEvent {
          * @brief %Modifier
          *
          * @todo AltGr + PP_INPUTEVENT_MODIFIER_ISKEYPAD, PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT
-         * @see Modifiers, modifiers()
+         * @see @ref Modifiers, @ref modifiers()
          */
         enum class Modifier: std::uint32_t {
             Shift = PP_INPUTEVENT_MODIFIER_SHIFTKEY,    /**< Shift */
@@ -414,7 +415,7 @@ class NaClApplication::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see modifiers()
+         * @see @ref modifiers()
          */
         typedef Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
 
@@ -469,8 +470,8 @@ class NaClApplication::InputEvent {
 /**
 @brief Key event
 
-See InputEvent for more information.
-@see keyPressEvent(), keyReleaseEvent()
+See also @ref InputEvent for more information.
+@see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
     friend class NaClApplication;
@@ -480,7 +481,7 @@ class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
          * @brief Key
          *
          * @todo Slash, percent, equal to be compatible with *XApplication
-         * @see key()
+         * @see @ref key()
          */
         enum class Key: std::uint32_t {
             Enter = 0x0D,               /**< Enter */
@@ -564,8 +565,8 @@ class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
 /**
 @brief Mouse event
 
-See InputEvent for more information.
-@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+See also @ref InputEvent for more information.
+@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
     friend class NaClApplication;
@@ -574,7 +575,7 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
         /**
          * @brief Button
          *
-         * @see button()
+         * @see @ref button()
          */
         enum class Button: unsigned int {
             Left = PP_INPUTEVENT_MOUSEBUTTON_LEFT,      /**< Left button */
@@ -598,8 +599,8 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
 /**
 @brief Mouse move event
 
-See InputEvent for more information.
-@see MouseEvent, mouseMoveEvent()
+See also @ref InputEvent for more information.
+@see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
     friend class NaClApplication;
@@ -642,9 +643,9 @@ namespace Implementation {
 @brief Entry point for NaCl application
 @param application  Application class name
 
-See NaClApplication and @ref portability-applications for more information.
-When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
+See @ref Magnum::Platform::NaClApplication "Platform::NaClApplication" and
+@ref portability-applications for more information. When no other application
+header is included this macro is also aliased to `MAGNUM_APPLICATION_MAIN()`.
 */
 /* look at that insane placement of __attribute__. WTF. */
 #define MAGNUM_NACLAPPLICATION_MAIN(application)                            \
