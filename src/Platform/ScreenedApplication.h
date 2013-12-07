@@ -170,15 +170,11 @@ template<class Application> class BasicScreenedApplication: public Application, 
          * @brief Global viewport event
          *
          * Called when window size changes, *before* all screens'
-         * @ref BasicScreen::viewportEvent() "viewportEvent()". You should at
-         * least pass the new size to @ref DefaultFramebuffer::setViewport().
-         *
-         * Note that this function might not get called at all if the window
-         * size doesn't change. You are responsible for configuring the initial
-         * state yourself, viewport of default framebuffer can be retrieved
-         * from @ref DefaultFramebuffer::viewport().
+         * @ref BasicScreen::viewportEvent() "viewportEvent()". Default
+         * implementation does nothing. See @ref Sdl2Application::viewportEvent() "*Application::viewportEvent()"
+         * for more information.
          */
-        virtual void globalViewportEvent(const Vector2i& size) = 0;
+        virtual void globalViewportEvent(const Vector2i& size);
 
         /**
          * @brief Draw event

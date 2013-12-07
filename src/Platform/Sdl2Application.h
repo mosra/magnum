@@ -64,13 +64,14 @@ to find SDL2), request `%Sdl2Application` component in CMake, add
 `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section Sdl2Application-usage Usage
 
-You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
-able to draw on the screen. The subclass can be then used directly in `main()`
--- see convenience macro @ref MAGNUM_SDL2APPLICATION_MAIN().
+You need to implement at least @ref drawEvent() to be able to draw on the
+screen. The subclass can be then used directly in `main()` -- see convenience
+macro @ref MAGNUM_SDL2APPLICATION_MAIN(). See @ref platform for more
+information.
 @code
 class MyApplication: public Platform::Sdl2Application {
     // implement required methods...
@@ -235,16 +236,19 @@ class Sdl2Application {
         /**
          * @brief Viewport event
          *
-         * Called when window size changes. You should pass the new size to
-         * @ref DefaultFramebuffer::setViewport() and possibly elsewhere
-         * (cameras, other framebuffers...).
+         * Called when window size changes. The default implementation does
+         * nothing, if you want to respond to size changes, you should pass the
+         * new size to @ref DefaultFramebuffer::setViewport() and possibly
+         * elsewhere (to @ref SceneGraph::AbstractCamera::setViewport() "SceneGraph::Camera*D::setViewport()",
+         * other framebuffers...).
          *
          * Note that this function might not get called at all if the window
-         * size doesn't change. You are responsible for configuring the initial
-         * state yourself, viewport of default framebuffer can be retrieved
-         * from @ref DefaultFramebuffer::viewport().
+         * size doesn't change. You should configure the initial state of your
+         * cameras, framebuffers etc. in application constructor rather than
+         * relying on this function to be called. Viewport of default
+         * framebuffer can be retrieved via @ref DefaultFramebuffer::viewport().
          */
-        virtual void viewportEvent(const Vector2i& size) = 0;
+        virtual void viewportEvent(const Vector2i& size);
 
         /**
          * @brief Draw event

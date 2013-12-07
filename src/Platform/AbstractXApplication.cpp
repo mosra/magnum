@@ -169,6 +169,7 @@ int AbstractXApplication::exec() {
     return 0;
 }
 
+void AbstractXApplication::viewportEvent(const Vector2i&) {}
 void AbstractXApplication::keyPressEvent(KeyEvent&) {}
 void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
 void AbstractXApplication::mousePressEvent(MouseEvent&) {}

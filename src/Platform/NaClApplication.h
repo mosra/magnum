@@ -63,13 +63,14 @@ to request `%NaClApplication` component in CMake, add
 `${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section NaClApplication-usage Usage
 
-You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
-able to draw on the screen. The subclass must be then registered to NaCl API
-using @ref MAGNUM_NACLAPPLICATION_MAIN() macro.
+You need to implement at least @ref drawEvent() to be able to draw on the
+screen. The subclass must be then registered to NaCl API using
+@ref MAGNUM_NACLAPPLICATION_MAIN() macro. See @ref platform for more
+information.
 @code
 class MyApplication: public Platform::NaClApplication {
     // implement required methods...
@@ -218,7 +219,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
     private:
     #endif
         /** @copydoc Sdl2Application::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size) = 0;
+        virtual void viewportEvent(const Vector2i& size);
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;

@@ -251,6 +251,7 @@ void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t)
     instance->flags |= Flag::MouseLocked;
 }
 
+void NaClApplication::viewportEvent(const Vector2i&) {}
 void NaClApplication::keyPressEvent(KeyEvent&) {}
 void NaClApplication::keyReleaseEvent(KeyEvent&) {}
 void NaClApplication::mousePressEvent(MouseEvent&) {}

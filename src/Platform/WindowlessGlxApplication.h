@@ -56,12 +56,13 @@ include path and link to `${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no
 other windowless application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section WindowlessGlxApplication-usage Usage
 
 Place your code into @ref exec(). The subclass can be then used directly in
 `main()` -- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
+See @ref platform for more information.
 @code
 class MyApplication: public Platform::WindowlessGlxApplication {
     // implement required methods...

@@ -72,6 +72,8 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
     return *this;
 }
 
+template<class Application> void BasicScreenedApplication<Application>::globalViewportEvent(const Vector2i&) {}
+
 template<class Application> void BasicScreenedApplication<Application>::viewportEvent(const Vector2i& size) {
     /* Call viewport event after all other (because of framebuffer resizing) */
     globalViewportEvent(size);

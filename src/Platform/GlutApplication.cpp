@@ -111,6 +111,7 @@ void GlutApplication::staticMouseMoveEvent(int x, int y) {
     instance->mouseMoveEvent(e);
 }
 
+void GlutApplication::viewportEvent(const Vector2i&) {}
 void GlutApplication::keyPressEvent(KeyEvent&) {}
 void GlutApplication::keyReleaseEvent(KeyEvent&) {}
 void GlutApplication::mousePressEvent(MouseEvent&) {}

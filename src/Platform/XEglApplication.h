@@ -47,13 +47,14 @@ request `%XEglApplication` component in CMake, add `${MAGNUM_XEGLAPPLICATION_INC
 to include path and link to `${MAGNUM_XEGLAPPLICATION_LIBRARIES}`.  If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section XEglApplication-usage Usage
 
-You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
-able to draw on the screen.  The subclass can be then used directly in `main()`
--- see convenience macro @ref MAGNUM_XEGLAPPLICATION_MAIN().
+You need to implement at least @ref drawEvent() to be able to draw on the
+screen.  The subclass can be then used directly in `main()` -- see convenience
+macro @ref MAGNUM_XEGLAPPLICATION_MAIN(). See @ref platform for more
+information.
 @code
 class MyApplication: public Platform::XEglApplication {
     // implement required methods...

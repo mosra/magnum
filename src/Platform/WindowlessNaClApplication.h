@@ -60,12 +60,13 @@ you need to request `%WindowlessNaClApplication` component in CMake, add
 application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section WindowlessNaClApplication-usage Usage
 
 Place your code into @ref exec(). The subclass must be then registered to NaCl
-API using @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() macro.
+API using @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() macro. See @ref platform
+for more information.
 @code
 class MyApplication: public Platform::WindowlessNaClApplication {
     // implement required methods...

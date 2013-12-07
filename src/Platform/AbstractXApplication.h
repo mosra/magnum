@@ -125,7 +125,7 @@ class AbstractXApplication {
     private:
     #endif
         /** @copydoc Sdl2Application::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size) = 0;
+        virtual void viewportEvent(const Vector2i& size);
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;

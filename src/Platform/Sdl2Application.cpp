@@ -244,6 +244,7 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     #endif
 }
 
+void Sdl2Application::viewportEvent(const Vector2i&) {}
 void Sdl2Application::keyPressEvent(KeyEvent&) {}
 void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
