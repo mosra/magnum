@@ -306,7 +306,7 @@ class MAGNUM_EXPORT Buffer {
          * @copybrief BufferUsage
          * @deprecated Use @ref Magnum::BufferUsage "BufferUsage" instead.
          */
-        typedef BufferUsage Usage;
+        typedef CORRADE_DEPRECATED("use BufferUsage instead") BufferUsage Usage;
         #endif
 
         /**
@@ -653,7 +653,7 @@ class MAGNUM_EXPORT Buffer {
          * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, BufferUsage) "setData(Containers::ArrayReference<const void>, BufferUsage)"
          *      instead.
          */
-        Buffer& setData(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
+        CORRADE_DEPRECATED("use setData(Containers::ArrayReference, BufferUsage) instead") Buffer& setData(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
             return setData({data, std::size_t(size)}, usage);
         }
         #endif
@@ -693,7 +693,7 @@ class MAGNUM_EXPORT Buffer {
          * @deprecated Use @ref Magnum::Buffer::setSubData(GLintptr, Containers::ArrayReference<const void>) "setSubData(GLintptr, Containers::ArrayReference<const void>)"
          *      instead.
          */
-        Buffer& setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+        CORRADE_DEPRECATED("use setSubData(GLintptr, Containers::ArrayReference) instead") Buffer& setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
             return setSubData(offset, {data, std::size_t(size)});
         }
         #endif

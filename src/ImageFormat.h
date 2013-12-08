@@ -38,13 +38,13 @@ namespace Magnum {
 @copybrief ColorFormat
 @deprecated Use @ref Magnum::ColorFormat "ColorFormat" instead.
 */
-typedef ColorFormat ImageFormat;
+typedef CORRADE_DEPRECATED("use ColorFormat instead") ColorFormat ImageFormat;
 
 /**
 @copybrief ColorType
 @deprecated Use @ref Magnum::ColorType "ColorType" instead.
 */
-typedef ColorType ImageType;
+typedef CORRADE_DEPRECATED("use ColorType instead") ColorType ImageType;
 
 }
 #else

@@ -115,7 +115,7 @@ class MAGNUM_EXPORT AbstractTexture {
          * @deprecated Use @ref Magnum::AbstractTexture::maxLayers() "maxLayers()"
          *      instead.
          */
-        static Int maxSupportedLayerCount() { return maxLayers(); }
+        static CORRADE_DEPRECATED("use maxLayers() instead") Int maxSupportedLayerCount() { return maxLayers(); }
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

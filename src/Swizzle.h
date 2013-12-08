@@ -41,7 +41,7 @@ namespace Magnum {
 @deprecated Use @ref Magnum::Math::swizzle() "Math::swizzle()" instead.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<char ...components, class T> constexpr typename Math::Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector);
+template<char ...components, class T> constexpr CORRADE_DEPRECATED("use Math::swizzle() instead") typename Math::Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector);
 #else
 using Math::swizzle;
 #endif
