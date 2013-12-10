@@ -41,11 +41,11 @@ in highp vec4 position;
 
 #ifdef TEXTURED
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoords;
+layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoordinates;
 #else
-in mediump vec2 textureCoords;
+in mediump vec2 textureCoordinates;
 #endif
-out mediump vec2 interpolatedTextureCoords;
+out mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 void main() {
@@ -53,6 +53,6 @@ void main() {
 
     #ifdef TEXTURED
     /* Texture coordinates, if needed */
-    interpolatedTextureCoords = textureCoords;
+    interpolatedTextureCoordinates = textureCoordinates;
     #endif
 }
