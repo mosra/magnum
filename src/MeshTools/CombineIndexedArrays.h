@@ -128,6 +128,8 @@ std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
 attributes indexed with `indices`.
 
 @attention The function expects that all arrays have the same size.
+@todo Use `std::pair` (to avoid `std::make_tuple`), make this usable also at
+    runtime
 */
 /* Implementation note: It's done using tuples because it is more clear which
    parameter is index array and which is attribute array, mainly when both are

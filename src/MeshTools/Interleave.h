@@ -201,6 +201,7 @@ mesh.setVertexCount(attribute.size());
 @endcode
 
 @see @ref MeshTools::compressIndices()
+@todo rework so Mesh & Buffer doesn't need to be included in header
 */
 template<class ...T> inline void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);
