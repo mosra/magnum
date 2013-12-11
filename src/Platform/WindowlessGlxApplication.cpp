@@ -54,7 +54,7 @@ void WindowlessGlxApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!c, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", );
+    CORRADE_ASSERT(!c, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
 
     display = XOpenDisplay(nullptr);
 

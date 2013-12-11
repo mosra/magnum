@@ -51,7 +51,7 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
 }
 
 bool AbstractXApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!c, "AbstractXApplication::tryCreateContext(): context already created", );
+    CORRADE_ASSERT(!c, "AbstractXApplication::tryCreateContext(): context already created", false);
 
     viewportSize = configuration.size();
 
