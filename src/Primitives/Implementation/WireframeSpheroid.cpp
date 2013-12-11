@@ -26,6 +26,7 @@
 
 #include "Math/Functions.h"
 #include "Math/Vector3.h"
+#include "Mesh.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
@@ -109,7 +110,7 @@ void WireframeSpheroid::cylinder() {
 }
 
 Trade::MeshData3D WireframeSpheroid::finalize() {
-    return Trade::MeshData3D(Mesh::Primitive::Lines, std::move(_indices), {std::move(_positions)}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{});
+    return Trade::MeshData3D(MeshPrimitive::Lines, std::move(_indices), {std::move(_positions)}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{});
 }
 
 }}}

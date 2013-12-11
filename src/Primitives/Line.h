@@ -38,7 +38,7 @@ namespace Magnum { namespace Primitives {
 @brief 2D line primitive
 
 Unit-size line in direction of positive X axis. Non-indexed
-@ref Mesh::Primitive "Lines".
+@ref MeshPrimitive::Lines.
 */
 class MAGNUM_PRIMITIVES_EXPORT Line2D {
     public:
@@ -52,7 +52,7 @@ class MAGNUM_PRIMITIVES_EXPORT Line2D {
 @brief 3D line primitive
 
 Unit-size line in direction of positive X axis. Non-indexed
-@ref Mesh::Primitive "Lines".
+@ref MeshPrimitive::Lines.
 */
 class MAGNUM_PRIMITIVES_EXPORT Line3D {
     public:

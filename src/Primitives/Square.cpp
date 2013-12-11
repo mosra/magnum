@@ -25,6 +25,7 @@
 #include "Square.h"
 
 #include "Math/Vector2.h"
+#include "Mesh.h"
 #include "Trade/MeshData2D.h"
 
 namespace Magnum { namespace Primitives {
@@ -38,7 +39,7 @@ Trade::MeshData2D Square::solid(const TextureCoords textureCoords) {
         {0.0f, 1.0f}
     });
 
-    return Trade::MeshData2D(Mesh::Primitive::TriangleStrip, std::vector<UnsignedInt>{}, {{
+    return Trade::MeshData2D(MeshPrimitive::TriangleStrip, std::vector<UnsignedInt>{}, {{
         {1.0f, -1.0f},
         {1.0f, 1.0f},
         {-1.0f, -1.0f},
@@ -47,7 +48,7 @@ Trade::MeshData2D Square::solid(const TextureCoords textureCoords) {
 }
 
 Trade::MeshData2D Square::wireframe() {
-    return Trade::MeshData2D(Mesh::Primitive::LineLoop, std::vector<UnsignedInt>{}, {{
+    return Trade::MeshData2D(MeshPrimitive::LineLoop, std::vector<UnsignedInt>{}, {{
         {-1.0f, -1.0f},
         {1.0f, -1.0f},
         {1.0f, 1.0f},

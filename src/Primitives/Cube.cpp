@@ -25,12 +25,13 @@
 #include "Cube.h"
 
 #include "Math/Vector3.h"
+#include "Mesh.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Cube::solid() {
-    return Trade::MeshData3D(Mesh::Primitive::Triangles, {
+    return Trade::MeshData3D(MeshPrimitive::Triangles, {
          0,  1,  2,  0,  2,  3, /* +Z */
          4,  5,  6,  4,  6,  7, /* +X */
          8,  9, 10,  8, 10, 11, /* +Y */
@@ -101,7 +102,7 @@ Trade::MeshData3D Cube::solid() {
 }
 
 Trade::MeshData3D Cube::wireframe() {
-    return Trade::MeshData3D(Mesh::Primitive::Lines, {
+    return Trade::MeshData3D(MeshPrimitive::Lines, {
         0, 1, 1, 2, 2, 3, 3, 0, /* +Z */
         4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
         1, 5, 2, 6,             /* +X */

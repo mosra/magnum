@@ -582,6 +582,8 @@ typedef ImageReference<1> ImageReference1D;
 typedef ImageReference<2> ImageReference2D;
 typedef ImageReference<3> ImageReference3D;
 
+enum class MeshPrimitive: GLenum;
+
 class Mesh;
 class MeshView;
 

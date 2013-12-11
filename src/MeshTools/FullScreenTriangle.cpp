@@ -34,7 +34,7 @@ namespace Magnum { namespace MeshTools {
 
 std::pair<Buffer*, Mesh> fullScreenTriangle() {
     Mesh mesh;
-    mesh.setPrimitive(Mesh::Primitive::Triangles)
+    mesh.setPrimitive(MeshPrimitive::Triangles)
         .setVertexCount(3);
 
     Buffer* buffer = nullptr;

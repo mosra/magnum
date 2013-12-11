@@ -24,6 +24,7 @@
 
 #include "CapsuleRenderer.h"
 
+#include "Mesh.h"
 #include "MeshView.h"
 #include "DebugTools/ResourceManager.h"
 #include "DebugTools/ShapeRenderer.h"

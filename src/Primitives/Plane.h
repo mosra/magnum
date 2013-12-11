@@ -53,7 +53,7 @@ class MAGNUM_PRIMITIVES_EXPORT Plane {
         /**
          * @brief Solid plane
          *
-         * Non-indexed @ref Mesh::Primitive "TriangleStrip" with normals in
+         * Non-indexed @ref MeshPrimitive::TriangleStrip with normals in
          * positive Z direction.
          */
         static Trade::MeshData3D solid(TextureCoords textureCoords = TextureCoords::DontGenerate);
@@ -61,7 +61,7 @@ class MAGNUM_PRIMITIVES_EXPORT Plane {
         /**
          * @brief Wireframe plane
          *
-         * Non-indexed @ref Mesh::Primitive "LineLoop".
+         * Non-indexed @ref MeshPrimitive::LineLoop.
          */
         static Trade::MeshData3D wireframe();
 

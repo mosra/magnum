@@ -45,7 +45,7 @@ class MAGNUM_PRIMITIVES_EXPORT Circle {
          * @brief Solid circle
          * @param segments  Number of segments. Must be greater or equal to 3.
          *
-         * Non-indexed @ref Mesh::Primitive "TriangleFan".
+         * Non-indexed @ref MeshPrimitive::TriangleFan.
          */
         static Trade::MeshData2D solid(UnsignedInt segments);
 
@@ -53,7 +53,7 @@ class MAGNUM_PRIMITIVES_EXPORT Circle {
          * @brief Wireframe circle
          * @param segments  Number of segments. Must be greater or equal to 3.
          *
-         * Non-indexed @ref Mesh::Primitive "LineLoop".
+         * Non-indexed @ref MeshPrimitive::LineLoop.
          */
         static Trade::MeshData2D wireframe(UnsignedInt segments);
 

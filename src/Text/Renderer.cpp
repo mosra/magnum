@@ -211,7 +211,7 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
     /* Configure mesh except for vertex buffer (depends on dimension count, done
        in subclass) */
     Mesh mesh;
-    mesh.setPrimitive(Mesh::Primitive::Triangles)
+    mesh.setPrimitive(MeshPrimitive::Triangles)
         .setIndexCount(indexCount)
         .setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
 
@@ -317,7 +317,7 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, 
     #endif
 
     /* Vertex buffer configuration depends on dimension count, done in subclass */
-    _mesh.setPrimitive(Mesh::Primitive::Triangles);
+    _mesh.setPrimitive(MeshPrimitive::Triangles);
 }
 
 AbstractRenderer::~AbstractRenderer() {}

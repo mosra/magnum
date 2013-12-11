@@ -45,7 +45,7 @@ class MAGNUM_PRIMITIVES_EXPORT Icosphere {
          * @brief Solid icosphere
          * @param subdivisions      Number of subdivisions
          *
-         * Indexed @ref Mesh::Primitive "Triangles" with normals.
+         * Indexed @ref MeshPrimitive::Triangles with normals.
          */
         static Trade::MeshData3D solid(UnsignedInt subdivisions);
 };

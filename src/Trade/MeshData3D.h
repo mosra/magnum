@@ -28,9 +28,11 @@
  * @brief Class Magnum::Trade::MeshData3D
  */
 
-#include <string>
+#include <vector>
 
-#include "Mesh.h"
+#include "Magnum.h"
+
+#include "magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 
@@ -54,7 +56,7 @@ class MAGNUM_EXPORT MeshData3D {
          * @param textureCoords2D   Two-dimensional texture coordinate arrays,
          *      if present
          */
-        explicit MeshData3D(Mesh::Primitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D);
+        explicit MeshData3D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D);
 
         /** @brief Copying is not allowed */
         MeshData3D(const MeshData3D&) = delete;
@@ -71,7 +73,7 @@ class MAGNUM_EXPORT MeshData3D {
         MeshData3D& operator=(MeshData3D&&);
 
         /** @brief Primitive */
-        Mesh::Primitive primitive() const { return _primitive; }
+        MeshPrimitive primitive() const { return _primitive; }
 
         /** @brief Whether the mesh is indexed */
         bool isIndexed() const { return !_indices.empty(); }
@@ -131,7 +133,7 @@ class MAGNUM_EXPORT MeshData3D {
         const std::vector<Vector2>& textureCoords2D(UnsignedInt id) const; /**< @overload */
 
     private:
-        Mesh::Primitive _primitive;
+        MeshPrimitive _primitive;
         std::vector<UnsignedInt> _indices;
         std::vector<std::vector<Vector3>> _positions;
         std::vector<std::vector<Vector3>> _normals;

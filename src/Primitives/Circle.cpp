@@ -26,13 +26,14 @@
 
 #include "Math/Functions.h"
 #include "Math/Vector2.h"
+#include "Mesh.h"
 #include "Trade/MeshData2D.h"
 
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Circle::solid(UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::solid(): segments must be >= 3",
-        Trade::MeshData2D(Mesh::Primitive::TriangleFan, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector2>>{}, std::vector<std::vector<Vector2>>{}));
+        Trade::MeshData2D(MeshPrimitive::TriangleFan, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector2>>{}, std::vector<std::vector<Vector2>>{}));
 
     std::vector<Vector2> positions;
     positions.reserve(segments+1);
@@ -47,12 +48,12 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(Mesh::Primitive::TriangleFan, std::vector<UnsignedInt>{}, {std::move(positions)}, std::vector<std::vector<Vector2>>{});
+    return Trade::MeshData2D(MeshPrimitive::TriangleFan, std::vector<UnsignedInt>{}, {std::move(positions)}, std::vector<std::vector<Vector2>>{});
 }
 
 Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::wireframe(): segments must be >= 3",
-        Trade::MeshData2D(Mesh::Primitive::LineLoop, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector2>>{}, std::vector<std::vector<Vector2>>{}));
+        Trade::MeshData2D(MeshPrimitive::LineLoop, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector2>>{}, std::vector<std::vector<Vector2>>{}));
 
     std::vector<Vector2> positions;
     positions.reserve(segments);
@@ -64,7 +65,7 @@ Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(Mesh::Primitive::LineLoop, std::vector<UnsignedInt>{}, {std::move(positions)}, std::vector<std::vector<Vector2>>{});
+    return Trade::MeshData2D(MeshPrimitive::LineLoop, std::vector<UnsignedInt>{}, {std::move(positions)}, std::vector<std::vector<Vector2>>{});
 }
 
 }}

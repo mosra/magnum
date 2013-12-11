@@ -54,9 +54,9 @@ class MAGNUM_PRIMITIVES_EXPORT UVSphere {
          *      equal to 3.
          * @param textureCoords Whether to generate texture coordinates.
          *
-         * Indexed @ref Mesh::Primitive "Triangles" with normals and optional
-         * 2D texture coordinates. If texture coordinates are generated,
-         * vertices of one segment are duplicated for texture wrapping.
+         * Indexed @ref MeshPrimitive::Triangles with normals and optional 2D
+         * texture coordinates. If texture coordinates are generated, vertices
+         * of one segment are duplicated for texture wrapping.
          */
         static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
@@ -67,7 +67,7 @@ class MAGNUM_PRIMITIVES_EXPORT UVSphere {
          * @param segments      Number of (line) segments. Must be larger or
          *      equal to 4 and multiple of 4.
          *
-         * Indexed @ref Mesh::Primitive "Lines".
+         * Indexed @ref MeshPrimitive::Lines.
          */
         static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments);
 };

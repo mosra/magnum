@@ -44,14 +44,14 @@ class MAGNUM_PRIMITIVES_EXPORT Cube {
         /**
          * @brief Solid cube
          *
-         * Indexed @ref Mesh::Primitive "Triangles" with flat normals.
+         * Indexed @ref MeshPrimitive::Triangles with flat normals.
          */
         static Trade::MeshData3D solid();
 
         /**
          * @brief Wireframe cube
          *
-         * Indexed @ref Mesh::Primitive "Lines".
+         * Indexed @ref MeshPrimitive::Lines.
          */
         static Trade::MeshData3D wireframe();
 
