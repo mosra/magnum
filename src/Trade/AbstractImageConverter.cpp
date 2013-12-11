@@ -24,9 +24,9 @@
 
 #include "AbstractImageConverter.h"
 
-#include <fstream>
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
+#include <Utility/Directory.h>
 
 namespace Magnum { namespace Trade {
 
@@ -63,18 +63,15 @@ bool AbstractImageConverter::exportToFile(const ImageReference2D& image, const s
 bool AbstractImageConverter::doExportToFile(const ImageReference2D& image, const std::string& filename) const {
     CORRADE_ASSERT(features() & Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): not implemented", false);
 
-    auto data = doExportToData(image);
+    const auto data = doExportToData(image);
     if(!data) return false;
 
     /* Open file */
-    std::ofstream out(filename.data(), std::ios::binary);
-    if(!out.good()) {
+    if(!Utility::Directory::write(filename, data)) {
         Error() << "Trade::AbstractImageConverter::exportToFile(): cannot write to file" << filename;
         return false;
     }
 
-    /* Write data, close */
-    out.write(reinterpret_cast<const char*>(data.begin()), data.size());
     return true;
 }
 

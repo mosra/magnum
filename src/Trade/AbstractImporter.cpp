@@ -24,9 +24,9 @@
 
 #include "AbstractImporter.h"
 
-#include <fstream>
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
+#include <Utility/Directory.h>
 
 #include "Trade/AbstractMaterialData.h"
 #include "Trade/CameraData.h"
@@ -68,22 +68,12 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
     CORRADE_ASSERT(features() & Feature::OpenData, "Trade::AbstractImporter::openFile(): not implemented", );
 
     /* Open file */
-    std::ifstream in(filename.data(), std::ios::binary);
-    if(!in.good()) {
+    if(!Utility::Directory::fileExists(filename)) {
         Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
         return;
     }
 
-    /* Create array to hold file contents */
-    in.seekg(0, std::ios::end);
-    Containers::Array<unsigned char> data(std::size_t(in.tellg()));
-
-    /* Read data, close */
-    in.seekg(0, std::ios::beg);
-    in.read(reinterpret_cast<char*>(data.begin()), data.size());
-    in.close();
-
-    doOpenData(data);
+    doOpenData(Utility::Directory::read(filename));
 }
 
 void AbstractImporter::close() {

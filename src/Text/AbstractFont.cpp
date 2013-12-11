@@ -24,8 +24,8 @@
 
 #include "AbstractFont.h"
 
-#include <fstream>
 #include <Containers/Array.h>
+#include <Utility/Directory.h>
 #include <Utility/Unicode.h>
 
 #include "Text/GlyphCache.h"
@@ -86,22 +86,12 @@ std::pair<Float, Float> AbstractFont::doOpenFile(const std::string& filename, co
         "Text::AbstractFont::openFile(): not implemented", {});
 
     /* Open file */
-    std::ifstream in(filename.data(), std::ios::binary);
-    if(!in.good()) {
+    if(!Utility::Directory::fileExists(filename)) {
         Error() << "Trade::AbstractFont::openFile(): cannot open file" << filename;
         return {};
     }
 
-    /* Create array to hold file contents */
-    in.seekg(0, std::ios::end);
-    Containers::Array<unsigned char> data(std::size_t(in.tellg()));
-
-    /* Read data, close */
-    in.seekg(0, std::ios::beg);
-    in.read(reinterpret_cast<char*>(data.begin()), data.size());
-    in.close();
-
-    return doOpenSingleData(data, size);
+    return doOpenSingleData(Utility::Directory::read(filename), size);
 }
 
 void AbstractFont::close() {
