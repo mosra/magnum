@@ -51,8 +51,8 @@ namespace Platform {
 /** @nosubgrouping
 @brief SDL2 application
 
-Application using [Simple DirectMedia Layer](www.libsdl.org/) toolkit. Supports
-keyboard and mouse handling.
+Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
+Supports keyboard and mouse handling.
 
 This application library is available on desktop OpenGL (Linux, Windows, OS X)
 and in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It depends on **SDL2**
