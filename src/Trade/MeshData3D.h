@@ -34,6 +34,10 @@
 
 #include "magnumVisibility.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Mesh.h"
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**

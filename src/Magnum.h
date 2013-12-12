@@ -589,8 +589,9 @@ typedef ImageReference<1> ImageReference1D;
 typedef ImageReference<2> ImageReference2D;
 typedef ImageReference<3> ImageReference3D;
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 enum class MeshPrimitive: GLenum;
-
+#endif
 class Mesh;
 class MeshView;
 
