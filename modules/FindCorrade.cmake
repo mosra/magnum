@@ -27,6 +27,8 @@
 #   mode for GCC 4.5
 #  CORRADE_GCC44_COMPATIBILITY  - Defined if compiled with compatibility
 #   mode for GCC 4.4
+#  CORRADE_MSVC2013_COMPATIBILITY - Defined if compiled with compatibility
+#   mode for MSVC 2013
 #  CORRADE_BUILD_DEPRECATED     - Defined if compiled with deprecated APIs
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries
@@ -174,6 +176,10 @@ endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_GCC44_COMPATIBILITY" _GCC44_COMPATIBILITY)
 if(NOT _GCC44_COMPATIBILITY EQUAL -1)
     set(CORRADE_GCC44_COMPATIBILITY 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_MSVC2013_COMPATIBILITY" _MSVC2013_COMPATIBILITY)
+if(NOT _MSVC2013_COMPATIBILITY EQUAL -1)
+    set(CORRADE_MSVC2013_COMPATIBILITY 1)
 endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_BUILD_DEPRECATED" _BUILD_DEPRECATED)
 if(NOT _BUILD_DEPRECATED EQUAL -1)
