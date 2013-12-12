@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Enum Magnum::ColorFormat, Magnum::ColorType
+ * @brief Enum @ref Magnum::ColorFormat, @ref Magnum::ColorType
  */
 
 #include "Magnum.h"
@@ -38,9 +38,18 @@ namespace Magnum {
 @brief Format of image data
 
 Note that some formats can be used only for framebuffer reading (using
-AbstractFramebuffer::read()) and some only for texture data (using Texture::setImage()
-and others).
-@see Image, ImageReference, BufferImage, Trade::ImageData
+@ref AbstractFramebuffer::read()) and some only for texture data (using
+@ref Texture::setImage() and others), the limitations are mentioned in
+documentation of each particular value.
+
+In most cases you may want to use @ref ColorFormat::Red (for grayscale images),
+@ref ColorFormat::RGB or @ref ColorFormat::RGBA along with
+@ref ColorType::UnsignedByte, the matching texture format is then
+@ref TextureFormat::R8, @ref TextureFormat::RGB8 or @ref TextureFormat::RGBA8.
+See documentation of these values for possible limitations when using OpenGL ES
+2.0 or WebGL.
+
+@see @ref Image, @ref ImageReference, @ref BufferImage, @ref Trade::ImageData
 */
 enum class ColorFormat: GLenum {
     /**
@@ -57,14 +66,14 @@ enum class ColorFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Floating-point green channel.
-     * @requires_gl Only @ref Magnum::ColorFormat "ColorFormat::Red" is
+     * @requires_gl Only @ref Magnum::ColorFormat::Red "ColorFormat::Red" is
      *      available in OpenGL ES.
      */
     Green = GL_GREEN,
 
     /**
      * Floating-point blue channel.
-     * @requires_gl Only @ref Magnum::ColorFormat "ColorFormat::Red" is
+     * @requires_gl Only @ref Magnum::ColorFormat::Red "ColorFormat::Red" is
      *      available in OpenGL ES.
      */
     Blue = GL_BLUE,
@@ -75,9 +84,9 @@ enum class ColorFormat: GLenum {
      * Floating-point luminance channel. The value is used for all RGB
      * channels.
      * @deprecated_gl Included for compatibility reasons only, use
-     *      @ref Magnum::ColorFormat "ColorFormat::Red" instead.
+     *      @ref Magnum::ColorFormat::Red "ColorFormat::Red" instead.
      * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-     *      @ref Magnum::ColorFormat "ColorFormat::Red" instead.
+     *      @ref Magnum::ColorFormat::Red "ColorFormat::Red" instead.
      */
     Luminance = GL_LUMINANCE,
     #endif
@@ -99,9 +108,9 @@ enum class ColorFormat: GLenum {
      * Floating-point luminance and alpha channel. First value is used for all
      * RGB channels, second value is used for alpha channel.
      * @deprecated_gl Included for compatibility reasons only, use
-     *      @ref Magnum::ColorFormat "ColorFormat::RG" instead.
+     *      @ref Magnum::ColorFormat::RG "ColorFormat::RG" instead.
      * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-     *      @ref Magnum::ColorFormat "ColorFormat::RG" instead.
+     *      @ref Magnum::ColorFormat::RG "ColorFormat::RG" instead.
      */
     LuminanceAlpha = GL_LUMINANCE_ALPHA,
     #endif
@@ -148,7 +157,7 @@ enum class ColorFormat: GLenum {
     /**
      * Integer green channel.
      * @requires_gl30 %Extension @extension{EXT,texture_integer}
-     * @requires_gl Only @ref Magnum::ColorFormat "ColorFormat::RedInteger"
+     * @requires_gl Only @ref Magnum::ColorFormat::RedInteger "ColorFormat::RedInteger"
      *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
      */
@@ -157,8 +166,8 @@ enum class ColorFormat: GLenum {
     /**
      * Integer blue channel.
      * @requires_gl30 %Extension @extension{EXT,texture_integer}
-     * @requires_gl Only @ref Magnum::ColorFormat "ColorFormat::RedInteger" is
-     *      available in OpenGL ES 3.0, only floating-point image data are
+     * @requires_gl Only @ref Magnum::ColorFormat::RedInteger "ColorFormat::RedInteger"
+     *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
      */
     BlueInteger = GL_BLUE_INTEGER,
@@ -194,8 +203,8 @@ enum class ColorFormat: GLenum {
     /**
      * Integer BGR.
      * @requires_gl30 %Extension @extension{EXT,texture_integer}
-     * @requires_gl Only @ref Magnum::ColorFormat "ColorFormat::RGBInteger" is
-     *      available in OpenGL ES 3.0, only floating-point image data are
+     * @requires_gl Only @ref Magnum::ColorFormat::RGBInteger "ColorFormat::RGBInteger"
+     *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
      */
     BGRInteger = GL_BGR_INTEGER,
@@ -203,8 +212,8 @@ enum class ColorFormat: GLenum {
     /**
      * Integer BGRA.
      * @requires_gl30 %Extension @extension{EXT,texture_integer}
-     * @requires_gl Only @ref Magnum::ColorFormat "ColorFormat::RGBAInteger" is
-     *      available in OpenGL ES 3.0, only floating-point image data are
+     * @requires_gl Only @ref Magnum::ColorFormat::RGBAInteger "ColorFormat::RGBAInteger"
+     *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
      */
     BGRAInteger = GL_BGRA_INTEGER,
@@ -251,9 +260,18 @@ enum class ColorFormat: GLenum {
 @brief Type of image data
 
 Note that some formats can be used only for framebuffer reading (using
-AbstractFramebuffer::read()) and some only for texture data (using Texture::setImage()
-and others).
-@see Image, ImageReference, BufferImage, Trade::ImageData
+@ref AbstractFramebuffer::read()) and some only for texture data (using
+@ref Texture::setImage() and others), the limitations are mentioned in
+documentation of each particular value.
+
+In most cases you may want to use @ref ColorType::UnsignedByte along with
+@ref ColorFormat::Red (for grayscale images), @ref ColorFormat::RGB or
+@ref ColorFormat::RGBA, the matching texture format is then
+@ref TextureFormat::R8, @ref TextureFormat::RGB8 or @ref TextureFormat::RGBA8.
+See documentation of these values for possible limitations when using OpenGL ES
+2.0 or WebGL.
+
+@see @ref Image, @ref ImageReference, @ref BufferImage, @ref Trade::ImageData
 */
 enum class ColorType: GLenum {
     /** Each component unsigned byte. */
@@ -263,8 +281,9 @@ enum class ColorType: GLenum {
     /**
      * Each component signed byte.
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
-     * @requires_gles30 For texture data only, only @ref Magnum::ColorType "ColorType::UnsignedByte"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 For texture data only, only
+     *      @ref Magnum::ColorType::UnsignedByte "ColorType::UnsignedByte" is
+     *      available in OpenGL ES 2.0.
      */
     Byte = GL_BYTE,
     #endif
@@ -281,8 +300,9 @@ enum class ColorType: GLenum {
     /**
      * Each component signed short.
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
-     * @requires_gles30 For texture data only, only @ref Magnum::ColorType "ColorType::UnsignedShort"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 For texture data only, only
+     *      @ref Magnum::ColorType::UnsignedShort "ColorType::UnsignedShort" is
+     *      available in OpenGL ES 2.0.
      */
     Short = GL_SHORT,
     #endif
@@ -298,7 +318,7 @@ enum class ColorType: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Each component signed int.
-     * @requires_gles30 Only @ref Magnum::ColorType "ColorType::UnsignedInt"
+     * @requires_gles30 Only @ref Magnum::ColorType::UnsignedInt "ColorType::UnsignedInt"
      *      is available in OpenGL ES 2.0.
      */
     Int = GL_INT,
@@ -345,7 +365,7 @@ enum class ColorType: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * BGR, unsigned short, red and blue 5bit, green 6bit.
-     * @requires_gl Only @ref Magnum::ColorType "ColorType::RGB565" is
+     * @requires_gl Only @ref Magnum::ColorType::RGB565 "ColorType::RGB565" is
      *      available in OpenGL ES.
      */
     UnsignedShort565Rev = GL_UNSIGNED_SHORT_5_6_5_REV,
@@ -388,22 +408,22 @@ enum class ColorType: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * RGBA, unsigned int, each component 8bit.
-     * @requires_gl Use @ref Magnum::ColorType "ColorType::UnsignedByte" in
-     *      OpenGL ES instead.
+     * @requires_gl Use @ref Magnum::ColorType::UnsignedByte "ColorType::UnsignedByte"
+     *      in OpenGL ES instead.
      */
     UnsignedInt8888 = GL_UNSIGNED_INT_8_8_8_8,
 
     /**
      * ABGR, unsigned int, each component 8bit.
      * @requires_gl Only RGBA component ordering is available in OpenGL ES, see
-     *      @ref Magnum::ColorType "ColorType::UnsignedInt8888" for more
-     *      information.
+     *      @ref Magnum::ColorType::UnsignedInt8888 "ColorType::UnsignedInt8888"
+     *      for more information.
      */
     UnsignedInt8888Rev = GL_UNSIGNED_INT_8_8_8_8_REV,
 
     /**
      * RGBA, unsigned int, each RGB component 10bit, alpha component 2bit.
-     * @requires_gl Only @ref Magnum::ColorType "ColorType::UnsignedInt2101010Rev"
+     * @requires_gl Only @ref Magnum::ColorType::UnsignedInt2101010Rev "ColorType::UnsignedInt2101010Rev"
      *      is available in OpenGL ES.
      */
     UnsignedInt1010102 = GL_UNSIGNED_INT_10_10_10_2,
@@ -455,7 +475,8 @@ enum class ColorType: GLenum {
      * Float + unsigned int, depth component 32bit float, 24bit gap, stencil
      * index 8bit.
      * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
-     * @requires_gles30 For texture data only, only @ref Magnum::ColorType "ColorType::UnsignedInt248"
+     * @requires_gles30 For texture data only, only
+     *      @ref Magnum::ColorType::UnsignedInt248 "ColorType::UnsignedInt248"
      *      is available in OpenGL ES 2.0.
      */
     Float32UnsignedInt248Rev = GL_FLOAT_32_UNSIGNED_INT_24_8_REV
