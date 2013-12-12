@@ -61,8 +61,7 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Wind
         .setHelp("Converts black&white image to distance-field representation.")
         .parse(arguments.argc, arguments.argv);
 
-    /* GCC 4.5 can't handle {} here (wtf) */
-    createContext(Configuration());
+    createContext();
 }
 
 int DistanceFieldConverter::exec() {

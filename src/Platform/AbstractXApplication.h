@@ -73,6 +73,18 @@ class AbstractXApplication {
         class MouseEvent;
         class MouseMoveEvent;
 
+        /** @brief Copying is not allowed */
+        AbstractXApplication(const AbstractXApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        AbstractXApplication(AbstractXApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        AbstractXApplication& operator=(const AbstractXApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        AbstractXApplication& operator=(AbstractXApplication&&) = delete;
+
         /**
          * @brief Execute main loop
          * @return Value for returning from `main()`.
@@ -87,22 +99,36 @@ class AbstractXApplication {
            this is faster than public pure virtual destructor */
         ~AbstractXApplication();
 
-        /** @copydoc GlutApplication::createContext() */
+        /** @copydoc Sdl2Application::createContext() */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void createContext(const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
         void createContext(const Configuration& configuration);
+        void createContext();
+        #endif
 
-        /** @{ @name Drawing functions */
+        /** @copydoc Sdl2Application::tryCreateContext() */
+        bool tryCreateContext(const Configuration& configuration);
 
-        /** @copydoc GlutApplication::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size) = 0;
+        /** @{ @name Screen handling */
 
-        /** @copydoc GlutApplication::drawEvent() */
-        virtual void drawEvent() = 0;
-
-        /** @copydoc GlutApplication::swapBuffers() */
+        /** @copydoc Sdl2Application::swapBuffers() */
         void swapBuffers();
 
-        /** @copydoc GlutApplication::redraw() */
+        /** @copydoc Sdl2Application::redraw() */
         void redraw() { flags |= Flag::Redraw; }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /** @copydoc Sdl2Application::viewportEvent() */
+        virtual void viewportEvent(const Vector2i& size);
+
+        /** @copydoc Sdl2Application::drawEvent() */
+        virtual void drawEvent() = 0;
 
         /*@}*/
 
@@ -134,10 +160,7 @@ class AbstractXApplication {
     #else
     protected:
     #endif
-        /* These two are split to avoid "invalid use of incomplete type" when
-           using default argument for configuration */
         explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments);
 
         #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
@@ -174,15 +197,11 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 @brief %Configuration
 
 Double-buffered OpenGL context.
-@see AbstractXApplication(), createContext()
+@see @ref GlxApplication::GlxApplication(), @ref XEglApplication::XEglApplication(),
+    @ref createContext(), @ref tryCreateContext()
 @todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
 */
 class AbstractXApplication::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         /*implicit*/ Configuration();
         ~Configuration();
@@ -223,21 +242,16 @@ class AbstractXApplication::Configuration {
 /**
 @brief Base for input events
 
-@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), keyReleaseEvent(),
-    mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
+@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
+    @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
+    @ref mouseMoveEvent()
 */
 class AbstractXApplication::InputEvent {
-    InputEvent(const InputEvent&) = delete;
-    InputEvent(InputEvent&&) = delete;
-    InputEvent& operator=(const InputEvent&) = delete;
-    InputEvent& operator=(InputEvent&&) = delete;
-
-    public:
     public:
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, modifiers()
+         * @see @ref Modifiers, @ref modifiers()
          */
         enum class Modifier: unsigned int {
             Shift = ShiftMask,          /**< Shift */
@@ -278,7 +292,7 @@ class AbstractXApplication::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see modifiers()
+         * @see @ref modifiers()
          */
         typedef Containers::EnumSet<Modifier, unsigned int> Modifiers;
 
@@ -300,10 +314,22 @@ class AbstractXApplication::InputEvent {
          */
         typedef Containers::EnumSet<Button, unsigned int> Buttons;
 
-        /** @copydoc GlutApplication::InputEvent::setAccepted() */
+        /** @brief Copying is not allowed */
+        InputEvent(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent(InputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        InputEvent& operator=(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent& operator=(InputEvent&&) = delete;
+
+        /** @copydoc Sdl2Application::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @copydoc GlutApplication::InputEvent::isAccepted() */
+        /** @copydoc Sdl2Application::InputEvent::isAccepted() */
         constexpr bool isAccepted() const { return _accepted; }
 
         /** @brief Modifiers */
@@ -338,7 +364,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
 /**
 @brief Key event
 
-@see keyPressEvent(), keyReleaseEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
     friend class AbstractXApplication;
@@ -347,7 +373,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
         /**
          * @brief Key
          *
-         * @see key()
+         * @see @ref key()
          */
         enum class Key: KeySym {
             Enter = XK_Return,          /**< Enter */
@@ -438,7 +464,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 /**
 @brief Mouse event
 
-@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
     friend class AbstractXApplication;
@@ -447,7 +473,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
         /**
          * @brief Mouse button
          *
-         * @see button()
+         * @see @ref button()
          */
         enum class Button: unsigned int {
             Left = Button1,         /**< Left button */
@@ -473,7 +499,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
 /**
 @brief Mouse move event
 
-@see MouseEvent, mouseMoveEvent()
+@see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
     friend class AbstractXApplication;

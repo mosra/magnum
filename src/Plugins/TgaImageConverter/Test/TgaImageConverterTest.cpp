@@ -49,8 +49,7 @@ class TgaImageConverterTest: public TestSuite::Tester {
 };
 
 namespace {
-    /** @todo `const` when ImageReference is sane */
-    char originalData[] = {
+    constexpr char originalData[] = {
         1, 2, 3, 2, 3, 4,
         3, 4, 5, 4, 5, 6,
         5, 6, 7, 6, 7, 8

@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Trade {
 
-MeshData2D::MeshData2D(Mesh::Primitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D): _primitive(primitive), _indices(std::move(indices)), _positions(std::move(positions)), _textureCoords2D(std::move(textureCoords2D)) {
+MeshData2D::MeshData2D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D): _primitive(primitive), _indices(std::move(indices)), _positions(std::move(positions)), _textureCoords2D(std::move(textureCoords2D)) {
     CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData2D: no position array specified", );
 }
 

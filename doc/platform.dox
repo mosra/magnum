@@ -47,15 +47,15 @@ Windowed applications provide a window and keyboard and mouse handling. The
 most basic toolkit (and toolkit packaged for most systems) is GLUT, which is
 implemented in @ref Platform::GlutApplication. As said above, the usage is
 similar for all toolkits, you must provide one-argument constructor and
-implement at least @ref GlutApplication::viewportEvent() "viewportEvent()" and
-@ref GlutApplication::drawEvent() "drawEvent()". The class can be then used
-directly in `main()`, but for convenience and portability it's better to use
-@ref MAGNUM_GLUTAPPLICATION_MAIN() macro.
+implement at least @ref GlutApplication::drawEvent() "drawEvent()" function.
+The class can be then used directly in `main()`, but for convenience and
+portability it's better to use @ref MAGNUM_GLUTAPPLICATION_MAIN() macro.
 
 To simplify the porting, the library provides `Platform::Application` typedef
 and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
 is included, to avoid ambiguity). Changing the code to use different toolkit is
-then matter of replacing only the <tt>#</tt>`include` statement.
+then matter of replacing only the <tt>#</tt>`include` statement (and changing
+one line in CMake build script, as you see later).
 
 Barebone application implementation which will just clear the window to dark
 blue color is shown in the following code listing.
@@ -76,18 +76,13 @@ class MyApplication: public Platform::Application {
     public:
         MyApplication(const Arguments& arguments);
 
-        void viewportEvent(const Vector2i& viewport) override;
+    private:
         void drawEvent() override;
 };
 
 MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {
     // Set clear color to dark blue
     Renderer::setClearColor({0.0f, 0.0f, 0.4f});
-}
-
-void MyApplication::viewportEvent(const Vector2i& size) {
-    // Resize the framebuffer to new window size
-    defaultFramebuffer.setViewport({{}, size});
 }
 
 void MyApplication::drawEvent() {
@@ -100,6 +95,28 @@ void MyApplication::drawEvent() {
 
 // main() function implementation
 MAGNUM_APPLICATION_MAIN(MyApplication)
+@endcode
+
+@subsection platform-windowed-viewport Responding to viewport size changes
+
+By default the application doesn't respond to window size changes in any way,
+as the window has fixed size in most cases. To respond to size change for
+example by resizing the default framebuffer, you need to reimplement
+@ref GlutApplication::viewportEvent() "viewportEvent()" function and pass the
+new size to the framebuffer:
+@code
+class MyApplication: public Platform::Application {
+    // ...
+
+    private:
+        void viewportEvent(const Vector2i& size) override;
+};
+
+// ...
+
+void MyApplication::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
+}
 @endcode
 
 @section platform-windowless Windowless applications
@@ -166,8 +183,9 @@ to it.
 Again, to simplify porting, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_WAPPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`, `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
 only if only one application (windowless application) component is requested to
-avoid ambiguity. Changing the code to use different toolkit is then matter of
-replacing only the requested `*Application` component.
+avoid ambiguity. Changing the build script to use different toolkit is then
+matter of replacing only the requested `*Application` component (and one
+<tt>#</tt>`include` line in the actual code, as said above).
 
 @code
 find_package(Magnum REQUIRED GlutApplication)

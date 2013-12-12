@@ -199,28 +199,8 @@ template<std::size_t size, class T> class Vector {
          *
          * @see operator[]()
          */
-        T* data()
-        #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-        &
-        #endif
-        #ifndef CORRADE_MSVC2013_COMPATIBILITY
-        { return _data; }
-        #else
-        { return _data.data(); }
-        #endif
-
-        /** @overload */
-        constexpr const T* data()
-        #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-        const &
-        #else
-        const
-        #endif
-        #ifndef CORRADE_MSVC2013_COMPATIBILITY
-        { return _data; }
-        #else
-        { return _data.data(); }
-        #endif
+        T* data() { return _data; }
+        constexpr const T* data() const { return _data; } /**< @overload */
 
         /**
          * @brief Value at given position

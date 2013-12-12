@@ -35,7 +35,6 @@
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
-#include "Math/Vector2.h"
 #include "Magnum.h"
 
 #include "corradeCompatibility.h"
@@ -61,12 +60,13 @@ you need to request `%WindowlessNaClApplication` component in CMake, add
 application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section WindowlessNaClApplication-usage Usage
 
 Place your code into @ref exec(). The subclass must be then registered to NaCl
-API using @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() macro.
+API using @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() macro. See @ref platform
+for more information.
 @code
 class MyApplication: public Platform::WindowlessNaClApplication {
     // implement required methods...
@@ -100,7 +100,7 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
 
         class Configuration;
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -109,12 +109,24 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         explicit WindowlessNaClApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t);
         #else
         explicit WindowlessNaClApplication(const Arguments& arguments, void*);
         #endif
+
+        /** @brief Copying is not allowed */
+        WindowlessNaClApplication(const WindowlessNaClApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessNaClApplication(WindowlessNaClApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        WindowlessNaClApplication& operator=(const WindowlessNaClApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessNaClApplication& operator=(WindowlessNaClApplication&&) = delete;
 
         /**
          * @brief Execute application
@@ -127,18 +139,22 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
            thus this is faster than public pure virtual destructor */
         ~WindowlessNaClApplication();
 
-        /** @copydoc GlutApplication::createContext() */
+        /** @copydoc Sdl2Application::createContext() */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void createContext(const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
         void createContext(const Configuration& configuration);
+        void createContext();
+        #endif
 
-        /** @copydoc GlutApplication::tryCreateContext() */
+        /** @copydoc Sdl2Application::tryCreateContext() */
         bool tryCreateContext(const Configuration& configuration);
 
     private:
         struct ConsoleDebugOutput;
 
-        void Graphics3DContextLost() override {
-            CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
-        }
+        void Graphics3DContextLost() override;
 
         bool Init(std::uint32_t, const char*, const char*) override;
 
@@ -150,14 +166,10 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
 /**
 @brief %Configuration
 
-@see WindowlessNaClApplication(), createContext(), tryCreateContext()
+@see @ref WindowlessNaClApplication(), @ref createContext(),
+    @ref tryCreateContext()
 */
 class WindowlessNaClApplication::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         constexpr /*implicit*/ Configuration() {}
 };
@@ -181,9 +193,10 @@ namespace Implementation {
 @brief Entry point for windowless NaCl application
 @param application  Application class name
 
-See WindowlessNaClApplication and @ref portability-applications for more
-information. When no other windowless application header is included this macro
-is also aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
+See @ref Magnum::Platform::WindowlessNaClApplication "Platform::WindowlessNaClApplication"
+and @ref portability-applications for more information. When no other
+windowless application header is included this macro is also aliased to
+`MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 /* look at that insane placement of __attribute__. WTF. */
 #define MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN(application)                  \

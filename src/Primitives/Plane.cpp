@@ -25,6 +25,7 @@
 #include "Plane.h"
 
 #include "Math/Vector3.h"
+#include "Mesh.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
@@ -38,7 +39,7 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
         {0.0f, 1.0f}
     });
 
-    return Trade::MeshData3D(Mesh::Primitive::TriangleStrip, std::vector<UnsignedInt>{}, {std::vector<Vector3>{
+    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, std::vector<UnsignedInt>{}, {std::vector<Vector3>{
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {-1.0f, -1.0f, 0.0f},
@@ -53,7 +54,7 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
 
 Trade::MeshData3D Plane::wireframe() {
     /* {} initializers are causing ICE in MSVC 2013. Bhaha. */
-    return Trade::MeshData3D(Mesh::Primitive::LineLoop, std::vector<UnsignedInt>(), {std::vector<Vector3>{
+    return Trade::MeshData3D(MeshPrimitive::LineLoop, std::vector<UnsignedInt>(), {std::vector<Vector3>{
         {-1.0f, -1.0f, 0.0f},
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Enum Magnum::TextureFormat
+ * @brief Enum @ref Magnum::TextureFormat
  */
 
 #include "OpenGL.h"
@@ -35,13 +35,20 @@ namespace Magnum {
 /**
 @brief Internal texture format
 
-@see Texture, CubeMapTexture, CubeMapTextureArray
+In most cases you may want to use @ref TextureFormat::R8 (for grayscale
+textures), @ref TextureFormat::RGB8 or @ref TextureFormat::RGBA8. The matching
+color format is then @ref ColorFormat::Red, @ref ColorFormat::RGB or
+@ref ColorFormat::RGBA along with @ref ColorType::UnsignedByte. See
+documentation of these values for possible limitations when using OpenGL ES 2.0
+or WebGL.
+
+@see @ref Texture, @ref CubeMapTexture, @ref CubeMapTextureArray
 */
 enum class TextureFormat: GLenum {
     /**
      * Red component, normalized unsigned, size implementation-dependent.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::TextureFormat "TextureFormat::R8".
+     *      format, e.g. @ref Magnum::TextureFormat::R8 "TextureFormat::R8".
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
      * @requires_gles30 %Extension @es_extension{EXT,texture_rg}
      */
@@ -55,8 +62,8 @@ enum class TextureFormat: GLenum {
     /**
      * Red component, normalized unsigned byte.
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::Red" in
-     *      OpenGL ES 2.0 instead.
+     * @requires_gles30 Use @ref Magnum::TextureFormat::Red "TextureFormat::Red"
+     *      in OpenGL ES 2.0 instead.
      */
     R8 = GL_R8,
     #endif
@@ -65,7 +72,7 @@ enum class TextureFormat: GLenum {
      * Red and green component, normalized unsigned, size
      * implementation-dependent.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::TextureFormat "TextureFormat::RG8".
+     *      format, e.g. @ref Magnum::TextureFormat::RG8 "TextureFormat::RG8".
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
      * @requires_gles30 %Extension @es_extension{EXT,texture_rg}
      */
@@ -79,8 +86,8 @@ enum class TextureFormat: GLenum {
     /**
      * Red and green component, each normalized unsigned byte.
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::RG" in
-     *      OpenGL ES 2.0 instead.
+     * @requires_gles30 Use @ref Magnum::TextureFormat::RG "TextureFormat::RG"
+     *      in OpenGL ES 2.0 instead.
      */
     RG8 = GL_RG8,
     #endif
@@ -88,7 +95,7 @@ enum class TextureFormat: GLenum {
     /**
      * RGB, normalized unsigned, size implementation-dependent.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::TextureFormat "TextureFormat::RGB8".
+     *      format, e.g. @ref Magnum::TextureFormat::RGB8 "TextureFormat::RGB8".
      */
     RGB = GL_RGB,
 
@@ -105,7 +112,7 @@ enum class TextureFormat: GLenum {
     /**
      * RGBA, normalized unsigned, size implementation-dependent.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::TextureFormat "TextureFormat::RGBA8".
+     *      format, e.g. @ref Magnum::TextureFormat::RGBA8 "TextureFormat::RGBA8".
      */
     RGBA = GL_RGBA,
 
@@ -476,9 +483,9 @@ enum class TextureFormat: GLenum {
      * Luminance, normalized unsigned, single value used for all RGB channels.
      * Size implementation-dependent.
      * @deprecated_gl Included for compatibility reasons only, use
-     *      @ref Magnum::TextureFormat "TextureFormat::R8" instead.
+     *      @ref Magnum::TextureFormat::R8 "TextureFormat::R8" instead.
      * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-     *      @ref Magnum::TextureFormat "TextureFormat::R8" instead.
+     *      @ref Magnum::TextureFormat::R8 "TextureFormat::R8" instead.
      */
     Luminance = GL_LUMINANCE,
 
@@ -487,9 +494,9 @@ enum class TextureFormat: GLenum {
      * RGB channels, second value is used for alpha channel. Size
      * implementation-dependent.
      * @deprecated_gl Included for compatibility reasons only, use
-     *      @ref Magnum::TextureFormat "TextureFormat::RG8" instead.
+     *      @ref Magnum::TextureFormat::RG8 "TextureFormat::RG8" instead.
      * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-     *      @ref Magnum::TextureFormat "TextureFormat::RG8" instead.
+     *      @ref Magnum::TextureFormat::RG8 "TextureFormat::RG8" instead.
      */
     LuminanceAlpha = GL_LUMINANCE_ALPHA,
     #endif
@@ -509,8 +516,9 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component normalized unsigned 5bit.
-     * @requires_gl Use @ref Magnum::TextureFormat "TextureFormat::RGB5A1" or
-     *      @ref Magnum::TextureFormat "TextureFormat::RGB565" in OpenGL ES.
+     * @requires_gl Use @ref Magnum::TextureFormat::RGB5A1 "TextureFormat::RGB5A1"
+     *      or @ref Magnum::TextureFormat::RGB565 "TextureFormat::RGB565" in
+     *      OpenGL ES.
      */
     RGB5 = GL_RGB5,
     #endif
@@ -552,8 +560,8 @@ enum class TextureFormat: GLenum {
     /**
      * RGB, unsigned with exponent, each RGB component 9bit, exponent 5bit.
      * @requires_gl30 %Extension @extension{EXT,texture_shared_exponent}
-     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::RGB" in
-     *      OpenGL ES 2.0 instead.
+     * @requires_gles30 Use @ref Magnum::TextureFormat::RGB "TextureFormat::RGB"
+     *      in OpenGL ES 2.0 instead.
      */
     RGB9E5 = GL_RGB9_E5,
     #endif
@@ -562,7 +570,7 @@ enum class TextureFormat: GLenum {
      * sRGB, normalized unsigned, size implementation-dependent.
      * @todo is this allowed in core?
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, i.e. @ref Magnum::TextureFormat "TextureFormat::SRGB8".
+     *      format, i.e. @ref Magnum::TextureFormat::SRGB8 "TextureFormat::SRGB8".
      * @requires_es_extension %Extension @es_extension{EXT,sRGB}
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -574,8 +582,8 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * sRGB, each component normalized unsigned byte.
-     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::SRGB" in
-     *      OpenGL ES 2.0 instead.
+     * @requires_gles30 Use @ref Magnum::TextureFormat::SRGB "TextureFormat::SRGB"
+     *      in OpenGL ES 2.0 instead.
      */
     SRGB8 = GL_SRGB8,
     #endif
@@ -633,7 +641,7 @@ enum class TextureFormat: GLenum {
      * sRGBA, normalized unsigned, size implementation-dependent.
      * @todo is this allowed in core?
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, i.e. @ref Magnum::TextureFormat "TextureFormat::SRGB8Alpha8".
+     *      format, i.e. @ref Magnum::TextureFormat::SRGB8Alpha8 "TextureFormat::SRGB8Alpha8".
      * @requires_es_extension %Extension @es_extension{EXT,sRGB}
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -645,7 +653,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * sRGBA, each component normalized unsigned byte.
-     * @requires_gles30 Use @ref Magnum::TextureFormat "TextureFormat::SRGBAlpha"
+     * @requires_gles30 Use @ref Magnum::TextureFormat::SRGBAlpha "TextureFormat::SRGBAlpha"
      *      in OpenGL ES 2.0 instead.
      */
     SRGB8Alpha8 = GL_SRGB8_ALPHA8,
@@ -742,7 +750,7 @@ enum class TextureFormat: GLenum {
     /**
      * Depth component, size implementation-dependent.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::TextureFormat "TextureFormat::DepthComponent16".
+     *      format, e.g. @ref Magnum::TextureFormat::DepthComponent16 "TextureFormat::DepthComponent16".
      * @requires_gles30 %Extension @es_extension{OES,depth_texture} or
      *      @es_extension{ANGLE,depth_texture}
      */
@@ -801,7 +809,7 @@ enum class TextureFormat: GLenum {
     /**
      * Depth and stencil component, size implementation-dependent.
      * @deprecated_gl Prefer to use exactly specified version of this format,
-     *      e.g. @ref Magnum::TextureFormat "TextureFormat::Depth24Stencil8".
+     *      e.g. @ref Magnum::TextureFormat::Depth24Stencil8 "TextureFormat::Depth24Stencil8".
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
      */
     #ifndef MAGNUM_TARGET_GLES2

@@ -229,14 +229,14 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
          * @deprecated Use @ref Magnum::SceneGraph::Animable::animables() "animables()"
          *      instead.
          */
-        AnimableGroup<dimensions, T>* group() { return animables(); }
+        CORRADE_DEPRECATED("use animables() instead") AnimableGroup<dimensions, T>* group() { return animables(); }
 
         /**
          * @copydoc animables()
          * @deprecated Use @ref Magnum::SceneGraph::Animable::animables() "animables()"
          *      instead.
          */
-        const AnimableGroup<dimensions, T>* group() const { return animables(); }
+        CORRADE_DEPRECATED("use animables() instead") const AnimableGroup<dimensions, T>* group() const { return animables(); }
         #endif
 
     protected:

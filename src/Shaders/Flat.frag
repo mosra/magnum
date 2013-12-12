@@ -43,7 +43,7 @@ uniform lowp vec4 color;
 #endif
 
 #ifdef TEXTURED
-in mediump vec2 interpolatedTextureCoords;
+in mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef NEW_GLSL
@@ -52,7 +52,7 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef TEXTURED
-    fragmentColor = texture(textureData, interpolatedTextureCoords);
+    fragmentColor = texture(textureData, interpolatedTextureCoordinates);
     #else
     fragmentColor = color;
     #endif

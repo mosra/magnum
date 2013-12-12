@@ -60,8 +60,7 @@ NaClApplication::NaClApplication(const Arguments& arguments, const Configuration
 #ifndef DOXYGEN_GENERATING_OUTPUT
 NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
-    /* GCC 4.5 can't handle {} here (wtf) */
-    createContext(Configuration());
+    createContext();
 }
 #endif
 
@@ -75,11 +74,10 @@ NaClApplication::NaClApplication(const Arguments& arguments, void*)
     debugOutput = new ConsoleDebugOutput(this);
 }
 
+void NaClApplication::createContext() { createContext({}); }
+
 void NaClApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::NaClApplication::createContext(): cannot create context";
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool NaClApplication::tryCreateContext(const Configuration& configuration) {
@@ -100,13 +98,16 @@ bool NaClApplication::tryCreateContext(const Configuration& configuration) {
 
     graphics = new pp::Graphics3D(this, attributes);
     if(graphics->is_null()) {
+        Error() << "Platform::NaClApplication::tryCreateContext(): cannot create context";
         delete graphics;
         graphics = nullptr;
         return false;
     }
     if(!BindGraphics(*graphics)) {
         Error() << "Platform::NaClApplication::tryCreateContext(): cannot bind graphics";
-        std::exit(1);
+        delete graphics;
+        graphics = nullptr;
+        return false;
     }
 
     fullscreen = new pp::Fullscreen(this);
@@ -256,6 +257,7 @@ void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t)
     instance->flags |= Flag::MouseLocked;
 }
 
+void NaClApplication::viewportEvent(const Vector2i&) {}
 void NaClApplication::keyPressEvent(KeyEvent&) {}
 void NaClApplication::keyReleaseEvent(KeyEvent&) {}
 void NaClApplication::mousePressEvent(MouseEvent&) {}

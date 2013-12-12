@@ -36,12 +36,14 @@ class ImageDataTest: public TestSuite::Tester {
         void moveConstructor();
         void moveAssignment();
         void toReference();
+        void release();
 };
 
 ImageDataTest::ImageDataTest() {
     addTests<ImageDataTest>({&ImageDataTest::moveConstructor,
               &ImageDataTest::moveAssignment,
-              &ImageDataTest::toReference});
+              &ImageDataTest::toReference,
+              &ImageDataTest::release});
 }
 
 void ImageDataTest::moveConstructor() {
@@ -71,13 +73,31 @@ void ImageDataTest::moveAssignment() {
 
 void ImageDataTest::toReference() {
     unsigned char* data = new unsigned char[3];
-    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    const Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     ImageReference2D b = a;
     CORRADE_COMPARE(b.format(), ColorFormat::Red);
     CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
+
+    CORRADE_VERIFY((std::is_convertible<const Trade::ImageData2D&, ImageReference2D>::value));
+    {
+        #ifdef CORRADE_GCC47_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
+        #endif
+        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D, ImageReference2D>::value));
+        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D&&, ImageReference2D>::value));
+    }
+}
+
+void ImageDataTest::release() {
+    unsigned char data[] = {'b', 'e', 'e', 'r'};
+    ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
+    const unsigned char* const pointer = a.release();
+    CORRADE_COMPARE(pointer, data);
+    CORRADE_VERIFY(!a.data());
+    CORRADE_VERIFY(a.size().isZero());
 }
 
 }}}

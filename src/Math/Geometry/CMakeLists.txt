@@ -26,13 +26,13 @@ set(MagnumMathGeometry_HEADERS
     Distance.h
     Intersection.h)
 
-install(FILES ${MagnumMathGeometry_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Geometry)
-
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(MagnumMathGeometry_HEADERS ${MagnumMathGeometry_HEADERS}
         Rectangle.h)
 endif()
+
+install(FILES ${MagnumMathGeometry_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Geometry)
 
 if(BUILD_TESTS)
     add_subdirectory(Test)

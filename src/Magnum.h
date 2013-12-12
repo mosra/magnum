@@ -34,6 +34,10 @@
 #include "Types.h"
 #include "magnumConfigure.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Utility/Macros.h>
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
@@ -330,15 +334,15 @@ typedef Math::Range3D<Int> Range3Di;
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @copybrief Range2D
-@deprecated Use @ref Magnum::Range2D instead.
+@deprecated Use @ref Magnum::Range2D "Range2D" instead.
 */
-typedef Math::Geometry::Rectangle<Float> Rectangle;
+typedef CORRADE_DEPRECATED("use Range2D instead") Math::Geometry::Rectangle<Float> Rectangle;
 
 /**
 @copybrief Range2Di
-@deprecated Use @ref Magnum::Range2Di instead.
+@deprecated Use @ref Magnum::Range2Di "Range2Di" instead.
 */
-typedef Math::Geometry::Rectangle<Int> Rectanglei;
+typedef CORRADE_DEPRECATED("use Range2Di instead") Math::Geometry::Rectangle<Int> Rectanglei;
 #endif
 
 /*@}*/
@@ -388,7 +392,7 @@ typedef Math::Matrix<2, Double> Matrix2x2d;
 @copybrief Matrix2x2d
 @deprecated Use @ref Magnum::Matrix2x2d "Matrix2x2d" instead.
 */
-typedef Math::Matrix<2, Double> Matrix2d;
+typedef CORRADE_DEPRECATED("use Matrix2x2d instead") Math::Matrix<2, Double> Matrix2d;
 #endif
 
 /**
@@ -496,7 +500,7 @@ typedef Math::Range3D<Double> Range3Dd;
 @copybrief Range2Dd
 @deprecated Use @ref Magnum::Range2Dd instead.
 */
-typedef Math::Geometry::Rectangle<Double> Rectangled;
+typedef CORRADE_DEPRECATED("use Range2Dd instead") Math::Geometry::Rectangle<Double> Rectangled;
 #endif
 
 /*@}*/
@@ -584,6 +588,8 @@ template<UnsignedInt> class ImageReference;
 typedef ImageReference<1> ImageReference1D;
 typedef ImageReference<2> ImageReference2D;
 typedef ImageReference<3> ImageReference3D;
+
+enum class MeshPrimitive: GLenum;
 
 class Mesh;
 class MeshView;

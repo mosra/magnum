@@ -86,7 +86,7 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     ResourceManager::instance().set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     Mesh* mesh = new Mesh;
-    mesh->setPrimitive(Mesh::Primitive::Lines)
+    mesh->setPrimitive(MeshPrimitive::Lines)
         .setIndexCount(indices.size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))

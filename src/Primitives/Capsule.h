@@ -48,7 +48,7 @@ class MAGNUM_PRIMITIVES_EXPORT Capsule2D {
          *      larger or equal to 1.
          * @param halfLength    Half the length of cylinder part
          *
-         * Indexed @ref Mesh::Primitive "Lines".
+         * Indexed @ref MeshPrimitive::Lines.
          */
         static Trade::MeshData2D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength);
 };
@@ -77,9 +77,9 @@ class MAGNUM_PRIMITIVES_EXPORT Capsule3D {
          * @param halfLength    Half the length of cylinder part
          * @param textureCoords Whether to generate texture coordinates.
          *
-         * Indexed @ref Mesh::Primitive "Triangles" with normals and optional
-         * 2D texture coordinates. If texture coordinates are generated,
-         * vertices of one segment are duplicated for texture wrapping.
+         * Indexed @ref MeshPrimitive::Triangles with normals and optional 2D
+         * texture coordinates. If texture coordinates are generated, vertices
+         * of one segment are duplicated for texture wrapping.
          */
         static Trade::MeshData3D solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords = TextureCoords::DontGenerate);
 
@@ -93,7 +93,7 @@ class MAGNUM_PRIMITIVES_EXPORT Capsule3D {
          *      equal to 4 and multiple of 4.
          * @param halfLength    Half the length of cylinder part
          *
-         * Indexed @ref Mesh::Primitive "Lines".
+         * Indexed @ref MeshPrimitive::Lines.
          */
         static Trade::MeshData3D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength);
 };

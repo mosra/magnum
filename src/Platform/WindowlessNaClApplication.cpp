@@ -26,6 +26,7 @@
 
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/cpp/completion_callback.h>
+#include <Utility/Assert.h>
 #include <Utility/NaClStreamBuffer.h>
 
 #include "Context.h"
@@ -58,8 +59,7 @@ WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments,
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
-    /* GCC 4.5 can't handle {} here (wtf) */
-    createContext(Configuration());
+    createContext();
 }
 #endif
 
@@ -73,11 +73,10 @@ WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments,
     debugOutput = new ConsoleDebugOutput(this);
 }
 
+void WindowlessNaClApplication::createContext() { createContext({}); }
+
 void WindowlessNaClApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::WindowlessNaClApplication::createContext(): cannot create context";
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
@@ -94,13 +93,16 @@ bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
 
     graphics = new pp::Graphics3D(this, attributes);
     if(graphics->is_null()) {
+        Error() << "Platform::WindowlessNaClApplication::tryCreateContext(): cannot create context";
         delete graphics;
         graphics = nullptr;
         return false;
     }
     if(!BindGraphics(*graphics)) {
         Error() << "Platform::WindowlessNaClApplication::tryCreateContext(): cannot bind graphics";
-        std::exit(1);
+        delete graphics;
+        graphics = nullptr;
+        return false;
     }
 
     glSetCurrentContextPPAPI(graphics->pp_resource());
@@ -117,6 +119,10 @@ WindowlessNaClApplication::~WindowlessNaClApplication() {
 
 bool WindowlessNaClApplication::Init(uint32_t , const char* , const char*) {
     return exec() == 0;
+}
+
+void WindowlessNaClApplication::Graphics3DContextLost() {
+    CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
 }
 
 }}

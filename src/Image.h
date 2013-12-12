@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Image, typedef Magnum::Image1D, Magnum::Image2D, Magnum::Image3D
+ * @brief Class @ref Magnum::Image, typedef @ref Magnum::Image1D, @ref Magnum::Image2D, @ref Magnum::Image3D
  */
 
 #include "ImageReference.h"
@@ -35,9 +35,9 @@ namespace Magnum {
 /**
 @brief %Image
 
-Stores image data on client memory. Interchangeable with ImageReference,
-BufferImage or Trade::ImageData.
-@see Image1D, Image2D, Image3D
+Stores image data on client memory. Interchangeable with @ref ImageReference,
+@ref BufferImage or @ref Trade::ImageData.
+@see @ref Image1D, @ref Image2D, @ref Image3D
 */
 template<UnsignedInt dimensions> class Image: public AbstractImage {
     public:
@@ -60,8 +60,8 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          *
-         * Dimensions and data pointer are set to zero, call setData() to fill
-         * the image with data.
+         * Dimensions are set to zero and data pointer to `nullptr`, call
+         * @ref setData() to fill the image with data.
          */
         explicit Image(ColorFormat format, ColorType type): AbstractImage(format, type), _data(nullptr) {}
 
@@ -80,17 +80,27 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         /** @brief Destructor */
         ~Image() { delete[] _data; }
 
-        /**
-         * @brief Conversion to reference
-         *
-         * @todo GCC 4.8: don't allow this on rvalue-ref
-         */
-        /*implicit*/ operator ImageReference<dimensions>() const;
+        /** @brief Conversion to reference */
+        /*implicit*/ operator ImageReference<dimensions>()
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        const &;
+        #else
+        const;
+        #endif
+
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        /** @overload */
+        /*implicit*/ operator ImageReference<dimensions>() const && = delete;
+        #endif
 
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
-        /** @brief Pointer to raw data */
+        /**
+         * @brief Pointer to raw data
+         *
+         * @see @ref release()
+         */
         unsigned char* data() { return _data; }
         const unsigned char* data() const { return _data; } /**< @overload */
 
@@ -103,8 +113,18 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          *
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
+         * @see @ref release()
          */
         void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data);
+
+        /**
+         * @brief Release data storage
+         *
+         * Returns the data pointer and resets internal state to default.
+         * Deleting the returned array is user responsibility.
+         * @see @ref setData()
+         */
+        unsigned char* release();
 
     private:
         Math::Vector<Dimensions, Int> _size;
@@ -132,8 +152,22 @@ template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::op
     return *this;
 }
 
-template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageReference<dimensions>() const {
+template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageReference<dimensions>()
+#ifndef CORRADE_GCC47_COMPATIBILITY
+const &
+#else
+const
+#endif
+{
     return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
+}
+
+template<UnsignedInt dimensions> inline unsigned char* Image<dimensions>::release() {
+    /** @todo I need `std::exchange` NOW. */
+    unsigned char* const data = _data;
+    _size = {};
+    _data = nullptr;
+    return data;
 }
 
 }

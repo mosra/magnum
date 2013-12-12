@@ -53,14 +53,14 @@ class MAGNUM_PRIMITIVES_EXPORT Square {
         /**
          * @brief Solid square
          *
-         * Non-indexed @ref Mesh::Primitive "TriangleStrip".
+         * Non-indexed @ref MeshPrimitive::TriangleStrip.
          */
         static Trade::MeshData2D solid(TextureCoords textureCoords = TextureCoords::DontGenerate);
 
         /**
          * @brief Wireframe square
          *
-         * Non-indexed @ref Mesh::Primitive "LineLoop."
+         * Non-indexed @ref MeshPrimitive::LineLoop.
          */
         static Trade::MeshData2D wireframe();
 

@@ -51,8 +51,8 @@ namespace Platform {
 /** @nosubgrouping
 @brief SDL2 application
 
-Application using [Simple DirectMedia Layer](www.libsdl.org/) toolkit. Supports
-keyboard and mouse handling.
+Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
+Supports keyboard and mouse handling.
 
 This application library is available on desktop OpenGL (Linux, Windows, OS X)
 and in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It depends on **SDL2**
@@ -64,13 +64,14 @@ to find SDL2), request `%Sdl2Application` component in CMake, add
 `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section Sdl2Application-usage Usage
 
-You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
-able to draw on the screen. The subclass can be then used directly in `main()`
--- see convenience macro @ref MAGNUM_SDL2APPLICATION_MAIN().
+You need to implement at least @ref drawEvent() to be able to draw on the
+screen. The subclass can be then used directly in `main()` -- see convenience
+macro @ref MAGNUM_SDL2APPLICATION_MAIN(). See @ref platform for more
+information.
 @code
 class MyApplication: public Platform::Sdl2Application {
     // implement required methods...
@@ -135,7 +136,15 @@ class Sdl2Application {
         class MouseEvent;
         class MouseMoveEvent;
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /**
+         * @brief Default constructor
+         * @param arguments     Application arguments
+         * @param configuration %Configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Configuration for more information. The program exits if
+         * the context cannot be created, see below for an alternative.
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -144,14 +153,35 @@ class Sdl2Application {
         explicit Sdl2Application(const Arguments& arguments);
         #endif
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /**
+         * @brief Constructor
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the context is not created and must be created later
+         * with @ref createContext() or @ref tryCreateContext().
+         */
         #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit Sdl2Application(const Arguments& arguments, std::nullptr_t);
         #else
         explicit Sdl2Application(const Arguments& arguments, void*);
         #endif
 
-        /** @copydoc GlutApplication::exec() */
+        /** @brief Copying is not allowed */
+        Sdl2Application(const Sdl2Application&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2Application(Sdl2Application&&) = delete;
+
+        /** @brief Copying is not allowed */
+        Sdl2Application& operator=(const Sdl2Application&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2Application& operator=(Sdl2Application&&) = delete;
+
+        /**
+         * @brief Execute main loop
+         * @return Value for returning from `main()`.
+         */
         int exec();
 
         /** @brief Exit application main loop */
@@ -162,31 +192,87 @@ class Sdl2Application {
            faster than public pure virtual destructor */
         ~Sdl2Application();
 
-        /** @copydoc GlutApplication::createContext() */
+        /**
+         * @brief Create context with given configuration
+         *
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself. The program exits if the context cannot be
+         * created, see @ref tryCreateContext() for an alternative.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void createContext(const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
         void createContext(const Configuration& configuration);
+        void createContext();
+        #endif
 
-        /** @copydoc GlutApplication::tryCreateContext() */
+        /**
+         * @brief Try to create context with given configuration
+         *
+         * Unlike @ref createContext() returns `false` if the context cannot be
+         * created, `true` otherwise.
+         */
         bool tryCreateContext(const Configuration& configuration);
 
-        /** @{ @name Drawing functions */
+        /** @{ @name Screen handling */
 
-        /** @copydoc GlutApplication::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size) = 0;
-
-        /** @copydoc GlutApplication::drawEvent() */
-        virtual void drawEvent() = 0;
-
-        /** @copydoc GlutApplication::swapBuffers() */
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
         void swapBuffers();
 
-        /** @copydoc GlutApplication::redraw() */
+        /**
+         * @brief Redraw immediately
+         *
+         * Marks the window for redrawing, resulting in call to @ref drawEvent()
+         * in the next iteration.
+         */
         void redraw() { flags |= Flag::Redraw; }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Viewport event
+         *
+         * Called when window size changes. The default implementation does
+         * nothing, if you want to respond to size changes, you should pass the
+         * new size to @ref DefaultFramebuffer::setViewport() and possibly
+         * elsewhere (to @ref SceneGraph::AbstractCamera::setViewport() "SceneGraph::Camera*D::setViewport()",
+         * other framebuffers...).
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You should configure the initial state of your
+         * cameras, framebuffers etc. in application constructor rather than
+         * relying on this function to be called. Viewport of default
+         * framebuffer can be retrieved via @ref DefaultFramebuffer::viewport().
+         */
+        virtual void viewportEvent(const Vector2i& size);
+
+        /**
+         * @brief Draw event
+         *
+         * Called when the screen is redrawn. You should clean the framebuffer
+         * using @ref DefaultFramebuffer::clear() and then add your own drawing
+         * functions. After drawing is finished, call @ref swapBuffers(). If
+         * you want to draw immediately again, call also @ref redraw().
+         */
+        virtual void drawEvent() = 0;
 
         /*@}*/
 
         /** @{ @name Keyboard handling */
 
-        /** @copydoc GlutApplication::keyPressEvent() */
+        /**
+         * @brief Key press event
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         */
         virtual void keyPressEvent(KeyEvent& event);
 
         /**
@@ -208,16 +294,30 @@ class Sdl2Application {
          * @brief Enable or disable mouse locking
          *
          * When mouse is locked, the cursor is hidden and only
-         * MouseMoveEvent::relativePosition() is changing, absolute position
-         * stays the same.
+         * @ref MouseMoveEvent::relativePosition() is changing, absolute
+         * position stays the same.
          */
         void setMouseLocked(bool enabled);
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
-        /** @copydoc GlutApplication::mousePressEvent() */
+    #else
+    private:
+    #endif
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
         virtual void mousePressEvent(MouseEvent& event);
 
-        /** @copydoc GlutApplication::mouseReleaseEvent() */
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
         virtual void mouseReleaseEvent(MouseEvent& event);
 
         /**
@@ -267,19 +367,14 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 
 Centered non-resizable window with double-buffered OpenGL context and 24bit
 depth buffer.
-@see Sdl2Application(), createContext()
+@see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
 */
 class Sdl2Application::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
         /**
          * @brief Window flag
          *
-         * @see Flags, setFlags()
+         * @see @ref Flags, @ref setFlags()
          */
         enum class Flag: Uint32 {
             Resizable = SDL_WINDOW_RESIZABLE,       /**< Resizable window */
@@ -293,7 +388,7 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window flags
          *
-         * @see setFlags()
+         * @see @ref setFlags()
          */
         typedef Containers::EnumSet<Flag, Uint32, SDL_WINDOW_RESIZABLE|
             SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
@@ -371,21 +466,17 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
 /**
 @brief Base for input events
 
-@see KeyEvent, MouseEvent, MouseMoveEvent, keyPressEvent(), keyReleaseEvent(),
-    mousePressEvent(), mouseReleaseEvent(), mouseMoveEvent()
+@see @ref KeyEvent, @ref MouseEvent, @ref MouseMoveEvent, @ref keyPressEvent(),
+    @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
+    @ref mouseMoveEvent()
 */
 class Sdl2Application::InputEvent {
-    InputEvent(const InputEvent&) = delete;
-    InputEvent(InputEvent&&) = delete;
-    InputEvent& operator=(const InputEvent&) = delete;
-    InputEvent& operator=(InputEvent&&) = delete;
-
     public:
         /**
          * @brief %Modifier
          *
-         * @see Modifiers, KeyEvent::modifiers(), MouseEvent::modifiers(),
-         *      MouseMoveEvent::modifiers()
+         * @see @ref Modifiers, @ref KeyEvent::modifiers(),
+         *      @ref MouseEvent::modifiers(), @ref MouseMoveEvent::modifiers()
          */
         enum class Modifier: Uint16 {
             Shift = KMOD_SHIFT,         /**< Shift */
@@ -400,15 +491,34 @@ class Sdl2Application::InputEvent {
         /**
          * @brief Set of modifiers
          *
-         * @see KeyEvent::modifiers(), MouseEvent::modifiers(),
-         *      MouseMoveEvent::modifiers()
+         * @see @ref KeyEvent::modifiers(), @ref MouseEvent::modifiers(),
+         *      @ref MouseMoveEvent::modifiers()
          */
         typedef Containers::EnumSet<Modifier, Uint16> Modifiers;
 
-        /** @copydoc GlutApplication::InputEvent::setAccepted() */
+        /** @brief Copying is not allowed */
+        InputEvent(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent(InputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        InputEvent& operator=(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent& operator=(InputEvent&&) = delete;
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
-        /** @copydoc GlutApplication::InputEvent::isAccepted() */
+        /** @brief Whether the event is accepted */
         constexpr bool isAccepted() const { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -433,7 +543,7 @@ Sdl2Application::InputEvent::~InputEvent() = default;
 /**
 @brief Key event
 
-@see keyPressEvent(), keyReleaseEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
     friend class Sdl2Application;
@@ -442,7 +552,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         /**
          * @brief Key
          *
-         * @see key()
+         * @see @ref key()
          */
         enum class Key: SDL_Keycode {
             Enter = SDLK_RETURN,        /**< Enter */
@@ -533,7 +643,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 /**
 @brief Mouse event
 
-@see MouseMoveEvent, mousePressEvent(), mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
     friend class Sdl2Application;
@@ -542,7 +652,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         /**
          * @brief Mouse button
          *
-         * @see button()
+         * @see @ref button()
          */
         enum class Button: Uint8 {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
@@ -577,7 +687,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 /**
 @brief Mouse move event
 
-@see MouseEvent, mouseMoveEvent()
+@see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
     friend class Sdl2Application;
@@ -636,9 +746,9 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 @brief Entry point for SDL2-based applications
 @param className Class name
 
-Can be used with Sdl2Application subclasses as equivalent to the following
-code to achieve better portability, see @ref portability-applications for more
-information.
+Can be used with @ref Magnum::Platform::Sdl2Application "Platform::Sdl2Application"
+subclasses as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

@@ -25,9 +25,10 @@
 #include "Shader.h"
 
 #include <algorithm> /* std::max(), needed by MSVC */
-#include <fstream>
+
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
+#include <Utility/Directory.h>
 
 #include "Extensions.h"
 #include "Implementation/State.h"
@@ -610,22 +611,10 @@ Shader& Shader::addSource(std::string source) {
 }
 
 Shader& Shader::addFile(const std::string& filename) {
-    /* Open file */
-    std::ifstream file(filename);
-    CORRADE_ASSERT(file.good(), "Shader file " << '\'' + filename + '\'' << " cannot be opened.", *this);
+    CORRADE_ASSERT(Utility::Directory::fileExists(filename),
+        "Shader file " << '\'' + filename + '\'' << " cannot be read.", *this);
 
-    /* Get size of shader and initialize buffer */
-    file.seekg(0, std::ios::end);
-    std::string source(std::size_t(file.tellg()), '\0');
-
-    /* Read data, close */
-    file.seekg(0, std::ios::beg);
-    file.read(&source[0], source.size());
-    file.close();
-
-    /* Move to sources */
-    addSource(std::move(source));
-
+    addSource(Utility::Directory::readString(filename));
     return *this;
 }
 

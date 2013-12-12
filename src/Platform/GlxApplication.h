@@ -46,13 +46,14 @@ CMake. To use it, you need to request `%GlxApplication` component in CMake, add
 `${MAGNUM_GLXAPPLICATION_LIBRARIES}`. If no other application is requested, you
 can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section GlxApplication-usage Usage
 
-You need to implement at least @ref drawEvent() and @ref viewportEvent() to be
-able to draw on the screen. The subclass can be then used directly in `main()`
--- see convenience macro @ref MAGNUM_GLXAPPLICATION_MAIN().
+You need to implement at least @ref drawEvent() to be able to draw on the
+screen. The subclass can be then used directly in `main()` -- see convenience
+macro @ref MAGNUM_GLXAPPLICATION_MAIN(). See @ref platform for more
+information.
 @code
 class MyApplication: public Platform::GlxApplication {
     // implement required methods...
@@ -66,10 +67,10 @@ to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, const Configuration&) */
         explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, std::nullptr_t) */
         #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit GlxApplication(const Arguments& arguments, std::nullptr_t);
         #else
@@ -86,9 +87,9 @@ class GlxApplication: public AbstractXApplication {
 @brief Entry point for GLX-based applications
 @param className Class name
 
-Can be used with GlxApplication subclasses as equivalent to the following code
-to achieve better portability, see @ref portability-applications for more
-information.
+Can be used with @ref Magnum::Platform::GlxApplication "Platform::GlxApplication"
+subclasses as equivalent to the following code to achieve better portability,
+see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

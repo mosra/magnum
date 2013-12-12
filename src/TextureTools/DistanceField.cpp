@@ -175,7 +175,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     }
 
     Mesh mesh;
-    mesh.setPrimitive(Mesh::Primitive::Triangles)
+    mesh.setPrimitive(MeshPrimitive::Triangles)
         .setVertexCount(3);
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */

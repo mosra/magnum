@@ -32,13 +32,15 @@
 #include "Math/Range.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Utility/Macros.h>
+
 namespace Magnum { namespace Math { namespace Geometry {
 
 /**
 @copybrief Math::Range2D
-@deprecated Use @ref Magnum::Math::Range2D instead.
+@deprecated Use @ref Magnum::Math::Range2D "Math::Range2D" instead.
 */
-template<class T> class Rectangle: public Range2D<T> {
+template<class T> class CORRADE_DEPRECATED("use Math::Range2D instead") Rectangle: public Range2D<T> {
     public:
         /** @copydoc Range2D() */
         constexpr Rectangle() = default;

@@ -25,9 +25,9 @@
 #include "AbstractFontConverter.h"
 
 #include <algorithm>
-#include <fstream>
 #include <Containers/Array.h>
 #include <Utility/Assert.h>
+#include <Utility/Directory.h>
 #include <Utility/Unicode.h>
 
 #include "Text/GlyphCache.h"
@@ -108,18 +108,10 @@ bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& c
 
     /* Export all data */
     const auto data = doExportFontToData(font, cache, filename, characters);
-    for(auto it = data.begin(); it != data.end(); ++it) {
+    for(auto it = data.begin(); it != data.end(); ++it) if(!Utility::Directory::write(it->first, it->second)) {
         const auto& d = *it;
-
-        /* Open file */
-        std::ofstream out(d.first.data(), std::ios::binary);
-        if(!out.good()) {
-            Error() << "Text::AbstractFontConverter::exportFontToFile(): cannot write to file" << d.first;
-            return false;
-        }
-
-        /* Write data, close */
-        out.write(reinterpret_cast<const char*>(d.second.begin()), d.second.size());
+        Error() << "Text::AbstractFontConverter::exportFontToFile(): cannot write to file" << d.first;
+        return false;
     }
 
     return true;
@@ -180,18 +172,9 @@ bool AbstractFontConverter::doExportGlyphCacheToFile(GlyphCache& cache, const st
 
     /* Export all data */
     const auto data = doExportGlyphCacheToData(cache, filename);
-    for(auto it = data.begin(); it != data.end(); ++it) {
-        const auto& d = *it;
-
-        /* Open file */
-        std::ofstream out(d.first.data(), std::ios::binary);
-        if(!out.good()) {
-            Error() << "Text::AbstractFontConverter::exportGlyphCacheToFile(): cannot write to file" << d.first;
-            return false;
-        }
-
-        /* Write data, close */
-        out.write(reinterpret_cast<const char*>(d.second.begin()), d.second.size());
+    for(auto it = data.begin(); it != data.end(); ++it) if(!Utility::Directory::write(it->first, it->second)) {
+        Error() << "Text::AbstractFontConverter::exportGlyphCacheToFile(): cannot write to file" << it->first;
+        return false;
     }
 
     return true;
@@ -241,22 +224,12 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromFile(co
         "Text::AbstractFontConverter::importGlyphCacheFromFile(): not implemented", {});
 
     /* Open file */
-    std::ifstream in(filename.data(), std::ios::binary);
-    if(!in.good()) {
+    if(!Utility::Directory::fileExists(filename)) {
         Error() << "Trade::AbstractFontConverter::importGlyphCacheFromFile(): cannot open file" << filename;
         return {};
     }
 
-    /* Create array to hold file contents */
-    in.seekg(0, std::ios::end);
-    Containers::Array<unsigned char> data(std::size_t(in.tellg()));
-
-    /* Read data, close */
-    in.seekg(0, std::ios::beg);
-    in.read(reinterpret_cast<char*>(data.begin()), data.size());
-    in.close();
-
-    return doImportGlyphCacheFromSingleData(data);
+    return doImportGlyphCacheFromSingleData(Utility::Directory::read(filename));
 }
 
 #ifndef __MINGW32__

@@ -190,8 +190,8 @@ The same as @ref interleave(const T&, const U&...), but this function writes the
 output to given array buffer and updates vertex count in the mesh accordingly,
 so you don't have to call @ref Mesh::setVertexCount() on your own.
 
-@attention Setting primitive type and binding the attributes to shader is left
-    to user - see @ref Mesh-configuration "Mesh documentation".
+@attention You still must call @ref Mesh::setPrimitive() and
+    @ref Mesh::addVertexBuffer() on the mesh afterwards.
 
 For only one attribute array this function is convenient equivalent to the
 following, without any performance loss:
@@ -201,6 +201,7 @@ mesh.setVertexCount(attribute.size());
 @endcode
 
 @see @ref MeshTools::compressIndices()
+@todo rework so Mesh & Buffer doesn't need to be included in header
 */
 template<class ...T> inline void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
     return Implementation::Interleave()(mesh, buffer, usage, attributes...);

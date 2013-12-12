@@ -62,8 +62,7 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .setHelp("Converts font to raster one of given atlas size.")
         .parse(arguments.argc, arguments.argv);
 
-    /* GCC 4.5 can't handle {} here (wtf) */
-    createContext(Configuration());
+    createContext();
 }
 
 int FontConverter::exec() {

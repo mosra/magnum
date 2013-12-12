@@ -49,8 +49,8 @@ MeshTest::MeshTest() {
 
 void MeshTest::debugPrimitive() {
     std::ostringstream o;
-    Debug(&o) << Mesh::Primitive::TriangleFan;
-    CORRADE_COMPARE(o.str(), "Mesh::Primitive::TriangleFan\n");
+    Debug(&o) << MeshPrimitive::TriangleFan;
+    CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan\n");
 }
 
 void MeshTest::debugIndexType() {
@@ -62,9 +62,9 @@ void MeshTest::debugIndexType() {
 void MeshTest::configurationPrimitive() {
     Utility::Configuration c;
 
-    c.setValue("primitive", Mesh::Primitive::LineStrip);
+    c.setValue("primitive", MeshPrimitive::LineStrip);
     CORRADE_COMPARE(c.value("primitive"), "LineStrip");
-    CORRADE_COMPARE(c.value<Mesh::Primitive>("primitive"), Mesh::Primitive::LineStrip);
+    CORRADE_COMPARE(c.value<MeshPrimitive>("primitive"), MeshPrimitive::LineStrip);
 }
 
 void MeshTest::configurationIndexType() {

@@ -26,6 +26,7 @@
 
 #include "Math/Functions.h"
 #include "Math/Vector3.h"
+#include "Mesh.h"
 #include "Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
@@ -161,7 +162,7 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
 }
 
 Trade::MeshData3D Spheroid::finalize() {
-    return Trade::MeshData3D(Mesh::Primitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)},
+    return Trade::MeshData3D(MeshPrimitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)},
         textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>>{std::move(textureCoords2D)} : std::vector<std::vector<Vector2>>());
 }
 

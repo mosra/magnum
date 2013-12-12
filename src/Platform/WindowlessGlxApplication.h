@@ -56,12 +56,13 @@ include path and link to `${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no
 other windowless application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building, @ref cmake and @ref platform for more information.
+@ref building and @ref cmake for more information.
 
 @section WindowlessGlxApplication-usage Usage
 
 Place your code into @ref exec(). The subclass can be then used directly in
 `main()` -- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
+See @ref platform for more information.
 @code
 class MyApplication: public Platform::WindowlessGlxApplication {
     // implement required methods...
@@ -83,7 +84,7 @@ class WindowlessGlxApplication {
 
         class Configuration;
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -92,12 +93,24 @@ class WindowlessGlxApplication {
         explicit WindowlessGlxApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc GlutApplication::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t);
         #else
         explicit WindowlessGlxApplication(const Arguments& arguments, void*);
         #endif
+
+        /** @brief Copying is not allowed */
+        WindowlessGlxApplication(const WindowlessGlxApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessGlxApplication(WindowlessGlxApplication&&) = delete;
+
+        /** @brief Copying is not allowed */
+        WindowlessGlxApplication& operator=(const WindowlessGlxApplication&) = delete;
+
+        /** @brief Moving is not allowed */
+        WindowlessGlxApplication& operator=(WindowlessGlxApplication&&) = delete;
 
         /**
          * @brief Execute application
@@ -110,8 +123,17 @@ class WindowlessGlxApplication {
            thus this is faster than public pure virtual destructor */
         ~WindowlessGlxApplication();
 
-        /** @copydoc GlutApplication::createContext() */
+        /** @copydoc Sdl2Application::createContext() */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void createContext(const Configuration& configuration = Configuration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
         void createContext(const Configuration& configuration);
+        void createContext();
+        #endif
+
+        /** @copydoc Sdl2Application::tryCreateContext() */
+        bool tryCreateContext(const Configuration& configuration);
 
     private:
         Display* display;
@@ -124,24 +146,20 @@ class WindowlessGlxApplication {
 /**
 @brief %Configuration
 
-@see WindowlessGlxApplication(), createContext()
+@see @ref WindowlessGlxApplication(), @ref createContext(),
+    @ref tryCreateContext()
 */
 class WindowlessGlxApplication::Configuration {
-    Configuration(const Configuration&) = delete;
-    Configuration(Configuration&&) = delete;
-    Configuration& operator=(const Configuration&) = delete;
-    Configuration& operator=(Configuration&&) = delete;
-
     public:
-        /*implicit*/ Configuration();
-        ~Configuration();
+        constexpr /*implicit*/ Configuration() {}
 };
 
 /** @hideinitializer
 @brief Entry point for windowless GLX application
 @param className Class name
 
-Can be used as equivalent to the following code to achieve better portability,
+Can be used with @ref Magnum::Platform::WindowlessGlxApplication "Platform::WindowlessGlxApplication"
+subclasses as equivalent to the following code to achieve better portability,
 see @ref portability-applications for more information.
 @code
 int main(int argc, char** argv) {

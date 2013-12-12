@@ -65,7 +65,7 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          * @param halfLength    Half the cylinder length
          * @param flags         Flags
          *
-         * Indexed @ref Mesh::Primitive "Triangles" with normals, optional 2D
+         * Indexed @ref MeshPrimitive::Triangles with normals, optional 2D
          * texture coordinates and optional capped ends. If texture coordinates
          * are generated, vertices of one segment are duplicated for texture
          * wrapping.
@@ -80,7 +80,7 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          *      equal to 4 and multiple of 4.
          * @param halfLength    Half the cylinder length
          *
-         * Indexed @ref Mesh::Primitive "Lines".
+         * Indexed @ref MeshPrimitive::Lines.
          */
         static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
 };

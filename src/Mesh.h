@@ -36,6 +36,80 @@
 namespace Magnum {
 
 /**
+ * @brief %Mesh primitive type
+ *
+ * @see @ref Mesh::primitive(), @ref Mesh::setPrimitive()
+ */
+enum class MeshPrimitive: GLenum {
+    /** Single points. */
+    Points = GL_POINTS,
+
+    /**
+     * First two vertices define first line segment, each following
+     * vertex defines another segment.
+     */
+    LineStrip = GL_LINE_STRIP,
+
+    /** Line strip, last and first vertex are connected together. */
+    LineLoop = GL_LINE_LOOP,
+
+    /**
+     * Each pair of vertices defines a single line, lines aren't
+     * connected together.
+     */
+    Lines = GL_LINES,
+
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * Line strip with adjacency information.
+     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     */
+    LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
+
+    /**
+     * Lines with adjacency information.
+     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     */
+    LinesAdjacency = GL_LINES_ADJACENCY,
+    #endif
+
+    /**
+     * First three vertices define first triangle, each following
+     * vertex defines another triangle.
+     */
+    TriangleStrip = GL_TRIANGLE_STRIP,
+
+    /**
+     * First vertex is center, each following vertex is connected to
+     * previous and center vertex.
+     */
+    TriangleFan = GL_TRIANGLE_FAN,
+
+    /** Each three vertices define one triangle. */
+    Triangles = GL_TRIANGLES,
+
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * Triangle strip with adjacency information.
+     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     */
+    TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
+
+    /**
+     * Triangles with adjacency information.
+     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     */
+    TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+
+    /**
+     * Patches.
+     * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+     */
+    Patches = GL_PATCHES
+    #endif
+};
+
+/**
 @brief %Mesh
 
 @section Mesh-configuration Mesh configuration
@@ -86,7 +160,7 @@ static constexpr Vector3 positions[30] = {
 vertexBuffer.setData(positions, BufferUsage::StaticDraw);
 
 // Set primitive and vertex count, add the buffer and specify its layout
-mesh.setPrimitive(Mesh::Primitive::Triangles)
+mesh.setPrimitive(MeshPrimitive::Triangles)
     .setVertexCount(30)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position());
 @endcode
@@ -135,7 +209,7 @@ static constexpr GLubyte indices[75] = {
 indexBuffer.setData(indices, BufferUsage::StaticDraw);
 
 // Set primitive, index count, specify the buffers
-mesh.setPrimitive(Mesh::Primitive::Triangles)
+mesh.setPrimitive(MeshPrimitive::Triangles)
     .setIndexCount(75)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position())
     .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
@@ -238,79 +312,13 @@ class MAGNUM_EXPORT Mesh {
     friend class MeshView;
 
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Primitive type
-         *
-         * @see @ref primitive(), @ref setPrimitive()
+         * @copybrief MeshPrimitive
+         * @deprecated Use @ref Magnum::MeshPrimitive "MeshPrimitive" instead.
          */
-        enum class Primitive: GLenum {
-            /** Single points. */
-            Points = GL_POINTS,
-
-            /**
-             * First two vertices define first line segment, each following
-             * vertex defines another segment.
-             */
-            LineStrip = GL_LINE_STRIP,
-
-            /** Line strip, last and first vertex are connected together. */
-            LineLoop = GL_LINE_LOOP,
-
-            /**
-             * Each pair of vertices defines a single line, lines aren't
-             * connected together.
-             */
-            Lines = GL_LINES,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Line strip with adjacency information.
-             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
-             */
-            LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
-
-            /**
-             * Lines with adjacency information.
-             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
-             */
-            LinesAdjacency = GL_LINES_ADJACENCY,
-            #endif
-
-            /**
-             * First three vertices define first triangle, each following
-             * vertex defines another triangle.
-             */
-            TriangleStrip = GL_TRIANGLE_STRIP,
-
-            /**
-             * First vertex is center, each following vertex is connected to
-             * previous and center vertex.
-             */
-            TriangleFan = GL_TRIANGLE_FAN,
-
-            /** Each three vertices define one triangle. */
-            Triangles = GL_TRIANGLES,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Triangle strip with adjacency information.
-             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
-             */
-            TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
-
-            /**
-             * Triangles with adjacency information.
-             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
-             */
-            TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
-
-            /**
-             * Patches.
-             * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
-             */
-            Patches = GL_PATCHES
-            #endif
-        };
+        typedef CORRADE_DEPRECATED("use MeshPrimitive instead") MeshPrimitive Primitive;
+        #endif
 
         /**
          * @brief Index type
@@ -377,7 +385,7 @@ class MAGNUM_EXPORT Mesh {
          * @see @ref setPrimitive(), @ref setVertexCount(), @fn_gl{GenVertexArrays}
          *      (if @extension{APPLE,vertex_array_object} is available)
          */
-        explicit Mesh(Primitive primitive = Primitive::Triangles);
+        explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
 
         /** @brief Copying is not allowed */
         Mesh(const Mesh&) = delete;
@@ -407,16 +415,16 @@ class MAGNUM_EXPORT Mesh {
         std::size_t indexSize() const { return indexSize(_indexType); }
 
         /** @brief Primitive type */
-        Primitive primitive() const { return _primitive; }
+        MeshPrimitive primitive() const { return _primitive; }
 
         /**
          * @brief Set primitive type
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref Primitive::Triangles.
+         * Default is @ref MeshPrimitive::Triangles.
          * @see @ref setVertexCount(), @ref addVertexBuffer()
          */
-        Mesh& setPrimitive(Primitive primitive) {
+        Mesh& setPrimitive(MeshPrimitive primitive) {
             _primitive = primitive;
             return *this;
         }
@@ -743,7 +751,7 @@ class MAGNUM_EXPORT Mesh {
         static MAGNUM_LOCAL UnbindImplementation unbindImplementation;
 
         GLuint _id;
-        Primitive _primitive;
+        MeshPrimitive _primitive;
         Int _vertexCount, _indexCount;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
@@ -762,7 +770,7 @@ class MAGNUM_EXPORT Mesh {
 };
 
 /** @debugoperator{Magnum::Mesh} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::Primitive value);
+Debug MAGNUM_EXPORT operator<<(Debug debug, MeshPrimitive value);
 
 /** @debugoperator{Magnum::Mesh} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
@@ -772,7 +780,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
 namespace Corrade { namespace Utility {
 
 /** @configurationvalue{Magnum::Mesh} */
-template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::Primitive> {
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
     ConfigurationValue() = delete;
 
     /**
@@ -780,14 +788,14 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::Primitive> {
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::Mesh::Primitive value, ConfigurationValueFlags);
+    static std::string toString(Magnum::MeshPrimitive value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum value as string
      *
-     * If the value is invalid, returns @ref Magnum::Mesh::Primitive::Points "Mesh::Primitive::Points".
+     * If the value is invalid, returns @ref Magnum::MeshPrimitive::Points "MeshPrimitive::Points".
      */
-    static Magnum::Mesh::Primitive fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 
 /** @configurationvalue{Magnum::Mesh} */

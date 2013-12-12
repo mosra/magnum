@@ -42,8 +42,7 @@ GlutApplication::GlutApplication(const Arguments& arguments, const Configuration
 #ifndef DOXYGEN_GENERATING_OUTPUT
 GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
     initialize(arguments.argc, arguments.argv);
-    /* GCC 4.5 can't handle {} here (wtf) */
-    createContext(Configuration());
+    createContext();
 }
 #endif
 
@@ -66,11 +65,10 @@ void GlutApplication::initialize(int& argc, char** argv) {
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 }
 
+void GlutApplication::createContext() { createContext({}); }
+
 void GlutApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::GlutApplication::createContext(): cannot create context";
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool GlutApplication::tryCreateContext(const Configuration& configuration) {
@@ -83,8 +81,10 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
 
     glutInitDisplayMode(flags);
     glutInitWindowSize(configuration.size().x(), configuration.size().y());
-    if(!glutCreateWindow(configuration.title().data()))
+    if(!glutCreateWindow(configuration.title().data())) {
+        Error() << "Platform::GlutApplication::tryCreateContext(): cannot create context";
         return false;
+    }
     glutReshapeFunc(staticViewportEvent);
     glutSpecialFunc(staticKeyEvent);
     glutMouseFunc(staticMouseEvent);
@@ -117,6 +117,7 @@ void GlutApplication::staticMouseMoveEvent(int x, int y) {
     instance->mouseMoveEvent(e);
 }
 
+void GlutApplication::viewportEvent(const Vector2i&) {}
 void GlutApplication::keyPressEvent(KeyEvent&) {}
 void GlutApplication::keyReleaseEvent(KeyEvent&) {}
 void GlutApplication::mousePressEvent(MouseEvent&) {}

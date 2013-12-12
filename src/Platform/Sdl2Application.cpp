@@ -68,8 +68,7 @@ Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configur
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
     initialize();
-    /* GCC 4.5 can't handle {} here (wtf) */
-    createContext(Configuration());
+    createContext();
 }
 #endif
 
@@ -95,11 +94,10 @@ void Sdl2Application::initialize() {
     }
 }
 
+void Sdl2Application::createContext() { createContext({}); }
+
 void Sdl2Application::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) {
-        Error() << "Platform::Sdl2Application::createContext(): cannot create context:" << SDL_GetError();
-        std::exit(1);
-    }
+    if(!tryCreateContext(configuration)) std::exit(1);
 }
 
 bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
@@ -122,10 +120,13 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     if(!(window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|flags)))
+            SDL_WINDOW_OPENGL|flags))) {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
         return false;
+    }
 
     if(!(context = SDL_GL_CreateContext(window))) {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
         SDL_DestroyWindow(window);
         window = nullptr;
         return false;
@@ -249,6 +250,7 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     #endif
 }
 
+void Sdl2Application::viewportEvent(const Vector2i&) {}
 void Sdl2Application::keyPressEvent(KeyEvent&) {}
 void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}

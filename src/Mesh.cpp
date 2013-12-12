@@ -82,7 +82,7 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Mesh::Mesh(Primitive primitive): _primitive(primitive), _vertexCount(0), _indexCount(0)
+Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _vertexCount(0), _indexCount(0)
     #ifndef MAGNUM_TARGET_GLES2
     , _indexStart(0), _indexEnd(0)
     #endif
@@ -379,9 +379,9 @@ void Mesh::unbindImplementationDefault() {
 void Mesh::unbindImplementationVAO() {}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, Mesh::Primitive value) {
+Debug operator<<(Debug debug, MeshPrimitive value) {
     switch(value) {
-        #define _c(value) case Mesh::Primitive::value: return debug << "Mesh::Primitive::" #value;
+        #define _c(value) case MeshPrimitive::value: return debug << "MeshPrimitive::" #value;
         _c(Points)
         _c(LineStrip)
         _c(LineLoop)
@@ -401,7 +401,7 @@ Debug operator<<(Debug debug, Mesh::Primitive value) {
         #undef _c
     }
 
-    return debug << "Mesh::Primitive::(invalid)";
+    return debug << "MeshPrimitive::(invalid)";
 }
 
 Debug operator<<(Debug debug, Mesh::IndexType value) {
@@ -421,9 +421,9 @@ Debug operator<<(Debug debug, Mesh::IndexType value) {
 
 namespace Corrade { namespace Utility {
 
-std::string ConfigurationValue<Magnum::Mesh::Primitive>::toString(Magnum::Mesh::Primitive value, ConfigurationValueFlags) {
+std::string ConfigurationValue<Magnum::MeshPrimitive>::toString(Magnum::MeshPrimitive value, ConfigurationValueFlags) {
     switch(value) {
-        #define _c(value) case Magnum::Mesh::Primitive::value: return #value;
+        #define _c(value) case Magnum::MeshPrimitive::value: return #value;
         _c(Points)
         _c(LineStrip)
         _c(LineLoop)
@@ -446,8 +446,8 @@ std::string ConfigurationValue<Magnum::Mesh::Primitive>::toString(Magnum::Mesh::
     return {};
 }
 
-Magnum::Mesh::Primitive ConfigurationValue<Magnum::Mesh::Primitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
-    #define _c(value) if(stringValue == #value) return Magnum::Mesh::Primitive::value;
+Magnum::MeshPrimitive ConfigurationValue<Magnum::MeshPrimitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+    #define _c(value) if(stringValue == #value) return Magnum::MeshPrimitive::value;
     _c(LineStrip)
     _c(LineLoop)
     _c(Lines)
@@ -465,7 +465,7 @@ Magnum::Mesh::Primitive ConfigurationValue<Magnum::Mesh::Primitive>::fromString(
     #endif
     #undef _c
 
-    return Magnum::Mesh::Primitive::Points;
+    return Magnum::MeshPrimitive::Points;
 }
 
 std::string ConfigurationValue<Magnum::Mesh::IndexType>::toString(Magnum::Mesh::IndexType value, ConfigurationValueFlags) {

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::ImageData
+ * @brief Class @ref Magnum::Trade::ImageData, typedef @ref Magnum::Trade::ImageData1D, @ref Magnum::Trade::ImageData2D, @ref Magnum::Trade::ImageData3D
  */
 
 #include "ImageReference.h"
@@ -35,9 +35,9 @@ namespace Magnum { namespace Trade {
 /**
 @brief %Image data
 
-Access to image data provided by AbstractImporter subclasses. Interchangeable
-with Image, ImageReference or BufferImage.
-@see ImageData1D, ImageData2D, ImageData3D
+Access to image data provided by @ref AbstractImporter subclasses.
+Interchangeable with @ref Image, @ref ImageReference or @ref BufferImage.
+@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */
 template<UnsignedInt dimensions> class ImageData: public AbstractImage {
     public:
@@ -70,19 +70,38 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         /** @brief Destructor */
         ~ImageData() { delete[] _data; }
 
-        /**
-         * @brief Conversion to reference
-         *
-         * @todo GCC 4.8: don't allow this on rvalue-ref
-         */
-        /*implicit*/ operator ImageReference<dimensions>() const;
+        /** @brief Conversion to reference */
+        /*implicit*/ operator ImageReference<dimensions>()
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        const &;
+        #else
+        const;
+        #endif
+
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        /** @overload */
+        /*implicit*/ operator ImageReference<dimensions>() const && = delete;
+        #endif
 
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
-        /** @brief Pointer to raw data */
+        /**
+         * @brief Pointer to raw data
+         *
+         * @see @ref release()
+         */
         unsigned char* data() { return _data; }
         const unsigned char* data() const { return _data; } /**< @overload */
+
+        /**
+         * @brief Release data storage
+         *
+         * Returns the data pointer and resets internal state to default.
+         * Deleting the returned array is user responsibility.
+         * @see @ref data()
+         */
+        unsigned char* release();
 
     private:
         Math::Vector<Dimensions, Int> _size;
@@ -110,8 +129,22 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensi
     return *this;
 }
 
-template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>() const {
+template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>()
+#ifndef CORRADE_GCC47_COMPATIBILITY
+const &
+#else
+const
+#endif
+{
     return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
+}
+
+template<UnsignedInt dimensions> inline unsigned char* ImageData<dimensions>::release() {
+    /** @todo I need `std::exchange` NOW. */
+    unsigned char* const data = _data;
+    _size = {};
+    _data = nullptr;
+    return data;
 }
 
 }}

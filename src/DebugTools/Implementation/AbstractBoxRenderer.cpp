@@ -24,6 +24,7 @@
 
 #include "AbstractBoxRenderer.h"
 
+#include "Mesh.h"
 #include "Primitives/Cube.h"
 #include "Primitives/Square.h"
 #include "Trade/MeshData2D.h"

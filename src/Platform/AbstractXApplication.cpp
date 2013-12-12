@@ -42,13 +42,6 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
     createContext(configuration);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
-    /* GCC 4.5 can't handle {} here (wtf) */
-    createContext(Configuration());
-}
-#endif
-
 #ifndef CORRADE_GCC45_COMPATIBILITY
 AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t)
 #else
@@ -56,8 +49,14 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
 #endif
     : contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
+void AbstractXApplication::createContext() { createContext({}); }
+
 void AbstractXApplication::createContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!c, "AbstractXApplication::createContext(): context already created", );
+    if(!tryCreateContext(configuration)) std::exit(1);
+}
+
+bool AbstractXApplication::tryCreateContext(const Configuration& configuration) {
+    CORRADE_ASSERT(!c, "AbstractXApplication::tryCreateContext(): context already created", false);
 
     viewportSize = configuration.size();
 
@@ -73,8 +72,8 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
     visTemplate.visualid = visualId;
     visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
-        Error() << "Cannot get X visual";
-        std::exit(1);
+        Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot get X visual";
+        return false;
     }
 
     /* Create X Window */
@@ -103,6 +102,7 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
     contextHandler->makeCurrent();
 
     c = new Context;
+    return true;
 }
 
 AbstractXApplication::~AbstractXApplication() {
@@ -174,6 +174,7 @@ int AbstractXApplication::exec() {
     return 0;
 }
 
+void AbstractXApplication::viewportEvent(const Vector2i&) {}
 void AbstractXApplication::keyPressEvent(KeyEvent&) {}
 void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
 void AbstractXApplication::mousePressEvent(MouseEvent&) {}
