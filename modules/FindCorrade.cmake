@@ -63,7 +63,10 @@
 # The macro adds preprocessor directive CORRADE_DYNAMIC_PLUGIN. Additional
 # libraries can be linked in via target_link_libraries(plugin_name ...). If
 # install_dir is set to CMAKE_CURRENT_BINARY_DIR (e.g. for testing purposes),
-# the files are copied directly, without need to run `make install`.
+# the files are copied directly, without the need to run `make install`. Note
+# that the files are actually put into configuration-based subdirectory, i.e.
+# ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}. See documentation of
+# CMAKE_CFG_INTDIR variable for more information.
 #
 #
 # Add static plugin.
@@ -152,13 +155,13 @@ endif()
 file(READ ${CORRADE_INCLUDE_DIR}/corradeConfigure.h _corradeConfigure)
 
 # Compatibility?
-string(FIND "${_corradeConfigure}" "#define CORRADE_GCC46_COMPATIBILITY" _GCC46_COMPATIBILITY)
-if(NOT _GCC46_COMPATIBILITY EQUAL -1)
-    set(CORRADE_GCC46_COMPATIBILITY 1)
-endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_GCC47_COMPATIBILITY" _GCC47_COMPATIBILITY)
 if(NOT _GCC47_COMPATIBILITY EQUAL -1)
     set(CORRADE_GCC47_COMPATIBILITY 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_GCC46_COMPATIBILITY" _GCC46_COMPATIBILITY)
+if(NOT _GCC46_COMPATIBILITY EQUAL -1)
+    set(CORRADE_GCC46_COMPATIBILITY 1)
 endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_BUILD_DEPRECATED" _BUILD_DEPRECATED)
 if(NOT _BUILD_DEPRECATED EQUAL -1)
@@ -191,8 +194,8 @@ set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_U
 set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 
 # At least static build needs this
-if((UNIX OR CORRADE_TARGET_NACL) AND NOT CORRADE_TARGET_NACL_NEWLIB)
-    set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARIES} dl)
+if(UNIX OR CORRADE_TARGET_NACL_GLIBC)
+    set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARIES} ${CMAKE_DL_LIBS})
 endif()
 
 mark_as_advanced(CORRADE_UTILITY_LIBRARY
