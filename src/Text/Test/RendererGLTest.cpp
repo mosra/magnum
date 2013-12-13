@@ -169,7 +169,8 @@ void RendererGLTest::renderMesh() {
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
     Range2D bounds;
-    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
+    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+        0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
     MAGNUM_VERIFY_NO_ERROR();
 
     /* Alignment offset */
@@ -181,7 +182,8 @@ void RendererGLTest::renderMesh() {
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     /* Vertex buffer contents */
-    Containers::Array<Float> vertices = vertexBuffer.data<Float>();
+    const Containers::Array<Float> vertices = vertexBuffer.data<Float>();
+    CORRADE_COMPARE(vertices.size(), 3*4*(2 + 2));
     CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
         0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
         0.0f + offset.x(),  0.0f + offset.y(), 0.0f,  0.0f,
@@ -199,7 +201,8 @@ void RendererGLTest::renderMesh() {
         5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
     }));
 
-    Containers::Array<UnsignedByte> indices = indexBuffer.data<UnsignedByte>();
+    const Containers::Array<UnsignedByte> indices = indexBuffer.data<UnsignedByte>();
+    CORRADE_COMPARE(indices.size(), 3*6);
     CORRADE_COMPARE(std::vector<UnsignedByte>(indices.begin(), indices.end()), (std::vector<UnsignedByte>{
         0,  1,  2,  1,  3,  2,
         4,  5,  6,  5,  7,  6,
