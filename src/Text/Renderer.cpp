@@ -201,7 +201,6 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
     vertexBuffer.setData(vertices, usage);
 
     const UnsignedInt glyphCount = vertices.size()/4;
-    const UnsignedInt vertexCount = glyphCount*4;
     const UnsignedInt indexCount = glyphCount*6;
 
     /* Render indices and upload them */
@@ -215,7 +214,7 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setIndexCount(indexCount)
-        .setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
+        .setIndexBuffer(indexBuffer, 0, indexType, 0, vertices.size());
 
     return std::make_tuple(std::move(mesh), rectangle);
 }
