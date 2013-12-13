@@ -34,6 +34,7 @@ class RendererGLTest: public Magnum::Test::AbstractOpenGLTester {
 
         void renderData();
         void renderMesh();
+        void renderMeshIndexType();
         void mutableText();
 
         void multiline();
@@ -42,6 +43,7 @@ class RendererGLTest: public Magnum::Test::AbstractOpenGLTester {
 RendererGLTest::RendererGLTest() {
     addTests({&RendererGLTest::renderData,
               &RendererGLTest::renderMesh,
+              &RendererGLTest::renderMeshIndexType,
               &RendererGLTest::mutableText,
 
               &RendererGLTest::multiline});
@@ -208,6 +210,45 @@ void RendererGLTest::renderMesh() {
         4,  5,  6,  5,  7,  6,
         8,  9, 10,  9, 11, 10
     }));
+    #endif
+}
+
+void RendererGLTest::renderMeshIndexType() {
+    #ifndef MAGNUM_TARGET_GLES
+    TestFont font;
+    Mesh mesh;
+    Buffer vertexBuffer, indexBuffer;
+
+    /* Sizes: four vertices per glyph, each vertex has 2D position and 2D
+       texture coordinates, each float is four bytes; six indices per glyph. */
+
+    /* 8-bit indices (exactly 256 vertices) */
+    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+        1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
+    MAGNUM_VERIFY_NO_ERROR();
+    Containers::Array<UnsignedByte> indicesByte = indexBuffer.data<UnsignedByte>();
+    CORRADE_COMPARE(vertexBuffer.size(), 256*(2 + 2)*4);
+    CORRADE_COMPARE(indicesByte.size(), 64*6);
+    CORRADE_COMPARE(std::vector<UnsignedByte>(indicesByte.begin(), indicesByte.begin()+18), (std::vector<UnsignedByte>{
+        0,  1,  2,  1,  3,  2,
+        4,  5,  6,  5,  7,  6,
+        8,  9, 10,  9, 11, 10
+    }));
+
+    /* 16-bit indices (260 vertices) */
+    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+        1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
+    MAGNUM_VERIFY_NO_ERROR();
+    Containers::Array<UnsignedShort> indicesShort = indexBuffer.data<UnsignedShort>();
+    CORRADE_COMPARE(vertexBuffer.size(), 260*(2 + 2)*4);
+    CORRADE_COMPARE(indicesShort.size(), 65*6);
+    CORRADE_COMPARE(std::vector<UnsignedShort>(indicesShort.begin(), indicesShort.begin()+18), (std::vector<UnsignedShort>{
+        0,  1,  2,  1,  3,  2,
+        4,  5,  6,  5,  7,  6,
+        8,  9, 10,  9, 11, 10
+    }));
+    #else
+    CORRADE_SKIP("Can't verify buffer contents on OpenGL ES.");
     #endif
 }
 
