@@ -44,7 +44,7 @@ template<class T> void createIndices(void* output, const UnsignedInt glyphCount)
            1---3 1 3---4 */
 
         const T vertex = T(i)*4;
-        const T pos = T(i)*6;
+        const UnsignedInt pos = T(i)*6;
         out[pos]   = vertex;
         out[pos+1] = vertex+1;
         out[pos+2] = vertex+2;
