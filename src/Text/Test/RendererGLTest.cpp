@@ -264,7 +264,7 @@ void RendererGLTest::mutableText() {
 void RendererGLTest::multiline() {
     class Layouter: public Text::AbstractLayouter {
         public:
-            explicit Layouter(UnsignedInt glyphs): AbstractLayouter(glyphs) {}
+            explicit Layouter(UnsignedInt glyphCount): AbstractLayouter(glyphCount) {}
 
         private:
             std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
@@ -284,7 +284,7 @@ void RendererGLTest::multiline() {
 
             std::pair<Float, Float> doOpenFile(const std::string&, Float) {
                 _opened = true;
-                return {0, 3.0f};
+                return {0.5f, 0.75f};
             }
 
             UnsignedInt doGlyphId(char32_t) override { return 0; }
@@ -303,7 +303,12 @@ void RendererGLTest::multiline() {
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
     std::tie(positions, textureCoordinates, indices, rectangle) = Text::Renderer2D::render(font,
-        *static_cast<GlyphCache*>(nullptr), 0.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+        *static_cast<GlyphCache*>(nullptr), 2.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+
+    /* We're rendering text at 2.0f size and the font is scaled to 0.3f, so the
+       line advance should be 0.75f*2.0f/0.5f = 3.0f */
+    CORRADE_COMPARE(font.size(), 0.5f);
+    CORRADE_COMPARE(font.lineHeight(), 0.75f);
 
     /* Bounds */
     CORRADE_COMPARE(rectangle, Range2D({-3.5f, -5.0f}, {3.5f, 5.0f}));
