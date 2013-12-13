@@ -58,16 +58,18 @@ struct Vertex {
     Vector2 position, textureCoordinates;
 };
 
-std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, const Alignment alignment) {
+std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, const Float size, const std::string& text, const Alignment alignment) {
     /* Output data, reserve memory as when the text would be ASCII-only. In
        reality the actual vertex count will be smaller, but allocating more at
        once is better than reallocating many times later. */
     std::vector<Vertex> vertices;
     vertices.reserve(text.size()*4);
 
-    /* Total rendered bounds, intial line position, last+1 vertex on previous line */
+    /* Total rendered bounds, intial line position, line increment, last+1
+       vertex on previous line */
     Range2D rectangle;
     Vector2 linePosition;
+    const Vector2 lineAdvance = Vector2::yAxis(font.lineHeight()*size/font.size());
     std::size_t lastLineLastVertex = 0;
 
     /* Temp buffer so we don't allocate for each new line */
@@ -146,7 +148,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
 
     /* Move to next line */
     } while(prevPos = pos+1,
-            linePosition -= Vector2::yAxis(font.lineHeight()),
+            linePosition -= lineAdvance,
             lastLineLastVertex = vertices.size(),
             pos != std::string::npos);
 
