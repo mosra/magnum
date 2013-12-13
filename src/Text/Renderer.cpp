@@ -176,11 +176,11 @@ std::pair<Containers::Array<unsigned char>, Mesh::IndexType> renderIndicesIntern
 
     Containers::Array<unsigned char> indices;
     Mesh::IndexType indexType;
-    if(vertexCount < 255) {
+    if(vertexCount <= 256) {
         indexType = Mesh::IndexType::UnsignedByte;
         indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedByte));
         createIndices<UnsignedByte>(indices, glyphCount);
-    } else if(vertexCount < 65535) {
+    } else if(vertexCount <= 65536) {
         indexType = Mesh::IndexType::UnsignedShort;
         indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedShort));
         createIndices<UnsignedShort>(indices, glyphCount);
