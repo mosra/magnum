@@ -93,15 +93,30 @@ ColorTest::ColorTest() {
 }
 
 void ColorTest::construct() {
+    /* GCC 4.4 added its own variant of copy constructor and then thinks this
+       is ambiguous */
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Color3 a = {1.0f, 0.5f, 0.75f};
+    #else
+    constexpr Color3 a{1.0f, 0.5f, 0.75f};
+    #endif
     CORRADE_COMPARE(a, Vector3(1.0f, 0.5f, 0.75f));
 
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Color4 b = {1.0f, 0.5f, 0.75f, 0.5f};
+    #else
+    constexpr Color4 b{1.0f, 0.5f, 0.75f, 0.5f};
+    #endif
     CORRADE_COMPARE(b, Vector4(1.0f, 0.5f, 0.75f, 0.5f));
 
     /* Default alpha */
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     constexpr Color4 c = {1.0f, 0.5f, 0.75f};
     constexpr Color4ub d = {10, 25, 176};
+    #else
+    constexpr Color4 c{1.0f, 0.5f, 0.75f};
+    constexpr Color4ub d{10, 25, 176};
+    #endif
     CORRADE_COMPARE(c, Vector4(1.0f, 0.5f, 0.75f, 1.0f));
     CORRADE_COMPARE(d, Math::Vector4<UnsignedByte>(10, 25, 176, 255));
 }
