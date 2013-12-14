@@ -81,7 +81,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        if(!(flags & Flag::Textured)) colorUniform = uniformLocation("color");
+        colorUniform = uniformLocation("color");
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -90,6 +90,11 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     {
         if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureLayer);
     }
+
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setColor(Color4(1.0f)); // Default to white, with full transperancy (so we can see the texture)
+    #endif
 }
 
 template class Flat<2>;

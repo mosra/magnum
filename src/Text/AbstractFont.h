@@ -152,17 +152,28 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /** @brief Close font */
         void close();
 
-        /** @brief Font size */
+        /**
+         * @brief Font size
+         *
+         * Returns scale in which @ref lineHeight() and @ref glyphAdvance() is
+         * returned.
+         */
         Float size() const { return _size; }
 
-        /** @brief Line height */
+        /**
+         * @brief Line height
+         *
+         * Returns line height scaled to font size.
+         * @see @ref size()
+         */
         Float lineHeight() const { return _lineHeight; }
 
         /**
          * @brief Glyph ID for given character
          *
-         * @note This function is not meant to be used in performance-critical
-         *      code, only for font observations and conversions.
+         * @note This function is meant to be used only for font observations
+         *      and conversions. In performance-critical code the @ref layout()
+         *      function should be used instead.
          */
         UnsignedInt glyphId(char32_t character);
 
@@ -170,9 +181,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Glyph advance
          * @param glyph     Glyph ID
          *
-         * @note This function is not meant to be used in performance-critical
-         *      code, only for font observations and conversions.
-         * @see @ref glyphId()
+         * Returns glyph advance scaled to font size.
+         * @note This function is meant to be used only for font observations
+         *      and conversions. In performance-critical code the @ref layout()
+         *      function should be used instead.
+         * @see @ref glyphId(), @ref size()
          */
         Vector2 glyphAdvance(UnsignedInt glyph);
 

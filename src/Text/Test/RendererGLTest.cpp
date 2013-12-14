@@ -34,6 +34,7 @@ class RendererGLTest: public Magnum::Test::AbstractOpenGLTester {
 
         void renderData();
         void renderMesh();
+        void renderMeshIndexType();
         void mutableText();
 
         void multiline();
@@ -42,6 +43,7 @@ class RendererGLTest: public Magnum::Test::AbstractOpenGLTester {
 RendererGLTest::RendererGLTest() {
     addTests({&RendererGLTest::renderData,
               &RendererGLTest::renderMesh,
+              &RendererGLTest::renderMeshIndexType,
               &RendererGLTest::mutableText,
 
               &RendererGLTest::multiline});
@@ -169,7 +171,8 @@ void RendererGLTest::renderMesh() {
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
     Range2D bounds;
-    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
+    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+        0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
     MAGNUM_VERIFY_NO_ERROR();
 
     /* Alignment offset */
@@ -181,7 +184,8 @@ void RendererGLTest::renderMesh() {
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     /* Vertex buffer contents */
-    Containers::Array<Float> vertices = vertexBuffer.data<Float>();
+    const Containers::Array<Float> vertices = vertexBuffer.data<Float>();
+    CORRADE_COMPARE(vertices.size(), 3*4*(2 + 2));
     CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
         0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
         0.0f + offset.x(),  0.0f + offset.y(), 0.0f,  0.0f,
@@ -199,12 +203,52 @@ void RendererGLTest::renderMesh() {
         5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
     }));
 
-    Containers::Array<UnsignedByte> indices = indexBuffer.data<UnsignedByte>();
+    const Containers::Array<UnsignedByte> indices = indexBuffer.data<UnsignedByte>();
+    CORRADE_COMPARE(indices.size(), 3*6);
     CORRADE_COMPARE(std::vector<UnsignedByte>(indices.begin(), indices.end()), (std::vector<UnsignedByte>{
         0,  1,  2,  1,  3,  2,
         4,  5,  6,  5,  7,  6,
         8,  9, 10,  9, 11, 10
     }));
+    #endif
+}
+
+void RendererGLTest::renderMeshIndexType() {
+    #ifndef MAGNUM_TARGET_GLES
+    TestFont font;
+    Mesh mesh;
+    Buffer vertexBuffer, indexBuffer;
+
+    /* Sizes: four vertices per glyph, each vertex has 2D position and 2D
+       texture coordinates, each float is four bytes; six indices per glyph. */
+
+    /* 8-bit indices (exactly 256 vertices) */
+    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+        1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
+    MAGNUM_VERIFY_NO_ERROR();
+    Containers::Array<UnsignedByte> indicesByte = indexBuffer.data<UnsignedByte>();
+    CORRADE_COMPARE(vertexBuffer.size(), 256*(2 + 2)*4);
+    CORRADE_COMPARE(indicesByte.size(), 64*6);
+    CORRADE_COMPARE(std::vector<UnsignedByte>(indicesByte.begin(), indicesByte.begin()+18), (std::vector<UnsignedByte>{
+        0,  1,  2,  1,  3,  2,
+        4,  5,  6,  5,  7,  6,
+        8,  9, 10,  9, 11, 10
+    }));
+
+    /* 16-bit indices (260 vertices) */
+    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+        1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
+    MAGNUM_VERIFY_NO_ERROR();
+    Containers::Array<UnsignedShort> indicesShort = indexBuffer.data<UnsignedShort>();
+    CORRADE_COMPARE(vertexBuffer.size(), 260*(2 + 2)*4);
+    CORRADE_COMPARE(indicesShort.size(), 65*6);
+    CORRADE_COMPARE(std::vector<UnsignedShort>(indicesShort.begin(), indicesShort.begin()+18), (std::vector<UnsignedShort>{
+        0,  1,  2,  1,  3,  2,
+        4,  5,  6,  5,  7,  6,
+        8,  9, 10,  9, 11, 10
+    }));
+    #else
+    CORRADE_SKIP("Can't verify buffer contents on OpenGL ES.");
     #endif
 }
 
@@ -264,7 +308,7 @@ void RendererGLTest::mutableText() {
 void RendererGLTest::multiline() {
     class Layouter: public Text::AbstractLayouter {
         public:
-            explicit Layouter(UnsignedInt glyphs): AbstractLayouter(glyphs) {}
+            explicit Layouter(UnsignedInt glyphCount): AbstractLayouter(glyphCount) {}
 
         private:
             std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
@@ -284,7 +328,7 @@ void RendererGLTest::multiline() {
 
             std::pair<Float, Float> doOpenFile(const std::string&, Float) {
                 _opened = true;
-                return {0, 3.0f};
+                return {0.5f, 0.75f};
             }
 
             UnsignedInt doGlyphId(char32_t) override { return 0; }
@@ -303,7 +347,12 @@ void RendererGLTest::multiline() {
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
     std::tie(positions, textureCoordinates, indices, rectangle) = Text::Renderer2D::render(font,
-        *static_cast<GlyphCache*>(nullptr), 0.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+        *static_cast<GlyphCache*>(nullptr), 2.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+
+    /* We're rendering text at 2.0f size and the font is scaled to 0.3f, so the
+       line advance should be 0.75f*2.0f/0.5f = 3.0f */
+    CORRADE_COMPARE(font.size(), 0.5f);
+    CORRADE_COMPARE(font.lineHeight(), 0.75f);
 
     /* Bounds */
     CORRADE_COMPARE(rectangle, Range2D({-3.5f, -5.0f}, {3.5f, 5.0f}));

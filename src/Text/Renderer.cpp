@@ -44,7 +44,7 @@ template<class T> void createIndices(void* output, const UnsignedInt glyphCount)
            1---3 1 3---4 */
 
         const T vertex = T(i)*4;
-        const T pos = T(i)*6;
+        const UnsignedInt pos = T(i)*6;
         out[pos]   = vertex;
         out[pos+1] = vertex+1;
         out[pos+2] = vertex+2;
@@ -61,16 +61,18 @@ struct Vertex {
     Vector2 position, textureCoordinates;
 };
 
-std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, const Alignment alignment) {
+std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& font, const GlyphCache& cache, const Float size, const std::string& text, const Alignment alignment) {
     /* Output data, reserve memory as when the text would be ASCII-only. In
        reality the actual vertex count will be smaller, but allocating more at
        once is better than reallocating many times later. */
     std::vector<Vertex> vertices;
     vertices.reserve(text.size()*4);
 
-    /* Total rendered bounds, intial line position, last+1 vertex on previous line */
+    /* Total rendered bounds, intial line position, line increment, last+1
+       vertex on previous line */
     Range2D rectangle;
     Vector2 linePosition;
+    const Vector2 lineAdvance = Vector2::yAxis(font.lineHeight()*size/font.size());
     std::size_t lastLineLastVertex = 0;
 
     /* Temp buffer so we don't allocate for each new line */
@@ -149,7 +151,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
 
     /* Move to next line */
     } while(prevPos = pos+1,
-            linePosition -= Vector2::yAxis(font.lineHeight()),
+            linePosition -= lineAdvance,
             lastLineLastVertex = vertices.size(),
             pos != std::string::npos);
 
@@ -178,11 +180,11 @@ std::pair<Containers::Array<unsigned char>, Mesh::IndexType> renderIndicesIntern
 
     Containers::Array<unsigned char> indices;
     Mesh::IndexType indexType;
-    if(vertexCount < 255) {
+    if(vertexCount <= 256) {
         indexType = Mesh::IndexType::UnsignedByte;
         indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedByte));
         createIndices<UnsignedByte>(indices, glyphCount);
-    } else if(vertexCount < 65535) {
+    } else if(vertexCount <= 65536) {
         indexType = Mesh::IndexType::UnsignedShort;
         indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedShort));
         createIndices<UnsignedShort>(indices, glyphCount);
@@ -203,7 +205,6 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
     vertexBuffer.setData(vertices, usage);
 
     const UnsignedInt glyphCount = vertices.size()/4;
-    const UnsignedInt vertexCount = glyphCount*4;
     const UnsignedInt indexCount = glyphCount*6;
 
     /* Render indices and upload them */
@@ -217,7 +218,7 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setIndexCount(indexCount)
-        .setIndexBuffer(indexBuffer, 0, indexType, 0, vertexCount);
+        .setIndexBuffer(indexBuffer, 0, indexType, 0, vertices.size());
 
     return std::make_tuple(std::move(mesh), rectangle);
 }
