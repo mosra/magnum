@@ -25,6 +25,7 @@
 #ifndef NEW_GLSL
 #define fragmentColor gl_FragColor
 #define texture texture2D
+#define in varying
 #endif
 
 #ifdef TEXTURED
@@ -33,16 +34,16 @@ layout(binding = 0) uniform sampler2D textureData;
 #else
 uniform sampler2D textureData;
 #endif
-#else
+#endif
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1) uniform vec4 color;
 #else
 uniform lowp vec4 color;
 #endif
-#endif
 
 #ifdef TEXTURED
-in mediump vec2 interpolatedTextureCoords;
+in mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef NEW_GLSL
@@ -51,7 +52,7 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef TEXTURED
-    fragmentColor = texture(textureData, interpolatedTextureCoords);
+    fragmentColor = color * texture(textureData, interpolatedTextureCoordinates);
     #else
     fragmentColor = color;
     #endif

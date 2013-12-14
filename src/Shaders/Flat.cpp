@@ -41,22 +41,23 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current()->supportedVersion({Version::GL310, Version::GL300, Version::GL210});
+    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     #else
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert(version, Shader::Type::Fragment);
+    Shader vert(version, Shader::Type::Vertex);
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("Flat.frag"));
+        .addSource(rs.get("generic.glsl"))
+        .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(version, Shader::Type::Vertex);
+    Shader frag(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>()));
+        .addSource(rs.get("Flat.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
 
@@ -77,11 +78,11 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        if(!(flags & Flag::Textured)) colorUniform = uniformLocation("color");
+        colorUniform = uniformLocation("color");
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
     #endif
     {
         if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureLayer);

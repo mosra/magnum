@@ -30,9 +30,9 @@
 
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
-#include "AbstractShaderProgram.h"
 #include "Color.h"
 #include "DimensionTraits.h"
+#include "Shaders/Generic.h"
 
 #include "magnumShadersVisibility.h"
 
@@ -44,7 +44,7 @@ namespace Implementation {
 }
 
 /**
-@brief Flat shader
+@brief %Flat shader
 
 Draws whole mesh with given unshaded color or texture. For colored mesh you
 need to provide @ref Position attribute in your triangle mesh and call at least
@@ -67,14 +67,14 @@ myTexture.bind(Shaders::Flat2D::TextureLayer);
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
     public:
         /** @brief Vertex position */
-        typedef Attribute<0, typename DimensionTraits<dimensions, Float>::VectorType> Position;
+        typedef typename Generic<dimensions>::Position Position;
 
         /**
          * @brief Texture coordinates
          *
          * Used only if @ref Flag::Textured is set.
          */
-        typedef Attribute<2, Vector2> TextureCoordinates;
+        typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
         enum: Int {
             /** Layer for color texture. Used only if @ref Flag::Textured is set. */
@@ -124,7 +124,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
-         * Has no effect if @ref Flag::Textured is set.
+         * Color will be multiplied with texture
+         * if @ref Flag::Textured is set.
          */
         Flat<dimensions>& setColor(const Color4& color);
 
@@ -144,7 +145,7 @@ typedef Flat<3> Flat3D;
 CORRADE_ENUMSET_OPERATORS(Implementation::FlatFlags)
 
 template<UnsignedInt dimensions> inline Flat<dimensions>& Flat<dimensions>::setColor(const Color4& color) {
-    if(!(_flags & Flag::Textured)) setUniform(colorUniform, color);
+    setUniform(colorUniform, color);
     return *this;
 }
 
