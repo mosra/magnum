@@ -124,7 +124,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
-         * Has no effect if @ref Flag::Textured is set.
+         * Color will be multiplied with texture
+         * if @ref Flag::Textured is set.
          */
         Flat<dimensions>& setColor(const Color4& color);
 
@@ -144,7 +145,7 @@ typedef Flat<3> Flat3D;
 CORRADE_ENUMSET_OPERATORS(Implementation::FlatFlags)
 
 template<UnsignedInt dimensions> inline Flat<dimensions>& Flat<dimensions>::setColor(const Color4& color) {
-    if(!(_flags & Flag::Textured)) setUniform(colorUniform, color);
+    setUniform(colorUniform, color);
     return *this;
 }
 
