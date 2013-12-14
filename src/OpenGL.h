@@ -31,6 +31,8 @@
 #include <corradeConfigure.h>
 #include "magnumConfigure.h"
 
+/** @todo Remove NaCl workaround when not needed */
+
 /* Desktop OpenGL */
 #ifndef MAGNUM_TARGET_GLES
     #include "OpenGL/GL/gl_magnum.h"
@@ -44,6 +46,12 @@
 
     #include <GLES2/gl2.h>
     #include <GLES2/gl2ext.h>
+
+    /* We need to define missing types for new extensions */
+    #include <cstdint>
+    typedef struct __GLsync *GLsync;
+    typedef std::uint64_t GLuint64;
+    typedef std::int64_t GLint64;
     #undef __gl2ext_h_
     #include "OpenGL/GLES2/gl2ext.h"
 
