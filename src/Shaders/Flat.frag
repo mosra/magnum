@@ -34,12 +34,20 @@ layout(binding = 0) uniform sampler2D textureData;
 #else
 uniform sampler2D textureData;
 #endif
-#else
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1) uniform vec4 color;
-#else
-uniform lowp vec4 color;
 #endif
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+#   ifndef GL_ES
+layout(location = 1) uniform vec4 color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+#   else
+layout(location = 1) uniform vec4 color;
+#   endif
+#else
+#   ifndef GL_ES
+uniform lowp vec4 color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+#   else
+unfirom lowp vec4 color;
+#   endif
 #endif
 
 #ifdef TEXTURED
@@ -52,7 +60,7 @@ out lowp vec4 fragmentColor;
 
 void main() {
     #ifdef TEXTURED
-    fragmentColor = texture(textureData, interpolatedTextureCoordinates);
+    fragmentColor = color * texture(textureData, interpolatedTextureCoordinates);
     #else
     fragmentColor = color;
     #endif
