@@ -141,7 +141,7 @@ void FunctionsTest::minmax() {
 
     const Vector3 a(5.0f, -4.0f, 1.0f);
     const Vector3 b(7.0f, -3.0f, 1.0f);
-    const std::pair<Vector3, Vector3> expectedVector{{5.0f, -4.0f, 1.0f}, {7.0f, -3.0f, 1.0f}};
+    const std::pair<Vector3, Vector3> expectedVector{Vector3(5.0f, -4.0f, 1.0f), Vector3(7.0f, -3.0f, 1.0f)};
     CORRADE_COMPARE_AS(Math::minmax(a, b), expectedVector, std::pair<Vector3, Vector3>);
     CORRADE_COMPARE_AS(Math::minmax(b, a), expectedVector, std::pair<Vector3, Vector3>);
 }
