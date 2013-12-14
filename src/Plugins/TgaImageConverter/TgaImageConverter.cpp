@@ -43,6 +43,18 @@
 
 namespace Magnum { namespace Trade {
 
+#ifdef MAGNUM_TARGET_GLES
+namespace {
+    constexpr Math::Vector3<UnsignedByte> bgr(const Math::Vector3<UnsignedByte>& vec) {
+        return Math::swizzle<'b', 'g', 'r'>(vec);
+    }
+
+    constexpr Math::Vector4<UnsignedByte> bgra(const Math::Vector4<UnsignedByte>& vec) {
+        return Math::swizzle<'b', 'g', 'r', 'a'>(vec);
+    }
+}
+#endif
+
 TgaImageConverter::TgaImageConverter() = default;
 
 TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin): AbstractImageConverter(manager, std::move(plugin)) {}
@@ -94,12 +106,10 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
     #ifdef MAGNUM_TARGET_GLES
     if(image.format() == ColorFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
-        std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
+        std::transform(pixels, pixels + image.size().product(), pixels, bgr);
     } else if(image.format() == ColorFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
-        std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
+        std::transform(pixels, pixels + image.size().product(), pixels, bgra);
     }
     #endif
 
