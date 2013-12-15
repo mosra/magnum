@@ -624,13 +624,21 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
         enum class Button: unsigned int {
             Left = PP_INPUTEVENT_MOUSEBUTTON_LEFT,      /**< Left button */
             Middle = PP_INPUTEVENT_MOUSEBUTTON_MIDDLE,  /**< Middle button */
-            Right = PP_INPUTEVENT_MOUSEBUTTON_RIGHT     /**< Right button */
+            Right = PP_INPUTEVENT_MOUSEBUTTON_RIGHT,    /**< Right button */
+            WheelUp = 0xFFFF01,                         /**< Wheel up */
+            WheelDown = 0xFFFF02                        /**< Wheel down */
         };
 
         /** @brief Button */
         constexpr Button button() const { return _button; }
 
-        /** @brief Position */
+        /**
+         * @brief Position
+         *
+         * @attention Note that due to the way the @ref Button::WheelUp and
+         *      @ref Button::WheelDown events are handled by Native Client, the
+         *      position information is not available, i.e. it is set to zero.
+         */
         constexpr Vector2i position() const { return _position; }
 
     private:

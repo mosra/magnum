@@ -34,6 +34,13 @@
 
 namespace Magnum { namespace Platform {
 
+static_assert(NaClApplication::MouseEvent::Button::WheelUp != NaClApplication::MouseEvent::Button::Left &&
+              NaClApplication::MouseEvent::Button::WheelUp != NaClApplication::MouseEvent::Button::Middle &&
+              NaClApplication::MouseEvent::Button::WheelUp != NaClApplication::MouseEvent::Button::Right &&
+              NaClApplication::MouseEvent::Button::WheelDown != NaClApplication::MouseEvent::Button::Left &&
+              NaClApplication::MouseEvent::Button::WheelDown != NaClApplication::MouseEvent::Button::Middle &&
+              NaClApplication::MouseEvent::Button::WheelDown != NaClApplication::MouseEvent::Button::Right, "");
+
 struct NaClApplication::ConsoleDebugOutput {
     explicit ConsoleDebugOutput(pp::Instance* instance);
 
@@ -197,6 +204,15 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
             pp::MouseInputEvent mouseEvent(event);
             MouseEvent e(static_cast<MouseEvent::Button>(mouseEvent.GetButton()), {mouseEvent.GetPosition().x(), mouseEvent.GetPosition().y()}, static_cast<InputEvent::Modifier>(mouseEvent.GetModifiers()));
             event.GetType() == PP_INPUTEVENT_TYPE_MOUSEDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+            if(!e.isAccepted()) return false;
+            break;
+        }
+
+        case PP_INPUTEVENT_TYPE_WHEEL: {
+            pp::WheelInputEvent wheelEvent(event);
+            if(Math::TypeTraits<Float>::equals(wheelEvent.GetDelta().y(), 0.0f)) return false;
+            MouseEvent e(wheelEvent.GetDelta().y() > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {}, static_cast<InputEvent::Modifier>(wheelEvent.GetModifiers()));
+            mousePressEvent(e);
             if(!e.isAccepted()) return false;
             break;
         }
