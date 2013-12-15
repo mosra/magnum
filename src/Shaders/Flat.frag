@@ -46,7 +46,7 @@ layout(location = 1) uniform vec4 color;
 #   ifndef GL_ES
 uniform lowp vec4 color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 #   else
-unfirom lowp vec4 color;
+uniform lowp vec4 color;
 #   endif
 #endif
 

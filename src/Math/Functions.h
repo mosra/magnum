@@ -252,12 +252,21 @@ template<std::size_t size, class T> Vector<size, T> floor(const Vector<size, T>&
 template<class T> inline T round(const T& a);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type round(T a) {
+    #ifndef CORRADE_TARGET_NACL_NEWLIB
     return std::round(a);
+    #else
+    return (a > T(0)) ? std::floor(a + T(0.5)) : std::ceil(a - T(0.5));
+    #endif
 }
 template<std::size_t size, class T> Vector<size, T> round(const Vector<size, T>& a) {
     Vector<size, T> out;
-    for(std::size_t i = 0; i != size; ++i)
+    for(std::size_t i = 0; i != size; ++i) {
+        #ifndef CORRADE_TARGET_NACL_NEWLIB
         out[i] = std::round(a[i]);
+        #else
+        out[i] = round(a[i]);
+        #endif
+    }
     return out;
 }
 #endif
