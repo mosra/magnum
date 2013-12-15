@@ -50,7 +50,8 @@ template<class Application> BasicScreenedApplication<Application>::BasicScreened
 #endif
     Application(arguments, nullptr) {}
 
-template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() = default;
+/* `= default` causes linker errors in GCC 4.4, maybe also in 4.5 */
+template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() {}
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::addScreen(BasicScreen<Application>& screen) {
     Containers::LinkedList<BasicScreen<Application>>::insert(&screen);
