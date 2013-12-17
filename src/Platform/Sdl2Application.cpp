@@ -251,7 +251,12 @@ void Sdl2Application::mousePressEvent(MouseEvent&) {}
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
 
-Sdl2Application::Configuration::Configuration(): _title("Magnum SDL2 Application"), _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}
+Sdl2Application::Configuration::Configuration():
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    _title("Magnum SDL2 Application"),
+    #endif
+    _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}
+
 Sdl2Application::Configuration::~Configuration() = default;
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
