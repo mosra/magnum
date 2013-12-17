@@ -34,7 +34,7 @@ namespace Magnum { namespace Text {
 
 AbstractFont::AbstractFont(): _size(0.0f) {}
 
-AbstractFont::AbstractFont(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f), _lineHeight(0.0f) {}
+AbstractFont::AbstractFont(PluginManager::AbstractManager& manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)), _size(0.0f), _lineHeight(0.0f) {}
 
 bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float size) {
     CORRADE_ASSERT(features() & Feature::OpenData,

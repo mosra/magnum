@@ -32,7 +32,7 @@ namespace Magnum { namespace Audio {
 
 AbstractImporter::AbstractImporter() = default;
 
-AbstractImporter::AbstractImporter(PluginManager::AbstractManager* manager, std::string plugin): PluginManager::AbstractPlugin(manager, std::move(plugin)) {}
+AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractPlugin(manager, std::move(plugin)) {}
 
 bool AbstractImporter::openData(Containers::ArrayReference<const unsigned char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,

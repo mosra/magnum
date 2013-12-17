@@ -95,7 +95,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
         explicit AbstractImporter();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImporter(PluginManager::AbstractManager* manager, std::string plugin);
+        explicit AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin);
 
         /** @brief Features supported by this importer */
         Features features() const { return doFeatures(); }

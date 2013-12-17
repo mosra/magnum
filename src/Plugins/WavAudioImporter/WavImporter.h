@@ -55,7 +55,7 @@ class WavImporter: public AbstractImporter {
         explicit WavImporter();
 
         /** @brief Plugin manager constructor */
-        explicit WavImporter(PluginManager::AbstractManager* manager, std::string plugin);
+        explicit WavImporter(PluginManager::AbstractManager& manager, std::string plugin);
 
         ~WavImporter();
 
