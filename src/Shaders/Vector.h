@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::Vector, typedef Magnum::Shaders::Vector2D, Magnum::Shaders::Vector3D
+ * @brief Class @ref Magnum::Shaders::Vector, typedef @ref Magnum::Shaders::Vector2D, @ref Magnum::Shaders::Vector3D
  */
 
 #include "Math/Matrix3.h"
@@ -41,9 +41,10 @@ namespace Magnum { namespace Shaders {
 /**
 @brief %Vector shader
 
-Renders vector art in plain grayscale form. See also DistanceFieldVector
-for more advanced effects.
-@see Vector2D, Vector3D
+Renders vector art in plain grayscale form. See also @ref DistanceFieldVector
+for more advanced effects. For rendering unchanged texture you can use the
+@ref Flat shader.
+@see @ref Vector2D, @ref Vector3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public AbstractVector<dimensions> {
     public:

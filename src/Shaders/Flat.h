@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::Flat
+ * @brief Class @ref Magnum::Shaders::Flat, typedef @ref Magnum::Shaders::Flat2D, @ref Magnum::Shaders::Flat3D
  */
 
 #include "Math/Matrix3.h"
@@ -62,6 +62,7 @@ Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
 myTexture.bind(Shaders::Flat2D::TextureLayer);
 @endcode
 
+For coloring the texture based on intensity you can use the @ref Vector shader.
 @see @ref Flat2D, @ref Flat3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
