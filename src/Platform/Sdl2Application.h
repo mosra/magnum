@@ -397,19 +397,32 @@ class Sdl2Application::Configuration {
         /*implicit*/ Configuration();
         ~Configuration();
 
-        /** @brief Window title */
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Window title
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN.
+         */
         std::string title() const { return _title; }
+        #endif
 
         /**
          * @brief Set window title
          * @return Reference to self (for method chaining)
          *
          * Default is `"Magnum SDL2 Application"`.
+         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
+         *      does nothing and is included only for compatibility. You need
+         *      to set the title separately in application's HTML markup.
          */
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         Configuration& setTitle(std::string title) {
             _title = std::move(title);
             return *this;
         }
+        #else
+        template<class T> Configuration& setTitle(const T&) { return *this; }
+        #endif
 
         /** @brief Window size */
         Vector2i size() const { return _size; }
@@ -455,7 +468,9 @@ class Sdl2Application::Configuration {
         }
 
     private:
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         std::string _title;
+        #endif
         Vector2i _size;
         Flags _flags;
         Int _sampleCount;

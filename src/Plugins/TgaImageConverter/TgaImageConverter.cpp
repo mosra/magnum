@@ -57,7 +57,7 @@ namespace {
 
 TgaImageConverter::TgaImageConverter() = default;
 
-TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager* manager, std::string plugin): AbstractImageConverter(manager, std::move(plugin)) {}
+TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImageConverter(manager, std::move(plugin)) {}
 
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 

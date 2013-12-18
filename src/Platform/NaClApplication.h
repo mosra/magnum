@@ -349,6 +349,16 @@ class NaClApplication::Configuration {
     public:
         constexpr /*implicit*/ Configuration(): _size(640, 480), _sampleCount(0) {}
 
+        /**
+         * @brief Set window title
+         * @return Reference to self (for method chaining)
+         *
+         * @note This function does nothing and is included only for
+         *      compatibility with other toolkits. You need to set the title
+         *      separately in application's HTML markup.
+         */
+        template<class T> Configuration& setTitle(const T&) { return *this; }
+
         /** @brief Window size */
         Vector2i size() const { return _size; }
 

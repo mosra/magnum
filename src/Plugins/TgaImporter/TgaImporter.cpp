@@ -58,7 +58,7 @@ namespace {
 
 TgaImporter::TgaImporter(): in(nullptr) {}
 
-TgaImporter::TgaImporter(PluginManager::AbstractManager* manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), in(nullptr) {}
+TgaImporter::TgaImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImporter(manager, std::move(plugin)), in(nullptr) {}
 
 TgaImporter::~TgaImporter() { close(); }
 

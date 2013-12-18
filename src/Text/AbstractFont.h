@@ -105,7 +105,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         explicit AbstractFont();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractFont(PluginManager::AbstractManager* manager, std::string plugin);
+        explicit AbstractFont(PluginManager::AbstractManager& manager, std::string plugin);
 
         /** @brief Features supported by this font */
         Features features() const { return doFeatures(); }

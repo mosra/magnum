@@ -32,7 +32,7 @@ namespace Magnum { namespace Trade {
 
 AbstractImageConverter::AbstractImageConverter() = default;
 
-AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager* manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
+AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
 
 Image2D* AbstractImageConverter::exportToImage(const ImageReference2D& image) const {
     CORRADE_ASSERT(features() & Feature::ConvertImage,

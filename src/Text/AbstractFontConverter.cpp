@@ -36,7 +36,7 @@ namespace Magnum { namespace Text {
 
 AbstractFontConverter::AbstractFontConverter() = default;
 
-AbstractFontConverter::AbstractFontConverter(PluginManager::AbstractManager* manager, std::string plugin): PluginManager::AbstractPlugin(manager, std::move(plugin)) {}
+AbstractFontConverter::AbstractFontConverter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractPlugin(manager, std::move(plugin)) {}
 
 std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::exportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::string& characters) const {
     CORRADE_ASSERT(features() >= (Feature::ExportFont|Feature::ConvertData),
