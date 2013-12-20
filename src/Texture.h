@@ -423,6 +423,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        Texture<Dimensions>& setLabel(const std::string& label) {
+            AbstractTexture::setLabel(label);
+            return *this;
+        }
         Texture<Dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;

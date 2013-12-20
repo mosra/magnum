@@ -29,6 +29,7 @@
 #include <Utility/Directory.h>
 
 #include "Extensions.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
@@ -578,6 +579,23 @@ Shader& Shader::operator=(Shader&& other) {
 
     other._id = 0;
 
+    return *this;
+}
+
+std::string Shader::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_SHADER, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_SHADER_KHR, _id);
+    #endif
+}
+
+Shader& Shader::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_SHADER, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_SHADER_KHR, _id, label);
+    #endif
     return *this;
 }
 

@@ -1,3 +1,5 @@
+#ifndef Magnum_Implementation_DebugState_h
+#define Magnum_Implementation_DebugState_h
 /*
     This file is part of Magnum.
 
@@ -22,48 +24,25 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "State.h"
+#include <string>
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Implementation/BufferState.h"
-#include "Implementation/DebugState.h"
-#include "Implementation/FramebufferState.h"
-#include "Implementation/MeshState.h"
-#include "Implementation/RendererState.h"
-#include "Implementation/ShaderState.h"
-#include "Implementation/ShaderProgramState.h"
-#include "Implementation/TextureState.h"
+#include "Magnum.h"
+#include "OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 
-State::State(Context& context):
-    buffer(new BufferState),
-    debug(new DebugState(context)),
-    framebuffer(new FramebufferState),
-    mesh(new MeshState),
-    renderer(new RendererState),
-    shader(new ShaderState),
-    shaderProgram(new ShaderProgramState),
-    texture(new TextureState) {
+struct DebugState {
+    DebugState(Context& context);
 
-    Debug() << "Using optional features:";
+    typedef std::string(*GetLabelImplementation)(GLenum, GLuint);
+    GetLabelImplementation getLabelImplementation;
 
-    if(context.isExtensionSupported<Extensions::GL::KHR::debug>())
-        Debug() << "   " << Extensions::GL::KHR::debug::string();
-    else if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>())
-        Debug() << "   " << Extensions::GL::EXT::debug_label::string();
-}
+    typedef void(*LabelImplementation)(GLenum, GLuint, const std::string&);
+    LabelImplementation labelImplementation;
 
-State::~State() {
-    delete texture;
-    delete shaderProgram;
-    delete shader;
-    delete renderer;
-    delete mesh;
-    delete framebuffer;
-    delete debug;
-    delete buffer;
-}
+    GLint maxLabelLength;
+};
 
 }}
+
+#endif

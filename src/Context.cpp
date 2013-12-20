@@ -420,7 +420,7 @@ Context::Context() {
     _current = this;
 
     /* Initialize state tracker */
-    _state = new Implementation::State;
+    _state = new Implementation::State(*this);
 
     /* Initialize functionality based on current OpenGL version and extensions */
     AbstractFramebuffer::initializeContextBasedFunctionality(*this);

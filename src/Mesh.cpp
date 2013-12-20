@@ -29,6 +29,7 @@
 #include "Buffer.h"
 #include "Context.h"
 #include "Extensions.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/BufferState.h"
 #include "Implementation/MeshState.h"
 #include "Implementation/State.h"
@@ -134,6 +135,23 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     #endif
     #endif
 
+    return *this;
+}
+
+std::string Mesh::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_VERTEX_ARRAY, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_VERTEX_ARRAY_KHR, _id);
+    #endif
+}
+
+Mesh& Mesh::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_VERTEX_ARRAY, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_VERTEX_ARRAY_KHR, _id, label);
+    #endif
     return *this;
 }
 

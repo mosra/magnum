@@ -22,48 +22,25 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "State.h"
+#include "DebugState.h"
 
+#include "AbstractObject.h"
 #include "Context.h"
 #include "Extensions.h"
-#include "Implementation/BufferState.h"
-#include "Implementation/DebugState.h"
-#include "Implementation/FramebufferState.h"
-#include "Implementation/MeshState.h"
-#include "Implementation/RendererState.h"
-#include "Implementation/ShaderState.h"
-#include "Implementation/ShaderProgramState.h"
-#include "Implementation/TextureState.h"
 
 namespace Magnum { namespace Implementation {
 
-State::State(Context& context):
-    buffer(new BufferState),
-    debug(new DebugState(context)),
-    framebuffer(new FramebufferState),
-    mesh(new MeshState),
-    renderer(new RendererState),
-    shader(new ShaderState),
-    shaderProgram(new ShaderProgramState),
-    texture(new TextureState) {
-
-    Debug() << "Using optional features:";
-
-    if(context.isExtensionSupported<Extensions::GL::KHR::debug>())
-        Debug() << "   " << Extensions::GL::KHR::debug::string();
-    else if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>())
-        Debug() << "   " << Extensions::GL::EXT::debug_label::string();
-}
-
-State::~State() {
-    delete texture;
-    delete shaderProgram;
-    delete shader;
-    delete renderer;
-    delete mesh;
-    delete framebuffer;
-    delete debug;
-    delete buffer;
+DebugState::DebugState(Context& context): maxLabelLength(0) {
+    if(context.isExtensionSupported<Extensions::GL::KHR::debug>()) {
+        getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
+        labelImplementation = &AbstractObject::labelImplementationKhr;
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
+        getLabelImplementation = &AbstractObject::getLabelImplementationExt;
+        labelImplementation = &AbstractObject::labelImplementationExt;
+    } else {
+        getLabelImplementation = &AbstractObject::getLabelImplementationNoOp;
+        labelImplementation = &AbstractObject::labelImplementationNoOp;
+    }
 }
 
 }}

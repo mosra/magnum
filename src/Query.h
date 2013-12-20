@@ -30,10 +30,8 @@
 
 #include <Utility/Assert.h>
 
-#include "OpenGL.h"
-#include "Types.h"
+#include "AbstractObject.h"
 #include "magnumConfigure.h"
-#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -45,10 +43,36 @@ information.
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 @requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 */
-class MAGNUM_EXPORT AbstractQuery {
+class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
     public:
         /** @brief OpenGL query ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief %Query label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} with @def_gl{QUERY} or
+         *      @fn_gl_extension{GetObjectLabel,EXT,object_label} with
+         *      @def_gl{QUERY_OBJECT_EXT}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set query label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
+         *      @def_gl{QUERY} or @fn_gl_extension{LabelObject,EXT,object_label}
+         *      with @def_gl{QUERY_OBJECT_EXT}
+         */
+        AbstractQuery& setLabel(const std::string& label);
 
         /**
          * @brief Whether the result is available
@@ -166,6 +190,14 @@ class PrimitiveQuery: public AbstractQuery {
         void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        PrimitiveQuery& setLabel(const std::string& label) {
+            AbstractQuery::setLabel(label);
+            return *this;
+        }
+        #endif
 };
 #endif
 
@@ -303,6 +335,14 @@ class SampleQuery: public AbstractQuery {
             glEndConditionalRender();
         }
         #endif
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        SampleQuery& setLabel(const std::string& label) {
+            AbstractQuery::setLabel(label);
+            return *this;
+        }
+        #endif
 };
 
 /**
@@ -370,6 +410,14 @@ class TimeQuery: public AbstractQuery {
         void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        TimeQuery& setLabel(const std::string& label) {
+            AbstractQuery::setLabel(label);
+            return *this;
+        }
+        #endif
 };
 
 }

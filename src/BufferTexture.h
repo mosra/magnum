@@ -207,7 +207,19 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
     BufferTexture& operator=(BufferTexture&&) = delete;
 
     public:
+        /** @copydoc AbstractTexture::maxLabelLength() */
+        static Int maxLabelLength() { return AbstractTexture::maxLabelLength(); }
+
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+
+        /** @copydoc AbstractTexture::label() */
+        std::string label() const { return AbstractTexture::label(); }
+
+        /** @copydoc AbstractTexture::setLabel() */
+        BufferTexture& setLabel(const std::string& label) {
+            AbstractTexture::setLabel(label);
+            return *this;
+        }
 
         /** @copydoc AbstractTexture::bind() */
         void bind(Int layer) { AbstractTexture::bind(layer); }

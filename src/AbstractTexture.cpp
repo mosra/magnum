@@ -31,6 +31,7 @@
 #include "Image.h"
 #include "Shader.h"
 #include "TextureFormat.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
 
@@ -155,6 +156,15 @@ AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) {
     _id = other._id;
 
     other.move();
+    return *this;
+}
+
+std::string AbstractTexture::label() const {
+    return Context::current()->state().debug->getLabelImplementation(GL_TEXTURE, _id);
+}
+
+AbstractTexture& AbstractTexture::setLabel(const std::string& label) {
+    Context::current()->state().debug->labelImplementation(GL_TEXTURE, _id, label);
     return *this;
 }
 

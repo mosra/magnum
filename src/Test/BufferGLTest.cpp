@@ -38,6 +38,7 @@ class BufferGLTest: public AbstractOpenGLTester {
         explicit BufferGLTest();
 
         void construct();
+        void label();
         void data();
         void map();
         #ifdef MAGNUM_TARGET_GLES2
@@ -55,6 +56,7 @@ class BufferGLTest: public AbstractOpenGLTester {
 
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
+              &BufferGLTest::label,
               &BufferGLTest::data,
               &BufferGLTest::map,
               #ifdef MAGNUM_TARGET_GLES2
@@ -78,6 +80,21 @@ void BufferGLTest::construct() {
     CORRADE_COMPARE(buffer.targetHint(), Buffer::Target::Array);
 
     CORRADE_COMPARE(buffer.size(), 0);
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferGLTest::label() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    Buffer buffer;
+    CORRADE_COMPARE(buffer.label(), "");
+
+    buffer.setLabel("MyBuffer");
+    CORRADE_COMPARE(buffer.label(), "MyBuffer");
+
     MAGNUM_VERIFY_NO_ERROR();
 }
 

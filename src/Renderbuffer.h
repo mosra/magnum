@@ -28,8 +28,8 @@
  * @brief Class Magnum::Renderbuffer
  */
 
+#include "AbstractObject.h"
 #include "Magnum.h"
-#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
@@ -53,7 +53,7 @@ See its documentation for more information.
 
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 */
-class MAGNUM_EXPORT Renderbuffer {
+class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
     friend class Context;
 
     Renderbuffer(const Renderbuffer&) = delete;
@@ -101,6 +101,32 @@ class MAGNUM_EXPORT Renderbuffer {
 
         /** @brief OpenGL internal renderbuffer ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief %Renderbuffer label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} or
+         *      @fn_gl_extension{GetObjectLabel,EXT,object_label} with
+         *      @def_gl{RENDERBUFFER}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set renderbuffer label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
+         *      @fn_gl_extension{LabelObject,EXT,object_label} with
+         *      @def_gl{RENDERBUFFER}
+         */
+        Renderbuffer& setLabel(const std::string& label);
 
         /**
          * @brief Set renderbuffer storage

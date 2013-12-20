@@ -229,6 +229,10 @@ class CubeMapTextureArray: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        CubeMapTextureArray& setLabel(const std::string& label) {
+            AbstractTexture::setLabel(label);
+            return *this;
+        }
         CubeMapTextureArray& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;

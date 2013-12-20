@@ -35,8 +35,16 @@ corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES MagnumTes
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES Magnum)
 
 if(BUILD_GL_TESTS)
+    corrade_add_test(AbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(AbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(AbstractShaderProgramGLTest AbstractShaderProgramGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(AbstractTextureGLTest AbstractTextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(BufferGLTest BufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(ContextGLTest ContextGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(FramebufferGLTest FramebufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(MeshGLTest MeshGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(RenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(ShaderGLTest ShaderGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
 endif()
 
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

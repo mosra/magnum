@@ -48,6 +48,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
 set(Magnum_SRCS
     AbstractFramebuffer.cpp
     AbstractImage.cpp
+    AbstractObject.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
@@ -69,6 +70,7 @@ set(Magnum_SRCS
     Timeline.cpp
 
     Implementation/BufferState.cpp
+    Implementation/DebugState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp
 

@@ -31,7 +31,7 @@
 #include <vector>
 #include <string>
 
-#include "Magnum.h"
+#include "AbstractObject.h"
 #include "Context.h"
 
 #include "magnumVisibility.h"
@@ -43,7 +43,7 @@ namespace Magnum {
 
 See AbstractShaderProgram for more information.
  */
-class MAGNUM_EXPORT Shader {
+class MAGNUM_EXPORT Shader: public AbstractObject {
     Shader(const Shader&) = delete;
     Shader& operator=(const Shader&) = delete;
 
@@ -455,6 +455,32 @@ class MAGNUM_EXPORT Shader {
 
         /** @brief OpenGL shader ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief %Shader label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} with @def_gl{SHADER} or
+         *      @fn_gl_extension{GetObjectLabel,EXT,object_label} with
+         *      @def_gl{SHADER_OBJECT_EXT}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set shader label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
+         *      @def_gl{SHADER} or @fn_gl_extension{LabelObject,EXT,object_label}
+         *      with @def_gl{SHADER_OBJECT_EXT}
+         */
+        Shader& setLabel(const std::string& label);
 
         /**
          * @brief Add shader source

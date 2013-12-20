@@ -26,6 +26,10 @@
 
 #include <Utility/Assert.h>
 
+#include "Context.h"
+#include "Implementation/DebugState.h"
+#include "Implementation/State.h"
+
 namespace Magnum {
 
 AbstractQuery::AbstractQuery(): target() {
@@ -46,6 +50,23 @@ AbstractQuery::~AbstractQuery() {
     CORRADE_INTERNAL_ASSERT(false);
     //glDeleteQueriesEXT(1, &_id);
     #endif
+}
+
+std::string AbstractQuery::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_QUERY, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_QUERY_KHR, _id);
+    #endif
+}
+
+AbstractQuery& AbstractQuery::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_QUERY, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_QUERY_KHR, _id, label);
+    #endif
+    return *this;
 }
 
 bool AbstractQuery::resultAvailable() {

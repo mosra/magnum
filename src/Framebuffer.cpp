@@ -31,6 +31,7 @@
 #include "Renderbuffer.h"
 #include "Texture.h"
 
+#include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/FramebufferState.h"
 
@@ -84,6 +85,15 @@ Framebuffer::~Framebuffer() {
     if(state->drawBinding == _id) state->drawBinding = 0;
 
     glDeleteFramebuffers(1, &_id);
+}
+
+std::string Framebuffer::label() const {
+    return Context::current()->state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
+}
+
+Framebuffer& Framebuffer::setLabel(const std::string& label) {
+    Context::current()->state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
+    return *this;
 }
 
 Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {

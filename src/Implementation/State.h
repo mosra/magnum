@@ -24,9 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum.h"
+
 namespace Magnum { namespace Implementation {
 
 struct BufferState;
+struct DebugState;
 struct FramebufferState;
 struct MeshState;
 struct RendererState;
@@ -35,10 +38,13 @@ struct ShaderProgramState;
 struct TextureState;
 
 struct State {
-    State();
+    /* Initializes context-based functionality */
+    State(Context& context);
+
     ~State();
 
     BufferState* const buffer;
+    DebugState* const debug;
     FramebufferState* const framebuffer;
     MeshState* const mesh;
     RendererState* const renderer;

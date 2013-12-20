@@ -22,48 +22,44 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "State.h"
-
+#include "AbstractShaderProgram.h"
 #include "Context.h"
 #include "Extensions.h"
-#include "Implementation/BufferState.h"
-#include "Implementation/DebugState.h"
-#include "Implementation/FramebufferState.h"
-#include "Implementation/MeshState.h"
-#include "Implementation/RendererState.h"
-#include "Implementation/ShaderState.h"
-#include "Implementation/ShaderProgramState.h"
-#include "Implementation/TextureState.h"
+#include "Test/AbstractOpenGLTester.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace Test {
 
-State::State(Context& context):
-    buffer(new BufferState),
-    debug(new DebugState(context)),
-    framebuffer(new FramebufferState),
-    mesh(new MeshState),
-    renderer(new RendererState),
-    shader(new ShaderState),
-    shaderProgram(new ShaderProgramState),
-    texture(new TextureState) {
+class AbstractShaderProgramGLTest: public AbstractOpenGLTester {
+    public:
+        explicit AbstractShaderProgramGLTest();
 
-    Debug() << "Using optional features:";
+        void label();
+};
 
-    if(context.isExtensionSupported<Extensions::GL::KHR::debug>())
-        Debug() << "   " << Extensions::GL::KHR::debug::string();
-    else if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>())
-        Debug() << "   " << Extensions::GL::EXT::debug_label::string();
+AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
+    addTests({&AbstractShaderProgramGLTest::label});
 }
 
-State::~State() {
-    delete texture;
-    delete shaderProgram;
-    delete shader;
-    delete renderer;
-    delete mesh;
-    delete framebuffer;
-    delete debug;
-    delete buffer;
+void AbstractShaderProgramGLTest::label() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    class MyShader: public AbstractShaderProgram {
+        public:
+            explicit MyShader() {}
+    };
+
+    MyShader shader;
+    CORRADE_COMPARE(shader.label(), "");
+
+    shader.setLabel("MyShader");
+    CORRADE_COMPARE(shader.label(), "MyShader");
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::AbstractShaderProgramGLTest)

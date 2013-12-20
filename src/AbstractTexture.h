@@ -31,6 +31,7 @@
 #include "Array.h"
 #include "Color.h"
 #include "Sampler.h"
+#include "AbstractObject.h"
 
 namespace Magnum {
 
@@ -95,7 +96,7 @@ nothing.
 @todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
 @todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
 */
-class MAGNUM_EXPORT AbstractTexture {
+class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend class Context;
 
     public:
@@ -164,6 +165,32 @@ class MAGNUM_EXPORT AbstractTexture {
 
         /** @brief Move assignment */
         AbstractTexture& operator=(AbstractTexture&& other);
+
+        /**
+         * @brief %Texture label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} or
+         *      @fn_gl_extension{GetObjectLabel,EXT,object_label} with
+         *      @def_gl{TEXTURE}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set texture label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
+         *      @fn_gl_extension{LabelObject,EXT,object_label} with
+         *      @def_gl{TEXTURE}
+         */
+        AbstractTexture& setLabel(const std::string& label);
 
         /** @brief OpenGL texture ID */
         GLuint id() const { return _id; }

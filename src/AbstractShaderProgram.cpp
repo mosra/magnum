@@ -27,6 +27,7 @@
 #include "Math/RectangularMatrix.h"
 #include "Extensions.h"
 #include "Shader.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
@@ -248,6 +249,23 @@ AbstractShaderProgram::~AbstractShaderProgram() {
 
 AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& other) noexcept {
     std::swap(_id, other._id);
+    return *this;
+}
+
+std::string AbstractShaderProgram::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_PROGRAM, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_PROGRAM_KHR, _id);
+    #endif
+}
+
+AbstractShaderProgram& AbstractShaderProgram::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_PROGRAM, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_PROGRAM_KHR, _id, label);
+    #endif
     return *this;
 }
 

@@ -27,8 +27,9 @@
 #include "Context.h"
 #include "Extensions.h"
 
-#include "Implementation/State.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/FramebufferState.h"
+#include "Implementation/State.h"
 
 namespace Magnum {
 
@@ -76,6 +77,15 @@ Renderbuffer::~Renderbuffer() {
     if(binding == _id) binding = 0;
 
     glDeleteRenderbuffers(1, &_id);
+}
+
+std::string Renderbuffer::label() const {
+    return Context::current()->state().debug->getLabelImplementation(GL_RENDERBUFFER, _id);
+}
+
+Renderbuffer& Renderbuffer::setLabel(const std::string& label) {
+    Context::current()->state().debug->labelImplementation(GL_RENDERBUFFER, _id, label);
+    return *this;
 }
 
 void Renderbuffer::bind() {

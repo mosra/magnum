@@ -30,6 +30,7 @@
 #include "Extensions.h"
 #include "Implementation/State.h"
 #include "Implementation/BufferState.h"
+#include "Implementation/DebugState.h"
 
 namespace Magnum {
 
@@ -158,6 +159,23 @@ Buffer::~Buffer() {
         if(bindings[i] == _id) bindings[i] = 0;
 
     glDeleteBuffers(1, &_id);
+}
+
+std::string Buffer::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_BUFFER, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_BUFFER_KHR, _id);
+    #endif
+}
+
+Buffer& Buffer::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_BUFFER, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_BUFFER_KHR, _id, label);
+    #endif
+    return *this;
 }
 
 void Buffer::bind(Target target, GLuint id) {
