@@ -22,9 +22,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Test/AbstractOpenGLTester.h"
 #include "Context.h"
 #include "Extensions.h"
+#include "Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
