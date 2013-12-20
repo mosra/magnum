@@ -31,6 +31,10 @@
 #include "AbstractFramebuffer.h"
 #include "CubeMapTexture.h"
 
+#ifdef _X11_XLIB_H_ /* Xlib.h, I hate you sincerely */
+#undef Status
+#endif
+
 namespace Magnum {
 
 /**
