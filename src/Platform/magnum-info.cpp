@@ -350,6 +350,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Sampler::maxAnisotropy())
     }
 
+    if(c->isExtensionSupported<Extensions::GL::KHR::debug>()) {
+        _h(KHR::debug)
+
+        _l(AbstractObject::maxLabelLength())
+    }
+
     #undef _l
     #undef _h
 }
