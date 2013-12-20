@@ -408,6 +408,14 @@ class MAGNUM_EXPORT Mesh {
         Mesh& operator=(Mesh&& other) noexcept;
 
         /**
+         * @brief OpenGL mesh ID
+         *
+         * If @extension{APPLE,vertex_array_object} is not available, returns
+         * 0.
+         */
+        GLuint id() const { return _id; }
+
+        /**
          * @brief Index size
          *
          * @see @ref indexSize(IndexType)
