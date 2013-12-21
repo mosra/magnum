@@ -46,7 +46,11 @@ void ShaderGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+    #ifndef MAGNUM_TARGET_GLES
     Shader shader(Version::GL210, Shader::Type::Vertex);
+    #else
+    Shader shader(Version::GLES200, Shader::Type::Vertex);
+    #endif
     CORRADE_COMPARE(shader.label(), "");
 
     shader.setLabel("MyShader");
