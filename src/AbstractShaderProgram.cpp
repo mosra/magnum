@@ -117,9 +117,8 @@ Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
 
     GLint& value = Context::current()->state().shaderProgram->maxComputeWorkGroupInvocations;
 
-    /** @todo Fix when glLoadGen has `GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS` */
     if(value == 0)
-        glGetIntegerv(/*GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS*/0x90EB, &value);
+        glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &value);
 
     return value;
 }
