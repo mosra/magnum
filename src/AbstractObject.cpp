@@ -170,7 +170,7 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     #endif
 
     /* Pop null terminator and return the string */
-    label.pop_back();
+    label.resize(size);
     return label;
     #else
     GLsizei size;
@@ -212,7 +212,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     #endif
 
     /* Pop null terminator and return the string */
-    label.pop_back();
+    label.resize(size);
     return label;
 }
 
