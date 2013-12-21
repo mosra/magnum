@@ -9,4 +9,5 @@
     EXT_texture_filter_anisotropic
     EXT_texture_mirror_clamp
     EXT_direct_state_access
+    EXT_debug_label
     GREMEDY_string_marker

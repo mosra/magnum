@@ -90,41 +90,42 @@ int ogl_ext_ATI_texture_mirror_once = ogl_LOAD_FAILED;
 int ogl_ext_EXT_texture_filter_anisotropic = ogl_LOAD_FAILED;
 int ogl_ext_EXT_texture_mirror_clamp = ogl_LOAD_FAILED;
 int ogl_ext_EXT_direct_state_access = ogl_LOAD_FAILED;
+int ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
 int ogl_ext_GREMEDY_string_marker = ogl_LOAD_FAILED;
 
 GLLOADGEN_EXPORT GLenum (CODEGEN_FUNCPTR *_ptrc_glGetGraphicsResetStatusARB)() = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnColorTableARB)(GLenum, GLenum, GLenum, GLsizei, GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnCompressedTexImageARB)(GLenum, GLint, GLsizei, GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnConvolutionFilterARB)(GLenum, GLenum, GLenum, GLsizei, GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnHistogramARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnColorTableARB)(GLenum, GLenum, GLenum, GLsizei, void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnCompressedTexImageARB)(GLenum, GLint, GLsizei, void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnConvolutionFilterARB)(GLenum, GLenum, GLenum, GLsizei, void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnHistogramARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnMapdvARB)(GLenum, GLenum, GLsizei, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnMapfvARB)(GLenum, GLenum, GLsizei, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnMapivARB)(GLenum, GLenum, GLsizei, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnMinmaxARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnMinmaxARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnPixelMapfvARB)(GLenum, GLsizei, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnPixelMapuivARB)(GLenum, GLsizei, GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnPixelMapusvARB)(GLenum, GLsizei, GLushort *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnPolygonStippleARB)(GLsizei, GLubyte *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnSeparableFilterARB)(GLenum, GLenum, GLenum, GLsizei, GLvoid *, GLsizei, GLvoid *, GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnTexImageARB)(GLenum, GLint, GLenum, GLenum, GLsizei, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnSeparableFilterARB)(GLenum, GLenum, GLenum, GLsizei, void *, GLsizei, void *, void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnTexImageARB)(GLenum, GLint, GLenum, GLenum, GLsizei, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnUniformdvARB)(GLuint, GLint, GLsizei, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnUniformfvARB)(GLuint, GLint, GLsizei, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnUniformivARB)(GLuint, GLint, GLsizei, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetnUniformuivARB)(GLuint, GLint, GLsizei, GLuint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glReadnPixelsARB)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glReadnPixelsARB)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *) = NULL;
 
 static int Load_ARB_robustness()
 {
   int numFailed = 0;
   _ptrc_glGetGraphicsResetStatusARB = (GLenum (CODEGEN_FUNCPTR *)())IntGetProcAddress("glGetGraphicsResetStatusARB");
   if(!_ptrc_glGetGraphicsResetStatusARB) numFailed++;
-  _ptrc_glGetnColorTableARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, GLvoid *))IntGetProcAddress("glGetnColorTableARB");
+  _ptrc_glGetnColorTableARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, void *))IntGetProcAddress("glGetnColorTableARB");
   if(!_ptrc_glGetnColorTableARB) numFailed++;
-  _ptrc_glGetnCompressedTexImageARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLsizei, GLvoid *))IntGetProcAddress("glGetnCompressedTexImageARB");
+  _ptrc_glGetnCompressedTexImageARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLsizei, void *))IntGetProcAddress("glGetnCompressedTexImageARB");
   if(!_ptrc_glGetnCompressedTexImageARB) numFailed++;
-  _ptrc_glGetnConvolutionFilterARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, GLvoid *))IntGetProcAddress("glGetnConvolutionFilterARB");
+  _ptrc_glGetnConvolutionFilterARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, void *))IntGetProcAddress("glGetnConvolutionFilterARB");
   if(!_ptrc_glGetnConvolutionFilterARB) numFailed++;
-  _ptrc_glGetnHistogramARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLboolean, GLenum, GLenum, GLsizei, GLvoid *))IntGetProcAddress("glGetnHistogramARB");
+  _ptrc_glGetnHistogramARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *))IntGetProcAddress("glGetnHistogramARB");
   if(!_ptrc_glGetnHistogramARB) numFailed++;
   _ptrc_glGetnMapdvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLsizei, GLdouble *))IntGetProcAddress("glGetnMapdvARB");
   if(!_ptrc_glGetnMapdvARB) numFailed++;
@@ -132,7 +133,7 @@ static int Load_ARB_robustness()
   if(!_ptrc_glGetnMapfvARB) numFailed++;
   _ptrc_glGetnMapivARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLsizei, GLint *))IntGetProcAddress("glGetnMapivARB");
   if(!_ptrc_glGetnMapivARB) numFailed++;
-  _ptrc_glGetnMinmaxARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLboolean, GLenum, GLenum, GLsizei, GLvoid *))IntGetProcAddress("glGetnMinmaxARB");
+  _ptrc_glGetnMinmaxARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *))IntGetProcAddress("glGetnMinmaxARB");
   if(!_ptrc_glGetnMinmaxARB) numFailed++;
   _ptrc_glGetnPixelMapfvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLfloat *))IntGetProcAddress("glGetnPixelMapfvARB");
   if(!_ptrc_glGetnPixelMapfvARB) numFailed++;
@@ -142,9 +143,9 @@ static int Load_ARB_robustness()
   if(!_ptrc_glGetnPixelMapusvARB) numFailed++;
   _ptrc_glGetnPolygonStippleARB = (void (CODEGEN_FUNCPTR *)(GLsizei, GLubyte *))IntGetProcAddress("glGetnPolygonStippleARB");
   if(!_ptrc_glGetnPolygonStippleARB) numFailed++;
-  _ptrc_glGetnSeparableFilterARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, GLvoid *, GLsizei, GLvoid *, GLvoid *))IntGetProcAddress("glGetnSeparableFilterARB");
+  _ptrc_glGetnSeparableFilterARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, void *, GLsizei, void *, void *))IntGetProcAddress("glGetnSeparableFilterARB");
   if(!_ptrc_glGetnSeparableFilterARB) numFailed++;
-  _ptrc_glGetnTexImageARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLenum, GLsizei, GLvoid *))IntGetProcAddress("glGetnTexImageARB");
+  _ptrc_glGetnTexImageARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLenum, GLsizei, void *))IntGetProcAddress("glGetnTexImageARB");
   if(!_ptrc_glGetnTexImageARB) numFailed++;
   _ptrc_glGetnUniformdvARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLsizei, GLdouble *))IntGetProcAddress("glGetnUniformdvARB");
   if(!_ptrc_glGetnUniformdvARB) numFailed++;
@@ -154,7 +155,7 @@ static int Load_ARB_robustness()
   if(!_ptrc_glGetnUniformivARB) numFailed++;
   _ptrc_glGetnUniformuivARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLsizei, GLuint *))IntGetProcAddress("glGetnUniformuivARB");
   if(!_ptrc_glGetnUniformuivARB) numFailed++;
-  _ptrc_glReadnPixelsARB = (void (CODEGEN_FUNCPTR *)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, GLvoid *))IntGetProcAddress("glReadnPixelsARB");
+  _ptrc_glReadnPixelsARB = (void (CODEGEN_FUNCPTR *)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *))IntGetProcAddress("glReadnPixelsARB");
   if(!_ptrc_glReadnPixelsARB) numFailed++;
   return numFailed;
 }
@@ -162,20 +163,20 @@ static int Load_ARB_robustness()
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBindMultiTextureEXT)(GLenum, GLenum, GLuint) = NULL;
 GLLOADGEN_EXPORT GLenum (CODEGEN_FUNCPTR *_ptrc_glCheckNamedFramebufferStatusEXT)(GLuint, GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glClearNamedBufferDataEXT)(GLuint, GLenum, GLenum, GLenum, const void *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glClearNamedBufferSubDataEXT)(GLuint, GLenum, GLenum, GLenum, GLsizeiptr, GLsizeiptr, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glClearNamedBufferSubDataEXT)(GLuint, GLenum, GLsizeiptr, GLsizeiptr, GLenum, GLenum, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glClientAttribDefaultEXT)(GLbitfield) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexImage1DEXT)(GLenum, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexImage2DEXT)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexImage3DEXT)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexSubImage1DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexSubImage2DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexSubImage3DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureImage1DEXT)(GLuint, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureImage2DEXT)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureImage3DEXT)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureSubImage1DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureSubImage2DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureSubImage3DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexImage1DEXT)(GLenum, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexImage2DEXT)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexImage3DEXT)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexSubImage1DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexSubImage2DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedMultiTexSubImage3DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureImage1DEXT)(GLuint, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureImage2DEXT)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureImage3DEXT)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureSubImage1DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureSubImage2DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTextureSubImage3DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyMultiTexImage1DEXT)(GLenum, GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyMultiTexImage2DEXT)(GLenum, GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyMultiTexSubImage1DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei) = NULL;
@@ -203,8 +204,8 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glFramebufferReadBufferEXT)(GLuint
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGenerateMultiTexMipmapEXT)(GLenum, GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGenerateTextureMipmapEXT)(GLuint, GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetBooleanIndexedvEXT)(GLenum, GLuint, GLboolean *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetCompressedMultiTexImageEXT)(GLenum, GLenum, GLint, GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetCompressedTextureImageEXT)(GLuint, GLenum, GLint, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetCompressedMultiTexImageEXT)(GLenum, GLenum, GLint, void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetCompressedTextureImageEXT)(GLuint, GLenum, GLint, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetDoubleIndexedvEXT)(GLenum, GLuint, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetDoublei_vEXT)(GLenum, GLuint, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetFloatIndexedvEXT)(GLenum, GLuint, GLfloat *) = NULL;
@@ -216,7 +217,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexEnvivEXT)(GLenum, GLe
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexGendvEXT)(GLenum, GLenum, GLenum, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexGenfvEXT)(GLenum, GLenum, GLenum, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexGenivEXT)(GLenum, GLenum, GLenum, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexImageEXT)(GLenum, GLenum, GLint, GLenum, GLenum, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexImageEXT)(GLenum, GLenum, GLint, GLenum, GLenum, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexLevelParameterfvEXT)(GLenum, GLenum, GLint, GLenum, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexLevelParameterivEXT)(GLenum, GLenum, GLint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexParameterIivEXT)(GLenum, GLenum, GLenum, GLint *) = NULL;
@@ -224,20 +225,20 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexParameterIuivEXT)(GLe
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexParameterfvEXT)(GLenum, GLenum, GLenum, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultiTexParameterivEXT)(GLenum, GLenum, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedBufferParameterivEXT)(GLuint, GLenum, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedBufferPointervEXT)(GLuint, GLenum, GLvoid **) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedBufferSubDataEXT)(GLuint, GLintptr, GLsizeiptr, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedBufferPointervEXT)(GLuint, GLenum, void **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedBufferSubDataEXT)(GLuint, GLintptr, GLsizeiptr, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedFramebufferAttachmentParameterivEXT)(GLuint, GLenum, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedFramebufferParameterivEXT)(GLuint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedProgramLocalParameterIivEXT)(GLuint, GLenum, GLuint, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedProgramLocalParameterIuivEXT)(GLuint, GLenum, GLuint, GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedProgramLocalParameterdvEXT)(GLuint, GLenum, GLuint, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedProgramLocalParameterfvEXT)(GLuint, GLenum, GLuint, GLfloat *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedProgramStringEXT)(GLuint, GLenum, GLenum, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedProgramStringEXT)(GLuint, GLenum, GLenum, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedProgramivEXT)(GLuint, GLenum, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetNamedRenderbufferParameterivEXT)(GLuint, GLenum, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetPointerIndexedvEXT)(GLenum, GLuint, GLvoid **) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetPointeri_vEXT)(GLenum, GLuint, GLvoid **) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTextureImageEXT)(GLuint, GLenum, GLint, GLenum, GLenum, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetPointerIndexedvEXT)(GLenum, GLuint, void **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetPointeri_vEXT)(GLenum, GLuint, void **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTextureImageEXT)(GLuint, GLenum, GLint, GLenum, GLenum, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTextureLevelParameterfvEXT)(GLuint, GLenum, GLint, GLenum, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTextureLevelParameterivEXT)(GLuint, GLenum, GLint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTextureParameterIivEXT)(GLuint, GLenum, GLenum, GLint *) = NULL;
@@ -246,8 +247,8 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTextureParameterfvEXT)(GLuint
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTextureParameterivEXT)(GLuint, GLenum, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexArrayIntegeri_vEXT)(GLuint, GLuint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexArrayIntegervEXT)(GLuint, GLenum, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexArrayPointeri_vEXT)(GLuint, GLuint, GLenum, GLvoid **) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexArrayPointervEXT)(GLuint, GLenum, GLvoid **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexArrayPointeri_vEXT)(GLuint, GLuint, GLenum, void **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexArrayPointervEXT)(GLuint, GLenum, void **) = NULL;
 GLLOADGEN_EXPORT GLboolean (CODEGEN_FUNCPTR *_ptrc_glIsEnabledIndexedEXT)(GLenum, GLuint) = NULL;
 GLLOADGEN_EXPORT void * (CODEGEN_FUNCPTR *_ptrc_glMapNamedBufferEXT)(GLuint, GLenum) = NULL;
 GLLOADGEN_EXPORT void * (CODEGEN_FUNCPTR *_ptrc_glMapNamedBufferRangeEXT)(GLuint, GLintptr, GLsizeiptr, GLbitfield) = NULL;
@@ -271,7 +272,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMatrixScalefEXT)(GLenum, GLfloat
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMatrixTranslatedEXT)(GLenum, GLdouble, GLdouble, GLdouble) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMatrixTranslatefEXT)(GLenum, GLfloat, GLfloat, GLfloat) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexBufferEXT)(GLenum, GLenum, GLenum, GLuint) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexCoordPointerEXT)(GLenum, GLint, GLenum, GLsizei, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexCoordPointerEXT)(GLenum, GLint, GLenum, GLsizei, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexEnvfEXT)(GLenum, GLenum, GLenum, GLfloat) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexEnvfvEXT)(GLenum, GLenum, GLenum, const GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexEnviEXT)(GLenum, GLenum, GLenum, GLint) = NULL;
@@ -282,9 +283,9 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexGenfEXT)(GLenum, GLenum,
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexGenfvEXT)(GLenum, GLenum, GLenum, const GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexGeniEXT)(GLenum, GLenum, GLenum, GLint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexGenivEXT)(GLenum, GLenum, GLenum, const GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexImage1DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexImage2DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexImage3DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexImage1DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexImage2DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexImage3DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexParameterIivEXT)(GLenum, GLenum, GLenum, const GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexParameterIuivEXT)(GLenum, GLenum, GLenum, const GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexParameterfEXT)(GLenum, GLenum, GLenum, GLfloat) = NULL;
@@ -292,11 +293,12 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexParameterfvEXT)(GLenum, 
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexParameteriEXT)(GLenum, GLenum, GLenum, GLint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexParameterivEXT)(GLenum, GLenum, GLenum, const GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexRenderbufferEXT)(GLenum, GLenum, GLuint) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexSubImage1DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexSubImage2DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexSubImage3DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedBufferDataEXT)(GLuint, GLsizeiptr, const GLvoid *, GLenum) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedBufferSubDataEXT)(GLuint, GLintptr, GLsizeiptr, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexSubImage1DEXT)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexSubImage2DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiTexSubImage3DEXT)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedBufferDataEXT)(GLuint, GLsizeiptr, const void *, GLenum) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedBufferStorageEXT)(GLuint, GLsizeiptr, const void *, GLbitfield) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedBufferSubDataEXT)(GLuint, GLintptr, GLsizeiptr, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedCopyBufferSubDataEXT)(GLuint, GLuint, GLintptr, GLintptr, GLsizeiptr) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedFramebufferParameteriEXT)(GLuint, GLenum, GLint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedFramebufferRenderbufferEXT)(GLuint, GLenum, GLenum, GLuint) = NULL;
@@ -317,7 +319,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedProgramLocalParameterI4uivE
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedProgramLocalParameters4fvEXT)(GLuint, GLenum, GLuint, GLsizei, const GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedProgramLocalParametersI4ivEXT)(GLuint, GLenum, GLuint, GLsizei, const GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedProgramLocalParametersI4uivEXT)(GLuint, GLenum, GLuint, GLsizei, const GLuint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedProgramStringEXT)(GLuint, GLenum, GLenum, GLsizei, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedProgramStringEXT)(GLuint, GLenum, GLenum, GLsizei, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedRenderbufferStorageEXT)(GLuint, GLenum, GLsizei, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedRenderbufferStorageMultisampleCoverageEXT)(GLuint, GLsizei, GLsizei, GLenum, GLsizei, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glNamedRenderbufferStorageMultisampleEXT)(GLuint, GLsizei, GLenum, GLsizei, GLsizei) = NULL;
@@ -374,10 +376,10 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glProgramUniformMatrix4x3fvEXT)(GL
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPushClientAttribDefaultEXT)(GLbitfield) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureBufferEXT)(GLuint, GLenum, GLenum, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureBufferRangeEXT)(GLuint, GLenum, GLenum, GLuint, GLintptr, GLsizeiptr) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureImage1DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureImage2DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureImage3DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexturePageCommitmentEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLboolean) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureImage1DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureImage2DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureImage3DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexturePageCommitmentEXT)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLboolean) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureParameterIivEXT)(GLuint, GLenum, GLenum, const GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureParameterIuivEXT)(GLuint, GLenum, GLenum, const GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureParameterfEXT)(GLuint, GLenum, GLenum, GLfloat) = NULL;
@@ -390,9 +392,9 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureStorage2DEXT)(GLuint, GLe
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureStorage2DMultisampleEXT)(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLboolean) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureStorage3DEXT)(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureStorage3DMultisampleEXT)(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureSubImage1DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureSubImage2DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureSubImage3DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureSubImage1DEXT)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureSubImage2DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTextureSubImage3DEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *) = NULL;
 GLLOADGEN_EXPORT GLboolean (CODEGEN_FUNCPTR *_ptrc_glUnmapNamedBufferEXT)(GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayBindVertexBufferEXT)(GLuint, GLuint, GLuint, GLintptr, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayColorOffsetEXT)(GLuint, GLuint, GLint, GLenum, GLsizei, GLintptr) = NULL;
@@ -404,6 +406,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayNormalOffsetEXT)(GLui
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArraySecondaryColorOffsetEXT)(GLuint, GLuint, GLint, GLenum, GLsizei, GLintptr) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayTexCoordOffsetEXT)(GLuint, GLuint, GLint, GLenum, GLsizei, GLintptr) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayVertexAttribBindingEXT)(GLuint, GLuint, GLuint) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayVertexAttribDivisorEXT)(GLuint, GLuint, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayVertexAttribFormatEXT)(GLuint, GLuint, GLint, GLenum, GLboolean, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayVertexAttribIFormatEXT)(GLuint, GLuint, GLint, GLenum, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayVertexAttribIOffsetEXT)(GLuint, GLuint, GLuint, GLint, GLenum, GLsizei, GLintptr) = NULL;
@@ -422,33 +425,33 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glCheckNamedFramebufferStatusEXT) numFailed++;
   _ptrc_glClearNamedBufferDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLenum, const void *))IntGetProcAddress("glClearNamedBufferDataEXT");
   if(!_ptrc_glClearNamedBufferDataEXT) numFailed++;
-  _ptrc_glClearNamedBufferSubDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLenum, GLsizeiptr, GLsizeiptr, const void *))IntGetProcAddress("glClearNamedBufferSubDataEXT");
+  _ptrc_glClearNamedBufferSubDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLsizeiptr, GLsizeiptr, GLenum, GLenum, const void *))IntGetProcAddress("glClearNamedBufferSubDataEXT");
   if(!_ptrc_glClearNamedBufferSubDataEXT) numFailed++;
   _ptrc_glClientAttribDefaultEXT = (void (CODEGEN_FUNCPTR *)(GLbitfield))IntGetProcAddress("glClientAttribDefaultEXT");
   if(!_ptrc_glClientAttribDefaultEXT) numFailed++;
-  _ptrc_glCompressedMultiTexImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedMultiTexImage1DEXT");
+  _ptrc_glCompressedMultiTexImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedMultiTexImage1DEXT");
   if(!_ptrc_glCompressedMultiTexImage1DEXT) numFailed++;
-  _ptrc_glCompressedMultiTexImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedMultiTexImage2DEXT");
+  _ptrc_glCompressedMultiTexImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedMultiTexImage2DEXT");
   if(!_ptrc_glCompressedMultiTexImage2DEXT) numFailed++;
-  _ptrc_glCompressedMultiTexImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedMultiTexImage3DEXT");
+  _ptrc_glCompressedMultiTexImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedMultiTexImage3DEXT");
   if(!_ptrc_glCompressedMultiTexImage3DEXT) numFailed++;
-  _ptrc_glCompressedMultiTexSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedMultiTexSubImage1DEXT");
+  _ptrc_glCompressedMultiTexSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedMultiTexSubImage1DEXT");
   if(!_ptrc_glCompressedMultiTexSubImage1DEXT) numFailed++;
-  _ptrc_glCompressedMultiTexSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedMultiTexSubImage2DEXT");
+  _ptrc_glCompressedMultiTexSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedMultiTexSubImage2DEXT");
   if(!_ptrc_glCompressedMultiTexSubImage2DEXT) numFailed++;
-  _ptrc_glCompressedMultiTexSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedMultiTexSubImage3DEXT");
+  _ptrc_glCompressedMultiTexSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedMultiTexSubImage3DEXT");
   if(!_ptrc_glCompressedMultiTexSubImage3DEXT) numFailed++;
-  _ptrc_glCompressedTextureImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTextureImage1DEXT");
+  _ptrc_glCompressedTextureImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedTextureImage1DEXT");
   if(!_ptrc_glCompressedTextureImage1DEXT) numFailed++;
-  _ptrc_glCompressedTextureImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTextureImage2DEXT");
+  _ptrc_glCompressedTextureImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedTextureImage2DEXT");
   if(!_ptrc_glCompressedTextureImage2DEXT) numFailed++;
-  _ptrc_glCompressedTextureImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTextureImage3DEXT");
+  _ptrc_glCompressedTextureImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedTextureImage3DEXT");
   if(!_ptrc_glCompressedTextureImage3DEXT) numFailed++;
-  _ptrc_glCompressedTextureSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTextureSubImage1DEXT");
+  _ptrc_glCompressedTextureSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedTextureSubImage1DEXT");
   if(!_ptrc_glCompressedTextureSubImage1DEXT) numFailed++;
-  _ptrc_glCompressedTextureSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTextureSubImage2DEXT");
+  _ptrc_glCompressedTextureSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedTextureSubImage2DEXT");
   if(!_ptrc_glCompressedTextureSubImage2DEXT) numFailed++;
-  _ptrc_glCompressedTextureSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTextureSubImage3DEXT");
+  _ptrc_glCompressedTextureSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedTextureSubImage3DEXT");
   if(!_ptrc_glCompressedTextureSubImage3DEXT) numFailed++;
   _ptrc_glCopyMultiTexImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLint))IntGetProcAddress("glCopyMultiTexImage1DEXT");
   if(!_ptrc_glCopyMultiTexImage1DEXT) numFailed++;
@@ -504,9 +507,9 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glGenerateTextureMipmapEXT) numFailed++;
   _ptrc_glGetBooleanIndexedvEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLboolean *))IntGetProcAddress("glGetBooleanIndexedvEXT");
   if(!_ptrc_glGetBooleanIndexedvEXT) numFailed++;
-  _ptrc_glGetCompressedMultiTexImageEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLvoid *))IntGetProcAddress("glGetCompressedMultiTexImageEXT");
+  _ptrc_glGetCompressedMultiTexImageEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, void *))IntGetProcAddress("glGetCompressedMultiTexImageEXT");
   if(!_ptrc_glGetCompressedMultiTexImageEXT) numFailed++;
-  _ptrc_glGetCompressedTextureImageEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLvoid *))IntGetProcAddress("glGetCompressedTextureImageEXT");
+  _ptrc_glGetCompressedTextureImageEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, void *))IntGetProcAddress("glGetCompressedTextureImageEXT");
   if(!_ptrc_glGetCompressedTextureImageEXT) numFailed++;
   _ptrc_glGetDoubleIndexedvEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLdouble *))IntGetProcAddress("glGetDoubleIndexedvEXT");
   if(!_ptrc_glGetDoubleIndexedvEXT) numFailed++;
@@ -530,7 +533,7 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glGetMultiTexGenfvEXT) numFailed++;
   _ptrc_glGetMultiTexGenivEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLint *))IntGetProcAddress("glGetMultiTexGenivEXT");
   if(!_ptrc_glGetMultiTexGenivEXT) numFailed++;
-  _ptrc_glGetMultiTexImageEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLenum, GLvoid *))IntGetProcAddress("glGetMultiTexImageEXT");
+  _ptrc_glGetMultiTexImageEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLenum, void *))IntGetProcAddress("glGetMultiTexImageEXT");
   if(!_ptrc_glGetMultiTexImageEXT) numFailed++;
   _ptrc_glGetMultiTexLevelParameterfvEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLenum, GLfloat *))IntGetProcAddress("glGetMultiTexLevelParameterfvEXT");
   if(!_ptrc_glGetMultiTexLevelParameterfvEXT) numFailed++;
@@ -546,9 +549,9 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glGetMultiTexParameterivEXT) numFailed++;
   _ptrc_glGetNamedBufferParameterivEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint *))IntGetProcAddress("glGetNamedBufferParameterivEXT");
   if(!_ptrc_glGetNamedBufferParameterivEXT) numFailed++;
-  _ptrc_glGetNamedBufferPointervEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLvoid **))IntGetProcAddress("glGetNamedBufferPointervEXT");
+  _ptrc_glGetNamedBufferPointervEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, void **))IntGetProcAddress("glGetNamedBufferPointervEXT");
   if(!_ptrc_glGetNamedBufferPointervEXT) numFailed++;
-  _ptrc_glGetNamedBufferSubDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLintptr, GLsizeiptr, GLvoid *))IntGetProcAddress("glGetNamedBufferSubDataEXT");
+  _ptrc_glGetNamedBufferSubDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLintptr, GLsizeiptr, void *))IntGetProcAddress("glGetNamedBufferSubDataEXT");
   if(!_ptrc_glGetNamedBufferSubDataEXT) numFailed++;
   _ptrc_glGetNamedFramebufferAttachmentParameterivEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLint *))IntGetProcAddress("glGetNamedFramebufferAttachmentParameterivEXT");
   if(!_ptrc_glGetNamedFramebufferAttachmentParameterivEXT) numFailed++;
@@ -562,17 +565,17 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glGetNamedProgramLocalParameterdvEXT) numFailed++;
   _ptrc_glGetNamedProgramLocalParameterfvEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLuint, GLfloat *))IntGetProcAddress("glGetNamedProgramLocalParameterfvEXT");
   if(!_ptrc_glGetNamedProgramLocalParameterfvEXT) numFailed++;
-  _ptrc_glGetNamedProgramStringEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLvoid *))IntGetProcAddress("glGetNamedProgramStringEXT");
+  _ptrc_glGetNamedProgramStringEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, void *))IntGetProcAddress("glGetNamedProgramStringEXT");
   if(!_ptrc_glGetNamedProgramStringEXT) numFailed++;
   _ptrc_glGetNamedProgramivEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLint *))IntGetProcAddress("glGetNamedProgramivEXT");
   if(!_ptrc_glGetNamedProgramivEXT) numFailed++;
   _ptrc_glGetNamedRenderbufferParameterivEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint *))IntGetProcAddress("glGetNamedRenderbufferParameterivEXT");
   if(!_ptrc_glGetNamedRenderbufferParameterivEXT) numFailed++;
-  _ptrc_glGetPointerIndexedvEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLvoid **))IntGetProcAddress("glGetPointerIndexedvEXT");
+  _ptrc_glGetPointerIndexedvEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, void **))IntGetProcAddress("glGetPointerIndexedvEXT");
   if(!_ptrc_glGetPointerIndexedvEXT) numFailed++;
-  _ptrc_glGetPointeri_vEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLvoid **))IntGetProcAddress("glGetPointeri_vEXT");
+  _ptrc_glGetPointeri_vEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, void **))IntGetProcAddress("glGetPointeri_vEXT");
   if(!_ptrc_glGetPointeri_vEXT) numFailed++;
-  _ptrc_glGetTextureImageEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLenum, GLvoid *))IntGetProcAddress("glGetTextureImageEXT");
+  _ptrc_glGetTextureImageEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLenum, void *))IntGetProcAddress("glGetTextureImageEXT");
   if(!_ptrc_glGetTextureImageEXT) numFailed++;
   _ptrc_glGetTextureLevelParameterfvEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLenum, GLfloat *))IntGetProcAddress("glGetTextureLevelParameterfvEXT");
   if(!_ptrc_glGetTextureLevelParameterfvEXT) numFailed++;
@@ -590,9 +593,9 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glGetVertexArrayIntegeri_vEXT) numFailed++;
   _ptrc_glGetVertexArrayIntegervEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint *))IntGetProcAddress("glGetVertexArrayIntegervEXT");
   if(!_ptrc_glGetVertexArrayIntegervEXT) numFailed++;
-  _ptrc_glGetVertexArrayPointeri_vEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLenum, GLvoid **))IntGetProcAddress("glGetVertexArrayPointeri_vEXT");
+  _ptrc_glGetVertexArrayPointeri_vEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLenum, void **))IntGetProcAddress("glGetVertexArrayPointeri_vEXT");
   if(!_ptrc_glGetVertexArrayPointeri_vEXT) numFailed++;
-  _ptrc_glGetVertexArrayPointervEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLvoid **))IntGetProcAddress("glGetVertexArrayPointervEXT");
+  _ptrc_glGetVertexArrayPointervEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, void **))IntGetProcAddress("glGetVertexArrayPointervEXT");
   if(!_ptrc_glGetVertexArrayPointervEXT) numFailed++;
   _ptrc_glIsEnabledIndexedEXT = (GLboolean (CODEGEN_FUNCPTR *)(GLenum, GLuint))IntGetProcAddress("glIsEnabledIndexedEXT");
   if(!_ptrc_glIsEnabledIndexedEXT) numFailed++;
@@ -640,7 +643,7 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glMatrixTranslatefEXT) numFailed++;
   _ptrc_glMultiTexBufferEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLuint))IntGetProcAddress("glMultiTexBufferEXT");
   if(!_ptrc_glMultiTexBufferEXT) numFailed++;
-  _ptrc_glMultiTexCoordPointerEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glMultiTexCoordPointerEXT");
+  _ptrc_glMultiTexCoordPointerEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, const void *))IntGetProcAddress("glMultiTexCoordPointerEXT");
   if(!_ptrc_glMultiTexCoordPointerEXT) numFailed++;
   _ptrc_glMultiTexEnvfEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLfloat))IntGetProcAddress("glMultiTexEnvfEXT");
   if(!_ptrc_glMultiTexEnvfEXT) numFailed++;
@@ -662,11 +665,11 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glMultiTexGeniEXT) numFailed++;
   _ptrc_glMultiTexGenivEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, const GLint *))IntGetProcAddress("glMultiTexGenivEXT");
   if(!_ptrc_glMultiTexGenivEXT) numFailed++;
-  _ptrc_glMultiTexImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glMultiTexImage1DEXT");
+  _ptrc_glMultiTexImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glMultiTexImage1DEXT");
   if(!_ptrc_glMultiTexImage1DEXT) numFailed++;
-  _ptrc_glMultiTexImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glMultiTexImage2DEXT");
+  _ptrc_glMultiTexImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glMultiTexImage2DEXT");
   if(!_ptrc_glMultiTexImage2DEXT) numFailed++;
-  _ptrc_glMultiTexImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glMultiTexImage3DEXT");
+  _ptrc_glMultiTexImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glMultiTexImage3DEXT");
   if(!_ptrc_glMultiTexImage3DEXT) numFailed++;
   _ptrc_glMultiTexParameterIivEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, const GLint *))IntGetProcAddress("glMultiTexParameterIivEXT");
   if(!_ptrc_glMultiTexParameterIivEXT) numFailed++;
@@ -682,15 +685,17 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glMultiTexParameterivEXT) numFailed++;
   _ptrc_glMultiTexRenderbufferEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLuint))IntGetProcAddress("glMultiTexRenderbufferEXT");
   if(!_ptrc_glMultiTexRenderbufferEXT) numFailed++;
-  _ptrc_glMultiTexSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glMultiTexSubImage1DEXT");
+  _ptrc_glMultiTexSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glMultiTexSubImage1DEXT");
   if(!_ptrc_glMultiTexSubImage1DEXT) numFailed++;
-  _ptrc_glMultiTexSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glMultiTexSubImage2DEXT");
+  _ptrc_glMultiTexSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glMultiTexSubImage2DEXT");
   if(!_ptrc_glMultiTexSubImage2DEXT) numFailed++;
-  _ptrc_glMultiTexSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glMultiTexSubImage3DEXT");
+  _ptrc_glMultiTexSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glMultiTexSubImage3DEXT");
   if(!_ptrc_glMultiTexSubImage3DEXT) numFailed++;
-  _ptrc_glNamedBufferDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLsizeiptr, const GLvoid *, GLenum))IntGetProcAddress("glNamedBufferDataEXT");
+  _ptrc_glNamedBufferDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLsizeiptr, const void *, GLenum))IntGetProcAddress("glNamedBufferDataEXT");
   if(!_ptrc_glNamedBufferDataEXT) numFailed++;
-  _ptrc_glNamedBufferSubDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLintptr, GLsizeiptr, const GLvoid *))IntGetProcAddress("glNamedBufferSubDataEXT");
+  _ptrc_glNamedBufferStorageEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLsizeiptr, const void *, GLbitfield))IntGetProcAddress("glNamedBufferStorageEXT");
+  if(!_ptrc_glNamedBufferStorageEXT) numFailed++;
+  _ptrc_glNamedBufferSubDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLintptr, GLsizeiptr, const void *))IntGetProcAddress("glNamedBufferSubDataEXT");
   if(!_ptrc_glNamedBufferSubDataEXT) numFailed++;
   _ptrc_glNamedCopyBufferSubDataEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLintptr, GLintptr, GLsizeiptr))IntGetProcAddress("glNamedCopyBufferSubDataEXT");
   if(!_ptrc_glNamedCopyBufferSubDataEXT) numFailed++;
@@ -732,7 +737,7 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glNamedProgramLocalParametersI4ivEXT) numFailed++;
   _ptrc_glNamedProgramLocalParametersI4uivEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLuint, GLsizei, const GLuint *))IntGetProcAddress("glNamedProgramLocalParametersI4uivEXT");
   if(!_ptrc_glNamedProgramLocalParametersI4uivEXT) numFailed++;
-  _ptrc_glNamedProgramStringEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glNamedProgramStringEXT");
+  _ptrc_glNamedProgramStringEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLsizei, const void *))IntGetProcAddress("glNamedProgramStringEXT");
   if(!_ptrc_glNamedProgramStringEXT) numFailed++;
   _ptrc_glNamedRenderbufferStorageEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLsizei, GLsizei))IntGetProcAddress("glNamedRenderbufferStorageEXT");
   if(!_ptrc_glNamedRenderbufferStorageEXT) numFailed++;
@@ -846,13 +851,13 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glTextureBufferEXT) numFailed++;
   _ptrc_glTextureBufferRangeEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, GLuint, GLintptr, GLsizeiptr))IntGetProcAddress("glTextureBufferRangeEXT");
   if(!_ptrc_glTextureBufferRangeEXT) numFailed++;
-  _ptrc_glTextureImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTextureImage1DEXT");
+  _ptrc_glTextureImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glTextureImage1DEXT");
   if(!_ptrc_glTextureImage1DEXT) numFailed++;
-  _ptrc_glTextureImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTextureImage2DEXT");
+  _ptrc_glTextureImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glTextureImage2DEXT");
   if(!_ptrc_glTextureImage2DEXT) numFailed++;
-  _ptrc_glTextureImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTextureImage3DEXT");
+  _ptrc_glTextureImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glTextureImage3DEXT");
   if(!_ptrc_glTextureImage3DEXT) numFailed++;
-  _ptrc_glTexturePageCommitmentEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLboolean))IntGetProcAddress("glTexturePageCommitmentEXT");
+  _ptrc_glTexturePageCommitmentEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLboolean))IntGetProcAddress("glTexturePageCommitmentEXT");
   if(!_ptrc_glTexturePageCommitmentEXT) numFailed++;
   _ptrc_glTextureParameterIivEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLenum, const GLint *))IntGetProcAddress("glTextureParameterIivEXT");
   if(!_ptrc_glTextureParameterIivEXT) numFailed++;
@@ -878,11 +883,11 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glTextureStorage3DEXT) numFailed++;
   _ptrc_glTextureStorage3DMultisampleEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean))IntGetProcAddress("glTextureStorage3DMultisampleEXT");
   if(!_ptrc_glTextureStorage3DMultisampleEXT) numFailed++;
-  _ptrc_glTextureSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTextureSubImage1DEXT");
+  _ptrc_glTextureSubImage1DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glTextureSubImage1DEXT");
   if(!_ptrc_glTextureSubImage1DEXT) numFailed++;
-  _ptrc_glTextureSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTextureSubImage2DEXT");
+  _ptrc_glTextureSubImage2DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glTextureSubImage2DEXT");
   if(!_ptrc_glTextureSubImage2DEXT) numFailed++;
-  _ptrc_glTextureSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTextureSubImage3DEXT");
+  _ptrc_glTextureSubImage3DEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glTextureSubImage3DEXT");
   if(!_ptrc_glTextureSubImage3DEXT) numFailed++;
   _ptrc_glUnmapNamedBufferEXT = (GLboolean (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glUnmapNamedBufferEXT");
   if(!_ptrc_glUnmapNamedBufferEXT) numFailed++;
@@ -906,6 +911,8 @@ static int Load_EXT_direct_state_access()
   if(!_ptrc_glVertexArrayTexCoordOffsetEXT) numFailed++;
   _ptrc_glVertexArrayVertexAttribBindingEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLuint))IntGetProcAddress("glVertexArrayVertexAttribBindingEXT");
   if(!_ptrc_glVertexArrayVertexAttribBindingEXT) numFailed++;
+  _ptrc_glVertexArrayVertexAttribDivisorEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLuint))IntGetProcAddress("glVertexArrayVertexAttribDivisorEXT");
+  if(!_ptrc_glVertexArrayVertexAttribDivisorEXT) numFailed++;
   _ptrc_glVertexArrayVertexAttribFormatEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLint, GLenum, GLboolean, GLuint))IntGetProcAddress("glVertexArrayVertexAttribFormatEXT");
   if(!_ptrc_glVertexArrayVertexAttribFormatEXT) numFailed++;
   _ptrc_glVertexArrayVertexAttribIFormatEXT = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLint, GLenum, GLuint))IntGetProcAddress("glVertexArrayVertexAttribIFormatEXT");
@@ -925,12 +932,25 @@ static int Load_EXT_direct_state_access()
   return numFailed;
 }
 
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glStringMarkerGREMEDY)(GLsizei, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetObjectLabelEXT)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glLabelObjectEXT)(GLenum, GLuint, GLsizei, const GLchar *) = NULL;
+
+static int Load_EXT_debug_label()
+{
+  int numFailed = 0;
+  _ptrc_glGetObjectLabelEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *))IntGetProcAddress("glGetObjectLabelEXT");
+  if(!_ptrc_glGetObjectLabelEXT) numFailed++;
+  _ptrc_glLabelObjectEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLsizei, const GLchar *))IntGetProcAddress("glLabelObjectEXT");
+  if(!_ptrc_glLabelObjectEXT) numFailed++;
+  return numFailed;
+}
+
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glStringMarkerGREMEDY)(GLsizei, const void *) = NULL;
 
 static int Load_GREMEDY_string_marker()
 {
   int numFailed = 0;
-  _ptrc_glStringMarkerGREMEDY = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLvoid *))IntGetProcAddress("glStringMarkerGREMEDY");
+  _ptrc_glStringMarkerGREMEDY = (void (CODEGEN_FUNCPTR *)(GLsizei, const void *))IntGetProcAddress("glStringMarkerGREMEDY");
   if(!_ptrc_glStringMarkerGREMEDY) numFailed++;
   return numFailed;
 }
@@ -957,7 +977,7 @@ GLLOADGEN_EXPORT GLenum (CODEGEN_FUNCPTR *_ptrc_glGetError)() = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetFloatv)(GLenum, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetIntegerv)(GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT const GLubyte * (CODEGEN_FUNCPTR *_ptrc_glGetString)(GLenum) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTexImage)(GLenum, GLint, GLenum, GLenum, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTexImage)(GLenum, GLint, GLenum, GLenum, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTexLevelParameterfv)(GLenum, GLint, GLenum, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTexLevelParameteriv)(GLenum, GLint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetTexParameterfv)(GLenum, GLenum, GLfloat *) = NULL;
@@ -971,13 +991,13 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPixelStorei)(GLenum, GLint) = NU
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPointSize)(GLfloat) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPolygonMode)(GLenum, GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glReadBuffer)(GLenum) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glReadPixels)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glReadPixels)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glScissor)(GLint, GLint, GLsizei, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glStencilFunc)(GLenum, GLint, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glStencilMask)(GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glStencilOp)(GLenum, GLenum, GLenum) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage1D)(GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage2D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage1D)(GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage2D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexParameterf)(GLenum, GLenum, GLfloat) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexParameterfv)(GLenum, GLenum, const GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexParameteri)(GLenum, GLenum, GLint) = NULL;
@@ -991,34 +1011,34 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyTexSubImage1D)(GLenum, GLint
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyTexSubImage2D)(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDeleteTextures)(GLsizei, const GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawArrays)(GLenum, GLint, GLsizei) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElements)(GLenum, GLsizei, GLenum, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElements)(GLenum, GLsizei, GLenum, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGenTextures)(GLsizei, GLuint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetPointerv)(GLenum, GLvoid **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetPointerv)(GLenum, void **) = NULL;
 GLLOADGEN_EXPORT GLboolean (CODEGEN_FUNCPTR *_ptrc_glIsTexture)(GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPolygonOffset)(GLfloat, GLfloat) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexSubImage1D)(GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexSubImage1D)(GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *) = NULL;
+
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyTexSubImage3D)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawRangeElements)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage3D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexSubImage3D)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *) = NULL;
+
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glActiveTexture)(GLenum) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexImage1D)(GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexImage2D)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexImage3D)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexSubImage1D)(GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexSubImage3D)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetCompressedTexImage)(GLenum, GLint, void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glSampleCoverage)(GLfloat, GLboolean) = NULL;
 
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBlendColor)(GLfloat, GLfloat, GLfloat, GLfloat) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBlendEquation)(GLenum) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyTexSubImage3D)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawRangeElements)(GLenum, GLuint, GLuint, GLsizei, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage3D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexSubImage3D)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *) = NULL;
-
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glActiveTexture)(GLenum) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexImage1D)(GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexImage2D)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexImage3D)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexSubImage1D)(GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexSubImage2D)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCompressedTexSubImage3D)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetCompressedTexImage)(GLenum, GLint, GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glSampleCoverage)(GLfloat, GLboolean) = NULL;
-
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBlendFuncSeparate)(GLenum, GLenum, GLenum, GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiDrawArrays)(GLenum, const GLint *, const GLsizei *, GLsizei) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiDrawElements)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiDrawElements)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPointParameterf)(GLenum, GLfloat) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPointParameterfv)(GLenum, const GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPointParameteri)(GLenum, GLint) = NULL;
@@ -1026,16 +1046,16 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPointParameteriv)(GLenum, const 
 
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBeginQuery)(GLenum, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBindBuffer)(GLenum, GLuint) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBufferData)(GLenum, GLsizeiptr, const GLvoid *, GLenum) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBufferSubData)(GLenum, GLintptr, GLsizeiptr, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBufferData)(GLenum, GLsizeiptr, const void *, GLenum) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBufferSubData)(GLenum, GLintptr, GLsizeiptr, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDeleteBuffers)(GLsizei, const GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDeleteQueries)(GLsizei, const GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glEndQuery)(GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGenBuffers)(GLsizei, GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGenQueries)(GLsizei, GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetBufferParameteriv)(GLenum, GLenum, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetBufferPointerv)(GLenum, GLenum, GLvoid **) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetBufferSubData)(GLenum, GLintptr, GLsizeiptr, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetBufferPointerv)(GLenum, GLenum, void **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetBufferSubData)(GLenum, GLintptr, GLsizeiptr, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetQueryObjectiv)(GLuint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetQueryObjectuiv)(GLuint, GLenum, GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetQueryiv)(GLenum, GLenum, GLint *) = NULL;
@@ -1068,7 +1088,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetShaderiv)(GLuint, GLenum, GLi
 GLLOADGEN_EXPORT GLint (CODEGEN_FUNCPTR *_ptrc_glGetUniformLocation)(GLuint, const GLchar *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetUniformfv)(GLuint, GLint, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetUniformiv)(GLuint, GLint, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexAttribPointerv)(GLuint, GLenum, GLvoid **) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexAttribPointerv)(GLuint, GLenum, void **) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexAttribdv)(GLuint, GLenum, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexAttribfv)(GLuint, GLenum, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexAttribiv)(GLuint, GLenum, GLint *) = NULL;
@@ -1136,7 +1156,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttrib4sv)(GLuint, const G
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttrib4ubv)(GLuint, const GLubyte *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttrib4uiv)(GLuint, const GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttrib4usv)(GLuint, const GLushort *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribPointer)(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *) = NULL;
 
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glUniformMatrix2x3fv)(GLint, GLsizei, GLboolean, const GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glUniformMatrix2x4fv)(GLint, GLsizei, GLboolean, const GLfloat *) = NULL;
@@ -1228,11 +1248,11 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribI4ubv)(GLuint, const
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribI4ui)(GLuint, GLuint, GLuint, GLuint, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribI4uiv)(GLuint, const GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribI4usv)(GLuint, const GLushort *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribIPointer)(GLuint, GLint, GLenum, GLsizei, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribIPointer)(GLuint, GLint, GLenum, GLsizei, const void *) = NULL;
 
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glCopyBufferSubData)(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawArraysInstanced)(GLenum, GLint, GLsizei, GLsizei) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsInstanced)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsInstanced)(GLenum, GLsizei, GLenum, const void *, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetActiveUniformBlockName)(GLuint, GLuint, GLsizei, GLsizei *, GLchar *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetActiveUniformBlockiv)(GLuint, GLuint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetActiveUniformName)(GLuint, GLuint, GLsizei, GLsizei *, GLchar *) = NULL;
@@ -1245,9 +1265,9 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glUniformBlockBinding)(GLuint, GLu
 
 GLLOADGEN_EXPORT GLenum (CODEGEN_FUNCPTR *_ptrc_glClientWaitSync)(GLsync, GLbitfield, GLuint64) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDeleteSync)(GLsync) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsBaseVertex)(GLenum, GLsizei, GLenum, const GLvoid *, GLint) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsInstancedBaseVertex)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei, GLint) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawRangeElementsBaseVertex)(GLenum, GLuint, GLuint, GLsizei, GLenum, const GLvoid *, GLint) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsBaseVertex)(GLenum, GLsizei, GLenum, const void *, GLint) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsInstancedBaseVertex)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawRangeElementsBaseVertex)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *, GLint) = NULL;
 GLLOADGEN_EXPORT GLsync (CODEGEN_FUNCPTR *_ptrc_glFenceSync)(GLenum, GLbitfield) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glFramebufferTexture)(GLenum, GLenum, GLuint, GLint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetBufferParameteri64v)(GLenum, GLenum, GLint64 *) = NULL;
@@ -1256,11 +1276,11 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetInteger64v)(GLenum, GLint64 *
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetMultisamplefv)(GLenum, GLuint, GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetSynciv)(GLsync, GLenum, GLsizei, GLsizei *, GLint *) = NULL;
 GLLOADGEN_EXPORT GLboolean (CODEGEN_FUNCPTR *_ptrc_glIsSync)(GLsync) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiDrawElementsBaseVertex)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei, const GLint *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMultiDrawElementsBaseVertex)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei, const GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glProvokingVertex)(GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glSampleMaski)(GLuint, GLbitfield) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage2DMultisample)(GLenum, GLsizei, GLint, GLsizei, GLsizei, GLboolean) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage3DMultisample)(GLenum, GLsizei, GLint, GLsizei, GLsizei, GLsizei, GLboolean) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage2DMultisample)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLboolean) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexImage3DMultisample)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glWaitSync)(GLsync, GLbitfield, GLuint64) = NULL;
 
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBindFragDataLocationIndexed)(GLuint, GLuint, GLuint, const GLchar *) = NULL;
@@ -1299,8 +1319,8 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBlendEquationi)(GLuint, GLenum) 
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBlendFuncSeparatei)(GLuint, GLenum, GLenum, GLenum, GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glBlendFunci)(GLuint, GLenum, GLenum) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDeleteTransformFeedbacks)(GLsizei, const GLuint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawArraysIndirect)(GLenum, const GLvoid *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsIndirect)(GLenum, GLenum, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawArraysIndirect)(GLenum, const void *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsIndirect)(GLenum, GLenum, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawTransformFeedback)(GLenum, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawTransformFeedbackStream)(GLenum, GLuint, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glEndQueryIndexed)(GLenum, GLuint) = NULL;
@@ -1350,13 +1370,13 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDepthRangef)(GLfloat, GLfloat) =
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGenProgramPipelines)(GLsizei, GLuint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetDoublei_v)(GLenum, GLuint, GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetFloati_v)(GLenum, GLuint, GLfloat *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetProgramBinary)(GLuint, GLsizei, GLsizei *, GLenum *, GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetProgramBinary)(GLuint, GLsizei, GLsizei *, GLenum *, void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetProgramPipelineInfoLog)(GLuint, GLsizei, GLsizei *, GLchar *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetProgramPipelineiv)(GLuint, GLenum, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetShaderPrecisionFormat)(GLenum, GLenum, GLint *, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetVertexAttribLdv)(GLuint, GLenum, GLdouble *) = NULL;
 GLLOADGEN_EXPORT GLboolean (CODEGEN_FUNCPTR *_ptrc_glIsProgramPipeline)(GLuint) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glProgramBinary)(GLuint, GLenum, const GLvoid *, GLsizei) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glProgramBinary)(GLuint, GLenum, const void *, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glProgramParameteri)(GLuint, GLenum, GLint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glProgramUniform1d)(GLuint, GLint, GLdouble) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glProgramUniform1dv)(GLuint, GLint, GLsizei, const GLdouble *) = NULL;
@@ -1412,7 +1432,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glReleaseShaderCompiler)() = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glScissorArrayv)(GLuint, GLsizei, const GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glScissorIndexed)(GLuint, GLint, GLint, GLsizei, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glScissorIndexedv)(GLuint, const GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glShaderBinary)(GLsizei, const GLuint *, GLenum, const GLvoid *, GLsizei) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glShaderBinary)(GLsizei, const GLuint *, GLenum, const void *, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glUseProgramStages)(GLuint, GLbitfield, GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glValidateProgramPipeline)(GLuint) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribL1d)(GLuint, GLdouble) = NULL;
@@ -1423,7 +1443,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribL3d)(GLuint, GLdoubl
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribL3dv)(GLuint, const GLdouble *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribL4d)(GLuint, GLdouble, GLdouble, GLdouble, GLdouble) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribL4dv)(GLuint, const GLdouble *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribLPointer)(GLuint, GLint, GLenum, GLsizei, const GLvoid *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexAttribLPointer)(GLuint, GLint, GLenum, GLsizei, const void *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glViewportArrayv)(GLuint, GLsizei, const GLfloat *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glViewportIndexedf)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glViewportIndexedfv)(GLuint, const GLfloat *) = NULL;
@@ -1435,7 +1455,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawElementsInstancedBaseVertexB
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawTransformFeedbackInstanced)(GLenum, GLuint, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDrawTransformFeedbackStreamInstanced)(GLenum, GLuint, GLuint, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetActiveAtomicCounterBufferiv)(GLuint, GLuint, GLenum, GLint *) = NULL;
-GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetInternalformati64v)(GLenum, GLenum, GLenum, GLsizei, GLint64 *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetInternalformativ)(GLenum, GLenum, GLenum, GLsizei, GLint *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glMemoryBarrier)(GLbitfield) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexStorage1D)(GLenum, GLsizei, GLenum, GLsizei) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glTexStorage2D)(GLenum, GLsizei, GLenum, GLsizei, GLsizei) = NULL;
@@ -1453,6 +1473,7 @@ GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glDispatchComputeIndirect)(GLintpt
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glFramebufferParameteri)(GLenum, GLenum, GLint) = NULL;
 GLLOADGEN_EXPORT GLuint (CODEGEN_FUNCPTR *_ptrc_glGetDebugMessageLog)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetFramebufferParameteriv)(GLenum, GLenum, GLint *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetInternalformati64v)(GLenum, GLenum, GLenum, GLsizei, GLint64 *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetObjectLabel)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetObjectPtrLabel)(const void *, GLsizei, GLsizei *, GLchar *) = NULL;
 GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetProgramInterfaceiv)(GLuint, GLenum, GLenum, GLint *) = NULL;
@@ -1541,7 +1562,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glGetIntegerv) numFailed++;
   _ptrc_glGetString = (const GLubyte * (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glGetString");
   if(!_ptrc_glGetString) numFailed++;
-  _ptrc_glGetTexImage = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLenum, GLvoid *))IntGetProcAddress("glGetTexImage");
+  _ptrc_glGetTexImage = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLenum, void *))IntGetProcAddress("glGetTexImage");
   if(!_ptrc_glGetTexImage) numFailed++;
   _ptrc_glGetTexLevelParameterfv = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLfloat *))IntGetProcAddress("glGetTexLevelParameterfv");
   if(!_ptrc_glGetTexLevelParameterfv) numFailed++;
@@ -1569,7 +1590,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glPolygonMode) numFailed++;
   _ptrc_glReadBuffer = (void (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glReadBuffer");
   if(!_ptrc_glReadBuffer) numFailed++;
-  _ptrc_glReadPixels = (void (CODEGEN_FUNCPTR *)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLvoid *))IntGetProcAddress("glReadPixels");
+  _ptrc_glReadPixels = (void (CODEGEN_FUNCPTR *)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void *))IntGetProcAddress("glReadPixels");
   if(!_ptrc_glReadPixels) numFailed++;
   _ptrc_glScissor = (void (CODEGEN_FUNCPTR *)(GLint, GLint, GLsizei, GLsizei))IntGetProcAddress("glScissor");
   if(!_ptrc_glScissor) numFailed++;
@@ -1579,9 +1600,9 @@ static int Load_Version_4_4()
   if(!_ptrc_glStencilMask) numFailed++;
   _ptrc_glStencilOp = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum))IntGetProcAddress("glStencilOp");
   if(!_ptrc_glStencilOp) numFailed++;
-  _ptrc_glTexImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTexImage1D");
+  _ptrc_glTexImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glTexImage1D");
   if(!_ptrc_glTexImage1D) numFailed++;
-  _ptrc_glTexImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTexImage2D");
+  _ptrc_glTexImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glTexImage2D");
   if(!_ptrc_glTexImage2D) numFailed++;
   _ptrc_glTexParameterf = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLfloat))IntGetProcAddress("glTexParameterf");
   if(!_ptrc_glTexParameterf) numFailed++;
@@ -1607,55 +1628,55 @@ static int Load_Version_4_4()
   if(!_ptrc_glDeleteTextures) numFailed++;
   _ptrc_glDrawArrays = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLsizei))IntGetProcAddress("glDrawArrays");
   if(!_ptrc_glDrawArrays) numFailed++;
-  _ptrc_glDrawElements = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const GLvoid *))IntGetProcAddress("glDrawElements");
+  _ptrc_glDrawElements = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const void *))IntGetProcAddress("glDrawElements");
   if(!_ptrc_glDrawElements) numFailed++;
   _ptrc_glGenTextures = (void (CODEGEN_FUNCPTR *)(GLsizei, GLuint *))IntGetProcAddress("glGenTextures");
   if(!_ptrc_glGenTextures) numFailed++;
-  _ptrc_glGetPointerv = (void (CODEGEN_FUNCPTR *)(GLenum, GLvoid **))IntGetProcAddress("glGetPointerv");
+  _ptrc_glGetPointerv = (void (CODEGEN_FUNCPTR *)(GLenum, void **))IntGetProcAddress("glGetPointerv");
   if(!_ptrc_glGetPointerv) numFailed++;
   _ptrc_glIsTexture = (GLboolean (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glIsTexture");
   if(!_ptrc_glIsTexture) numFailed++;
   _ptrc_glPolygonOffset = (void (CODEGEN_FUNCPTR *)(GLfloat, GLfloat))IntGetProcAddress("glPolygonOffset");
   if(!_ptrc_glPolygonOffset) numFailed++;
-  _ptrc_glTexSubImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTexSubImage1D");
+  _ptrc_glTexSubImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glTexSubImage1D");
   if(!_ptrc_glTexSubImage1D) numFailed++;
-  _ptrc_glTexSubImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTexSubImage2D");
+  _ptrc_glTexSubImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glTexSubImage2D");
   if(!_ptrc_glTexSubImage2D) numFailed++;
+  _ptrc_glCopyTexSubImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei))IntGetProcAddress("glCopyTexSubImage3D");
+  if(!_ptrc_glCopyTexSubImage3D) numFailed++;
+  _ptrc_glDrawRangeElements = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *))IntGetProcAddress("glDrawRangeElements");
+  if(!_ptrc_glDrawRangeElements) numFailed++;
+  _ptrc_glTexImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *))IntGetProcAddress("glTexImage3D");
+  if(!_ptrc_glTexImage3D) numFailed++;
+  _ptrc_glTexSubImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *))IntGetProcAddress("glTexSubImage3D");
+  if(!_ptrc_glTexSubImage3D) numFailed++;
+  _ptrc_glActiveTexture = (void (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glActiveTexture");
+  if(!_ptrc_glActiveTexture) numFailed++;
+  _ptrc_glCompressedTexImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedTexImage1D");
+  if(!_ptrc_glCompressedTexImage1D) numFailed++;
+  _ptrc_glCompressedTexImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedTexImage2D");
+  if(!_ptrc_glCompressedTexImage2D) numFailed++;
+  _ptrc_glCompressedTexImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *))IntGetProcAddress("glCompressedTexImage3D");
+  if(!_ptrc_glCompressedTexImage3D) numFailed++;
+  _ptrc_glCompressedTexSubImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedTexSubImage1D");
+  if(!_ptrc_glCompressedTexSubImage1D) numFailed++;
+  _ptrc_glCompressedTexSubImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedTexSubImage2D");
+  if(!_ptrc_glCompressedTexSubImage2D) numFailed++;
+  _ptrc_glCompressedTexSubImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *))IntGetProcAddress("glCompressedTexSubImage3D");
+  if(!_ptrc_glCompressedTexSubImage3D) numFailed++;
+  _ptrc_glGetCompressedTexImage = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, void *))IntGetProcAddress("glGetCompressedTexImage");
+  if(!_ptrc_glGetCompressedTexImage) numFailed++;
+  _ptrc_glSampleCoverage = (void (CODEGEN_FUNCPTR *)(GLfloat, GLboolean))IntGetProcAddress("glSampleCoverage");
+  if(!_ptrc_glSampleCoverage) numFailed++;
   _ptrc_glBlendColor = (void (CODEGEN_FUNCPTR *)(GLfloat, GLfloat, GLfloat, GLfloat))IntGetProcAddress("glBlendColor");
   if(!_ptrc_glBlendColor) numFailed++;
   _ptrc_glBlendEquation = (void (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glBlendEquation");
   if(!_ptrc_glBlendEquation) numFailed++;
-  _ptrc_glCopyTexSubImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei))IntGetProcAddress("glCopyTexSubImage3D");
-  if(!_ptrc_glCopyTexSubImage3D) numFailed++;
-  _ptrc_glDrawRangeElements = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLuint, GLsizei, GLenum, const GLvoid *))IntGetProcAddress("glDrawRangeElements");
-  if(!_ptrc_glDrawRangeElements) numFailed++;
-  _ptrc_glTexImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTexImage3D");
-  if(!_ptrc_glTexImage3D) numFailed++;
-  _ptrc_glTexSubImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const GLvoid *))IntGetProcAddress("glTexSubImage3D");
-  if(!_ptrc_glTexSubImage3D) numFailed++;
-  _ptrc_glActiveTexture = (void (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glActiveTexture");
-  if(!_ptrc_glActiveTexture) numFailed++;
-  _ptrc_glCompressedTexImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTexImage1D");
-  if(!_ptrc_glCompressedTexImage1D) numFailed++;
-  _ptrc_glCompressedTexImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTexImage2D");
-  if(!_ptrc_glCompressedTexImage2D) numFailed++;
-  _ptrc_glCompressedTexImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTexImage3D");
-  if(!_ptrc_glCompressedTexImage3D) numFailed++;
-  _ptrc_glCompressedTexSubImage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTexSubImage1D");
-  if(!_ptrc_glCompressedTexSubImage1D) numFailed++;
-  _ptrc_glCompressedTexSubImage2D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTexSubImage2D");
-  if(!_ptrc_glCompressedTexSubImage2D) numFailed++;
-  _ptrc_glCompressedTexSubImage3D = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glCompressedTexSubImage3D");
-  if(!_ptrc_glCompressedTexSubImage3D) numFailed++;
-  _ptrc_glGetCompressedTexImage = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLvoid *))IntGetProcAddress("glGetCompressedTexImage");
-  if(!_ptrc_glGetCompressedTexImage) numFailed++;
-  _ptrc_glSampleCoverage = (void (CODEGEN_FUNCPTR *)(GLfloat, GLboolean))IntGetProcAddress("glSampleCoverage");
-  if(!_ptrc_glSampleCoverage) numFailed++;
   _ptrc_glBlendFuncSeparate = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLenum))IntGetProcAddress("glBlendFuncSeparate");
   if(!_ptrc_glBlendFuncSeparate) numFailed++;
   _ptrc_glMultiDrawArrays = (void (CODEGEN_FUNCPTR *)(GLenum, const GLint *, const GLsizei *, GLsizei))IntGetProcAddress("glMultiDrawArrays");
   if(!_ptrc_glMultiDrawArrays) numFailed++;
-  _ptrc_glMultiDrawElements = (void (CODEGEN_FUNCPTR *)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei))IntGetProcAddress("glMultiDrawElements");
+  _ptrc_glMultiDrawElements = (void (CODEGEN_FUNCPTR *)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei))IntGetProcAddress("glMultiDrawElements");
   if(!_ptrc_glMultiDrawElements) numFailed++;
   _ptrc_glPointParameterf = (void (CODEGEN_FUNCPTR *)(GLenum, GLfloat))IntGetProcAddress("glPointParameterf");
   if(!_ptrc_glPointParameterf) numFailed++;
@@ -1669,9 +1690,9 @@ static int Load_Version_4_4()
   if(!_ptrc_glBeginQuery) numFailed++;
   _ptrc_glBindBuffer = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint))IntGetProcAddress("glBindBuffer");
   if(!_ptrc_glBindBuffer) numFailed++;
-  _ptrc_glBufferData = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizeiptr, const GLvoid *, GLenum))IntGetProcAddress("glBufferData");
+  _ptrc_glBufferData = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizeiptr, const void *, GLenum))IntGetProcAddress("glBufferData");
   if(!_ptrc_glBufferData) numFailed++;
-  _ptrc_glBufferSubData = (void (CODEGEN_FUNCPTR *)(GLenum, GLintptr, GLsizeiptr, const GLvoid *))IntGetProcAddress("glBufferSubData");
+  _ptrc_glBufferSubData = (void (CODEGEN_FUNCPTR *)(GLenum, GLintptr, GLsizeiptr, const void *))IntGetProcAddress("glBufferSubData");
   if(!_ptrc_glBufferSubData) numFailed++;
   _ptrc_glDeleteBuffers = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLuint *))IntGetProcAddress("glDeleteBuffers");
   if(!_ptrc_glDeleteBuffers) numFailed++;
@@ -1685,9 +1706,9 @@ static int Load_Version_4_4()
   if(!_ptrc_glGenQueries) numFailed++;
   _ptrc_glGetBufferParameteriv = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint *))IntGetProcAddress("glGetBufferParameteriv");
   if(!_ptrc_glGetBufferParameteriv) numFailed++;
-  _ptrc_glGetBufferPointerv = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLvoid **))IntGetProcAddress("glGetBufferPointerv");
+  _ptrc_glGetBufferPointerv = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, void **))IntGetProcAddress("glGetBufferPointerv");
   if(!_ptrc_glGetBufferPointerv) numFailed++;
-  _ptrc_glGetBufferSubData = (void (CODEGEN_FUNCPTR *)(GLenum, GLintptr, GLsizeiptr, GLvoid *))IntGetProcAddress("glGetBufferSubData");
+  _ptrc_glGetBufferSubData = (void (CODEGEN_FUNCPTR *)(GLenum, GLintptr, GLsizeiptr, void *))IntGetProcAddress("glGetBufferSubData");
   if(!_ptrc_glGetBufferSubData) numFailed++;
   _ptrc_glGetQueryObjectiv = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint *))IntGetProcAddress("glGetQueryObjectiv");
   if(!_ptrc_glGetQueryObjectiv) numFailed++;
@@ -1751,7 +1772,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glGetUniformfv) numFailed++;
   _ptrc_glGetUniformiv = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLint *))IntGetProcAddress("glGetUniformiv");
   if(!_ptrc_glGetUniformiv) numFailed++;
-  _ptrc_glGetVertexAttribPointerv = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLvoid **))IntGetProcAddress("glGetVertexAttribPointerv");
+  _ptrc_glGetVertexAttribPointerv = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, void **))IntGetProcAddress("glGetVertexAttribPointerv");
   if(!_ptrc_glGetVertexAttribPointerv) numFailed++;
   _ptrc_glGetVertexAttribdv = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLdouble *))IntGetProcAddress("glGetVertexAttribdv");
   if(!_ptrc_glGetVertexAttribdv) numFailed++;
@@ -1887,7 +1908,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glVertexAttrib4uiv) numFailed++;
   _ptrc_glVertexAttrib4usv = (void (CODEGEN_FUNCPTR *)(GLuint, const GLushort *))IntGetProcAddress("glVertexAttrib4usv");
   if(!_ptrc_glVertexAttrib4usv) numFailed++;
-  _ptrc_glVertexAttribPointer = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid *))IntGetProcAddress("glVertexAttribPointer");
+  _ptrc_glVertexAttribPointer = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *))IntGetProcAddress("glVertexAttribPointer");
   if(!_ptrc_glVertexAttribPointer) numFailed++;
   _ptrc_glUniformMatrix2x3fv = (void (CODEGEN_FUNCPTR *)(GLint, GLsizei, GLboolean, const GLfloat *))IntGetProcAddress("glUniformMatrix2x3fv");
   if(!_ptrc_glUniformMatrix2x3fv) numFailed++;
@@ -2067,13 +2088,13 @@ static int Load_Version_4_4()
   if(!_ptrc_glVertexAttribI4uiv) numFailed++;
   _ptrc_glVertexAttribI4usv = (void (CODEGEN_FUNCPTR *)(GLuint, const GLushort *))IntGetProcAddress("glVertexAttribI4usv");
   if(!_ptrc_glVertexAttribI4usv) numFailed++;
-  _ptrc_glVertexAttribIPointer = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glVertexAttribIPointer");
+  _ptrc_glVertexAttribIPointer = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLenum, GLsizei, const void *))IntGetProcAddress("glVertexAttribIPointer");
   if(!_ptrc_glVertexAttribIPointer) numFailed++;
   _ptrc_glCopyBufferSubData = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr))IntGetProcAddress("glCopyBufferSubData");
   if(!_ptrc_glCopyBufferSubData) numFailed++;
   _ptrc_glDrawArraysInstanced = (void (CODEGEN_FUNCPTR *)(GLenum, GLint, GLsizei, GLsizei))IntGetProcAddress("glDrawArraysInstanced");
   if(!_ptrc_glDrawArraysInstanced) numFailed++;
-  _ptrc_glDrawElementsInstanced = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei))IntGetProcAddress("glDrawElementsInstanced");
+  _ptrc_glDrawElementsInstanced = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const void *, GLsizei))IntGetProcAddress("glDrawElementsInstanced");
   if(!_ptrc_glDrawElementsInstanced) numFailed++;
   _ptrc_glGetActiveUniformBlockName = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLsizei, GLsizei *, GLchar *))IntGetProcAddress("glGetActiveUniformBlockName");
   if(!_ptrc_glGetActiveUniformBlockName) numFailed++;
@@ -2097,11 +2118,11 @@ static int Load_Version_4_4()
   if(!_ptrc_glClientWaitSync) numFailed++;
   _ptrc_glDeleteSync = (void (CODEGEN_FUNCPTR *)(GLsync))IntGetProcAddress("glDeleteSync");
   if(!_ptrc_glDeleteSync) numFailed++;
-  _ptrc_glDrawElementsBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const GLvoid *, GLint))IntGetProcAddress("glDrawElementsBaseVertex");
+  _ptrc_glDrawElementsBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const void *, GLint))IntGetProcAddress("glDrawElementsBaseVertex");
   if(!_ptrc_glDrawElementsBaseVertex) numFailed++;
-  _ptrc_glDrawElementsInstancedBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei, GLint))IntGetProcAddress("glDrawElementsInstancedBaseVertex");
+  _ptrc_glDrawElementsInstancedBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint))IntGetProcAddress("glDrawElementsInstancedBaseVertex");
   if(!_ptrc_glDrawElementsInstancedBaseVertex) numFailed++;
-  _ptrc_glDrawRangeElementsBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLuint, GLsizei, GLenum, const GLvoid *, GLint))IntGetProcAddress("glDrawRangeElementsBaseVertex");
+  _ptrc_glDrawRangeElementsBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *, GLint))IntGetProcAddress("glDrawRangeElementsBaseVertex");
   if(!_ptrc_glDrawRangeElementsBaseVertex) numFailed++;
   _ptrc_glFenceSync = (GLsync (CODEGEN_FUNCPTR *)(GLenum, GLbitfield))IntGetProcAddress("glFenceSync");
   if(!_ptrc_glFenceSync) numFailed++;
@@ -2119,15 +2140,15 @@ static int Load_Version_4_4()
   if(!_ptrc_glGetSynciv) numFailed++;
   _ptrc_glIsSync = (GLboolean (CODEGEN_FUNCPTR *)(GLsync))IntGetProcAddress("glIsSync");
   if(!_ptrc_glIsSync) numFailed++;
-  _ptrc_glMultiDrawElementsBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei, const GLint *))IntGetProcAddress("glMultiDrawElementsBaseVertex");
+  _ptrc_glMultiDrawElementsBaseVertex = (void (CODEGEN_FUNCPTR *)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei, const GLint *))IntGetProcAddress("glMultiDrawElementsBaseVertex");
   if(!_ptrc_glMultiDrawElementsBaseVertex) numFailed++;
   _ptrc_glProvokingVertex = (void (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glProvokingVertex");
   if(!_ptrc_glProvokingVertex) numFailed++;
   _ptrc_glSampleMaski = (void (CODEGEN_FUNCPTR *)(GLuint, GLbitfield))IntGetProcAddress("glSampleMaski");
   if(!_ptrc_glSampleMaski) numFailed++;
-  _ptrc_glTexImage2DMultisample = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLint, GLsizei, GLsizei, GLboolean))IntGetProcAddress("glTexImage2DMultisample");
+  _ptrc_glTexImage2DMultisample = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLboolean))IntGetProcAddress("glTexImage2DMultisample");
   if(!_ptrc_glTexImage2DMultisample) numFailed++;
-  _ptrc_glTexImage3DMultisample = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLint, GLsizei, GLsizei, GLsizei, GLboolean))IntGetProcAddress("glTexImage3DMultisample");
+  _ptrc_glTexImage3DMultisample = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean))IntGetProcAddress("glTexImage3DMultisample");
   if(!_ptrc_glTexImage3DMultisample) numFailed++;
   _ptrc_glWaitSync = (void (CODEGEN_FUNCPTR *)(GLsync, GLbitfield, GLuint64))IntGetProcAddress("glWaitSync");
   if(!_ptrc_glWaitSync) numFailed++;
@@ -2201,9 +2222,9 @@ static int Load_Version_4_4()
   if(!_ptrc_glBlendFunci) numFailed++;
   _ptrc_glDeleteTransformFeedbacks = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLuint *))IntGetProcAddress("glDeleteTransformFeedbacks");
   if(!_ptrc_glDeleteTransformFeedbacks) numFailed++;
-  _ptrc_glDrawArraysIndirect = (void (CODEGEN_FUNCPTR *)(GLenum, const GLvoid *))IntGetProcAddress("glDrawArraysIndirect");
+  _ptrc_glDrawArraysIndirect = (void (CODEGEN_FUNCPTR *)(GLenum, const void *))IntGetProcAddress("glDrawArraysIndirect");
   if(!_ptrc_glDrawArraysIndirect) numFailed++;
-  _ptrc_glDrawElementsIndirect = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, const GLvoid *))IntGetProcAddress("glDrawElementsIndirect");
+  _ptrc_glDrawElementsIndirect = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, const void *))IntGetProcAddress("glDrawElementsIndirect");
   if(!_ptrc_glDrawElementsIndirect) numFailed++;
   _ptrc_glDrawTransformFeedback = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint))IntGetProcAddress("glDrawTransformFeedback");
   if(!_ptrc_glDrawTransformFeedback) numFailed++;
@@ -2301,7 +2322,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glGetDoublei_v) numFailed++;
   _ptrc_glGetFloati_v = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLfloat *))IntGetProcAddress("glGetFloati_v");
   if(!_ptrc_glGetFloati_v) numFailed++;
-  _ptrc_glGetProgramBinary = (void (CODEGEN_FUNCPTR *)(GLuint, GLsizei, GLsizei *, GLenum *, GLvoid *))IntGetProcAddress("glGetProgramBinary");
+  _ptrc_glGetProgramBinary = (void (CODEGEN_FUNCPTR *)(GLuint, GLsizei, GLsizei *, GLenum *, void *))IntGetProcAddress("glGetProgramBinary");
   if(!_ptrc_glGetProgramBinary) numFailed++;
   _ptrc_glGetProgramPipelineInfoLog = (void (CODEGEN_FUNCPTR *)(GLuint, GLsizei, GLsizei *, GLchar *))IntGetProcAddress("glGetProgramPipelineInfoLog");
   if(!_ptrc_glGetProgramPipelineInfoLog) numFailed++;
@@ -2313,7 +2334,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glGetVertexAttribLdv) numFailed++;
   _ptrc_glIsProgramPipeline = (GLboolean (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glIsProgramPipeline");
   if(!_ptrc_glIsProgramPipeline) numFailed++;
-  _ptrc_glProgramBinary = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, const GLvoid *, GLsizei))IntGetProcAddress("glProgramBinary");
+  _ptrc_glProgramBinary = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, const void *, GLsizei))IntGetProcAddress("glProgramBinary");
   if(!_ptrc_glProgramBinary) numFailed++;
   _ptrc_glProgramParameteri = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint))IntGetProcAddress("glProgramParameteri");
   if(!_ptrc_glProgramParameteri) numFailed++;
@@ -2425,7 +2446,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glScissorIndexed) numFailed++;
   _ptrc_glScissorIndexedv = (void (CODEGEN_FUNCPTR *)(GLuint, const GLint *))IntGetProcAddress("glScissorIndexedv");
   if(!_ptrc_glScissorIndexedv) numFailed++;
-  _ptrc_glShaderBinary = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLuint *, GLenum, const GLvoid *, GLsizei))IntGetProcAddress("glShaderBinary");
+  _ptrc_glShaderBinary = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLuint *, GLenum, const void *, GLsizei))IntGetProcAddress("glShaderBinary");
   if(!_ptrc_glShaderBinary) numFailed++;
   _ptrc_glUseProgramStages = (void (CODEGEN_FUNCPTR *)(GLuint, GLbitfield, GLuint))IntGetProcAddress("glUseProgramStages");
   if(!_ptrc_glUseProgramStages) numFailed++;
@@ -2447,7 +2468,7 @@ static int Load_Version_4_4()
   if(!_ptrc_glVertexAttribL4d) numFailed++;
   _ptrc_glVertexAttribL4dv = (void (CODEGEN_FUNCPTR *)(GLuint, const GLdouble *))IntGetProcAddress("glVertexAttribL4dv");
   if(!_ptrc_glVertexAttribL4dv) numFailed++;
-  _ptrc_glVertexAttribLPointer = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glVertexAttribLPointer");
+  _ptrc_glVertexAttribLPointer = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLenum, GLsizei, const void *))IntGetProcAddress("glVertexAttribLPointer");
   if(!_ptrc_glVertexAttribLPointer) numFailed++;
   _ptrc_glViewportArrayv = (void (CODEGEN_FUNCPTR *)(GLuint, GLsizei, const GLfloat *))IntGetProcAddress("glViewportArrayv");
   if(!_ptrc_glViewportArrayv) numFailed++;
@@ -2469,8 +2490,8 @@ static int Load_Version_4_4()
   if(!_ptrc_glDrawTransformFeedbackStreamInstanced) numFailed++;
   _ptrc_glGetActiveAtomicCounterBufferiv = (void (CODEGEN_FUNCPTR *)(GLuint, GLuint, GLenum, GLint *))IntGetProcAddress("glGetActiveAtomicCounterBufferiv");
   if(!_ptrc_glGetActiveAtomicCounterBufferiv) numFailed++;
-  _ptrc_glGetInternalformati64v = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, GLint64 *))IntGetProcAddress("glGetInternalformati64v");
-  if(!_ptrc_glGetInternalformati64v) numFailed++;
+  _ptrc_glGetInternalformativ = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, GLint *))IntGetProcAddress("glGetInternalformativ");
+  if(!_ptrc_glGetInternalformativ) numFailed++;
   _ptrc_glMemoryBarrier = (void (CODEGEN_FUNCPTR *)(GLbitfield))IntGetProcAddress("glMemoryBarrier");
   if(!_ptrc_glMemoryBarrier) numFailed++;
   _ptrc_glTexStorage1D = (void (CODEGEN_FUNCPTR *)(GLenum, GLsizei, GLenum, GLsizei))IntGetProcAddress("glTexStorage1D");
@@ -2503,6 +2524,8 @@ static int Load_Version_4_4()
   if(!_ptrc_glGetDebugMessageLog) numFailed++;
   _ptrc_glGetFramebufferParameteriv = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint *))IntGetProcAddress("glGetFramebufferParameteriv");
   if(!_ptrc_glGetFramebufferParameteriv) numFailed++;
+  _ptrc_glGetInternalformati64v = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLenum, GLsizei, GLint64 *))IntGetProcAddress("glGetInternalformati64v");
+  if(!_ptrc_glGetInternalformati64v) numFailed++;
   _ptrc_glGetObjectLabel = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *))IntGetProcAddress("glGetObjectLabel");
   if(!_ptrc_glGetObjectLabel) numFailed++;
   _ptrc_glGetObjectPtrLabel = (void (CODEGEN_FUNCPTR *)(const void *, GLsizei, GLsizei *, GLchar *))IntGetProcAddress("glGetObjectPtrLabel");
@@ -2592,7 +2615,7 @@ typedef struct ogl_StrToExtMap_s
   PFN_LOADFUNCPOINTERS LoadExtension;
 } ogl_StrToExtMap;
 
-static ogl_StrToExtMap ExtensionMap[8] = {
+static ogl_StrToExtMap ExtensionMap[9] = {
   {"GL_AMD_vertex_shader_layer", &ogl_ext_AMD_vertex_shader_layer, NULL},
   {"GL_AMD_shader_trinary_minmax", &ogl_ext_AMD_shader_trinary_minmax, NULL},
   {"GL_ARB_robustness", &ogl_ext_ARB_robustness, Load_ARB_robustness},
@@ -2600,10 +2623,11 @@ static ogl_StrToExtMap ExtensionMap[8] = {
   {"GL_EXT_texture_filter_anisotropic", &ogl_ext_EXT_texture_filter_anisotropic, NULL},
   {"GL_EXT_texture_mirror_clamp", &ogl_ext_EXT_texture_mirror_clamp, NULL},
   {"GL_EXT_direct_state_access", &ogl_ext_EXT_direct_state_access, Load_EXT_direct_state_access},
+  {"GL_EXT_debug_label", &ogl_ext_EXT_debug_label, Load_EXT_debug_label},
   {"GL_GREMEDY_string_marker", &ogl_ext_GREMEDY_string_marker, Load_GREMEDY_string_marker},
 };
 
-static int g_extensionMapSize = 8;
+static int g_extensionMapSize = 9;
 
 static void ClearExtensionVars()
 {
@@ -2614,6 +2638,7 @@ static void ClearExtensionVars()
   ogl_ext_EXT_texture_filter_anisotropic = ogl_LOAD_FAILED;
   ogl_ext_EXT_texture_mirror_clamp = ogl_LOAD_FAILED;
   ogl_ext_EXT_direct_state_access = ogl_LOAD_FAILED;
+  ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
   ogl_ext_GREMEDY_string_marker = ogl_LOAD_FAILED;
 }
 
