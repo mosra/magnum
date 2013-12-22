@@ -32,6 +32,7 @@
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"
 #include "Context.h"
+#include "DebugMessage.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
 #include "Mesh.h"
@@ -354,6 +355,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(KHR::debug)
 
         _l(AbstractObject::maxLabelLength())
+        _l(DebugMessage::maxLoggedMessages())
+        _l(DebugMessage::maxMessageLength())
     }
 
     #undef _l
