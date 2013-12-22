@@ -553,10 +553,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
          * this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{BUFFER} or
-         *      @fn_gl_extension{GetObjectLabel,EXT,object_label} with
+         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
          */
         std::string label() const;
@@ -566,11 +566,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension{EXT,debug_label} desktop or ES extension is available,
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
          * this function does nothing.
-         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
-         *      @def_gl{BUFFER} or @fn_gl_extension{LabelObject,EXT,object_label}
-         *      with @def_gl{BUFFER_OBJECT_EXT}
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with @def_gl{BUFFER}
+         *      or @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @def_gl{BUFFER_OBJECT_EXT}
          */
         Buffer& setLabel(const std::string& label);
 

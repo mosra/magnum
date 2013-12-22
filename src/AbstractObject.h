@@ -53,7 +53,7 @@ class MAGNUM_EXPORT AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If @extension{KHR,debug} desktop or ES extension is
-         * not available, returns `0`. Note that @extension{EXT,debug_label}
+         * not available, returns `0`. Note that @extension2{EXT,debug_label}
          * has no such limit.
          * @see @ref AbstractQuery::setLabel(), @ref AbstractShaderProgram::setLabel(),
          *      @ref AbstractTexture::setLabel(), @ref Buffer::setLabel(),
