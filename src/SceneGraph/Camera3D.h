@@ -30,7 +30,7 @@
 
 #include "AbstractCamera.h"
 
-#ifdef _WIN32 /* I so HATE windef.h */
+#ifdef CORRADE_TARGET_WINDOWS /* I so HATE windef.h */
 #undef near
 #undef far
 #endif
@@ -141,7 +141,7 @@ template<class T> class BasicCamera3D: public AbstractCamera<3, T> {
 */
 typedef BasicCamera3D<Float> Camera3D;
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera3D<Float>;
 #endif
 

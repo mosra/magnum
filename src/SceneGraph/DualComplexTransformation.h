@@ -183,7 +183,7 @@ template<class T> struct Transformation<BasicDualComplexTransformation<T>> {
 
 }
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualComplexTransformation<Float>>;
 #endif
 

@@ -200,7 +200,7 @@ template<class T> struct Transformation<BasicDualQuaternionTransformation<T>> {
 
 }
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualQuaternionTransformation<Float>>;
 #endif
 

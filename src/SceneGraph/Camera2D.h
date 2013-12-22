@@ -105,7 +105,7 @@ template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
 */
 typedef BasicCamera2D<Float> Camera2D;
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D<Float>;
 #endif
 

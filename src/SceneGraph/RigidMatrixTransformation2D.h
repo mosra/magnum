@@ -202,7 +202,7 @@ template<class T> struct Transformation<BasicRigidMatrixTransformation2D<T>> {
 
 }
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation2D<Float>>;
 #endif
 
