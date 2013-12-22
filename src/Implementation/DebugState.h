@@ -34,11 +34,8 @@ namespace Magnum { namespace Implementation {
 struct DebugState {
     DebugState(Context& context);
 
-    typedef std::string(*GetLabelImplementation)(GLenum, GLuint);
-    GetLabelImplementation getLabelImplementation;
-
-    typedef void(*LabelImplementation)(GLenum, GLuint, const std::string&);
-    LabelImplementation labelImplementation;
+    std::string(*getLabelImplementation)(GLenum, GLuint);
+    void(*labelImplementation)(GLenum, GLuint, const std::string&);
 
     GLint maxLabelLength;
 };

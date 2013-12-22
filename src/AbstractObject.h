@@ -36,9 +36,7 @@
 
 namespace Magnum {
 
-namespace Implementation {
-    struct DebugState;
-}
+namespace Implementation { struct DebugState; }
 
 /**
 @brief Base for all OpenGL objects
