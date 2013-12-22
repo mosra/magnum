@@ -79,6 +79,31 @@ class MAGNUM_EXPORT Renderer {
              */
             Blending = GL_BLEND,
 
+            /**
+             * Debug output
+             * @requires_gl43 %Extension @extension{KHR,debug}
+             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             * @see @ref DebugMessage, @ref Feature::DebugOutputSynchronous
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            DebugOutput = GL_DEBUG_OUTPUT,
+            #else
+            DebugOutput = GL_DEBUG_OUTPUT_KHR,
+            #endif
+
+            /**
+             * Synchronous debug output. Has effect only if @ref Feature::DebugOutput
+             * is enabled.
+             * @requires_gl43 %Extension @extension{KHR,debug}
+             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             * @see @ref DebugMessage
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            DebugOutputSynchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS,
+            #else
+            DebugOutputSynchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR,
+            #endif
+
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.

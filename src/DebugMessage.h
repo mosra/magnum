@@ -41,8 +41,32 @@ namespace Implementation { struct DebugState; }
 /**
 @brief Debug message
 
-Allows inserting debug messages into OpenGL command stream, for example with
-conjunction with various debuggers, such as Apitrace or gDEBugger.
+Allows retrieving and inserting debug messages from and to OpenGL command
+stream, for example with conjunction with various debuggers, such as Apitrace
+or gDEBugger.
+
+@section DebugMessage-usage Basic usage
+
+To retrieve debug messages from either the GL or your application you need to
+have OpenGL 4.3 or @extension{KHR,debug} desktop/ES extension. You need to
+enable @ref Renderer::Feature::DebugOutput and possibly also
+@ref Renderer::Feature::DebugOutputSynchronous. Then set up message callback
+using @ref setCallback() or use the default one provided in
+@ref setDefaultCallback():
+
+@code
+Renderer::setFeature(Renderer::Feature::DebugOutput, true);
+Renderer::setFeature(Renderer::Feature::DebugOutputSynchronous, true);
+
+DebugMessage::setDefaultCallback();
+DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
+    1337, DebugMessage::Severity::Notification, "Hello from OpenGL command stream!");
+@endcode
+
+With default callback the messages will be printed on standard output:
+
+    DebugMessage::Source::Application DebugMessage::Type::Marker -1 DebugMessage::Severity::Notification
+        Hello from OpenGL command stream!
 */
 class MAGNUM_EXPORT DebugMessage {
     friend class Implementation::DebugState;
@@ -51,7 +75,7 @@ class MAGNUM_EXPORT DebugMessage {
         /**
          * @brief Message source
          *
-         * @see @ref insert()
+         * @see @ref insert(), @ref setCallback()
          */
         enum class Source: GLenum {
             /** OpenGL */
@@ -100,7 +124,7 @@ class MAGNUM_EXPORT DebugMessage {
         /**
          * @brief Message type
          *
-         * @see @ref insert()
+         * @see @ref insert(), @ref setCallback()
          */
         enum class Type: GLenum {
             /** OpenGL error */
@@ -156,7 +180,7 @@ class MAGNUM_EXPORT DebugMessage {
         /**
          * @brief Message severity
          *
-         * @see @ref insert()
+         * @see @ref insert(), @ref setCallback()
          */
         enum class Severity: GLenum {
             /**
@@ -193,6 +217,13 @@ class MAGNUM_EXPORT DebugMessage {
             Notification = GL_DEBUG_SEVERITY_NOTIFICATION_KHR
             #endif
         };
+
+        /**
+         * @brief Debug callback
+         *
+         * @see @ref setCallback()
+         */
+        typedef void(*Callback)(Source, Type, UnsignedInt, Severity, const std::string&, const void*);
 
         /**
          * @brief Max count of debug messages in log
@@ -242,6 +273,34 @@ class MAGNUM_EXPORT DebugMessage {
          */
         static void insert(Source source, Type type, UnsignedInt id, Severity severity, const std::string& string);
 
+        /**
+         * @brief Set debug message callback
+         *
+         * The messages are sent to the callback only if
+         * @ref Renderer::Feature::DebugOutput is enabled. If OpenGL 4.3 is not
+         * supported and @extension{KHR,debug} is not available, this function
+         * does nothing.
+         * @see @ref setDefaultCallback(),
+         *      @ref Renderer::Feature::DebugOutputSynchronous
+         */
+        static void setCallback(Callback callback, const void* userParam = nullptr);
+
+        /**
+         * @brief Set default debug message callback
+         *
+         * See @ref setCallback() for more information. The message is printed
+         * to either @ref Corrade::Utility::Error "Error", @ref Corrade::Utility::Warning "Warning"
+         * or @ref Corrade::Utility::Debug "Debug" in the following format:
+         * @code
+         * DebugMessage::insert(DebugMessage::Source::Application,
+         *      DebugMessage::Type::Marker, 1337, DebugMessage::Severity::Notification, "Hello from OpenGL command stream!");
+         * @endcode
+         *
+         * <pre>%DebugMessage::Source::Application %DebugMessage::Type::Marker -1 %DebugMessage::Severity::Notification
+         *     Hello from OpenGL command stream!</pre>
+         */
+        static void setDefaultCallback();
+
         DebugMessage() = delete;
 
     private:
@@ -251,6 +310,9 @@ class MAGNUM_EXPORT DebugMessage {
         #ifndef MAGNUM_TARGET_GLES
         static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, Severity, const std::string& string);
         #endif
+
+        static MAGNUM_LOCAL void callbackImplementationNoOp(Callback, const void*);
+        static MAGNUM_LOCAL void callbackImplementationKhr(Callback callback, const void* userParam);
 };
 
 /** @debugoperator{Magnum::DebugMessage} */

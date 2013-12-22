@@ -33,6 +33,29 @@
 
 namespace Magnum {
 
+namespace {
+
+void callbackWrapper(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+    Context::current()->state().debug->messageCallback(DebugMessage::Source(source), DebugMessage::Type(type), id, DebugMessage::Severity(severity), std::string(message, length), userParam);
+}
+
+void defaultCallback(const DebugMessage::Source source, const DebugMessage::Type type, const UnsignedInt id, const DebugMessage::Severity severity, const std::string& string, const void*) {
+    switch(severity) {
+        case DebugMessage::Severity::High:
+            Error() << source << type << id << severity << "\n   " << string;
+            break;
+
+        case DebugMessage::Severity::Medium:
+        case DebugMessage::Severity::Low:
+            Warning() << source << type << id << severity << "\n   " << string;
+            break;
+
+        default: Debug() << source << type << id << severity << "\n   " << string;
+    }
+}
+
+}
+
 Int DebugMessage::maxLoggedMessages() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
         return 0;
@@ -71,6 +94,14 @@ void DebugMessage::insert(const Source source, const Type type, const UnsignedIn
     Context::current()->state().debug->messageInsertImplementation(source, type, id, severity, string);
 }
 
+void DebugMessage::setCallback(const Callback callback, const void* userParam) {
+    Context::current()->state().debug->messageCallbackImplementation(callback, userParam);
+}
+
+void DebugMessage::setDefaultCallback() {
+    setCallback(defaultCallback, nullptr);
+}
+
 void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, Severity, const std::string&) {}
 
 void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const Severity severity, const std::string& string) {
@@ -103,6 +134,34 @@ void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, Severi
     glStringMarkerGREMEDY(string.length(), string.data());
 }
 #endif
+
+void DebugMessage::callbackImplementationNoOp(Callback, const void*) {}
+
+void DebugMessage::callbackImplementationKhr(const Callback callback, const void* userParam) {
+    /* Replace the callback */
+    const Callback original = Context::current()->state().debug->messageCallback;
+    Context::current()->state().debug->messageCallback = callback;
+
+    /* Adding callback */
+    if(!original && callback) {
+        #ifndef MAGNUM_TARGET_GLES
+        glDebugMessageCallback(callbackWrapper, userParam);
+        #else
+        static_cast<void>(userParam);
+        CORRADE_INTERNAL_ASSERT(false);
+        //glDebugMessageCallbackEXT(callbackWrapper, userParam);
+        #endif
+
+    /* Deleting callback */
+    } else if(original && !callback) {
+        #ifndef MAGNUM_TARGET_GLES
+        glDebugMessageCallback(nullptr, nullptr);
+        #else
+        CORRADE_INTERNAL_ASSERT(false);
+        //glDebugMessageCallbackEXT(nullptr, nullptr);
+        #endif
+    }
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, const DebugMessage::Source value) {

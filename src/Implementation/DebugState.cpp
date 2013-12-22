@@ -30,11 +30,12 @@
 
 namespace Magnum { namespace Implementation {
 
-DebugState::DebugState(Context& context): maxLabelLength(0), maxLoggedMessages(0), maxMessageLength(0) {
+DebugState::DebugState(Context& context): maxLabelLength(0), maxLoggedMessages(0), maxMessageLength(0), messageCallback(nullptr) {
     if(context.isExtensionSupported<Extensions::GL::KHR::debug>()) {
         getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
         labelImplementation = &AbstractObject::labelImplementationKhr;
         messageInsertImplementation = &DebugMessage::insertImplementationKhr;
+        messageCallbackImplementation = &DebugMessage::callbackImplementationKhr;
 
     } else {
         if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
@@ -53,6 +54,8 @@ DebugState::DebugState(Context& context): maxLabelLength(0), maxLoggedMessages(0
         #endif
         else
             messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
+
+        messageCallbackImplementation = &DebugMessage::callbackImplementationNoOp;
     }
 }
 

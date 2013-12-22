@@ -37,8 +37,10 @@ struct DebugState {
     void(*labelImplementation)(GLenum, GLuint, const std::string&);
 
     void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugMessage::Severity, const std::string&);
+    void(*messageCallbackImplementation)(DebugMessage::Callback, const void*);
 
     GLint maxLabelLength, maxLoggedMessages, maxMessageLength;
+    DebugMessage::Callback messageCallback;
 };
 
 }}
