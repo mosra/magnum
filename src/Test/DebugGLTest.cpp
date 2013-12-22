@@ -60,8 +60,11 @@ DebugGLTest::DebugGLTest() {
 
 void DebugGLTest::insertMessageNoOp() {
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() ||
-       Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>() ||
-       Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+       Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>()
+       #ifndef MAGNUM_TARGET_GLES
+       || Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()
+       #endif
+    )
         CORRADE_SKIP("The extensions are supported, cannot test.");
 
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
@@ -93,8 +96,11 @@ void DebugGLTest::insertMessage() {
 
 void DebugGLTest::insertMessageFallback() {
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() ||
-     (!Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>() &&
-      !Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()))
+     (!Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>()
+   #ifndef MAGNUM_TARGET_GLES
+   && !Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()
+   #endif
+    ))
         CORRADE_SKIP("No proper extension is supported");
 
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
