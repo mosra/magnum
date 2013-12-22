@@ -51,10 +51,10 @@ void DebugMarker::markImplementationDefault(const std::string&) {}
 void DebugMarker::markImplementationDebugger(const std::string& string) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    glStringMarkerGREMEDY(string.length(), string.c_str());
+    glStringMarkerGREMEDY(string.length(), string.data());
     #else
     #if 0
-    glInsertEventMarkerEXT(string.length(), string.c_str());
+    glInsertEventMarkerEXT(string.length(), string.data());
     #else
     static_cast<void>(string);
     #endif

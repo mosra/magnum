@@ -298,15 +298,15 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
 }
 
 void AbstractShaderProgram::bindAttributeLocation(UnsignedInt location, const std::string& name) {
-    glBindAttribLocation(_id, location, name.c_str());
+    glBindAttribLocation(_id, location, name.data());
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
-    glBindFragDataLocation(_id, location, name.c_str());
+    glBindFragDataLocation(_id, location, name.data());
 }
 void AbstractShaderProgram::bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
-    glBindFragDataLocationIndexed(_id, location, index, name.c_str());
+    glBindFragDataLocationIndexed(_id, location, index, name.data());
 }
 #endif
 
@@ -347,7 +347,7 @@ bool AbstractShaderProgram::link() {
 }
 
 Int AbstractShaderProgram::uniformLocation(const std::string& name) {
-    GLint location = glGetUniformLocation(_id, name.c_str());
+    GLint location = glGetUniformLocation(_id, name.data());
     if(location == -1)
         Warning() << "AbstractShaderProgram: location of uniform \'" + name + "\' cannot be retrieved!";
     return location;
