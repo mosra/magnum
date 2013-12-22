@@ -34,7 +34,6 @@
 #include "AbstractTexture.h"
 #include "Buffer.h"
 #include "BufferTexture.h"
-#include "DebugMarker.h"
 #include "DefaultFramebuffer.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
@@ -431,7 +430,6 @@ Context::Context() {
     #ifndef MAGNUM_TARGET_GLES
     BufferTexture::initializeContextBasedFunctionality(*this);
     #endif
-    DebugMarker::initializeContextBasedFunctionality(*this);
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
     Framebuffer::initializeContextBasedFunctionality(*this);
     Mesh::initializeContextBasedFunctionality(*this);

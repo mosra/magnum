@@ -26,8 +26,7 @@
 
 #include <string>
 
-#include "Magnum.h"
-#include "OpenGL.h"
+#include "DebugMessage.h"
 
 namespace Magnum { namespace Implementation {
 
@@ -37,7 +36,9 @@ struct DebugState {
     std::string(*getLabelImplementation)(GLenum, GLuint);
     void(*labelImplementation)(GLenum, GLuint, const std::string&);
 
-    GLint maxLabelLength;
+    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugMessage::Severity, const std::string&);
+
+    GLint maxLabelLength, maxLoggedMessages, maxMessageLength;
 };
 
 }}

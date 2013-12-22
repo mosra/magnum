@@ -54,7 +54,7 @@ set(Magnum_SRCS
     Buffer.cpp
     ColorFormat.cpp
     Context.cpp
-    DebugMarker.cpp
+    DebugMessage.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
@@ -112,7 +112,7 @@ set(Magnum_HEADERS
     ColorFormat.h
     Context.h
     CubeMapTexture.h
-    DebugMarker.h
+    DebugMessage.h
     DefaultFramebuffer.h
     DimensionTraits.h
     Extensions.h
@@ -141,6 +141,7 @@ set(Magnum_HEADERS
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
+        DebugMarker.h
         ImageFormat.h
         Swizzle.h)
 endif()

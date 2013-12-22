@@ -45,14 +45,24 @@ State::State(Context& context):
     renderer(new RendererState),
     shader(new ShaderState),
     shaderProgram(new ShaderProgramState),
-    texture(new TextureState) {
+    texture(new TextureState)
+{
 
     Debug() << "Using optional features:";
 
     if(context.isExtensionSupported<Extensions::GL::KHR::debug>())
         Debug() << "   " << Extensions::GL::KHR::debug::string();
-    else if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>())
-        Debug() << "   " << Extensions::GL::EXT::debug_label::string();
+    else {
+        if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>())
+            Debug() << "   " << Extensions::GL::EXT::debug_label::string();
+
+        if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>())
+            Debug() << "   " << Extensions::GL::EXT::debug_marker::string();
+        #ifndef MAGNUM_TARGET_GLES
+        else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+            Debug() << "   " << Extensions::GL::GREMEDY::string_marker::string();
+        #endif
+    }
 }
 
 State::~State() {

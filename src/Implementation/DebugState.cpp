@@ -30,16 +30,29 @@
 
 namespace Magnum { namespace Implementation {
 
-DebugState::DebugState(Context& context): maxLabelLength(0) {
+DebugState::DebugState(Context& context): maxLabelLength(0), maxLoggedMessages(0), maxMessageLength(0) {
     if(context.isExtensionSupported<Extensions::GL::KHR::debug>()) {
         getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
         labelImplementation = &AbstractObject::labelImplementationKhr;
-    } else if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
-        getLabelImplementation = &AbstractObject::getLabelImplementationExt;
-        labelImplementation = &AbstractObject::labelImplementationExt;
+        messageInsertImplementation = &DebugMessage::insertImplementationKhr;
+
     } else {
-        getLabelImplementation = &AbstractObject::getLabelImplementationNoOp;
-        labelImplementation = &AbstractObject::labelImplementationNoOp;
+        if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
+            getLabelImplementation = &AbstractObject::getLabelImplementationExt;
+            labelImplementation = &AbstractObject::labelImplementationExt;
+        } else {
+            getLabelImplementation = &AbstractObject::getLabelImplementationNoOp;
+            labelImplementation = &AbstractObject::labelImplementationNoOp;
+        }
+
+        if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>())
+            messageInsertImplementation = &DebugMessage::insertImplementationExt;
+        #ifndef MAGNUM_TARGET_GLES
+        else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+            messageInsertImplementation = &DebugMessage::insertImplementationGremedy;
+        #endif
+        else
+            messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
     }
 }
 

@@ -25,47 +25,33 @@
 */
 
 /** @file
- * @brief Class Magnum::DebugMarker
+ * @brief Typedef @ref Magnum::DebugMarker
+ * @deprecated Use @ref DebugMessage.h instead.
  */
 
-#include <string>
+#include "DebugMessage.h"
 
-#include "Magnum.h"
-
-#include "magnumVisibility.h"
-
+#ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum {
 
 /**
-@brief Debug marker
-
-Allows putting debug marker into OpenGL command stream for use with various
-debuggers, such as ApiTrace or gDEBugger.
-@requires_extension %Extension @extension{GREMEDY,string_marker}. If not
-    available, this class does nothing.
-@requires_es_extension %Extension @es_extension{EXT,debug_marker}. If not
-    available, this class does nothing.
+@copybrief DebugMessage
+@deprecated Use @ref Magnum::DebugMessage "DebugMessage" instead.
 */
-class MAGNUM_EXPORT DebugMarker {
-    friend class Context;
-
+class CORRADE_DEPRECATED("use DebugMessage instead") MAGNUM_EXPORT DebugMarker: public DebugMessage {
     public:
-        DebugMarker() = delete;
-
-        /** @brief Put string mark into OpenGL command stream */
-        static void mark(const std::string& string) {
-            markImplementation(string);
+        /**
+         * @copybrief DebugMessage::insert()
+         * @deprecated Use @ref Magnum::DebugMessage::insert() "insert()" instead.
+         */
+        static CORRADE_DEPRECATED("use DebugMessage::insert() instead") void mark(const std::string& string) {
+            insert(Source::Application, Type::Marker, 0, Severity::Notification, string);
         }
-
-    private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
-        typedef void(*MarkImplementation)(const std::string&);
-        static MAGNUM_LOCAL void markImplementationDefault(const std::string& string);
-        static MAGNUM_LOCAL void markImplementationDebugger(const std::string& string);
-        static MarkImplementation markImplementation;
 };
 
 }
+#else
+#error use DebugMessage.h instead
+#endif
 
 #endif
