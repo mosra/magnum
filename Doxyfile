@@ -208,6 +208,7 @@ ALIASES                = \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "fn_gl{1}=<a href=\"http://www.opengl.org/sdk/docs/man4/xhtml/gl\1.xml\">gl\1()</a>" \
     "fn_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">gl\1<b></b>\2()</a>" \
+    "fn_gl_extension2{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "fn_gles_extension{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "def_gl{1}=`GL_\1`" \
     "deprecated_gl=@xrefitem deprecated-gl \"Deprecated OpenGL API\" \"Deprecated OpenGL API list\"" \
@@ -222,6 +223,7 @@ ALIASES                = \
     "requires_gl44=@xrefitem requires-gl44 \"Requires OpenGL 4.4\" \"Functionality requiring OpenGL 4.4\"" \
     "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
     "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>" \
+    "extension2{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\1_\2.txt\"><tt>\1_\2</tt></a>" \
     "requires_gles30=@xrefitem requires-gles30 \"Requires OpenGL ES 3.0\" \"Functionality requiring OpenGL ES 3.0\"" \
     "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL (not available in OpenGL ES)\"" \
     "requires_gles20=@xrefitem requires-gles20 \"Requires OpenGL ES 2.0\" \"Functionality requiring OpenGL ES 2.0 (not available in ES 3.0 and desktop OpenGL)\"" \
