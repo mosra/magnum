@@ -182,6 +182,7 @@ namespace GL {
         _extension(GL,EXT,direct_state_access,          GL210,  None) // #353
         _extension(GL,EXT,texture_snorm,                GL300, GL310) // #365
         _extension(GL,EXT,debug_label,                  GL210,  None) // #439
+        _extension(GL,EXT,debug_marker,                 GL210,  None) // #440
     } namespace GREMEDY {
         _extension(GL,GREMEDY,string_marker,            GL210,  None) // #311
     } namespace INTEL {

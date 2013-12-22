@@ -91,6 +91,7 @@ int ogl_ext_EXT_texture_filter_anisotropic = ogl_LOAD_FAILED;
 int ogl_ext_EXT_texture_mirror_clamp = ogl_LOAD_FAILED;
 int ogl_ext_EXT_direct_state_access = ogl_LOAD_FAILED;
 int ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
+int ogl_ext_EXT_debug_marker = ogl_LOAD_FAILED;
 int ogl_ext_GREMEDY_string_marker = ogl_LOAD_FAILED;
 
 GLLOADGEN_EXPORT GLenum (CODEGEN_FUNCPTR *_ptrc_glGetGraphicsResetStatusARB)() = NULL;
@@ -942,6 +943,22 @@ static int Load_EXT_debug_label()
   if(!_ptrc_glGetObjectLabelEXT) numFailed++;
   _ptrc_glLabelObjectEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLsizei, const GLchar *))IntGetProcAddress("glLabelObjectEXT");
   if(!_ptrc_glLabelObjectEXT) numFailed++;
+  return numFailed;
+}
+
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glInsertEventMarkerEXT)(GLsizei, const GLchar *) = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPopGroupMarkerEXT)() = NULL;
+GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPushGroupMarkerEXT)(GLsizei, const GLchar *) = NULL;
+
+static int Load_EXT_debug_marker()
+{
+  int numFailed = 0;
+  _ptrc_glInsertEventMarkerEXT = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLchar *))IntGetProcAddress("glInsertEventMarkerEXT");
+  if(!_ptrc_glInsertEventMarkerEXT) numFailed++;
+  _ptrc_glPopGroupMarkerEXT = (void (CODEGEN_FUNCPTR *)())IntGetProcAddress("glPopGroupMarkerEXT");
+  if(!_ptrc_glPopGroupMarkerEXT) numFailed++;
+  _ptrc_glPushGroupMarkerEXT = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLchar *))IntGetProcAddress("glPushGroupMarkerEXT");
+  if(!_ptrc_glPushGroupMarkerEXT) numFailed++;
   return numFailed;
 }
 
@@ -2615,7 +2632,7 @@ typedef struct ogl_StrToExtMap_s
   PFN_LOADFUNCPOINTERS LoadExtension;
 } ogl_StrToExtMap;
 
-static ogl_StrToExtMap ExtensionMap[9] = {
+static ogl_StrToExtMap ExtensionMap[10] = {
   {"GL_AMD_vertex_shader_layer", &ogl_ext_AMD_vertex_shader_layer, NULL},
   {"GL_AMD_shader_trinary_minmax", &ogl_ext_AMD_shader_trinary_minmax, NULL},
   {"GL_ARB_robustness", &ogl_ext_ARB_robustness, Load_ARB_robustness},
@@ -2624,10 +2641,11 @@ static ogl_StrToExtMap ExtensionMap[9] = {
   {"GL_EXT_texture_mirror_clamp", &ogl_ext_EXT_texture_mirror_clamp, NULL},
   {"GL_EXT_direct_state_access", &ogl_ext_EXT_direct_state_access, Load_EXT_direct_state_access},
   {"GL_EXT_debug_label", &ogl_ext_EXT_debug_label, Load_EXT_debug_label},
+  {"GL_EXT_debug_marker", &ogl_ext_EXT_debug_marker, Load_EXT_debug_marker},
   {"GL_GREMEDY_string_marker", &ogl_ext_GREMEDY_string_marker, Load_GREMEDY_string_marker},
 };
 
-static int g_extensionMapSize = 9;
+static int g_extensionMapSize = 10;
 
 static void ClearExtensionVars()
 {
@@ -2639,6 +2657,7 @@ static void ClearExtensionVars()
   ogl_ext_EXT_texture_mirror_clamp = ogl_LOAD_FAILED;
   ogl_ext_EXT_direct_state_access = ogl_LOAD_FAILED;
   ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
+  ogl_ext_EXT_debug_marker = ogl_LOAD_FAILED;
   ogl_ext_GREMEDY_string_marker = ogl_LOAD_FAILED;
 }
 

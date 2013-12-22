@@ -87,6 +87,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_mirror_clamp),
         _extension(GL,EXT,direct_state_access),
         _extension(GL,EXT,debug_label),
+        _extension(GL,EXT,debug_marker),
         _extension(GL,GREMEDY,string_marker)};              // done
     static const std::vector<Extension> extensions300{
         /**

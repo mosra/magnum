@@ -171,6 +171,7 @@ extern int ogl_ext_EXT_texture_filter_anisotropic;
 extern int ogl_ext_EXT_texture_mirror_clamp;
 extern int ogl_ext_EXT_direct_state_access;
 extern int ogl_ext_EXT_debug_label;
+extern int ogl_ext_EXT_debug_marker;
 extern int ogl_ext_GREMEDY_string_marker;
 
 #define GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB 0x00000004
@@ -2087,6 +2088,16 @@ extern GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glGetObjectLabelEXT)(GLenum
 extern GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glLabelObjectEXT)(GLenum, GLuint, GLsizei, const GLchar *);
 #define glLabelObjectEXT _ptrc_glLabelObjectEXT
 #endif /*GL_EXT_debug_label*/
+
+#ifndef GL_EXT_debug_marker
+#define GL_EXT_debug_marker 1
+extern GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glInsertEventMarkerEXT)(GLsizei, const GLchar *);
+#define glInsertEventMarkerEXT _ptrc_glInsertEventMarkerEXT
+extern GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPopGroupMarkerEXT)();
+#define glPopGroupMarkerEXT _ptrc_glPopGroupMarkerEXT
+extern GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glPushGroupMarkerEXT)(GLsizei, const GLchar *);
+#define glPushGroupMarkerEXT _ptrc_glPushGroupMarkerEXT
+#endif /*GL_EXT_debug_marker*/
 
 #ifndef GL_GREMEDY_string_marker
 #define GL_GREMEDY_string_marker 1
