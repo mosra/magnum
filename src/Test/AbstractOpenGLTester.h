@@ -42,7 +42,7 @@ class AbstractOpenGLTester: public TestSuite::Tester, public Platform::Windowles
         explicit AbstractOpenGLTester(): Platform::WindowlessApplication({zero, nullptr}) {}
 
         using TestSuite::Tester::exec;
-        int exec() override { return TestSuite::Tester::exec(); }
+        int exec() override final { return TestSuite::Tester::exec(); }
 
     private:
         static int zero;
