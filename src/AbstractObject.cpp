@@ -33,8 +33,6 @@
 namespace Magnum {
 
 namespace {
-    /* What the hell, Apple? Why you had to create this abomination _after_
-       KHR_debug was released?! */
     inline GLenum extTypeFromKhrIdentifier(GLenum khrIdentifier) {
         switch(khrIdentifier) {
             #ifndef MAGNUM_TARGET_GLES
