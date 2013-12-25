@@ -43,7 +43,7 @@ endif()
 
 # Include dir
 find_path(SDL2_INCLUDE_DIR
-    NAMES SDL.h SDL_scancode.h
+    NAMES SDL_scancode.h
     PATH_SUFFIXES ${PATH_SUFFIXES}
 )
 
