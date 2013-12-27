@@ -103,6 +103,7 @@ endif()
 set(Magnum_HEADERS
     AbstractFramebuffer.h
     AbstractImage.h
+    AbstractObject.h
     AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
