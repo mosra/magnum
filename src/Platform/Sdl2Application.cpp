@@ -111,6 +111,46 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+
+    #ifdef __APPLE__
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+    if(!(window = SDL_CreateWindow(configuration.title().data(),
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        configuration.size().x(), configuration.size().y(),
+        SDL_WINDOW_OPENGL|flags))){
+            Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create core window:" << SDL_GetError();
+            return false;
+    }
+
+    if(!(context = SDL_GL_CreateContext(window))){
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create core context:" << SDL_GetError() << " falling back to compatibility context.";
+        SDL_DestroyWindow(window);
+
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+
+        if(!(window = SDL_CreateWindow(configuration.title().data(),
+            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            configuration.size().x(), configuration.size().y(),
+            SDL_WINDOW_OPENGL|flags))){
+                Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
+                return false;
+        }
+
+        if(!(context = SDL_GL_CreateContext(window))){
+            Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create compatibility context:" << SDL_GetError();
+            SDL_DestroyWindow(window);
+            window = nullptr;
+            return false;
+        }
+    }
+
+    #else
     if(!(window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration.size().x(), configuration.size().y(),
@@ -125,6 +165,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         window = nullptr;
         return false;
     }
+    #endif
     #else
     context = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
     #endif
