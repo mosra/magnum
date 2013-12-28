@@ -296,6 +296,12 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          */
         explicit Framebuffer(const Range2Di& viewport);
 
+        /** @brief Copying is not allowed */
+        Framebuffer(const Framebuffer&) = delete;
+
+        /** @brief Move constructor */
+        Framebuffer(Framebuffer&& other) noexcept;
+
         /**
          * @brief Destructor
          *
@@ -303,6 +309,12 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{DeleteFramebuffers}
          */
         ~Framebuffer();
+
+        /** @brief Copying is not allowed */
+        Framebuffer& operator=(const Framebuffer&) = delete;
+
+        /** @brief Move assignment */
+        Framebuffer& operator=(Framebuffer&& other) noexcept;
 
         /** @brief OpenGL framebuffer ID */
         GLuint id() const { return _id; }
@@ -576,6 +588,19 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 
 /** @debugoperator{DefaultFramebuffer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
+
+inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
+    _id = other._id;
+    _viewport = other._viewport;
+    other._id = 0;
+    other._viewport = {};
+}
+
+inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
+    std::swap(_id, other._id);
+    std::swap(_viewport, other._viewport);
+    return *this;
+}
 
 }
 

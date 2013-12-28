@@ -56,11 +56,6 @@ See its documentation for more information.
 class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
     friend class Context;
 
-    Renderbuffer(const Renderbuffer&) = delete;
-    Renderbuffer(Renderbuffer&&) = delete;
-    Renderbuffer& operator=(const Renderbuffer&) = delete;
-    Renderbuffer& operator=(Renderbuffer&&) = delete;
-
     public:
         /**
          * @brief Max supported renderbuffer size
@@ -89,7 +84,13 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * Generates new OpenGL renderbuffer.
          * @see @fn_gl{GenRenderbuffers}
          */
-        explicit Renderbuffer() { glGenRenderbuffers(1, &_id); }
+        explicit Renderbuffer();
+
+        /** @brief Copying is not allowed */
+        Renderbuffer(const Renderbuffer&) = delete;
+
+        /** @brief Move constructor */
+        Renderbuffer(Renderbuffer&& other) noexcept;
 
         /**
          * @brief Destructor
@@ -98,6 +99,12 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @see @fn_gl{DeleteRenderbuffers}
          */
         ~Renderbuffer();
+
+        /** @brief Copying is not allowed */
+        Renderbuffer& operator=(const Renderbuffer&) = delete;
+
+        /** @brief Move assignment */
+        Renderbuffer& operator=(Renderbuffer&& other) noexcept;
 
         /** @brief OpenGL internal renderbuffer ID */
         GLuint id() const { return _id; }
@@ -188,6 +195,15 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
 
         GLuint _id;
 };
+
+inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id(other._id) {
+    other._id = 0;
+}
+
+inline Renderbuffer& Renderbuffer::operator=(Renderbuffer&& other) noexcept {
+    std::swap(_id, other._id);
+    return *this;
+}
 
 }
 

@@ -79,6 +79,9 @@ Framebuffer::Framebuffer(const Range2Di& viewport) {
 }
 
 Framebuffer::~Framebuffer() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     /* If bound, remove itself from state */
     Implementation::FramebufferState* state = Context::current()->state().framebuffer;
     if(state->readBinding == _id) state->readBinding = 0;

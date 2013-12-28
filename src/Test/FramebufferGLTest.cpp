@@ -33,11 +33,60 @@ class FramebufferGLTest: public AbstractOpenGLTester {
     public:
         explicit FramebufferGLTest();
 
+        void construct();
+        void constructCopy();
+        void constructMove();
+
         void label();
 };
 
 FramebufferGLTest::FramebufferGLTest() {
-    addTests({&FramebufferGLTest::label});
+    addTests({&FramebufferGLTest::construct,
+              &FramebufferGLTest::constructCopy,
+              &FramebufferGLTest::constructMove,
+
+              &FramebufferGLTest::label});
+}
+
+void FramebufferGLTest::construct() {
+    {
+        const Framebuffer framebuffer({{32, 16}, {128, 256}});
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_VERIFY(framebuffer.id() > 0);
+        CORRADE_COMPARE(framebuffer.viewport(), Range2Di({32, 16}, {128, 256}));
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void FramebufferGLTest::constructCopy() {
+     CORRADE_VERIFY(!(std::is_constructible<Framebuffer, const Framebuffer&>{}));
+     CORRADE_VERIFY(!(std::is_assignable<Framebuffer, const Framebuffer&>{}));
+}
+
+void FramebufferGLTest::constructMove() {
+    Framebuffer a({{32, 16}, {128, 256}});
+    const Int id = a.id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    Framebuffer b(std::move(a));
+
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.viewport(), Range2Di({32, 16}, {128, 256}));
+
+    Framebuffer c({{128, 256}, {32, 16}});
+    const Int cId = c.id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.viewport(), Range2Di({32, 16}, {128, 256}));
 }
 
 void FramebufferGLTest::label() {

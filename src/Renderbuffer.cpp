@@ -71,7 +71,12 @@ Int Renderbuffer::maxSamples() {
     return value;
 }
 
+Renderbuffer::Renderbuffer() { glGenRenderbuffers(1, &_id); }
+
 Renderbuffer::~Renderbuffer() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     /* If bound, remove itself from state */
     GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;
     if(binding == _id) binding = 0;

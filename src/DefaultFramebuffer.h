@@ -291,6 +291,18 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         explicit MAGNUM_LOCAL DefaultFramebuffer();
 
+        /** @brief Copying is not allowed */
+        DefaultFramebuffer(const DefaultFramebuffer&) = delete;
+
+        /** @brief Moving is not allowed */
+        DefaultFramebuffer(DefaultFramebuffer&&) = delete;
+
+        /** @brief Copying is not allowed */
+        DefaultFramebuffer& operator=(const DefaultFramebuffer&) = delete;
+
+        /** @brief Moving is not allowed */
+        DefaultFramebuffer& operator=(DefaultFramebuffer&& other) = delete;
+
         /**
          * @brief Check framebuffer status
          * @param target    Target for which to check the status

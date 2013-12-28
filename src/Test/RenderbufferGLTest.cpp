@@ -33,11 +33,57 @@ class RenderbufferGLTest: public AbstractOpenGLTester {
     public:
         explicit RenderbufferGLTest();
 
+        void construct();
+        void constructCopy();
+        void constructMove();
+
         void label();
 };
 
 RenderbufferGLTest::RenderbufferGLTest() {
-    addTests({&RenderbufferGLTest::label});
+    addTests({&RenderbufferGLTest::construct,
+              &RenderbufferGLTest::constructCopy,
+              &RenderbufferGLTest::constructMove,
+
+              &RenderbufferGLTest::label});
+}
+
+void RenderbufferGLTest::construct() {
+    {
+        const Renderbuffer renderbuffer;
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_VERIFY(renderbuffer.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RenderbufferGLTest::constructCopy() {
+     CORRADE_VERIFY(!(std::is_constructible<Renderbuffer, const Renderbuffer&>{}));
+     CORRADE_VERIFY(!(std::is_assignable<Renderbuffer, const Renderbuffer&>{}));
+}
+
+void RenderbufferGLTest::constructMove() {
+    Renderbuffer a;
+    const Int id = a.id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    Renderbuffer b(std::move(a));
+
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    Renderbuffer c;
+    const Int cId = c.id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
 }
 
 void RenderbufferGLTest::label() {
