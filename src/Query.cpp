@@ -43,6 +43,9 @@ AbstractQuery::AbstractQuery(): target() {
 }
 
 AbstractQuery::~AbstractQuery() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     /** @todo Get some extension wrangler instead to avoid undeclared glGenQueries() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &_id);

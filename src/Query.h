@@ -45,6 +45,18 @@ information.
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
     public:
+        /** @brief Copying is not allowed */
+        AbstractQuery(const AbstractQuery&) = delete;
+
+        /** @brief Move constructor */
+        AbstractQuery(AbstractQuery&& other) noexcept;
+
+        /** @brief Copying is not allowed */
+        AbstractQuery& operator=(const AbstractQuery&) = delete;
+
+        /** @brief Move assignment */
+        AbstractQuery& operator=(AbstractQuery&& other) noexcept;
+
         /** @brief OpenGL query ID */
         GLuint id() const { return _id; }
 
@@ -419,6 +431,17 @@ class TimeQuery: public AbstractQuery {
         }
         #endif
 };
+
+
+inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._id), target(other.target) {
+    other._id = 0;
+}
+
+inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
+    std::swap(_id, other._id);
+    std::swap(target, other.target);
+    return *this;
+}
 
 }
 
