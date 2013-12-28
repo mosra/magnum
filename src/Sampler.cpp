@@ -52,12 +52,9 @@ Float Sampler::maxAnisotropy() {
 
     GLfloat& value = Context::current()->state().texture->maxAnisotropy;
 
-    /** @todo Re-enable when extension header is available */
-    #ifndef MAGNUM_TARGET_GLES
     /* Get the value, if not already cached */
     if(value == 0.0f)
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
-    #endif
 
     return value;
 }
