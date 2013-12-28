@@ -33,11 +33,66 @@ class AbstractShaderProgramGLTest: public AbstractOpenGLTester {
     public:
         explicit AbstractShaderProgramGLTest();
 
+        void construct();
+        void constructCopy();
+        void constructMove();
+
         void label();
 };
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
-    addTests({&AbstractShaderProgramGLTest::label});
+    addTests({&AbstractShaderProgramGLTest::construct,
+              &AbstractShaderProgramGLTest::constructCopy,
+              &AbstractShaderProgramGLTest::constructMove,
+
+              &AbstractShaderProgramGLTest::label});
+}
+
+namespace {
+
+class MyShader: public AbstractShaderProgram {
+    public:
+        explicit MyShader() {}
+};
+
+}
+
+void AbstractShaderProgramGLTest::construct() {
+    {
+        const MyShader shader;
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_VERIFY(shader.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void AbstractShaderProgramGLTest::constructCopy() {
+     CORRADE_VERIFY(!(std::is_constructible<MyShader, const MyShader&>{}));
+     CORRADE_VERIFY(!(std::is_assignable<MyShader, const MyShader&>{}));
+}
+
+void AbstractShaderProgramGLTest::constructMove() {
+    MyShader a;
+    const Int id = a.id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    MyShader b(std::move(a));
+
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    MyShader c;
+    const Int cId = c.id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
 }
 
 void AbstractShaderProgramGLTest::label() {
@@ -45,11 +100,6 @@ void AbstractShaderProgramGLTest::label() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
-
-    class MyShader: public AbstractShaderProgram {
-        public:
-            explicit MyShader() {}
-    };
 
     MyShader shader;
     CORRADE_COMPARE(shader.label(), "");

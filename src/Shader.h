@@ -44,9 +44,6 @@ namespace Magnum {
 See AbstractShaderProgram for more information.
  */
 class MAGNUM_EXPORT Shader: public AbstractObject {
-    Shader(const Shader&) = delete;
-    Shader& operator=(const Shader&) = delete;
-
     public:
         /**
          * @brief %Shader type
@@ -439,6 +436,12 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          */
         explicit Shader(Version version, Type type);
 
+        /** @brief Copying is not allowed */
+        Shader(const Shader&) = delete;
+
+        /** @brief Move constructor */
+        Shader(Shader&& other) noexcept;
+
         /**
          * @brief Destructor
          *
@@ -447,11 +450,11 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          */
         ~Shader();
 
-        /** @brief Move constructor */
-        Shader(Shader&& other);
+        /** @brief Copying is not allowed */
+        Shader& operator=(const Shader&) = delete;
 
-        /** @brief Move assignment operator */
-        Shader& operator=(Shader&& other);
+        /** @brief Move assignment */
+        Shader& operator=(Shader&& other) noexcept;
 
         /** @brief OpenGL shader ID */
         GLuint id() const { return _id; }
@@ -481,6 +484,12 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      with @def_gl{SHADER_OBJECT_EXT}
          */
         Shader& setLabel(const std::string& label);
+
+        /** @brief Shader type */
+        Type type() const { return _type; }
+
+        /** @brief Shader sources */
+        std::vector<std::string> sources() const;
 
         /**
          * @brief Add shader source
@@ -519,11 +528,22 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         Type _type;
         GLuint _id;
 
-        std::vector<std::string> sources;
+        std::vector<std::string> _sources;
 };
 
 /** @debugoperator{Magnum::Shader} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Shader::Type value);
+
+inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._id), _sources(std::move(other._sources)) {
+    other._id = 0;
+}
+
+inline Shader& Shader::operator=(Shader&& other) noexcept {
+    std::swap(_type, other._type);
+    std::swap(_id, other._id);
+    std::swap(_sources, other._sources);
+    return *this;
+}
 
 }
 
