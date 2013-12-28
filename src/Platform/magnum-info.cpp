@@ -31,6 +31,7 @@
 
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"
+#include "BufferTexture.h"
 #include "Context.h"
 #include "DebugMessage.h"
 #include "Extensions.h"
@@ -313,6 +314,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Shader::maxTessellationControlTotalOutputComponents())
         _l(Shader::maxTessellationEvaluationInputComponents())
         _l(Shader::maxTessellationEvaluationOutputComponents())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>()) {
+        _h(ARB::texture_buffer_range)
+
+        _l(BufferTexture::offsetAlignment())
     }
     #endif
 
