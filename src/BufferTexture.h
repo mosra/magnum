@@ -207,6 +207,9 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
 
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
+        /** @copydoc AbstractTexture::id() */
+        Int id() const { return AbstractTexture::id(); }
+
         /** @copydoc AbstractTexture::label() */
         std::string label() const { return AbstractTexture::label(); }
 
