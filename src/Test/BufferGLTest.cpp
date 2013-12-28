@@ -38,6 +38,9 @@ class BufferGLTest: public AbstractOpenGLTester {
         explicit BufferGLTest();
 
         void construct();
+        void constructCopy();
+        void constructMove();
+
         void label();
         void data();
         void map();
@@ -74,13 +77,43 @@ BufferGLTest::BufferGLTest() {
 }
 
 void BufferGLTest::construct() {
-    Buffer buffer;
-    MAGNUM_VERIFY_NO_ERROR();
+    {
+        Buffer buffer;
 
-    CORRADE_COMPARE(buffer.targetHint(), Buffer::Target::Array);
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_VERIFY(buffer.id() > 0);
+        CORRADE_COMPARE(buffer.targetHint(), Buffer::Target::Array);
+        CORRADE_COMPARE(buffer.size(), 0);
+    }
 
-    CORRADE_COMPARE(buffer.size(), 0);
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferGLTest::constructCopy() {
+     CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
+     CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
+}
+
+void BufferGLTest::constructMove() {
+    Buffer a;
+    const Int id = a.id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    Buffer b(std::move(a));
+
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    Buffer c;
+    const Int cId = c.id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
 }
 
 void BufferGLTest::label() {
