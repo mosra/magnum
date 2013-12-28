@@ -78,8 +78,7 @@ You can create texture arrays by passing
 @ref Target::Texture2DArray "Texture3D::Target::Texture2DArray" to constructor.
 
 It is possible to specify each layer separately using @ref setSubImage(), but
-you have to allocate the memory for all layers first either by calling
-@ref setStorage() or by passing properly sized empty image to @ref setImage().
+you have to allocate the memory for all layers first by calling @ref setStorage().
 Example: 2D texture array with 16 layers of 64x64 images:
 @code
 Texture3D texture(Texture3D::Target::Texture2DArray);
@@ -350,7 +349,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             %Image
+         * @param image             @ref Image, @ref ImageReference or
+         *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
          * For better performance when generating mipmaps using
@@ -382,7 +382,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             %Image
+         * @param image             @ref Image, @ref ImageReference or
+         *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the

@@ -43,25 +43,25 @@ See @ref CubeMapTexture documentation for introduction.
 @section CubeMapTextureArray-usage Usage
 
 Common usage is to specify each layer and face separately using @ref setSubImage().
-You have to allocate the memory for all layers and faces first either by
-calling @ref setStorage() or by passing properly sized empty image to
-@ref setImage(). Example: array with 16 layers of cube map faces, each face
-consisting of six 64x64 images:
+You have to allocate the memory for all layers and faces first by calling
+@ref setStorage(). Example: array with 4 layers of cube maps, each cube map
+consisting of six 64x64 images, i.e. 24 layers total:
 @code
 CubeMapTextureArray texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
-    .setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 16});
+    .setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 24});
 
-for(std::size_t i = 0; i != 16; ++i) {
-    Image2D imagePositiveX(ColorFormat::RGBA, ColorType::UnsignedByte, {64, 64}, data);
+for(std::size_t i = 0; i != 4; i += 6) {
+    Image3D imagePositiveX(ColorFormat::RGBA, ColorType::UnsignedByte, {64, 64, 1}, data);
     // ...
-    texture.setSubImage(i, CubeMapTextureArray::Coordinate::PositiveX, 0, {}, imagePositiveX);
-    texture.setSubImage(i, CubeMapTextureArray::Coordinate::NegativeX, 0, {}, imageNegativeX);
+    texture.setSubImage(0, Vector3i::zAxis(i+0), imagePositiveX);
+    texture.setSubImage(0, Vector3i::zAxis(i+1), imageNegativeX);
+    texture.setSubImage(0, Vector3i::zAxis(i+2), imagePositiveY);
     // ...
 }
 
-// ...
+texture.generateMipmap();
 @endcode
 
 The texture is bound to layer specified by shader via @ref bind(). In shader,
@@ -121,7 +121,8 @@ class CubeMapTextureArray: public AbstractTexture {
         /**
          * @brief Set storage
          *
-         * See @ref Texture::setStorage() for more information.
+         * Z coordinate of @p size must be multiple of 6. See
+         * @ref Texture::setStorage() for more information.
          */
         CubeMapTextureArray& setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
             DataHelper<3>::setStorage(this, _target, levels, internalFormat, size);
@@ -162,13 +163,14 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             @ref Image, @ref ImageReference, @ref BufferImage
-         *      or @ref Trade::ImageData of the same dimension count
+         * @param image             @ref Image3D, @ref ImageReference3D or
+         *      @ref Trade::ImageData3D
          * @return Reference to self (for method chaining)
          *
          * Sets texture image data from three-dimensional image for all cube
          * faces for all layers. Each group of 6 2D images is one cube map
-         * layer. The images are ordered the same way as Coordinate enum.
+         * layer, thus Z coordinate of @p image size must be multiple of 6. The
+         * images are in order of (+X, -X, +Y, -Y, +Z, -Z).
          *
          * See @ref Texture::setImage() for more information.
          */
@@ -187,16 +189,12 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set texture image 3D subdata
          * @param level         Mip level
          * @param offset        Offset where to put data in the texture
-         * @param image         @ref Image3D, @ref ImageReference3D, @ref BufferImage3D
-         *      or @ref Trade::ImageData3D
+         * @param image         @ref Image3D, @ref ImageReference3D or
+         *      @ref Trade::ImageData3D
          * @return Reference to self (for method chaining)
          *
-         * Sets texture image subdata for more than one level/face at once.
-         *
-         * Z coordinate of @p offset specifies layer and cube map face. If
-         * you want to start at given face in layer *n*, you have to specify
-         * Z coordinate as @f$ 6n + i @f$, where i is face index as specified
-         * in @ref Coordinate enum.
+         * Z coordinate is equivalent to layer * 6 + number of texture face,
+         * i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z).
          *
          * See @ref Texture::setSubImage() for more information.
          */
@@ -218,8 +216,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @param size              Size of invalidated data
          *
          * Z coordinate is equivalent to layer * 6 + number of texture face,
-         * i.e. @ref Coordinate::PositiveX is `0` and so on, in the same order
-         * as in the enum.
+         * i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z).
          *
          * See @ref Texture::invalidateSubImage() for more information.
          */
