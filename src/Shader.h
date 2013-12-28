@@ -522,6 +522,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         std::vector<std::string> sources;
 };
 
+/** @debugoperator{Magnum::Shader} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Shader::Type value);
+
 }
 
 #endif

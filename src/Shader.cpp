@@ -682,4 +682,23 @@ bool Shader::compile() {
     return success;
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, const Shader::Type value) {
+    switch(value) {
+        #define _c(value) case Shader::Type::value: return debug << "Shader::Type::" #value;
+        _c(Vertex)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(TessellationControl)
+        _c(TessellationEvaluation)
+        _c(Geometry)
+        _c(Compute)
+        #endif
+        _c(Fragment)
+        #undef _c
+    }
+
+    return debug << "Shader::Type::(invalid)";
+}
+#endif
+
 }

@@ -35,6 +35,7 @@ corrade_add_test(MeshTest MeshTest.cpp LIBRARIES Magnum)
 corrade_add_test(RendererTest RendererTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES Magnum)
+corrade_add_test(ShaderTest ShaderTest.cpp LIBRARIES Magnum)
 
 if(BUILD_GL_TESTS)
     corrade_add_test(AbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
