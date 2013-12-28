@@ -39,7 +39,8 @@ struct TextureState {
     #ifndef MAGNUM_TARGET_GLES
     GLint maxColorSamples,
         maxDepthSamples,
-        maxIntegerSamples;
+        maxIntegerSamples,
+        bufferOffsetAlignment;
     #endif
 
     std::vector<GLuint> bindings;

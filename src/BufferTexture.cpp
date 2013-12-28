@@ -29,10 +29,26 @@
 #include "Context.h"
 #include "Extensions.h"
 
+#include "Implementation/State.h"
+#include "Implementation/TextureState.h"
+
 namespace Magnum {
 
 BufferTexture::SetBufferImplementation BufferTexture::setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
 BufferTexture::SetBufferRangeImplementation BufferTexture::setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
+
+Int BufferTexture::offsetAlignment() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+        return 0;
+
+    GLint& value = Context::current()->state().texture->bufferOffsetAlignment;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT, &value);
+
+    return value;
+}
 
 void BufferTexture::initializeContextBasedFunctionality(Context& context) {
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {

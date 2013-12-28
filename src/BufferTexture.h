@@ -205,6 +205,16 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
         /** @copydoc AbstractTexture::maxLabelLength() */
         static Int maxLabelLength() { return AbstractTexture::maxLabelLength(); }
 
+        /**
+         * @brief Minimum required alignment for texture buffer offsets
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,texture_buffer_range}
+         * (part of OpenGL 4.3) is not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{TEXTURE_BUFFER_OFFSET_ALIGNMENT}
+         */
+        static Int offsetAlignment();
+
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         /** @copydoc AbstractTexture::id() */
