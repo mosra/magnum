@@ -325,10 +325,10 @@ void BufferGLTest::mapRangeExplicitFlush() {
 void BufferGLTest::copy() {
     Buffer buffer1;
     constexpr char data[] = {2, 7, 5, 13, 25};
-    buffer1.setData(data, BufferUsage::StaticDraw);
+    buffer1.setData(data, BufferUsage::StaticCopy);
 
     Buffer buffer2;
-    buffer2.setData({nullptr, 5}, BufferUsage::StaticDraw);
+    buffer2.setData({nullptr, 5}, BufferUsage::StaticRead);
 
     Buffer::copy(buffer1, buffer2, 1, 2, 3);
     MAGNUM_VERIFY_NO_ERROR();
