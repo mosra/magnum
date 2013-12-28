@@ -208,7 +208,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Buf
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image.size() != size)
-        image.setData(size, image.format(), image.type(), nullptr, usage);
+        image.setData(image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bind(Buffer::Target::PixelPack);
     /** @todo De-duplicate buffer size computation */

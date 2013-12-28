@@ -48,6 +48,10 @@ if(BUILD_GL_TESTS)
     corrade_add_test(MeshGLTest MeshGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(RenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(ShaderGLTest ShaderGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+
+    if(NOT MAGNUM_TARGET_GLES2)
+        corrade_add_test(BufferImageGLTest BufferImageGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    endif()
 endif()
 
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)

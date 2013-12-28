@@ -999,7 +999,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLin
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(this, target, level);
     const std::size_t dataSize = size.product()*image.pixelSize();
     if(image.size() != size)
-        image.setData(size, image.format(), image.type(), nullptr, usage);
+        image.setData(image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bind(Buffer::Target::PixelPack);
     (this->*getImageImplementation)(target, level, image.format(), image.type(), dataSize, nullptr);
