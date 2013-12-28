@@ -33,11 +33,57 @@ class MeshGLTest: public AbstractOpenGLTester {
     public:
         explicit MeshGLTest();
 
+        void construct();
+        void constructCopy();
+        void constructMove();
+
         void label();
 };
 
 MeshGLTest::MeshGLTest() {
-    addTests({&MeshGLTest::label});
+    addTests({&MeshGLTest::construct,
+              &MeshGLTest::constructCopy,
+              &MeshGLTest::constructMove,
+
+              &MeshGLTest::label});
+}
+
+void MeshGLTest::construct() {
+    {
+        const Mesh mesh;
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_VERIFY(mesh.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void MeshGLTest::constructCopy() {
+     CORRADE_VERIFY(!(std::is_constructible<Mesh, const Mesh&>{}));
+     CORRADE_VERIFY(!(std::is_assignable<Mesh, const Mesh&>{}));
+}
+
+void MeshGLTest::constructMove() {
+    Mesh a;
+    const Int id = a.id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    Mesh b(std::move(a));
+
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    Mesh c;
+    const Int cId = c.id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
 }
 
 void MeshGLTest::label() {

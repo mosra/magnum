@@ -93,6 +93,9 @@ Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _vertexCount(0), _in
 }
 
 Mesh::~Mesh() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     /* Remove current vao from the state */
     GLuint& current = Context::current()->state().mesh->currentVAO;
     if(current == _id) current = 0;
@@ -278,7 +281,7 @@ void Mesh::destroyImplementationDefault() {}
 void Mesh::destroyImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glDeleteVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    if(_id) glDeleteVertexArrays(1, &_id);
+    glDeleteVertexArrays(1, &_id);
     #endif
 }
 
