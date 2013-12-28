@@ -185,6 +185,11 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
+        /** @overload */
+        CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, BufferImage3D&& image) {
+            return setImage(level, internalFormat, image);
+        }
+
         /**
          * @brief Set texture image 3D subdata
          * @param level         Mip level
@@ -207,6 +212,11 @@ class CubeMapTextureArray: public AbstractTexture {
         CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, BufferImage3D& image) {
             DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
             return *this;
+        }
+
+        /** @overload */
+        CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, BufferImage3D&& image) {
+            return setSubImage(level, offset, image);
         }
 
         /**

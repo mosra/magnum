@@ -182,6 +182,11 @@ class CubeMapTexture: public AbstractTexture {
             DataHelper<2>::setImage(this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
+
+        /** @overload */
+        CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D&& image) {
+            return setImage(coordinate, level, internalFormat, image);
+        }
         #endif
 
         /**
@@ -203,6 +208,12 @@ class CubeMapTexture: public AbstractTexture {
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
+            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
+            return *this;
+        }
+
+        /** @overload */
+        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D&& image) {
             DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
             return *this;
         }

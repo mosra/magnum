@@ -376,6 +376,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
             return *this;
         }
+
+        /** @overload */
+        Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>&& image) {
+            return setImage(level, internalFormat, image);
+        }
         #endif
 
         /**
@@ -405,6 +410,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
             return *this;
+        }
+
+        /** @overload */
+        Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>&& image) {
+            return setSubImage(level, offset, image);
         }
         #endif
 
