@@ -304,6 +304,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          */
         ~Framebuffer();
 
+        /** @brief OpenGL framebuffer ID */
+        GLuint id() const { return _id; }
+
         /**
          * @brief %Framebuffer label
          *
