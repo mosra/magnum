@@ -273,18 +273,18 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default value is `1.0f`, which means no anisotropy. Set to value
-         * greater than `1.0f` for anisotropic filtering. If
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation.
+         * greater than `1.0f` for anisotropic filtering. If extension
+         * @extension{EXT,texture_filter_anisotropic} (desktop or ES) is not
+         * available, this function does nothing. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some layer before the operation.
          * @see @ref Sampler::maxAnisotropy(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
-         * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
-         * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
         AbstractTexture& setMaxAnisotropy(Float anisotropy) {
-            (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+            (this->*setMaxAnisotropyImplementation)(anisotropy);
             return *this;
         }
 
@@ -379,6 +379,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
         #endif
         static ParameterfvImplementation parameterfvImplementation;
+
+        typedef void(AbstractTexture::*SetMaxAnisotropyImplementation)(GLfloat);
+        void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
+        void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
+        static SetMaxAnisotropyImplementation setMaxAnisotropyImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
         typedef void(AbstractTexture::*GetLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);

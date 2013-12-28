@@ -45,6 +45,8 @@ AbstractTexture::ParameterfImplementation AbstractTexture::parameterfImplementat
     &AbstractTexture::parameterImplementationDefault;
 AbstractTexture::ParameterfvImplementation AbstractTexture::parameterfvImplementation =
     &AbstractTexture::parameterImplementationDefault;
+AbstractTexture::SetMaxAnisotropyImplementation AbstractTexture::setMaxAnisotropyImplementation =
+    &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 #ifndef MAGNUM_TARGET_GLES
 AbstractTexture::GetLevelParameterivImplementation AbstractTexture::getLevelParameterivImplementation =
     &AbstractTexture::getLevelParameterImplementationDefault;
@@ -270,9 +272,13 @@ void AbstractTexture::initializeContextBasedFunctionality(Context& context) {
             storage3DImplementation = &AbstractTexture::storageImplementationDefault;
         }
     }
-    #else
-    static_cast<void>(context);
     #endif
+
+    if(context.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
+        Debug() << "AbstractTexture: using" << Extensions::GL::EXT::texture_filter_anisotropic::string() << "features";
+
+        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
+    }
 }
 
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
@@ -676,6 +682,12 @@ void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat
     glTextureParameterfvEXT(_id, _target, parameter, values);
 }
 #endif
+
+void AbstractTexture::setMaxAnisotropyImplementationNoOp(GLfloat) {}
+
+void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
+    (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+}
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values) {

@@ -136,10 +136,9 @@ class MAGNUM_EXPORT Sampler {
          * @brief Max supported anisotropy
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls.
+         * OpenGL calls. If extension @extension{EXT,texture_filter_anisotropic}
+         * (desktop or ES) is not available, returns `0.0f`.
          * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
-         * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
-         * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
         static Float maxAnisotropy();
 
