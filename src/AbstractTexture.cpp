@@ -124,8 +124,12 @@ Int AbstractTexture::maxIntegerSamples() {
 }
 #endif
 
-void AbstractTexture::destroy() {
-    /* Moved out */
+AbstractTexture::AbstractTexture(GLenum target): _target(target) {
+    glGenTextures(1, &_id);
+}
+
+AbstractTexture::~AbstractTexture() {
+    /* Moved out, nothing to do */
     if(!_id) return;
 
     /* Remove all bindings */
@@ -133,30 +137,6 @@ void AbstractTexture::destroy() {
         if(binding == _id) binding = 0;
 
     glDeleteTextures(1, &_id);
-}
-
-void AbstractTexture::move() {
-    _id = 0;
-}
-
-AbstractTexture::AbstractTexture(GLenum target): _target(target) {
-    glGenTextures(1, &_id);
-}
-
-AbstractTexture::~AbstractTexture() { destroy(); }
-
-AbstractTexture::AbstractTexture(AbstractTexture&& other): _target(other._target), _id(other._id) {
-    other.move();
-}
-
-AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) {
-    destroy();
-
-    _target = other._target;
-    _id = other._id;
-
-    other.move();
-    return *this;
 }
 
 std::string AbstractTexture::label() const {

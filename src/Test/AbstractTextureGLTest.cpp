@@ -33,11 +33,57 @@ class AbstractTextureGLTest: public AbstractOpenGLTester {
     public:
         explicit AbstractTextureGLTest();
 
+        void construct();
+        void constructCopy();
+        void constructMove();
+
         void label();
 };
 
 AbstractTextureGLTest::AbstractTextureGLTest() {
-    addTests({&AbstractTextureGLTest::label});
+    addTests({&AbstractTextureGLTest::construct,
+              &AbstractTextureGLTest::constructCopy,
+              &AbstractTextureGLTest::constructMove,
+
+              &AbstractTextureGLTest::label});
+}
+
+void AbstractTextureGLTest::construct() {
+    {
+        const Texture2D texture;
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_VERIFY(texture.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void AbstractTextureGLTest::constructCopy() {
+     CORRADE_VERIFY(!(std::is_constructible<Texture2D, const Texture2D&>{}));
+     CORRADE_VERIFY(!(std::is_assignable<Texture2D, const Texture2D&>{}));
+}
+
+void AbstractTextureGLTest::constructMove() {
+    Texture2D a;
+    const Int id = a.id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    Texture2D b(std::move(a));
+
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    Texture2D c;
+    const Int cId = c.id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
 }
 
 void AbstractTextureGLTest::label() {

@@ -201,11 +201,6 @@ and respective function documentation for more information.
 class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
     friend class Context;
 
-    BufferTexture(const BufferTexture&) = delete;
-    BufferTexture(BufferTexture&&) = delete;
-    BufferTexture& operator=(const BufferTexture&) = delete;
-    BufferTexture& operator=(BufferTexture&&) = delete;
-
     public:
         /** @copydoc AbstractTexture::maxLabelLength() */
         static Int maxLabelLength() { return AbstractTexture::maxLabelLength(); }

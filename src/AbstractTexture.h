@@ -158,13 +158,13 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         AbstractTexture(const AbstractTexture&) = delete;
 
         /** @brief Move constructor */
-        AbstractTexture(AbstractTexture&& other);
+        AbstractTexture(AbstractTexture&& other) noexcept;
 
         /** @brief Copying is not allowed */
         AbstractTexture& operator=(const AbstractTexture&) = delete;
 
         /** @brief Move assignment */
-        AbstractTexture& operator=(AbstractTexture&& other);
+        AbstractTexture& operator=(AbstractTexture&& other) noexcept;
 
         /**
          * @brief %Texture label
@@ -482,8 +482,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #endif
         static InvalidateSubImageImplementation invalidateSubImageImplementation;
 
-        void MAGNUM_LOCAL destroy();
-        void MAGNUM_LOCAL move();
         ColorFormat MAGNUM_LOCAL imageFormatForInternalFormat(TextureFormat internalFormat);
         ColorType MAGNUM_LOCAL imageTypeForInternalFormat(TextureFormat internalFormat);
 
@@ -596,6 +594,16 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     }
 };
 #endif
+
+inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _target(other._target), _id(other._id) {
+    other._id = 0;
+}
+
+inline AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) noexcept {
+    std::swap(_target, other._target);
+    std::swap(_id, other._id);
+    return *this;
+}
 
 }
 
