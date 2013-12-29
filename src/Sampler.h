@@ -133,22 +133,29 @@ class MAGNUM_EXPORT Sampler {
         };
 
         /**
-         * @brief Max supported anisotropy
+         * @brief Max supported max anisotropy
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,texture_filter_anisotropic}
          * (desktop or ES) is not available, returns `0.0f`.
          * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          */
-        static Float maxAnisotropy();
+        static Float maxMaxAnisotropy();
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief maxAnisotropy()
-         * @deprecated Use @ref Magnum::Sampler::maxAnisotropy() "maxAnisotropy()"
+         * @copybrief maxMaxAnisotropy()
+         * @deprecated Use @ref Magnum::Sampler::maxMaxAnisotropy() "maxMaxAnisotropy()"
          *      instead.
          */
-        static CORRADE_DEPRECATED("use maxAnisotropy() instead") Float maxSupportedAnisotropy() { return maxAnisotropy(); }
+        static CORRADE_DEPRECATED("use maxMaxAnisotropy() instead") Float maxAnisotropy() { return maxMaxAnisotropy(); }
+
+        /**
+         * @copybrief maxMaxAnisotropy()
+         * @deprecated Use @ref Magnum::Sampler::maxMaxAnisotropy() "maxMaxAnisotropy()"
+         *      instead.
+         */
+        static CORRADE_DEPRECATED("use maxMaxAnisotropy() instead") Float maxSupportedAnisotropy() { return maxMaxAnisotropy(); }
         #endif
 };
 

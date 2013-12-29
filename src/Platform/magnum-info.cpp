@@ -355,7 +355,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
         _h(EXT::texture_filter_anisotropic)
 
-        _l(Sampler::maxAnisotropy())
+        _l(Sampler::maxMaxAnisotropy())
     }
 
     if(c->isExtensionSupported<Extensions::GL::KHR::debug>()) {

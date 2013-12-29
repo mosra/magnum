@@ -87,7 +87,7 @@ void CubeMapTextureGLTest::sampling() {
            .setMagnificationFilter(Sampler::Filter::Linear)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
    MAGNUM_VERIFY_NO_ERROR();
 }

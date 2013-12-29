@@ -46,11 +46,11 @@ static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
     "Unsupported constants for GL texture filtering");
 #undef filter_or
 
-Float Sampler::maxAnisotropy() {
+Float Sampler::maxMaxAnisotropy() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>())
         return 0.0f;
 
-    GLfloat& value = Context::current()->state().texture->maxAnisotropy;
+    GLfloat& value = Context::current()->state().texture->maxMaxAnisotropy;
 
     /* Get the value, if not already cached */
     if(value == 0.0f)

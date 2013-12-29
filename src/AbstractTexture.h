@@ -278,7 +278,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * available, this function does nothing. If
          * @extension{EXT,direct_state_access} is not available, the texture is
          * bound to some layer before the operation.
-         * @see @ref Sampler::maxAnisotropy(), @fn_gl{ActiveTexture},
+         * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}

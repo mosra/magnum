@@ -491,7 +491,7 @@ void TextureGLTest::sampling1D() {
            .setMagnificationFilter(Sampler::Filter::Linear)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -507,7 +507,7 @@ void TextureGLTest::sampling2D() {
            #else
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
-           .setMaxAnisotropy(Sampler::maxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -540,7 +540,7 @@ void TextureGLTest::sampling3D() {
            #else
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
-           .setMaxAnisotropy(Sampler::maxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -573,7 +573,7 @@ void TextureGLTest::sampling1DArray() {
            .setMagnificationFilter(Sampler::Filter::Linear)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -595,7 +595,7 @@ void TextureGLTest::sampling2DArray() {
            #else
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
-           .setMaxAnisotropy(Sampler::maxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -624,7 +624,7 @@ void TextureGLTest::samplingRectangle() {
            .setMagnificationFilter(Sampler::Filter::Linear)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
     MAGNUM_VERIFY_NO_ERROR();
 }
