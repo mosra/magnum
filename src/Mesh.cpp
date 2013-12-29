@@ -270,7 +270,7 @@ void Mesh::initializeContextBasedFunctionality(Context& context) {
     #endif
 }
 
-void Mesh::createImplementationDefault() {}
+void Mesh::createImplementationDefault() { _id = 0; }
 
 void Mesh::createImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glGenVertexArrays() on ES2 */

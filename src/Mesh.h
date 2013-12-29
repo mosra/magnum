@@ -411,7 +411,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief OpenGL mesh ID
          *
          * If @extension{APPLE,vertex_array_object} is not available, returns
-         * 0.
+         * `0`.
          */
         GLuint id() const { return _id; }
 

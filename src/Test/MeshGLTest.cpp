@@ -53,7 +53,15 @@ void MeshGLTest::construct() {
         const Mesh mesh;
 
         MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_VERIFY(mesh.id() > 0);
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+        #elif defined(MAGNUM_TARGET_GLES2)
+        if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+        #endif
+        {
+            CORRADE_VERIFY(mesh.id() > 0);
+        }
     }
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -72,7 +80,15 @@ void MeshGLTest::constructMove() {
     const Int id = a.id();
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_VERIFY(id > 0);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    #endif
+    {
+        CORRADE_VERIFY(id > 0);
+    }
 
     Mesh b(std::move(a));
 
@@ -84,7 +100,16 @@ void MeshGLTest::constructMove() {
     c = std::move(b);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_VERIFY(cId > 0);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    #endif
+    {
+        CORRADE_VERIFY(cId > 0);
+    }
+
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
 }
