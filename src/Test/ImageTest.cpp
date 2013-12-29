@@ -63,8 +63,11 @@ void ImageTest::construct() {
 }
 
 void ImageTest::constructCopy() {
-     CORRADE_VERIFY(!(std::is_constructible<Image2D, const Image2D&>{}));
-     CORRADE_VERIFY(!(std::is_assignable<Image2D, const Image2D&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Image2D, const Image2D&>{}));
+    /* GCC 4.6 doesn't have std::is_assignable */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    CORRADE_VERIFY(!(std::is_assignable<Image2D, const Image2D&>{}));
+    #endif
 }
 
 void ImageTest::constructMove() {

@@ -60,8 +60,11 @@ void AbstractTextureGLTest::construct() {
 }
 
 void AbstractTextureGLTest::constructCopy() {
-     CORRADE_VERIFY(!(std::is_constructible<Texture2D, const Texture2D&>{}));
-     CORRADE_VERIFY(!(std::is_assignable<Texture2D, const Texture2D&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Texture2D, const Texture2D&>{}));
+    /* GCC 4.6 doesn't have std::is_assignable */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    CORRADE_VERIFY(!(std::is_assignable<Texture2D, const Texture2D&>{}));
+    #endif
 }
 
 void AbstractTextureGLTest::constructMove() {
