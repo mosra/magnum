@@ -118,6 +118,7 @@ Int AbstractObject::maxLabelLength() {
 void AbstractObject::labelImplementationNoOp(GLenum, GLuint, const std::string&) {}
 
 void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const std::string& label) {
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glObjectLabel(identifier, name, label.size(), label.data());
     #else
@@ -131,7 +132,7 @@ void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuin
 
 void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const std::string& label) {
     const GLenum type = extTypeFromKhrIdentifier(identifier);
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glLabelObjectEXT(type, name, label.size(), label.data());
     #else
@@ -174,7 +175,7 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     GLsizei size;
     std::string label;
     label.resize(maxLabelLength());
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, label.size(), &size, &label[0]);
     #else
@@ -192,7 +193,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
 
     /* Get label size (w/o null terminator) */
     GLsizei size;
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabelEXT(type, name, 0, &size, nullptr);
     #else
@@ -204,7 +205,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     /* Make place also for the null terminator */
     std::string label;
     label.resize(size+1);
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabelEXT(identifier, name, size+1, nullptr, &label[0]);
     #endif

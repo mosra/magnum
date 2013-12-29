@@ -206,13 +206,16 @@ void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, 
 }
 
 void Mesh::bindVAO(GLuint vao) {
-    /** @todo Get some extension wrangler instead to avoid linker errors to glBindVertexArray() on ES2 */
-    #ifndef MAGNUM_TARGET_GLES2
+    /** @todo Re-enable when extension loader is available for ES */
     GLuint& current = Context::current()->state().mesh->currentVAO;
-    if(current != vao) glBindVertexArray(current = vao);
-    #else
-    static_cast<void>(vao);
-    #endif
+    if(current != vao) {
+        #ifndef MAGNUM_TARGET_GLES2
+        glBindVertexArray(current = vao);
+        #else
+        CORRADE_INTERNAL_ASSERT(false);
+        //glBindVertexArrayOES(current = vao);
+        #endif
+    }
 }
 
 void Mesh::vertexAttribPointer(const Attribute& attribute) {

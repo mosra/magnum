@@ -144,6 +144,7 @@ void DebugMessage::callbackImplementationKhr(const Callback callback, const void
 
     /* Adding callback */
     if(!original && callback) {
+        /** @todo Re-enable when extension wrangler is available for ES */
         #ifndef MAGNUM_TARGET_GLES
         glDebugMessageCallback(callbackWrapper, userParam);
         #else
@@ -154,6 +155,7 @@ void DebugMessage::callbackImplementationKhr(const Callback callback, const void
 
     /* Deleting callback */
     } else if(original && !callback) {
+        /** @todo Re-enable when extension wrangler is available for ES */
         #ifndef MAGNUM_TARGET_GLES
         glDebugMessageCallback(nullptr, nullptr);
         #else

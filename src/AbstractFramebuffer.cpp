@@ -142,7 +142,7 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
-    /** @todo Get some extension wrangler instead to avoid undeclared glBlitFramebuffer() on ES2 */
+    /** @todo Re-enable when extension loader is available for ES, add also ANGLE version */
     #ifndef MAGNUM_TARGET_GLES2
     glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
@@ -150,6 +150,8 @@ void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer&
     static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
     static_cast<void>(filter);
+    //glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+    CORRADE_INTERNAL_ASSERT(false);
     #endif
 }
 
@@ -217,25 +219,27 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Buf
 #endif
 
 void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments) {
-    /** @todo Re-enable when extension wrangler is available for ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glInvalidateFramebuffer(GLenum(bindInternal()), count, attachments);
     #else
-    //glDiscardFramebufferEXT(GLenum(bindInternal()), count, attachments);
     static_cast<void>(count);
     static_cast<void>(attachments);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glDiscardFramebufferEXT(GLenum(bindInternal()), count, attachments);
     #endif
 }
 
 void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments, const Range2Di& rectangle) {
-    /** @todo Re-enable when extension wrangler is available for ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
     #else
-    //glDiscardSubFramebufferEXT(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
     static_cast<void>(count);
     static_cast<void>(attachments);
     static_cast<void>(rectangle);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glDiscardSubFramebufferEXT(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
     #endif
 }
 
@@ -286,13 +290,10 @@ void AbstractFramebuffer::initializeContextBasedFunctionality(Context& context) 
         #ifndef MAGNUM_TARGET_GLES
         Debug() << "AbstractFramebuffer: using" << Extensions::GL::ARB::robustness::string() << "features";
         #else
-        //Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::robustness::string() << "features";
+        Debug() << "AbstractFramebuffer: using" << Extensions::GL::EXT::robustness::string() << "features";
         #endif
 
-        /** @todo Enable when extension wrangler for ES is available */
-        #ifndef MAGNUM_TARGET_GLES
         readImplementation = &AbstractFramebuffer::readImplementationRobustness;
-        #endif
     }
 }
 
@@ -308,7 +309,7 @@ GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget
 #endif
 
 void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
-    /** @todo Re-enable when extension wrangler is available for ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
@@ -329,7 +330,7 @@ void AbstractFramebuffer::drawBuffersImplementationDSA(GLsizei count, const GLen
 #endif
 
 void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
-    /** @todo Re-enable when extension wrangler is available for ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
@@ -343,6 +344,8 @@ void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
     #endif
     #else
     static_cast<void>(buffer);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glDrawBuffersNV(1, &buffer);
     #endif
 }
 
@@ -353,7 +356,7 @@ void AbstractFramebuffer::drawBufferImplementationDSA(GLenum buffer) {
 #endif
 
 void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
-    /** @todo Get some extension wrangler instead to avoid undeclared glReadBuffer() on ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
@@ -363,6 +366,8 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
     glReadBuffer(buffer);
     #else
     static_cast<void>(buffer);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glReadBufferNV(buffer);
     #endif
 }
 
@@ -377,18 +382,18 @@ void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, cons
 }
 
 void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
-    /** @todo Enable when extension wrangler for ES is available */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), dataSize, data);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
     static_cast<void>(offset);
     static_cast<void>(size);
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(dataSize);
     static_cast<void>(data);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
     #endif
 }
 

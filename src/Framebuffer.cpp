@@ -185,7 +185,7 @@ void Framebuffer::texture2DImplementationDSA(BufferAttachment attachment, GLenum
 
 void Framebuffer::texture3DImplementationDefault(BufferAttachment attachment, Texture3D& texture, GLint mipLevel, GLint layer) {
     /** @todo Check for texture target compatibility */
-    /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glFramebufferTexture3D(GLenum(bindInternal()), GLenum(attachment), GLenum(texture.target()), texture.id(), mipLevel, layer);
     #else
@@ -193,6 +193,8 @@ void Framebuffer::texture3DImplementationDefault(BufferAttachment attachment, Te
     static_cast<void>(texture);
     static_cast<void>(mipLevel);
     static_cast<void>(layer);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glFramebufferTexture3DOES(GLenum(bindInternal()), GLenum(attachment), GLenum(texture.target()), texture.id(), mipLevel, layer);
     #endif
 }
 

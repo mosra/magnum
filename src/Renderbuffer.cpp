@@ -136,7 +136,7 @@ void Renderbuffer::storageImplementationDSA(RenderbufferFormat internalFormat, c
 }
 #endif
 
-/** @todo Enable when extension wrangler for ES is done */
+/** @todo Re-enable when extension loader is available for ES */
 
 #ifndef MAGNUM_TARGET_GLES2
 void Renderbuffer::storageMultisampleImplementationDefault(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
