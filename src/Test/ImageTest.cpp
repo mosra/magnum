@@ -33,53 +33,90 @@ class ImageTest: public TestSuite::Tester {
     public:
         explicit ImageTest();
 
-        void moveConstructor();
-        void moveAssignment();
+        void construct();
+        void constructCopy();
+        void constructMove();
+
+        void setData();
         void toReference();
         void release();
 };
 
 ImageTest::ImageTest() {
-    addTests<ImageTest>({&ImageTest::moveConstructor,
-              &ImageTest::moveAssignment,
+    addTests<ImageTest>({&ImageTest::construct,
+              &ImageTest::constructCopy,
+              &ImageTest::constructMove,
+
+              &ImageTest::setData,
               &ImageTest::toReference,
               &ImageTest::release});
 }
 
-void ImageTest::moveConstructor() {
-    unsigned char* data = new unsigned char[3];
+void ImageTest::construct() {
+    auto data = new unsigned char[3];
     Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
-    Image2D b(std::move(a));
-    CORRADE_VERIFY(!a.data());
-    CORRADE_COMPARE(b.format(), ColorFormat::Red);
-    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(b.size(), Vector2i(1, 3));
-    CORRADE_VERIFY(b.data() == data);
+    CORRADE_COMPARE(a.format(), ColorFormat::Red);
+    CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(a.data(), data);
 }
 
-void ImageTest::moveAssignment() {
-    unsigned char* data = new unsigned char[3];
-    Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+void ImageTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Image2D, const Image2D&>{}));
+    /* GCC 4.6 doesn't have std::is_assignable */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    CORRADE_VERIFY(!(std::is_assignable<Image2D, const Image2D&>{}));
+    #endif
+}
 
-    Image2D b(ColorFormat::Red, ColorType::UnsignedByte);
-    b = std::move(a);
-    CORRADE_VERIFY(!a.data());
+void ImageTest::constructMove() {
+    auto data = new unsigned char[3];
+    Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    Image2D b(std::move(a));
+
+    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.size(), Vector2i());
+
     CORRADE_COMPARE(b.format(), ColorFormat::Red);
     CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
-    CORRADE_VERIFY(b.data() == data);
+    CORRADE_COMPARE(b.data(), data);
+
+    auto data2 = new unsigned char[3];
+    Image2D c(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 6}, data2);
+    c = std::move(b);
+
+    CORRADE_COMPARE(b.data(), data2);
+    CORRADE_COMPARE(b.size(), Vector2i(2, 6));
+
+    CORRADE_COMPARE(c.format(), ColorFormat::Red);
+    CORRADE_COMPARE(c.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(c.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(c.data(), data);
+}
+
+void ImageTest::setData() {
+    auto data = new unsigned char[3];
+    Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    auto data2 = new unsigned short[2*4];
+    a.setData(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 1}, data2);
+
+    CORRADE_COMPARE(a.format(), ColorFormat::RGBA);
+    CORRADE_COMPARE(a.type(), ColorType::UnsignedShort);
+    CORRADE_COMPARE(a.size(), Vector2i(2, 1));
+    CORRADE_COMPARE(a.data(), reinterpret_cast<unsigned char*>(data2));
 }
 
 void ImageTest::toReference() {
-    unsigned char* data = new unsigned char[3];
+    auto data = new unsigned char[3];
     const Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
-
     ImageReference2D b = a;
+
     CORRADE_COMPARE(b.format(), ColorFormat::Red);
     CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
-    CORRADE_VERIFY(b.data() == data);
+    CORRADE_COMPARE(b.data(), data);
 
     CORRADE_VERIFY((std::is_convertible<const Image2D&, ImageReference2D>::value));
     {
@@ -95,9 +132,10 @@ void ImageTest::release() {
     unsigned char data[] = {'c', 'a', 'f', 'e'};
     Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
     const unsigned char* const pointer = a.release();
+
     CORRADE_COMPARE(pointer, data);
-    CORRADE_VERIFY(!a.data());
-    CORRADE_VERIFY(a.size().isZero());
+    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.size(), Vector2i());
 }
 
 }}

@@ -31,6 +31,7 @@
 #include "Image.h"
 #include "Shader.h"
 #include "TextureFormat.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
 
@@ -44,6 +45,8 @@ AbstractTexture::ParameterfImplementation AbstractTexture::parameterfImplementat
     &AbstractTexture::parameterImplementationDefault;
 AbstractTexture::ParameterfvImplementation AbstractTexture::parameterfvImplementation =
     &AbstractTexture::parameterImplementationDefault;
+AbstractTexture::SetMaxAnisotropyImplementation AbstractTexture::setMaxAnisotropyImplementation =
+    &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 #ifndef MAGNUM_TARGET_GLES
 AbstractTexture::GetLevelParameterivImplementation AbstractTexture::getLevelParameterivImplementation =
     &AbstractTexture::getLevelParameterImplementationDefault;
@@ -123,8 +126,12 @@ Int AbstractTexture::maxIntegerSamples() {
 }
 #endif
 
-void AbstractTexture::destroy() {
-    /* Moved out */
+AbstractTexture::AbstractTexture(GLenum target): _target(target) {
+    glGenTextures(1, &_id);
+}
+
+AbstractTexture::~AbstractTexture() {
+    /* Moved out, nothing to do */
     if(!_id) return;
 
     /* Remove all bindings */
@@ -135,27 +142,12 @@ void AbstractTexture::destroy() {
     glDeleteTextures(1, &_id);
 }
 
-void AbstractTexture::move() {
-    _id = 0;
+std::string AbstractTexture::label() const {
+    return Context::current()->state().debug->getLabelImplementation(GL_TEXTURE, _id);
 }
 
-AbstractTexture::AbstractTexture(GLenum target): _target(target) {
-    glGenTextures(1, &_id);
-}
-
-AbstractTexture::~AbstractTexture() { destroy(); }
-
-AbstractTexture::AbstractTexture(AbstractTexture&& other): _target(other._target), _id(other._id) {
-    other.move();
-}
-
-AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) {
-    destroy();
-
-    _target = other._target;
-    _id = other._id;
-
-    other.move();
+AbstractTexture& AbstractTexture::setLabel(const std::string& label) {
+    Context::current()->state().debug->labelImplementation(GL_TEXTURE, _id, label);
     return *this;
 }
 
@@ -281,9 +273,13 @@ void AbstractTexture::initializeContextBasedFunctionality(Context& context) {
             storage3DImplementation = &AbstractTexture::storageImplementationDefault;
         }
     }
-    #else
-    static_cast<void>(context);
     #endif
+
+    if(context.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
+        Debug() << "AbstractTexture: using" << Extensions::GL::EXT::texture_filter_anisotropic::string() << "features";
+
+        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
+    }
 }
 
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
@@ -688,6 +684,12 @@ void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat
 }
 #endif
 
+void AbstractTexture::setMaxAnisotropyImplementationNoOp(GLfloat) {}
+
+void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
+    (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values) {
     bindInternal();
@@ -713,15 +715,16 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
     bindInternal();
-    /** @todo Re-enable when extension wrangler is available for ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage1D(target, levels, GLenum(internalFormat), size[0]);
     #else
-    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
     static_cast<void>(target);
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
     #endif
 }
 
@@ -774,15 +777,16 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size) {
     bindInternal();
-    /** @todo Re-enable when extension wrangler is available for ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage2D(target, levels, GLenum(internalFormat), size.x(), size.y());
     #else
-    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
     static_cast<void>(target);
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
     #endif
 }
 
@@ -827,15 +831,16 @@ void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei level
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     bindInternal();
-    /** @todo Re-enable when extension wrangler is available for ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage3D(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     #else
-    //glTexStorage3DEXT(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     static_cast<void>(target);
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glTexStorage3DEXT(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     #endif
 }
 
@@ -856,17 +861,18 @@ void AbstractTexture::getImageImplementationDSA(const GLenum target, const GLint
 }
 
 void AbstractTexture::getImageImplementationRobustness(const GLenum target, const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     bindInternal();
     glGetnTexImageARB(target, level, GLenum(format), GLenum(type), dataSize, data);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
     static_cast<void>(target);
     static_cast<void>(level);
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(dataSize);
     static_cast<void>(data);
+    CORRADE_INTERNAL_ASSERT(false);
     #endif
 }
 #endif
@@ -895,7 +901,7 @@ void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, Texture
 
 void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
-    /** @todo Get some extension wrangler instead to avoid linker errors to glTexImage3D() on ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexImage3D(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
     #else
@@ -906,6 +912,8 @@ void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, Tex
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(data);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glTexImage3DOES(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
     #endif
 }
 
@@ -939,7 +947,7 @@ void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, cons
 
 void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
-    /** @todo Get some extension wrangler instead to avoid linker errors to glTexSubImage3D() on ES2 */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexSubImage3D(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
     #else
@@ -950,6 +958,8 @@ void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, 
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(data);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glTexSubImage3DOES(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
     #endif
 }
 
@@ -993,7 +1003,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLin
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(this, target, level);
     const std::size_t dataSize = size.product()*image.pixelSize();
     if(image.size() != size)
-        image.setData(size, image.format(), image.type(), nullptr, usage);
+        image.setData(image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bind(Buffer::Target::PixelPack);
     (this->*getImageImplementation)(target, level, image.format(), image.type(), dataSize, nullptr);
@@ -1109,7 +1119,7 @@ void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture* const texture,
 
 void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture* texture, const Array2D<Sampler::Wrapping>& wrapping) {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Sampler::Wrapping::ClampToEdge || wrapping.x() == Sampler::Wrapping::ClampToBorder) && (wrapping.y() == Sampler::Wrapping::ClampToEdge || wrapping.y() == Sampler::Wrapping::ClampToEdge)), "AbstractTexture: rectangle texture wrapping must either clamp to border or to edge", );
+    CORRADE_ASSERT(texture->_target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Sampler::Wrapping::ClampToEdge || wrapping.x() == Sampler::Wrapping::ClampToBorder) && (wrapping.y() == Sampler::Wrapping::ClampToEdge || wrapping.y() == Sampler::Wrapping::ClampToBorder)), "Texture2D::setWrapping(): rectangle texture must be clamped to border or to edge", );
     #endif
 
     (texture->*parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));

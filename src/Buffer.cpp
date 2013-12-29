@@ -30,6 +30,7 @@
 #include "Extensions.h"
 #include "Implementation/State.h"
 #include "Implementation/BufferState.h"
+#include "Implementation/DebugState.h"
 
 namespace Magnum {
 
@@ -160,6 +161,23 @@ Buffer::~Buffer() {
     glDeleteBuffers(1, &_id);
 }
 
+std::string Buffer::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_BUFFER, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_BUFFER_KHR, _id);
+    #endif
+}
+
+Buffer& Buffer::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_BUFFER, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_BUFFER_KHR, _id, label);
+    #endif
+    return *this;
+}
+
 void Buffer::bind(Target target, GLuint id) {
     GLuint& bound = Context::current()->state().buffer->bindings[Implementation::BufferState::indexForTarget(target)];
 
@@ -201,7 +219,7 @@ Int Buffer::size() {
 
 #ifdef MAGNUM_TARGET_GLES2
 void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAccess access) {
-    /** @todo Enable also in Emscripten (?) when extension wrangler is available */
+    /** @todo Enable also in Emscripten (?) when extension loader is available */
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
     return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
@@ -214,6 +232,7 @@ void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAc
 }
 
 void Buffer::unmapSub() {
+    /** @todo Enable also in Emscripten (?) when extension loader is available */
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(_mappedBuffer, "Buffer::unmapSub(): the buffer is not mapped", );
     glUnmapBufferSubDataCHROMIUM(_mappedBuffer);
@@ -293,12 +312,13 @@ void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) 
 #endif
 
 void* Buffer::mapImplementationDefault(MapAccess access) {
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     return glMapBuffer(GLenum(bindInternal(_targetHint)), GLenum(access));
     #else
     static_cast<void>(access);
-    return nullptr;
+    CORRADE_INTERNAL_ASSERT(false);
+    //return glMapBufferOES(GLenum(bindInternal(_targetHint)), GLenum(access));
     #endif
 }
 
@@ -309,14 +329,15 @@ void* Buffer::mapImplementationDSA(MapAccess access) {
 #endif
 
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     return glMapBufferRange(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
     static_cast<void>(access);
-    return nullptr;
+    CORRADE_INTERNAL_ASSERT(false);
+    //return glMapBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
     #endif
 }
 
@@ -327,12 +348,14 @@ void* Buffer::mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapF
 #endif
 
 void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glFlushMappedBufferRange(GLenum(bindInternal(_targetHint)), offset, length);
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glFlushMappedBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length);
     #endif
 }
 
@@ -343,11 +366,12 @@ void Buffer::flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr lengt
 #endif
 
 bool Buffer::unmapImplementationDefault() {
-    /** @todo Re-enable when extension wrangler is available for ES */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     return glUnmapBuffer(GLenum(bindInternal(_targetHint)));
     #else
-    return false;
+    CORRADE_INTERNAL_ASSERT(false);
+    //return glUnmapBufferOES(GLenum(bindInternal(_targetHint)));
     #endif
 }
 

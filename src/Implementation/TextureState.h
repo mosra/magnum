@@ -34,12 +34,13 @@ struct TextureState {
     explicit TextureState();
     ~TextureState();
 
-    GLfloat maxAnisotropy;
+    GLfloat maxMaxAnisotropy;
     GLint currentLayer;
     #ifndef MAGNUM_TARGET_GLES
     GLint maxColorSamples,
         maxDepthSamples,
-        maxIntegerSamples;
+        maxIntegerSamples,
+        bufferOffsetAlignment;
     #endif
 
     std::vector<GLuint> bindings;

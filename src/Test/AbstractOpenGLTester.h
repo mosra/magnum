@@ -27,6 +27,9 @@
 #include <TestSuite/Tester.h>
 #include <corradeCompatibility.h>
 
+#include "Context.h"
+#include "Extensions.h"
+#include "DebugMessage.h"
 #include "Renderer.h"
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
@@ -39,14 +42,22 @@ namespace Magnum { namespace Test {
 
 class AbstractOpenGLTester: public TestSuite::Tester, public Platform::WindowlessApplication {
     public:
-        explicit AbstractOpenGLTester(): Platform::WindowlessApplication({zero, nullptr}) {}
+        explicit AbstractOpenGLTester();
 
         using TestSuite::Tester::exec;
-        int exec() override { return TestSuite::Tester::exec(); }
+        int exec() override final { return TestSuite::Tester::exec(); }
 
     private:
         static int zero;
 };
+
+AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({zero, nullptr}) {
+    if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
+        Renderer::setFeature(Renderer::Feature::DebugOutput, true);
+        Renderer::setFeature(Renderer::Feature::DebugOutputSynchronous, true);
+        DebugMessage::setDefaultCallback();
+    }
+}
 
 int AbstractOpenGLTester::zero = 0;
 

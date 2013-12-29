@@ -35,9 +35,8 @@
 #include <Containers/EnumSet.h>
 #include <Utility/Assert.h>
 
+#include "AbstractObject.h"
 #include "Magnum.h"
-#include "OpenGL.h"
-#include "magnumVisibility.h"
 
 namespace Magnum {
 
@@ -189,7 +188,7 @@ nothing.
 @todo Support for AMD/ARB's query buffer (@extension{AMD,query_buffer_object}, @extension{ARB,query_buffer_object})
 @todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
  */
-class MAGNUM_EXPORT Buffer {
+class MAGNUM_EXPORT Buffer: public AbstractObject {
     friend class Context;
 
     public:
@@ -548,6 +547,32 @@ class MAGNUM_EXPORT Buffer {
 
         /** @brief OpenGL buffer ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief %Buffer label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} with @def_gl{BUFFER} or
+         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @def_gl{BUFFER_OBJECT_EXT}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set buffer label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with @def_gl{BUFFER}
+         *      or @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @def_gl{BUFFER_OBJECT_EXT}
+         */
+        Buffer& setLabel(const std::string& label);
 
         /** @brief Target hint */
         Target targetHint() const { return _targetHint; }

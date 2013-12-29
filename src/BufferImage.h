@@ -54,13 +54,36 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
+         * @param size              %Image size
+         * @param data              %Image data
+         * @param usage             %Image buffer usage
          *
-         * Dimensions and buffer are empty, call @ref setData() to fill the
+         * Note that the image data are not copied on construction, but they
+         * are deleted on class destruction.
+         */
+        explicit BufferImage(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage);
+
+        /**
+         * @brief Constructor
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
+         *
+         * Size is zero and buffer are empty, call @ref setData() to fill the
          * image with data.
          */
-        explicit BufferImage(ColorFormat format, ColorType type): AbstractImage(format, type) {
-            _buffer.setTargetHint(Buffer::Target::PixelPack);
-        }
+        explicit BufferImage(ColorFormat format, ColorType type);
+
+        /** @brief Copying is not allowed */
+        BufferImage(const BufferImage<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        BufferImage(BufferImage<dimensions>&& other) noexcept;
+
+        /** @brief Copying is not allowed */
+        BufferImage<dimensions>& operator=(const BufferImage<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        BufferImage<dimensions>& operator=(BufferImage<dimensions>&& other) noexcept;
 
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
@@ -70,9 +93,9 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
 
         /**
          * @brief Set image data
-         * @param size              %Image size
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
+         * @param size              %Image size
          * @param data              %Image data
          * @param usage             %Image buffer usage
          *
@@ -80,7 +103,17 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
          * after filling the buffer.
          * @see @ref Buffer::setData()
          */
-        void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage);
+        void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage)
+         * @deprecated Use @ref Magnum::BufferImage::setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage) "setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage)" instead.
+         */
+        CORRADE_DEPRECATED("use setData(ColorFormat, ColorType, VectorNi, const void*, BufferUsage) instead") void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage) {
+            setData(format, type, size, data, usage);
+        }
+        #endif
 
     private:
         Math::Vector<Dimensions, Int> _size;
@@ -95,6 +128,17 @@ typedef BufferImage<2> BufferImage2D;
 
 /** @brief Three-dimensional buffer image */
 typedef BufferImage<3> BufferImage3D;
+
+template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: AbstractImage(std::move(other)), _size(other._size), _buffer(std::move(other._buffer)) {
+    other._size = {};
+}
+
+template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
+    AbstractImage::operator=(std::move(other));
+    std::swap(_size, other._size);
+    std::swap(_buffer, other._buffer);
+    return *this;
+}
 #endif
 
 }

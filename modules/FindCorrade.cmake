@@ -32,6 +32,9 @@
 #  CORRADE_BUILD_DEPRECATED     - Defined if compiled with deprecated APIs
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries
+#  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
+#   (Linux, BSD, OS X)
+#  CORRADE_TARGET_WINDOWS       - Defined if compiled for Windows
 #  CORRADE_TARGET_NACL          - Defined if compiled for Google Chrome
 #   Native Client
 #  CORRADE_TARGET_NACL_NEWLIB   - Defined if compiled for Google Chrome
@@ -188,6 +191,14 @@ endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_BUILD_STATIC" _BUILD_STATIC)
 if(NOT _BUILD_STATIC EQUAL -1)
     set(CORRADE_BUILD_STATIC 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_UNIX" _TARGET_UNIX)
+if(NOT _TARGET_UNIX EQUAL -1)
+    set(CORRADE_TARGET_UNIX 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_WINDOWS" _TARGET_WINDOWS)
+if(NOT _TARGET_WINDOWS EQUAL -1)
+    set(CORRADE_TARGET_WINDOWS 1)
 endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL" _TARGET_NACL)
 if(NOT _TARGET_NACL EQUAL -1)

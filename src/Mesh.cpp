@@ -29,6 +29,7 @@
 #include "Buffer.h"
 #include "Context.h"
 #include "Extensions.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/BufferState.h"
 #include "Implementation/MeshState.h"
 #include "Implementation/State.h"
@@ -92,6 +93,9 @@ Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _vertexCount(0), _in
 }
 
 Mesh::~Mesh() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     /* Remove current vao from the state */
     GLuint& current = Context::current()->state().mesh->currentVAO;
     if(current == _id) current = 0;
@@ -134,6 +138,23 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     #endif
     #endif
 
+    return *this;
+}
+
+std::string Mesh::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_VERTEX_ARRAY, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_VERTEX_ARRAY_KHR, _id);
+    #endif
+}
+
+Mesh& Mesh::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_VERTEX_ARRAY, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_VERTEX_ARRAY_KHR, _id, label);
+    #endif
     return *this;
 }
 
@@ -185,13 +206,16 @@ void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, 
 }
 
 void Mesh::bindVAO(GLuint vao) {
-    /** @todo Get some extension wrangler instead to avoid linker errors to glBindVertexArray() on ES2 */
-    #ifndef MAGNUM_TARGET_GLES2
+    /** @todo Re-enable when extension loader is available for ES */
     GLuint& current = Context::current()->state().mesh->currentVAO;
-    if(current != vao) glBindVertexArray(current = vao);
-    #else
-    static_cast<void>(vao);
-    #endif
+    if(current != vao) {
+        #ifndef MAGNUM_TARGET_GLES2
+        glBindVertexArray(current = vao);
+        #else
+        CORRADE_INTERNAL_ASSERT(false);
+        //glBindVertexArrayOES(current = vao);
+        #endif
+    }
 }
 
 void Mesh::vertexAttribPointer(const Attribute& attribute) {
@@ -246,7 +270,7 @@ void Mesh::initializeContextBasedFunctionality(Context& context) {
     #endif
 }
 
-void Mesh::createImplementationDefault() {}
+void Mesh::createImplementationDefault() { _id = 0; }
 
 void Mesh::createImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glGenVertexArrays() on ES2 */
@@ -260,7 +284,7 @@ void Mesh::destroyImplementationDefault() {}
 void Mesh::destroyImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glDeleteVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
-    if(_id) glDeleteVertexArrays(1, &_id);
+    glDeleteVertexArrays(1, &_id);
     #endif
 }
 

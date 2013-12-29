@@ -181,6 +181,8 @@ namespace GL {
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352
         _extension(GL,EXT,direct_state_access,          GL210,  None) // #353
         _extension(GL,EXT,texture_snorm,                GL300, GL310) // #365
+        _extension(GL,EXT,debug_label,                  GL210,  None) // #439
+        _extension(GL,EXT,debug_marker,                 GL210,  None) // #440
     } namespace GREMEDY {
         _extension(GL,GREMEDY,string_marker,            GL210,  None) // #311
     } namespace INTEL {
@@ -215,6 +217,7 @@ namespace GL {
         _extension(GL,EXT,discard_framebuffer,      GLES200, GLES300) // #64
         _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #65
         _extension(GL,EXT,read_format_bgra,         GLES200,    None) // #66
+        _extension(GL,EXT,debug_label,              GLES200,    None) // #98
         _extension(GL,EXT,debug_marker,             GLES200,    None) // #99
         _extension(GL,EXT,occlusion_query_boolean,  GLES200, GLES300) // #100
         _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
@@ -232,9 +235,9 @@ namespace GL {
         _extension(GL,NV,fbo_color_attachments,     GLES200, GLES300) // #92
         _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
         _extension(GL,NV,read_buffer_front,         GLES200,    None) // #93
-        _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
+        _extension(GL,NV,read_depth,                GLES200,    None) // #94
         _extension(GL,NV,read_stencil,              GLES200,    None) // #94
-        _extension(GL,NV,read_depth_stencil,        GLES200, GLES300) // #94
+        _extension(GL,NV,read_depth_stencil,        GLES200,    None) // #94
         _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
         _extension(GL,NV,framebuffer_multisample,   GLES200, GLES300) // #143
         _extension(GL,NV,texture_border_clamp,      GLES200,    None) // #149

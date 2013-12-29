@@ -126,7 +126,7 @@ typedef BasicAnimableGroup3D<Float> AnimableGroup3D;
 typedef AnimableGroup<3, Float> AnimableGroup3D;
 #endif
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<3, Float>;
 #endif

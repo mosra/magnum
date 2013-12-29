@@ -31,6 +31,7 @@
 #include <Utility/Directory.h>
 
 #include "Extensions.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
@@ -439,8 +440,8 @@ Int Shader::maxUniformBlocks(const Type type) {
         GL_MAX_VERTEX_UNIFORM_BLOCKS,
         GL_MAX_FRAGMENT_UNIFORM_BLOCKS,
         #ifndef MAGNUM_TARGET_GLES
-        /** @todo Fix this when glLoadGen has GL_MAX_GEOMETRY_UNIFORM_BLOCKS enum */
-        0x8A2C /*GL_MAX_GEOMETRY_UNIFORM_BLOCKS*/,
+        /** @todo Fix this when glLoadGen has `GL_MAX_GEOMETRY_UNIFORM_BLOCKS` enum */
+        0x8A2C, //GL_MAX_GEOMETRY_UNIFORM_BLOCKS,
         GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS,
         GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS,
         GL_MAX_COMPUTE_UNIFORM_BLOCKS
@@ -522,8 +523,8 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
         GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS,
         GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS,
         #ifndef MAGNUM_TARGET_GLES
-        /** @todo Fix this when glLoadGen has GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS enum */
-        0x8A32 /*GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS*/,
+        /** @todo Fix this when glLoadGen has `GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS` enum */
+        0x8A32, //GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS,
         GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS,
         GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS,
         GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS
@@ -541,19 +542,19 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
-        case Version::GL210: sources.push_back("#version 120\n"); return;
-        case Version::GL300: sources.push_back("#version 130\n"); return;
-        case Version::GL310: sources.push_back("#version 140\n"); return;
-        case Version::GL320: sources.push_back("#version 150\n"); return;
-        case Version::GL330: sources.push_back("#version 330\n"); return;
-        case Version::GL400: sources.push_back("#version 400\n"); return;
-        case Version::GL410: sources.push_back("#version 410\n"); return;
-        case Version::GL420: sources.push_back("#version 420\n"); return;
-        case Version::GL430: sources.push_back("#version 430\n"); return;
-        case Version::GL440: sources.push_back("#version 440\n"); return;
+        case Version::GL210: _sources.push_back("#version 120\n"); return;
+        case Version::GL300: _sources.push_back("#version 130\n"); return;
+        case Version::GL310: _sources.push_back("#version 140\n"); return;
+        case Version::GL320: _sources.push_back("#version 150\n"); return;
+        case Version::GL330: _sources.push_back("#version 330\n"); return;
+        case Version::GL400: _sources.push_back("#version 400\n"); return;
+        case Version::GL410: _sources.push_back("#version 410\n"); return;
+        case Version::GL420: _sources.push_back("#version 420\n"); return;
+        case Version::GL430: _sources.push_back("#version 430\n"); return;
+        case Version::GL440: _sources.push_back("#version 440\n"); return;
         #else
-        case Version::GLES200: sources.push_back("#version 100\n"); return;
-        case Version::GLES300: sources.push_back("#version 300\n"); return;
+        case Version::GLES200: _sources.push_back("#version 100\n"); return;
+        case Version::GLES300: _sources.push_back("#version 300\n"); return;
         #endif
 
         case Version::None:
@@ -563,48 +564,54 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Shader::Shader(Shader&& other): _type(other._type), _id(other._id), sources(std::move(other.sources)) {
-    other._id = 0;
-}
-
 Shader::~Shader() {
-    if(_id) glDeleteShader(_id);
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
+    glDeleteShader(_id);
 }
 
-Shader& Shader::operator=(Shader&& other) {
-    glDeleteShader(_id);
+std::string Shader::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_SHADER, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_SHADER_KHR, _id);
+    #endif
+}
 
-    _type = other._type;
-    sources = std::move(other.sources);
-    _id = other._id;
-
-    other._id = 0;
-
+Shader& Shader::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_SHADER, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_SHADER_KHR, _id, label);
+    #endif
     return *this;
 }
+
+std::vector<std::string> Shader::sources() const { return _sources; }
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
         #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
         std::ostringstream converter;
-        converter << (sources.size()+1)/2;
+        converter << (_sources.size()+1)/2;
         #endif
 
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
-        sources.push_back("#line 1 " +
+        _sources.push_back("#line 1 " +
             /* This shouldn't be ambiguous. But is. */
             #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(__MINGW32__)
             #ifndef CORRADE_GCC44_COMPATIBILITY
-            std::to_string((sources.size()+1)/2) +
+            std::to_string((_sources.size()+1)/2) +
             #else
-            std::to_string(static_cast<unsigned long long int>(sources.size()+1)/2) +
+            std::to_string(static_cast<unsigned long long int>(_sources.size()+1)/2) +
             #endif
             #else
             converter.str() +
             #endif
             '\n');
-        sources.push_back(std::move(source));
+        _sources.push_back(std::move(source));
     }
 
     return *this;
@@ -619,20 +626,20 @@ Shader& Shader::addFile(const std::string& filename) {
 }
 
 bool Shader::compile() {
-    CORRADE_ASSERT(sources.size() > 1, "Shader::compile(): no files added", false);
+    CORRADE_ASSERT(_sources.size() > 1, "Shader::compile(): no files added", false);
 
     /* Array of source string pointers and their lengths */
     /** @todo Use `Containers::ArrayTuple` to avoid one allocation if it ever
         gets to be implemented (we need properly aligned memory too) */
-    Containers::Array<const GLchar*> pointers(sources.size());
-    Containers::Array<GLint> sizes(sources.size());
-    for(std::size_t i = 0; i != sources.size(); ++i) {
-        pointers[i] = static_cast<const GLchar*>(sources[i].data());
-        sizes[i] = sources[i].size();
+    Containers::Array<const GLchar*> pointers(_sources.size());
+    Containers::Array<GLint> sizes(_sources.size());
+    for(std::size_t i = 0; i != _sources.size(); ++i) {
+        pointers[i] = static_cast<const GLchar*>(_sources[i].data());
+        sizes[i] = _sources[i].size();
     }
 
     /* Create shader and set its source */
-    glShaderSource(_id, sources.size(), pointers, sizes);
+    glShaderSource(_id, _sources.size(), pointers, sizes);
 
     /* Compile shader */
     glCompileShader(_id);
@@ -670,5 +677,24 @@ bool Shader::compile() {
 
     return success;
 }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, const Shader::Type value) {
+    switch(value) {
+        #define _c(value) case Shader::Type::value: return debug << "Shader::Type::" #value;
+        _c(Vertex)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(TessellationControl)
+        _c(TessellationEvaluation)
+        _c(Geometry)
+        _c(Compute)
+        #endif
+        _c(Fragment)
+        #undef _c
+    }
+
+    return debug << "Shader::Type::(invalid)";
+}
+#endif
 
 }

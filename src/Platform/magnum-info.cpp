@@ -31,7 +31,9 @@
 
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"
+#include "BufferTexture.h"
 #include "Context.h"
+#include "DebugMessage.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
 #include "Mesh.h"
@@ -322,6 +324,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Shader::maxTessellationEvaluationInputComponents())
         _l(Shader::maxTessellationEvaluationOutputComponents())
     }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>()) {
+        _h(ARB::texture_buffer_range)
+
+        _l(BufferTexture::offsetAlignment())
+    }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -356,7 +364,15 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
         _h(EXT::texture_filter_anisotropic)
 
-        _l(Sampler::maxAnisotropy())
+        _l(Sampler::maxMaxAnisotropy())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::KHR::debug>()) {
+        _h(KHR::debug)
+
+        _l(AbstractObject::maxLabelLength())
+        _l(DebugMessage::maxLoggedMessages())
+        _l(DebugMessage::maxMessageLength())
     }
 
     #undef _l

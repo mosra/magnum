@@ -349,7 +349,7 @@ typedef AbstractBasicFeature3D<Float> AbstractFeature3D;
 typedef AbstractFeature<3, Float> AbstractFeature3D;
 #endif
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
 #endif

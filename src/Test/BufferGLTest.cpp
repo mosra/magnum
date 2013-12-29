@@ -38,6 +38,10 @@ class BufferGLTest: public AbstractOpenGLTester {
         explicit BufferGLTest();
 
         void construct();
+        void constructCopy();
+        void constructMove();
+
+        void label();
         void data();
         void map();
         #ifdef MAGNUM_TARGET_GLES2
@@ -55,6 +59,7 @@ class BufferGLTest: public AbstractOpenGLTester {
 
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
+              &BufferGLTest::label,
               &BufferGLTest::data,
               &BufferGLTest::map,
               #ifdef MAGNUM_TARGET_GLES2
@@ -72,12 +77,60 @@ BufferGLTest::BufferGLTest() {
 }
 
 void BufferGLTest::construct() {
-    Buffer buffer;
+    {
+        Buffer buffer;
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_VERIFY(buffer.id() > 0);
+        CORRADE_COMPARE(buffer.targetHint(), Buffer::Target::Array);
+        CORRADE_COMPARE(buffer.size(), 0);
+    }
+
     MAGNUM_VERIFY_NO_ERROR();
+}
 
-    CORRADE_COMPARE(buffer.targetHint(), Buffer::Target::Array);
+void BufferGLTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
+    /* GCC 4.6 doesn't have std::is_assignable */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
+    #endif
+}
 
-    CORRADE_COMPARE(buffer.size(), 0);
+void BufferGLTest::constructMove() {
+    Buffer a;
+    const Int id = a.id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    Buffer b(std::move(a));
+
+    CORRADE_COMPARE(a.id(), 0);
+    CORRADE_COMPARE(b.id(), id);
+
+    Buffer c;
+    const Int cId = c.id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.id(), cId);
+    CORRADE_COMPARE(c.id(), id);
+}
+
+void BufferGLTest::label() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    Buffer buffer;
+    CORRADE_COMPARE(buffer.label(), "");
+
+    buffer.setLabel("MyBuffer");
+    CORRADE_COMPARE(buffer.label(), "MyBuffer");
+
     MAGNUM_VERIFY_NO_ERROR();
 }
 
@@ -275,10 +328,10 @@ void BufferGLTest::mapRangeExplicitFlush() {
 void BufferGLTest::copy() {
     Buffer buffer1;
     constexpr char data[] = {2, 7, 5, 13, 25};
-    buffer1.setData(data, BufferUsage::StaticDraw);
+    buffer1.setData(data, BufferUsage::StaticCopy);
 
     Buffer buffer2;
-    buffer2.setData({nullptr, 5}, BufferUsage::StaticDraw);
+    buffer2.setData({nullptr, 5}, BufferUsage::StaticRead);
 
     Buffer::copy(buffer1, buffer2, 1, 2, 3);
     MAGNUM_VERIFY_NO_ERROR();

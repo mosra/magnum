@@ -34,7 +34,6 @@
 #include "AbstractTexture.h"
 #include "Buffer.h"
 #include "BufferTexture.h"
-#include "DebugMarker.h"
 #include "DefaultFramebuffer.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
@@ -86,6 +85,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_filter_anisotropic),      // done
         _extension(GL,EXT,texture_mirror_clamp),
         _extension(GL,EXT,direct_state_access),
+        _extension(GL,EXT,debug_label),
+        _extension(GL,EXT,debug_marker),
         _extension(GL,GREMEDY,string_marker)};              // done
     static const std::vector<Extension> extensions300{
         /**
@@ -217,6 +218,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,texture_format_BGRA8888),
         _extension(GL,EXT,read_format_bgra),
+        _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,separate_shader_objects),
@@ -229,7 +231,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,robustness),
         _extension(GL,KHR,debug),
         _extension(GL,NV,read_buffer_front),
+        _extension(GL,NV,read_depth),
         _extension(GL,NV,read_stencil),
+        _extension(GL,NV,read_depth_stencil),
         _extension(GL,NV,texture_border_clamp),             // done
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
@@ -252,8 +256,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,draw_buffers),
         _extension(GL,NV,fbo_color_attachments),
         _extension(GL,NV,read_buffer),
-        _extension(GL,NV,read_depth),
-        _extension(GL,NV,read_depth_stencil),
         _extension(GL,NV,framebuffer_blit),                 // done
         _extension(GL,NV,framebuffer_multisample),
         _extension(GL,OES,depth24),
@@ -415,12 +417,51 @@ Context::Context() {
     }
     #endif
 
+    /* Disable extensions for which we need extension loader, as they would
+       crash otherwise. */
+    /** @todo Remove this when extension loader for ES is available */
+    #ifdef MAGNUM_TARGET_GLES
+    #define _disable(prefix, vendor, extension)                           \
+        extensionStatus.reset(Extensions::prefix::vendor::extension::Index);
+    #ifndef CORRADE_TARGET_NACL
+    _disable(GL,CHROMIUM,map_sub)
+    #endif
+    _disable(GL,EXT,debug_label)
+    _disable(GL,EXT,debug_marker)
+    _disable(GL,EXT,disjoint_timer_query)
+    _disable(GL,EXT,separate_shader_objects)
+    _disable(GL,EXT,multisampled_render_to_texture)
+    _disable(GL,EXT,robustness)
+    _disable(GL,KHR,debug)
+    _disable(GL,NV,read_buffer_front)
+    _disable(GL,OES,mapbuffer)
+    _disable(GL,OES,texture_3D)
+    #ifdef MAGNUM_TARGET_GLES2
+    _disable(GL,ANGLE,framebuffer_blit)
+    _disable(GL,ANGLE,framebuffer_multisample)
+    _disable(GL,APPLE,framebuffer_multisample)
+    _disable(GL,EXT,discard_framebuffer)
+    _disable(GL,EXT,blend_minmax)
+    #ifndef CORRADE_TARGET_NACL
+    _disable(GL,EXT,occlusion_query_boolean)
+    #endif
+    _disable(GL,EXT,texture_storage)
+    _disable(GL,EXT,map_buffer_range)
+    _disable(GL,NV,draw_buffers)
+    _disable(GL,NV,fbo_color_attachments) // ??
+    _disable(GL,NV,read_buffer)
+    _disable(GL,NV,framebuffer_multisample)
+    _disable(GL,OES,vertex_array_object)
+    #endif
+    #undef _disable
+    #endif
+
     /* Set this context as current */
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );
     _current = this;
 
     /* Initialize state tracker */
-    _state = new Implementation::State;
+    _state = new Implementation::State(*this);
 
     /* Initialize functionality based on current OpenGL version and extensions */
     AbstractFramebuffer::initializeContextBasedFunctionality(*this);
@@ -430,7 +471,6 @@ Context::Context() {
     #ifndef MAGNUM_TARGET_GLES
     BufferTexture::initializeContextBasedFunctionality(*this);
     #endif
-    DebugMarker::initializeContextBasedFunctionality(*this);
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
     Framebuffer::initializeContextBasedFunctionality(*this);
     Mesh::initializeContextBasedFunctionality(*this);

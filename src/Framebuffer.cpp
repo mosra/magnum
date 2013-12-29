@@ -31,6 +31,7 @@
 #include "Renderbuffer.h"
 #include "Texture.h"
 
+#include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/FramebufferState.h"
 
@@ -78,12 +79,24 @@ Framebuffer::Framebuffer(const Range2Di& viewport) {
 }
 
 Framebuffer::~Framebuffer() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     /* If bound, remove itself from state */
     Implementation::FramebufferState* state = Context::current()->state().framebuffer;
     if(state->readBinding == _id) state->readBinding = 0;
     if(state->drawBinding == _id) state->drawBinding = 0;
 
     glDeleteFramebuffers(1, &_id);
+}
+
+std::string Framebuffer::label() const {
+    return Context::current()->state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
+}
+
+Framebuffer& Framebuffer::setLabel(const std::string& label) {
+    Context::current()->state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
+    return *this;
 }
 
 Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
@@ -172,7 +185,7 @@ void Framebuffer::texture2DImplementationDSA(BufferAttachment attachment, GLenum
 
 void Framebuffer::texture3DImplementationDefault(BufferAttachment attachment, Texture3D& texture, GLint mipLevel, GLint layer) {
     /** @todo Check for texture target compatibility */
-    /** @todo Get some extension wrangler for glFramebufferTexture3D() (extension only) */
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glFramebufferTexture3D(GLenum(bindInternal()), GLenum(attachment), GLenum(texture.target()), texture.id(), mipLevel, layer);
     #else
@@ -180,6 +193,8 @@ void Framebuffer::texture3DImplementationDefault(BufferAttachment attachment, Te
     static_cast<void>(texture);
     static_cast<void>(mipLevel);
     static_cast<void>(layer);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glFramebufferTexture3DOES(GLenum(bindInternal()), GLenum(attachment), GLenum(texture.target()), texture.id(), mipLevel, layer);
     #endif
 }
 

@@ -257,7 +257,7 @@ template<class T> struct Transformation<BasicRigidMatrixTransformation3D<T>> {
 
 }
 
-#ifdef _WIN32
+#ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicRigidMatrixTransformation3D<Float>>;
 #endif
 

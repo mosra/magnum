@@ -29,6 +29,7 @@
 #include "Context.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
+#include "Extensions.h"
 
 namespace Magnum {
 
@@ -45,15 +46,15 @@ static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
     "Unsupported constants for GL texture filtering");
 #undef filter_or
 
-Float Sampler::maxAnisotropy() {
-    GLfloat& value = Context::current()->state().texture->maxAnisotropy;
+Float Sampler::maxMaxAnisotropy() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>())
+        return 0.0f;
 
-    /** @todo Re-enable when extension header is available */
-    #ifndef MAGNUM_TARGET_GLES
+    GLfloat& value = Context::current()->state().texture->maxMaxAnisotropy;
+
     /* Get the value, if not already cached */
     if(value == 0.0f)
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
-    #endif
 
     return value;
 }

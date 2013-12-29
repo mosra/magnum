@@ -150,11 +150,6 @@ from buffer overflow.
 class MAGNUM_EXPORT AbstractFramebuffer {
     friend class Context;
 
-    AbstractFramebuffer(const AbstractFramebuffer&) = delete;
-    AbstractFramebuffer(AbstractFramebuffer&&) = delete;
-    AbstractFramebuffer& operator=(const AbstractFramebuffer&) = delete;
-    AbstractFramebuffer& operator=(AbstractFramebuffer&&) = delete;
-
     public:
         /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@extension{ARB,ES2_compatibility}). */
 
@@ -211,6 +206,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
+         * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
+         *      exists for ES)
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
 

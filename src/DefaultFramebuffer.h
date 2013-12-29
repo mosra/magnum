@@ -92,7 +92,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * The default framebuffer does not exist.
-             * @requires_es_extension %Extension @es_extension{OES,surfaceless_context}
+             * @requires_gles30 %Extension @es_extension{OES,surfaceless_context}
              */
             #ifndef MAGNUM_TARGET_GLES2
             Undefined = GL_FRAMEBUFFER_UNDEFINED
@@ -290,6 +290,18 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         };
 
         explicit MAGNUM_LOCAL DefaultFramebuffer();
+
+        /** @brief Copying is not allowed */
+        DefaultFramebuffer(const DefaultFramebuffer&) = delete;
+
+        /** @brief Moving is not allowed */
+        DefaultFramebuffer(DefaultFramebuffer&&) = delete;
+
+        /** @brief Copying is not allowed */
+        DefaultFramebuffer& operator=(const DefaultFramebuffer&) = delete;
+
+        /** @brief Moving is not allowed */
+        DefaultFramebuffer& operator=(DefaultFramebuffer&& other) = delete;
 
         /**
          * @brief Check framebuffer status

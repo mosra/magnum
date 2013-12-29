@@ -307,7 +307,7 @@ drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @todo test vertex specification & drawing
 @todo How to glDrawElementsBaseVertex()/vertex offset -- in draw()?
  */
-class MAGNUM_EXPORT Mesh {
+class MAGNUM_EXPORT Mesh: public AbstractObject {
     friend class Context;
     friend class MeshView;
 
@@ -406,6 +406,40 @@ class MAGNUM_EXPORT Mesh {
 
         /** @brief Move assignment */
         Mesh& operator=(Mesh&& other) noexcept;
+
+        /**
+         * @brief OpenGL mesh ID
+         *
+         * If @extension{APPLE,vertex_array_object} is not available, returns
+         * `0`.
+         */
+        GLuint id() const { return _id; }
+
+        /**
+         * @brief %Mesh label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} with @def_gl{VERTEX_ARRAY} or
+         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @def_gl{VERTEX_ARRAY_OBJECT_EXT}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set mesh label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
+         *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
+         *      with @def_gl{VERTEX_ARRAY_OBJECT_EXT}
+         */
+        Mesh& setLabel(const std::string& label);
 
         /**
          * @brief Index size

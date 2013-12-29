@@ -34,7 +34,7 @@
 #include "Math/Vector2.h"
 #include "Magnum.h"
 
-#ifdef _WIN32 /* Windows version of SDL2 redefines main(), we don't want that */
+#ifdef CORRADE_TARGET_WINDOWS /* Windows version of SDL2 redefines main(), we don't want that */
 #define SDL_MAIN_HANDLED
 #endif
 #include <SDL.h>

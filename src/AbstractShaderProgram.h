@@ -31,8 +31,8 @@
 #include <string>
 #include <Containers/EnumSet.h>
 
+#include "AbstractObject.h"
 #include "Magnum.h"
-#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {
@@ -171,7 +171,7 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
     supported in OpenGL ES 2.0, use bindAttributeLocation() instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
     ES 2.0, similar functionality is available in extension
-    @extension{NV,draw_buffers}.
+    @es_extension{NV,draw_buffers}.
 
 @subsection AbstractShaderProgram-uniform-location Uniform locations
 
@@ -317,7 +317,7 @@ comes in handy.
     status, should be faster -- https://twitter.com/g_truc/status/352778836657700866
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
-class MAGNUM_EXPORT AbstractShaderProgram {
+class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
     friend class Context;
 
     public:
@@ -507,6 +507,32 @@ class MAGNUM_EXPORT AbstractShaderProgram {
 
         /** @brief OpenGL program ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief %Shader program label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} with @def_gl{PROGRAM} or
+         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @def_gl{PROGRAM_OBJECT_EXT}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set shader program label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
+         *      @def_gl{PROGRAM} or @fn_gl_extension2{LabelObject,EXT,debug_label}
+         *      with @def_gl{PROGRAM_OBJECT_EXT}
+         */
+        AbstractShaderProgram& setLabel(const std::string& label);
 
         /**
          * @brief Validate program

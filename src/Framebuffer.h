@@ -31,6 +31,10 @@
 #include "AbstractFramebuffer.h"
 #include "CubeMapTexture.h"
 
+#ifdef _X11_XLIB_H_ /* Xlib.h, I hate you sincerely */
+#undef Status
+#endif
+
 namespace Magnum {
 
 /**
@@ -95,8 +99,9 @@ to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their respective
 documentation for more information.
 
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@todo `MAX_COLOR_ATTACHMENTS`
 */
-class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
+class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObject {
     friend class Context;
 
     public:
@@ -113,6 +118,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
                 /**
                  * @brief Constructor
                  * @param id        Color attachment id
+                 *
+                 * @requires_gles30 %Extension @es_extension{NV,fbo_color_attachments}
+                 *      is required for @p id greater than 0.
                  */
                 constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
@@ -308,6 +316,12 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          */
         explicit Framebuffer(const Range2Di& viewport);
 
+        /** @brief Copying is not allowed */
+        Framebuffer(const Framebuffer&) = delete;
+
+        /** @brief Move constructor */
+        Framebuffer(Framebuffer&& other) noexcept;
+
         /**
          * @brief Destructor
          *
@@ -315,6 +329,41 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
          * @see @fn_gl{DeleteFramebuffers}
          */
         ~Framebuffer();
+
+        /** @brief Copying is not allowed */
+        Framebuffer& operator=(const Framebuffer&) = delete;
+
+        /** @brief Move assignment */
+        Framebuffer& operator=(Framebuffer&& other) noexcept;
+
+        /** @brief OpenGL framebuffer ID */
+        GLuint id() const { return _id; }
+
+        /**
+         * @brief %Framebuffer label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} or
+         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @def_gl{FRAMEBUFFER}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set framebuffer label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
+         *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @def_gl{FRAMEBUFFER}
+         */
+        Framebuffer& setLabel(const std::string& label);
 
         /**
          * @brief Check framebuffer status
@@ -559,6 +608,19 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer {
 
 /** @debugoperator{DefaultFramebuffer} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
+
+inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
+    _id = other._id;
+    _viewport = other._viewport;
+    other._id = 0;
+    other._viewport = {};
+}
+
+inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
+    std::swap(_id, other._id);
+    std::swap(_viewport, other._viewport);
+    return *this;
+}
 
 }
 

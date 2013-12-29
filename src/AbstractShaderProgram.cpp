@@ -29,6 +29,7 @@
 #include "Math/RectangularMatrix.h"
 #include "Extensions.h"
 #include "Shader.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
@@ -119,9 +120,8 @@ Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
 
     GLint& value = Context::current()->state().shaderProgram->maxComputeWorkGroupInvocations;
 
-    /** @todo Fix when glLoadGen has `GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS` */
     if(value == 0)
-        glGetIntegerv(/*GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS*/0x90EB, &value);
+        glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &value);
 
     return value;
 }
@@ -254,6 +254,23 @@ AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& 
     return *this;
 }
 
+std::string AbstractShaderProgram::label() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return Context::current()->state().debug->getLabelImplementation(GL_PROGRAM, _id);
+    #else
+    return Context::current()->state().debug->getLabelImplementation(GL_PROGRAM_KHR, _id);
+    #endif
+}
+
+AbstractShaderProgram& AbstractShaderProgram::setLabel(const std::string& label) {
+    #ifndef MAGNUM_TARGET_GLES
+    Context::current()->state().debug->labelImplementation(GL_PROGRAM, _id, label);
+    #else
+    Context::current()->state().debug->labelImplementation(GL_PROGRAM_KHR, _id, label);
+    #endif
+    return *this;
+}
+
 std::pair<bool, std::string> AbstractShaderProgram::validate() {
     glValidateProgram(_id);
 
@@ -283,15 +300,15 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
 }
 
 void AbstractShaderProgram::bindAttributeLocation(UnsignedInt location, const std::string& name) {
-    glBindAttribLocation(_id, location, name.c_str());
+    glBindAttribLocation(_id, location, name.data());
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
-    glBindFragDataLocation(_id, location, name.c_str());
+    glBindFragDataLocation(_id, location, name.data());
 }
 void AbstractShaderProgram::bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
-    glBindFragDataLocationIndexed(_id, location, index, name.c_str());
+    glBindFragDataLocationIndexed(_id, location, index, name.data());
 }
 #endif
 
@@ -332,7 +349,7 @@ bool AbstractShaderProgram::link() {
 }
 
 Int AbstractShaderProgram::uniformLocation(const std::string& name) {
-    GLint location = glGetUniformLocation(_id, name.c_str());
+    GLint location = glGetUniformLocation(_id, name.data());
     if(location == -1)
         Warning() << "AbstractShaderProgram: location of uniform \'" + name + "\' cannot be retrieved!";
     return location;

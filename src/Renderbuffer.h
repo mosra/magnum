@@ -28,8 +28,8 @@
  * @brief Class Magnum::Renderbuffer
  */
 
+#include "AbstractObject.h"
 #include "Magnum.h"
-#include "OpenGL.h"
 #include "magnumVisibility.h"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
@@ -57,13 +57,8 @@ See its documentation for more information.
 
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 */
-class MAGNUM_EXPORT Renderbuffer {
+class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
     friend class Context;
-
-    Renderbuffer(const Renderbuffer&) = delete;
-    Renderbuffer(Renderbuffer&&) = delete;
-    Renderbuffer& operator=(const Renderbuffer&) = delete;
-    Renderbuffer& operator=(Renderbuffer&&) = delete;
 
     public:
         /**
@@ -93,7 +88,13 @@ class MAGNUM_EXPORT Renderbuffer {
          * Generates new OpenGL renderbuffer.
          * @see @fn_gl{GenRenderbuffers}
          */
-        explicit Renderbuffer() { glGenRenderbuffers(1, &_id); }
+        explicit Renderbuffer();
+
+        /** @brief Copying is not allowed */
+        Renderbuffer(const Renderbuffer&) = delete;
+
+        /** @brief Move constructor */
+        Renderbuffer(Renderbuffer&& other) noexcept;
 
         /**
          * @brief Destructor
@@ -103,8 +104,40 @@ class MAGNUM_EXPORT Renderbuffer {
          */
         ~Renderbuffer();
 
+        /** @brief Copying is not allowed */
+        Renderbuffer& operator=(const Renderbuffer&) = delete;
+
+        /** @brief Move assignment */
+        Renderbuffer& operator=(Renderbuffer&& other) noexcept;
+
         /** @brief OpenGL internal renderbuffer ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief %Renderbuffer label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} or
+         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @def_gl{RENDERBUFFER}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set renderbuffer label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
+         *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @def_gl{RENDERBUFFER}
+         */
+        Renderbuffer& setLabel(const std::string& label);
 
         /**
          * @brief Set renderbuffer storage
@@ -131,10 +164,11 @@ class MAGNUM_EXPORT Renderbuffer {
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
          * @see @ref maxSize(), @ref maxSamples(), @fn_gl{BindRenderbuffer},
-         *      @fn_gl{RenderbufferStorage} or @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
+         *      @fn_gl{RenderbufferStorageMultisample} or @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
          *      or @es_extension{NV,framebuffer_multisample}
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
+         * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}
          */
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size) {
             (this->*storageMultisampleImplementation)(samples, internalFormat, size);
@@ -166,6 +200,15 @@ class MAGNUM_EXPORT Renderbuffer {
 
         GLuint _id;
 };
+
+inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id(other._id) {
+    other._id = 0;
+}
+
+inline Renderbuffer& Renderbuffer::operator=(Renderbuffer&& other) noexcept {
+    std::swap(_id, other._id);
+    return *this;
+}
 
 }
 

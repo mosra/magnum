@@ -27,8 +27,9 @@
 #include "Context.h"
 #include "Extensions.h"
 
-#include "Implementation/State.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/FramebufferState.h"
+#include "Implementation/State.h"
 
 namespace Magnum {
 
@@ -70,12 +71,26 @@ Int Renderbuffer::maxSamples() {
     return value;
 }
 
+Renderbuffer::Renderbuffer() { glGenRenderbuffers(1, &_id); }
+
 Renderbuffer::~Renderbuffer() {
+    /* Moved out, nothing to do */
+    if(!_id) return;
+
     /* If bound, remove itself from state */
     GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;
     if(binding == _id) binding = 0;
 
     glDeleteRenderbuffers(1, &_id);
+}
+
+std::string Renderbuffer::label() const {
+    return Context::current()->state().debug->getLabelImplementation(GL_RENDERBUFFER, _id);
+}
+
+Renderbuffer& Renderbuffer::setLabel(const std::string& label) {
+    Context::current()->state().debug->labelImplementation(GL_RENDERBUFFER, _id, label);
+    return *this;
 }
 
 void Renderbuffer::bind() {
@@ -121,7 +136,7 @@ void Renderbuffer::storageImplementationDSA(RenderbufferFormat internalFormat, c
 }
 #endif
 
-/** @todo Enable when extension wrangler for ES is done */
+/** @todo Re-enable when extension loader is available for ES */
 
 #ifndef MAGNUM_TARGET_GLES2
 void Renderbuffer::storageMultisampleImplementationDefault(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {

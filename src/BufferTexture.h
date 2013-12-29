@@ -201,13 +201,33 @@ and respective function documentation for more information.
 class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
     friend class Context;
 
-    BufferTexture(const BufferTexture&) = delete;
-    BufferTexture(BufferTexture&&) = delete;
-    BufferTexture& operator=(const BufferTexture&) = delete;
-    BufferTexture& operator=(BufferTexture&&) = delete;
-
     public:
+        /** @copydoc AbstractTexture::maxLabelLength() */
+        static Int maxLabelLength() { return AbstractTexture::maxLabelLength(); }
+
+        /**
+         * @brief Minimum required alignment for texture buffer offsets
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,texture_buffer_range}
+         * (part of OpenGL 4.3) is not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{TEXTURE_BUFFER_OFFSET_ALIGNMENT}
+         */
+        static Int offsetAlignment();
+
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+
+        /** @copydoc AbstractTexture::id() */
+        Int id() const { return AbstractTexture::id(); }
+
+        /** @copydoc AbstractTexture::label() */
+        std::string label() const { return AbstractTexture::label(); }
+
+        /** @copydoc AbstractTexture::setLabel() */
+        BufferTexture& setLabel(const std::string& label) {
+            AbstractTexture::setLabel(label);
+            return *this;
+        }
 
         /** @copydoc AbstractTexture::bind() */
         void bind(Int layer) { AbstractTexture::bind(layer); }

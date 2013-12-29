@@ -1,3 +1,5 @@
+#ifndef Magnum_Implementation_DebugState_h
+#define Magnum_Implementation_DebugState_h
 /*
     This file is part of Magnum.
 
@@ -22,43 +24,25 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "DebugMarker.h"
+#include <string>
 
-#include <Utility/Debug.h>
+#include "DebugMessage.h"
 
-#include "Context.h"
-#include "Extensions.h"
+namespace Magnum { namespace Implementation {
 
-namespace Magnum {
+struct DebugState {
+    DebugState(Context& context);
 
-DebugMarker::MarkImplementation DebugMarker::markImplementation = &DebugMarker::markImplementationDefault;
+    std::string(*getLabelImplementation)(GLenum, GLuint);
+    void(*labelImplementation)(GLenum, GLuint, const std::string&);
 
-void DebugMarker::initializeContextBasedFunctionality(Context& context) {
-    /** @todo Re-enable when extension wrangler is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()) {
-        Debug() << "DebugMarker: using" << Extensions::GL::GREMEDY::string_marker::string() << "features";
+    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugMessage::Severity, const std::string&);
+    void(*messageCallbackImplementation)(DebugMessage::Callback, const void*);
 
-        markImplementation = &DebugMarker::markImplementationDebugger;
-    }
-    #else
-    static_cast<void>(context);
-    #endif
-}
+    GLint maxLabelLength, maxLoggedMessages, maxMessageLength;
+    DebugMessage::Callback messageCallback;
+};
 
-void DebugMarker::markImplementationDefault(const std::string&) {}
+}}
 
-void DebugMarker::markImplementationDebugger(const std::string& string) {
-    /** @todo Re-enable when extension wrangler is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
-    glStringMarkerGREMEDY(string.length(), string.c_str());
-    #else
-    #if 0
-    glInsertEventMarkerEXT(string.length(), string.c_str());
-    #else
-    static_cast<void>(string);
-    #endif
-    #endif
-}
-
-}
+#endif

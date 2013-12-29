@@ -31,6 +31,7 @@
 #include "Array.h"
 #include "Color.h"
 #include "Sampler.h"
+#include "AbstractObject.h"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
 #include "Buffer.h"
@@ -101,7 +102,7 @@ nothing.
 @todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
 @todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
 */
-class MAGNUM_EXPORT AbstractTexture {
+class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend class Context;
 
     public:
@@ -163,13 +164,39 @@ class MAGNUM_EXPORT AbstractTexture {
         AbstractTexture(const AbstractTexture&) = delete;
 
         /** @brief Move constructor */
-        AbstractTexture(AbstractTexture&& other);
+        AbstractTexture(AbstractTexture&& other) noexcept;
 
         /** @brief Copying is not allowed */
         AbstractTexture& operator=(const AbstractTexture&) = delete;
 
         /** @brief Move assignment */
-        AbstractTexture& operator=(AbstractTexture&& other);
+        AbstractTexture& operator=(AbstractTexture&& other) noexcept;
+
+        /**
+         * @brief %Texture label
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function returns empty string.
+         * @see @fn_gl{GetObjectLabel} or
+         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @def_gl{TEXTURE}
+         */
+        std::string label() const;
+
+        /**
+         * @brief Set texture label
+         * @return Reference to self (for method chaining)
+         *
+         * Default is empty string. If neither @extension{KHR,debug} nor
+         * @extension2{EXT,debug_label} desktop or ES extension is available,
+         * this function does nothing.
+         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
+         *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @def_gl{TEXTURE}
+         */
+        AbstractTexture& setLabel(const std::string& label);
 
         /** @brief OpenGL texture ID */
         GLuint id() const { return _id; }
@@ -252,18 +279,18 @@ class MAGNUM_EXPORT AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Default value is `1.0f`, which means no anisotropy. Set to value
-         * greater than `1.0f` for anisotropic filtering. If
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation.
-         * @see @ref Sampler::maxAnisotropy(), @fn_gl{ActiveTexture},
+         * greater than `1.0f` for anisotropic filtering. If extension
+         * @extension{EXT,texture_filter_anisotropic} (desktop or ES) is not
+         * available, this function does nothing. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some layer before the operation.
+         * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
-         * @requires_extension %Extension @extension{EXT,texture_filter_anisotropic}
-         * @requires_es_extension %Extension @es_extension2{EXT,texture_filter_anisotropic,texture_filter_anisotropic}
          */
         AbstractTexture& setMaxAnisotropy(Float anisotropy) {
-            (this->*parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+            (this->*setMaxAnisotropyImplementation)(anisotropy);
             return *this;
         }
 
@@ -358,6 +385,11 @@ class MAGNUM_EXPORT AbstractTexture {
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
         #endif
         static ParameterfvImplementation parameterfvImplementation;
+
+        typedef void(AbstractTexture::*SetMaxAnisotropyImplementation)(GLfloat);
+        void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
+        void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
+        static SetMaxAnisotropyImplementation setMaxAnisotropyImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
         typedef void(AbstractTexture::*GetLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
@@ -461,8 +493,6 @@ class MAGNUM_EXPORT AbstractTexture {
         #endif
         static InvalidateSubImageImplementation invalidateSubImageImplementation;
 
-        void MAGNUM_LOCAL destroy();
-        void MAGNUM_LOCAL move();
         ColorFormat MAGNUM_LOCAL imageFormatForInternalFormat(TextureFormat internalFormat);
         ColorType MAGNUM_LOCAL imageTypeForInternalFormat(TextureFormat internalFormat);
 
@@ -575,6 +605,16 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     }
 };
 #endif
+
+inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _target(other._target), _id(other._id) {
+    other._id = 0;
+}
+
+inline AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) noexcept {
+    std::swap(_target, other._target);
+    std::swap(_id, other._id);
+    return *this;
+}
 
 }
 

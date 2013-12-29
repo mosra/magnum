@@ -24,7 +24,10 @@
 
 #include "State.h"
 
+#include "Context.h"
+#include "Extensions.h"
 #include "Implementation/BufferState.h"
+#include "Implementation/DebugState.h"
 #include "Implementation/FramebufferState.h"
 #include "Implementation/MeshState.h"
 #include "Implementation/RendererState.h"
@@ -34,14 +37,33 @@
 
 namespace Magnum { namespace Implementation {
 
-State::State():
+State::State(Context& context):
     buffer(new BufferState),
+    debug(new DebugState(context)),
     framebuffer(new FramebufferState),
     mesh(new MeshState),
     renderer(new RendererState),
     shader(new ShaderState),
     shaderProgram(new ShaderProgramState),
-    texture(new TextureState) {}
+    texture(new TextureState)
+{
+
+    Debug() << "Using optional features:";
+
+    if(context.isExtensionSupported<Extensions::GL::KHR::debug>())
+        Debug() << "   " << Extensions::GL::KHR::debug::string();
+    else {
+        if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>())
+            Debug() << "   " << Extensions::GL::EXT::debug_label::string();
+
+        if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>())
+            Debug() << "   " << Extensions::GL::EXT::debug_marker::string();
+        #ifndef MAGNUM_TARGET_GLES
+        else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+            Debug() << "   " << Extensions::GL::GREMEDY::string_marker::string();
+        #endif
+    }
+}
 
 State::~State() {
     delete texture;
@@ -50,6 +72,7 @@ State::~State() {
     delete renderer;
     delete mesh;
     delete framebuffer;
+    delete debug;
     delete buffer;
 }
 

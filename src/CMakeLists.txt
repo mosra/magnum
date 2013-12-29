@@ -29,9 +29,13 @@ if(CORRADE_GCC46_COMPATIBILITY AND NOT CORRADE_GCC45_COMPATIBILITY)
     string(REPLACE "-pedantic" "" CORRADE_CXX_FLAGS "${CORRADE_CXX_FLAGS}")
 endif()
 
-# Disable strict aliasing for GCC 4.4, as it breaks non-const Matrix[34]::up()
+# On 4.8.2 strict aliasing causes failure of DebugToolsCylinderRendererTest
+# without any warning, only in release build, any attempt to add debug print
+# results in issue disappearing. Not an issue on Clang or GCC < 4.8.
+#
+# Disable it also for GCC 4.4, as it breaks non-const Matrix[34]::up()
 # etc. accessors (and I have no better solution for that yet)
-if(CORRADE_GCC44_COMPATIBILITY)
+if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.8.0") OR CORRADE_GCC44_COMPATIBILITY)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
 endif()
 
@@ -54,12 +58,13 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
 set(Magnum_SRCS
     AbstractFramebuffer.cpp
     AbstractImage.cpp
+    AbstractObject.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
     ColorFormat.cpp
     Context.cpp
-    DebugMarker.cpp
+    DebugMessage.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
@@ -75,6 +80,7 @@ set(Magnum_SRCS
     Timeline.cpp
 
     Implementation/BufferState.cpp
+    Implementation/DebugState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp
 
@@ -107,6 +113,7 @@ endif()
 set(Magnum_HEADERS
     AbstractFramebuffer.h
     AbstractImage.h
+    AbstractObject.h
     AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
@@ -116,7 +123,7 @@ set(Magnum_HEADERS
     ColorFormat.h
     Context.h
     CubeMapTexture.h
-    DebugMarker.h
+    DebugMessage.h
     DefaultFramebuffer.h
     DimensionTraits.h
     Extensions.h
@@ -145,6 +152,7 @@ set(Magnum_HEADERS
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
+        DebugMarker.h
         ImageFormat.h
         Swizzle.h)
 endif()

@@ -51,7 +51,7 @@ Texture2D texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
     .setWrapping(Sampler::Wrapping::ClampToEdge)
-    .setMaxAnisotropy(Sampler::maxAnisotropy())
+    .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
     .setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
     .setSubImage(0, {}, image)
     .generateMipmap();
@@ -78,8 +78,7 @@ You can create texture arrays by passing
 @ref Target::Texture2DArray "Texture3D::Target::Texture2DArray" to constructor.
 
 It is possible to specify each layer separately using @ref setSubImage(), but
-you have to allocate the memory for all layers first either by calling
-@ref setStorage() or by passing properly sized empty image to @ref setImage().
+you have to allocate the memory for all layers first by calling @ref setStorage().
 Example: 2D texture array with 16 layers of 64x64 images:
 @code
 Texture3D texture(Texture3D::Target::Texture2DArray);
@@ -133,6 +132,7 @@ documentation for more information.
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref BufferTexture
 @todo @extension{AMD,sparse_texture}
+@todo Separate multisample, array and rectangle texture classes to avoid confusion, then remove Target enum
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
@@ -350,7 +350,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             %Image
+         * @param image             @ref Image, @ref ImageReference or
+         *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
          * For better performance when generating mipmaps using
@@ -376,13 +377,19 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
             return *this;
         }
+
+        /** @overload */
+        Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>&& image) {
+            return setImage(level, internalFormat, image);
+        }
         #endif
 
         /**
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             %Image
+         * @param image             @ref Image, @ref ImageReference or
+         *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the
@@ -405,6 +412,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
             return *this;
         }
+
+        /** @overload */
+        Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>&& image) {
+            return setSubImage(level, offset, image);
+        }
         #endif
 
         /**
@@ -423,6 +435,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        Texture<Dimensions>& setLabel(const std::string& label) {
+            AbstractTexture::setLabel(label);
+            return *this;
+        }
         Texture<Dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;
