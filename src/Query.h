@@ -193,6 +193,8 @@ class PrimitiveQuery: public AbstractQuery {
             TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
         };
 
+        explicit PrimitiveQuery() {}
+
         /**
          * @brief Begin query
          *
@@ -319,6 +321,8 @@ class SampleQuery: public AbstractQuery {
         };
         #endif
 
+        explicit SampleQuery() {}
+
         /** @copydoc PrimitiveQuery::begin() */
         void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
@@ -402,6 +406,8 @@ class TimeQuery: public AbstractQuery {
             TimeElapsed = GL_TIME_ELAPSED_EXT
             #endif
         };
+
+        explicit TimeQuery() {}
 
         /**
          * @brief Query timestamp
