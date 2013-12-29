@@ -235,9 +235,9 @@ namespace GL {
         _extension(GL,NV,fbo_color_attachments,     GLES200, GLES300) // #92
         _extension(GL,NV,read_buffer,               GLES200, GLES300) // #93
         _extension(GL,NV,read_buffer_front,         GLES200,    None) // #93
-        _extension(GL,NV,read_depth,                GLES200, GLES300) // #94
+        _extension(GL,NV,read_depth,                GLES200,    None) // #94
         _extension(GL,NV,read_stencil,              GLES200,    None) // #94
-        _extension(GL,NV,read_depth_stencil,        GLES200, GLES300) // #94
+        _extension(GL,NV,read_depth_stencil,        GLES200,    None) // #94
         _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
         _extension(GL,NV,framebuffer_multisample,   GLES200, GLES300) // #143
         _extension(GL,NV,texture_border_clamp,      GLES200,    None) // #149

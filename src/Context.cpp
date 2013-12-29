@@ -231,7 +231,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,robustness),
         _extension(GL,KHR,debug),
         _extension(GL,NV,read_buffer_front),
+        _extension(GL,NV,read_depth),
         _extension(GL,NV,read_stencil),
+        _extension(GL,NV,read_depth_stencil),
         _extension(GL,NV,texture_border_clamp),             // done
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
@@ -254,8 +256,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,draw_buffers),
         _extension(GL,NV,fbo_color_attachments),
         _extension(GL,NV,read_buffer),
-        _extension(GL,NV,read_depth),
-        _extension(GL,NV,read_depth_stencil),
         _extension(GL,NV,framebuffer_blit),                 // done
         _extension(GL,NV,framebuffer_multisample),
         _extension(GL,OES,depth24),
