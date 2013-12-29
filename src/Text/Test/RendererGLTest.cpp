@@ -253,6 +253,17 @@ void RendererGLTest::renderMeshIndexType() {
 }
 
 void RendererGLTest::mutableText() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
+        CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
+    #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_EMSCRIPTEN)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::OES::mapbuffer>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
+        CORRADE_SKIP("No required extension is supported");
+    }
+    #endif
+
     TestFont font;
     Text::Renderer2D renderer(font, *static_cast<GlyphCache*>(nullptr), 0.25f);
     MAGNUM_VERIFY_NO_ERROR();
