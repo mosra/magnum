@@ -33,7 +33,7 @@ endif()
 # without any warning, only in release build, any attempt to add debug print
 # results in issue disappearing. Not an issue on Clang or GCC < 4.8.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.8.0")
-    set(CORRADE_CXX_FLAGS "${CORRADE_CXX_FLAGS} -fno-strict-aliasing")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
