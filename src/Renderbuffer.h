@@ -160,10 +160,11 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
          * @see @ref maxSize(), @ref maxSamples(), @fn_gl{BindRenderbuffer},
-         *      @fn_gl{RenderbufferStorage} or @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
+         *      @fn_gl{RenderbufferStorageMultisample} or @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
          *      or @es_extension{NV,framebuffer_multisample}
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
+         * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}
          */
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size) {
             (this->*storageMultisampleImplementation)(samples, internalFormat, size);

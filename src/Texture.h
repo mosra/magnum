@@ -132,6 +132,7 @@ documentation for more information.
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref BufferTexture
 @todo @extension{AMD,sparse_texture}
+@todo Separate multisample, array and rectangle texture classes to avoid confusion, then remove Target enum
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:

@@ -92,7 +92,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * The default framebuffer does not exist.
-             * @requires_es_extension %Extension @es_extension{OES,surfaceless_context}
+             * @requires_gles30 %Extension @es_extension{OES,surfaceless_context}
              */
             #ifndef MAGNUM_TARGET_GLES2
             Undefined = GL_FRAMEBUFFER_UNDEFINED

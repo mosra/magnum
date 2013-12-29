@@ -171,7 +171,7 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
     supported in OpenGL ES 2.0, use bindAttributeLocation() instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
     ES 2.0, similar functionality is available in extension
-    @extension{NV,draw_buffers}.
+    @es_extension{NV,draw_buffers}.
 
 @subsection AbstractShaderProgram-uniform-location Uniform locations
 

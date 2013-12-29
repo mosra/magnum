@@ -201,6 +201,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit}
+         * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
+         *      exists for ES)
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
 

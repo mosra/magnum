@@ -99,6 +99,7 @@ to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their respective
 documentation for more information.
 
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@todo `MAX_COLOR_ATTACHMENTS`
 */
 class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObject {
     friend class Context;
@@ -117,6 +118,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
                 /**
                  * @brief Constructor
                  * @param id        Color attachment id
+                 *
+                 * @requires_gles30 %Extension @es_extension{NV,fbo_color_attachments}
+                 *      is required for @p id greater than 0.
                  */
                 constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
