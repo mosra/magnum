@@ -592,7 +592,7 @@ Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
         #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
         std::ostringstream converter;
-        converter << (sources.size()+1)/2;
+        converter << (_sources.size()+1)/2;
         #endif
 
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
