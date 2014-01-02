@@ -60,7 +60,7 @@ in lowp vec3 barycentric;
 #endif
 
 #ifdef NEW_GLSL
-out vec4 fragmentColor;
+out lowp vec4 fragmentColor;
 #endif
 
 #if defined(WIREFRAME_RENDERING) && defined(GL_ES) && __VERSION__ < 300
