@@ -54,12 +54,13 @@ namespace Platform {
 Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
 Supports keyboard and mouse handling.
 
-This application library is available on desktop OpenGL (Linux, Windows, OS X)
-and in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It depends on **SDL2**
-library (Emscripten has it built in) and is built if `WITH_SDL2APPLICATION` is
-enabled in CMake. To use it, you need to copy `FindSDL2.cmake` from `modules/`
-directory in %Magnum source to `modules/` dir in your project (so CMake is able
-to find SDL2), request `%Sdl2Application` component in CMake, add
+This application library is in theory available for all platforms for which
+SDL2 is ported (thus also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", but not
+@ref CORRADE_TARGET_NACL "NaCl"). It depends on **SDL2** library (Emscripten
+has it built in) and is built if `WITH_SDL2APPLICATION` is enabled in CMake. To
+use it, you need to copy `FindSDL2.cmake` from `modules/` directory in %Magnum
+source to `modules/` dir in your project (so CMake is able to find SDL2),
+request `%Sdl2Application` component in CMake, add
 `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and

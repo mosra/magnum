@@ -124,7 +124,22 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #ifndef MAGNUM_TARGET_GLES
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, configuration.version() >= Version::GL310 ?
             SDL_GL_CONTEXT_PROFILE_CORE : SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+        #else
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
+    }
+
+    #ifdef MAGNUM_TARGET_GLES
+    else {
+        #ifdef MAGNUM_TARGET_GLES3
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        #elif defined(MAGNUM_TARGET_GLES2)
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+        #else
+        #error Unsupported OpenGL ES version
+        #endif
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     }
 
     /* On OS X we need to create 3.2 context, as the default (2.1) contains
@@ -132,7 +147,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
        in Apple's GL drivers, thus we would be forever stuck on 2.1 without the
        new features. In practice SDL fails to create 2.1 context on recent OS X
        versions. */
-    #ifdef __APPLE__
+    #elif defined(__APPLE__)
     else {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
