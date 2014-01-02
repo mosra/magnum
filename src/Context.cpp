@@ -295,6 +295,9 @@ Context::Context() {
     #endif
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
+    CORRADE_ASSERT(Renderer::error() == Renderer::Error::NoError,
+        "Context: cannot retrieve OpenGL version", );
+
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(isVersionSupported(Version::GL210), "Context: unsupported OpenGL version" << Int(_version), );
     #elif defined(MAGNUM_TARGET_GLES2)
