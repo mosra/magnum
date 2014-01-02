@@ -30,8 +30,6 @@
 
 #include "Context.h"
 
-#define None 0L // redef Xlib nonsense
-
 namespace Magnum { namespace Platform { namespace Implementation {
 
 VisualID GlxContextHandler::getVisualId(Display* nativeDisplay) {
@@ -94,7 +92,7 @@ void GlxContextHandler::createContext(Window nativeWindow) {
 }
 
 GlxContextHandler::~GlxContextHandler() {
-    glXMakeCurrent(display, None, nullptr);
+    glXMakeCurrent(display, 0, nullptr);
     glXDestroyContext(display, context);
 }
 
