@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractQuery, Magnum::PrimitiveQuery, Magnum::SampleQuery, Magnum::TimeQuery
+ * @brief Class @ref Magnum::AbstractQuery, @ref Magnum::PrimitiveQuery, @ref Magnum::SampleQuery, @ref Magnum::TimeQuery
  */
 
 #include <Utility/Assert.h>
@@ -38,10 +38,9 @@ namespace Magnum {
 /**
 @brief Base class for queries
 
-See PrimitiveQuery, SampleQuery and TimeQuery documentation for more
-information.
+See @ref PrimitiveQuery, @ref SampleQuery and @ref TimeQuery documentation for
+more information.
 @todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
-@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
     public:
@@ -101,9 +100,9 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
-         * @requires_gl33 %Extension @extension{ARB,timer_query} (result type
-         *      @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
-         *      "Long")
+         * @requires_gl33 %Extension @extension{ARB,timer_query} for result
+         *      type @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
+         *      "Long"
          * @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
          *      @ref Magnum::Long "Long".
@@ -113,7 +112,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         /**
          * @brief End query
          *
-         * The result can be then retrieved by calling result().
+         * The result can be then retrieved by calling @ref result().
          * @see @fn_gl{EndQuery}
          */
         void end();
@@ -158,9 +157,9 @@ template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
 Queries count of generated primitives from vertex shader, geometry shader or
 transform feedback and elapsed time. Example usage:
 @code
-Query q;
+PrimitiveQuery q;
 
-q.begin(Query::Target::PrimitivesGenerated);
+q.begin(PrimitiveQuery::Target::PrimitivesGenerated);
 // rendering...
 q.end();
 
@@ -198,7 +197,7 @@ class PrimitiveQuery: public AbstractQuery {
         /**
          * @brief Begin query
          *
-         * Begins counting of given @p target until end() is called.
+         * Begins counting of given @p target until @ref end() is called.
          * @see @fn_gl{BeginQuery}
          */
         void begin(Target target) {
@@ -369,10 +368,10 @@ query either duration of sequence of commands or absolute timestamp. Example
 usage of both methods:
 @code
 TimeQuery q1, q2;
-q1.begin(Query::Target::TimeElapsed);
+q1.begin(TimeQuery::Target::TimeElapsed);
 // rendering...
 q1.end();
-q2.begin(Query::Target::TimeElapsed);
+q2.begin(TimeQuery::Target::TimeElapsed);
 // another rendering...
 q2.end();
 UnsignedInt timeElapsed1 = q1.result<UnsignedInt>();
