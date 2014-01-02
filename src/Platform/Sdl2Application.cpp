@@ -24,11 +24,14 @@
 
 #include "Sdl2Application.h"
 
-#ifdef CORRADE_TARGET_EMSCRIPTEN
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+#include <tuple>
+#else
 #include <emscripten/emscripten.h>
 #endif
 
 #include "Context.h"
+#include "Version.h"
 #include "Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
@@ -111,15 +114,30 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Set context version, if requested */
+    if(configuration.version() != Version::None) {
+        Int major, minor;
+        std::tie(major, minor) = version(configuration.version());
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+
+        #ifndef MAGNUM_TARGET_GLES
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, configuration.version() >= Version::GL310 ?
+            SDL_GL_CONTEXT_PROFILE_CORE : SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+        #endif
+    }
+
     /* On OS X we need to create 3.2 context, as the default (2.1) contains
        compatibility features which are not implemented for newer GL versions
        in Apple's GL drivers, thus we would be forever stuck on 2.1 without the
        new features. In practice SDL fails to create 2.1 context on recent OS X
        versions. */
     #ifdef __APPLE__
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    else {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    }
     #endif
 
     if(!(window = SDL_CreateWindow(configuration.title().data(),
@@ -295,7 +313,7 @@ Sdl2Application::Configuration::Configuration():
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _title("Magnum SDL2 Application"),
     #endif
-    _size(800, 600), _flags(Flag::Resizable), _sampleCount(0) {}
+    _size(800, 600), _flags(Flag::Resizable), _sampleCount(0), _version(Version::None) {}
 
 Sdl2Application::Configuration::~Configuration() = default;
 

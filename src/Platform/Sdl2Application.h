@@ -448,6 +448,34 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Context version
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        Version version() const { return _version; }
+        #endif
+
+        /**
+         * @brief Set context version
+         *
+         * If requesting version greater or equal to OpenGL 3.1, core profile
+         * is used. The created context will then have any version which is
+         * backwards-compatible with requested one. Default is
+         * @ref Version::None, i.e. any provided version is used.
+         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
+         *      does nothing (@ref Version::GLES200 is always used).
+         */
+        Configuration& setVersion(Version version) {
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            _version = version;
+            #else
+            static_cast<void>(version);
+            #endif
+            return *this;
+        }
+
         /** @brief Sample count */
         Int sampleCount() const { return _sampleCount; }
 
@@ -470,6 +498,7 @@ class Sdl2Application::Configuration {
         Vector2i _size;
         Flags _flags;
         Int _sampleCount;
+        Version _version;
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
