@@ -70,6 +70,7 @@
         <string>es2</string>
         <string>es2desktop</string>
         <string>es3</string>
+        <string>es3desktop</string>
       </values>
     </hudson.matrix.TextAxis>
   </axes>
