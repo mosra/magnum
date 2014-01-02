@@ -241,33 +241,47 @@ void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
 #endif
 
 void Mesh::initializeContextBasedFunctionality(Context& context) {
-    /** @todo VAOs are in ES 3.0 and as extension in ES 2.0, enable them when some extension wrangler is available */
+    /** @todo Enable when some extension wrangler is available in ES 2.0 */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>()) {
+    if(context.isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(context.isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    #else
+    static_cast<void>(context);
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
         Debug() << "Mesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
+        #elif defined(MAGNUM_TARGET_GLES2)
+        Debug() << "Mesh: using" << Extensions::GL::OES::vertex_array_object::string() << "features";
+        #endif
 
         createImplementation = &Mesh::createImplementationVAO;
         destroyImplementation = &Mesh::destroyImplementationVAO;
 
+        #ifndef MAGNUM_TARGET_GLES
         if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
             Debug() << "Mesh: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
 
             attributePointerImplementation = &Mesh::attributePointerImplementationDSA;
             attributeIPointerImplementation = &Mesh::attributePointerImplementationDSA;
             attributeLPointerImplementation = &Mesh::attributePointerImplementationDSA;
-        } else {
+        } else
+        #endif
+        {
             attributePointerImplementation = &Mesh::attributePointerImplementationVAO;
+            #ifndef MAGNUM_TARGET_GLES2
             attributeIPointerImplementation = &Mesh::attributePointerImplementationVAO;
+            #ifndef MAGNUM_TARGET_GLES
             attributeLPointerImplementation = &Mesh::attributePointerImplementationVAO;
+            #endif
+            #endif
         }
 
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         bindImplementation = &Mesh::bindImplementationVAO;
         unbindImplementation = &Mesh::unbindImplementationVAO;
     }
-    #else
-    static_cast<void>(context);
-    #endif
 }
 
 void Mesh::createImplementationDefault() { _id = 0; }
