@@ -24,12 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/** @file Version.h
+ * Enum @ref Magnum::Version, function @ref version()
+ */
+
+#include <utility>
+
 #include "Magnum.h"
 #include "magnumVisibility.h"
-
-/** @file Version.h
- * Enum @ref Magnum::Version
- */
 
 namespace Magnum {
 
@@ -79,6 +81,16 @@ enum class Version: Int {
     GLES300 = 300
     #endif
 };
+
+/** @brief Enum value from major and minor version number */
+inline Version version(Int major, Int minor) {
+    return Version(major*100 + minor*10);
+}
+
+/** @brief Major and minor version number from enum value */
+inline std::pair<Int, Int> version(Version version) {
+    return {Int(version)/100, (Int(version)%100)/10};
+}
 
 /** @debugoperator{Magnum::Context} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Version value);
