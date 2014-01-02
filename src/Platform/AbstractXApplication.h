@@ -48,7 +48,7 @@ class Context;
 namespace Platform {
 
 namespace Implementation {
-    template<class, class, class> class AbstractContextHandler;
+    template<class, class, class, class> class AbstractContextHandler;
 }
 
 /** @nosubgrouping
@@ -160,9 +160,9 @@ class AbstractXApplication {
     #else
     protected:
     #endif
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
 
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
 
     private:
         enum class Flag: unsigned int {
@@ -177,7 +177,7 @@ class AbstractXApplication {
         Window window;
         Atom deleteWindow;
 
-        Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
+        Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler;
 
         Context* c;
 
@@ -225,9 +225,19 @@ class AbstractXApplication::Configuration {
             return *this;
         }
 
+        /** @copydoc GlutApplication::Configuration::version() */
+        Version version() const { return _version; }
+
+        /** @copydoc GlutApplication::Configuration::setVersion() */
+        Configuration& setVersion(Version version) {
+            _version = version;
+            return *this;
+        }
+
     private:
         std::string _title;
         Vector2i _size;
+        Version _version;
 };
 
 /**

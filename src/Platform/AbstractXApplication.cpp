@@ -38,11 +38,11 @@ namespace Magnum { namespace Platform {
 
 /** @todo Delegating constructor when support for GCC 4.6 is dropped */
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
     createContext(configuration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
 
 void AbstractXApplication::createContext() { createContext({}); }
 
@@ -88,7 +88,7 @@ bool AbstractXApplication::tryCreateContext(const Configuration& configuration) 
     XSetWMProtocols(display, window, &deleteWindow, 1);
 
     /* Create context */
-    contextHandler->createContext(window);
+    contextHandler->createContext(configuration, window);
 
     /* Capture exposure, keyboard and mouse button events */
     XSelectInput(display, window, INPUT_MASK);
