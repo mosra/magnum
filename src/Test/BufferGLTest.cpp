@@ -197,7 +197,7 @@ void BufferGLTest::data() {
 }
 
 void BufferGLTest::map() {
-    #ifdef MAGNUM_TARGET_GLES2
+    #ifdef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::mapbuffer>())
         CORRADE_SKIP(Extensions::GL::OES::mapbuffer::string() + std::string(" is not supported"));
     #endif
@@ -206,7 +206,7 @@ void BufferGLTest::map() {
     constexpr char data[] = {2, 7, 5, 13, 25};
     buffer.setData(data, BufferUsage::StaticDraw);
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
     char* contents = reinterpret_cast<char*>(buffer.map(Buffer::MapAccess::ReadWrite));
     #else
     char* contents = reinterpret_cast<char*>(buffer.map(Buffer::MapAccess::WriteOnly));
@@ -254,10 +254,10 @@ void BufferGLTest::mapSub() {
 #endif
 
 void BufferGLTest::mapRange() {
-    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
-    #else
+    #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::EXT::map_buffer_range::string() + std::string(" is not supported"));
     #endif
@@ -285,10 +285,10 @@ void BufferGLTest::mapRange() {
 }
 
 void BufferGLTest::mapRangeExplicitFlush() {
-    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
-    #else
+    #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::EXT::map_buffer_range::string() + std::string(" is not supported"));
     #endif

@@ -701,6 +701,8 @@ void TextureGLTest::storage1DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector2i(32, 32));
     CORRADE_COMPARE(texture.imageSize(1), Vector2i(16, 32));
     CORRADE_COMPARE(texture.imageSize(2), Vector2i( 8, 32));
@@ -709,6 +711,7 @@ void TextureGLTest::storage1DArray() {
     CORRADE_COMPARE(texture.imageSize(5), Vector2i( 0,  0)); /* not available */
 
     MAGNUM_VERIFY_NO_ERROR();
+    #endif
 }
 #endif
 
@@ -724,6 +727,8 @@ void TextureGLTest::storage2DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector3i(32, 32, 32));
     CORRADE_COMPARE(texture.imageSize(1), Vector3i(16, 16, 32));
     CORRADE_COMPARE(texture.imageSize(2), Vector3i( 8,  8, 32));
@@ -732,6 +737,7 @@ void TextureGLTest::storage2DArray() {
     CORRADE_COMPARE(texture.imageSize(5), Vector3i( 0,  0,  0)); /* not available */
 
     MAGNUM_VERIFY_NO_ERROR();
+    #endif
 }
 #endif
 
@@ -843,6 +849,8 @@ void TextureGLTest::image2DBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
@@ -852,6 +860,7 @@ void TextureGLTest::image2DBuffer() {
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
         std::vector<UnsignedByte>(data, data + 16), TestSuite::Compare::Container);
+    #endif
 }
 #endif
 
@@ -904,6 +913,8 @@ void TextureGLTest::image3DBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
@@ -913,6 +924,7 @@ void TextureGLTest::image3DBuffer() {
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
         std::vector<UnsignedByte>(data, data + 32), TestSuite::Compare::Container);
+    #endif
 }
 #endif
 
@@ -988,6 +1000,8 @@ void TextureGLTest::image2DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image);
 
@@ -996,6 +1010,7 @@ void TextureGLTest::image2DArray() {
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(image.data(), image.data()+image.pixelSize()*image.size().product()),
        std::vector<UnsignedByte>(data, data + 32), TestSuite::Compare::Container);
+    #endif
 }
 
 void TextureGLTest::image2DArrayBuffer() {
@@ -1018,6 +1033,8 @@ void TextureGLTest::image2DArrayBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
@@ -1027,6 +1044,7 @@ void TextureGLTest::image2DArrayBuffer() {
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
         std::vector<UnsignedByte>(data, data + 32), TestSuite::Compare::Container);
+    #endif
 }
 #endif
 
@@ -1204,6 +1222,8 @@ void TextureGLTest::subImage2DBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
@@ -1217,6 +1237,7 @@ void TextureGLTest::subImage2DBuffer() {
         0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     }), TestSuite::Compare::Container);
+    #endif
 }
 #endif
 
@@ -1294,6 +1315,8 @@ void TextureGLTest::subImage3DBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
@@ -1322,6 +1345,7 @@ void TextureGLTest::subImage3DBuffer() {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     }), TestSuite::Compare::Container);
+    #endif
 }
 #endif
 
@@ -1414,6 +1438,8 @@ void TextureGLTest::subImage2DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image);
 
@@ -1441,6 +1467,7 @@ void TextureGLTest::subImage2DArray() {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     }), TestSuite::Compare::Container);
+    #endif
 }
 
 void TextureGLTest::subImage2DArrayBuffer() {
@@ -1466,6 +1493,8 @@ void TextureGLTest::subImage2DArrayBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(0, image, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
@@ -1494,6 +1523,7 @@ void TextureGLTest::subImage2DArrayBuffer() {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     }), TestSuite::Compare::Container);
+    #endif
 }
 #endif
 
@@ -1713,13 +1743,18 @@ void TextureGLTest::generateMipmap2DArray() {
     texture.setImage(0, TextureFormat::RGBA8,
         ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(32)));
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector3i(32));
     CORRADE_COMPARE(texture.imageSize(1), Vector3i( 0));
+    #endif
 
     texture.generateMipmap();
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector3i(32, 32, 32));
     CORRADE_COMPARE(texture.imageSize(1), Vector3i(16, 16, 32));
     CORRADE_COMPARE(texture.imageSize(2), Vector3i( 8,  8, 32));
@@ -1728,6 +1763,7 @@ void TextureGLTest::generateMipmap2DArray() {
     CORRADE_COMPARE(texture.imageSize(5), Vector3i( 1,  1, 32));
 
     MAGNUM_VERIFY_NO_ERROR();
+    #endif
 }
 #endif
 

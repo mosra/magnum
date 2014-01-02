@@ -244,6 +244,8 @@ void CubeMapTextureGLTest::subImageBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
     texture.image(CubeMapTexture::Coordinate::PositiveX, 0, image, BufferUsage::StaticRead);
 
@@ -257,6 +259,7 @@ void CubeMapTextureGLTest::subImageBuffer() {
         0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     }), TestSuite::Compare::Container);
+    #endif
 }
 #endif
 
