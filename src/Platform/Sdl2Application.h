@@ -397,7 +397,7 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window title
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         std::string title() const { return _title; }
         #endif

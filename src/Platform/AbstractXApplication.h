@@ -216,15 +216,10 @@ class AbstractXApplication::Configuration {
             return *this;
         }
 
-        /** @brief Window size */
+        /** @copydoc GlutApplication::Configuration::size() */
         Vector2i size() const { return _size; }
 
-        /**
-         * @brief Set window size
-         * @return Reference to self (for method chaining)
-         *
-         * Default is `{800, 600}`.
-         */
+        /** @copydoc GlutApplication::Configuration::setSize() */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
             return *this;
