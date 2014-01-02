@@ -24,6 +24,7 @@
 
 #include "GlyphCache.h"
 
+#include "Context.h"
 #include "Extensions.h"
 #include "Image.h"
 #include "TextureFormat.h"

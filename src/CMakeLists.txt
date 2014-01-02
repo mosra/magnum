@@ -75,6 +75,7 @@ set(Magnum_SRCS
     Sampler.cpp
     Shader.cpp
     Timeline.cpp
+    Version.cpp
 
     Implementation/BufferState.cpp
     Implementation/DebugState.cpp
@@ -143,6 +144,7 @@ set(Magnum_HEADERS
     TextureFormat.h
     Timeline.h
     Types.h
+    Version.h
 
     magnumVisibility.h)
 

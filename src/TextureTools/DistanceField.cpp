@@ -29,6 +29,7 @@
 #include "Math/Range.h"
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"
+#include "Context.h"
 #include "Extensions.h"
 #include "Framebuffer.h"
 #include "Mesh.h"

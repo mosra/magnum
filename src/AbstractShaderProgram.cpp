@@ -25,6 +25,7 @@
 #include "AbstractShaderProgram.h"
 
 #include "Math/RectangularMatrix.h"
+#include "Context.h"
 #include "Extensions.h"
 #include "Shader.h"
 #include "Implementation/DebugState.h"

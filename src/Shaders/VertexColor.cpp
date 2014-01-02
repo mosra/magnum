@@ -26,6 +26,7 @@
 
 #include <Utility/Resource.h>
 
+#include "Context.h"
 #include "Extensions.h"
 #include "Shader.h"
 
