@@ -24,7 +24,10 @@
 
 #include "GlutApplication.h"
 
+#include <tuple>
+
 #include "Context.h"
+#include "Version.h"
 
 #include "Platform/ScreenedApplication.hpp"
 
@@ -75,6 +78,18 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
 
     glutInitDisplayMode(flags);
     glutInitWindowSize(configuration.size().x(), configuration.size().y());
+
+    /* Set context version, if requested */
+    if(configuration.version() != Version::None) {
+        Int major, minor;
+        std::tie(major, minor) = version(configuration.version());
+        glutInitContextVersion(major, minor);
+        #ifndef MAGNUM_TARGET_GLES
+        if(configuration.version() >= Version::GL310)
+            glutInitContextProfile(GLUT_CORE_PROFILE);
+        #endif
+    }
+
     if(!glutCreateWindow(configuration.title().data())) {
         Error() << "Platform::GlutApplication::tryCreateContext(): cannot create context";
         return false;

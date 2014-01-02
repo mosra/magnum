@@ -290,6 +290,22 @@ class GlutApplication::Configuration {
             return *this;
         }
 
+        /** @brief Context version */
+        Version version() const { return _version; }
+
+        /**
+         * @brief Set context version
+         *
+         * If requesting version greater or equal to OpenGL 3.1, core profile
+         * is used. The created context will then have any version which is
+         * backwards-compatible with requested one. Default is
+         * @ref Version::None, i.e. any provided version is used.
+         */
+        Configuration& setVersion(Version version) {
+            _version = version;
+            return *this;
+        }
+
         /** @brief Sample count */
         Int sampleCount() const { return _sampleCount; }
 
@@ -310,6 +326,7 @@ class GlutApplication::Configuration {
         std::string _title;
         Vector2i _size;
         Int _sampleCount;
+        Version _version;
 };
 
 /**
