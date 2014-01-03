@@ -40,6 +40,16 @@
   <customWorkspace>Magnum</customWorkspace>
   <axes>
     <hudson.matrix.TextAxis>
+      <name>gl</name>
+      <values>
+        <string>desktop</string>
+        <string>es2</string>
+        <string>es2desktop</string>
+        <string>es3</string>
+        <string>es3desktop</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
       <name>compiler</name>
       <values>
         <string>g++</string>
@@ -61,16 +71,6 @@
       <values>
         <string></string>
         <string>deprecated</string>
-      </values>
-    </hudson.matrix.TextAxis>
-    <hudson.matrix.TextAxis>
-      <name>gl</name>
-      <values>
-        <string>desktop</string>
-        <string>es2</string>
-        <string>es2desktop</string>
-        <string>es3</string>
-        <string>es3desktop</string>
       </values>
     </hudson.matrix.TextAxis>
   </axes>
