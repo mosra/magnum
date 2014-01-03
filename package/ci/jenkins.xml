@@ -113,7 +113,7 @@ elif [ ${gl} = "es3" ] ; then
 elif [ ${gl} = "es3desktop" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=OFF -DTARGET_DESKTOP_GLES=ON"
     desktop_flag=OFF
-    windowless_flag=OFF
+    windowless_flag=ON
 fi
 
 mkdir -p build-${compiler}-${libraries}-${compatibility}-${gl}
