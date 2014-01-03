@@ -27,6 +27,7 @@
 #ifndef CORRADE_NO_ASSERT
 #include "ColorFormat.h"
 #endif
+#include "Context.h"
 #include "Extensions.h"
 #include "ImageReference.h"
 #include "TextureFormat.h"

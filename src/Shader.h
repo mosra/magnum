@@ -32,8 +32,7 @@
 #include <string>
 
 #include "AbstractObject.h"
-#include "Context.h"
-
+#include "Magnum.h"
 #include "magnumVisibility.h"
 
 namespace Magnum {

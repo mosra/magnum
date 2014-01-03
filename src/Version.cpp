@@ -22,42 +22,37 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "FullScreenTriangle.h"
-
-#include "Math/Vector2.h"
-#include "AbstractShaderProgram.h"
-#include "Buffer.h"
-#include "Context.h"
-#include "Mesh.h"
 #include "Version.h"
 
-namespace Magnum { namespace MeshTools {
+#include <Utility/Debug.h>
 
-std::pair<Buffer*, Mesh> fullScreenTriangle() {
-    Mesh mesh;
-    mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3);
+namespace Magnum {
 
-    Buffer* buffer = nullptr;
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL300))
-    #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
-    #endif
-    {
-        buffer = new Buffer;
-        constexpr Vector2 triangle[] = {
-            Vector2(-1.0,  1.0),
-            Vector2(-1.0, -3.0),
-            Vector2( 3.0,  1.0)
-        };
-        buffer->setData(triangle, BufferUsage::StaticDraw);
-        /** @todo Is it possible to attach moveable buffer here to avoid heap
-           allocation? OTOH this is more effective in most (modern) cases */
-        mesh.addVertexBuffer(*buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, Version value) {
+    switch(value) {
+        #define _c(value, string) case Version::value: return debug << string;
+        _c(None, "None")
+        #ifndef MAGNUM_TARGET_GLES
+        _c(GL210, "OpenGL 2.1")
+        _c(GL300, "OpenGL 3.0")
+        _c(GL310, "OpenGL 3.1")
+        _c(GL320, "OpenGL 3.2")
+        _c(GL330, "OpenGL 3.3")
+        _c(GL400, "OpenGL 4.0")
+        _c(GL410, "OpenGL 4.1")
+        _c(GL420, "OpenGL 4.2")
+        _c(GL430, "OpenGL 4.3")
+        _c(GL440, "OpenGL 4.4")
+        #else
+        _c(GLES200, "OpenGL ES 2.0")
+        _c(GLES300, "OpenGL ES 3.0")
+        #endif
+        #undef _c
     }
 
-    return {std::move(buffer), std::move(mesh)};
+    return debug << "Invalid";
 }
+#endif
 
-}}
+}

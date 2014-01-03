@@ -31,7 +31,8 @@
 #undef None
 #undef Always
 
-#include "AbstractContextHandler.h"
+#include "Platform/AbstractXApplication.h"
+#include "Platform/Implementation/AbstractContextHandler.h"
 
 #include "corradeCompatibility.h"
 
@@ -43,13 +44,13 @@ namespace Magnum { namespace Platform { namespace Implementation {
 Creates OpenGL or OpenGL ES 2.0 context, if targeting OpenGL ES. Used in
 GlxApplication.
 */
-class GlxContextHandler: public AbstractContextHandler<Display*, VisualID, Window> {
+class GlxContextHandler: public AbstractContextHandler<AbstractXApplication::Configuration, Display*, VisualID, Window> {
     public:
         explicit GlxContextHandler();
         ~GlxContextHandler();
 
         VisualID getVisualId(Display* nativeDisplay) override;
-        void createContext(Window nativeWindow) override;
+        void createContext(const AbstractXApplication::Configuration& configuration, Window nativeWindow) override;
 
         void makeCurrent() override {
             glXMakeCurrent(display, window, context);

@@ -373,6 +373,15 @@ class NaClApplication::Configuration {
             return *this;
         }
 
+        /**
+         * @brief Set context version
+         *
+         * @note This function does nothing and is included only for
+         *      compatibility with other toolkits. @ref Version::GLES200 is
+         *      always used.
+         */
+        Configuration& setVersion(Version) { return *this; }
+
         /** @brief Sample count */
         Int sampleCount() const { return _sampleCount; }
 

@@ -27,6 +27,7 @@
 #include <algorithm> /* std::max(), needed by MSVC */
 
 #include "Math/RectangularMatrix.h"
+#include "Context.h"
 #include "Extensions.h"
 #include "Shader.h"
 #include "Implementation/DebugState.h"

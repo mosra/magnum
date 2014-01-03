@@ -24,9 +24,12 @@
 
 #include "EglContextHandler.h"
 
+#include <tuple>
+#include <EGL/eglext.h>
 #include <Utility/Debug.h>
 
 #include "Context.h"
+#include "Version.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
@@ -62,8 +65,12 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
         EGL_DEPTH_SIZE, 1,
         #ifndef MAGNUM_TARGET_GLES
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-        #else
+        #elif defined(MAGNUM_TARGET_GLES3)
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+        #elif defined(MAGNUM_TARGET_GLES2)
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+        #else
+        #error Unsupported OpenGL edition
         #endif
         EGL_NONE
     };
@@ -88,14 +95,51 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     return visualId;
 }
 
-void EglContextHandler::createContext(EGLNativeWindowType window) {
-    static const EGLint contextAttributes[] = {
-        #ifdef MAGNUM_TARGET_GLES
-        EGL_CONTEXT_CLIENT_VERSION, 2,
-        #endif
+void EglContextHandler::createContext(const AbstractXApplication::Configuration& configuration, EGLNativeWindowType window) {
+    EGLint attributes[] = {
+        /* Leave some space for optional attributes below */
+        EGL_NONE, EGL_NONE,
+        EGL_NONE, EGL_NONE,
+        EGL_NONE, EGL_NONE,
+
         EGL_NONE
     };
-    if(!eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributes)) {
+
+    /* Set context version, if requested. On desktop needs
+       EGL_KHR_create_context. */
+    /** @todo Test for presence of EGL_KHR_create_context extension */
+    if(configuration.version() != Version::None) {
+        Int major, minor;
+        std::tie(major, minor) = version(configuration.version());
+
+        attributes[0] = EGL_CONTEXT_MAJOR_VERSION_KHR;
+        attributes[1] = major;
+        attributes[2] = EGL_CONTEXT_MINOR_VERSION_KHR;
+        attributes[3] = minor;
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(configuration.version() >= Version::GL310) {
+            attributes[4] = EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR;
+            attributes[5] = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
+        }
+        #endif
+    }
+
+    /* We need this to run ES (default is desktop GL) */
+    #ifdef MAGNUM_TARGET_GLES
+    else {
+        attributes[0] = EGL_CONTEXT_CLIENT_VERSION;
+        #ifdef MAGNUM_TARGET_GLES3
+        attributes[1] = 3;
+        #elif defined(MAGNUM_TARGET_GLES2)
+        attributes[1] = 2;
+        #else
+        #error Unsupported OpenGL ES version
+        #endif
+    }
+    #endif
+
+    if(!eglCreateContext(display, config, EGL_NO_CONTEXT, attributes)) {
         Error() << "Cannot create EGL context:" << errorString(eglGetError());
         std::exit(1);
     }

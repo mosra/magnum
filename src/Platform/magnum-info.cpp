@@ -332,28 +332,44 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
+    /** @todo Somehow sort the following into previous list for ES3 */
+
     #ifndef MAGNUM_TARGET_GLES2
-    if(c->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>()) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
         _h(ARB::uniform_buffer_object)
+        #endif
 
         _l(Shader::maxUniformBlocks(Shader::Type::Vertex))
+        #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationEvaluation))
         _l(Shader::maxUniformBlocks(Shader::Type::Geometry))
         _l(Shader::maxUniformBlocks(Shader::Type::Compute))
+        #endif
         _l(Shader::maxUniformBlocks(Shader::Type::Fragment))
         _l(Shader::maxCombinedUniformBlocks())
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Vertex))
+        #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationControl))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationEvaluation))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Geometry))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Compute))
+        #endif
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Fragment))
         _l(AbstractShaderProgram::maxUniformBlockSize())
     }
 
-    if(c->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>()) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
         _h(EXT::gpu_shader4)
+        #endif
 
         _l(Buffer::maxUniformBindings())
         _l(AbstractShaderProgram::minTexelOffset())

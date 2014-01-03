@@ -25,12 +25,12 @@
 #include "GlxContextHandler.h"
 
 #include <cstdlib>
+#include <tuple>
 #include <GL/glxext.h>
 #include <Utility/Debug.h>
 
 #include "Context.h"
-
-#define None 0L // redef Xlib nonsense
+#include "Version.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
@@ -71,17 +71,56 @@ VisualID GlxContextHandler::getVisualId(Display* nativeDisplay) {
     return visualId;
 }
 
-void GlxContextHandler::createContext(Window nativeWindow) {
+void GlxContextHandler::createContext(const AbstractXApplication::Configuration& configuration, Window nativeWindow) {
     window = nativeWindow;
 
     GLint attributes[] = {
-        #ifdef MAGNUM_TARGET_GLES
-        GLX_CONTEXT_MAJOR_VERSION_ARB, 2,
-        GLX_CONTEXT_MINOR_VERSION_ARB, 0,
-        GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
-        #endif
+        /* Leave some space for optional attributes below */
+        0, 0,
+        0, 0,
+        0, 0,
+
         0
     };
+
+    /* Set context version, if requested */
+    if(configuration.version() != Version::None) {
+        Int major, minor;
+        std::tie(major, minor) = version(configuration.version());
+
+        attributes[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
+        attributes[1] = major;
+        attributes[2] = GLX_CONTEXT_MINOR_VERSION_ARB;
+        attributes[3] = minor;
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(configuration.version() >= Version::GL310) {
+            attributes[4] = GLX_CONTEXT_PROFILE_MASK_ARB;
+            attributes[5] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
+        }
+        #else
+        attributes[4] = GLX_CONTEXT_PROFILE_MASK_ARB;
+        attributes[5] = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
+        #endif
+    }
+
+    /* We need this to run ES (default is desktop GL) */
+    #ifdef MAGNUM_TARGET_GLES
+    else {
+        attributes[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
+        #ifdef MAGNUM_TARGET_GLES3
+        attributes[1] = 3;
+        #elif defined(MAGNUM_TARGET_GLES2)
+        attributes[1] = 2;
+        #else
+        #error Unsupported OpenGL ES version
+        #endif
+        attributes[2] = GLX_CONTEXT_MINOR_VERSION_ARB;
+        attributes[3] = 0;
+        attributes[4] = GLX_CONTEXT_PROFILE_MASK_ARB;
+        attributes[5] = GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
+    }
+    #endif
 
     /** @todo Use some extension wrangler for this, not GLEW, as it apparently needs context to create context, yo dawg wtf. */
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
@@ -94,7 +133,7 @@ void GlxContextHandler::createContext(Window nativeWindow) {
 }
 
 GlxContextHandler::~GlxContextHandler() {
-    glXMakeCurrent(display, None, nullptr);
+    glXMakeCurrent(display, 0, nullptr);
     glXDestroyContext(display, context);
 }
 

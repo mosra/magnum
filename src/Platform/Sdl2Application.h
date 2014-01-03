@@ -54,12 +54,13 @@ namespace Platform {
 Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
 Supports keyboard and mouse handling.
 
-This application library is available on desktop OpenGL (Linux, Windows, OS X)
-and in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It depends on **SDL2**
-library (Emscripten has it built in) and is built if `WITH_SDL2APPLICATION` is
-enabled in CMake. To use it, you need to copy `FindSDL2.cmake` from `modules/`
-directory in %Magnum source to `modules/` dir in your project (so CMake is able
-to find SDL2), request `%Sdl2Application` component in CMake, add
+This application library is in theory available for all platforms for which
+SDL2 is ported (thus also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", but not
+@ref CORRADE_TARGET_NACL "NaCl"). It depends on **SDL2** library (Emscripten
+has it built in) and is built if `WITH_SDL2APPLICATION` is enabled in CMake. To
+use it, you need to copy `FindSDL2.cmake` from `modules/` directory in %Magnum
+source to `modules/` dir in your project (so CMake is able to find SDL2),
+request `%Sdl2Application` component in CMake, add
 `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
@@ -401,7 +402,7 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window title
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         std::string title() const { return _title; }
         #endif
@@ -452,6 +453,34 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Context version
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        Version version() const { return _version; }
+        #endif
+
+        /**
+         * @brief Set context version
+         *
+         * If requesting version greater or equal to OpenGL 3.1, core profile
+         * is used. The created context will then have any version which is
+         * backwards-compatible with requested one. Default is
+         * @ref Version::None, i.e. any provided version is used.
+         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
+         *      does nothing (@ref Version::GLES200 is always used).
+         */
+        Configuration& setVersion(Version version) {
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            _version = version;
+            #else
+            static_cast<void>(version);
+            #endif
+            return *this;
+        }
+
         /** @brief Sample count */
         Int sampleCount() const { return _sampleCount; }
 
@@ -474,6 +503,7 @@ class Sdl2Application::Configuration {
         Vector2i _size;
         Flags _flags;
         Int _sampleCount;
+        Version _version;
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)

@@ -52,16 +52,23 @@ BufferImageTest::BufferImageTest() {
 void BufferImageTest::construct() {
     const unsigned char data[] = { 'a', 'b', 'c' };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw);
+
+    #ifndef MAGNUM_TARGET_GLES
     const auto imageData = a.buffer().data<UnsignedByte>();
+    #endif
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
                        std::vector<UnsignedByte>(data, data + 3),
                        TestSuite::Compare::Container);
+    #endif
 }
 
 void BufferImageTest::constructCopy() {
@@ -113,16 +120,23 @@ void BufferImageTest::setData() {
 
     const unsigned short data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     a.setData(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 1}, data2, BufferUsage::StaticDraw);
+
+    #ifndef MAGNUM_TARGET_GLES
     const auto imageData = a.buffer().data<UnsignedShort>();
+    #endif
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(a.format(), ColorFormat::RGBA);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(2, 1));
+
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(std::vector<UnsignedShort>(imageData.begin(), imageData.end()),
                        std::vector<UnsignedShort>(data2, data2 + 8),
                        TestSuite::Compare::Container);
+    #endif
 }
 
 }}

@@ -26,6 +26,7 @@
 
 #include <Utility/Assert.h>
 
+#include "Context.h"
 #include "Extensions.h"
 #include "Implementation/State.h"
 #include "Implementation/DebugState.h"

@@ -48,7 +48,7 @@ class Context;
 namespace Platform {
 
 namespace Implementation {
-    template<class, class, class> class AbstractContextHandler;
+    template<class, class, class, class> class AbstractContextHandler;
 }
 
 /** @nosubgrouping
@@ -160,12 +160,12 @@ class AbstractXApplication {
     #else
     protected:
     #endif
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
 
         #ifndef CORRADE_GCC45_COMPATIBILITY
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t);
         #else
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler, const Arguments& arguments, void*);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, void*);
         #endif
 
     private:
@@ -181,7 +181,7 @@ class AbstractXApplication {
         Window window;
         Atom deleteWindow;
 
-        Implementation::AbstractContextHandler<Display*, VisualID, Window>* contextHandler;
+        Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler;
 
         Context* c;
 
@@ -220,23 +220,28 @@ class AbstractXApplication::Configuration {
             return *this;
         }
 
-        /** @brief Window size */
+        /** @copydoc GlutApplication::Configuration::size() */
         Vector2i size() const { return _size; }
 
-        /**
-         * @brief Set window size
-         * @return Reference to self (for method chaining)
-         *
-         * Default is `{800, 600}`.
-         */
+        /** @copydoc GlutApplication::Configuration::setSize() */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
+            return *this;
+        }
+
+        /** @copydoc GlutApplication::Configuration::version() */
+        Version version() const { return _version; }
+
+        /** @copydoc GlutApplication::Configuration::setVersion() */
+        Configuration& setVersion(Version version) {
+            _version = version;
             return *this;
         }
 
     private:
         std::string _title;
         Vector2i _size;
+        Version _version;
 };
 
 /**

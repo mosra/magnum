@@ -22,42 +22,41 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "FullScreenTriangle.h"
+#include <TestSuite/Tester.h>
 
-#include "Math/Vector2.h"
-#include "AbstractShaderProgram.h"
-#include "Buffer.h"
-#include "Context.h"
-#include "Mesh.h"
 #include "Version.h"
 
-namespace Magnum { namespace MeshTools {
+namespace Magnum { namespace Test {
 
-std::pair<Buffer*, Mesh> fullScreenTriangle() {
-    Mesh mesh;
-    mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3);
+class VersionTest: public TestSuite::Tester {
+    public:
+        explicit VersionTest();
 
-    Buffer* buffer = nullptr;
+        void fromNumber();
+        void toNumber();
+};
+
+VersionTest::VersionTest() {
+    addTests({&VersionTest::fromNumber,
+              &VersionTest::toNumber});
+}
+
+void VersionTest::fromNumber() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL300))
+    CORRADE_COMPARE(version(4, 3), Version::GL430);
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    CORRADE_COMPARE(version(3, 0), Version::GLES300);
     #endif
-    {
-        buffer = new Buffer;
-        constexpr Vector2 triangle[] = {
-            Vector2(-1.0,  1.0),
-            Vector2(-1.0, -3.0),
-            Vector2( 3.0,  1.0)
-        };
-        buffer->setData(triangle, BufferUsage::StaticDraw);
-        /** @todo Is it possible to attach moveable buffer here to avoid heap
-           allocation? OTOH this is more effective in most (modern) cases */
-        mesh.addVertexBuffer(*buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
-    }
+}
 
-    return {std::move(buffer), std::move(mesh)};
+void VersionTest::toNumber() {
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(version(Version::GL430), std::make_pair(4, 3));
+    #else
+    CORRADE_COMPARE(version(Version::GLES300), std::make_pair(3, 0));
+    #endif
 }
 
 }}
+
+CORRADE_TEST_MAIN(Magnum::Test::VersionTest)

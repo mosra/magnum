@@ -31,7 +31,7 @@ namespace Magnum { namespace Platform { namespace Implementation {
 
 @todo GLX_MESA_query_renderer, EGL_MESA_query_renderer
 */
-template<class Display, class VisualId, class Window> class AbstractContextHandler {
+template<class Configuration, class Display, class VisualId, class Window> class AbstractContextHandler {
     public:
         /**
          * @brief Get visual ID
@@ -50,7 +50,7 @@ template<class Display, class VisualId, class Window> class AbstractContextHandl
         virtual ~AbstractContextHandler() {}
 
         /** @brief Create context */
-        virtual void createContext(Window nativeWindow) = 0;
+        virtual void createContext(const Configuration& configuration, Window nativeWindow) = 0;
 
         /** @brief Make the context current */
         virtual void makeCurrent() = 0;
@@ -59,7 +59,7 @@ template<class Display, class VisualId, class Window> class AbstractContextHandl
         virtual void swapBuffers() = 0;
 };
 
-template<class Display, class VisualId, class Window> inline AbstractContextHandler<Display, VisualId, Window>::AbstractContextHandler() = default;
+template<class Configuration, class Display, class VisualId, class Window> inline AbstractContextHandler<Configuration, Display, VisualId, Window>::AbstractContextHandler() = default;
 
 }}}
 

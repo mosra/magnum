@@ -30,6 +30,7 @@
 #include <Utility/Assert.h>
 #include <Utility/Directory.h>
 
+#include "Context.h"
 #include "Extensions.h"
 #include "Implementation/DebugState.h"
 #include "Implementation/State.h"

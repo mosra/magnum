@@ -322,7 +322,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             /**
              * Map buffer for reading only.
              * @requires_gl Only @ref Magnum::Buffer::MapAccess "MapAccess::WriteOnly"
-             *      is available in OpenGL ES 2.0.
+             *      is available in OpenGL ES.
              */
             ReadOnly = GL_READ_ONLY,
             #endif
@@ -336,7 +336,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             /**
              * Map buffer for both reading and writing.
              * @requires_gl Only @ref Magnum::Buffer::MapAccess "MapAccess::WriteOnly"
-             *      is available in OpenGL ES 2.0.
+             *      is available in OpenGL ES.
              */
             ReadWrite = GL_READ_WRITE
             #endif
