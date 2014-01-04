@@ -98,7 +98,7 @@ class CubeMapTexture: public AbstractTexture {
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
         CubeMapTexture(const CubeMapTexture&) = delete;
-        CubeMapTexture(CubeMapTexture&&) = default;
+        CubeMapTexture(CubeMapTexture&& other): AbstractTexture(std::move(other)) {}
         CubeMapTexture& operator=(CubeMapTexture&) = delete;
         CubeMapTexture& operator=(CubeMapTexture&& other) {
             AbstractTexture::operator=(std::move(other));

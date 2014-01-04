@@ -231,7 +231,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
         Texture(const Texture<dimensions>&) = delete;
-        Texture(Texture<dimensions>&&) = default;
+        Texture(Texture<dimensions>&& other): AbstractTexture(std::move(other)) {}
         Texture<dimensions>& operator=(const Texture<dimensions>&) = delete;
         Texture<dimensions>& operator=(Texture<dimensions>&& other) {
             AbstractTexture::operator=(std::move(other));

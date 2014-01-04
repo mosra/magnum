@@ -196,7 +196,7 @@ class PrimitiveQuery: public AbstractQuery {
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
         PrimitiveQuery(const PrimitiveQuery&) = delete;
-        PrimitiveQuery(PrimitiveQuery&&) = default;
+        PrimitiveQuery(PrimitiveQuery&& other): AbstractQuery(std::move(other)) {}
         PrimitiveQuery& operator=(const PrimitiveQuery&) = delete;
         PrimitiveQuery& operator=(PrimitiveQuery&& other) {
             AbstractQuery::operator=(std::move(other));
@@ -334,7 +334,7 @@ class SampleQuery: public AbstractQuery {
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
         SampleQuery(const SampleQuery&) = delete;
-        SampleQuery(SampleQuery&&) = default;
+        SampleQuery(SampleQuery&& other): AbstractQuery(std::move(other)) {}
         SampleQuery& operator=(const SampleQuery&) = delete;
         SampleQuery& operator=(SampleQuery&& other) {
             AbstractQuery::operator=(std::move(other));
@@ -430,7 +430,7 @@ class TimeQuery: public AbstractQuery {
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
         TimeQuery(const TimeQuery&) = delete;
-        TimeQuery(TimeQuery&&) = default;
+        TimeQuery(TimeQuery&& other): AbstractQuery(std::move(other)) {}
         TimeQuery& operator=(const TimeQuery&) = delete;
         TimeQuery& operator=(TimeQuery&& other) {
             AbstractQuery::operator=(std::move(other));

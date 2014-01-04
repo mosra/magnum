@@ -219,7 +219,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
         BufferTexture(const BufferTexture&) = delete;
-        BufferTexture(BufferTexture&& other) = default;
+        BufferTexture(BufferTexture&& other): AbstractTexture(std::move(other)) {}
         BufferTexture& operator=(const BufferTexture&) = delete;
         BufferTexture& operator=(BufferTexture&& other) {
             AbstractTexture::operator=(std::move(other));

@@ -56,7 +56,7 @@ class MyShader: public AbstractShaderProgram {
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
         MyShader(const MyShader&) = delete;
-        MyShader(MyShader&&) = default;
+        MyShader(MyShader&& other): AbstractShaderProgram(std::move(other)) {}
         MyShader& operator=(const MyShader&) = delete;
         MyShader& operator=(MyShader&& other) {
             AbstractShaderProgram::operator=(std::move(other));
