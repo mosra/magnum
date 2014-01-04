@@ -25,7 +25,10 @@
 # Disable `-pedantic` for GCC 4.6, as the compiler doesn't like
 # list-initialization of array of classes (RectangularMatrix constructors). It
 # is perfectly legal C++11 and both GCC 4.7 and Clang accept it without notice.
-if(CORRADE_GCC46_COMPATIBILITY AND NOT CORRADE_GCC45_COMPATIBILITY)
+# Disable it also for GCC <=4.5, because otherwise the compiler output is
+# ridden with "warning: comma at the end of enumerator list", which is also
+# legal C++11.
+if(CORRADE_GCC46_COMPATIBILITY)
     string(REPLACE "-pedantic" "" CORRADE_CXX_FLAGS "${CORRADE_CXX_FLAGS}")
 endif()
 
