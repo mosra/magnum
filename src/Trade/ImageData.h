@@ -56,13 +56,13 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         explicit ImageData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /** @brief Copying is not allowed */
-        ImageData(const ImageData<dimensions>&& other) = delete;
+        ImageData(const ImageData<dimensions>&) = delete;
 
         /** @brief Move constructor */
         ImageData(ImageData<dimensions>&& other) noexcept;
 
         /** @brief Copying is not allowed */
-        ImageData<dimensions>& operator=(const ImageData<dimensions>&& other) = delete;
+        ImageData<dimensions>& operator=(const ImageData<dimensions>&) = delete;
 
         /** @brief Move assignment */
         ImageData<dimensions>& operator=(ImageData<dimensions>&& other) noexcept;
