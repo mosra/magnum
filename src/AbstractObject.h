@@ -61,8 +61,8 @@ class MAGNUM_EXPORT AbstractObject {
         static Int maxLabelLength();
 
     protected:
-        MAGNUM_LOCAL AbstractObject() = default;
-        MAGNUM_LOCAL ~AbstractObject() = default;
+        MAGNUM_LOCAL AbstractObject();
+        MAGNUM_LOCAL ~AbstractObject();
 
     private:
         static MAGNUM_LOCAL void labelImplementationNoOp(GLenum, GLuint, const std::string&);
@@ -72,6 +72,9 @@ class MAGNUM_EXPORT AbstractObject {
         static MAGNUM_LOCAL std::string getLabelImplementationExt(GLenum identifier, GLuint name);
         static MAGNUM_LOCAL std::string getLabelImplementationKhr(GLenum identifier, GLuint name);
 };
+
+inline AbstractObject::AbstractObject() = default;
+inline AbstractObject::~AbstractObject() = default;
 
 }
 
