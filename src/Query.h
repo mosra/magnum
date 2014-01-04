@@ -194,6 +194,16 @@ class PrimitiveQuery: public AbstractQuery {
 
         explicit PrimitiveQuery() {}
 
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        PrimitiveQuery(const PrimitiveQuery&) = delete;
+        PrimitiveQuery(PrimitiveQuery&&) = default;
+        PrimitiveQuery& operator=(const PrimitiveQuery&) = delete;
+        PrimitiveQuery& operator=(PrimitiveQuery&& other) {
+            AbstractQuery::operator=(std::move(other));
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Begin query
          *
@@ -322,6 +332,16 @@ class SampleQuery: public AbstractQuery {
 
         explicit SampleQuery() {}
 
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        SampleQuery(const SampleQuery&) = delete;
+        SampleQuery(SampleQuery&&) = default;
+        SampleQuery& operator=(const SampleQuery&) = delete;
+        SampleQuery& operator=(SampleQuery&& other) {
+            AbstractQuery::operator=(std::move(other));
+            return *this;
+        }
+        #endif
+
         /** @copydoc PrimitiveQuery::begin() */
         void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
@@ -407,6 +427,16 @@ class TimeQuery: public AbstractQuery {
         };
 
         explicit TimeQuery() {}
+
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        TimeQuery(const TimeQuery&) = delete;
+        TimeQuery(TimeQuery&&) = default;
+        TimeQuery& operator=(const TimeQuery&) = delete;
+        TimeQuery& operator=(TimeQuery&& other) {
+            AbstractQuery::operator=(std::move(other));
+            return *this;
+        }
+        #endif
 
         /**
          * @brief Query timestamp

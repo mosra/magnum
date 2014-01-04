@@ -229,6 +229,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          */
         explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(GLenum(target)) {}
 
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        Texture(const Texture<dimensions>&) = delete;
+        Texture(Texture<dimensions>&&) = default;
+        Texture<dimensions>& operator=(const Texture<dimensions>&) = delete;
+        Texture<dimensions>& operator=(Texture<dimensions>&& other) {
+            AbstractTexture::operator=(std::move(other));
+            return *this;
+        }
+        #endif
+
         /** @brief %Texture target */
         constexpr Target target() const { return static_cast<Target>(_target); }
 

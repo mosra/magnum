@@ -96,6 +96,16 @@ class CubeMapTexture: public AbstractTexture {
          */
         explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        CubeMapTexture(const CubeMapTexture&) = delete;
+        CubeMapTexture(CubeMapTexture&&) = default;
+        CubeMapTexture& operator=(CubeMapTexture&) = delete;
+        CubeMapTexture& operator=(CubeMapTexture&& other) {
+            AbstractTexture::operator=(std::move(other));
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set wrapping
          *

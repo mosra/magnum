@@ -53,6 +53,16 @@ namespace {
 class MyShader: public AbstractShaderProgram {
     public:
         explicit MyShader() {}
+
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        MyShader(const MyShader&) = delete;
+        MyShader(MyShader&&) = default;
+        MyShader& operator=(const MyShader&) = delete;
+        MyShader& operator=(MyShader&& other) {
+            AbstractShaderProgram::operator=(std::move(other));
+            return *this;
+        }
+        #endif
 };
 
 }
