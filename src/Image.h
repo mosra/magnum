@@ -66,13 +66,13 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         explicit Image(ColorFormat format, ColorType type): AbstractImage(format, type), _data(nullptr) {}
 
         /** @brief Copying is not allowed */
-        Image(const Image<dimensions>&& other) = delete;
+        Image(const Image<dimensions>&) = delete;
 
         /** @brief Move constructor */
         Image(Image<dimensions>&& other) noexcept;
 
         /** @brief Copying is not allowed */
-        Image<dimensions>& operator=(const Image<dimensions>&& other) = delete;
+        Image<dimensions>& operator=(const Image<dimensions>&) = delete;
 
         /** @brief Move assignment */
         Image<dimensions>& operator=(Image<dimensions>&& other) noexcept;
