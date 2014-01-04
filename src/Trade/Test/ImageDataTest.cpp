@@ -73,7 +73,7 @@ void ImageDataTest::constructMove() {
     Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
     Trade::ImageData2D b(std::move(a));
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<unsigned char*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_COMPARE(b.format(), ColorFormat::Red);
@@ -120,7 +120,7 @@ void ImageDataTest::release() {
     const unsigned char* const pointer = a.release();
 
     CORRADE_COMPARE(pointer, data);
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<unsigned char*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i());
 }
 
