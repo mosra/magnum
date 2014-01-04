@@ -37,6 +37,10 @@
 #include "OpenGL.h"
 #include "magnumVisibility.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Version.h"
+#endif
+
 namespace Magnum {
 
 /** @todoc Resolve conflict with Audio/Context.h (Doxygen doesn't list this file) */

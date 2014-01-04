@@ -41,6 +41,10 @@
 
 #include "Math/Vector2.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Version.h"
+#endif
+
 namespace Magnum {
 
 class Context;

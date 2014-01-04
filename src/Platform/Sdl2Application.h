@@ -42,6 +42,10 @@
 #include <Containers/EnumSet.h>
 #include <Corrade.h>
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Version.h"
+#endif
+
 namespace Magnum {
 
 class Context;
