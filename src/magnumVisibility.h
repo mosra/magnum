@@ -29,7 +29,7 @@
 #include "magnumConfigure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
-    #if defined(Magnum_EXPORTS) || defined(MagnumObjects_EXPORTS) || defined(MagnumMathObjects_EXPORTS)
+    #if defined(Magnum_EXPORTS) || defined(MagnumMathObjects_EXPORTS)
         #define MAGNUM_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_EXPORT CORRADE_VISIBILITY_IMPORT

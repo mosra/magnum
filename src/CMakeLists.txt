@@ -94,7 +94,6 @@ set(Magnum_SRCS
     Trade/PhongMaterialData.cpp
     Trade/SceneData.cpp
     Trade/TextureData.cpp)
-set(Magnum_OBJECTS $<TARGET_OBJECTS:MagnumObjects>)
 
 # Desktop-only code
 if(NOT TARGET_GLES)
@@ -161,7 +160,7 @@ if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferTexture.h
         CubeMapTextureArray.h)
-    set(Magnum_OBJECTS ${Magnum_OBJECTS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
+    set(Magnum_SRCS ${Magnum_SRCS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Not-ES2 headers
@@ -175,21 +174,23 @@ set(MagnumMath_SRCS
     Math/Functions.cpp
     Math/instantiation.cpp)
 
-# Set shared library flags for the objects, as they will be part of shared lib
-# TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
-add_library(MagnumObjects OBJECT ${Magnum_SRCS})
-set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS -DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-set_target_properties(MagnumObjects PROPERTIES COMPILE_FLAGS "-DMagnumObjects_EXPORTS -DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-
 # Main library
+add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 add_library(Magnum ${SHARED_OR_STATIC}
-    ${Magnum_OBJECTS}
+    ${Magnum_SRCS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
-if(BUILD_STATIC_PIC)
+
+# TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    # Set shared library flags for the objects, as they will be part of shared lib
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+else()
+    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS")
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DGLLoadGen_EXPORTS")
 endif()
+
 set(Magnum_LIBS
     ${CORRADE_UTILITY_LIBRARIES}
     ${CORRADE_PLUGINMANAGER_LIBRARIES})
@@ -257,16 +258,10 @@ if(BUILD_TESTS)
     set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
     target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
 
-    add_library(MagnumTestLib ${SHARED_OR_STATIC}
-        ${Magnum_OBJECTS}
-        $<TARGET_OBJECTS:MagnumMathObjects>)
-    set_target_properties(MagnumTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
-    target_link_libraries(MagnumTestLib ${Magnum_LIBS})
-
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumMathTestLib MagnumTestLib
+        install(TARGETS MagnumMathTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
