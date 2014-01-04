@@ -61,7 +61,7 @@ void FramebufferGLTest::construct() {
 }
 
 void FramebufferGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Framebuffer, const Framebuffer&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Framebuffer, const Framebuffer&>::value));
     /* GCC 4.6 doesn't have std::is_assignable */
     #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<Framebuffer, const Framebuffer&>{}));

@@ -90,7 +90,7 @@ void BufferGLTest::construct() {
 }
 
 void BufferGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>::value));
     /* GCC 4.6 doesn't have std::is_assignable */
     #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));

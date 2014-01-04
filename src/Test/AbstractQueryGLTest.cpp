@@ -65,7 +65,7 @@ void AbstractQueryGLTest::construct() {
 }
 
 void AbstractQueryGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<SampleQuery, const SampleQuery&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<SampleQuery, const SampleQuery&>::value));
     /* GCC 4.6 doesn't have std::is_assignable */
     #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<SampleQuery, const SampleQuery&>{}));
