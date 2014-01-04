@@ -40,6 +40,12 @@ endif()
 # etc. accessors (and I have no better solution for that yet)
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.8.0") OR CORRADE_GCC44_COMPATIBILITY)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
+
+# For GCC 4.5 disable just the strict-aliasing warnings. They are mostly
+# harmless and are just polluting the output. In case they aren't harmless
+# anymore the strict-aliasing should be disabled here too.
+elseif(CORRADE_GCC45_COMPATIBILITY AND NOT CORRADE_GCC44_COMPATIBILITY)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
