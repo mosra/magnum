@@ -90,10 +90,14 @@ void BufferGLTest::construct() {
 }
 
 void BufferGLTest::constructCopy() {
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>::value));
     /* GCC 4.6 doesn't have std::is_assignable */
     #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
+    #endif
+    #else
+    CORRADE_SKIP("Type traits needed to test this are not available on GCC 4.4.");
     #endif
 }
 
