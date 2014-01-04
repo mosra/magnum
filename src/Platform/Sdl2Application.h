@@ -29,6 +29,7 @@
  */
 
 #include <Containers/EnumSet.h>
+#include <Corrade.h>
 
 #include "Platform/Platform.h"
 #include "Math/Vector2.h"
@@ -39,8 +40,6 @@
 #endif
 #include <SDL.h>
 #include <SDL_scancode.h>
-#include <Containers/EnumSet.h>
-#include <Corrade.h>
 
 namespace Magnum {
 
