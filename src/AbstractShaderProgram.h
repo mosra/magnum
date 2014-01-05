@@ -270,32 +270,29 @@ See @ref types for more information, only types with GLSL equivalent can be used
     @ref Magnum::Vector4i "Vector4i") or unsigned integer uniforms (i.e.
     @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Vector2ui "Vector2ui",
     @ref Magnum::Vector3ui "Vector3ui" and @ref Magnum::Vector4ui "Vector4ui").
-@requires_gles30 Integer attributes and unsigned integer uniforms are not
-    available in OpenGL ES 2.0.
-
 @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64} is required when
     using double uniforms (i.e. @ref Magnum::Double "Double",
     @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
-    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2d "Matrix2d",
-    @ref Magnum::Matrix3d "Matrix3d", @ref Magnum::Matrix4d "Matrix4d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
+    @ref Magnum::Matrix3x3d "Matrix3x3d", @ref Magnum::Matrix4x4d "Matrix4x4d",
     @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
     @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
     @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
 @requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} is required when
     using double attributes (i.e. @ref Magnum::Double "Double",
     @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
-    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2d "Matrix2d",
-    @ref Magnum::Matrix3d "Matrix3d", @ref Magnum::Matrix4d "Matrix4d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
+    @ref Magnum::Matrix3x3d "Matrix3x3d", @ref Magnum::Matrix4x4d "Matrix4x4d",
     @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
     @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
     @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
-@requires_gl Double attributes and uniforms are not available in OpenGL ES.
 
-@requires_gles30 Non-square matrix attributes and uniforms (i.e.
-    @ref Magnum::Matrix2x3 "Matrix2x3", @ref Magnum::Matrix3x2 "Matrix3x2",
-    @ref Magnum::Matrix2x4 "Matrix2x4", @ref Magnum::Matrix4x2d "Matrix4x2",
-    @ref Magnum::Matrix3x4 "Matrix3x4" and @ref Magnum::Matrix4x3 "Matrix4x3")
-    are not available in OpenGL ES 2.0.
+@requires_gles30 Integer attributes, unsigned integer uniforms and non-square
+    matrix attributes and uniforms (i.e. @ref Magnum::Matrix2x3 "Matrix2x3",
+    @ref Magnum::Matrix3x2 "Matrix3x2", @ref Magnum::Matrix2x4 "Matrix2x4",
+    @ref Magnum::Matrix4x2d "Matrix4x2", @ref Magnum::Matrix3x4 "Matrix3x4" and
+    @ref Magnum::Matrix4x3 "Matrix4x3") are not available in OpenGL ES 2.0.
+@requires_gl Double attributes and uniforms are not available in OpenGL ES.
 
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 
@@ -1158,7 +1155,7 @@ to floating-point shader inputs. In this case you may want to normalize the
 values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see @ref DataOption::Normalize.
 
 Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
-or TypeTraits::AttributeType for more information.
+for more information.
 
 See @ref AbstractShaderProgram-subclassing for example usage in shaders and
 @ref Mesh-configuration for example usage when adding vertex buffers to mesh.
@@ -1296,7 +1293,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
              * Normalize integer components. Only for float attribute types.
              * Default is to not normalize.
              */
-            Normalize = 1 << 0
+            Normalized = 1 << 0
         };
         #else
         typedef typename Implementation::Attribute<T>::DataOption DataOption;

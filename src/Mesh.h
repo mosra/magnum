@@ -552,7 +552,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          *      if @extension{APPLE,vertex_array_object} is available
-         * @todoc Add back the *s when Doxygen is sane again
          */
         template<class ...T> inline Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), attributes...);
