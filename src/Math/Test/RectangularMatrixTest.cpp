@@ -444,6 +444,7 @@ void RectangularMatrixTest::subclassTypes() {
     const Float* const cdata = nullptr;
     CORRADE_VERIFY((std::is_same<decltype(Mat2x2::from(data)), Mat2x2&>::value));
     CORRADE_VERIFY((std::is_same<decltype(Mat2x2::from(cdata)), const Mat2x2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(Mat2x2::fromDiagonal({})), Mat2x2>::value));
 
     /* Const operators */
     const Mat2x2 c;
@@ -478,6 +479,9 @@ void RectangularMatrixTest::subclass() {
     const Float cdata[] = {1.0f, -2.0f, 3.0f, -4.5f};
     CORRADE_COMPARE(Mat2x2::from(cdata), Mat2x2(Vector2(1.0f, -2.0f),
                                                 Vector2(3.0f, -4.5f)));
+
+    CORRADE_COMPARE(Mat2x2::fromDiagonal({1.0f, -2.0f}), Mat2x2(Vector2(1.0f,  0.0f),
+                                                                Vector2(0.0f, -2.0f)));
 
     const Mat2x2 a(Vector2(1.0f, -3.0f),
                    Vector2(-3.0f, 1.0f));
