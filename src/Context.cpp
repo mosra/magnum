@@ -213,6 +213,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,stencil1),
         _extension(GL,OES,stencil4),
         _extension(GL,OES,texture_3D)};
+    #ifdef MAGNUM_TARGET_GLES2
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
         _extension(GL,ANGLE,framebuffer_multisample),
@@ -246,6 +247,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,required_internalformat),
         _extension(GL,OES,surfaceless_context)};            // done
     #endif
+    #endif
 
     switch(version) {
         case Version::None:  return extensions;
@@ -264,7 +266,12 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         case Version::GL440: return extensions440;
         #else
         case Version::GLES200: return empty;
-        case Version::GLES300: return extensionsES300;
+        case Version::GLES300:
+            #ifdef MAGNUM_TARGET_GLES2
+            return extensionsES300;
+            #else
+            return empty;
+            #endif
         #endif
     }
 

@@ -101,18 +101,15 @@ void ContextGLTest::unsupportedExtension() {
 void ContextGLTest::pastExtension() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isVersionSupported(Version::GL300))
-        CORRADE_SKIP("No already supported extensions exist in OpenGL 2.1");
+        CORRADE_SKIP("No already supported extensions are listed for OpenGL 2.1");
 
     CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>());
     /* No assertion should be fired */
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::APPLE::vertex_array_object);
+    #elif defined(MAGNUM_TARGET_GLES2)
+    CORRADE_SKIP("No already supported extensions are listed for OpenGL ES 2.0");
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
-        CORRADE_SKIP("No already supported extensions exist in OpenGL ES 2.0");
-
-    CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>());
-    /* No assertion should be fired */
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::texture_rg);
+    CORRADE_SKIP("No already supported extensions are listed for OpenGL ES 3.0");
     #endif
 }
 
