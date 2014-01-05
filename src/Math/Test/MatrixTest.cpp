@@ -314,6 +314,7 @@ void MatrixTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(c*cv), Vec2>::value));
 
     CORRADE_VERIFY((std::is_same<decltype(c.transposed()), Mat2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.diagonal()), Vec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(c.inverted()), Mat2>::value));
     CORRADE_VERIFY((std::is_same<decltype(c.invertedOrthogonal()), Mat2>::value));
 }
@@ -333,6 +334,7 @@ void MatrixTest::subclass() {
 
     CORRADE_COMPARE(a.transposed(), Mat2(Vec2(2.0f, 3.0f),
                                          Vec2(3.5f, 1.0f)));
+    CORRADE_COMPARE(a.diagonal(), Vec2(2.0f, 1.0f));
 
     Mat2 c(Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f),
            Vec2(-Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f));

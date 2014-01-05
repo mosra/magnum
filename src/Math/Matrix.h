@@ -240,6 +240,7 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
     }                                                                       \
                                                                             \
     Type<T> transposed() const { return Matrix<size, T>::transposed(); }    \
+    constexpr VectorType<T> diagonal() const { return Matrix<size, T>::diagonal(); } \
     Type<T> inverted() const { return Matrix<size, T>::inverted(); }        \
     Type<T> invertedOrthogonal() const {                                    \
         return Matrix<size, T>::invertedOrthogonal();                       \
