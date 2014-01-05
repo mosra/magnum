@@ -70,7 +70,14 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * `Matrix m(Matrix::Identity);`. Optional parameter @p value allows
          * you to specify value on diagonal.
          */
-        constexpr /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)): RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)) {}
+        constexpr /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)): RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(),
+            /* The original one is not constexpr under GCC 4.6 */
+            #ifndef CORRADE_GCC46_COMPATIBILITY
+            Vector<size, T>(value)
+            #else
+            Vector<size, T>(typename Implementation::GenerateSequence<size>::Type(), value)
+            #endif
+        ) {}
 
         /**
          * @brief %Matrix from column vectors

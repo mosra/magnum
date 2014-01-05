@@ -59,6 +59,11 @@ template<std::size_t size, class T> class Vector {
 
     template<std::size_t, class> friend class Vector;
 
+    #ifdef CORRADE_GCC46_COMPATIBILITY
+    /* So it can call internal constexpr constructor from one value */
+    template<std::size_t, class> friend class Matrix;
+    #endif
+
     public:
         typedef T Type;                         /**< @brief Underlying data type */
         const static std::size_t Size = size;   /**< @brief %Vector size */
