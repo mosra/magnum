@@ -71,11 +71,11 @@ template<std::size_t size, class T> class Vector {
          * @attention Use with caution, the function doesn't check whether the
          *      array is long enough.
          */
-        constexpr static Vector<size, T>& from(T* data) {
+        static Vector<size, T>& from(T* data) {
             return *reinterpret_cast<Vector<size, T>*>(data);
         }
         /** @overload */
-        constexpr static const Vector<size, T>& from(const T* data) {
+        static const Vector<size, T>& from(const T* data) {
             return *reinterpret_cast<const Vector<size, T>*>(data);
         }
 
@@ -1042,10 +1042,10 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(size, Type)                   \
-    constexpr static Type<T>& from(T* data) {                               \
+    static Type<T>& from(T* data) {                                         \
         return *reinterpret_cast<Type<T>*>(data);                           \
     }                                                                       \
-    constexpr static const Type<T>& from(const T* data) {                   \
+    static const Type<T>& from(const T* data) {                             \
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
                                                                             \

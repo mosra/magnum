@@ -76,11 +76,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @attention Use with caution, the function doesn't check whether the
          *      array is long enough.
          */
-        constexpr static RectangularMatrix<cols, rows, T>& from(T* data) {
+        static RectangularMatrix<cols, rows, T>& from(T* data) {
             return *reinterpret_cast<RectangularMatrix<cols, rows, T>*>(data);
         }
         /** @overload */
-        constexpr static const RectangularMatrix<cols, rows, T>& from(const T* data) {
+        static const RectangularMatrix<cols, rows, T>& from(const T* data) {
             return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(data);
         }
 
@@ -531,10 +531,10 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 #endif
 
 #define MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(cols, rows, ...)   \
-    constexpr static __VA_ARGS__& from(T* data) {                           \
+    static __VA_ARGS__& from(T* data) {                                     \
         return *reinterpret_cast<__VA_ARGS__*>(data);                       \
     }                                                                       \
-    constexpr static const __VA_ARGS__& from(const T* data) {               \
+    static const __VA_ARGS__& from(const T* data) {                         \
         return *reinterpret_cast<const __VA_ARGS__*>(data);                 \
     }                                                                       \
                                                                             \
