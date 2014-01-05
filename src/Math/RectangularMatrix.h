@@ -85,14 +85,6 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Construct diagonal matrix
-         *
-         * @see diagonal()
-         * @todo make this constexpr
-         */
-        static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal);
-
-        /**
          * @brief Construct matrix from vector
          *
          * Rolls the vector into matrix, i.e. first `rows` elements of the
@@ -101,6 +93,15 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         static RectangularMatrix<cols, rows, T> fromVector(const Vector<cols*rows, T>& vector) {
             return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(vector.data());
+        }
+
+        /**
+         * @brief Construct diagonal matrix
+         *
+         * @see diagonal()
+         */
+        constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
+            return RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), diagonal);
         }
 
         /** @brief Construct zero-filled matrix */
@@ -342,9 +343,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @brief Values on diagonal
          *
          * @see fromDiagonal()
-         * @todo constexpr
          */
-        Vector<DiagonalSize, T> diagonal() const;
+        constexpr Vector<DiagonalSize, T> diagonal() const;
 
         /**
          * @brief Convert matrix to vector
@@ -359,9 +359,15 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return *reinterpret_cast<const Vector<rows*cols, T>*>(data());
         }
 
+    protected:
+        /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and Matrix<size, T>(T) */
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
+
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
+
+        template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Implementation::Sequence<sequence...>) const;
 
         Vector<rows, T> _data[cols];
 };
@@ -593,14 +599,16 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }
 #endif
 
-template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> RectangularMatrix<cols, rows, T>::fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
-    RectangularMatrix<cols, rows, T> out;
-
-    for(std::size_t i = 0; i != DiagonalSize; ++i)
-        out[i][i] = diagonal[i];
-
-    return out;
+namespace Implementation {
+    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> inline constexpr Vector<rows, T> diagonalMatrixColumn2(Implementation::Sequence<sequence...>, const T& number) {
+        return {(sequence == i ? number : T(0))...};
+    }
+    template<std::size_t rows, std::size_t i, class T> inline constexpr Vector<rows, T> diagonalMatrixColumn(const T& number) {
+        return diagonalMatrixColumn2<rows, i, T>(typename Implementation::GenerateSequence<rows>::Type(), number);
+    }
 }
+
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
 
 template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> RectangularMatrix<cols, rows, T>::row(std::size_t row) const {
     Vector<cols, T> out;
@@ -641,13 +649,10 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<r
     return out;
 }
 
-template<std::size_t cols, std::size_t rows, class T> auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> {
-    Vector<DiagonalSize, T> out;
+template<std::size_t cols, std::size_t rows, class T> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
 
-    for(std::size_t i = 0; i != DiagonalSize; ++i)
-        out[i] = _data[i][i];
-
-    return out;
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
+    return {(*this)[sequence][sequence]...};
 }
 
 }}

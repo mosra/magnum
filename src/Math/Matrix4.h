@@ -190,14 +190,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Creates identity matrix. You can also explicitly call this
          * constructor with `Matrix4 m(Matrix4::Identity);`. Optional parameter
          * @p value allows you to specify value on diagonal.
-         * @todo Use constexpr implementation in Matrix, when done
          */
-        constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(
-            Vector<4, T>(value,  T(0),  T(0),  T(0)),
-            Vector<4, T>( T(0), value,  T(0),  T(0)),
-            Vector<4, T>( T(0),  T(0), value,  T(0)),
-            Vector<4, T>( T(0),  T(0),  T(0), value)
-        ) {}
+        constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>({}, value) {}
 
         /** @brief %Matrix from column vectors */
         constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix<4, T>(first, second, third, fourth) {}

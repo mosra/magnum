@@ -126,9 +126,9 @@ void MatrixTest::construct() {
 }
 
 void MatrixTest::constructIdentity() {
-    Matrix4x4 identity;
-    Matrix4x4 identity2(Matrix4x4::Identity);
-    Matrix4x4 identity3(Matrix4x4::Identity, 4.0f);
+    constexpr Matrix4x4 identity;
+    constexpr Matrix4x4 identity2(Matrix4x4::Identity);
+    constexpr Matrix4x4 identity3(Matrix4x4::Identity, 4.0f);
 
     Matrix4x4 identityExpected(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
                                Vector4(0.0f, 1.0f, 0.0f, 0.0f),

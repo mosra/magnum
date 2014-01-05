@@ -181,18 +181,20 @@ void RectangularMatrixTest::constructFromData() {
 }
 
 void RectangularMatrixTest::constructFromDiagonal() {
-    Vector3 diagonal(-1.0f, 5.0f, 11.0f);
+    constexpr Vector3 diagonal(-1.0f, 5.0f, 11.0f);
 
+    constexpr auto a = Matrix3x4::fromDiagonal(diagonal);
     Matrix3x4 expectedA(Vector4(-1.0f, 0.0f,  0.0f, 0.0f),
                         Vector4( 0.0f, 5.0f,  0.0f, 0.0f),
                         Vector4( 0.0f, 0.0f, 11.0f, 0.0f));
-    CORRADE_COMPARE(Matrix3x4::fromDiagonal(diagonal), expectedA);
+    CORRADE_COMPARE(a, expectedA);
 
+    constexpr auto b = Matrix4x3::fromDiagonal(diagonal);
     Matrix4x3 expectedB(Vector3(-1.0f, 0.0f,  0.0f),
                         Vector3( 0.0f, 5.0f,  0.0f),
                         Vector3( 0.0f, 0.0f, 11.0f),
                         Vector3( 0.0f, 0.0f,  0.0f));
-    CORRADE_COMPARE(Matrix4x3::fromDiagonal(diagonal), expectedB);
+    CORRADE_COMPARE(b, expectedB);
 }
 
 void RectangularMatrixTest::constructCopy() {
@@ -387,16 +389,18 @@ void RectangularMatrixTest::transposed() {
 void RectangularMatrixTest::diagonal() {
     Vector3 diagonal(-1.0f, 5.0f, 11.0f);
 
-    Matrix4x3 a(Vector3(-1.0f,  1.0f,  3.0f),
-                Vector3( 4.0f,  5.0f,  7.0f),
-                Vector3( 8.0f,  9.0f, 11.0f),
-                Vector3(12.0f, 13.0f, 15.0f));
-    CORRADE_COMPARE(a.diagonal(), diagonal);
+    constexpr Matrix4x3 a(Vector3(-1.0f,  1.0f,  3.0f),
+                          Vector3( 4.0f,  5.0f,  7.0f),
+                          Vector3( 8.0f,  9.0f, 11.0f),
+                          Vector3(12.0f, 13.0f, 15.0f));
+    constexpr Vector3 aDiagonal = a.diagonal();
+    CORRADE_COMPARE(aDiagonal, diagonal);
 
-    Matrix3x4 b(Vector4(-1.0f, 4.0f,  8.0f, 12.0f),
-                Vector4( 1.0f, 5.0f,  9.0f, 13.0f),
-                Vector4( 3.0f, 7.0f, 11.0f, 15.0f));
-    CORRADE_COMPARE(b.diagonal(), diagonal);
+    constexpr Matrix3x4 b(Vector4(-1.0f, 4.0f,  8.0f, 12.0f),
+                          Vector4( 1.0f, 5.0f,  9.0f, 13.0f),
+                          Vector4( 3.0f, 7.0f, 11.0f, 15.0f));
+    constexpr Vector3 bDiagonal = b.diagonal();
+    CORRADE_COMPARE(bDiagonal, diagonal);
 }
 
 void RectangularMatrixTest::vector() {

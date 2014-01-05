@@ -128,13 +128,8 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * Creates identity matrix. You can also explicitly call this
          * constructor with `Matrix3 m(Matrix3::Identity);`. Optional parameter
          * @p value allows you to specify value on diagonal.
-         * @todo Use constexpr implementation in Matrix, when done
          */
-        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(
-            Vector<3, T>(value,  T(0),  T(0)),
-            Vector<3, T>( T(0), value,  T(0)),
-            Vector<3, T>( T(0),  T(0), value)
-        ) {}
+        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType identity = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(identity, value) {}
 
         /** @brief %Matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
