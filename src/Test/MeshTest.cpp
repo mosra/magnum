@@ -34,6 +34,8 @@ class MeshTest: public TestSuite::Tester {
     public:
         MeshTest();
 
+        void indexSize();
+
         void debugPrimitive();
         void debugIndexType();
         void configurationPrimitive();
@@ -41,10 +43,18 @@ class MeshTest: public TestSuite::Tester {
 };
 
 MeshTest::MeshTest() {
-    addTests({&MeshTest::debugPrimitive,
+    addTests({&MeshTest::indexSize,
+
+              &MeshTest::debugPrimitive,
               &MeshTest::debugIndexType,
               &MeshTest::configurationPrimitive,
               &MeshTest::configurationIndexType});
+}
+
+void MeshTest::indexSize() {
+    CORRADE_COMPARE(Mesh::indexSize(Mesh::IndexType::UnsignedByte), 1);
+    CORRADE_COMPARE(Mesh::indexSize(Mesh::IndexType::UnsignedShort), 2);
+    CORRADE_COMPARE(Mesh::indexSize(Mesh::IndexType::UnsignedInt), 4);
 }
 
 void MeshTest::debugPrimitive() {
