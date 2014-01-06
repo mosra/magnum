@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractShaderProgram
+ * @brief Class @ref Magnum::AbstractShaderProgram
  */
 
 #include <string>
@@ -48,38 +48,38 @@ namespace Implementation {
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
- - <strong>%Attribute definitions</strong> with location and type for
-   configuring meshes, for example:
+-   <strong>%Attribute definitions</strong> with location and type for
+    configuring meshes, for example:
 @code
 typedef Attribute<0, Vector3> Position;
 typedef Attribute<1, Vector3> Normal;
 typedef Attribute<2, Vector2> TextureCoordinates;
 @endcode
- - **Output attribute locations**, if desired, for example:
+-   **Output attribute locations**, if desired, for example:
 @code
 enum: UnsignedInt {
     ColorOutput = 0,
     NormalOutput = 1
 };
 @endcode
- - **Layers for texture uniforms** to which the textures will be bound before
-   rendering, for example:
+-   **Layers for texture uniforms** to which the textures will be bound before
+    rendering, for example:
 @code
 enum: Int {
     DiffuseTextureLayer = 0,
     SpecularTextureLayer = 1
 };
 @endcode
- - **Uniform locations** for setting uniform data (see below) (private
-   variables), for example:
+-   **Uniform locations** for setting uniform data (see below) (private
+    variables), for example:
 @code
 Int TransformationUniform = 0,
     ProjectionUniform = 1,
     DiffuseTextureUniform = 2,
     SpecularTextureUniform = 3;
 @endcode
- - **Constructor**, which attaches particular shaders, links the program and
-   gets uniform locations, for example:
+-   **Constructor**, which attaches particular shaders, links the program and
+    gets uniform locations, for example:
 @code
 MyShader() {
     // Load shaders, compile them and attach them to the program
@@ -97,9 +97,9 @@ MyShader() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
 @endcode
- - **Uniform setting functions**, which will provide public interface for
-   protected setUniform() functions. For usability purposes you can implement
-   also method chaining. Example:
+-   **Uniform setting functions**, which will provide public interface for
+    protected @ref setUniform() functions. For usability purposes you can
+    implement also method chaining. Example:
 @code
 MyShader& setTransformation(const Matrix4& matrix) {
     setUniform(TransformationUniform, matrix);
@@ -113,9 +113,9 @@ MyShader& setProjection(const Matrix4& matrix) {
 
 @subsection AbstractShaderProgram-attribute-location Binding attribute location
 
-The preferred workflow is to specify attribute location for vertex shader
-input attributes and fragment shader output attributes explicitly in the
-shader code, e.g.:
+The preferred workflow is to specify attribute location for vertex shader input
+attributes and fragment shader output attributes explicitly in the shader code,
+e.g.:
 @code
 // GLSL 3.30, or
 #extension GL_ARB_explicit_attrib_location: enable
@@ -124,9 +124,9 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoordinates;
 @endcode
 
-Similarly for ouput attributes, you can also specify blend equation color
-index for them (see Framebuffer::BlendFunction for more information about
-using color input index):
+Similarly for ouput attributes, you can also specify blend equation color index
+for them (see @ref Renderer::BlendFunction for more information about using
+color input index):
 @code
 layout(location = 0, index = 0) out vec4 color;
 layout(location = 1, index = 1) out vec3 normal;
@@ -161,14 +161,14 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 
 @see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 %Extension @extension{EXT,gpu_shader4} for using
-    bindFragmentDataLocation().
+    @ref bindFragmentDataLocation().
 @requires_gl33 %Extension @extension{ARB,blend_func_extended} for using
-    bindFragmentDataLocationIndexed().
+    @ref bindFragmentDataLocationIndexed().
 @requires_gl33 %Extension @extension{ARB,explicit_attrib_location} for
-    explicit attribute location instead of using bindAttributeLocation(),
-    bindFragmentDataLocation() or bindFragmentDataLocationIndexed().
+    explicit attribute location instead of using @ref bindAttributeLocation(),
+    @ref bindFragmentDataLocation() or @ref bindFragmentDataLocationIndexed().
 @requires_gles30 Explicit location specification of input attributes is not
-    supported in OpenGL ES 2.0, use bindAttributeLocation() instead.
+    supported in OpenGL ES 2.0, use @ref bindAttributeLocation() instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
     ES 2.0, similar functionality is available in extension
     @es_extension{NV,draw_buffers}.
@@ -199,9 +199,9 @@ Int projectionUniform = uniformLocation("projection");
 
 @see @ref maxUniformLocations()
 @requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
-    explicit uniform location instead of using uniformLocation().
+    explicit uniform location instead of using @ref uniformLocation().
 @requires_gl Explicit uniform location is not supported in OpenGL ES. Use
-    uniformLocation() instead.
+    @ref uniformLocation() instead.
 
 @subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
 
@@ -244,8 +244,8 @@ for more information) and map shader outputs to framebuffer attachments if
 needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
 information). In each draw event set uniforms, mark the shader for use, bind
 specific framebuffer (if needed) and bind required textures to their
-respective layers using AbstractTexture::bind(Int). Then call Mesh::draw().
-Example:
+respective layers using @ref AbstractTexture::bind(Int). Then call
+@ref Mesh::draw(). Example:
 @code
 shader.setTransformation(transformation)
     .setProjection(projection)
@@ -260,7 +260,8 @@ mesh.draw();
 @section AbstractShaderProgram-types Mapping between GLSL and Magnum types
 
 See @ref types for more information, only types with GLSL equivalent can be used
-(and their super- or subclasses with the same size and underlying type).
+(and their super- or subclasses with the same size and underlying type). See
+also @ref Attribute::DataType enum for additional type options.
 
 @requires_gl30 %Extension @extension{EXT,gpu_shader4} is required when using
     integer attributes (i.e. @ref Magnum::UnsignedInt "UnsignedInt",
@@ -300,10 +301,10 @@ The engine tracks currently used shader program to avoid unnecessary calls to
 @fn_gl{UseProgram}. %Shader limits (such as @ref maxVertexAttributes())
 are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
 
-If extension @extension{ARB,separate_shader_objects} or
+If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1) or
 @extension{EXT,direct_state_access} is available, uniform setting functions
 use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}. See
-setUniform() documentation for more information.
+@ref setUniform() documentation for more information.
 
 To achieve least state changes, set all uniforms in one run -- method chaining
 comes in handy.
@@ -606,11 +607,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Bind fragment data to given location and color input index
          * @param location      Location
-         * @param name          Fragment output variable name
          * @param index         Blend equation color input index (`0` or `1`)
+         * @param name          Fragment output variable name
          *
          * Binds fragment data to location which is used later for framebuffer
-         * operations. See also Framebuffer::BlendFunction for more
+         * operations. See also @ref Renderer::BlendFunction for more
          * information about using color input index.
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
@@ -628,12 +629,13 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param location      Location
          * @param name          Fragment output variable name
          *
-         * The same as bindFragmentDataLocationIndexed(), but with `index` set
-         * to `0`.
+         * The same as @ref bindFragmentDataLocationIndexed(), but with `index`
+         * set to `0`.
          * @see @fn_gl{BindFragDataLocation}
          * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0
-         *      instead.
+         *      and `gl_FragData[n]` provided by @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
+         *      in OpenGL ES 2.0.
          */
         void bindFragmentDataLocation(UnsignedInt location, const std::string& name);
         #endif
@@ -643,7 +645,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Returns `false` if linking failed, `true` otherwise. Compiler
          * message (if any) is printed to error output. All attached shaders
-         * must be explicitly compiled with Shader::compile() before linking.
+         * must be compiled with @ref Shader::compile() before linking.
          * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
          *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
          *      @fn_gl{GetProgramInfoLog}
@@ -668,7 +670,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param value         Value
          *
          * Convenience alternative for setting one value, see
-         * setUniform(Int, UnsignedInt, const Float*) for more information.
+         * @ref setUniform(Int, UnsignedInt, const Float*) for more
+         * information.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class T> inline void setUniform(Int location, const T& value);
@@ -703,10 +706,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param count         Value count
          * @param values        Values
          *
-         * If neither @extension{ARB,separate_shader_objects} nor
-         * @extension{EXT,direct_state_access} is available, the shader is
-         * marked for use before the operation.
-         * @see setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
+         * If neither @extension{ARB,separate_shader_objects} (part of OpenGL
+         * 4.1) nor @extension{EXT,direct_state_access} is available, the
+         * shader is marked for use before the operation.
+         * @see @ref setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
          *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */
         void setUniform(Int location, UnsignedInt count, const Float* values) {
@@ -1170,7 +1173,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * @brief Type
          *
          * Type used in shader code.
-         * @see DataType
+         * @see @ref DataType
          */
         typedef typename Implementation::Attribute<T>::Type Type;
 
@@ -1213,12 +1216,13 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Four components with BGRA ordering. Only for four-component
-             * float vector type.
+             * float vector type. Must be used along with @ref DataType::UnsignedByte
+             * and @ref DataOption::Normalized.
              * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
              * @requires_gl Only RGBA component ordering is supported in OpenGL
              *      ES.
              */
-            BGRA = 1 << 1
+            BGRA = GL_BGRA
             #endif
         };
         #else
@@ -1229,7 +1233,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * @brief Data type
          *
          * Type of data passed to shader.
-         * @see Type, DataOptions, Attribute()
+         * @see @ref Type, @ref DataOptions, @ref Attribute()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class DataType: GLenum {
@@ -1285,7 +1289,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
 
         /**
          * @brief Data option
-         * @see DataOptions, Attribute()
+         * @see @ref DataOptions, @ref Attribute()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class DataOption: UnsignedByte {
@@ -1301,7 +1305,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
 
         /**
          * @brief Data options
-         * @see Attribute()
+         * @see @ref Attribute()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         typedef typename Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
@@ -1313,7 +1317,8 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * @brief Constructor
          * @param components    Component count
          * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. DataType::Integer for Vector4i).
+         *      type used in shader (e.g. @ref DataType::Integer for
+         *      @ref Vector4i).
          * @param dataOptions   Data options. Default is no options.
          */
         constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}

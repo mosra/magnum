@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shader
+ * @brief Class @ref Magnum::Shader
  */
 
 #include <vector>
@@ -40,7 +40,12 @@ namespace Magnum {
 /**
 @brief %Shader
 
-See AbstractShaderProgram for more information.
+See @ref AbstractShaderProgram for more information.
+
+@section Shader-performance-optimization Performance optimizations
+
+%Shader limits and implementation-defined values (such as @ref maxUniformComponents())
+are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
  */
 class MAGNUM_EXPORT Shader: public AbstractObject {
     public:
@@ -430,7 +435,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @param type      %Shader type
          *
          * Creates empty OpenGL shader and adds @c \#version directive at the
-         * beginning. Sources can be added with addSource() or addFile().
+         * beginning.
          * @see @fn_gl{CreateShader}
          */
         explicit Shader(Version version, Type type);
@@ -498,7 +503,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * Adds given source to source list, preceeded with @c \#line directive
          * marking first line of the source as `n(1)` where n is number of
          * added source. If passed string is empty, the function does nothing.
-         * @see addFile()
+         * @see @ref addFile()
          */
         Shader& addSource(std::string source);
 
@@ -507,8 +512,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @param filename  Name of source file to read from
          * @return Reference to self (for method chaining)
          *
-         * The file must exist and must be readable. Calls addSource() with
-         * the contents.
+         * The file must exist and must be readable. Calls @ref addSource()
+         * with the contents.
          */
         Shader& addFile(const std::string& filename);
 
