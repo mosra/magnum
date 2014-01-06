@@ -34,9 +34,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 /* undef Xlib nonsense to avoid conflicts */
+#undef Always
 #undef Complex
 #undef None
-#undef Always
+#undef Status
 
 #include "Magnum.h"
 

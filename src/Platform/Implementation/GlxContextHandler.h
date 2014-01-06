@@ -25,11 +25,13 @@
 */
 
 #include "OpenGL.h"
+#define Status int
 #include <GL/glx.h>
 /* undef Xlib nonsense to avoid conflicts */
+#undef Always
 #undef Complex
 #undef None
-#undef Always
+#undef Status
 
 #include "Platform/AbstractXApplication.h"
 #include "Platform/Implementation/AbstractContextHandler.h"
