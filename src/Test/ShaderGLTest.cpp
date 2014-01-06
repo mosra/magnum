@@ -22,10 +22,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Utility/Directory.h>
+
 #include "Context.h"
 #include "Extensions.h"
 #include "Shader.h"
 #include "Test/AbstractOpenGLTester.h"
+
+#include "ShaderGLTestConfigure.h"
 
 namespace Magnum { namespace Test {
 
@@ -38,6 +42,10 @@ class ShaderGLTest: public AbstractOpenGLTester {
         void constructMove();
 
         void label();
+
+        void addSource();
+        void addFile();
+        void compile();
 };
 
 ShaderGLTest::ShaderGLTest() {
@@ -45,7 +53,11 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::constructCopy,
               &ShaderGLTest::constructMove,
 
-              &ShaderGLTest::label});
+              &ShaderGLTest::label,
+
+              &ShaderGLTest::addSource,
+              &ShaderGLTest::addFile,
+              &ShaderGLTest::compile});
 }
 
 void ShaderGLTest::construct() {
@@ -136,6 +148,75 @@ void ShaderGLTest::label() {
     CORRADE_COMPARE(shader.label(), "MyShader");
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void ShaderGLTest::addSource() {
+    #ifndef MAGNUM_TARGET_GLES
+    Shader shader(Version::GL210, Shader::Type::Fragment);
+    #else
+    Shader shader(Version::GLES200, Shader::Type::Fragment);
+    #endif
+
+    shader.addSource("#define FOO BAR\n")
+          .addSource("void main() {}\n");
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "#version 120\n",
+        "#line 1 1\n",
+        "#define FOO BAR\n",
+        "#line 1 2\n",
+        "void main() {}\n"
+    }));
+    #else
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "#version 100\n",
+        "#line 1 1\n",
+        "#define FOO BAR\n",
+        "#line 1 2\n",
+        "void main() {}\n"
+    }));
+    #endif
+}
+
+void ShaderGLTest::addFile() {
+    #ifndef MAGNUM_TARGET_GLES
+    Shader shader(Version::GL210, Shader::Type::Fragment);
+    #else
+    Shader shader(Version::GLES200, Shader::Type::Fragment);
+    #endif
+
+    shader.addFile(Utility::Directory::join(SHADERGLTEST_FILES_DIR, "shader.glsl"));
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "#version 120\n",
+        "#line 1 1\n",
+        "void main() {}\n"
+    }));
+    #else
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "#version 100\n",
+        "#line 1 1\n",
+        "void main() {}\n"
+    }));
+    #endif
+}
+
+void ShaderGLTest::compile() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v = Version::GL210;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Fragment);
+    shader.addSource("void main() {}\n");
+    CORRADE_VERIFY(shader.compile());
+
+    Shader shader2(v, Shader::Type::Fragment);
+    shader2.addSource("[fu] bleh error #:! stuff\n");
+    CORRADE_VERIFY(!shader2.compile());
 }
 
 }}
