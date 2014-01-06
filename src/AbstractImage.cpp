@@ -97,6 +97,8 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
         #ifdef MAGNUM_TARGET_GLES2
         case ColorFormat::Luminance:
         #endif
+        case ColorFormat::DepthComponent:
+        case ColorFormat::StencilIndex:
             return 1*size;
         case ColorFormat::RG:
         #ifndef MAGNUM_TARGET_GLES2
@@ -126,10 +128,8 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
             return 4*size;
 
         /* Handled above */
-        case ColorFormat::DepthComponent:
-        case ColorFormat::StencilIndex:
         case ColorFormat::DepthStencil:
-            CORRADE_ASSERT_UNREACHABLE();
+            CORRADE_ASSERT(false, "AbstractImage::pixelSize(): invalid ColorType specified for depth/stencil ColorFormat", 0);
     }
 
     CORRADE_ASSERT_UNREACHABLE();

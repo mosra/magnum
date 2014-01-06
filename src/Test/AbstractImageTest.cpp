@@ -34,13 +34,24 @@ class AbstractImageTest: public TestSuite::Tester {
     public:
         explicit AbstractImageTest();
 
+        void pixelSize();
+
         void debugFormat();
         void debugType();
 };
 
 AbstractImageTest::AbstractImageTest() {
-    addTests({&AbstractImageTest::debugFormat,
+    addTests({&AbstractImageTest::pixelSize,
+
+              &AbstractImageTest::debugFormat,
               &AbstractImageTest::debugType});
+}
+
+void AbstractImageTest::pixelSize() {
+    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::RGBA, ColorType::UnsignedInt), 4*4);
+    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::DepthComponent, ColorType::UnsignedShort), 2);
+    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::StencilIndex, ColorType::UnsignedByte), 1);
+    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::DepthStencil, ColorType::UnsignedInt248), 4);
 }
 
 void AbstractImageTest::debugFormat() {
