@@ -88,6 +88,11 @@ template<UnsignedInt dimensions> class MAGNUM_EXPORT BufferImage: public Abstrac
         /** @brief %Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
+        /** @copydoc Image::dataSize() */
+        std::size_t dataSize(const typename DimensionTraits<Dimensions, Int>::VectorType& size) const {
+            return AbstractImage::dataSize<dimensions>(size);
+        }
+
         /** @brief %Image buffer */
         Buffer& buffer() { return _buffer; }
 

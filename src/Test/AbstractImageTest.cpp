@@ -26,6 +26,7 @@
 #include <TestSuite/Tester.h>
 
 #include "AbstractImage.h"
+#include "Image.h"
 #include "ColorFormat.h"
 
 namespace Magnum { namespace Test {
@@ -35,6 +36,7 @@ class AbstractImageTest: public TestSuite::Tester {
         explicit AbstractImageTest();
 
         void pixelSize();
+        void dataSize();
 
         void debugFormat();
         void debugType();
@@ -42,6 +44,7 @@ class AbstractImageTest: public TestSuite::Tester {
 
 AbstractImageTest::AbstractImageTest() {
     addTests({&AbstractImageTest::pixelSize,
+              &AbstractImageTest::dataSize,
 
               &AbstractImageTest::debugFormat,
               &AbstractImageTest::debugType});
@@ -52,6 +55,17 @@ void AbstractImageTest::pixelSize() {
     CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::DepthComponent, ColorType::UnsignedShort), 2);
     CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::StencilIndex, ColorType::UnsignedByte), 1);
     CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::DepthStencil, ColorType::UnsignedInt248), 4);
+}
+
+void AbstractImageTest::dataSize() {
+    /* Verify that row size is properly rounded */
+    CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedByte).dataSize({}), 0);
+    CORRADE_COMPARE(Image2D(ColorFormat::Red, ColorType::UnsignedByte).dataSize({4, 2}), 8);
+    CORRADE_COMPARE(Image2D(ColorFormat::Red, ColorType::UnsignedByte).dataSize({2, 4}), 16);
+    CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedByte).dataSize(Vector2i(1)), 4);
+
+    CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedShort).dataSize({16, 8}),
+                    4*2*16*8);
 }
 
 void AbstractImageTest::debugFormat() {

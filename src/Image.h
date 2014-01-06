@@ -97,6 +97,17 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /**
+         * @brief Size of data required to store image of given size
+         *
+         * Takes color format, type and row alignment of this image into
+         * account.
+         * @see @ref pixelSize()
+         */
+        std::size_t dataSize(const typename DimensionTraits<Dimensions, Int>::VectorType& size) const {
+            return AbstractImage::dataSize<dimensions>(size);
+        }
+
+        /**
          * @brief Pointer to raw data
          *
          * @see @ref release()

@@ -26,6 +26,7 @@
 
 #include <Utility/Assert.h>
 
+#include "Math/Vector.h"
 #include "ColorFormat.h"
 
 namespace Magnum {
@@ -134,5 +135,19 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
 
     CORRADE_ASSERT_UNREACHABLE();
 }
+
+template<UnsignedInt dimensions> std::size_t AbstractImage::dataSize(Math::Vector<dimensions, Int> size) const {
+    /** @todo Code this properly when all @fn_gl{PixelStore} parameters are implemented */
+    /* Row size, rounded to multiple of 4 bytes */
+    const std::size_t rowSize = ((size[0]*pixelSize() + 3)/4)*4;
+
+    /** @todo Can't this be done somewhat nicer? */
+    size[0] = 1;
+    return rowSize*size.product();
+}
+
+template std::size_t AbstractImage::dataSize<1>(Math::Vector<1, Int>) const;
+template std::size_t AbstractImage::dataSize<2>(Math::Vector<2, Int>) const;
+template std::size_t AbstractImage::dataSize<3>(Math::Vector<3, Int>) const;
 
 }

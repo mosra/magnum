@@ -79,6 +79,8 @@ class MAGNUM_EXPORT AbstractImage {
 
         ~AbstractImage() = default;
 
+        template<UnsignedInt dimensions> std::size_t dataSize(Math::Vector<dimensions, Int> size) const;
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #else
