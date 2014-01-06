@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Renderbuffer
+ * @brief Class @ref Magnum::Renderbuffer
  */
 
 #include "AbstractObject.h"
@@ -37,18 +37,18 @@ namespace Magnum {
 /**
 @brief %Renderbuffer
 
-Attachable to framebuffer as render target, see Framebuffer documentation
+Attachable to framebuffer as render target, see @ref Framebuffer documentation
 for more information.
 
 @section Renderbuffer-performance-optimization Performance optimizations
 
 The engine tracks currently bound renderbuffer to avoid unnecessary calls to
-@fn_gl{BindRenderbuffer} in setStorage(). %Renderbuffer limits and
+@fn_gl{BindRenderbuffer} in @ref setStorage(). %Renderbuffer limits and
 implementation-defined values (such as @ref maxSize()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, function
-setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindRenderbuffer}.
+@ref setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindRenderbuffer}.
 See its documentation for more information.
 
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}

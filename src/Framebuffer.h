@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Framebuffer
+ * @brief Class @ref Magnum::Framebuffer
  */
 
 #include "AbstractFramebuffer.h"
@@ -40,9 +40,9 @@ namespace Magnum {
 /**
 @brief %Framebuffer
 
-Unlike DefaultFramebuffer, which is used for on-screen rendering, this class
-is used for off-screen rendering, usable either in windowless applications,
-texture generation or for various post-processing effects.
+Unlike @ref DefaultFramebuffer, which is used for on-screen rendering, this
+class is used for off-screen rendering, usable either in windowless
+applications, texture generation or for various post-processing effects.
 
 @section Framebuffer-usage Example usage
 
@@ -71,10 +71,9 @@ framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)}
                         {MyShader::NormalOutput, Framebuffer::ColorAttachment(1)}});
 @endcode
 
-The actual @ref Platform::GlutApplication::drawEvent() "drawEvent()" might
-look like this. First you clear all buffers you need, perform drawing to
-off-screen framebuffer, then bind the default and render the textures on
-screen:
+The actual @ref Platform::Sdl2Application::drawEvent() "drawEvent()" might look
+like this. First you clear all buffers you need, perform drawing to off-screen
+framebuffer, then bind the default and render the textures on screen:
 @code
 void drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color)
@@ -93,10 +92,10 @@ void drawEvent() {
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
 If extension @extension{EXT,direct_state_access} is available, functions
-mapForDraw(), mapForRead(), attachRenderbuffer(), attachTexture1D(),
-attachTexture2D(), attachCubeMapTexture() and attachTexture3D() use DSA
-to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their respective
-documentation for more information.
+@ref mapForDraw(), @ref mapForRead(), @ref attachRenderbuffer(),
+@ref attachTexture1D(), @ref attachTexture2D(), @ref attachCubeMapTexture() and
+@ref attachTexture3D() use DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}.
+See their respective documentation for more information.
 
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @todo `MAX_COLOR_ATTACHMENTS`
@@ -108,8 +107,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Color attachment
          *
-         * @see Attachment, attachRenderbuffer(), attachTexture1D(),
-         *      attachTexture2D(), attachCubeMapTexture(), attachTexture3D()
+         * @see @ref Attachment, @ref attachRenderbuffer(),
+         *      @ref attachTexture1D(), @ref attachTexture2D(),
+         *      @ref attachCubeMapTexture(), @ref attachTexture3D()
          */
         class ColorAttachment {
             friend class Framebuffer;
@@ -117,7 +117,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
             public:
                 /**
                  * @brief Constructor
-                 * @param id        Color attachment id
+                 * @param id        Color attachment ID
                  *
                  * @requires_gles30 %Extension @es_extension{NV,fbo_color_attachments}
                  *      is required for @p id greater than 0.
@@ -135,7 +135,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Draw attachment
          *
-         * @see mapForDraw()
+         * @see @ref mapForDraw()
          */
         class DrawAttachment {
             public:
@@ -158,8 +158,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief %Buffer attachment
          *
-         * @see attachRenderbuffer(), attachTexture1D(), attachTexture2D(),
-         *      attachCubeMapTexture(), attachTexture3D()
+         * @see @ref attachRenderbuffer(), @ref attachTexture1D(),
+         *      @ref attachTexture2D(), @ref attachCubeMapTexture(),
+         *      @ref attachTexture3D()
          */
         class MAGNUM_EXPORT BufferAttachment {
             public:
@@ -174,7 +175,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
                  * @brief Both depth and stencil buffer
                  *
                  * @requires_gles30 Combined depth and stencil attachment is
-                 *      not available in OpenGL ES 2.0.
+                 *      not available in OpenGL ES 2.0. Attach the same object
+                 *      to both @ref Depth and @ref Stencil instead.
+                 * @todo Support this in ES2 (bind to both depth and stencil internally)
                  */
                 static const BufferAttachment DepthStencil;
                 #endif
@@ -195,7 +198,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Invalidation attachment
          *
-         * @see invalidate()
+         * @see @ref invalidate()
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
          */
@@ -223,7 +226,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Status
          *
-         * @see checkStatus()
+         * @see @ref checkStatus()
          */
         enum class Status: GLenum {
             /** The framebuffer is complete */
@@ -296,7 +299,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Constructor
          *
          * Generates new OpenGL framebuffer.
-         * @see setViewport(), @fn_gl{GenFramebuffers}
+         * @see @ref setViewport(), @fn_gl{GenFramebuffers}
          */
         explicit Framebuffer(const Range2Di& viewport);
 
@@ -369,7 +372,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *
          * @p attachments is list of shader outputs mapped to framebuffer
          * color attachment IDs. %Shader outputs which are not listed are not
-         * used, you can achieve the same by passing Framebuffer::DrawAttachment::None
+         * used, you can achieve the same by passing @ref Framebuffer::DrawAttachment::None
          * as color attachment ID. Example usage:
          * @code
          * framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
@@ -410,6 +413,23 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         }
 
         /**
+         * @brief Map given color attachment for reading
+         * @param attachment        Color attachment
+         * @return Reference to self (for method chaining)
+         *
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @ref mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
+         *      or @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
+         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         */
+        Framebuffer& mapForRead(ColorAttachment attachment) {
+            (this->*readBufferImplementation)(GLenum(attachment));
+            return *this;
+        }
+
+        /**
          * @brief Invalidate framebuffer
          * @param attachments       Attachments to invalidate
          *
@@ -418,9 +438,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
-         *      clear() instead where the extension is not supported.
+         *      @ref clear() instead where the extension is not supported.
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use clear() instead where the extension is not supported.
+         *      Use @ref clear() instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
 
@@ -434,28 +454,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
-         *      clear() instead where the extension is not supported.
+         *      @ref clear() instead where the extension is not supported.
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use clear() instead where the extension is not supported.
+         *      Use @ref clear() instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
-
-        /**
-         * @brief Map given color attachment for reading
-         * @param attachment        Color attachment
-         * @return Reference to self (for method chaining)
-         *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer} or
-         *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
-         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
-         */
-        Framebuffer& mapForRead(ColorAttachment attachment) {
-            (this->*readBufferImplementation)(GLenum(attachment));
-            return *this;
-        }
 
         /**
          * @brief Attach renderbuffer to given buffer
@@ -505,7 +508,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
+         * @see @ref attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
         Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
@@ -521,7 +524,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
+         * @see @ref attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
          *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
         Framebuffer& attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, Int level) {

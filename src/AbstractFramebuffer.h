@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractFramebuffer
+ * @brief Class @ref Magnum::AbstractFramebuffer, enum @ref Magnum::FramebufferClear, @ref Magnum::FramebufferBlit, @ref Magnum::FramebufferBlitFilter, @ref Magnum::FramebufferTarget, enum set @ref FramebufferClearMask
  */
 
 #include <Containers/EnumSet.h>
@@ -128,7 +128,7 @@ enum class FramebufferTarget: GLenum {
 /**
 @brief Base for default and named framebuffers
 
-See DefaultFramebuffer and Framebuffer for more information.
+See @ref DefaultFramebuffer and @ref Framebuffer for more information.
 
 @section AbstractFramebuffer-performance-optimization Performance optimizations and security
 
@@ -138,8 +138,8 @@ switching framebuffers. %Framebuffer limits and implementation-defined values
 (such as @ref maxViewportSize()) are cached, so repeated queries don't result
 in repeated @fn_gl{Get} calls.
 
-If @extension{ARB,robustness} is available, read() operations are protected
-from buffer overflow.
+If @extension{ARB,robustness} is available, @ref read() operations are
+protected from buffer overflow.
 @todo @extension{ARB,viewport_array} (and `GL_MAX_VIEWPORTS`)
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
@@ -229,9 +229,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Bind framebuffer for rendering
          *
          * Binds the framebuffer and updates viewport to saved dimensions.
-         * @see setViewport(), DefaultFramebuffer::mapForRead(),
-         *      Framebuffer::mapForRead(), DefaultFramebuffer::mapForDraw(),
-         *      Framebuffer::mapForDraw(), @fn_gl{BindFramebuffer},
+         * @see @ref setViewport(), @ref DefaultFramebuffer::mapForRead(),
+         *      @ref Framebuffer::mapForRead(), @ref DefaultFramebuffer::mapForDraw(),
+         *      @ref Framebuffer::mapForDraw(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Viewport}
          * @todo Bind internally to ReadDraw if separate binding points are not
          *      supported
@@ -245,7 +245,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Set viewport
          * @return Reference to self (for method chaining)
          *
-         * Saves the viewport to be used at later time in bind(). If the
+         * Saves the viewport to be used at later time in @ref bind(). If the
          * framebuffer is currently bound, updates the viewport to given
          * rectangle.
          * @see @ref maxViewportSize(), @fn_gl{Viewport}
@@ -257,11 +257,11 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param mask              Which buffers to clear
          *
          * To improve performance you can also use
-         * DefaultFramebuffer::invalidate() / Framebuffer::invalidate() instead
-         * of clearing given buffer if you will not use it anymore or fully
-         * overwrite it later.
-         * @see Renderer::setClearColor(), Renderer::setClearDepth(),
-         *      Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
+         * @ref DefaultFramebuffer::invalidate() / @ref Framebuffer::invalidate()
+         * instead of clearing given buffer if you will not use it anymore or
+         * fully overwrite it later.
+         * @see @ref Renderer::setClearColor(), @ref Renderer::setClearDepth(),
+         *      @ref Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Clear}
          */
         void clear(FramebufferClearMask mask);
@@ -290,7 +290,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * See read(const Vector2i&, const Vector2i&, Image2D*) for more
+         * See @ref read(const Vector2i&, const Vector2i&, Image2D*) for more
          * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */

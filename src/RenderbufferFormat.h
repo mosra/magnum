@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Enum Magnum::RenderbufferFormat
+ * @brief Enum @ref Magnum::RenderbufferFormat
  */
 
 #include "OpenGL.h"
@@ -35,7 +35,7 @@ namespace Magnum {
 /**
 @brief Internal renderbuffer format
 
-@see Renderbuffer
+@see @ref Renderbuffer
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @todo RGB, RGB8 ES only (ES3 + @es_extension{OES,rgb8_rgba8})
  */

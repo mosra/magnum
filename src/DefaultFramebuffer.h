@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::DefaultFramebuffer
+ * @brief Class @ref Magnum::DefaultFramebuffer
  */
 
 #include "AbstractFramebuffer.h"
@@ -36,8 +36,9 @@ namespace Magnum {
 @brief Default framebuffer
 
 Default framebuffer, i.e. the actual screen surface. It is automatically
-created when Context is created and it is available through global variable
-@ref defaultFramebuffer. It is by default mapped to whole screen surface.
+created when @ref Context is created and it is available through global
+variable @ref defaultFramebuffer. It is by default mapped to whole screen
+surface.
 
 @section DefaultFramebuffer-usage Usage
 
@@ -72,7 +73,7 @@ multiple framebuffers.
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
 If extension @extension{EXT,direct_state_access} is available, functions
-mapForDraw() and mapForRead() use DSA to avoid unnecessary calls to
+@ref mapForDraw() and @ref mapForRead() use DSA to avoid unnecessary calls to
 @fn_gl{BindFramebuffer}. See their respective documentation for more
 information.
 */
@@ -83,7 +84,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         /**
          * @brief Status
          *
-         * @see checkStatus()
+         * @see @ref checkStatus()
          * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
          */
         enum class Status: GLenum {
@@ -105,7 +106,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         /**
          * @brief Draw attachment
          *
-         * @see mapForDraw()
+         * @see @ref mapForDraw()
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
@@ -166,7 +167,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         /**
          * @brief Read attachment
          *
-         * @see mapForRead()
+         * @see @ref mapForRead()
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
         enum class ReadAttachment: GLenum {
@@ -236,7 +237,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         /**
          * @brief Invalidation attachment
          *
-         * @see invalidate()
+         * @see @ref invalidate()
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
          */
@@ -354,8 +355,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * If @extension{EXT,direct_state_access} is not available and the
          * framebuffer is not currently bound, it is bound before the
          * operation.
-         * @see mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer} or
-         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
+         * @see @ref mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer}
+         *      or @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
@@ -392,9 +393,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
-         *      clear() instead where the extension is not supported.
+         *      @ref clear() instead where the extension is not supported.
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use clear() instead where the extension is not supported.
+         *      Use @ref clear() instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
 
@@ -408,9 +409,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
-         *      clear() instead where the extension is not supported.
+         *      @ref clear() instead where the extension is not supported.
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use clear() instead where the extension is not supported.
+         *      Use @ref clear() instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 
