@@ -61,9 +61,6 @@ class ColorTest: public TestSuite::Tester {
         void configuration();
 };
 
-typedef BasicColor3<UnsignedByte> Color3ub;
-typedef BasicColor4<UnsignedByte> Color4ub;
-
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
               &ColorTest::constructDefault,
@@ -152,9 +149,6 @@ void ColorTest::constructParts() {
 }
 
 void ColorTest::constructConversion() {
-    typedef BasicColor3<UnsignedByte> Color3ub;
-    typedef BasicColor4<UnsignedByte> Color4ub;
-
     constexpr Color3 a(10.1f, 12.5f, 0.75f);
     #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr /* Not constexpr under GCC < 4.7 */

@@ -151,7 +151,7 @@ Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
 range @f$ [0.0, 1.0] @f$.
 
-@see @ref Color3, @ref BasicColor4
+@see @ref Color3, @ref Color3ub, @ref BasicColor4
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -332,13 +332,16 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
 /** @brief Three-component (RGB) float color */
 typedef BasicColor3<Float> Color3;
 
+/** @brief Three-component (RGB) unsigned byte color */
+typedef BasicColor3<UnsignedByte> Color3ub;
+
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, BasicColor3)
 
 /**
 @brief Four-component (RGBA) color
 
 See @ref BasicColor3 for more information.
-@see @ref Color4
+@see @ref Color4, @ref Color4ub
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -499,6 +502,9 @@ class BasicColor4: public Math::Vector4<T> {
 
 /** @brief Four-component (RGBA) float color */
 typedef BasicColor4<Float> Color4;
+
+/** @brief Four-component (RGBA) unsigned byte color */
+typedef BasicColor4<UnsignedByte> Color4ub;
 
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, BasicColor4)
 

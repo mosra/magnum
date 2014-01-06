@@ -549,7 +549,9 @@ enum class BufferTextureFormat: GLenum;
 template<class> class BasicColor3;
 template<class> class BasicColor4;
 typedef BasicColor3<Float> Color3;
+typedef BasicColor3<UnsignedByte> Color3ub;
 typedef BasicColor4<Float> Color4;
+typedef BasicColor4<UnsignedByte> Color4ub;
 
 enum class ColorFormat: GLenum;
 enum class ColorType: GLenum;
