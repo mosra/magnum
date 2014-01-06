@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::MeshView
+ * @brief Class @ref Magnum::MeshView
  */
 
 #include "Magnum.h"
@@ -42,10 +42,10 @@ index count and offset. It is then possible to reuse one mesh buffer
 configuration for different views. %Mesh primitive, index type, attribute
 bindings and attached buffers are reused from original mesh.
 
-The same rules as in Mesh apply, i.e. if the view has non-zero index count, it
-is treated as indexed mesh, otherwise it is treated as non-indexed mesh. If
-both index and vertex count is zero, the view is treated as empty and no draw
-commands are issued when calling draw().
+The same rules as in @ref Mesh apply, i.e. if the view has non-zero index
+count, it is treated as indexed mesh, otherwise it is treated as non-indexed
+mesh. If both index and vertex count is zero, the view is treated as empty and
+no draw commands are issued when calling @ref draw().
 
 You must ensure that the original mesh remains available for whole view
 lifetime.

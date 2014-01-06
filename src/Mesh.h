@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Mesh
+ * @brief Class @ref Magnum::Mesh
  */
 
 #include <vector>
@@ -285,10 +285,10 @@ for more infromation) and call @ref Mesh::draw().
 
 @section Mesh-performance-optimization Performance optimizations
 
-If @extension{APPLE,vertex_array_object}, OpenGL ES 3.0 or
+If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
 @es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
-in each draw() call. The engine tracks currently bound VAO to avoid
+in each @ref draw() call. The engine tracks currently bound VAO to avoid
 unnecessary calls to @fn_gl{BindVertexArray}. %Mesh limits and
 implementation-defined values (such as @ref maxVertexAttributes()) are cached,
 so repeated queries don't result in repeated @fn_gl{Get} calls.
@@ -410,8 +410,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         /**
          * @brief OpenGL mesh ID
          *
-         * If @extension{APPLE,vertex_array_object} is not available, returns
-         * `0`.
+         * If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0) is not
+         * available, returns `0`.
          */
         GLuint id() const { return _id; }
 
@@ -590,7 +590,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * Prefer to use @ref setIndexBuffer(Buffer&, GLintptr, IndexType, UnsignedInt, UnsignedInt)
          * for better performance.
-         * @see setIndexCount(), MeshTools::compressIndices(),
+         * @see @ref setIndexCount(), @ref MeshTools::compressIndices(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
          *      @extension{APPLE,vertex_array_object} is available)
          */
