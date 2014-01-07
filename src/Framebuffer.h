@@ -583,7 +583,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
-        static MAGNUM_LOCAL Texture2DImplementation texture2DImplementation;
+        static Texture2DImplementation texture2DImplementation;
 
         typedef void(Framebuffer::*Texture3DImplementation)(BufferAttachment, Texture3D&, GLint, GLint);
         void MAGNUM_LOCAL texture3DImplementationDefault(BufferAttachment attachment, Texture3D& texture, GLint level, GLint layer);
