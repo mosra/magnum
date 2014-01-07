@@ -22,9 +22,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Math/Vector2.h"
 #include "Context.h"
 #include "Extensions.h"
 #include "Renderbuffer.h"
+#include "RenderbufferFormat.h"
 #include "Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -38,6 +40,9 @@ class RenderbufferGLTest: public AbstractOpenGLTester {
         void constructMove();
 
         void label();
+
+        void setStorage();
+        void setStorageMultisample();
 };
 
 RenderbufferGLTest::RenderbufferGLTest() {
@@ -45,7 +50,10 @@ RenderbufferGLTest::RenderbufferGLTest() {
               &RenderbufferGLTest::constructCopy,
               &RenderbufferGLTest::constructMove,
 
-              &RenderbufferGLTest::label});
+              &RenderbufferGLTest::label,
+
+              &RenderbufferGLTest::setStorage,
+              &RenderbufferGLTest::setStorageMultisample});
 }
 
 void RenderbufferGLTest::construct() {
@@ -115,6 +123,44 @@ void RenderbufferGLTest::label() {
 
     renderbuffer.setLabel("MyRenderbuffer");
     CORRADE_COMPARE(renderbuffer.label(), "MyRenderbuffer");
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RenderbufferGLTest::setStorage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
+    Renderbuffer renderbuffer;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    renderbuffer.setStorage(RenderbufferFormat::RGBA8, {128, 128});
+    #else
+    renderbuffer.setStorage(RenderbufferFormat::RGBA4, {128, 128});
+    #endif
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RenderbufferGLTest::setStorageMultisample() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+        CORRADE_SKIP("Required extension is not available.");
+    #endif
+
+    Renderbuffer renderbuffer;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    renderbuffer.setStorageMultisample(Renderbuffer::maxSamples(), RenderbufferFormat::RGBA8, {128, 128});
+    #else
+    renderbuffer.setStorageMultisample(Renderbuffer::maxSamples(), RenderbufferFormat::RGBA4, {128, 128});
+    #endif
 
     MAGNUM_VERIFY_NO_ERROR();
 }
