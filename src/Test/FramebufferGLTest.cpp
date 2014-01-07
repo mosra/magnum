@@ -49,6 +49,11 @@ FramebufferGLTest::FramebufferGLTest() {
 }
 
 void FramebufferGLTest::construct() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
     {
         const Framebuffer framebuffer({{32, 16}, {128, 256}});
 
@@ -69,6 +74,11 @@ void FramebufferGLTest::constructCopy() {
 }
 
 void FramebufferGLTest::constructMove() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
     Framebuffer a({{32, 16}, {128, 256}});
     const Int id = a.id();
 
@@ -93,6 +103,11 @@ void FramebufferGLTest::constructMove() {
 }
 
 void FramebufferGLTest::label() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
