@@ -194,7 +194,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Ima
     #else
     bindInternal(readTarget);
     #endif
-    const std::size_t dataSize = image.pixelSize()*size.product();
+    const std::size_t dataSize = image.dataSize(size);
     char* const data = new char[dataSize];
     readImplementation(offset, size, image.format(), image.type(), dataSize, data);
     image.setData(image.format(), image.type(), size, data);
@@ -213,8 +213,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Buf
         image.setData(image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bind(Buffer::Target::PixelPack);
-    /** @todo De-duplicate buffer size computation */
-    readImplementation(offset, size, image.format(), image.type(), image.pixelSize()*size.product(), nullptr);
+    readImplementation(offset, size, image.format(), image.type(), image.dataSize(size), nullptr);
 }
 #endif
 
