@@ -636,7 +636,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gl %Buffer data queries are not available in OpenGL ES.
          *      Use @ref Magnum::Buffer::map() "map()" instead.
          */
-        template<class T> Containers::Array<T> data();
+        template<class T = unsigned char> Containers::Array<T> data();
 
         /**
          * @brief %Buffer subdata
@@ -652,7 +652,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gl %Buffer data queries are not available in OpenGL ES.
          *      Use @ref Magnum::Buffer::map() "map()" instead.
          */
-        template<class T> Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
+        template<class T = unsigned char> Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
         #endif
 
         /**

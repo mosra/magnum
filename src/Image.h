@@ -101,8 +101,14 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          *
          * @see @ref release()
          */
-        unsigned char* data() { return _data; }
-        const unsigned char* data() const { return _data; } /**< @overload */
+        template<class T = unsigned char> T* data() {
+            return reinterpret_cast<T*>(_data);
+        }
+
+        /** @overload */
+        template<class T = unsigned char> const T* data() const {
+            return reinterpret_cast<const T*>(_data);
+        }
 
         /**
          * @brief Set image data

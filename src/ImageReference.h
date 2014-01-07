@@ -79,6 +79,11 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
         /** @brief Pointer to raw data */
         constexpr const unsigned char* data() const { return _data; }
 
+        /** @overload */
+        template<class T = unsigned char> const T* data() const {
+            return reinterpret_cast<const T*>(_data);
+        }
+
         /**
          * @brief Set image data
          * @param data              %Image data
