@@ -152,7 +152,7 @@ namespace {
 }
 
 void AbstractShaderProgramGLTest::create() {
-    Utility::Resource rs("MyShader");
+    Utility::Resource rs("AbstractShaderProgramGLTest");
 
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
@@ -206,7 +206,7 @@ void AbstractShaderProgramGLTest::create() {
 
 void AbstractShaderProgramGLTest::createMultipleOutputs() {
     #ifndef MAGNUM_TARGET_GLES
-    Utility::Resource rs("MyShader");
+    Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(Version::GL210, Shader::Type::Vertex);
     vert.addSource(rs.get("MyShader.vert"));
@@ -248,7 +248,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
-    Utility::Resource rs("MyShader");
+    Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(Version::GL210, Shader::Type::Vertex);
     vert.addSource(rs.get("MyShader.vert"));
@@ -298,7 +298,7 @@ namespace {
 }
 
 MyShader::MyShader() {
-    Utility::Resource rs("MyShader");
+    Utility::Resource rs("AbstractShaderProgramGLTest");
 
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
