@@ -90,21 +90,6 @@ bool AbstractQuery::resultAvailable() {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<> bool AbstractQuery::result<bool>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
-
-    /** @todo Re-enable when extension loader is available for ES */
-    GLuint result;
-    #ifndef MAGNUM_TARGET_GLES2
-    glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
-    #elif defined(CORRADE_TARGET_NACL)
-    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT, &result);
-    #else
-    CORRADE_INTERNAL_ASSERT(false);
-    #endif
-    return result == GL_TRUE;
-}
-
 template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
@@ -119,6 +104,8 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     #endif
     return result;
 }
+
+template<> bool AbstractQuery::result<bool>() { return result<UnsignedInt>() != 0; }
 
 template<> Int AbstractQuery::result<Int>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
