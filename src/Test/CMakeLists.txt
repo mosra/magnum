@@ -50,11 +50,24 @@ if(BUILD_GL_TESTS)
     corrade_add_test(MeshGLTest MeshGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(RenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(TextureGLTest TextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(TimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
 
     corrade_add_resource(AbstractShaderProgramGLTest_RES AbstractShaderProgramGLTestFiles/resources.conf)
     corrade_add_test(AbstractShaderProgramGLTest
         AbstractShaderProgramGLTest.cpp
         ${AbstractShaderProgramGLTest_RES}
+        LIBRARIES ${GL_TEST_LIBRARIES})
+
+    corrade_add_resource(QueryGLTest_RES QueryGLTestFiles/resources.conf)
+    if(NOT MAGNUM_TARGET_GLES2)
+        corrade_add_test(PrimitiveQueryGLTest
+            PrimitiveQueryGLTest.cpp
+            ${QueryGLTest_RES}
+            LIBRARIES ${GL_TEST_LIBRARIES})
+    endif()
+    corrade_add_test(SampleQueryGLTest
+        SampleQueryGLTest.cpp
+        ${QueryGLTest_RES}
         LIBRARIES ${GL_TEST_LIBRARIES})
 
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ShaderGLTestConfigure.h.cmake
