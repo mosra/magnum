@@ -172,6 +172,8 @@ UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
 @requires_gl30 %Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
+
+@see @ref SampleQuery, @ref TimeQuery
 @todo glBeginQueryIndexed
 */
 class PrimitiveQuery: public AbstractQuery {
@@ -249,6 +251,8 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 q.endConditionalRender();
 @endcode
 @requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
+
+@see @ref PrimitiveQuery, @ref TimeQuery
 */
 class SampleQuery: public AbstractQuery {
     public:
@@ -391,6 +395,8 @@ UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
 Using the latter results in fewer OpenGL calls when doing more measures.
 @requires_gl33 %Extension @extension{ARB,timer_query}
 @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
+
+@see @ref PrimitiveQuery, @ref SampleQuery
 @todo timestamp with glGet + example usage
 @todo @es_extension{EXT,disjoint_timer_query} -- GL_GPU_DISJOINT_EXT support? where?
 */
