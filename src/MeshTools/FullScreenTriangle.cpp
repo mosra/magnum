@@ -47,9 +47,9 @@ std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle(Version version) {
     {
         buffer.reset(new Buffer);
         constexpr Vector2 triangle[] = {
-            Vector2(-1.0,  1.0),
-            Vector2(-1.0, -3.0),
-            Vector2( 3.0,  1.0)
+            {-1.0f,  1.0f},
+            {-1.0f, -3.0f},
+            { 3.0f,  1.0f}
         };
         buffer->setData(triangle, BufferUsage::StaticDraw);
         /** @todo Is it possible to attach moveable buffer here to avoid heap
