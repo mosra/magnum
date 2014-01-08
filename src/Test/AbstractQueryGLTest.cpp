@@ -22,8 +22,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Context.h"
-#include "Extensions.h"
 #include "Query.h"
 #include "Test/AbstractOpenGLTester.h"
 

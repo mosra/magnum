@@ -437,7 +437,6 @@ class TimeQuery: public AbstractQuery {
         #endif
 };
 
-
 inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._id), target(other.target) {
     other._id = 0;
 }
