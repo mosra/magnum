@@ -33,19 +33,19 @@
 
 namespace Magnum { namespace MeshTools {
 
-std::pair<Buffer*, Mesh> fullScreenTriangle() {
+std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle(Version version) {
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setVertexCount(3);
 
-    Buffer* buffer = nullptr;
+    std::unique_ptr<Buffer> buffer;
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL300))
+    if(version < Version::GL300)
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    if(version < Version::GLES300)
     #endif
     {
-        buffer = new Buffer;
+        buffer.reset(new Buffer);
         constexpr Vector2 triangle[] = {
             Vector2(-1.0,  1.0),
             Vector2(-1.0, -3.0),
@@ -58,6 +58,10 @@ std::pair<Buffer*, Mesh> fullScreenTriangle() {
     }
 
     return {std::move(buffer), std::move(mesh)};
+}
+
+std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle() {
+    return fullScreenTriangle(Context::current()->version());
 }
 
 }}
