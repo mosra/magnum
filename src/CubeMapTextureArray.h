@@ -251,6 +251,8 @@ class CubeMapTextureArray: public AbstractTexture {
 };
 
 }
+#else
+#error this header is available only on desktop OpenGL build
 #endif
 
 #endif

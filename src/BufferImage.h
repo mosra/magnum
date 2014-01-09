@@ -144,6 +144,8 @@ template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dim
     std::swap(_buffer, other._buffer);
     return *this;
 }
+#else
+#error this header is available only on desktop OpenGL and OpenGL ES 3.0 build
 #endif
 
 }

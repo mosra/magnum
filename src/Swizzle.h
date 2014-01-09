@@ -24,16 +24,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file /Swizzle.h
  * @brief Function @ref Magnum::swizzle()
  * @deprecated Use @ref Math/Swizzle.h instead.
  */
+#endif
 
 #include "Math/Swizzle.h"
-
-#ifdef MAGNUM_BUILD_DEPRECATED
 #include "Color.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum {
 
 /**
@@ -48,7 +49,7 @@ using Math::swizzle;
 
 }
 #else
-#error
+#error this header is available only on deprecated build
 #endif
 
 #endif

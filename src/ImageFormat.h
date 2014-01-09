@@ -24,10 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Enum @ref Magnum::ImageFormat, @ref Magnum::ImageType
  * @deprecated Use @ref ColorFormat.h instead.
  */
+#endif
 
 #include "ColorFormat.h"
 
@@ -48,7 +50,7 @@ typedef CORRADE_DEPRECATED("use ColorType instead") ColorType ImageType;
 
 }
 #else
-#error
+#error this header is available only on deprecated build
 #endif
 
 #endif

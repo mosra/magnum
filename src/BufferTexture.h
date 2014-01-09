@@ -280,6 +280,8 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
 };
 
 }
+#else
+#error this header is available only on desktop OpenGL build
 #endif
 
 #endif
