@@ -41,6 +41,10 @@
 #include <SDL.h>
 #include <SDL_scancode.h>
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 class Context;
@@ -370,9 +374,9 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window flag
          *
-         * @see @ref Flags, @ref setFlags()
+         * @see @ref WindowFlags, @ref setWindowFlags()
          */
-        enum class Flag: Uint32 {
+        enum class WindowFlag: Uint32 {
             Resizable = SDL_WINDOW_RESIZABLE,       /**< Resizable window */
             Fullscreen = SDL_WINDOW_FULLSCREEN,     /**< Fullscreen window */
             Hidden = SDL_WINDOW_HIDDEN,             /**< Hidden window */
@@ -381,14 +385,30 @@ class Sdl2Application::Configuration {
             MouseLocked = SDL_WINDOW_INPUT_GRABBED  /**< Window with mouse locked */
         };
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowFlag
+         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::WindowFlag "WindowFlag" instead.
+         */
+        typedef CORRADE_DEPRECATED("use WindowFlag instead") WindowFlag Flag;
+        #endif
+
         /**
          * @brief Window flags
          *
          * @see @ref setFlags()
          */
-        typedef Containers::EnumSet<Flag, Uint32, SDL_WINDOW_RESIZABLE|
+        typedef Containers::EnumSet<WindowFlag, Uint32, SDL_WINDOW_RESIZABLE|
             SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
-            SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> Flags;
+            SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> WindowFlags;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowFlags
+         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::WindowFlags "WindowFlags" instead.
+         */
+        typedef CORRADE_DEPRECATED("use WindowFlags instead") WindowFlags Flags;
+        #endif
 
         /*implicit*/ Configuration();
         ~Configuration();
@@ -435,18 +455,38 @@ class Sdl2Application::Configuration {
         }
 
         /** @brief Window flags */
-        Flags flags() const { return _flags; }
+        WindowFlags windowFlags() const { return _windowFlags; }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief windowFlags()
+         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::windowFlags() "windowFlags()" instead.
+         */
+        CORRADE_DEPRECATED("use windowFlags() instead") WindowFlags flags() const {
+            return windowFlags();
+        }
+        #endif
 
         /**
          * @brief Set window flags
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref Flag::Resizable.
+         * Default is @ref WindowFlag::Resizable.
          */
-        Configuration& setFlags(const Flags flags) {
-            _flags = flags;
+        Configuration& setWindowFlags(WindowFlags flags) {
+            _windowFlags = flags;
             return *this;
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief setWindowFlags()
+         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::setWindowFlags "setWindowFlags()" instead.
+         */
+        CORRADE_DEPRECATED("use setWindowFlags() instead") Configuration& setFlags(WindowFlags flags) {
+            return setWindowFlags(flags);
+        }
+        #endif
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -496,12 +536,12 @@ class Sdl2Application::Configuration {
         std::string _title;
         #endif
         Vector2i _size;
-        Flags _flags;
+        WindowFlags _windowFlags;
         Int _sampleCount;
         Version _version;
 };
 
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 
 /**
 @brief Base for input events

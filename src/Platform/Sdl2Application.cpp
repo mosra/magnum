@@ -109,8 +109,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration.sampleCount());
 
     /* Flags: if not hidden, set as shown */
-    Uint32 flags(configuration.flags());
-    if(!(configuration.flags() & Configuration::Flag::Hidden)) flags |= SDL_WINDOW_SHOWN;
+    Uint32 windowFlags(configuration.windowFlags());
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden)) windowFlags |= SDL_WINDOW_SHOWN;
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -158,7 +158,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     if(!(window = SDL_CreateWindow(configuration.title().data(),
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         configuration.size().x(), configuration.size().y(),
-        SDL_WINDOW_OPENGL|flags)))
+        SDL_WINDOW_OPENGL|windowFlags)))
     {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
         return false;
@@ -328,7 +328,7 @@ Sdl2Application::Configuration::Configuration():
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _title("Magnum SDL2 Application"),
     #endif
-    _size(800, 600), _flags(Flag::Resizable), _sampleCount(0), _version(Version::None) {}
+    _size(800, 600), _windowFlags(WindowFlag::Resizable), _sampleCount(0), _version(Version::None) {}
 
 Sdl2Application::Configuration::~Configuration() = default;
 
