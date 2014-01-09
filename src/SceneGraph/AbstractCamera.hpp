@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for AbstractCamera.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractCamera.h
  */
 
 #include "AbstractCamera.h"

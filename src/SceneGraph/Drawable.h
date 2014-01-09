@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Drawable, Magnum::SceneGraph::DrawableGroup, alias Magnum::SceneGraph::BasicDrawable2D, Magnum::SceneGraph::BasicDrawable3D, Magnum::SceneGraph::BasicDrawableGroup2D, Magnum::SceneGraph::BasicDrawableGroup3D, typedef Magnum::SceneGraph::Drawable2D, Magnum::SceneGraph::Drawable3D, Magnum::SceneGraph::DrawableGroup2D, Magnum::SceneGraph::DrawableGroup3D
+ * @brief Class @ref Magnum::SceneGraph::Drawable, @ref Magnum::SceneGraph::DrawableGroup, alias @ref Magnum::SceneGraph::BasicDrawable2D, @ref Magnum::SceneGraph::BasicDrawable3D, @ref Magnum::SceneGraph::BasicDrawableGroup2D, @ref Magnum::SceneGraph::BasicDrawableGroup3D, typedef @ref Magnum::SceneGraph::Drawable2D, @ref Magnum::SceneGraph::Drawable3D, @ref Magnum::SceneGraph::DrawableGroup2D, @ref Magnum::SceneGraph::DrawableGroup3D
  */
 
 #include "AbstractGroupedFeature.h"
@@ -35,14 +35,15 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Drawable
 
-Adds drawing function to the object. Each %Drawable is part of some DrawableGroup
-and the whole group is drawn with particular camera using AbstractCamera::draw().
+Adds drawing function to the object. Each %Drawable is part of some
+@ref DrawableGroup and the whole group is drawn with particular camera using
+@ref AbstractCamera::draw().
 
 @section Drawable-usage Usage
 
-First thing is add Drawable feature to some object and implement draw(). You
-can do it conveniently using multiple inheritance (see @ref scenegraph-features
-for introduction). Example:
+First thing is to add @ref Drawable feature to some object and implement
+@ref draw(). You can do it conveniently using multiple inheritance (see
+@ref scenegraph-features for introduction). Example:
 @code
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
@@ -60,8 +61,8 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
 @endcode
 
 Then you add these objects to your scene and some drawable group and transform
-them as you like. You can also use DrawableGroup::add() and
-DrawableGroup::remove().
+them as you like. You can also use @ref DrawableGroup::add() and
+@ref DrawableGroup::remove().
 @code
 Scene3D scene;
 SceneGraph::DrawableGroup3D drawables;
@@ -74,9 +75,10 @@ SceneGraph::DrawableGroup3D drawables;
 // ...
 @endcode
 
-The last thing you need is Camera attached to some object (thus using its
+The last thing you need is camera attached to some object (thus using its
 transformation) and with it you can perform drawing in your draw event
-implementation. See Camera2D and Camera3D documentation for more information.
+implementation. See @ref Camera2D and @ref Camera3D documentation for more
+information.
 @code
 Camera3D camera(&cameraObject);
 
@@ -91,10 +93,10 @@ void MyApplication::drawEvent() {
 @section Drawable-performance Using drawable groups to improve performance
 
 You can organize your drawables to multiple groups to minimize OpenGL state
-changes - for example put all objects using the same shader, the same light
+changes -- for example put all objects using the same shader, the same light
 setup etc into one group, then put all transparent into another and set common
-parameters once for whole group instead of setting them again in each draw()
-implementation. Example:
+parameters once for whole group instead of setting them again in each
+@ref draw() implementation. Example:
 @code
 Shaders::PhongShader shader;
 SceneGraph::DrawableGroup3D phongObjects, transparentObjects;
@@ -135,7 +137,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          * @param drawables Group this drawable belongs to
          *
          * Adds the feature to the object and also to the group, if specified.
-         * Otherwise you can use DrawableGroup::add().
+         * Otherwise you can use @ref DrawableGroup::add().
          */
         explicit Drawable(AbstractObject<dimensions, T>& object, DrawableGroup<dimensions, T>* drawables = nullptr);
 
@@ -159,7 +161,8 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          *      to camera
          * @param camera                    Camera
          *
-         * Projection matrix can be retrieved from AbstractCamera::projectionMatrix().
+         * Projection matrix can be retrieved from
+         * @ref SceneGraph::AbstractCamera::projectionMatrix() "AbstractCamera::projectionMatrix()".
          */
         virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>& camera) = 0;
 };
@@ -168,7 +171,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
 /**
 @brief %Drawable for two-dimensional scenes
 
-Convenience alternative to <tt>%Drawable<2, T></tt>. See Drawable for more
+Convenience alternative to <tt>%Drawable<2, T></tt>. See @ref Drawable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see @ref Drawable2D, @ref BasicDrawable3D
@@ -191,7 +194,7 @@ typedef Drawable<2, Float> Drawable2D;
 /**
 @brief %Drawable for three-dimensional scenes
 
-Convenience alternative to <tt>%Drawable<3, T></tt>. See Drawable for more
+Convenience alternative to <tt>%Drawable<3, T></tt>. See @ref Drawable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see @ref Drawable3D, @ref BasicDrawable3D
@@ -227,7 +230,7 @@ template<UnsignedInt dimensions, class T> class DrawableGroup: public FeatureGro
 /**
 @brief Group of drawables for two-dimensional scenes
 
-Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See Drawable for
+Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See @ref Drawable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see @ref DrawableGroup2D, @ref BasicDrawableGroup3D
@@ -250,7 +253,7 @@ typedef DrawableGroup<2, Float> DrawableGroup2D;
 /**
 @brief Group of drawables for three-dimensional scenes
 
-Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See Drawable for
+Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See @ref Drawable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see @ref DrawableGroup3D, @ref BasicDrawableGroup2D

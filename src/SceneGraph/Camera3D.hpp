@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for Camera3D.h
+ * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Camera3D.h
  */
 
 #include "AbstractCamera.hpp"

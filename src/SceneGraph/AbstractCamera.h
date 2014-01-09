@@ -167,8 +167,8 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
 /**
 @brief Base camera for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See AbstractCamera
-for more information.
+Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See
+@ref AbstractCamera for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see @ref AbstractCamera2D, @ref AbstractBasicCamera3D
 */
@@ -190,8 +190,8 @@ typedef AbstractCamera<2, Float> AbstractCamera2D;
 /**
 @brief Base camera for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See AbstractCamera
-for more information.
+Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See
+@ref AbstractCamera for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
 @see @ref AbstractCamera3D, @ref AbstractBasicCamera2D
 */

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicCamera2D, typedef Magnum::SceneGraph::Camera2D
+ * @brief Class @ref Magnum::SceneGraph::BasicCamera2D, typedef @ref Magnum::SceneGraph::Camera2D
  */
 
 #include "AbstractCamera.h"
@@ -64,7 +64,7 @@ template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
          * @param object    %Object holding this feature
          *
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
-         * @see setProjection()
+         * @see @ref setProjection()
          */
         explicit BasicCamera2D(AbstractObject<2, T>& object);
 
@@ -85,7 +85,7 @@ template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
          * @param size      Size of the view
          * @return Reference to self (for method chaining)
          *
-         * @see Matrix3::projection()
+         * @see @ref Matrix3::projection()
          */
         BasicCamera2D<T>& setProjection(const Math::Vector2<T>& size);
 

@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractGroupedFeature, alias Magnum::SceneGraph::AbstractBasicGroupedFeature2D, Magnum::SceneGraph::AbstractBasicGroupedFeature3D, Magnum::SceneGraph::AbstractGroupedFeature2D, Magnum::SceneGraph::AbstractGroupedFeature3D
+ * @brief Class @ref Magnum::SceneGraph::AbstractGroupedFeature, alias @ref Magnum::SceneGraph::AbstractBasicGroupedFeature2D, @ref Magnum::SceneGraph::AbstractBasicGroupedFeature3D, @ref Magnum::SceneGraph::AbstractGroupedFeature2D, @ref Magnum::SceneGraph::AbstractGroupedFeature3D
  */
 
 #include <vector>
@@ -38,12 +38,12 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for grouped features
 
-Used together with FeatureGroup.
+Used together with @ref FeatureGroup.
 
 @section AbstractGroupedFeature-subclassing Subclassing
 
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
-and typedef'ing FeatureGroup to accept only given type, e.g.:
+and typedef'ing @ref FeatureGroup to accept only given type, e.g.:
 @code
 class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
     // ...
@@ -76,7 +76,7 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
          * @param group     Group this feature belongs to
          *
          * Adds the feature to the object and to group, if specified.
-         * @see FeatureGroup::add()
+         * @see @ref FeatureGroup::add()
          */
         explicit AbstractGroupedFeature(AbstractObject<dimensions, T>& object, FeatureGroup<dimensions, Derived, T>* group = nullptr): AbstractFeature<dimensions, T>(object), _group(nullptr) {
             if(group) group->add(static_cast<Derived&>(*this));
@@ -111,7 +111,7 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
 @brief Base grouped feature for two-dimensional scenes
 
 Convenience alternative to <tt>%AbstractGroupedFeature<2, Derived, T></tt>. See
-AbstractGroupedFeature for more information.
+@ref AbstractGroupedFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<2, Derived, T></tt>
     instead.
 @see @ref AbstractGroupedFeature2D, @ref AbstractBasicGroupedFeature3D
@@ -122,7 +122,7 @@ template<class Derived, class T> using AbstractBasicGroupedFeature2D = AbstractG
 @brief Base grouped feature for two-dimensional float scenes
 
 Convenience alternative to <tt>%AbstractBasicGroupedFeature2D<Derived, Float></tt>.
-See AbstractGroupedFeature for more information.
+See @ref AbstractGroupedFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<2, Derived, Float></tt>
     instead.
 @see @ref AbstractGroupedFeature3D
@@ -133,7 +133,7 @@ template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFea
 @brief Base grouped feature for three-dimensional scenes
 
 Convenience alternative to <tt>%AbstractGroupedFeature<3, Derived, T></tt>. See
-AbstractGroupedFeature for more information.
+@ref AbstractGroupedFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<3, Derived, T></tt>
     instead.
 @see @ref AbstractGroupedFeature3D, @ref AbstractBasicGroupedFeature2D
@@ -144,7 +144,7 @@ template<class Derived, class T> using AbstractBasicGroupedFeature3D = AbstractG
 @brief Base grouped feature for three-dimensional float scenes
 
 Convenience alternative to <tt>%AbstractBasicGroupedFeature3D<Derived, Float></tt>.
-See AbstractGroupedFeature for more information.
+See @ref AbstractGroupedFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<3, Derived, Float></tt>
     instead.
 @see @ref AbstractGroupedFeature2D

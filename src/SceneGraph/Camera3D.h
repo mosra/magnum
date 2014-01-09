@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicCamera3D, typedef Magnum::SceneGraph::Camera3D
+ * @brief Class @ref Magnum::SceneGraph::BasicCamera3D, typedef @ref Magnum::SceneGraph::Camera3D
  */
 
 #include "AbstractCamera.h"
@@ -89,7 +89,7 @@ template<class T> class BasicCamera3D: public AbstractCamera<3, T> {
          * @param far           Far clipping plane
          * @return Reference to self (for method chaining)
          *
-         * @see setPerspective(), Matrix4::orthographicProjection()
+         * @see @ref setPerspective(), @ref Matrix4::orthographicProjection()
          */
         BasicCamera3D<T>& setOrthographic(const Math::Vector2<T>& size, T near, T far);
 
@@ -100,7 +100,7 @@ template<class T> class BasicCamera3D: public AbstractCamera<3, T> {
          * @param far           Far clipping plane
          * @return Reference to self (for method chaining)
          *
-         * @see setOrthographic(), Matrix4::perspectiveProjection()
+         * @see @ref setOrthographic(), @ref Matrix4::perspectiveProjection()
          */
         BasicCamera3D<T>& setPerspective(const Math::Vector2<T>& size, T near, T far);
 
@@ -112,7 +112,7 @@ template<class T> class BasicCamera3D: public AbstractCamera<3, T> {
          * @param far           Far clipping plane
          * @return Reference to self (for method chaining)
          *
-         * @see setOrthographic(), Matrix4::perspectiveProjection()
+         * @see @ref setOrthographic(), @ref Matrix4::perspectiveProjection()
          */
         BasicCamera3D<T>& setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far);
 

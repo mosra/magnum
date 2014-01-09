@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractFeature, alias Magnum::SceneGraph::BasicAbstractFeature2D, Magnum::SceneGraph::BasicAbstractFeature3D, typedef Magnum::SceneGraph::AbstractFeature2D, Magnum::SceneGraph::AbstractFeature3D, enum Magnum::SceneGraph::CachedTransformation, enum set Magnum::SceneGraph::CachedTransformations
+ * @brief Class @ref Magnum::SceneGraph::AbstractFeature, alias @ref Magnum::SceneGraph::AbstractBasicFeature2D, @ref Magnum::SceneGraph::AbstractBasicFeature3D, typedef @ref Magnum::SceneGraph::AbstractFeature2D, @ref Magnum::SceneGraph::AbstractFeature3D, enum @ref Magnum::SceneGraph::CachedTransformation, enum set @ref Magnum::SceneGraph::CachedTransformations
  */
 
 #include <Containers/EnumSet.h>
@@ -39,9 +39,9 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Which transformation to cache in given feature
 
-@see @ref scenegraph-caching, CachedTransformations,
-    AbstractFeature::setCachedTransformations(), AbstractFeature::clean(),
-    AbstractFeature::cleanInverted()
+@see @ref scenegraph-caching, @ref CachedTransformations,
+    @ref AbstractFeature::setCachedTransformations(), @ref AbstractFeature::clean(),
+    @ref AbstractFeature::cleanInverted()
 @todo Provide also simpler representations from which could benefit
     other transformation implementations, as they won't need to
     e.g. create transformation matrix from quaternion?
@@ -50,14 +50,16 @@ enum class CachedTransformation: UnsignedByte {
     /**
      * Absolute transformation is cached.
      *
-     * If enabled, clean() is called when cleaning object.
+     * If enabled, @ref AbstractFeature::clean() is called when cleaning
+     * object.
      */
     Absolute = 1 << 0,
 
     /**
      * Inverted absolute transformation is cached.
      *
-     * If enabled, cleanInverted() is called when cleaning object.
+     * If enabled, @ref AbstractFeature::cleanInverted() is called when
+     * cleaning object.
      */
     InvertedAbsolute = 1 << 1
 };
@@ -65,8 +67,8 @@ enum class CachedTransformation: UnsignedByte {
 /**
 @brief Which transformations to cache in this feature
 
-@see @ref scenegraph-caching, AbstractFeature::setCachedTransformations(),
-    AbstractFeature::clean(), AbstractFeature::cleanInverted()
+@see @ref scenegraph-caching, @ref AbstractFeature::setCachedTransformations(),
+    @ref AbstractFeature::clean(), @ref AbstractFeature::cleanInverted()
 */
 typedef Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
 
@@ -75,11 +77,11 @@ CORRADE_ENUMSET_OPERATORS(CachedTransformations)
 /**
 @brief Base for object features
 
-Contained in Object, takes care of transformation caching. See @ref scenegraph
-for introduction.
+Contained in @ref Object, takes care of transformation caching. See
+@ref scenegraph for introduction.
 
-Uses Corrade::Containers::LinkedList for accessing holder object and sibling
-features.
+Uses @ref Corrade::Containers::LinkedList for accessing holder object and
+sibling features.
 
 @section AbstractFeature-subclassing Subclassing
 
@@ -94,9 +96,9 @@ it from scratch every time to achieve better performance. See
 @ref scenegraph-caching for introduction.
 
 In order to have caching, you must enable it first, because by default the
-caching is disabled. You can enable it using setCachedTransformations() and
-then implement corresponding cleaning function(s) -- either clean(),
-cleanInverted() or both. Example:
+caching is disabled. You can enable it using @ref setCachedTransformations()
+and then implement corresponding cleaning function(s) -- either @ref clean(),
+@ref cleanInverted() or both. Example:
 @code
 class CachingFeature: public SceneGraph::AbstractFeature3D {
     public:
@@ -119,16 +121,16 @@ Before using the cached value explicitly request object cleaning by calling
 
 @subsection AbstractFeature-subclassing-transformation Accessing object transformation
 
-Features has by default access only to AbstractObject, which is base of Object
-not depending on any particular transformation implementation. This has the
-advantage that features doesn't have to be implemented for all possible
+Features has by default access only to @ref AbstractObject, which is base of
+@ref Object not depending on any particular transformation implementation. This
+has the advantage that features doesn't have to be implemented for all possible
 transformation implementations, thus preventing code duplication. However it
-is impossible to transform the object using only pointer to AbstractObject.
+is impossible to transform the object using only pointer to @ref AbstractObject.
 
 The transformations have interfaces for common functionality, so the feature
 can use that interface instead of being specialized for all relevant
 transformation implementations. Using small trick we are able to get pointer
-to both AbstractObject and needed transformation from one constructor
+to both @ref AbstractObject and needed transformation from one constructor
 parameter:
 @code
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
@@ -231,7 +233,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         /**
          * @brief Which transformations are cached
          *
-         * @see @ref scenegraph-caching, clean(), cleanInverted()
+         * @see @ref scenegraph-caching, @ref clean(), @ref cleanInverted()
          */
         CachedTransformations cachedTransformations() const {
             return _cachedTransformations;
@@ -241,8 +243,8 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         /**
          * @brief Set transformations to be cached
          *
-         * Based on which transformation types are enabled, clean() or
-         * cleanInverted() is called when cleaning absolute object
+         * Based on which transformation types are enabled, @ref clean() or
+         * @ref cleanInverted() is called when cleaning absolute object
          * transformation.
          *
          * Nothing is enabled by default.
@@ -257,7 +259,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          *
          * Reimplement only if you want to invalidate some external data when
          * object is marked as dirty. All expensive computations should be
-         * done in clean() and cleanInverted().
+         * done in @ref clean() and @ref cleanInverted().
          *
          * Default implementation does nothing.
          * @see @ref scenegraph-caching
@@ -299,8 +301,8 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
 /**
 @brief Base feature for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractFeature<2, T></tt>. See AbstractFeature
-for more information.
+Convenience alternative to <tt>%AbstractFeature<2, T></tt>. See
+@ref AbstractFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<2, T></tt> instead.
 @see @ref AbstractFeature2D, @ref AbstractBasicFeature3D
 */
@@ -322,8 +324,8 @@ typedef AbstractFeature<2, Float> AbstractFeature2D;
 /**
 @brief Base feature for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See AbstractFeature
-for more information.
+Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See
+@ref AbstractFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
 @see AbstractFeature2D
 */

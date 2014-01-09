@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AnimableGroup, alias Magnum::SceneGraph::BasicAnimableGroup2D, Magnum::SceneGraph::BasicAnimableGroup3D, typedef Magnum::SceneGraph::AnimableGroup2D, Magnum::SceneGraph::AnimableGroup3D
+ * @brief Class @ref Magnum::SceneGraph::AnimableGroup, alias @ref Magnum::SceneGraph::BasicAnimableGroup2D, @ref Magnum::SceneGraph::BasicAnimableGroup3D, typedef @ref Magnum::SceneGraph::AnimableGroup2D, @ref Magnum::SceneGraph::AnimableGroup3D
  */
 
 #include "FeatureGroup.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Group of animables
 
-See Animable for more information.
+See @ref Animable for more information.
 @see @ref scenegraph, @ref BasicAnimableGroup2D, @ref BasicAnimableGroup3D,
     @ref AnimableGroup2D, @ref AnimableGroup3D
 */
@@ -53,19 +53,19 @@ template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGro
         /**
          * @brief Count of running animations
          *
-         * @see step()
+         * @see @ref step()
          */
         std::size_t runningCount() const { return _runningCount; }
 
         /**
          * @brief Perform animation step
-         * @param time      Absolute time (e.g. Timeline::previousFrameTime())
-         * @param delta     Time delta for current frame (e.g. Timeline::previousFrameDuration())
+         * @param time      Absolute time (e.g. @ref Timeline::previousFrameTime())
+         * @param delta     Time delta for current frame (e.g. @ref Timeline::previousFrameDuration())
          *
          * If there are no running animations the function does nothing.
-         * @see runningCount()
+         * @see @ref runningCount()
          */
-        void step(const Float time, const Float delta);
+        void step(Float time, Float delta);
 
     private:
         std::size_t _runningCount;
