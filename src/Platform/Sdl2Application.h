@@ -538,7 +538,9 @@ class Sdl2Application::Configuration {
         Vector2i _size;
         WindowFlags _windowFlags;
         Int _sampleCount;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         Version _version;
+        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
