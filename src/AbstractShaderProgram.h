@@ -1166,7 +1166,14 @@ See @ref AbstractShaderProgram-subclassing for example usage in shaders and
 template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
     public:
         enum: UnsignedInt {
-            Location = location /**< Location to which the attribute is bound */
+            Location = location, /**< Location to which the attribute is bound */
+
+            /**
+             * Count of vectors in this type
+             *
+             * @see @ref vectorSize()
+             */
+            VectorCount = Implementation::Attribute<T>::VectorCount
         };
 
         /**
@@ -1340,9 +1347,13 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
         /** @brief Type of passed data */
         constexpr DataType dataType() const { return _dataType; }
 
-        /** @brief Size of passed data */
-        std::size_t dataSize() const {
-            return Implementation::Attribute<T>::size(GLint(_components)*Implementation::Attribute<T>::vectorCount(), _dataType);
+        /**
+         * @brief Size of each vector in passed data
+         *
+         * @see @ref VectorCount
+         */
+        UnsignedInt vectorSize() const {
+            return Implementation::Attribute<T>::size(GLint(_components), _dataType);
         }
 
         /** @brief Data options */
@@ -1369,7 +1380,7 @@ template<std::size_t cols, std::size_t rows> struct SizedAttribute;
 
 /* Vector attribute sizes */
 template<std::size_t cols> struct SizedVectorAttribute {
-    constexpr static std::size_t vectorCount() { return cols; }
+    enum: UnsignedInt { VectorCount = UnsignedInt(cols) };
 };
 template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1 };
@@ -1565,7 +1576,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
     };
     typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    constexpr static std::size_t vectorCount() { return 1; }
+    enum: UnsignedInt { VectorCount = 1 };
 
     static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
