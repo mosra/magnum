@@ -683,7 +683,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
                     bool(attribute.dataOptions() & AbstractShaderProgram::Attribute<location, T>::DataOption::Normalized),
-                    offset+i*attribute.vectorSize(),
+                    GLintptr(offset+i*attribute.vectorSize()),
                     stride
                 });
         }
@@ -708,7 +708,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
-                    offset+i*attribute.vectorSize(),
+                    GLintptr(offset+i*attribute.vectorSize()),
                     stride
                 });
         }
