@@ -161,14 +161,17 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 
 @see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 %Extension @extension{EXT,gpu_shader4} for using
-    @ref bindFragmentDataLocation().
+    @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()".
 @requires_gl33 %Extension @extension{ARB,blend_func_extended} for using
-    @ref bindFragmentDataLocationIndexed().
+    @ref Magnum::AbstractShaderProgram::bindFragmentDataLocationIndexed() "bindFragmentDataLocationIndexed()".
 @requires_gl33 %Extension @extension{ARB,explicit_attrib_location} for
-    explicit attribute location instead of using @ref bindAttributeLocation(),
-    @ref bindFragmentDataLocation() or @ref bindFragmentDataLocationIndexed().
+    explicit attribute location instead of using
+    @ref Magnum::AbstractShaderProgram::bindAttributeLocation() "bindAttributeLocation()",
+    @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()"
+    or @ref Magnum::AbstractShaderProgram::bindFragmentDataLocationIndexed() "bindFragmentDataLocationIndexed()".
 @requires_gles30 Explicit location specification of input attributes is not
-    supported in OpenGL ES 2.0, use @ref bindAttributeLocation() instead.
+    supported in OpenGL ES 2.0, use @ref Magnum::AbstractShaderProgram::bindAttributeLocation() "bindAttributeLocation()"
+    instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
     ES 2.0, similar functionality is available in extension
     @es_extension{NV,draw_buffers}.
@@ -199,9 +202,11 @@ Int projectionUniform = uniformLocation("projection");
 
 @see @ref maxUniformLocations()
 @requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
-    explicit uniform location instead of using @ref uniformLocation().
+    explicit uniform location instead of using
+    @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()".
 @requires_gl Explicit uniform location is not supported in OpenGL ES. Use
-    @ref uniformLocation() instead.
+    @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()"
+    instead.
 
 @subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
 
@@ -216,7 +221,7 @@ layout(binding = 1) uniform sampler2D specularTexture;
 
 If you don't have the required extension (or if you want to change the layer
 later), declare the uniforms without the `layout()` qualifier and set the
-texture layer uniform using @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
+texture layer uniform using @ref setUniform(Int, const T&) "setUniform(Int, Int)".
 Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES
 1.0.
 @code
@@ -1155,7 +1160,7 @@ Template parameter @p T is the type which is used for shader attribute, e.g.
 buffers to mesh. By default it is the same as type used in shader (e.g.
 @ref DataType::Int for @ref Vector4i). It's also possible to pass integer data
 to floating-point shader inputs. In this case you may want to normalize the
-values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see @ref DataOption::Normalize.
+values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see @ref DataOption::Normalized.
 
 Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
 for more information.
@@ -1324,8 +1329,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * @brief Constructor
          * @param components    Component count
          * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. @ref DataType::Integer for
-         *      @ref Vector4i).
+         *      type used in shader (e.g. @ref DataType::Int for @ref Vector4i).
          * @param dataOptions   Data options. Default is no options.
          */
         constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}

@@ -129,7 +129,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * constructor with `Matrix3 m(Matrix3::Identity);`. Optional parameter
          * @p value allows you to specify value on diagonal.
          */
-        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType identity = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(identity, value) {}
+        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(Matrix<3, T>::Identity, value) {}
 
         /** @brief %Matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
@@ -206,7 +206,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * to @ref uniformScaling(), because it doesn't compute the square
          * root.
          * @see @ref rotationScaling(), @ref rotation(),
-         *      @ref rotationNormalized(), @ref scaling(const Vector2&),
+         *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
          *      @ref Matrix4::uniformScaling()
          */
         T uniformScalingSquared() const {
@@ -223,7 +223,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * the scaling is the same in all axes. Use faster alternative
          * @ref uniformScalingSquared() where possible.
          * @see @ref rotationScaling(), @ref rotation(),
-         *      @ref rotationNormalized(), @ref scaling(const Vector2&),
+         *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
          *      @ref Matrix4::uniformScaling()
          */
         T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }

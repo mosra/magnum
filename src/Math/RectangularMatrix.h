@@ -359,7 +359,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return *reinterpret_cast<const Vector<rows*cols, T>*>(data());
         }
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
+    #else
+    private:
+    #endif
         /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and Matrix<size, T>(T) */
         template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
 
@@ -654,9 +658,11 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<r
 
 template<std::size_t cols, std::size_t rows, class T> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
     return {(*this)[sequence][sequence]...};
 }
+#endif
 
 }}
 

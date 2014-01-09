@@ -297,6 +297,7 @@ namespace {
     };
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
@@ -326,6 +327,7 @@ MyShader::MyShader() {
     colorUniform = uniformLocation("color");
     additionsUniform = uniformLocation("additions");
 }
+#endif
 
 void AbstractShaderProgramGLTest::uniform() {
     MyShader shader;

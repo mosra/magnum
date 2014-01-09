@@ -77,7 +77,7 @@ four-component, corresponding @ref Math::Vector2, @ref Math::Vector3,
 @ref Math::Vector4, @ref Color3 or @ref Color4 specialization is returned.
 
 @see @ref matrix-vector-component-access, @ref Vector4::xyz(),
-    @ref Vector4::xy(), @ref Vector3::xy(), @ref Color4::rgb()
+    @ref Vector4::xy(), @ref Vector3::xy(), @ref BasicColor4::rgb()
 */
 template<char ...components, class T> constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
     return {Implementation::Component<T::Size, components>::value(vector)...};

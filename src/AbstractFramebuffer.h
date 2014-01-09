@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::AbstractFramebuffer, enum @ref Magnum::FramebufferClear, @ref Magnum::FramebufferBlit, @ref Magnum::FramebufferBlitFilter, @ref Magnum::FramebufferTarget, enum set @ref FramebufferClearMask
+ * @brief Class @ref Magnum::AbstractFramebuffer, enum @ref Magnum::FramebufferClear, @ref Magnum::FramebufferBlit, @ref Magnum::FramebufferBlitFilter, @ref Magnum::FramebufferTarget, enum set @ref Magnum::FramebufferClearMask
  */
 
 #include <Containers/EnumSet.h>
@@ -39,7 +39,7 @@ namespace Magnum {
 /**
 @brief Mask for framebuffer clearing
 
-@see AbstractFramebuffer, FramebufferClearMask
+@see @ref AbstractFramebuffer, @ref FramebufferClearMask
 */
 enum class FramebufferClear: GLbitfield {
     Color = GL_COLOR_BUFFER_BIT,    /**< Color */
@@ -50,7 +50,7 @@ enum class FramebufferClear: GLbitfield {
 /**
 @brief Mask for clearing
 
-@see AbstractFramebuffer::clear()
+@see @ref AbstractFramebuffer::clear()
 */
 typedef Containers::EnumSet<FramebufferClear, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferClearMask;
@@ -58,7 +58,7 @@ typedef Containers::EnumSet<FramebufferClear, GLbitfield,
 /**
 @brief Mask for framebuffer blitting
 
-@see AbstractFramebuffer, FramebufferBlitMask
+@see @ref AbstractFramebuffer, @ref FramebufferBlitMask
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit}
@@ -72,7 +72,7 @@ enum class FramebufferBlit: GLbitfield {
 /**
 @brief Mask for framebuffer blitting
 
-@see AbstractFramebuffer::blit()
+@see @ref AbstractFramebuffer::blit()
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit}
@@ -83,7 +83,7 @@ typedef Containers::EnumSet<FramebufferBlit, GLbitfield,
 /**
 @brief %Framebuffer blit filtering
 
-@see AbstractFramebuffer::blit()
+@see @ref AbstractFramebuffer::blit()
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit}
@@ -96,7 +96,7 @@ enum class FramebufferBlitFilter: GLenum {
 /**
 @brief Target for binding framebuffer
 
-@see DefaultFramebuffer::bind(), Framebuffer::bind()
+@see @ref DefaultFramebuffer::bind(), @ref Framebuffer::bind()
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 */
 enum class FramebufferTarget: GLenum {
@@ -290,7 +290,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param image             %Buffer image where to put the data
          * @param usage             %Buffer usage
          *
-         * See @ref read(const Vector2i&, const Vector2i&, Image2D*) for more
+         * See @ref read(const Vector2i&, const Vector2i&, Image2D&) for more
          * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
          */

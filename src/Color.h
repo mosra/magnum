@@ -25,7 +25,7 @@
 */
 
 /** @file
- * @brief Class Magnum::BasicColor3, Magnum::BasicColor4, typedef Magnum::Color3, Magnum::Color4
+ * @brief Class @ref Magnum::BasicColor3, @ref Magnum::BasicColor4, typedef @ref Magnum::Color3, @ref Magnum::Color4
  */
 
 #include <tuple>
@@ -290,7 +290,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          * std::tie(hue, saturation, value) = color.toHSV();
          * @endcode
          *
-         * @see hue(), saturation(), value(), fromHSV()
+         * @see @ref hue(), @ref saturation(), @ref value(), @ref fromHSV()
          */
         constexpr HSV toHSV() const {
             return Implementation::toHSV<T>(*this);
@@ -300,7 +300,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          * @brief Hue
          * @return Hue in range @f$ [0.0, 360.0] @f$.
          *
-         * @see saturation(), value(), toHSV(), fromHSV()
+         * @see @ref saturation(), @ref value(), @ref toHSV(), @ref fromHSV()
          */
         constexpr Math::Deg<FloatingPointType> hue() const {
             return Math::Deg<FloatingPointType>(Implementation::hue<T>(*this));
@@ -310,7 +310,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          * @brief Saturation
          * @return Saturation in range @f$ [0.0, 1.0] @f$.
          *
-         * @see hue(), value(), toHSV(), fromHSV()
+         * @see @ref hue(), @ref value(), @ref toHSV(), @ref fromHSV()
          */
         constexpr FloatingPointType saturation() const {
             return Implementation::saturation<T>(*this);
@@ -320,7 +320,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          * @brief Value
          * @return Value in range @f$ [0.0, 1.0] @f$.
          *
-         * @see hue(), saturation(), toHSV(), fromHSV()
+         * @see @ref hue(), @ref saturation(), @ref toHSV(), @ref fromHSV()
          */
         constexpr FloatingPointType value() const {
             return Implementation::value<T>(*this);
@@ -420,7 +420,7 @@ class BasicColor4: public Math::Vector4<T> {
 
         /**
          * @copydoc BasicColor3::fromHSV()
-         * @param a     Alpha value, defaults to 1.0 for floating-point types
+         * @param a     Alpha value, defaults to `1.0` for floating-point types
          *      and maximum positive value for integral types.
          */
         constexpr static BasicColor4<T> fromHSV(HSV hsv, T a = Implementation::fullChannel<T>()) {
@@ -434,14 +434,14 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Default constructor
          *
-         * RGB components are set to zero, A component is set to 1.0 for
+         * RGB components are set to zero, A component is set to `1.0` for
          * floating-point types and maximum positive value for integral types.
          */
         constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::fullChannel<T>()) {}
 
         /**
          * @copydoc BasicColor3::BasicColor3(T)
-         * @param alpha Alpha value, defaults to 1.0 for floating-point types
+         * @param alpha Alpha value, defaults to `1.0` for floating-point types
          *      and maximum positive value for integral types.
          */
         constexpr explicit BasicColor4(T rgb, T alpha = Implementation::fullChannel<T>()): Math::Vector4<T>(rgb, rgb, rgb, alpha) {}
@@ -451,7 +451,7 @@ class BasicColor4: public Math::Vector4<T> {
          * @param r     R value
          * @param g     G value
          * @param b     B value
-         * @param a     A value, defaults to 1.0 for floating-point types and
+         * @param a     A value, defaults to `1.0` for floating-point types and
          *      maximum positive value for integral types.
          */
         constexpr /*implicit*/ BasicColor4(T r, T g, T b, T a = Implementation::fullChannel<T>()): Math::Vector4<T>(r, g, b, a) {}

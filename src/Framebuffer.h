@@ -107,7 +107,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Color attachment
          *
-         * @see @ref Attachment, @ref attachRenderbuffer(),
+         * @see @ref BufferAttachment, @ref attachRenderbuffer(),
          *      @ref attachTexture1D(), @ref attachTexture2D(),
          *      @ref attachCubeMapTexture(), @ref attachTexture3D()
          */
@@ -176,7 +176,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
                  *
                  * @requires_gles30 Combined depth and stencil attachment is
                  *      not available in OpenGL ES 2.0. Attach the same object
-                 *      to both @ref Depth and @ref Stencil instead.
+                 *      to both @ref Magnum::Framebuffer::BufferAttachment::Depth
+                 *      "BufferAttachment::Depth" and @ref Magnum::Framebuffer::BufferAttachment::Stencil
+                 *      "BufferAttachment::Stencil" instead.
                  * @todo Support this in ES2 (bind to both depth and stencil internally)
                  */
                 static const BufferAttachment DepthStencil;
@@ -438,9 +440,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
-         *      @ref clear() instead where the extension is not supported.
+         *      @ref Magnum::Framebuffer::clear() "clear()" instead where the
+         *      extension is not supported.
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use @ref clear() instead where the extension is not supported.
+         *      Use @ref Magnum::Framebuffer::clear() "clear()" instead where
+         *      the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
 
@@ -454,9 +458,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
-         *      @ref clear() instead where the extension is not supported.
+         *      @ref Magnum::Framebuffer::clear() "clear()" instead where the
+         *      extension is not supported.
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use @ref clear() instead where the extension is not supported.
+         *      Use @ref Magnum::Framebuffer::clear() "clear()" instead where
+         *      the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 

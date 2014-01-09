@@ -277,6 +277,7 @@ namespace {
     };
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 FloatShader::FloatShader(const std::string& type, const std::string& conversion) {
     /* We need special version for ES3, because GLSL in ES2 doesn't support
        rectangle matrices */
@@ -403,6 +404,7 @@ template<class T> T Checker::get(ColorFormat format, ColorType type) {
     framebuffer.read({}, Vector2i(1), image);
     return image.data<T>()[0];
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferUnsignedInt() {
@@ -982,6 +984,7 @@ namespace {
     };
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MultipleShader::MultipleShader() {
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
@@ -1017,6 +1020,7 @@ MultipleShader::MultipleShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
+#endif
 
 void MeshGLTest::addVertexBufferMultiple() {
     const Float data[] = {
@@ -1132,6 +1136,7 @@ namespace {
     constexpr Color4ub indexedResult(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 IndexChecker::IndexChecker(Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
     #ifndef MAGNUM_TARGET_GLES2
     renderbuffer.setStorage(RenderbufferFormat::RGBA8, Vector2i(1));
@@ -1156,6 +1161,7 @@ Color4ub IndexChecker::get() {
     framebuffer.read({}, Vector2i(1), image);
     return image.data<Color4ub>()[0];
 }
+#endif
 
 void MeshGLTest::setIndexBuffer() {
     Buffer vertices;

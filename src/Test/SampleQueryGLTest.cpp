@@ -64,6 +64,7 @@ namespace {
     };
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
     Utility::Resource rs("QueryGLTest");
     #ifndef MAGNUM_TARGET_GLES
@@ -86,6 +87,7 @@ MyShader::MyShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
+#endif
 
 void SampleQueryGLTest::querySamplesPassed() {
     #ifdef MAGNUM_TARGET_GLES2
