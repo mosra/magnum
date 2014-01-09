@@ -316,6 +316,7 @@ comes in handy.
 
 @see @ref portability-shaders
 
+@todo Use Containers::ArrayReference for setting uniform arrays?
 @todo Compiling and linking more than one shader in parallel, then checking
     status, should be faster -- https://twitter.com/g_truc/status/352778836657700866
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})

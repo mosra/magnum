@@ -62,6 +62,7 @@ typedef Containers::EnumSet<FramebufferClear, GLbitfield,
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit}
+@todo Remove redundant `%Buffer`
 */
 enum class FramebufferBlit: GLbitfield {
     ColorBuffer = GL_COLOR_BUFFER_BIT,    /**< Color buffer */

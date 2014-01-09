@@ -42,6 +42,8 @@ namespace Magnum {
 
 See @ref AbstractShaderProgram for more information.
 
+@todoc Usage...
+
 @section Shader-performance-optimization Performance optimizations
 
 %Shader limits and implementation-defined values (such as @ref maxUniformComponents())
