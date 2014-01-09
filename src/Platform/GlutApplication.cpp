@@ -133,7 +133,7 @@ void GlutApplication::mousePressEvent(MouseEvent&) {}
 void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
-GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600), _sampleCount(0) {}
+GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600), _sampleCount(0), _version(Version::None) {}
 GlutApplication::Configuration::~Configuration() = default;
 
 template class BasicScreen<GlutApplication>;

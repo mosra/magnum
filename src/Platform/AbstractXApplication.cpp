@@ -27,9 +27,8 @@
 #include <Utility/utilities.h>
 
 #include "Context.h"
+#include "Version.h"
 #include "Platform/Implementation/AbstractContextHandler.h"
-
-#define None 0L // redef Xlib nonsense
 
 /* Mask for X events */
 #define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|PointerMotionMask|StructureNotifyMask
@@ -80,7 +79,7 @@ bool AbstractXApplication::tryCreateContext(const Configuration& configuration) 
     attr.event_mask = 0;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
     window = XCreateWindow(display, root, 20, 20, configuration.size().x(), configuration.size().y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
-    XSetStandardProperties(display, window, configuration.title().data(), nullptr, None, nullptr, 0, nullptr);
+    XSetStandardProperties(display, window, configuration.title().data(), nullptr, 0, nullptr, 0, nullptr);
     XFree(visInfo);
 
     /* Be notified about closing the window */
@@ -176,7 +175,7 @@ void AbstractXApplication::mousePressEvent(MouseEvent&) {}
 void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
 void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
-AbstractXApplication::Configuration::Configuration(): _title("Magnum X Application"), _size(800, 600) {}
+AbstractXApplication::Configuration::Configuration(): _title("Magnum X Application"), _size(800, 600), _version(Version::None) {}
 AbstractXApplication::Configuration::~Configuration() = default;
 
 }}
