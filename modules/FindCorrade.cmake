@@ -37,6 +37,10 @@
 #   Native Client with `glibc` toolchain
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #
+# If CORRADE_BUILD_DEPRECATED is defined, the CORRADE_INCLUDE_DIR variable also
+# contains path directly to Corrade directory (i.e. for includes without
+# `Corrade/` prefix).
+#
 # Corrade provides these macros and functions:
 #
 #
@@ -126,8 +130,7 @@ find_program(CORRADE_RC_EXECUTABLE corrade-rc)
 
 # Include dir
 find_path(CORRADE_INCLUDE_DIR
-    NAMES PluginManager Utility
-    PATH_SUFFIXES Corrade)
+    NAMES Corrade/PluginManager Corrade/Utility)
 
 # CMake module dir
 find_path(_CORRADE_MODULE_DIR
@@ -155,7 +158,7 @@ if(NOT CORRADE_FOUND)
 endif()
 
 # Configuration
-file(READ ${CORRADE_INCLUDE_DIR}/corradeConfigure.h _corradeConfigure)
+file(READ ${CORRADE_INCLUDE_DIR}/Corrade/corradeConfigure.h _corradeConfigure)
 
 # Compatibility?
 string(FIND "${_corradeConfigure}" "#define CORRADE_GCC47_COMPATIBILITY" _GCC47_COMPATIBILITY)
@@ -214,6 +217,11 @@ mark_as_advanced(CORRADE_UTILITY_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY
     CORRADE_TESTSUITE_LIBRARY
     _CORRADE_MODULE_DIR)
+
+# Add Corrade dir to include path if this is deprecated build
+if(CORRADE_BUILD_DEPRECATED)
+    set(CORRADE_INCLUDE_DIR ${CORRADE_INCLUDE_DIR} ${CORRADE_INCLUDE_DIR}/Corrade)
+endif()
 
 # Include our module dir, if we have any
 if(NOT "${_CORRADE_MODULE_DIR}" STREQUAL "${CMAKE_ROOT}/Modules")
