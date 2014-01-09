@@ -46,7 +46,9 @@ or WebGL.
 */
 enum class TextureFormat: GLenum {
     /**
-     * Red component, normalized unsigned, size implementation-dependent.
+     * Red component, normalized unsigned, size implementation-dependent. Not
+     * allowed in unemulated @ref Texture::setStorage() "*Texture::setStorage()"
+     * calls.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::R8 "TextureFormat::R8".
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
@@ -70,7 +72,8 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, normalized unsigned, size
-     * implementation-dependent.
+     * implementation-dependent. Not allowed in unemulated
+     * @ref Texture::setStorage() "*Texture::setStorage()" calls.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::RG8 "TextureFormat::RG8".
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
@@ -93,7 +96,8 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * RGB, normalized unsigned, size implementation-dependent.
+     * RGB, normalized unsigned, size implementation-dependent. Not allowed in
+     * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::RGB8 "TextureFormat::RGB8".
      */
@@ -110,7 +114,8 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * RGBA, normalized unsigned, size implementation-dependent.
+     * RGBA, normalized unsigned, size implementation-dependent. Not allowed in
+     * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::RGBA8 "TextureFormat::RGBA8".
      */
@@ -744,7 +749,8 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * Depth component, size implementation-dependent.
+     * Depth component, size implementation-dependent. Not allowed in
+     * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::DepthComponent16 "TextureFormat::DepthComponent16".
      * @requires_gles30 %Extension @es_extension{OES,depth_texture} or
@@ -803,7 +809,8 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * Depth and stencil component, size implementation-dependent.
+     * Depth and stencil component, size implementation-dependent. Not allowed
+     * in unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls.
      * @deprecated_gl Prefer to use exactly specified version of this format,
      *      e.g. @ref Magnum::TextureFormat::Depth24Stencil8 "TextureFormat::Depth24Stencil8".
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
