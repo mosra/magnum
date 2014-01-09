@@ -1150,7 +1150,6 @@ IndexChecker::IndexChecker(Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
     shader.use();
     mesh.setIndexCount(2)
         .setPrimitive(MeshPrimitive::Points);
-    mesh.draw();
 
     /* Skip first vertex so we test also offsets */
     MeshView(mesh).setIndexRange(1, 1).draw();
