@@ -49,8 +49,6 @@ no draw commands are issued when calling @ref draw().
 
 You must ensure that the original mesh remains available for whole view
 lifetime.
-@todo Might cause issues when there are more data than just indices in index
-    buffer (wrongly computed offset)
 */
 class MAGNUM_EXPORT MeshView {
     public:
