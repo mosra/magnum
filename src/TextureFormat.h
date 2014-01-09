@@ -749,8 +749,9 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * Depth component, size implementation-dependent. Not allowed in
-     * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls.
+     * Depth component, size implementation-dependent. Not supported in 3D
+     * textures, not allowed in unemulated @ref Texture::setStorage()
+     * "*Texture::setStorage()" calls.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::DepthComponent16 "TextureFormat::DepthComponent16".
      * @requires_gles30 %Extension @es_extension{OES,depth_texture} or
@@ -759,7 +760,7 @@ enum class TextureFormat: GLenum {
     DepthComponent = GL_DEPTH_COMPONENT,
 
     /**
-     * Depth component, 16bit.
+     * Depth component, 16bit. Not supported in 3D textures.
      * @requires_gles30 %Extension (@es_extension{OES,required_internalformat}
      *      and @es_extension{OES,depth_texture}) or (@es_extension{EXT,texture_storage}
      *      and @es_extension{ANGLE,depth_texture})
@@ -767,7 +768,7 @@ enum class TextureFormat: GLenum {
     DepthComponent16 = GL_DEPTH_COMPONENT16,
 
     /**
-     * Depth component, 24bit.
+     * Depth component, 24bit. Not supported in 3D textures.
      * @requires_gles30 %Extension @es_extension{OES,required_internalformat},
      *      @es_extension{OES,depth_texture} and @es_extension{OES,depth24}
      */
@@ -778,7 +779,7 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * Depth component, 32bit.
+     * Depth component, 32bit. Not supported in 3D textures.
      * @requires_es_extension %Extension (@es_extension{OES,required_internalformat},
      *      @es_extension{OES,depth_texture} and @es_extension{OES,depth32}) or
      *      (@es_extension{EXT,texture_storage} and @es_extension{ANGLE,depth_texture})
@@ -791,7 +792,7 @@ enum class TextureFormat: GLenum {
 
     #ifndef MAGNUM_TARGET_GLES2
     /**
-     * Depth component, 32bit float.
+     * Depth component, 32bit float. Not supported in 3D textures.
      * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
      * @requires_gles30 Only integral depth textures are available in OpenGL ES
      *      2.0.
@@ -801,7 +802,7 @@ enum class TextureFormat: GLenum {
 
     #ifndef MAGNUM_TARGET_GLES
     /**
-     * Stencil index, 8bit.
+     * Stencil index, 8bit. Not supported in 3D textures.
      * @requires_gl44 %Extension @extension{ARB,texture_stencil8}
      * @requires_gl Only available as renderbuffer format in OpenGL ES.
      */
@@ -809,8 +810,9 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * Depth and stencil component, size implementation-dependent. Not allowed
-     * in unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls.
+     * Depth and stencil component, size implementation-dependent. Not
+     * supported in 3D textures, not allowed in unemulated
+     * @ref Texture::setStorage() "*Texture::setStorage()" calls.
      * @deprecated_gl Prefer to use exactly specified version of this format,
      *      e.g. @ref Magnum::TextureFormat::Depth24Stencil8 "TextureFormat::Depth24Stencil8".
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
@@ -822,7 +824,7 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * 24bit depth and 8bit stencil component.
+     * 24bit depth and 8bit stencil component. Not supported in 3D textures.
      * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} and
      *      (@es_extension{OES,required_internalformat} or
@@ -836,7 +838,8 @@ enum class TextureFormat: GLenum {
 
     #ifndef MAGNUM_TARGET_GLES2
     /**
-     * 32bit float depth component and 8bit stencil component.
+     * 32bit float depth component and 8bit stencil component. Not supported in
+     * 3D textures.
      * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
      * @requires_gles30 Only integral depth textures are available in OpenGL ES
      *      2.0.
