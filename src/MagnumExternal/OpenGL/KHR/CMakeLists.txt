@@ -24,5 +24,5 @@
 
 # NaCl has its own gl2.h, this one causes linker issues
 if(NOT CORRADE_TARGET_NACL)
-    install(FILES khrplatform.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/KHR)
+    install(FILES khrplatform.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/KHR)
 endif()

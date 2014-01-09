@@ -30,4 +30,4 @@ else()
     set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DGLLoadGen_EXPORTS")
 endif()
 
-install(FILES gl_magnum.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/OpenGL/GL)
+install(FILES gl_magnum.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GL)

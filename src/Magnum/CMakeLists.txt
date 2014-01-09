@@ -22,32 +22,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Disable `-pedantic` for GCC 4.6, as the compiler doesn't like
-# list-initialization of array of classes (RectangularMatrix constructors). It
-# is perfectly legal C++11 and both GCC 4.7 and Clang accept it without notice.
-if(CORRADE_GCC46_COMPATIBILITY)
-    string(REPLACE "-pedantic" "" CORRADE_CXX_FLAGS "${CORRADE_CXX_FLAGS}")
-endif()
-
-# On 4.8.2 strict aliasing causes failure of DebugToolsCylinderRendererTest
-# without any warning, only in release build, any attempt to add debug print
-# results in issue disappearing. Not an issue on Clang or GCC < 4.8.
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.8.0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
-endif()
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CORRADE_INCLUDE_DIR}
-
-    # We can use both implicit include path (GLES2/gl2.h) where our headers can
-    # be overriden with system ones or explicit (OpenGL/GLES2/gl2ext.h) where
-    # only our headers will be used
-    ${CMAKE_SOURCE_DIR}/external
-    ${CMAKE_SOURCE_DIR}/external/OpenGL)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
 
@@ -212,7 +186,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM
 
 add_subdirectory(Math)
 add_subdirectory(Platform)
-add_subdirectory(Plugins)
 add_subdirectory(Trade)
 
 if(WITH_AUDIO)

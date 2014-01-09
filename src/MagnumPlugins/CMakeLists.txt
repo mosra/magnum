@@ -22,8 +22,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 # Wrapper for creating given plugin type
 macro(add_plugin)
     if(NOT BUILD_STATIC)
