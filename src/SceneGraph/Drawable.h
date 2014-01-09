@@ -114,6 +114,16 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
+@section Drawable-explicit-specializations Explicit template specializations
+
+The following specializations are explicitly compiled into @ref SceneGraph
+library. For other specializations (e.g. using @ref Double type) you have to
+use @ref Drawable.hpp implementation file to avoid linker errors. See also
+@ref compilation-speedup-hpp for more information.
+
+-   @ref Drawable2D
+-   @ref Drawable3D
+
 @see @ref scenegraph, @ref BasicDrawable2D, @ref BasicDrawable3D,
     @ref Drawable2D, @ref Drawable3D, @ref DrawableGroup
 */
@@ -127,7 +137,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          * Adds the feature to the object and also to the group, if specified.
          * Otherwise you can use DrawableGroup::add().
          */
-        explicit Drawable(AbstractObject<dimensions, T>& object, DrawableGroup<dimensions, T>* drawables = nullptr): AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>(object, drawables) {}
+        explicit Drawable(AbstractObject<dimensions, T>& object, DrawableGroup<dimensions, T>* drawables = nullptr);
 
         /**
          * @brief Group containing this drawable

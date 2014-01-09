@@ -51,6 +51,7 @@ set(MagnumSceneGraph_HEADERS
     Camera3D.h
     Camera3D.hpp
     Drawable.h
+    Drawable.hpp
     DualComplexTransformation.h
     DualQuaternionTransformation.h
     RigidMatrixTransformation2D.h

@@ -26,6 +26,7 @@
 #include "SceneGraph/Animable.hpp"
 #include "SceneGraph/Camera2D.hpp"
 #include "SceneGraph/Camera3D.hpp"
+#include "SceneGraph/Drawable.hpp"
 #include "SceneGraph/DualComplexTransformation.h"
 #include "SceneGraph/DualQuaternionTransformation.h"
 #include "SceneGraph/FeatureGroup.hpp"
@@ -65,6 +66,9 @@ template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractCamera<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP AbstractCamera<3, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicCamera2D<Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicCamera3D<Float>;
+
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Drawable<2, Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP Drawable<3, Float>;
 
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicDualComplexTransformation<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicDualQuaternionTransformation<Float>>;
