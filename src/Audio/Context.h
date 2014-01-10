@@ -28,8 +28,8 @@
  * @brief Class Magnum::Audio::Context
  */
 
-#include <al.h>
 #include <string>
+#include <al.h>
 
 #include "Audio/magnumAudioVisibility.h"
 
