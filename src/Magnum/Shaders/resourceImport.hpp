@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_magnumShadersResourceImport_hpp
-#define Magnum_Shaders_magnumShadersResourceImport_hpp
+#ifndef Magnum_Shaders_resourceImport_hpp
+#define Magnum_Shaders_resourceImport_hpp
 /*
     This file is part of Magnum.
 
@@ -27,11 +27,13 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_BUILD_STATIC
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Shaders/resourceImport.h"
-#else
-#error use Magnum/Shaders/resourceImport.h instead
-#endif
+#include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/Macros.h>
+
+static int magnumShadersResourceImport() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RCS)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(magnumShadersResourceImport)
 #else
 #error this header is available only in static build
 #endif

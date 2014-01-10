@@ -47,7 +47,11 @@ set(MagnumShaders_HEADERS
     visibility.h)
 
 if(BUILD_STATIC)
-    set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} magnumShadersResourceImport.hpp)
+    set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} resourceImport.hpp)
+
+    if(BUILD_DEPRECATED)
+        set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} magnumShadersResourceImport.hpp)
+    endif()
 endif()
 
 add_library(MagnumShaders ${SHARED_OR_STATIC} ${MagnumShaders_SRCS})
