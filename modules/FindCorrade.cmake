@@ -158,7 +158,7 @@ if(NOT CORRADE_FOUND)
 endif()
 
 # Configuration
-file(READ ${CORRADE_INCLUDE_DIR}/Corrade/corradeConfigure.h _corradeConfigure)
+file(READ ${CORRADE_INCLUDE_DIR}/Corrade/configure.h _corradeConfigure)
 
 # Compatibility?
 string(FIND "${_corradeConfigure}" "#define CORRADE_GCC47_COMPATIBILITY" _GCC47_COMPATIBILITY)
