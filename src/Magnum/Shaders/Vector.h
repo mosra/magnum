@@ -28,13 +28,12 @@
  * @brief Class @ref Magnum::Shaders::Vector, typedef @ref Magnum::Shaders::Vector2D, @ref Magnum::Shaders::Vector3D
  */
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "Color.h"
-#include "DimensionTraits.h"
-#include "Shaders/AbstractVector.h"
-
-#include "magnumShadersVisibility.h"
+#include "Magnum/Color.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Shaders/AbstractVector.h"
+#include "Magnum/Shaders/magnumShadersVisibility.h"
 
 namespace Magnum { namespace Shaders {
 

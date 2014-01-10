@@ -28,9 +28,9 @@
  * @brief Class Magnum::Shapes::Point, typedef Magnum::Shapes::Point2D, Magnum::Shapes::Point3D
  */
 
-#include "Math/Vector3.h"
-#include "DimensionTraits.h"
-#include "Shapes/magnumShapesVisibility.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -27,7 +27,7 @@
 #include <algorithm>
 #include <Corrade/Utility/Assert.h>
 
-#include "Shapes/Implementation/CollisionDispatch.h"
+#include "Magnum/Shapes/Implementation/CollisionDispatch.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Shapes/shapeImplementation.h"
+#include "Magnum/Shapes/shapeImplementation.h"
 
 namespace Magnum { namespace Shapes { namespace Test {
 

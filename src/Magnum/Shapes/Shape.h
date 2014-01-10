@@ -28,10 +28,9 @@
  * @brief Class Magnum::Shapes::Shape
  */
 
-#include "Shapes/AbstractShape.h"
-#include "Shapes/Shapes.h"
-
-#include "magnumShapesVisibility.h"
+#include "Magnum/Shapes/AbstractShape.h"
+#include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes {
 

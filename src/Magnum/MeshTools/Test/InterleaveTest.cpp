@@ -27,7 +27,7 @@
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "MeshTools/Interleave.h"
+#include "Magnum/MeshTools/Interleave.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

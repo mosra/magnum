@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/BoolVector.h"
+#include "Magnum/Math/BoolVector.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

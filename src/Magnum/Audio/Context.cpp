@@ -28,7 +28,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
 namespace Magnum { namespace Audio {
 

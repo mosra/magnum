@@ -24,9 +24,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Vector2.h"
-#include "Primitives/Circle.h"
-#include "Trade/MeshData2D.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Primitives/Circle.h"
+#include "Magnum/Trade/MeshData2D.h"
 
 namespace Magnum { namespace Primitives { namespace Test {
 

@@ -27,8 +27,8 @@
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Text/AbstractFontConverter.h"
-#include "Text/GlyphCache.h"
+#include "Magnum/Text/AbstractFontConverter.h"
+#include "Magnum/Text/GlyphCache.h"
 
 #include "testConfigure.h"
 

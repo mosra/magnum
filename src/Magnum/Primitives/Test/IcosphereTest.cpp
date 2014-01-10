@@ -24,9 +24,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Vector3.h"
-#include "Primitives/Icosphere.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Primitives/Icosphere.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives { namespace Test {
 

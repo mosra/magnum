@@ -28,9 +28,8 @@
  * @brief Class Magnum::Primitives::Plane
  */
 
-#include "Trade/Trade.h"
-
-#include "Primitives/magnumPrimitivesVisibility.h"
+#include "Magnum/Trade/Trade.h"
+#include "Magnum/Primitives/magnumPrimitivesVisibility.h"
 
 namespace Magnum { namespace Primitives {
 

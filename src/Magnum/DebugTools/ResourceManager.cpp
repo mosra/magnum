@@ -26,12 +26,12 @@
 
 #include "ResourceManager.h"
 
-#include "Buffer.h"
-#include "Mesh.h"
-#include "MeshView.h"
-#include "DebugTools/ForceRenderer.h"
-#include "DebugTools/ObjectRenderer.h"
-#include "DebugTools/ShapeRenderer.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/MeshView.h"
+#include "Magnum/DebugTools/ForceRenderer.h"
+#include "Magnum/DebugTools/ObjectRenderer.h"
+#include "Magnum/DebugTools/ShapeRenderer.h"
 
 namespace Magnum {
 

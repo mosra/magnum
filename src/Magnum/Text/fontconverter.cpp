@@ -26,11 +26,11 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Platform/WindowlessGlxApplication.h"
-#include "Text/AbstractFont.h"
-#include "Text/AbstractFontConverter.h"
-#include "Text/DistanceFieldGlyphCache.h"
-#include "Trade/AbstractImageConverter.h"
+#include "Magnum/Platform/WindowlessGlxApplication.h"
+#include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractFontConverter.h"
+#include "Magnum/Text/DistanceFieldGlyphCache.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 
 #include "configure.h"
 

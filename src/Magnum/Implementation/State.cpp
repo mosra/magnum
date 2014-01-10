@@ -24,16 +24,17 @@
 
 #include "State.h"
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Implementation/BufferState.h"
-#include "Implementation/DebugState.h"
-#include "Implementation/FramebufferState.h"
-#include "Implementation/MeshState.h"
-#include "Implementation/RendererState.h"
-#include "Implementation/ShaderState.h"
-#include "Implementation/ShaderProgramState.h"
-#include "Implementation/TextureState.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
+#include "BufferState.h"
+#include "DebugState.h"
+#include "FramebufferState.h"
+#include "MeshState.h"
+#include "RendererState.h"
+#include "ShaderState.h"
+#include "ShaderProgramState.h"
+#include "TextureState.h"
 
 namespace Magnum { namespace Implementation {
 

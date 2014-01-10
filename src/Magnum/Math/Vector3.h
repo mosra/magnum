@@ -28,8 +28,8 @@
  * @brief Class Magnum::Math::Vector3
  */
 
-#include "Vector2.h"
-#include "Swizzle.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Swizzle.h"
 
 namespace Magnum { namespace Math {
 

@@ -24,11 +24,11 @@
 
 #include "AbstractBoxRenderer.h"
 
-#include "Mesh.h"
-#include "Primitives/Cube.h"
-#include "Primitives/Square.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Primitives/Cube.h"
+#include "Magnum/Primitives/Square.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

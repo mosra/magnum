@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "MagnumFont/MagnumFont.h"
+#include "MagnumPlugins/MagnumFont/MagnumFont.h"
 
 CORRADE_PLUGIN_REGISTER(MagnumFont, Magnum::Text::MagnumFont,
     "cz.mosra.magnum.Text.AbstractFont/0.2.3")

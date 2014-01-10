@@ -45,14 +45,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CO
 # where only our headers will be used
 include_directories(${CMAKE_SOURCE_DIR}/src/MagnumExternal/OpenGL)
 
-if(MAGNUM_BUILD_DEPRECATED)
-    include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/Magnum
-        ${CMAKE_CURRENT_BINARY_DIR}/Magnum
-        ${CMAKE_CURRENT_SOURCE_DIR}/MagnumPlugins
-        ${CMAKE_CURRENT_SOURCE_DIR}/MagnumExternal)
-endif()
-
 add_subdirectory(MagnumExternal)
 add_subdirectory(Magnum)
 add_subdirectory(MagnumPlugins)

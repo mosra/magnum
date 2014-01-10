@@ -28,7 +28,7 @@
  * @brief Class Magnum::Shapes::LineSegment, typedef Magnum::Shapes::LineSegment2D, Magnum::Shapes::LineSegment3D
  */
 
-#include "Line.h"
+#include "Magnum/Shapes/Line.h"
 
 namespace Magnum { namespace Shapes {
 

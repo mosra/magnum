@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Trade/ObjectData2D.h"
+#include "Magnum/Trade/ObjectData2D.h"
 
 namespace Magnum { namespace Trade { namespace Test {
 

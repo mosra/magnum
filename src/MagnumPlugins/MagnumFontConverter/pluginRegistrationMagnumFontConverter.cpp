@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "MagnumFontConverter/MagnumFontConverter.h"
+#include "MagnumPlugins/MagnumFontConverter/MagnumFontConverter.h"
 
 CORRADE_PLUGIN_REGISTER(MagnumFontConverter, Magnum::Text::MagnumFontConverter,
     "cz.mosra.magnum.Text.AbstractFontConverter/0.1.1")

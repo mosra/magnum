@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 

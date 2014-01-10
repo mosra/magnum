@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Trade/AbstractImporter.h"
+#include "Magnum/Trade/AbstractImporter.h"
 
 #include "testConfigure.h"
 

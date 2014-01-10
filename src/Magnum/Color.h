@@ -30,9 +30,9 @@
 
 #include <tuple>
 
-#include "Math/Functions.h"
-#include "Math/Vector4.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Vector4.h"
 
 namespace Magnum {
 

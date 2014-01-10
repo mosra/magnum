@@ -25,7 +25,7 @@
 #include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Geometry/Intersection.h"
+#include "Magnum/Math/Geometry/Intersection.h"
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 

@@ -30,7 +30,7 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Trade/AbstractImporter.h"
+#include "Magnum/Trade/AbstractImporter.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC

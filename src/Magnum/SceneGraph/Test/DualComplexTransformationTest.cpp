@@ -25,8 +25,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "SceneGraph/DualComplexTransformation.h"
-#include "SceneGraph/Scene.h"
+#include "Magnum/SceneGraph/DualComplexTransformation.h"
+#include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 

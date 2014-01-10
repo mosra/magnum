@@ -24,9 +24,9 @@
 
 #include "DebugState.h"
 
-#include "AbstractObject.h"
-#include "Context.h"
-#include "Extensions.h"
+#include "Magnum/AbstractObject.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 
 namespace Magnum { namespace Implementation {
 

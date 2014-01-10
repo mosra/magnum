@@ -24,9 +24,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Matrix4.h"
-#include "Magnum.h"
-#include "Shapes/Box.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Shapes/Box.h"
 
 namespace Magnum { namespace Shapes { namespace Test {
 

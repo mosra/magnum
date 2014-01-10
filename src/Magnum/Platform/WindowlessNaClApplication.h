@@ -36,7 +36,7 @@
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
 namespace pp {
     class Graphics3D;

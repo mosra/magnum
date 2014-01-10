@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "DebugTools/Implementation/ForceRendererTransformation.h"
+#include "../Implementation/ForceRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation { namespace Test {
 

@@ -28,7 +28,7 @@
  * @brief Struct @ref Magnum::Shaders::Generic, typedef @ref Magnum::Shaders::Generic2D, @ref Magnum::Shaders::Generic3D
  */
 
-#include "AbstractShaderProgram.h"
+#include "Magnum/AbstractShaderProgram.h"
 
 namespace Magnum { namespace Shaders {
 

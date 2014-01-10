@@ -28,7 +28,7 @@
  * @brief Forward declarations for Magnum::Shaders namespace
  */
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Shaders {
 

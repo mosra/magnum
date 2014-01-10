@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Endianness.h>
 
-#include "MeshTools/CompressIndices.h"
+#include "Magnum/MeshTools/CompressIndices.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

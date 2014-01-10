@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Trade/TextureData.h"
+#include "Magnum/Trade/TextureData.h"
 
 namespace Magnum { namespace Trade { namespace Test {
 

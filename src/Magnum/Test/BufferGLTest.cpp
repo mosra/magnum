@@ -26,10 +26,10 @@
 #include <vector>
 #include <Corrade/Containers/Array.h>
 
-#include "Buffer.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 

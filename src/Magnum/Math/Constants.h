@@ -28,7 +28,7 @@
  * @brief Class Magnum::Math::Constants
  */
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Math {
 

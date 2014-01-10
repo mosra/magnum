@@ -26,7 +26,7 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "magnumConfigure.h"
+#include "Magnum/magnumConfigure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
     #if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)

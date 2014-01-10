@@ -28,9 +28,9 @@
  * @brief Class Magnum::SceneGraph::BasicDualComplexTransformation, typedef Magnum::SceneGraph::DualComplexTransformation
  */
 
-#include "Math/DualComplex.h"
-#include "AbstractTranslationRotation2D.h"
-#include "Object.h"
+#include "Magnum/Math/DualComplex.h"
+#include "Magnum/SceneGraph/AbstractTranslationRotation2D.h"
+#include "Magnum/SceneGraph/Object.h"
 
 namespace Magnum { namespace SceneGraph {
 

@@ -31,11 +31,10 @@
 #include <Corrade/configure.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Math/Constants.h"
-#include "Math/Math.h"
-#include "Math/Unit.h"
-
-#include "magnumVisibility.h"
+#include "Magnum/magnumVisibility.h"
+#include "Magnum/Math/Constants.h"
+#include "Magnum/Math/Math.h"
+#include "Magnum/Math/Unit.h"
 
 namespace Magnum { namespace Math {
 

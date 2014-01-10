@@ -28,7 +28,7 @@
  * @brief Function Magnum::Math::swizzle()
  */
 
-#include "Vector.h"
+#include "Magnum/Math/Vector.h"
 
 namespace Magnum { namespace Math {
 

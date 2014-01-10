@@ -24,17 +24,17 @@
 
 #include "CapsuleRenderer.h"
 
-#include "Mesh.h"
-#include "MeshView.h"
-#include "DebugTools/ResourceManager.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Primitives/Capsule.h"
-#include "Shapes/Capsule.h"
-#include "Shaders/Flat.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/MeshView.h"
+#include "Magnum/DebugTools/ResourceManager.h"
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#include "Magnum/Primitives/Capsule.h"
+#include "Magnum/Shapes/Capsule.h"
+#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
-#include "DebugTools/Implementation/CapsuleRendererTransformation.h"
+#include "CapsuleRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

@@ -31,8 +31,8 @@
 #include <string>
 #include <vector>
 
-#include "Types.h"
-#include "magnumVisibility.h"
+#include "Magnum/Types.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 

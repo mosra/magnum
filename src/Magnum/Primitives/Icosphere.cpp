@@ -24,11 +24,11 @@
 
 #include "Icosphere.h"
 
-#include "Math/Vector3.h"
-#include "Mesh.h"
-#include "MeshTools/Subdivide.h"
-#include "MeshTools/RemoveDuplicates.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/MeshTools/Subdivide.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 

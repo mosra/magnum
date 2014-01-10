@@ -32,8 +32,8 @@
 #include <al.h>
 #include <Corrade/Containers/Array.h>
 
-#include "Magnum.h"
-#include "Audio/magnumAudioVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Audio/magnumAudioVisibility.h"
 
 namespace Magnum { namespace Audio {
 

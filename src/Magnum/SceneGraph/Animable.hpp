@@ -28,10 +28,9 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Animable.h and @ref AnimableGroup.h
  */
 
-#include "AnimableGroup.h"
-#include "Animable.h"
-
-#include "Timeline.h"
+#include "Magnum/Timeline.h"
+#include "Magnum/SceneGraph/AnimableGroup.h"
+#include "Magnum/SceneGraph/Animable.h"
 
 namespace Magnum { namespace SceneGraph {
 

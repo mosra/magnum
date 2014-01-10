@@ -29,7 +29,7 @@
  * @deprecated Use @ref Math/Range.h instead.
  */
 
-#include "Math/Range.h"
+#include "Magnum/Math/Range.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>

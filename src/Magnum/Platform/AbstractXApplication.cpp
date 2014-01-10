@@ -26,9 +26,10 @@
 
 #include <Corrade/Utility/utilities.h>
 
-#include "Context.h"
-#include "Version.h"
-#include "Platform/Implementation/AbstractContextHandler.h"
+#include "Magnum/Context.h"
+#include "Magnum/Version.h"
+
+#include "Implementation/AbstractContextHandler.h"
 
 /* Mask for X events */
 #define INPUT_MASK KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|PointerMotionMask|StructureNotifyMask

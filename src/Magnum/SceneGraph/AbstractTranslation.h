@@ -28,9 +28,9 @@
  * @brief Class @ref Magnum::SceneGraph::AbstractTranslation, alias @ref Magnum::SceneGraph::AbstractBasicTranslation2D, @ref Magnum::SceneGraph::AbstractBasicTranslation3D, typedef @ref Magnum::SceneGraph::AbstractTranslation2D, @ref Magnum::SceneGraph::AbstractBasicTranslation3D
  */
 
-#include "Math/Vector3.h"
-#include "DimensionTraits.h"
-#include "SceneGraph/AbstractTransformation.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/SceneGraph/AbstractTransformation.h"
 
 namespace Magnum { namespace SceneGraph {
 

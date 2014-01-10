@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "DimensionTraits.h"
+#include "Magnum/DimensionTraits.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

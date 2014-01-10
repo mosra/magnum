@@ -30,8 +30,8 @@
 
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
-#include "Magnum.h"
-#include "Audio/Buffer.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Audio/Buffer.h"
 
 namespace Magnum { namespace Audio {
 

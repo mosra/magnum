@@ -24,11 +24,11 @@
 
 #include "ObjectRenderer.h"
 
-#include "Buffer.h"
-#include "DebugTools/ResourceManager.h"
-#include "MeshTools/Interleave.h"
-#include "SceneGraph/AbstractCamera.h"
-#include "Shaders/VertexColor.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/DebugTools/ResourceManager.h"
+#include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/SceneGraph/AbstractCamera.h"
+#include "Magnum/Shaders/VertexColor.h"
 
 namespace Magnum { namespace DebugTools {
 

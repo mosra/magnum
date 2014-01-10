@@ -28,11 +28,10 @@
  * @brief Class Magnum::DebugTools::ObjectRenderer, Magnum::DebugTools::ObjectRendererOptions, typedef Magnum::DebugTools::ObjectRenderer2D, Magnum::DebugTools::ObjectRenderer3D
  */
 
-#include "Resource.h"
-#include "SceneGraph/Drawable.h"
-#include "Shaders/Shaders.h"
-
-#include "magnumDebugToolsVisibility.h"
+#include "Magnum/Resource.h"
+#include "Magnum/SceneGraph/Drawable.h"
+#include "Magnum/Shaders/Shaders.h"
+#include "Magnum/DebugTools/magnumDebugToolsVisibility.h"
 
 namespace Magnum { namespace DebugTools {
 

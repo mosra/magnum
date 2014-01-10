@@ -28,11 +28,11 @@
  * @brief Class Magnum::Shapes::Sphere, typedef Magnum::Shapes::Sphere2D, Magnum::Shapes::Sphere3D
  */
 
-#include "Math/Vector3.h"
-#include "DimensionTraits.h"
-#include "Shapes/Collision.h"
-#include "Shapes/Shapes.h"
-#include "Shapes/magnumShapesVisibility.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Shapes/Collision.h"
+#include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -28,8 +28,8 @@
  * @brief Class Magnum::Math::Matrix4
  */
 
-#include "Math/Matrix.h"
-#include "Math/Vector4.h"
+#include "Magnum/Math/Matrix.h"
+#include "Magnum/Math/Vector4.h"
 
 #ifdef CORRADE_TARGET_WINDOWS /* I so HATE windef.h */
 #undef near

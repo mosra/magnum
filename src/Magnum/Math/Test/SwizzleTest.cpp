@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Swizzle.h"
+#include "Magnum/Math/Swizzle.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

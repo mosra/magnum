@@ -24,8 +24,9 @@
 
 #include "GlxApplication.h"
 
-#include "Platform/ScreenedApplication.hpp"
-#include "Platform/Implementation/GlxContextHandler.h"
+#include "Magnum/Platform/ScreenedApplication.hpp"
+
+#include "Implementation/GlxContextHandler.h"
 
 namespace Magnum { namespace Platform {
 

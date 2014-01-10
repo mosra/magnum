@@ -26,7 +26,7 @@
 
 #include <vector>
 
-#include "OpenGL.h"
+#include "Magnum/OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 

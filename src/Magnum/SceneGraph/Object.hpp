@@ -28,13 +28,12 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractObject.h, @ref AbstractTransformation.h and @ref Object.h
  */
 
-#include "AbstractTransformation.h"
-#include "Object.h"
-
 #include <algorithm>
 #include <stack>
 
-#include "Scene.h"
+#include "Magnum/SceneGraph/AbstractTransformation.h"
+#include "Magnum/SceneGraph/Object.h"
+#include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph {
 

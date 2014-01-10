@@ -24,8 +24,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "MeshTools/Duplicate.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/Duplicate.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

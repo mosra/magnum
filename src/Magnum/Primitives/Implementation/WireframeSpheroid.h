@@ -26,8 +26,8 @@
 
 #include <vector>
 
-#include "Magnum.h"
-#include "Trade/Trade.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
 

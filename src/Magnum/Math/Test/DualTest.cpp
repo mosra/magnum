@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Dual.h"
+#include "Magnum/Math/Dual.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

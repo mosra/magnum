@@ -28,11 +28,11 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "ColorFormat.h"
-#include "Image.h"
-#include "Text/GlyphCache.h"
-#include "Text/AbstractFont.h"
-#include "TgaImageConverter/TgaImageConverter.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Image.h"
+#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/AbstractFont.h"
+#include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"
 
 namespace Magnum { namespace Text {
 

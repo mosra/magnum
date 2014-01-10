@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Audio/AbstractImporter.h"
+#include "Magnum/Audio/AbstractImporter.h"
 
 #include "testConfigure.h"
 

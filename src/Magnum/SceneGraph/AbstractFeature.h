@@ -31,8 +31,8 @@
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/LinkedList.h>
 
-#include "Magnum.h"
-#include "SceneGraph/AbstractObject.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/SceneGraph/AbstractObject.h"
 
 namespace Magnum { namespace SceneGraph {
 

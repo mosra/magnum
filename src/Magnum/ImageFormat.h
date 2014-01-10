@@ -31,7 +31,7 @@
  */
 #endif
 
-#include "ColorFormat.h"
+#include "Magnum/ColorFormat.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum {

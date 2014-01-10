@@ -38,9 +38,9 @@
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
-#include "Platform/Platform.h"
-#include "Math/Vector2.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Platform/Platform.h"
 
 namespace pp {
     class Graphics3D;

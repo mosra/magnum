@@ -30,8 +30,8 @@
 
 #include <Corrade/Containers/LinkedList.h>
 
-#include "Magnum.h"
-#include "Platform/Platform.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 

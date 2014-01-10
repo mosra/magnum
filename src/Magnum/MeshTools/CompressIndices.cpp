@@ -28,8 +28,8 @@
 #include <algorithm>
 #include <Corrade/Containers/Array.h>
 
-#include "Math/Functions.h"
-#include "Buffer.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Buffer.h"
 
 namespace Magnum { namespace MeshTools {
 

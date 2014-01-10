@@ -28,7 +28,7 @@
  * @brief Function Magnum::Math::Algorithms::gramSchmidtOrthogonalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthogonalize(), Magnum::Math::Algorithms::gramSchmidtOrthonormalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthonormalize()
  */
 
-#include "Math/RectangularMatrix.h"
+#include "Magnum/Math/RectangularMatrix.h"
 
 namespace Magnum { namespace Math { namespace Algorithms {
 

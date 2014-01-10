@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Version.h"
+#include "Magnum/Version.h"
 
 namespace Magnum { namespace Test {
 

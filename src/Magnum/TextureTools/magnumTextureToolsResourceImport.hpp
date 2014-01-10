@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "magnumConfigure.h"
+#include "Magnum/magnumConfigure.h"
 
 #ifdef MAGNUM_BUILD_STATIC
 #include <Corrade/Utility/Resource.h>

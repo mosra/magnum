@@ -28,7 +28,7 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Drawable.h
  */
 
-#include "Drawable.h"
+#include "Magnum/SceneGraph/Drawable.h"
 
 namespace Magnum { namespace SceneGraph {
 

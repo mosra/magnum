@@ -32,14 +32,13 @@
 #include <tuple>
 #include <vector>
 
-#include "Math/Range.h"
-#include "Buffer.h"
-#include "DimensionTraits.h"
-#include "Mesh.h"
-#include "Text/Text.h"
-#include "Text/Alignment.h"
-
-#include "magnumTextVisibility.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Text/Text.h"
+#include "Magnum/Text/Alignment.h"
+#include "Magnum/Text/magnumTextVisibility.h"
 
 namespace Magnum { namespace Text {
 

@@ -24,8 +24,8 @@
 
 #include <type_traits>
 
-#include "OpenGL.h"
-#include "Types.h"
+#include "Magnum/OpenGL.h"
+#include "Magnum/Types.h"
 
 namespace Magnum {
 

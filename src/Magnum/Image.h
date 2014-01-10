@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::Image, typedef @ref Magnum::Image1D, @ref Magnum::Image2D, @ref Magnum::Image3D
  */
 
-#include "ImageReference.h"
+#include "Magnum/ImageReference.h"
 
 namespace Magnum {
 

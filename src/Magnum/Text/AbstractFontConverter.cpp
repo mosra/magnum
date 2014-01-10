@@ -30,7 +30,7 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Unicode.h>
 
-#include "Text/GlyphCache.h"
+#include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text {
 

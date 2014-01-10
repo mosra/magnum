@@ -25,13 +25,13 @@
 #include "DistanceFieldGlyphCache.h"
 
 #ifndef CORRADE_NO_ASSERT
-#include "ColorFormat.h"
+#include "Magnum/ColorFormat.h"
 #endif
-#include "Context.h"
-#include "Extensions.h"
-#include "ImageReference.h"
-#include "TextureFormat.h"
-#include "TextureTools/DistanceField.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/ImageReference.h"
+#include "Magnum/TextureFormat.h"
+#include "Magnum/TextureTools/DistanceField.h"
 
 namespace Magnum { namespace Text {
 

@@ -26,10 +26,10 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Math/Range.h"
+#include "Magnum/Math/Range.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include "Math/Geometry/Rectangle.h"
+#include "Magnum/Math/Geometry/Rectangle.h"
 #endif
 
 namespace Magnum { namespace Math { namespace Test {

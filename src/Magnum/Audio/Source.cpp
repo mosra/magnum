@@ -26,7 +26,7 @@
 
 #include <Corrade/Containers/Array.h>
 
-#include "Audio/Buffer.h"
+#include "Magnum/Audio/Buffer.h"
 
 namespace Magnum { namespace Audio {
 

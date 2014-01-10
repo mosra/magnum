@@ -24,9 +24,9 @@
 
 #include "Square.h"
 
-#include "Math/Vector2.h"
-#include "Mesh.h"
-#include "Trade/MeshData2D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Trade/MeshData2D.h"
 
 namespace Magnum { namespace Primitives {
 

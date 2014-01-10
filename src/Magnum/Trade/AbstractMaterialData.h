@@ -28,8 +28,8 @@
  * @brief Class @ref Magnum::Trade::AbstractMaterialData, enum @ref Magnum::Trade::MaterialType
  */
 
-#include "magnumVisibility.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 

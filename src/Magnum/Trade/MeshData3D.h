@@ -30,9 +30,8 @@
 
 #include <vector>
 
-#include "Magnum.h"
-
-#include "magnumVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum { namespace Trade {
 

@@ -28,8 +28,8 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Camera3D.h
  */
 
-#include "AbstractCamera.hpp"
-#include "Camera3D.h"
+#include "Magnum/SceneGraph/AbstractCamera.hpp"
+#include "Magnum/SceneGraph/Camera3D.h"
 
 /** @todo Use AbstractBasicCamera3D<T> when support for GCC 4.6 is dropped (also in header) */
 

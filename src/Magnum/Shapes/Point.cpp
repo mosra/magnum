@@ -24,8 +24,8 @@
 
 #include "Point.h"
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -28,10 +28,10 @@
  * @brief Class @ref Magnum::AbstractTexture
  */
 
-#include "Array.h"
-#include "Color.h"
-#include "Sampler.h"
-#include "AbstractObject.h"
+#include "Magnum/Array.h"
+#include "Magnum/Color.h"
+#include "Magnum/Sampler.h"
+#include "Magnum/AbstractObject.h"
 
 namespace Magnum {
 

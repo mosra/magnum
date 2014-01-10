@@ -22,18 +22,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/Matrix.h"
-#include "Math/Vector4.h"
-#include "Buffer.h"
-#include "ColorFormat.h"
-#include "Framebuffer.h"
-#include "Image.h"
-#include "Mesh.h"
-#include "MeshView.h"
-#include "Renderbuffer.h"
-#include "RenderbufferFormat.h"
-#include "Shader.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Framebuffer.h"
+#include "Magnum/Image.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/MeshView.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/RenderbufferFormat.h"
+#include "Magnum/Shader.h"
+#include "Magnum/Math/Matrix.h"
+#include "Magnum/Math/Vector4.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 

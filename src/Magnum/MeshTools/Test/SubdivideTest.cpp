@@ -25,8 +25,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "MeshTools/RemoveDuplicates.h"
-#include "MeshTools/Subdivide.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
+#include "Magnum/MeshTools/Subdivide.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

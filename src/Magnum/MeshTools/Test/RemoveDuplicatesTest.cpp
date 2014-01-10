@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "MeshTools/RemoveDuplicates.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

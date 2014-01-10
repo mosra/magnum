@@ -31,9 +31,8 @@
 #include <tuple>
 #include <vector>
 
-#include "Magnum.h"
-
-#include "magnumMeshToolsVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/magnumMeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {
 

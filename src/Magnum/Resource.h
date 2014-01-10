@@ -31,9 +31,8 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/MurmurHash2.h>
 
-#include "Magnum.h"
-
-#include "magnumVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum {
 

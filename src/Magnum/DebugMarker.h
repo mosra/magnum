@@ -29,7 +29,7 @@
  * @deprecated Use @ref DebugMessage.h instead.
  */
 
-#include "DebugMessage.h"
+#include "Magnum/DebugMessage.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum {

@@ -28,11 +28,11 @@
  * @brief Class Magnum::Shapes::AbstractShape, typedef Magnum::Shapes::AbstractShape2D, Magnum::Shapes::AbstractShape3D
  */
 
-#include "Magnum.h"
-#include "DimensionTraits.h"
-#include "Shapes/magnumShapesVisibility.h"
-#include "Shapes/shapeImplementation.h"
-#include "SceneGraph/AbstractGroupedFeature.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
+#include "Magnum/Shapes/shapeImplementation.h"
+#include "Magnum/SceneGraph/AbstractGroupedFeature.h"
 
 namespace Magnum { namespace Shapes {
 

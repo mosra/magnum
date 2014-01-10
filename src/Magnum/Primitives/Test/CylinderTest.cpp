@@ -25,9 +25,9 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Math/Vector3.h"
-#include "Primitives/Cylinder.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Primitives/Cylinder.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives { namespace Test {
 

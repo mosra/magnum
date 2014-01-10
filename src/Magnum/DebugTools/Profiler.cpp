@@ -28,7 +28,7 @@
 #include <numeric>
 #include <Corrade/Utility/Assert.h>
 
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
 using namespace std::chrono;
 

@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Array.h"
+#include "Magnum/Array.h"
 
 namespace Magnum { namespace Test {
 

@@ -26,8 +26,9 @@
 
 #include <Corrade/Utility/Debug.h>
 
-#include "Context.h"
-#include "Extensions.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
 #include "Implementation/State.h"
 #include "Implementation/BufferState.h"
 #include "Implementation/DebugState.h"

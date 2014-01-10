@@ -25,9 +25,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "SceneGraph/Animable.h"
-#include "SceneGraph/AnimableGroup.h"
-#include "SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/Animable.h"
+#include "Magnum/SceneGraph/AnimableGroup.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 

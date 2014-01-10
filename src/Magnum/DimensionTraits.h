@@ -24,8 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/Math.h"
-#include "Types.h"
+#include "Magnum/Math/Math.h"
+#include "Magnum/Types.h"
 
 /** @file
  * @brief Class Magnum::DimensionTraits

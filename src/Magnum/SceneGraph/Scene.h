@@ -28,7 +28,7 @@
  * @brief Class Magnum::SceneGraph::Scene
  */
 
-#include "Object.h"
+#include "Magnum/SceneGraph/Object.h"
 
 namespace Magnum { namespace SceneGraph {
 

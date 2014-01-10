@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Text/AbstractFont.h"
+#include "Magnum/Text/AbstractFont.h"
 
 #include "testConfigure.h"
 

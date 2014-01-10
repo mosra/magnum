@@ -28,7 +28,7 @@
  * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotation2D, typedef Magnum::SceneGraph::AbstractTranslationRotation2D
  */
 
-#include "SceneGraph/AbstractTranslation.h"
+#include "Magnum/SceneGraph/AbstractTranslation.h"
 
 namespace Magnum { namespace SceneGraph {
 

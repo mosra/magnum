@@ -30,9 +30,9 @@
 #include <emscripten/emscripten.h>
 #endif
 
-#include "Context.h"
-#include "Version.h"
-#include "Platform/ScreenedApplication.hpp"
+#include "Magnum/Context.h"
+#include "Magnum/Version.h"
+#include "Magnum/Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
 

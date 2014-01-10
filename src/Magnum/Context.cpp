@@ -29,17 +29,17 @@
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/String.h>
 
-#include "AbstractFramebuffer.h"
-#include "AbstractShaderProgram.h"
-#include "AbstractTexture.h"
-#include "Buffer.h"
-#include "BufferTexture.h"
-#include "DefaultFramebuffer.h"
-#include "Extensions.h"
-#include "Framebuffer.h"
-#include "Mesh.h"
-#include "Renderbuffer.h"
-#include "Renderer.h"
+#include "Magnum/AbstractFramebuffer.h"
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/AbstractTexture.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/BufferTexture.h"
+#include "Magnum/DefaultFramebuffer.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Framebuffer.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/Renderer.h"
 
 #include "Implementation/State.h"
 

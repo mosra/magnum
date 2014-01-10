@@ -24,10 +24,10 @@
 
 #include <Corrade/Utility/Directory.h>
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Shader.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Shader.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 #include "ShaderGLTestConfigure.h"
 

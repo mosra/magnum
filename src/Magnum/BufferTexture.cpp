@@ -25,9 +25,9 @@
 #include "BufferTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES
-#include "Buffer.h"
-#include "Context.h"
-#include "Extensions.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"

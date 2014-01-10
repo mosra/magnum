@@ -24,8 +24,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Functions.h"
-#include "Math/Vector3.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

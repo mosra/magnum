@@ -28,18 +28,16 @@
  * @brief Class Magnum::DebugTools::ResourceManager
  */
 
-#include "Magnum.h"
-
 #ifndef MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE
 #define MAGNUM_RESOURCEMANAGER_DONT_DEFINE_INTERNALINSTANCE
 #endif
-#include "../ResourceManager.h"
+#include "Magnum/ResourceManager.h"
 
-#include "SceneGraph/SceneGraph.h"
-#include "Shapes/Shapes.h"
-#include "DebugTools.h"
-
-#include "magnumDebugToolsVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/DebugTools/DebugTools.h"
+#include "Magnum/DebugTools/magnumDebugToolsVisibility.h"
+#include "Magnum/SceneGraph/SceneGraph.h"
+#include "Magnum/Shapes/Shapes.h"
 
 namespace Magnum {
 

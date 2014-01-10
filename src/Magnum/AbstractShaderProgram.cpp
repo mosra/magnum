@@ -24,10 +24,11 @@
 
 #include "AbstractShaderProgram.h"
 
-#include "Math/RectangularMatrix.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Shader.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Shader.h"
+#include "Magnum/Math/RectangularMatrix.h"
+
 #include "Implementation/DebugState.h"
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"

@@ -24,12 +24,12 @@
 
 #include "FullScreenTriangle.h"
 
-#include "Math/Vector2.h"
-#include "AbstractShaderProgram.h"
-#include "Buffer.h"
-#include "Context.h"
-#include "Mesh.h"
-#include "Version.h"
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Version.h"
+#include "Magnum/Math/Vector2.h"
 
 namespace Magnum { namespace MeshTools {
 

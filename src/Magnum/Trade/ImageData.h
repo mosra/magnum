@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::Trade::ImageData, typedef @ref Magnum::Trade::ImageData1D, @ref Magnum::Trade::ImageData2D, @ref Magnum::Trade::ImageData3D
  */
 
-#include "ImageReference.h"
+#include "Magnum/ImageReference.h"
 
 namespace Magnum { namespace Trade {
 

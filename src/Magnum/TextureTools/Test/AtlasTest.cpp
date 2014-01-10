@@ -25,8 +25,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Range.h"
-#include "TextureTools/Atlas.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/TextureTools/Atlas.h"
 
 namespace Magnum { namespace TextureTools { namespace Test {
 

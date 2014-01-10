@@ -24,12 +24,12 @@
 
 #include "Framebuffer.h"
 
-#include "BufferImage.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Image.h"
-#include "Renderbuffer.h"
-#include "Texture.h"
+#include "Magnum/BufferImage.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/Texture.h"
 
 #include "Implementation/DebugState.h"
 #include "Implementation/State.h"

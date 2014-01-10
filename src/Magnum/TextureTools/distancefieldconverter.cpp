@@ -25,17 +25,17 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/PluginManager/Manager.h>
 
-#include "Math/Range.h"
-#include "ColorFormat.h"
-#include "Image.h"
-#include "Renderer.h"
-#include "Texture.h"
-#include "TextureFormat.h"
-#include "Platform/WindowlessGlxApplication.h"
-#include "TextureTools/DistanceField.h"
-#include "Trade/AbstractImporter.h"
-#include "Trade/AbstractImageConverter.h"
-#include "Trade/ImageData.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Image.h"
+#include "Magnum/Renderer.h"
+#include "Magnum/Texture.h"
+#include "Magnum/TextureFormat.h"
+#include "Magnum/Platform/WindowlessGlxApplication.h"
+#include "Magnum/TextureTools/DistanceField.h"
+#include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
+#include "Magnum/Trade/ImageData.h"
 
 #include "configure.h"
 

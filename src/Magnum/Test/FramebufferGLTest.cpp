@@ -22,17 +22,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "BufferImage.h"
-#include "ColorFormat.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Framebuffer.h"
-#include "Image.h"
-#include "Renderbuffer.h"
-#include "RenderbufferFormat.h"
-#include "Texture.h"
-#include "TextureFormat.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/BufferImage.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Framebuffer.h"
+#include "Magnum/Image.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/RenderbufferFormat.h"
+#include "Magnum/Texture.h"
+#include "Magnum/TextureFormat.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 

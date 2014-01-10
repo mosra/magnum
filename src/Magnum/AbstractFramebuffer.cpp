@@ -24,10 +24,10 @@
 
 #include "AbstractFramebuffer.h"
 
-#include "BufferImage.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Image.h"
+#include "Magnum/BufferImage.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
 
 #include "Implementation/FramebufferState.h"
 #include "Implementation/State.h"

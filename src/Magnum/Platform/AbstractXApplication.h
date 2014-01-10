@@ -38,8 +38,8 @@
 #undef None
 #undef Status
 
-#include "Magnum.h"
-#include "Math/Vector2.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector2.h"
 
 namespace Magnum {
 

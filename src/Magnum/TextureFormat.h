@@ -28,7 +28,7 @@
  * @brief Enum @ref Magnum::TextureFormat
  */
 
-#include "OpenGL.h"
+#include "Magnum/OpenGL.h"
 
 namespace Magnum {
 

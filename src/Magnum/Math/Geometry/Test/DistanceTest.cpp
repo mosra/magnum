@@ -25,8 +25,8 @@
 #include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Constants.h"
-#include "Math/Geometry/Distance.h"
+#include "Magnum/Math/Constants.h"
+#include "Magnum/Math/Geometry/Distance.h"
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 

@@ -31,8 +31,8 @@
  */
 #endif
 
-#include "Math/Swizzle.h"
-#include "Color.h"
+#include "Magnum/Math/Swizzle.h"
+#include "Magnum/Color.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum {

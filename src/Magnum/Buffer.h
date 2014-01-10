@@ -35,8 +35,8 @@
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
 
-#include "AbstractObject.h"
-#include "Magnum.h"
+#include "Magnum/AbstractObject.h"
+#include "Magnum/Magnum.h"
 
 namespace Magnum {
 

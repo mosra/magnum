@@ -30,7 +30,7 @@
 
 #include <vector>
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace MeshTools {
 

@@ -24,15 +24,15 @@
 
 #include "CollisionDispatch.h"
 
-#include "Shapes/AxisAlignedBox.h"
-#include "Shapes/Box.h"
-#include "Shapes/Capsule.h"
-#include "Shapes/Cylinder.h"
-#include "Shapes/LineSegment.h"
-#include "Shapes/Plane.h"
-#include "Shapes/Point.h"
-#include "Shapes/Sphere.h"
-#include "Shapes/shapeImplementation.h"
+#include "Magnum/Shapes/AxisAlignedBox.h"
+#include "Magnum/Shapes/Box.h"
+#include "Magnum/Shapes/Capsule.h"
+#include "Magnum/Shapes/Cylinder.h"
+#include "Magnum/Shapes/LineSegment.h"
+#include "Magnum/Shapes/Plane.h"
+#include "Magnum/Shapes/Point.h"
+#include "Magnum/Shapes/Sphere.h"
+#include "Magnum/Shapes/shapeImplementation.h"
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 

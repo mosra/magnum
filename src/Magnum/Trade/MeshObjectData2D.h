@@ -28,7 +28,7 @@
  * @brief Class Magnum::Trade::MeshObjectData2D
  */
 
-#include "ObjectData2D.h"
+#include "Magnum/Trade/ObjectData2D.h"
 
 namespace Magnum { namespace Trade {
 

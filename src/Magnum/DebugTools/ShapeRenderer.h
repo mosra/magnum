@@ -28,13 +28,12 @@
  * @brief Class Magnum::DebugTools::ShapeRenderer, Magnum::DebugTools::ShapeRendererOptions, typedef Magnum::DebugTools::ShapeRenderer2D, Magnum::DebugTools::ShapeRenderer3D
  */
 
-#include "Color.h"
-#include "Resource.h"
-#include "SceneGraph/Drawable.h"
-#include "Shapes/Shapes.h"
-#include "Shapes/shapeImplementation.h"
-
-#include "magnumDebugToolsVisibility.h"
+#include "Magnum/Color.h"
+#include "Magnum/Resource.h"
+#include "Magnum/SceneGraph/Drawable.h"
+#include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/shapeImplementation.h"
+#include "Magnum/DebugTools/magnumDebugToolsVisibility.h"
 
 namespace Magnum { namespace DebugTools {
 

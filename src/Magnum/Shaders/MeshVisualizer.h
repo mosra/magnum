@@ -28,11 +28,11 @@
  * @brief Class Magnum::Shaders::MeshVisualizer
  */
 
-#include "Math/Matrix4.h"
-#include "AbstractShaderProgram.h"
-#include "Color.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Color.h"
 
-#include "Shaders/magnumShadersVisibility.h"
+#include "Magnum/Shaders/magnumShadersVisibility.h"
 
 namespace Magnum { namespace Shaders {
 

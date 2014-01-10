@@ -28,9 +28,8 @@
  * @brief Class Magnum::Primitives::Line2D, Magnum::Primitives::Line3D
  */
 
-#include "Trade/Trade.h"
-
-#include "Primitives/magnumPrimitivesVisibility.h"
+#include "Magnum/Primitives/magnumPrimitivesVisibility.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {
 

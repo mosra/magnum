@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::SceneGraph::BasicCamera3D, typedef @ref Magnum::SceneGraph::Camera3D
  */
 
-#include "AbstractCamera.h"
+#include "Magnum/SceneGraph/AbstractCamera.h"
 
 #ifdef CORRADE_TARGET_WINDOWS /* I so HATE windef.h */
 #undef near

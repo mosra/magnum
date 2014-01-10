@@ -28,10 +28,10 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Math/Vector3.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
-#include "Primitives/Capsule.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Primitives/Capsule.h"
 
 namespace Magnum { namespace Primitives { namespace Test {
 

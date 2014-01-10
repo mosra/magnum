@@ -28,9 +28,8 @@
  * @brief Forward declarations for Magnum::Text namespace
  */
 
-#include "Types.h"
-
-#include "magnumConfigure.h"
+#include "Magnum/Types.h"
+#include "Magnum/magnumConfigure.h"
 
 namespace Magnum { namespace Text {
 

@@ -24,8 +24,8 @@
 
 #include "GenerateFlatNormals.h"
 
-#include "Math/Vector3.h"
-#include "MeshTools/RemoveDuplicates.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools {
 

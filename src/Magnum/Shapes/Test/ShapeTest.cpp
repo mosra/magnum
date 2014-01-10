@@ -24,14 +24,14 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Shapes/ShapeGroup.h"
-#include "Shapes/Shape.h"
-#include "Shapes/Point.h"
-#include "Shapes/Composition.h"
-#include "Shapes/Sphere.h"
-#include "SceneGraph/MatrixTransformation2D.h"
-#include "SceneGraph/MatrixTransformation3D.h"
-#include "SceneGraph/Scene.h"
+#include "Magnum/Shapes/Composition.h"
+#include "Magnum/Shapes/Point.h"
+#include "Magnum/Shapes/Shape.h"
+#include "Magnum/Shapes/ShapeGroup.h"
+#include "Magnum/Shapes/Sphere.h"
+#include "Magnum/SceneGraph/MatrixTransformation2D.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace Shapes { namespace Test {
 

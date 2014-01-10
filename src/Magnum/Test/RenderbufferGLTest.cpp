@@ -22,12 +22,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/Vector2.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Renderbuffer.h"
-#include "RenderbufferFormat.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/RenderbufferFormat.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 

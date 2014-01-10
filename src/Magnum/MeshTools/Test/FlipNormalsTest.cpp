@@ -25,8 +25,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Vector3.h"
-#include "MeshTools/FlipNormals.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/MeshTools/FlipNormals.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

@@ -24,15 +24,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <chrono>
-
-#include "Types.h"
-
-#include "magnumVisibility.h"
-
 /** @file
  * @brief Class Magnum::Timeline
  */
+
+#include <chrono>
+
+#include "Magnum/Types.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum {
 

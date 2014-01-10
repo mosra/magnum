@@ -24,13 +24,13 @@
 
 #include "Capsule.h"
 
-#include "Math/Vector3.h"
-#include "Math/Functions.h"
-#include "Mesh.h"
-#include "Primitives/Implementation/Spheroid.h"
-#include "Primitives/Implementation/WireframeSpheroid.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Primitives/Implementation/Spheroid.h"
+#include "Magnum/Primitives/Implementation/WireframeSpheroid.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 

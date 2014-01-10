@@ -31,9 +31,9 @@
 #include <vector>
 #include <unordered_map>
 
-#include "Math/Range.h"
-#include "Texture.h"
-#include "Text/magnumTextVisibility.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/Texture.h"
+#include "Magnum/Text/magnumTextVisibility.h"
 
 namespace Magnum { namespace Text {
 

@@ -28,11 +28,11 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "ColorFormat.h"
-#include "Image.h"
-#include "Trade/ImageData.h"
-#include "TgaImageConverter/TgaImageConverter.h"
-#include "TgaImporter/TgaImporter.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Image.h"
+#include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"
+#include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
 #include "configure.h"
 

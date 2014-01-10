@@ -22,10 +22,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/Matrix4.h"
-#include "Shapes/LineSegment.h"
-#include "Shapes/Point.h"
-#include "Shapes/Plane.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Shapes/LineSegment.h"
+#include "Magnum/Shapes/Point.h"
+#include "Magnum/Shapes/Plane.h"
 
 #include "ShapeTestBase.h"
 

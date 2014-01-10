@@ -26,10 +26,10 @@
 
 #include <Corrade/Utility/Debug.h>
 
-#include "Context.h"
-#include "Implementation/State.h"
-#include "Implementation/TextureState.h"
-#include "Extensions.h"
+#include "Magnum/Context.h"
+#include "Magnum/Implementation/State.h"
+#include "Magnum/Implementation/TextureState.h"
+#include "Magnum/Extensions.h"
 
 namespace Magnum {
 

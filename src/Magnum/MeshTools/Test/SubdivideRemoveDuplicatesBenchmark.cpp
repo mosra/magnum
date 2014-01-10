@@ -26,9 +26,9 @@
 
 #include <QtTest/QTest>
 
-#include "Primitives/Icosphere.h"
-#include "MeshTools/RemoveDuplicates.h"
-#include "MeshTools/Subdivide.h"
+#include "Magnum/Primitives/Icosphere.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
+#include "Magnum/MeshTools/Subdivide.h"
 
 QTEST_APPLESS_MAIN(Magnum::MeshTools::Test::SubdivideRemoveDuplicatesBenchmark)
 

@@ -28,9 +28,8 @@
  * @brief Class @ref Magnum::SceneGraph::Animable, alias @ref Magnum::SceneGraph::BasicAnimable2D, @ref Magnum::SceneGraph::BasicAnimable3D, typedef @ref Magnum::SceneGraph::Animable2D, @ref Magnum::SceneGraph::Animable3D, enum @ref Magnum::SceneGraph::AnimationState
  */
 
-#include "AbstractGroupedFeature.h"
-
-#include "magnumSceneGraphVisibility.h"
+#include "Magnum/SceneGraph/AbstractGroupedFeature.h"
+#include "Magnum/SceneGraph/magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
 

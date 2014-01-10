@@ -33,10 +33,10 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Assert.h>
 
-#include "DimensionTraits.h"
-#include "Shapes/Shapes.h"
-#include "Shapes/magnumShapesVisibility.h"
-#include "Shapes/shapeImplementation.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
+#include "Magnum/Shapes/shapeImplementation.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -33,8 +33,8 @@
 #include <string>
 #include <vector>
 
-#include "Types.h"
-#include "magnumDebugToolsVisibility.h"
+#include "Magnum/Types.h"
+#include "Magnum/DebugTools/magnumDebugToolsVisibility.h"
 
 namespace Magnum { namespace DebugTools {
 

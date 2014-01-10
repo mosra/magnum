@@ -30,7 +30,7 @@
 
 #include <string>
 
-#include "ResourceManager.h"
+#include "Magnum/ResourceManager.h"
 
 namespace Magnum {
 

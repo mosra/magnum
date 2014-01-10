@@ -28,7 +28,7 @@
  * @brief Class Magnum::Math::Matrix
  */
 
-#include "RectangularMatrix.h"
+#include "Magnum/Math/RectangularMatrix.h"
 
 namespace Magnum { namespace Math {
 

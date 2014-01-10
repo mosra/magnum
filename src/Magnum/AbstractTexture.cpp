@@ -24,13 +24,14 @@
 
 #include "AbstractTexture.h"
 
-#include "BufferImage.h"
-#include "ColorFormat.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Image.h"
-#include "Shader.h"
-#include "TextureFormat.h"
+#include "Magnum/BufferImage.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
+#include "Magnum/Shader.h"
+#include "Magnum/TextureFormat.h"
+
 #include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"

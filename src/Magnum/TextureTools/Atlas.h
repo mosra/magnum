@@ -30,10 +30,9 @@
 
 #include <vector>
 
-#include "Math/Vector2.h"
-#include "Magnum.h"
-
-#include "magnumTextureToolsVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/TextureTools/magnumTextureToolsVisibility.h"
 
 namespace Magnum { namespace TextureTools {
 

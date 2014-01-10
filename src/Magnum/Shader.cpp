@@ -28,8 +28,9 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Context.h"
-#include "Extensions.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
 #include "Implementation/DebugState.h"
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"

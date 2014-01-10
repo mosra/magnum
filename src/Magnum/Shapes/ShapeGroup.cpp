@@ -24,7 +24,7 @@
 
 #include "ShapeGroup.h"
 
-#include "Shapes/AbstractShape.h"
+#include "Magnum/Shapes/AbstractShape.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -31,7 +31,7 @@
 #include <Corrade/configure.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Math {
 

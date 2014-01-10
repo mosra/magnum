@@ -30,10 +30,9 @@
 
 #include <Corrade/Containers/EnumSet.h>
 
-#include "AbstractFeature.h"
-#include "AbstractObject.h"
-
-#include "magnumSceneGraphVisibility.h"
+#include "Magnum/SceneGraph/AbstractFeature.h"
+#include "Magnum/SceneGraph/AbstractObject.h"
+#include "Magnum/SceneGraph/magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
 

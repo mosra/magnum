@@ -28,9 +28,9 @@
  * @brief Class @ref Magnum::Shapes::Collision
  */
 
-#include "Math/Vector2.h"
-#include "Math/Vector3.h"
-#include "DimensionTraits.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Shapes {
 

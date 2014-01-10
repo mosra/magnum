@@ -24,8 +24,8 @@
 
 #include "XEglApplication.h"
 
-#include "Platform/ScreenedApplication.hpp"
-#include "Platform/Implementation/EglContextHandler.h"
+#include "Magnum/Platform/ScreenedApplication.hpp"
+#include "Magnum/Platform/Implementation/EglContextHandler.h"
 
 namespace Magnum { namespace Platform {
 

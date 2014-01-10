@@ -1,7 +1,7 @@
 #ifndef Magnum_Text_TextRenderer_h
 #define Magnum_Text_TextRenderer_h
 
-#include "Text/Renderer.h"
+#include "Magnum/Text/Renderer.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum { namespace Text {

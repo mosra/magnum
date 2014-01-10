@@ -24,7 +24,7 @@
 
 #include "MeshView.h"
 
-#include "Mesh.h"
+#include "Magnum/Mesh.h"
 
 namespace Magnum {
 

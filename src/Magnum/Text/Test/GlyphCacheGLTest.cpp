@@ -22,8 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Test/AbstractOpenGLTester.h"
-#include "Text/GlyphCache.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text { namespace Test {
 

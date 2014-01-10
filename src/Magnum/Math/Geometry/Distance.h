@@ -28,8 +28,8 @@
  * @brief Class Magnum::Math::Geometry::Distance
  */
 
-#include "Math/Functions.h"
-#include "Math/Vector3.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math { namespace Geometry {
 

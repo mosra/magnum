@@ -30,9 +30,9 @@
 
 #include <Corrade/Utility/Utility.h>
 
-#include "Math/Math.h"
-#include "Types.h"
-#include "magnumConfigure.h"
+#include "Magnum/Types.h"
+#include "Magnum/magnumConfigure.h"
+#include "Magnum/Math/Math.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>

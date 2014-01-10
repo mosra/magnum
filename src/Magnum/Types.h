@@ -30,7 +30,7 @@
 
 #include <cstdint>
 
-#include "magnumConfigure.h"
+#include "Magnum/magnumConfigure.h"
 
 namespace Magnum {
 

@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "OpenGL.h"
-#include "Types.h"
-#include "magnumConfigure.h"
+#include "Magnum/OpenGL.h"
+#include "Magnum/Types.h"
+#include "Magnum/magnumConfigure.h"
 
 namespace Magnum { namespace Implementation {
 

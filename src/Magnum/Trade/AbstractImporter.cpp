@@ -28,16 +28,16 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Trade/AbstractMaterialData.h"
-#include "Trade/CameraData.h"
-#include "Trade/ImageData.h"
-#include "Trade/LightData.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
-#include "Trade/ObjectData2D.h"
-#include "Trade/ObjectData3D.h"
-#include "Trade/SceneData.h"
-#include "Trade/TextureData.h"
+#include "Magnum/Trade/AbstractMaterialData.h"
+#include "Magnum/Trade/CameraData.h"
+#include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/LightData.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/ObjectData2D.h"
+#include "Magnum/Trade/ObjectData3D.h"
+#include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/TextureData.h"
 
 namespace Magnum { namespace Trade {
 

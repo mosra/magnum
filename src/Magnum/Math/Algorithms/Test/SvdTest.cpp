@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Algorithms/Svd.h"
+#include "Magnum/Math/Algorithms/Svd.h"
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 

@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::SceneGraph::BasicCamera2D, typedef @ref Magnum::SceneGraph::Camera2D
  */
 
-#include "AbstractCamera.h"
+#include "Magnum/SceneGraph/AbstractCamera.h"
 
 namespace Magnum { namespace SceneGraph {
 

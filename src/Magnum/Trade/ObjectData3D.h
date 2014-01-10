@@ -30,8 +30,8 @@
 
 #include <vector>
 
-#include "Math/Matrix4.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Matrix4.h"
 
 namespace Magnum { namespace Trade {
 

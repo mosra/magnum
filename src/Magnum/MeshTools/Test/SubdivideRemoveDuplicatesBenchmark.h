@@ -26,7 +26,7 @@
 
 #include <QtCore/QObject>
 
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

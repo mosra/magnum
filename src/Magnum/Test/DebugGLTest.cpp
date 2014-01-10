@@ -22,16 +22,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Test/AbstractOpenGLTester.h"
-
 #include <sstream>
 
-#include "Context.h"
-#include "DebugMessage.h"
-#include "Extensions.h"
+#include "Magnum/Context.h"
+#include "Magnum/DebugMessage.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include "DebugMarker.h"
+#include "Magnum/DebugMarker.h"
 #endif
 
 namespace Magnum { namespace Test {

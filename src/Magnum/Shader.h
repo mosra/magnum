@@ -31,9 +31,9 @@
 #include <vector>
 #include <string>
 
-#include "AbstractObject.h"
-#include "Magnum.h"
-#include "magnumVisibility.h"
+#include "Magnum/AbstractObject.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum {
 

@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::Math::Range, @ref Magnum::Math::Range2D, @ref Magnum::Math::Range3D, alias @ref Magnum::Math::Range1D
  */
 
-#include "Math/Vector3.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math {
 

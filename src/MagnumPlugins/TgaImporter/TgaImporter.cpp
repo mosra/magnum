@@ -29,8 +29,9 @@
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Containers/Array.h>
 
-#include "ColorFormat.h"
-#include "Trade/ImageData.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/TgaImporter/TgaHeader.h"
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
@@ -39,8 +40,6 @@
 #include "Context.h"
 #include "Extensions.h"
 #endif
-
-#include "TgaHeader.h"
 
 namespace Magnum { namespace Trade {
 

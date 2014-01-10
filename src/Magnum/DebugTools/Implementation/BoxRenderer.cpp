@@ -24,10 +24,10 @@
 
 #include "BoxRenderer.h"
 
-#include "Mesh.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Shapes/Box.h"
-#include "Shaders/Flat.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#include "Magnum/Shapes/Box.h"
+#include "Magnum/Shaders/Flat.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

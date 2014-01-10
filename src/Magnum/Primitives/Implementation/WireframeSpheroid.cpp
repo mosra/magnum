@@ -24,10 +24,10 @@
 
 #include "WireframeSpheroid.h"
 
-#include "Math/Functions.h"
-#include "Math/Vector3.h"
-#include "Mesh.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
 

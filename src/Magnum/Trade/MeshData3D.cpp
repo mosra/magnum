@@ -24,7 +24,7 @@
 
 #include "MeshData3D.h"
 
-#include "Math/Vector3.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Trade {
 

@@ -30,8 +30,8 @@
 
 #include <vector>
 
-#include "AbstractFeature.h"
-#include "FeatureGroup.h"
+#include "Magnum/SceneGraph/AbstractFeature.h"
+#include "Magnum/SceneGraph/FeatureGroup.h"
 
 namespace Magnum { namespace SceneGraph {
 

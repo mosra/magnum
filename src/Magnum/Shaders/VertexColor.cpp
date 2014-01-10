@@ -26,9 +26,9 @@
 
 #include <Corrade/Utility/Resource.h>
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Shader.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Shader.h"
 
 namespace Magnum { namespace Shaders {
 

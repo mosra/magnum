@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "DebugMessage.h"
+#include "Magnum/DebugMessage.h"
 
 namespace Magnum { namespace Test {
 

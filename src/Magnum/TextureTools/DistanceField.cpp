@@ -22,19 +22,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "TextureTools/DistanceField.h"
+#include "DistanceField.h"
 
 #include <Corrade/Utility/Resource.h>
 
-#include "Math/Range.h"
-#include "AbstractShaderProgram.h"
-#include "Buffer.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Framebuffer.h"
-#include "Mesh.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Framebuffer.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Shader.h"
+#include "Magnum/Texture.h"
 
 namespace Magnum { namespace TextureTools {
 

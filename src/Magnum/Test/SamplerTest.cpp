@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Sampler.h"
+#include "Magnum/Sampler.h"
 
 namespace Magnum { namespace Test {
 

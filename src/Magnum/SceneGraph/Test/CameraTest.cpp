@@ -24,13 +24,13 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
-#include "SceneGraph/Camera2D.h"
-#include "SceneGraph/Camera3D.h"
-#include "SceneGraph/Drawable.h"
-#include "SceneGraph/MatrixTransformation2D.h"
-#include "SceneGraph/MatrixTransformation3D.h"
-#include "SceneGraph/Scene.h"
+#include "Magnum/SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
+#include "Magnum/SceneGraph/Camera2D.h"
+#include "Magnum/SceneGraph/Camera3D.h"
+#include "Magnum/SceneGraph/Drawable.h"
+#include "Magnum/SceneGraph/MatrixTransformation2D.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 

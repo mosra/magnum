@@ -31,10 +31,9 @@
 #include <vector>
 #include <Corrade/Containers/LinkedList.h>
 
-#include "DimensionTraits.h"
-#include "SceneGraph.h"
-
-#include "SceneGraph/magnumSceneGraphVisibility.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/SceneGraph/SceneGraph.h"
+#include "Magnum/SceneGraph/magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
 

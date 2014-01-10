@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Angle.h"
+#include "Magnum/Math/Angle.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

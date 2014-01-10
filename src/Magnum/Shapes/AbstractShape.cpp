@@ -26,8 +26,8 @@
 
 #include <Corrade/Utility/Debug.h>
 
-#include "Shapes/ShapeGroup.h"
-#include "Shapes/Implementation/CollisionDispatch.h"
+#include "Magnum/Shapes/ShapeGroup.h"
+#include "Magnum/Shapes/Implementation/CollisionDispatch.h"
 
 namespace Magnum { namespace Shapes {
 

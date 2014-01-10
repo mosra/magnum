@@ -32,10 +32,10 @@
 #include <vector>
 #include <al.h>
 
-#include "Math/Vector3.h"
-#include "Magnum.h"
-#include "Audio/Audio.h"
-#include "Audio/magnumAudioVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Audio/Audio.h"
+#include "Magnum/Audio/magnumAudioVisibility.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Audio {
 

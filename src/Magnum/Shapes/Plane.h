@@ -28,10 +28,10 @@
  * @brief Class Magnum::Shapes::Plane
  */
 
-#include "Math/Vector3.h"
-#include "Magnum.h"
-#include "Shapes/Shapes.h"
-#include "Shapes/magnumShapesVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -32,8 +32,8 @@
 #include <numeric>
 #include <tuple>
 
-#include "Math/Vector.h"
-#include "MeshTools/RemoveDuplicates.h"
+#include "Magnum/Math/Vector.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools {
 

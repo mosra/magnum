@@ -28,8 +28,8 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Camera2D.h
  */
 
-#include "AbstractCamera.hpp"
-#include "Camera2D.h"
+#include "Magnum/SceneGraph/AbstractCamera.hpp"
+#include "Magnum/SceneGraph/Camera2D.h"
 
 /** @todo Use AbstractBasicCamera2D<T> when support for GCC 4.6 is dropped (also in header) */
 

@@ -30,9 +30,9 @@
 
 #include <Corrade/Containers/EnumSet.h>
 
-#include "Magnum.h"
-#include "OpenGL.h"
-#include "magnumVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/OpenGL.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum {
 

@@ -29,7 +29,8 @@
  */
 
 #include <utility>
-#include "OpenGL.h"
+
+#include "Magnum/OpenGL.h"
 #include <GL/glx.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -39,7 +40,7 @@
 #undef None
 #undef Status
 
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
 namespace Magnum { namespace Platform {
 

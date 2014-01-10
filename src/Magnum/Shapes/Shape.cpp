@@ -24,7 +24,7 @@
 
 #include "Shape.h"
 
-#include "Shapes/Composition.h"
+#include "Magnum/Shapes/Composition.h"
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 

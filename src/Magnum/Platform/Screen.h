@@ -30,7 +30,7 @@
 
 #include <Corrade/Containers/EnumSet.h>
 
-#include "Platform/ScreenedApplication.h"
+#include "Magnum/Platform/ScreenedApplication.h"
 
 namespace Magnum { namespace Platform {
 

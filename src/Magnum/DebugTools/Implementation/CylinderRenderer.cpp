@@ -24,16 +24,16 @@
 
 #include "CylinderRenderer.h"
 
-#include "Mesh.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Shapes/Cylinder.h"
-#include "Primitives/Cylinder.h"
-#include "Primitives/Square.h"
-#include "Shaders/Flat.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#include "Magnum/Shapes/Cylinder.h"
+#include "Magnum/Primitives/Cylinder.h"
+#include "Magnum/Primitives/Square.h"
+#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
-#include "DebugTools/Implementation/CylinderRendererTransformation.h"
+#include "CylinderRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

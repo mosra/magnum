@@ -27,7 +27,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Context.h"
+#include "Magnum/Context.h"
 
 #define None 0L // redef Xlib nonsense
 

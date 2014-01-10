@@ -26,8 +26,8 @@
 #include <Corrade/compatibility.h>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "AbstractResourceLoader.h"
-#include "ResourceManager.h"
+#include "Magnum/AbstractResourceLoader.h"
+#include "Magnum/ResourceManager.h"
 
 namespace Magnum { namespace Test {
 

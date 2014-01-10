@@ -28,9 +28,9 @@
  * @brief Class Magnum::SceneGraph::BasicDualQuaternionTransformation, typedef Magnum::SceneGraph::DualQuaternionTransformation
  */
 
-#include "Math/DualQuaternion.h"
-#include "AbstractTranslationRotation3D.h"
-#include "Object.h"
+#include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/SceneGraph/AbstractTranslationRotation3D.h"
+#include "Magnum/SceneGraph/Object.h"
 
 namespace Magnum { namespace SceneGraph {
 

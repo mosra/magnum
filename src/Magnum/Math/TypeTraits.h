@@ -30,7 +30,7 @@
 
 #include <cmath>
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 /** @brief Precision when testing floats for equality */
 #ifndef FLOAT_EQUALITY_PRECISION

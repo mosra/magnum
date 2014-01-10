@@ -27,9 +27,9 @@
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "ColorFormat.h"
-#include "ImageReference.h"
-#include "Trade/AbstractImageConverter.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/ImageReference.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 
 #include "testConfigure.h"
 

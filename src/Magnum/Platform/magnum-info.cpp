@@ -29,20 +29,20 @@
 #include <Corrade/Utility/NaClStreamBuffer.h>
 #endif
 
-#include "AbstractShaderProgram.h"
-#include "Buffer.h"
-#include "BufferTexture.h"
-#include "Context.h"
-#include "DebugMessage.h"
-#include "Extensions.h"
-#include "Framebuffer.h"
-#include "Mesh.h"
-#include "Renderbuffer.h"
-#include "Shader.h"
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/BufferTexture.h"
+#include "Magnum/Context.h"
+#include "Magnum/DebugMessage.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Framebuffer.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/Shader.h"
 #ifndef CORRADE_TARGET_NACL
-#include "Platform/WindowlessGlxApplication.h"
+#include "Magnum/Platform/WindowlessGlxApplication.h"
 #else
-#include "Platform/WindowlessNaClApplication.h"
+#include "Magnum/Platform/WindowlessNaClApplication.h"
 #endif
 
 namespace Magnum {

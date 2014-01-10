@@ -24,8 +24,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Shapes/Collision.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Shapes/Collision.h"
 
 namespace Magnum { namespace Shapes { namespace Test {
 

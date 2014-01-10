@@ -24,10 +24,10 @@
 
 #include "ShapeRenderer.h"
 
-#include "ResourceManager.h"
-#include "Shapes/Composition.h"
-#include "Shapes/Shape.h"
-#include "SceneGraph/AbstractCamera.h"
+#include "Magnum/DebugTools/ResourceManager.h"
+#include "Magnum/Shapes/Composition.h"
+#include "Magnum/Shapes/Shape.h"
+#include "Magnum/SceneGraph/AbstractCamera.h"
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"

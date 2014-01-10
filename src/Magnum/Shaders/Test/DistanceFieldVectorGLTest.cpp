@@ -22,11 +22,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Shaders/DistanceFieldVector.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/Shaders/DistanceFieldVector.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 #ifdef MAGNUM_BUILD_STATIC
-#include "Shaders/magnumShadersResourceImport.hpp"
+#include "Magnum/Shaders/magnumShadersResourceImport.hpp"
 #endif
 
 namespace Magnum { namespace Shaders { namespace Test {

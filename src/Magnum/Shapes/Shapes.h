@@ -28,7 +28,7 @@
  * @brief Forward declarations for Magnum::Shapes namespace
  */
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Shapes {
 

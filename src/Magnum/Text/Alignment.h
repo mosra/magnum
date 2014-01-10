@@ -28,7 +28,7 @@
  * @brief Enum @ref Magnum::Text::Alignment
  */
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Text {
 

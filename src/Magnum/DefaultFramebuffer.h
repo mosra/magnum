@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::DefaultFramebuffer
  */
 
-#include "AbstractFramebuffer.h"
+#include "Magnum/AbstractFramebuffer.h"
 
 namespace Magnum {
 

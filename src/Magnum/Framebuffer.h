@@ -28,8 +28,8 @@
  * @brief Class @ref Magnum::Framebuffer
  */
 
-#include "AbstractFramebuffer.h"
-#include "CubeMapTexture.h"
+#include "Magnum/AbstractFramebuffer.h"
+#include "Magnum/CubeMapTexture.h"
 
 #ifdef _X11_XLIB_H_ /* Xlib.h, I hate you sincerely */
 #undef Status

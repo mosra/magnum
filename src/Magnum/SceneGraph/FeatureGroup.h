@@ -31,8 +31,8 @@
 #include <vector>
 #include <Corrade/Utility/Assert.h>
 
-#include "SceneGraph/SceneGraph.h"
-#include "SceneGraph/magnumSceneGraphVisibility.h"
+#include "Magnum/SceneGraph/SceneGraph.h"
+#include "Magnum/SceneGraph/magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
 

@@ -24,7 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "OpenGL.h"
+#include "Magnum/OpenGL.h"
+
 #define Status int
 #include <GL/glx.h>
 /* undef Xlib nonsense to avoid conflicts */
@@ -35,8 +36,8 @@
 
 #include <Corrade/compatibility.h>
 
-#include "Platform/AbstractXApplication.h"
-#include "Platform/Implementation/AbstractContextHandler.h"
+#include "Magnum/Platform/AbstractXApplication.h"
+#include "Magnum/Platform/Implementation/AbstractContextHandler.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 

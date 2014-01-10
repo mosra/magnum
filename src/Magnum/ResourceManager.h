@@ -30,7 +30,7 @@
 
 #include <unordered_map>
 
-#include "Resource.h"
+#include "Magnum/Resource.h"
 
 namespace Magnum {
 

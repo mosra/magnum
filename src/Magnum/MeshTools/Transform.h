@@ -28,8 +28,8 @@
  * @brief Function Magnum::MeshTools::transformVectorsInPlace(), Magnum::MeshTools::transformVectors(), Magnum::MeshTools::transformPointsInPlace(), Magnum::MeshTools::transformPoints()
  */
 
-#include "Math/DualQuaternion.h"
-#include "Math/DualComplex.h"
+#include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/Math/DualComplex.h"
 
 namespace Magnum { namespace MeshTools {
 

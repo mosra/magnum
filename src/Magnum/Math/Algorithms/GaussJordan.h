@@ -28,7 +28,7 @@
  * @brief Function Magnum::Math::Algorithms::gaussJordanInPlaceTransposed(), Magnum::Math::Algorithms::gaussJordanInPlace()
  */
 
-#include "Math/RectangularMatrix.h"
+#include "Magnum/Math/RectangularMatrix.h"
 
 namespace Magnum { namespace Math { namespace Algorithms {
 

@@ -29,8 +29,8 @@
 #include <GL/glxext.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Context.h"
-#include "Version.h"
+#include "Magnum/Context.h"
+#include "Magnum/Version.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 

@@ -25,9 +25,9 @@
 #include <array>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Matrix3.h"
-#include "Magnum.h"
-#include "MeshTools/Transform.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/Transform.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

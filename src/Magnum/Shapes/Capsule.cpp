@@ -24,13 +24,13 @@
 
 #include "Capsule.h"
 
-#include "Math/Functions.h"
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "Math/Geometry/Distance.h"
-#include "Magnum.h"
-#include "Shapes/Point.h"
-#include "Shapes/Sphere.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Geometry/Distance.h"
+#include "Magnum/Shapes/Point.h"
+#include "Magnum/Shapes/Sphere.h"
 
 using namespace Magnum::Math::Geometry;
 

@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "WavAudioImporter/WavImporter.h"
+#include "MagnumPlugins/WavAudioImporter/WavImporter.h"
 
 CORRADE_PLUGIN_REGISTER(WavAudioImporter, Magnum::Audio::WavImporter,
     "cz.mosra.magnum.Audio.AbstractImporter/0.1")

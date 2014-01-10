@@ -26,20 +26,18 @@
 
 #include <fstream>
 #include <tuple>
-
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Endianness.h>
 
-#include "ColorFormat.h"
-#include "Image.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Image.h"
+#include "MagnumPlugins/TgaImporter/TgaHeader.h"
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
-#include "Math/Swizzle.h"
-#include "Math/Vector4.h"
+#include "Magnum/Math/Swizzle.h"
+#include "Magnum/Math/Vector4.h"
 #endif
-
-#include "TgaImporter/TgaHeader.h"
 
 namespace Magnum { namespace Trade {
 

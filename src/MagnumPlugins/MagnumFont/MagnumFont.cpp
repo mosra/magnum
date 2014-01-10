@@ -29,10 +29,9 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Unicode.h>
 
-#include "Text/GlyphCache.h"
-#include "Trade/ImageData.h"
-
-#include "TgaImporter/TgaImporter.h"
+#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
 namespace Magnum { namespace Text {
 

@@ -22,9 +22,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/DualComplex.h"
-#include "Math/DualQuaternion.h"
-#include "Math/Range.h"
+#include "Magnum/Math/DualComplex.h"
+#include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/Math/Range.h"
 
 namespace Corrade { namespace Utility {
 

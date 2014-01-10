@@ -28,10 +28,10 @@
  * @brief Class Magnum::Shapes::AxisAlignedBox, typedef Magnum::Shapes::AxisAlignedBox2D, Magnum::Shapes.:AxisAlignedBox3D
  */
 
-#include "Math/Vector3.h"
-#include "DimensionTraits.h"
-#include "Shapes/Shapes.h"
-#include "Shapes/magnumShapesVisibility.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes {
 

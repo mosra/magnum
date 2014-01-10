@@ -30,10 +30,9 @@
 
 #include <vector>
 
-#include "Shapes/AbstractShape.h"
-#include "SceneGraph/FeatureGroup.h"
-
-#include "magnumShapesVisibility.h"
+#include "Magnum/SceneGraph/FeatureGroup.h"
+#include "Magnum/Shapes/AbstractShape.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes {
 

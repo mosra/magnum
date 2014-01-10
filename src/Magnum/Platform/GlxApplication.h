@@ -28,8 +28,8 @@
  * @brief Class @ref Magnum::Platform::GlxApplication
  */
 
-#include "Platform/AbstractXApplication.h"
-#include "Platform/Platform.h"
+#include "Magnum/Platform/AbstractXApplication.h"
+#include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 

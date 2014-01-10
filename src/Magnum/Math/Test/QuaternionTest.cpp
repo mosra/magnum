@@ -25,8 +25,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Matrix4.h"
-#include "Math/Quaternion.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Quaternion.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

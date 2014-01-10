@@ -33,8 +33,8 @@
 #include <vector>
 #include <Corrade/Utility/MurmurHash2.h>
 
-#include "Math/Functions.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Functions.h"
 
 namespace Magnum { namespace MeshTools {
 

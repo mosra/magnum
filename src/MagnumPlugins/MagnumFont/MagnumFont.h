@@ -28,8 +28,8 @@
  * @brief Class Magnum::Text::MagnumFont
  */
 
-#include "Text/AbstractFont.h"
-#include "Trade/Trade.h"
+#include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Text {
 

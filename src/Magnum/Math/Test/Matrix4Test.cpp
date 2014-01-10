@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Math/Matrix4.h"
+#include "Magnum/Math/Matrix4.h"
 
 struct Mat4 {
     float a[16];

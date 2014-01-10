@@ -28,7 +28,7 @@
  * @brief Class Magnum::Trade::TgaImageConverter
  */
 
-#include "Trade/AbstractImageConverter.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC

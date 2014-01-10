@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "TgaImporter.h"
+#include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
 CORRADE_PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter,
     "cz.mosra.magnum.Trade.AbstractImporter/0.3")

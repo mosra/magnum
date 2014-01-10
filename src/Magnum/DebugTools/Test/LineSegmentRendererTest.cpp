@@ -24,10 +24,11 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "Magnum.h"
-#include "DebugTools/Implementation/LineSegmentRendererTransformation.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
+
+#include "../Implementation/LineSegmentRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Test {
 

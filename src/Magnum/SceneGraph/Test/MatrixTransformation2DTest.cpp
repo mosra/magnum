@@ -24,8 +24,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "SceneGraph/MatrixTransformation2D.h"
-#include "SceneGraph/Scene.h"
+#include "Magnum/SceneGraph/MatrixTransformation2D.h"
+#include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 

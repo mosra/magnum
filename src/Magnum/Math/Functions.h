@@ -24,18 +24,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/** @file
+ * @brief Functions usable with scalar and vector types
+ */
+
 #include <cmath>
 #include <limits>
 #include <type_traits>
 #include <utility>
 
-#include "Math/Vector.h"
-
-#include "magnumVisibility.h"
-
-/** @file
- * @brief Functions usable with scalar and vector types
- */
+#include "Magnum/magnumVisibility.h"
+#include "Magnum/Math/Vector.h"
 
 namespace Magnum { namespace Math {
 

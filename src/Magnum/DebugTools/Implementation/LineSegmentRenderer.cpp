@@ -24,15 +24,15 @@
 
 #include "LineSegmentRenderer.h"
 
-#include "Mesh.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Shapes/LineSegment.h"
-#include "Primitives/Line.h"
-#include "Shaders/Flat.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#include "Magnum/Shapes/LineSegment.h"
+#include "Magnum/Primitives/Line.h"
+#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
-#include "DebugTools/Implementation/LineSegmentRendererTransformation.h"
+#include "LineSegmentRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

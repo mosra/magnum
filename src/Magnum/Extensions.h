@@ -28,7 +28,7 @@
  * @brief Namespace Magnum::Extensions
  */
 
-#include "Version.h"
+#include "Magnum/Version.h"
 
 namespace Magnum {
 

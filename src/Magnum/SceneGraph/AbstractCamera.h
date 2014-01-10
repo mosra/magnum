@@ -28,11 +28,10 @@
  * @brief Class @ref Magnum::SceneGraph::AbstractCamera, enum @ref Magnum::SceneGraph::AspectRatioPolicy, alias @ref Magnum::SceneGraph::AbstractBasicCamera2D, @ref Magnum::SceneGraph::AbstractBasicCamera3D, typedef @ref Magnum::SceneGraph::AbstractCamera2D, @ref Magnum::SceneGraph::AbstractCamera3D
  */
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "AbstractFeature.h"
-
-#include "magnumSceneGraphVisibility.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/SceneGraph/AbstractFeature.h"
+#include "Magnum/SceneGraph/magnumSceneGraphVisibility.h"
 
 namespace Magnum { namespace SceneGraph {
 

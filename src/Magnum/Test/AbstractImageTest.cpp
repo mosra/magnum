@@ -25,9 +25,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "AbstractImage.h"
-#include "Image.h"
-#include "ColorFormat.h"
+#include "Magnum/AbstractImage.h"
+#include "Magnum/Image.h"
+#include "Magnum/ColorFormat.h"
 
 namespace Magnum { namespace Test {
 

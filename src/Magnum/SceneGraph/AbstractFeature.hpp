@@ -28,7 +28,7 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractFeature.h
  */
 
-#include "AbstractFeature.h"
+#include "Magnum/SceneGraph/AbstractFeature.h"
 
 namespace Magnum { namespace SceneGraph {
 

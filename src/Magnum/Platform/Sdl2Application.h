@@ -31,9 +31,9 @@
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Corrade.h>
 
-#include "Platform/Platform.h"
-#include "Math/Vector2.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Platform/Platform.h"
 
 #ifdef CORRADE_TARGET_WINDOWS /* Windows version of SDL2 redefines main(), we don't want that */
 #define SDL_MAIN_HANDLED

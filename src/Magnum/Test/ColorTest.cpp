@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Color.h"
+#include "Magnum/Color.h"
 
 namespace Magnum { namespace Test {
 

@@ -28,9 +28,8 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractCamera.h
  */
 
-#include "AbstractCamera.h"
-
-#include "Drawable.h"
+#include "Magnum/SceneGraph/AbstractCamera.h"
+#include "Magnum/SceneGraph/Drawable.h"
 
 namespace Magnum { namespace SceneGraph {
 

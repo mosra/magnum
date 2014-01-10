@@ -31,8 +31,8 @@
 #include <memory>
 #include <utility>
 
-#include "Magnum.h"
-#include "MeshTools/magnumMeshToolsVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/magnumMeshToolsVisibility.h"
 
 namespace Magnum { namespace MeshTools {
 

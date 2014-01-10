@@ -24,11 +24,11 @@
 
 #include "Renderer.h"
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Mesh.h"
-#include "Shaders/AbstractVector.h"
-#include "Text/AbstractFont.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Shaders/AbstractVector.h"
+#include "Magnum/Text/AbstractFont.h"
 
 namespace Magnum { namespace Text {
 

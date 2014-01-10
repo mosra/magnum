@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include "DebugMessage.h"
+#include "Magnum/DebugMessage.h"
 
 namespace Magnum { namespace Implementation {
 

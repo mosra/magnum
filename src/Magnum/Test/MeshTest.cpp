@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Mesh.h"
+#include "Magnum/Mesh.h"
 
 namespace Magnum { namespace Test {
 

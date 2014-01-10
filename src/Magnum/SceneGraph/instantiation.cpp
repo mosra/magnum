@@ -22,20 +22,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "SceneGraph/AbstractFeature.hpp"
-#include "SceneGraph/Animable.hpp"
-#include "SceneGraph/Camera2D.hpp"
-#include "SceneGraph/Camera3D.hpp"
-#include "SceneGraph/Drawable.hpp"
-#include "SceneGraph/DualComplexTransformation.h"
-#include "SceneGraph/DualQuaternionTransformation.h"
-#include "SceneGraph/FeatureGroup.hpp"
-#include "SceneGraph/MatrixTransformation2D.h"
-#include "SceneGraph/MatrixTransformation3D.h"
-#include "SceneGraph/Object.hpp"
-#include "SceneGraph/RigidMatrixTransformation2D.h"
-#include "SceneGraph/RigidMatrixTransformation3D.h"
-#include "SceneGraph/TranslationTransformation.h"
+#include "Magnum/SceneGraph/AbstractFeature.hpp"
+#include "Magnum/SceneGraph/Animable.hpp"
+#include "Magnum/SceneGraph/Camera2D.hpp"
+#include "Magnum/SceneGraph/Camera3D.hpp"
+#include "Magnum/SceneGraph/Drawable.hpp"
+#include "Magnum/SceneGraph/DualComplexTransformation.h"
+#include "Magnum/SceneGraph/DualQuaternionTransformation.h"
+#include "Magnum/SceneGraph/FeatureGroup.hpp"
+#include "Magnum/SceneGraph/MatrixTransformation2D.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/Object.hpp"
+#include "Magnum/SceneGraph/RigidMatrixTransformation2D.h"
+#include "Magnum/SceneGraph/RigidMatrixTransformation3D.h"
+#include "Magnum/SceneGraph/TranslationTransformation.h"
 
 namespace Magnum { namespace SceneGraph {
 

@@ -26,8 +26,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Types.h"
-#include "MeshTools/CombineIndexedArrays.h"
+#include "Magnum/Types.h"
+#include "Magnum/MeshTools/CombineIndexedArrays.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
 

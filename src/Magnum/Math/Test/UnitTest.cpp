@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Unit.h"
+#include "Magnum/Math/Unit.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

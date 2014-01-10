@@ -27,7 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "WavAudioImporter/WavImporter.h"
+#include "MagnumPlugins/WavAudioImporter/WavImporter.h"
 
 #include "configure.h"
 

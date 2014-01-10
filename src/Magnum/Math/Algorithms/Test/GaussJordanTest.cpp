@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Algorithms/GaussJordan.h"
+#include "Magnum/Math/Algorithms/GaussJordan.h"
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 

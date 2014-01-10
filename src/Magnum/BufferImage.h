@@ -30,10 +30,10 @@
  */
 #endif
 
-#include "Math/Vector3.h"
-#include "AbstractImage.h"
-#include "Buffer.h"
-#include "DimensionTraits.h"
+#include "Magnum/AbstractImage.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum {
 

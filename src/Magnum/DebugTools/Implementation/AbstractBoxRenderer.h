@@ -26,8 +26,8 @@
 
 #include "AbstractShapeRenderer.h"
 
-#include "Resource.h"
-#include "Shaders/Shaders.h"
+#include "Magnum/Resource.h"
+#include "Magnum/Shaders/Shaders.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

@@ -22,13 +22,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Shaders/MeshVisualizer.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Shaders/MeshVisualizer.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 #ifdef MAGNUM_BUILD_STATIC
-#include "Shaders/magnumShadersResourceImport.hpp"
+#include "Magnum/Shaders/magnumShadersResourceImport.hpp"
 #endif
 
 namespace Magnum { namespace Shaders { namespace Test {

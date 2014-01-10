@@ -25,7 +25,7 @@
 #include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/TypeTraits.h"
+#include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

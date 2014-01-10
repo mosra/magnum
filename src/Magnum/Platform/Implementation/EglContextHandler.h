@@ -24,8 +24,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum.h"
-
 #ifndef SUPPORT_X11
 #define SUPPORT_X11 // OpenGL ES on BeagleBoard needs this (?)
 #endif
@@ -35,8 +33,9 @@
 
 #include <Corrade/compatibility.h>
 
-#include "Platform/AbstractXApplication.h"
-#include "Platform/Implementation/AbstractContextHandler.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Platform/AbstractXApplication.h"
+#include "Magnum/Platform/Implementation/AbstractContextHandler.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 

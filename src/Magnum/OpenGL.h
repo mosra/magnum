@@ -30,13 +30,13 @@
 
 #include <Corrade/configure.h>
 
-#include "magnumConfigure.h"
+#include "Magnum/magnumConfigure.h"
 
 /** @todo Remove NaCl workaround when not needed */
 
 /* Desktop OpenGL */
 #ifndef MAGNUM_TARGET_GLES
-    #include "OpenGL/GL/gl_magnum.h"
+    #include "MagnumExternal/OpenGL/GL/gl_magnum.h"
 
 /* NaCl has its own gl2.h, the official one causes linker issues. Additionaly
    to NaCl's gl2ext.h we are including our own to prevent undeclared symbol
@@ -54,19 +54,19 @@
     typedef std::uint64_t GLuint64;
     typedef std::int64_t GLint64;
     #undef __gl2ext_h_
-    #include "OpenGL/GLES2/gl2ext.h"
+    #include "MagnumExternal/OpenGL/GLES2/gl2ext.h"
 
 /* Generic OpenGL ES */
 #else
-    #include "OpenGL/KHR/khrplatform.h"
+    #include "MagnumExternal/OpenGL/KHR/khrplatform.h"
     #ifndef MAGNUM_TARGET_GLES2
-        #include "OpenGL/GLES3/gl3platform.h"
-        #include "OpenGL/GLES3/gl3.h"
+        #include "MagnumExternal/OpenGL/GLES3/gl3platform.h"
+        #include "MagnumExternal/OpenGL/GLES3/gl3.h"
     #else
-        #include "OpenGL/GLES2/gl2platform.h"
-        #include "OpenGL/GLES2/gl2.h"
+        #include "MagnumExternal/OpenGL/GLES2/gl2platform.h"
+        #include "MagnumExternal/OpenGL/GLES2/gl2.h"
     #endif
-    #include "OpenGL/GLES2/gl2ext.h"
+    #include "MagnumExternal/OpenGL/GLES2/gl2ext.h"
 #endif
 
 #endif

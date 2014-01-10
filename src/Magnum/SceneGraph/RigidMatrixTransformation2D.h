@@ -28,10 +28,10 @@
  * @brief Class Magnum::SceneGraph::BasicRigidMatrixTransformation2D, typedef Magnum::SceneGraph::RigidMatrixTransformation2D
  */
 
-#include "Math/Matrix3.h"
-#include "Math/Algorithms/GramSchmidt.h"
-#include "AbstractTranslationRotation2D.h"
-#include "Object.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Algorithms/GramSchmidt.h"
+#include "Magnum/SceneGraph/AbstractTranslationRotation2D.h"
+#include "Magnum/SceneGraph/Object.h"
 
 namespace Magnum { namespace SceneGraph {
 

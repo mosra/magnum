@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Renderer.h"
+#include "Magnum/Renderer.h"
 
 namespace Magnum { namespace Implementation {
 

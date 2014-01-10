@@ -26,9 +26,8 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref ScreenedApplication.h and @ref Screen.h
  */
 
-#include "ScreenedApplication.h"
-
-#include "Platform/Screen.h"
+#include "Magnum/Platform/Screen.h"
+#include "Magnum/Platform/ScreenedApplication.h"
 
 namespace Magnum { namespace Platform {
 

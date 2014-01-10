@@ -28,10 +28,10 @@
  * @brief Class Magnum::Shapes::Box, typedef Magnum::Shapes::Box2D, Magnum::Shapes::Box3D
  */
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "DimensionTraits.h"
-#include "Shapes/magnumShapesVisibility.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes {
 

@@ -26,9 +26,10 @@
 
 #include <Corrade/Utility/Debug.h>
 
-#include "Buffer.h"
-#include "Context.h"
-#include "Extensions.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
 #include "Implementation/DebugState.h"
 #include "Implementation/BufferState.h"
 #include "Implementation/MeshState.h"

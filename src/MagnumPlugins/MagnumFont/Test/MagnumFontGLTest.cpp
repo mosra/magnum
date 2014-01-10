@@ -24,9 +24,9 @@
 
 #include <Corrade/Utility/Directory.h>
 
-#include "Test/AbstractOpenGLTester.h"
-#include "Text/GlyphCache.h"
-#include "MagnumFont/MagnumFont.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/Text/GlyphCache.h"
+#include "MagnumPlugins/MagnumFont/MagnumFont.h"
 
 #include "magnumFontTestConfigure.h"
 

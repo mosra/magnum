@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Math/Range.h"
-#include "Magnum.h"
-#include "OpenGL.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/OpenGL.h"
+#include "Magnum/Math/Range.h"
 
 namespace Magnum { namespace Implementation {
 

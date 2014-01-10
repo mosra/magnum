@@ -28,9 +28,9 @@
  * @brief Class Magnum::Math::DualComplex
  */
 
-#include "Math/Dual.h"
-#include "Math/Complex.h"
-#include "Math/Matrix3.h"
+#include "Magnum/Math/Complex.h"
+#include "Magnum/Math/Dual.h"
+#include "Magnum/Math/Matrix3.h"
 
 namespace Magnum { namespace Math {
 

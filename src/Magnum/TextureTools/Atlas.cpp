@@ -24,8 +24,8 @@
 
 #include "Atlas.h"
 
-#include "Math/Functions.h"
-#include "Math/Range.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Range.h"
 
 namespace Magnum { namespace TextureTools {
 

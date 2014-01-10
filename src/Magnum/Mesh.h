@@ -31,7 +31,7 @@
 #include <vector>
 #include <Corrade/Utility/ConfigurationValue.h>
 
-#include "AbstractShaderProgram.h"
+#include "Magnum/AbstractShaderProgram.h"
 
 namespace Magnum {
 

@@ -26,10 +26,10 @@
 
 #include <Corrade/Containers/Array.h>
 
-#include "Context.h"
-#include "Extensions.h"
-#include "Implementation/State.h"
-#include "Implementation/FramebufferState.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Implementation/State.h"
+#include "Magnum/Implementation/FramebufferState.h"
 
 namespace Magnum {
 

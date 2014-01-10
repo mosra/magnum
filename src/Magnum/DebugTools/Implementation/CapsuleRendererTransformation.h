@@ -26,11 +26,11 @@
 
 #include <array>
 
-#include "Math/Functions.h"
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "Magnum.h"
-#include "DimensionTraits.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

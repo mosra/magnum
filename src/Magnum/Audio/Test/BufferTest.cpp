@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Audio/Buffer.h"
+#include "Magnum/Audio/Buffer.h"
 
 namespace Magnum { namespace Audio { namespace Test {
 

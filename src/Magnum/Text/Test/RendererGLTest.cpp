@@ -22,9 +22,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Test/AbstractOpenGLTester.h"
-#include "Text/AbstractFont.h"
-#include "Text/Renderer.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/Renderer.h"
 
 namespace Magnum { namespace Text { namespace Test {
 

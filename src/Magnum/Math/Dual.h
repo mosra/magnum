@@ -31,7 +31,7 @@
 #include <cmath>
 #include <Corrade/Utility/Debug.h>
 
-#include "Math/TypeTraits.h"
+#include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace Math {
 

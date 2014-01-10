@@ -30,7 +30,7 @@
 
 #include <Corrade/compatibility.h>
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace SceneGraph {
 

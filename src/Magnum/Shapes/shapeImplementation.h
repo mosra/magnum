@@ -28,10 +28,10 @@
 #include <Corrade/compatibility.h>
 #include <Corrade/Utility/Assert.h>
 
-#include "DimensionTraits.h"
-#include "Magnum.h"
-#include "Shapes/Shapes.h"
-#include "Shapes/magnumShapesVisibility.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/magnumShapesVisibility.h"
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 

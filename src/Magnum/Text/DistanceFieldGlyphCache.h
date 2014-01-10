@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::Text::DistanceFieldGlyphCache
  */
 
-#include "Text/GlyphCache.h"
+#include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text {
 

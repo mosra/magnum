@@ -24,7 +24,7 @@
 
 #include "FlipNormals.h"
 
-#include "Math/Vector3.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace MeshTools {
 

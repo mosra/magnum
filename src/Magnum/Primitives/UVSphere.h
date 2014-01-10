@@ -28,8 +28,8 @@
  * @brief Class Magnum::Primitives::UVSphere
  */
 
-#include "Primitives/magnumPrimitivesVisibility.h"
-#include "Trade/Trade.h"
+#include "Magnum/Trade/Trade.h"
+#include "Magnum/Primitives/magnumPrimitivesVisibility.h"
 
 namespace Magnum { namespace Primitives {
 

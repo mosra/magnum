@@ -24,11 +24,11 @@
 
 #include "Cylinder.h"
 
-#include "Math/Vector3.h"
-#include "Mesh.h"
-#include "Primitives/Implementation/Spheroid.h"
-#include "Primitives/Implementation/WireframeSpheroid.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Primitives/Implementation/Spheroid.h"
+#include "Magnum/Primitives/Implementation/WireframeSpheroid.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 

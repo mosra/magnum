@@ -25,7 +25,7 @@
 #include <type_traits>
 #include <al.h>
 
-#include "Types.h"
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Audio {
 

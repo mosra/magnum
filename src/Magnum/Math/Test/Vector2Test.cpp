@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Math/Vector3.h" /* Vector3 used in Vector2::cross() */
+#include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2::cross() */
 
 struct Vec2 {
     float x, y;

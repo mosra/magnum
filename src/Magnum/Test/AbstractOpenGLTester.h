@@ -27,13 +27,13 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/compatibility.h>
 
-#include "Context.h"
-#include "Extensions.h"
-#include "DebugMessage.h"
-#include "Renderer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/DebugMessage.h"
+#include "Magnum/Renderer.h"
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Platform/WindowlessGlxApplication.h"
+#include "Magnum/Platform/WindowlessGlxApplication.h"
 #else
 #error Cannot run OpenGL tests on this platform
 #endif

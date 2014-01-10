@@ -32,9 +32,9 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Math/TypeTraits.h"
-#include "Math/Matrix.h"
-#include "Math/Vector3.h"
+#include "Magnum/Math/Matrix.h"
+#include "Magnum/Math/TypeTraits.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math {
 

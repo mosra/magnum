@@ -28,7 +28,7 @@
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/Endianness.h>
 
-#include "WavHeader.h"
+#include "MagnumPlugins/WavAudioImporter/WavHeader.h"
 
 namespace Magnum { namespace Audio {
 

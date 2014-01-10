@@ -30,8 +30,8 @@
 
 #include <type_traits>
 
-#include "Math/BoolVector.h" /* for Math::Implementation::Sequence */
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/BoolVector.h" /* for Math::Implementation::Sequence */
 
 namespace Magnum {
 

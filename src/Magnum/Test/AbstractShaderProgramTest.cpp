@@ -24,7 +24,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "AbstractShaderProgram.h"
+#include "Magnum/AbstractShaderProgram.h"
 
 namespace Magnum { namespace Test {
 

@@ -25,8 +25,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Complex.h"
-#include "Math/Matrix3.h"
+#include "Magnum/Math/Complex.h"
+#include "Magnum/Math/Matrix3.h"
 
 namespace Magnum { namespace Math { namespace Test {
 

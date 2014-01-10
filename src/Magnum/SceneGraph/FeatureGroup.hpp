@@ -28,9 +28,9 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref FeatureGroup.h
  */
 
-#include "FeatureGroup.h"
-
 #include <algorithm>
+
+#include "Magnum/SceneGraph/FeatureGroup.h"
 
 namespace Magnum { namespace SceneGraph {
 

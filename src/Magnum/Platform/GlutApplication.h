@@ -30,12 +30,12 @@
 
 #include <string>
 
-#include "Platform/Platform.h"
-#include "Math/Vector2.h"
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Platform/Platform.h"
 
 /* We must include our own GL headers first to avoid conflicts */
-#include "OpenGL.h"
+#include "Magnum/OpenGL.h"
 #include <GL/freeglut.h>
 
 namespace Magnum {

@@ -24,13 +24,13 @@
 
 #include <Corrade/Utility/Resource.h>
 
-#include "Math/Matrix.h"
-#include "Math/Vector4.h"
-#include "AbstractShaderProgram.h"
-#include "Context.h"
-#include "Extensions.h"
-#include "Shader.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/Shader.h"
+#include "Magnum/Math/Matrix.h"
+#include "Magnum/Math/Vector4.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 

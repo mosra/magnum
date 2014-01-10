@@ -28,9 +28,9 @@
  * @brief Enum @ref Magnum::ColorFormat, @ref Magnum::ColorType
  */
 
-#include "Magnum.h"
-#include "OpenGL.h"
-#include "magnumVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/OpenGL.h"
+#include "Magnum/magnumVisibility.h"
 
 namespace Magnum {
 

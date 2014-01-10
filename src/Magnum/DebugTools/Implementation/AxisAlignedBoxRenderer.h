@@ -26,8 +26,9 @@
 
 #include <Corrade/compatibility.h>
 
+#include "Magnum/Shapes/Shapes.h"
+
 #include "AbstractBoxRenderer.h"
-#include "Shapes/Shapes.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

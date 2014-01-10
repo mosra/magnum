@@ -28,10 +28,10 @@
  * @brief Class @ref Magnum::SceneGraph::TranslationTransformation, alias @ref Magnum::SceneGraph::BasicTranslationTransformation2D, @ref Magnum::SceneGraph::BasicTranslationTransformation3D, typedef @ref Magnum::SceneGraph::TranslationTransformation2D, @ref Magnum::SceneGraph::BasicTranslationTransformation3D
  */
 
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "SceneGraph/AbstractTranslation.h"
-#include "SceneGraph/Object.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/SceneGraph/AbstractTranslation.h"
+#include "Magnum/SceneGraph/Object.h"
 
 namespace Magnum { namespace SceneGraph {
 

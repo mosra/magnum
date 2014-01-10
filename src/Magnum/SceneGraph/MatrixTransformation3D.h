@@ -28,9 +28,9 @@
  * @brief Class Magnum::SceneGraph::BasicMatrixTransformation3D, typedef Magnum::SceneGraph::MatrixTransformation3D
  */
 
-#include "Math/Matrix4.h"
-#include "AbstractTranslationRotationScaling3D.h"
-#include "Object.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/SceneGraph/AbstractTranslationRotationScaling3D.h"
+#include "Magnum/SceneGraph/Object.h"
 
 namespace Magnum { namespace SceneGraph {
 

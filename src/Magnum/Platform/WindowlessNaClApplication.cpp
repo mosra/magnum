@@ -29,7 +29,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/NaClStreamBuffer.h>
 
-#include "Context.h"
+#include "Magnum/Context.h"
 
 namespace Magnum { namespace Platform {
 

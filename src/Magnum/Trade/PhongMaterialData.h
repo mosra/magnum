@@ -28,9 +28,9 @@
  * @brief Class Magnum::Trade::PhongMaterialData
  */
 
-#include "Math/Vector3.h"
-#include "Magnum.h"
-#include "AbstractMaterialData.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Trade/AbstractMaterialData.h"
 
 namespace Magnum { namespace Trade {
 

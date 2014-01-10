@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Math/Vector4.h"
+#include "Magnum/Math/Vector4.h"
 
 struct Vec4 {
     float x, y, z, w;

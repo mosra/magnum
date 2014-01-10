@@ -24,12 +24,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "DimensionTraits.h"
-#include "Resource.h"
-#include "DebugTools/DebugTools.h"
-#include "SceneGraph/SceneGraph.h"
-#include "Shaders/Shaders.h"
-#include "Trade/Trade.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/Resource.h"
+#include "Magnum/DebugTools/DebugTools.h"
+#include "Magnum/SceneGraph/SceneGraph.h"
+#include "Magnum/Shaders/Shaders.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum {
 

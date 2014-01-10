@@ -28,7 +28,7 @@
  * @brief Struct Magnum::Trade::TgaHeader
  */
 
-#include <Types.h>
+#include "Magnum/Types.h"
 
 namespace Magnum { namespace Trade {
 

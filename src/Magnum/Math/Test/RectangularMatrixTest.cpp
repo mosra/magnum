@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Math/RectangularMatrix.h"
+#include "Magnum/Math/RectangularMatrix.h"
 
 struct Mat2x3 {
     float a[6];

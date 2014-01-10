@@ -24,13 +24,13 @@
 
 #include "PointRenderer.h"
 
-#include "Mesh.h"
-#include "DebugTools/ShapeRenderer.h"
-#include "Shapes/Point.h"
-#include "Primitives/Crosshair.h"
-#include "Shaders/Flat.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#include "Magnum/Shapes/Point.h"
+#include "Magnum/Primitives/Crosshair.h"
+#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

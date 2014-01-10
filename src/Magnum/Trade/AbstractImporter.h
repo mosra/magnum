@@ -32,11 +32,10 @@
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
-#include "Optional/optional.hpp"
-
-#include "Magnum.h"
-#include "magnumVisibility.h"
-#include "Trade/Trade.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/magnumVisibility.h"
+#include "Magnum/Trade/Trade.h"
+#include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum { namespace Trade {
 

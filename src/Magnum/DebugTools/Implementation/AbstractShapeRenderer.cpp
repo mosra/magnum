@@ -24,14 +24,14 @@
 
 #include "AbstractShapeRenderer.h"
 
-#include "AbstractShaderProgram.h"
-#include "Buffer.h"
-#include "Mesh.h"
-#include "DebugTools/ResourceManager.h"
-#include "MeshTools/CompressIndices.h"
-#include "Shaders/Flat.h"
-#include "Trade/MeshData2D.h"
-#include "Trade/MeshData3D.h"
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/DebugTools/ResourceManager.h"
+#include "Magnum/MeshTools/CompressIndices.h"
+#include "Magnum/Shaders/Flat.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

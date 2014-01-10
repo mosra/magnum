@@ -24,9 +24,9 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Buffer.h"
-#include "BufferTexture.h"
-#include "Test/AbstractOpenGLTester.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/BufferTexture.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 

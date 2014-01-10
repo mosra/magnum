@@ -24,8 +24,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Math/Range.h"
-#include "Text/AbstractFont.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/Text/AbstractFont.h"
 
 namespace Magnum { namespace Text { namespace Test {
 

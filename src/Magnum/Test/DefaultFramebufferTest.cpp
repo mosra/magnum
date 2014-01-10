@@ -25,7 +25,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "DefaultFramebuffer.h"
+#include "Magnum/DefaultFramebuffer.h"
 
 namespace Magnum { namespace Test {
 

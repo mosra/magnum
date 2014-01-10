@@ -29,11 +29,11 @@
  */
 
 #ifndef MAGNUM_TARGET_GLES
-#include "Math/Vector2.h"
+#include "Magnum/Math/Vector2.h"
 #endif
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
-#include "TextureTools/magnumTextureToolsVisibility.h"
+#include "Magnum/TextureTools/magnumTextureToolsVisibility.h"
 
 namespace Magnum { namespace TextureTools {
 

@@ -30,7 +30,7 @@
 
 #include <Corrade/Containers/Array.h>
 
-#include "Audio/AbstractImporter.h"
+#include "Magnum/Audio/AbstractImporter.h"
 
 namespace Magnum { namespace Audio {
 

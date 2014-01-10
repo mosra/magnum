@@ -28,7 +28,7 @@
  * @brief Class Magnum::Math::Geometry::Intersection
  */
 
-#include "Math/Vector3.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math { namespace Geometry {
 

@@ -28,8 +28,8 @@
  * @brief Class @ref Magnum::Texture, typedef @ref Magnum::Texture1D, @ref Magnum::Texture2D, @ref Magnum::Texture3D
  */
 
-#include "AbstractTexture.h"
-#include "DimensionTraits.h"
+#include "Magnum/AbstractTexture.h"
+#include "Magnum/DimensionTraits.h"
 
 namespace Magnum {
 

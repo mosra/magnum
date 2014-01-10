@@ -28,9 +28,9 @@
  * @brief Class Magnum::Math::DualQuaternion
  */
 
-#include "Math/Dual.h"
-#include "Math/Matrix4.h"
-#include "Math/Quaternion.h"
+#include "Magnum/Math/Dual.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Quaternion.h"
 
 namespace Magnum { namespace Math {
 

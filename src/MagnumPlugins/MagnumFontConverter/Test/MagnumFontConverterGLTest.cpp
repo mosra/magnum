@@ -25,16 +25,15 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/TestSuite/Compare/File.h>
 
-#include "ColorFormat.h"
-#include "Extensions.h"
-#include "TextureFormat.h"
-#include "Test/AbstractOpenGLTester.h"
-#include "Text/GlyphCache.h"
-#include "Trade/ImageData.h"
-
-#include "Text/AbstractFont.h"
-#include "MagnumFontConverter/MagnumFontConverter.h"
-#include "TgaImporter/TgaImporter.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/TextureFormat.h"
+#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/MagnumFontConverter/MagnumFontConverter.h"
+#include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
 #include "magnumFontTestConfigure.h"
 #include "magnumFontConverterTestConfigure.h"

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Buffer.h"
+#include "Magnum/Buffer.h"
 
 namespace Magnum { namespace Implementation {
 

@@ -30,8 +30,8 @@
 
 #include <tuple>
 
-#include "Math/Functions.h"
-#include "Math/Matrix.h"
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Matrix.h"
 
 namespace Magnum { namespace Math { namespace Algorithms {
 

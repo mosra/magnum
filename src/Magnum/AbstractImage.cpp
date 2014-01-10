@@ -26,8 +26,8 @@
 
 #include <Corrade/Utility/Assert.h>
 
-#include "Math/Vector.h"
-#include "ColorFormat.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/Math/Vector.h"
 
 namespace Magnum {
 

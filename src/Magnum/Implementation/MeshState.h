@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
 namespace Magnum { namespace Implementation {
 

@@ -33,10 +33,10 @@
 #include <tuple>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
-#include "Magnum.h"
-#include "Texture.h"
-#include "Text/Text.h"
-#include "Text/magnumTextVisibility.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Texture.h"
+#include "Magnum/Text/Text.h"
+#include "Magnum/Text/magnumTextVisibility.h"
 
 namespace Magnum { namespace Text {
 

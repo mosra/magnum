@@ -34,11 +34,10 @@
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
-#include "Math/Angle.h"
-#include "Math/BoolVector.h"
-#include "Math/TypeTraits.h"
-
-#include "magnumVisibility.h"
+#include "Magnum/magnumVisibility.h"
+#include "Magnum/Math/Angle.h"
+#include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace Math {
 

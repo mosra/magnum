@@ -33,8 +33,8 @@
 #include <limits>
 #include <tuple>
 
-#include "Mesh.h"
-#include "Buffer.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/Buffer.h"
 
 namespace Magnum { namespace MeshTools {
 

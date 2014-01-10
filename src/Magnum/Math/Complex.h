@@ -32,8 +32,8 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Math/Matrix.h"
-#include "Math/Vector2.h"
+#include "Magnum/Math/Matrix.h"
+#include "Magnum/Math/Vector2.h"
 
 namespace Magnum { namespace Math {
 

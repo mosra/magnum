@@ -27,7 +27,7 @@
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/utilities.h>
 
-#include "Magnum.h"
+#include "Magnum/Magnum.h"
 
 using namespace std::chrono;
 
