@@ -47,7 +47,7 @@ set(MagnumDebugTools_HEADERS
     ResourceManager.h
     ShapeRenderer.h
 
-    magnumDebugToolsVisibility.h)
+    visibility.h)
 
 add_library(MagnumDebugTools ${SHARED_OR_STATIC} ${MagnumDebugTools_SRCS})
 if(BUILD_STATIC_PIC)

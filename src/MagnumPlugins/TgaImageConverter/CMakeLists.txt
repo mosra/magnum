@@ -34,7 +34,7 @@ set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaIm
 add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR}
     TgaImageConverter.conf
     $<TARGET_OBJECTS:TgaImageConverterObjects>
-    pluginRegistrationTgaImageConverter.cpp)
+    pluginRegistration.cpp)
 target_link_libraries(TgaImageConverter Magnum)
 
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)

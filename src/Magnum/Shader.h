@@ -33,7 +33,6 @@
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
-#include "Magnum/magnumVisibility.h"
 
 namespace Magnum {
 

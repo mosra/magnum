@@ -1,5 +1,5 @@
-#ifndef Magnum_Shapes_magnumShapesVisibility_h
-#define Magnum_Shapes_magnumShapesVisibility_h
+#ifndef Magnum_Primitives_visibility_h
+#define Magnum_Primitives_visibility_h
 /*
     This file is part of Magnum.
 
@@ -26,17 +26,16 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumShapes_EXPORTS
-        #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_EXPORT
+    #ifdef MagnumPrimitives_EXPORTS
+        #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_IMPORT
+        #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define MAGNUM_SHAPES_EXPORT CORRADE_VISIBILITY_STATIC
+    #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
-#define MAGNUM_SHAPES_LOCAL CORRADE_VISIBILITY_LOCAL
 
 #endif

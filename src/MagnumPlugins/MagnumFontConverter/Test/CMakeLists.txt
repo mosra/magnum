@@ -22,11 +22,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumFontConverterTestConfigure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/magnumFontConverterTestConfigure.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../MagnumFont/Test/
-                    ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp LIBRARIES
     MagnumFontConverterTestLib

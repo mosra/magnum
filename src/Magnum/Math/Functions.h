@@ -33,7 +33,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "Magnum/magnumVisibility.h"
+#include "Magnum/visibility.h"
 #include "Magnum/Math/Vector.h"
 
 namespace Magnum { namespace Math {

@@ -31,7 +31,7 @@
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Primitives/magnumPrimitivesVisibility.h"
+#include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {

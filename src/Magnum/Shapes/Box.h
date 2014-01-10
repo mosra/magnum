@@ -31,7 +31,7 @@
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
-#include "Magnum/Shapes/magnumShapesVisibility.h"
+#include "Magnum/Shapes/visibility.h"
 
 namespace Magnum { namespace Shapes {
 

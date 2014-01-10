@@ -1,5 +1,5 @@
-#ifndef Magnum_Text_magnumTextVisibility_h
-#define Magnum_Text_magnumTextVisibility_h
+#ifndef Magnum_Audio_visibility_h
+#define Magnum_Audio_visibility_h
 /*
     This file is part of Magnum.
 
@@ -26,17 +26,16 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumText_EXPORTS
-        #define MAGNUM_TEXT_EXPORT CORRADE_VISIBILITY_EXPORT
+    #ifdef MagnumAudio_EXPORTS
+        #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define MAGNUM_TEXT_EXPORT CORRADE_VISIBILITY_IMPORT
+        #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define MAGNUM_TEXT_EXPORT CORRADE_VISIBILITY_STATIC
+    #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
-#define MAGNUM_TEXT_LOCAL CORRADE_VISIBILITY_LOCAL
 
 #endif

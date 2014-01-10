@@ -33,7 +33,7 @@
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/Texture.h"
-#include "Magnum/Text/magnumTextVisibility.h"
+#include "Magnum/Text/visibility.h"
 
 namespace Magnum { namespace Text {
 

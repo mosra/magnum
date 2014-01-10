@@ -31,7 +31,7 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/AbstractObject.h"
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 namespace Magnum {
 

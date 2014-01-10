@@ -57,8 +57,8 @@ set(MagnumShapes_HEADERS
     Point.h
     Sphere.h
 
-    magnumShapesVisibility.h
-    shapeImplementation.h)
+    shapeImplementation.h
+    visibility.h)
 
 add_library(MagnumShapes ${SHARED_OR_STATIC} ${MagnumShapes_SRCS})
 if(BUILD_STATIC_PIC)

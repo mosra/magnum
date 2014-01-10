@@ -30,7 +30,7 @@
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/GlyphCache.h"
 
-#include "testConfigure.h"
+#include "configure.h"
 
 namespace Magnum { namespace Text { namespace Test {
 

@@ -70,9 +70,9 @@ if(BUILD_GL_TESTS)
         ${QueryGLTest_RES}
         LIBRARIES ${GL_TEST_LIBRARIES})
 
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ShaderGLTestConfigure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/ShaderGLTestConfigure.h)
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+    include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
     corrade_add_test(ShaderGLTest ShaderGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
 
     if(NOT MAGNUM_TARGET_GLES2)

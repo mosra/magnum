@@ -44,7 +44,7 @@ set(MagnumShaders_HEADERS
     Vector.h
     VertexColor.h
 
-    magnumShadersVisibility.h)
+    visibility.h)
 
 if(BUILD_STATIC)
     set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} magnumShadersResourceImport.hpp)

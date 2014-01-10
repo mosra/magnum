@@ -29,7 +29,7 @@
  */
 
 #include "Magnum/SceneGraph/AbstractGroupedFeature.h"
-#include "Magnum/SceneGraph/magnumSceneGraphVisibility.h"
+#include "Magnum/SceneGraph/visibility.h"
 
 namespace Magnum { namespace SceneGraph {
 

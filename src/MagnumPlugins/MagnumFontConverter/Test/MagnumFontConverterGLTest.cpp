@@ -35,8 +35,8 @@
 #include "MagnumPlugins/MagnumFontConverter/MagnumFontConverter.h"
 #include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
-#include "magnumFontTestConfigure.h"
-#include "magnumFontConverterTestConfigure.h"
+#include "../../MagnumFont/Test/configure.h"
+#include "configure.h"
 
 namespace Magnum { namespace Text { namespace Test {
 

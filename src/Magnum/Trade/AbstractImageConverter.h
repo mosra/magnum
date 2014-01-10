@@ -31,7 +31,7 @@
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/magnumVisibility.h"
+#include "Magnum/visibility.h"
 #include "Magnum/Text/Text.h"
 
 namespace Magnum { namespace Trade {

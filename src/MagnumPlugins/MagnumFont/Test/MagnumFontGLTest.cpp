@@ -28,7 +28,7 @@
 #include "Magnum/Text/GlyphCache.h"
 #include "MagnumPlugins/MagnumFont/MagnumFont.h"
 
-#include "magnumFontTestConfigure.h"
+#include "configure.h"
 
 namespace Magnum { namespace Text { namespace Test {
 

@@ -1,5 +1,5 @@
-#ifndef Magnum_Audio_magnumAudioVisibility_h
-#define Magnum_Audio_magnumAudioVisibility_h
+#ifndef Magnum_MeshTools_visibility_h
+#define Magnum_MeshTools_visibility_h
 /*
     This file is part of Magnum.
 
@@ -26,16 +26,16 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumAudio_EXPORTS
-        #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_EXPORT
+    #if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
+        #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_IMPORT
+        #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_STATIC
+    #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #endif

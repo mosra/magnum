@@ -31,7 +31,7 @@
 #include <vector>
 
 #include "Magnum/Types.h"
-#include "Magnum/MeshTools/magnumMeshToolsVisibility.h"
+#include "Magnum/MeshTools/visibility.h"
 
 namespace Magnum { namespace MeshTools {
 

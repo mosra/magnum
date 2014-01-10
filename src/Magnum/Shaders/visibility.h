@@ -26,7 +26,7 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
     #ifdef MagnumShaders_EXPORTS

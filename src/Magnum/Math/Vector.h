@@ -34,7 +34,7 @@
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
-#include "Magnum/magnumVisibility.h"
+#include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/BoolVector.h"
 #include "Magnum/Math/TypeTraits.h"

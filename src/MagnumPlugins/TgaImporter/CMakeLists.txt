@@ -35,7 +35,7 @@ set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporter
 add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR}
     TgaImporter.conf
     $<TARGET_OBJECTS:TgaImporterObjects>
-    pluginRegistrationTgaImporter.cpp)
+    pluginRegistration.cpp)
 target_link_libraries(TgaImporter Magnum)
 
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)

@@ -31,7 +31,7 @@
 #include <al.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Audio/magnumAudioVisibility.h"
+#include "Magnum/Audio/visibility.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Audio {

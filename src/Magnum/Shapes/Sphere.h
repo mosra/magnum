@@ -32,7 +32,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Shapes/Collision.h"
 #include "Magnum/Shapes/Shapes.h"
-#include "Magnum/Shapes/magnumShapesVisibility.h"
+#include "Magnum/Shapes/visibility.h"
 
 namespace Magnum { namespace Shapes {
 

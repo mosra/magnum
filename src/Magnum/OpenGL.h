@@ -30,7 +30,7 @@
 
 #include <Corrade/configure.h>
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 /** @todo Remove NaCl workaround when not needed */
 

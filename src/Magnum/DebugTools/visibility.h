@@ -1,5 +1,5 @@
-#ifndef Magnum_magnumVisibility_h
-#define Magnum_magnumVisibility_h
+#ifndef Magnum_DebugTools_visibility_h
+#define Magnum_DebugTools_visibility_h
 /*
     This file is part of Magnum.
 
@@ -26,17 +26,16 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
-    #if defined(Magnum_EXPORTS) || defined(MagnumMathObjects_EXPORTS)
-        #define MAGNUM_EXPORT CORRADE_VISIBILITY_EXPORT
+    #ifdef MagnumDebugTools_EXPORTS
+        #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define MAGNUM_EXPORT CORRADE_VISIBILITY_IMPORT
+        #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define MAGNUM_EXPORT CORRADE_VISIBILITY_STATIC
+    #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
-#define MAGNUM_LOCAL CORRADE_VISIBILITY_LOCAL
 
 #endif

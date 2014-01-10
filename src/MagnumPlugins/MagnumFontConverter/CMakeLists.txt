@@ -34,7 +34,7 @@ set_target_properties(MagnumFontConverterObjects PROPERTIES COMPILE_FLAGS "${CMA
 add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR}
     MagnumFontConverter.conf
     $<TARGET_OBJECTS:MagnumFontConverterObjects>
-    pluginRegistrationMagnumFontConverter.cpp)
+    pluginRegistration.cpp)
 target_link_libraries(MagnumFontConverter Magnum MagnumText)
 
 if(WIN32)

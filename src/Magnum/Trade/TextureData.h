@@ -30,7 +30,7 @@
 
 #include "Magnum/Array.h"
 #include "Magnum/Sampler.h"
-#include "Magnum/magnumVisibility.h"
+#include "Magnum/visibility.h"
 
 namespace Magnum { namespace Trade {
 

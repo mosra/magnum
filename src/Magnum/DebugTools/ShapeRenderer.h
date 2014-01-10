@@ -33,7 +33,7 @@
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/shapeImplementation.h"
-#include "Magnum/DebugTools/magnumDebugToolsVisibility.h"
+#include "Magnum/DebugTools/visibility.h"
 
 namespace Magnum { namespace DebugTools {
 

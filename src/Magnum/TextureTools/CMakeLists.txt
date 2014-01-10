@@ -51,8 +51,8 @@ if(WITH_DISTANCEFIELDCONVERTER)
         message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
     endif()
 
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/distancefieldconverterConfigure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/distancefieldconverterConfigure.h)
 
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 

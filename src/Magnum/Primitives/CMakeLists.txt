@@ -49,7 +49,7 @@ set(MagnumPrimitives_HEADERS
     Square.h
     UVSphere.h
 
-    magnumPrimitivesVisibility.h)
+    visibility.h)
 
 add_library(MagnumPrimitives ${SHARED_OR_STATIC} ${MagnumPrimitives_SRCS})
 if(BUILD_STATIC_PIC)

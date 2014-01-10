@@ -28,7 +28,7 @@
  * @brief Class Magnum::Primitives::Circle
  */
 
-#include "Magnum/Primitives/magnumPrimitivesVisibility.h"
+#include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {

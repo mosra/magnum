@@ -32,7 +32,7 @@
 
 #include "Magnum/SceneGraph/FeatureGroup.h"
 #include "Magnum/Shapes/AbstractShape.h"
-#include "Magnum/Shapes/magnumShapesVisibility.h"
+#include "Magnum/Shapes/visibility.h"
 
 namespace Magnum { namespace Shapes {
 

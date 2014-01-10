@@ -35,7 +35,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/DebugTools/DebugTools.h"
-#include "Magnum/DebugTools/magnumDebugToolsVisibility.h"
+#include "Magnum/DebugTools/visibility.h"
 #include "Magnum/SceneGraph/SceneGraph.h"
 #include "Magnum/Shapes/Shapes.h"
 

@@ -34,7 +34,7 @@ set_target_properties(MagnumFontObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED
 add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_INSTALL_DIR}
     MagnumFont.conf
     $<TARGET_OBJECTS:MagnumFontObjects>
-    pluginRegistrationMagnumFont.cpp)
+    pluginRegistration.cpp)
 target_link_libraries(MagnumFont Magnum MagnumText)
 
 if(WIN32)

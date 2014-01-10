@@ -32,7 +32,7 @@
 
 #include "Magnum/OpenGL.h"
 #include "Magnum/Types.h"
-#include "Magnum/magnumVisibility.h"
+#include "Magnum/visibility.h"
 
 namespace Magnum {
 

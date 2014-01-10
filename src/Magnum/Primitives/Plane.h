@@ -29,7 +29,7 @@
  */
 
 #include "Magnum/Trade/Trade.h"
-#include "Magnum/Primitives/magnumPrimitivesVisibility.h"
+#include "Magnum/Primitives/visibility.h"
 
 namespace Magnum { namespace Primitives {
 

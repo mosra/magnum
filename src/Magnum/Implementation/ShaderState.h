@@ -26,7 +26,7 @@
 
 #include "Magnum/OpenGL.h"
 #include "Magnum/Types.h"
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 namespace Magnum { namespace Implementation {
 

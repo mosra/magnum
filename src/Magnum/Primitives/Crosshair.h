@@ -28,7 +28,7 @@
  * @brief Class Magnum::Primitives::Crosshair2D, Magnum::Primitives::Crosshair3D
  */
 
-#include "Magnum/Primitives/magnumPrimitivesVisibility.h"
+#include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {

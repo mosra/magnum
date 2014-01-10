@@ -28,7 +28,7 @@
 
 #include "Magnum/Text/AbstractFont.h"
 
-#include "testConfigure.h"
+#include "configure.h"
 
 namespace Magnum { namespace Text { namespace Test {
 

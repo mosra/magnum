@@ -33,7 +33,7 @@
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Audio/magnumAudioVisibility.h"
+#include "Magnum/Audio/visibility.h"
 
 namespace Magnum { namespace Audio {
 

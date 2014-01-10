@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "Magnum/Types.h"
-#include "Magnum/DebugTools/magnumDebugToolsVisibility.h"
+#include "Magnum/DebugTools/visibility.h"
 
 namespace Magnum { namespace DebugTools {
 

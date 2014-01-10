@@ -39,7 +39,7 @@ set_target_properties(WavAudioImporterObjects PROPERTIES COMPILE_FLAGS "-DWavAud
 add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR}
     WavAudioImporter.conf
     $<TARGET_OBJECTS:WavAudioImporterObjects>
-    pluginRegistrationWavAudioImporter.cpp)
+    pluginRegistration.cpp)
 target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)

@@ -1,5 +1,5 @@
-#ifndef Magnum_Primitives_magnumPrimitivesVisibility_h
-#define Magnum_Primitives_magnumPrimitivesVisibility_h
+#ifndef Magnum_SceneGraph_visibility_h
+#define Magnum_SceneGraph_visibility_h
 /*
     This file is part of Magnum.
 
@@ -26,16 +26,17 @@
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumPrimitives_EXPORTS
-        #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_EXPORT
+    #if defined(MagnumSceneGraph_EXPORTS) || defined(MagnumSceneGraphObjects_EXPORTS)
+        #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_IMPORT
+        #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define MAGNUM_PRIMITIVES_EXPORT CORRADE_VISIBILITY_STATIC
+    #define MAGNUM_SCENEGRAPH_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
+#define MAGNUM_SCENEGRAPH_LOCAL CORRADE_VISIBILITY_LOCAL
 
 #endif

@@ -29,7 +29,7 @@
 #include "Magnum/Shader.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
-#include "ShaderGLTestConfigure.h"
+#include "configure.h"
 
 namespace Magnum { namespace Test {
 

@@ -33,7 +33,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/AbstractVector.h"
-#include "Magnum/Shaders/magnumShadersVisibility.h"
+#include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
 

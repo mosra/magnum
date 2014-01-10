@@ -31,7 +31,7 @@
 #include "Magnum/ImageReference.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 
-#include "testConfigure.h"
+#include "configure.h"
 
 namespace Magnum { namespace Trade { namespace Test {
 

@@ -32,7 +32,7 @@
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Color.h"
 
-#include "Magnum/Shaders/magnumShadersVisibility.h"
+#include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
 

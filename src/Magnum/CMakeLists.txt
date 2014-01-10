@@ -22,8 +22,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/magnumConfigure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
@@ -119,7 +119,7 @@ set(Magnum_HEADERS
     Types.h
     Version.h
 
-    magnumVisibility.h)
+    visibility.h)
 
 # Deprecated headers
 if(BUILD_DEPRECATED)
@@ -182,7 +182,7 @@ install(TARGETS Magnum
     LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnumConfigure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(Math)
 add_subdirectory(Platform)

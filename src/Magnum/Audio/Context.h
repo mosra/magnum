@@ -31,7 +31,7 @@
 #include <string>
 #include <al.h>
 
-#include "Magnum/Audio/magnumAudioVisibility.h"
+#include "Magnum/Audio/visibility.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef struct ALCdevice_struct ALCdevice;

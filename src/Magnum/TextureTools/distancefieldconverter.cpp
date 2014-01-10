@@ -37,7 +37,7 @@
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
 
-#include "configure.h"
+#include "distancefieldconverterConfigure.h"
 
 namespace Magnum { namespace TextureTools {
 

@@ -36,7 +36,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Texture.h"
 #include "Magnum/Text/Text.h"
-#include "Magnum/Text/magnumTextVisibility.h"
+#include "Magnum/Text/visibility.h"
 
 namespace Magnum { namespace Text {
 

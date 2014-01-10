@@ -28,7 +28,7 @@
 
 #include "Magnum/Audio/AbstractImporter.h"
 
-#include "testConfigure.h"
+#include "configure.h"
 
 namespace Magnum { namespace Audio { namespace Test {
 

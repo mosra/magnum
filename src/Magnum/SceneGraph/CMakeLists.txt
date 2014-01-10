@@ -66,7 +66,7 @@ set(MagnumSceneGraph_HEADERS
     SceneGraph.h
     TranslationTransformation.h
 
-    magnumSceneGraphVisibility.h)
+    visibility.h)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well

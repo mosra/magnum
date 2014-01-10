@@ -31,7 +31,7 @@
 #include <Corrade/configure.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/magnumVisibility.h"
+#include "Magnum/visibility.h"
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Math.h"
 #include "Magnum/Math/Unit.h"

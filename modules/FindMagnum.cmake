@@ -133,7 +133,7 @@ find_path(MAGNUM_INCLUDE_DIR
     NAMES Magnum/Magnum.h)
 
 # Configuration
-file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/magnumConfigure.h _magnumConfigure)
+file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
 
 string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_DEPRECATED" _BUILD_DEPRECATED)
 if(NOT _BUILD_DEPRECATED EQUAL -1)

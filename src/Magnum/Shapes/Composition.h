@@ -35,8 +35,8 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Shapes/Shapes.h"
-#include "Magnum/Shapes/magnumShapesVisibility.h"
 #include "Magnum/Shapes/shapeImplementation.h"
+#include "Magnum/Shapes/visibility.h"
 
 namespace Magnum { namespace Shapes {
 

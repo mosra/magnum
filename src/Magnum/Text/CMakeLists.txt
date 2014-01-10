@@ -37,7 +37,7 @@ set(MagnumText_HEADERS
     Renderer.h
     Text.h
 
-    magnumTextVisibility.h)
+    visibility.h)
 
 if(MAGNUM_BUILD_DEPRECATED)
     set(MagnumText_HEADERS ${MagnumText_HEADERS}
@@ -65,7 +65,7 @@ if(WITH_FONTCONVERTER)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+    include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(magnum-fontconverter fontconverter.cpp)
     target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})

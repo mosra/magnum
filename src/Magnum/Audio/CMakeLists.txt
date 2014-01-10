@@ -42,7 +42,7 @@ set(MagnumAudio_HEADERS
     Renderer.h
     Source.h
 
-    magnumAudioVisibility.h)
+    visibility.h)
 
 add_library(MagnumAudio ${SHARED_OR_STATIC} ${MagnumAudio_SOURCES})
 target_link_libraries(MagnumAudio ${CORRADE_PLUGINMANAGER_LIBRARIES} ${OPENAL_LIBRARY})

@@ -46,7 +46,7 @@ set(MagnumMeshTools_HEADERS
     Tipsify.h
     Transform.h
 
-    magnumMeshToolsVisibility.h)
+    visibility.h)
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
