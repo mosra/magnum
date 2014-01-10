@@ -68,7 +68,7 @@ namespace Corrade { namespace Utility {
     template<class T> struct ConfigurationValue<Magnum::Math::Geometry::Rectangle<T>>: public ConfigurationValue<Magnum::Math::Range2D<T>> {};
 }}
 #else
-#error
+#error use Magnum/Math/Range.h instead
 #endif
 
 #endif
