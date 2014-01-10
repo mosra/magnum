@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file /Context.h
+/** @file
  * @brief Class @ref Magnum::Context, @ref Magnum::Extension, macro @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
  */
 

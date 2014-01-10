@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file /Buffer.h
+/** @file
  * @brief Class @ref Magnum::Buffer, enum @ref Magnum::BufferUsage
  */
 

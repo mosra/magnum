@@ -689,11 +689,12 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = src/ \
+INPUT                  = src/Magnum \
+                         src/MagnumPlugins \
                          doc/ \
-                         ../magnum-plugins/src/ \
+                         ../magnum-plugins/src/MagnumPlugins \
                          ../magnum-plugins/doc/ \
-                         ../magnum-integration/src/ \
+                         ../magnum-integration/src/Magnum \
                          ../magnum-integration/doc/ \
                          ../magnum-examples/doc/
 

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file /Renderer.h
+/** @file
  * @brief Class Magnum::Renderer
  */
 

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file /ResourceManager.h
+/** @file
  * @brief Class Magnum::ResourceManager, enum Magnum::ResourceDataState, Magnum::ResourcePolicy
  */
 

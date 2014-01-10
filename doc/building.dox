@@ -139,9 +139,9 @@ available for desktop OpenGL only, see @ref requires-gl.
    emulation in desktop OpenGL library. Might not be supported in all drivers.
 
 The features used can be conveniently detected in depending projects both in
-CMake and C++ sources, see @ref cmake and @ref src/Magnum.h for more
-information. See also @ref corrade-cmake and @ref src/Corrade.h for additional
-information.
+CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
+information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
+additional information.
 
 By default the engine is built with nearly everything except Audio library,
 plugins and application libraries (see below). Using `WITH_*` CMake parameters

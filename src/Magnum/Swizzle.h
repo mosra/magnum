@@ -25,7 +25,7 @@
 */
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-/** @file /Swizzle.h
+/** @file
  * @brief Function @ref Magnum::swizzle()
  * @deprecated Use @ref Math/Swizzle.h instead.
  */
