@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Resource.h>
+#include <Corrade/Utility/Resource.h>
 
 #include "Math/Matrix.h"
 #include "Math/Vector4.h"

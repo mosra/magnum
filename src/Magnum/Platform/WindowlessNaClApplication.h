@@ -29,15 +29,14 @@
  */
 
 #include <string>
-#include <Containers/EnumSet.h>
+#include <Corrade/compatibility.h>
+#include <Corrade/Containers/EnumSet.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/graphics_3d_client.h>
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
 #include "Magnum.h"
-
-#include "corradeCompatibility.h"
 
 namespace pp {
     class Graphics3D;

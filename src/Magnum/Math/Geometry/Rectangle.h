@@ -32,7 +32,7 @@
 #include "Math/Range.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Utility/Macros.h>
+#include <Corrade/Utility/Macros.h>
 
 namespace Magnum { namespace Math { namespace Geometry {
 

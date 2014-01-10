@@ -28,9 +28,9 @@
  * @brief Class @ref Magnum::Platform::BasicScreenedApplication
  */
 
-#include <Containers/LinkedList.h>
-#include <Magnum.h>
+#include <Corrade/Containers/LinkedList.h>
 
+#include "Magnum.h"
 #include "Platform/Platform.h"
 
 namespace Magnum { namespace Platform {

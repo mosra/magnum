@@ -22,8 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
-#include <TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Math/Vector3.h"
 #include "Primitives/UVSphere.h"

@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::AbstractQuery, @ref Magnum::PrimitiveQuery, @ref Magnum::SampleQuery, @ref Magnum::TimeQuery
  */
 
-#include <Utility/Assert.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "AbstractObject.h"
 #include "magnumConfigure.h"

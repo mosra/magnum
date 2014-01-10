@@ -31,7 +31,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
-#include <PluginManager/AbstractPlugin.h>
+#include <Corrade/PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
 #include "Texture.h"

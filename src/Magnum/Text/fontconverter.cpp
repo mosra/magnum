@@ -22,9 +22,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <PluginManager/Manager.h>
-#include <Utility/Arguments.h>
-#include <Utility/Directory.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Platform/WindowlessGlxApplication.h"
 #include "Text/AbstractFont.h"

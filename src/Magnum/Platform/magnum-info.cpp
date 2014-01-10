@@ -22,11 +22,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Arguments.h>
-#include <Utility/Debug.h>
-#include <corradeCompatibility.h>
+#include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/compatibility.h>
 #ifdef CORRADE_TARGET_NACL
-#include <Utility/NaClStreamBuffer.h>
+#include <Corrade/Utility/NaClStreamBuffer.h>
 #endif
 
 #include "AbstractShaderProgram.h"

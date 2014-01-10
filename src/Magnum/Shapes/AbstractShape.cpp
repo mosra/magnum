@@ -24,7 +24,7 @@
 
 #include "AbstractShape.h"
 
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Shapes/ShapeGroup.h"
 #include "Shapes/Implementation/CollisionDispatch.h"

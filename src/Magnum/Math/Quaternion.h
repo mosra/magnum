@@ -29,8 +29,8 @@
  */
 
 #include <cmath>
-#include <Utility/Assert.h>
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Math/TypeTraits.h"
 #include "Math/Matrix.h"

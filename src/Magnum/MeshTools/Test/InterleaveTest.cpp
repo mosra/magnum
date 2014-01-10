@@ -23,10 +23,10 @@
 */
 
 #include <sstream>
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Endianness.h>
+#include <Corrade/Utility/Debug.h>
 
-#include "Utility/Endianness.h"
-#include "Utility/Debug.h"
 #include "MeshTools/Interleave.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {

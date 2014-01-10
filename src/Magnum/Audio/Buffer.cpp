@@ -24,7 +24,7 @@
 
 #include "Buffer.h"
 
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Audio {
 

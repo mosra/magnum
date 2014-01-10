@@ -28,7 +28,7 @@
  * @brief Class Magnum::Primitives::Cylinder
  */
 
-#include <Containers/EnumSet.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum.h"
 #include "Primitives/magnumPrimitivesVisibility.h"

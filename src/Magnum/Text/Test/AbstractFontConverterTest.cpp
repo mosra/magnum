@@ -22,10 +22,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Containers/Array.h>
-#include <TestSuite/Tester.h>
-#include <TestSuite/Compare/FileToString.h>
-#include <Utility/Directory.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/FileToString.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Text/AbstractFontConverter.h"
 #include "Text/GlyphCache.h"

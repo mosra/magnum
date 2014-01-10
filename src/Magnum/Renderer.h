@@ -28,7 +28,7 @@
  * @brief Class Magnum::Renderer
  */
 
-#include <Containers/EnumSet.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum.h"
 #include "OpenGL.h"

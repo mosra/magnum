@@ -29,7 +29,7 @@
  */
 
 #include <string>
-#include <Containers/EnumSet.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "AbstractObject.h"
 #include "Magnum.h"

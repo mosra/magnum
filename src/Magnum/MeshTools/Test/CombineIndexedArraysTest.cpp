@@ -24,7 +24,7 @@
 
 #include <functional>
 #include <sstream>
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "Types.h"
 #include "MeshTools/CombineIndexedArrays.h"

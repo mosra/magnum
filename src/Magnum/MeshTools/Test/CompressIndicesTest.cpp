@@ -22,9 +22,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Containers/Array.h>
-#include <TestSuite/Tester.h>
-#include <Utility/Endianness.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Endianness.h>
 
 #include "MeshTools/CompressIndices.h"
 

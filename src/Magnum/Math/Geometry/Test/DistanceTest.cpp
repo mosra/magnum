@@ -23,7 +23,7 @@
 */
 
 #include <limits>
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "Math/Constants.h"
 #include "Math/Geometry/Distance.h"

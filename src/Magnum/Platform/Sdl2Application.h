@@ -28,8 +28,8 @@
  * @brief Class @ref Magnum::Platform::Sdl2Application
  */
 
-#include <Containers/EnumSet.h>
-#include <Corrade.h>
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Corrade.h>
 
 #include "Platform/Platform.h"
 #include "Math/Vector2.h"
@@ -42,7 +42,7 @@
 #include <SDL_scancode.h>
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Utility/Macros.h>
+#include <Corrade/Utility/Macros.h>
 #endif
 
 namespace Magnum {

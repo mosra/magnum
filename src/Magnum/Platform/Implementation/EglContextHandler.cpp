@@ -26,7 +26,7 @@
 
 #include <tuple>
 #include <EGL/eglext.h>
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Context.h"
 #include "Version.h"

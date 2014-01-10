@@ -23,7 +23,7 @@
 */
 
 #include <array>
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "Math/Matrix3.h"
 #include "Magnum.h"

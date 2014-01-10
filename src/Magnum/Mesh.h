@@ -29,7 +29,7 @@
  */
 
 #include <vector>
-#include <Utility/ConfigurationValue.h>
+#include <Corrade/Utility/ConfigurationValue.h>
 
 #include "AbstractShaderProgram.h"
 

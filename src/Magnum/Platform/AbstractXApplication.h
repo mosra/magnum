@@ -28,9 +28,7 @@
  * @brief Class @ref Magnum::Platform::AbstractXApplication
  */
 
-#include <Containers/EnumSet.h>
-
-#include "Magnum.h"
+#include <Corrade/Containers/EnumSet.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -40,6 +38,7 @@
 #undef None
 #undef Status
 
+#include "Magnum.h"
 #include "Math/Vector2.h"
 
 namespace Magnum {

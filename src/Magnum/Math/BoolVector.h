@@ -28,8 +28,8 @@
  * @brief Class Magnum::Math::BoolVector
  */
 
-#include <Utility/Debug.h>
-#include <corradeCompatibility.h>
+#include <Corrade/configure.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Types.h"
 

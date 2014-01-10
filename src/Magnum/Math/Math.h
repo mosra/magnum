@@ -29,7 +29,7 @@
  */
 
 #include <cstddef>
-#include <corradeConfigure.h>
+#include <Corrade/configure.h>
 
 #include "Types.h"
 

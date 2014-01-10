@@ -28,8 +28,8 @@
  * @brief Class Magnum::Math::Deg, Magnum::Math::Rad and related operators.
  */
 
-#include <Utility/Debug.h>
-#include <corradeCompatibility.h>
+#include <Corrade/configure.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Math/Constants.h"
 #include "Math/Math.h"

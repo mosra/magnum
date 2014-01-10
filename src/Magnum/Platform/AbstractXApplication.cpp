@@ -24,7 +24,7 @@
 
 #include "AbstractXApplication.h"
 
-#include <Utility/utilities.h>
+#include <Corrade/Utility/utilities.h>
 
 #include "Context.h"
 #include "Version.h"

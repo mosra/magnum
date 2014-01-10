@@ -25,8 +25,8 @@
 /* Less precision */
 #define FLOAT_EQUALITY_PRECISION 1.0e-5
 
-#include <TestSuite/Tester.h>
-#include <TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Math/Vector3.h"
 #include "Trade/MeshData2D.h"

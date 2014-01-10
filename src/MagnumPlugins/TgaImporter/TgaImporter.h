@@ -28,7 +28,7 @@
  * @brief Class Magnum::Trade::TgaImporter
  */
 
-#include <Utility/Visibility.h>
+#include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Trade/AbstractImporter.h"
 

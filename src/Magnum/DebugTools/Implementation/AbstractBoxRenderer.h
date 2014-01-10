@@ -29,8 +29,6 @@
 #include "Resource.h"
 #include "Shaders/Shaders.h"
 
-#include "corradeCompatibility.h"
-
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> class AbstractBoxRenderer;

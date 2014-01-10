@@ -30,9 +30,9 @@
 
 #include <cmath>
 #include <limits>
-#include <Utility/Assert.h>
-#include <Utility/Debug.h>
-#include <Utility/ConfigurationValue.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/ConfigurationValue.h>
 
 #include "Math/Angle.h"
 #include "Math/BoolVector.h"

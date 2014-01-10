@@ -26,8 +26,8 @@
 
 #include <fstream>
 #include <sstream>
-#include <Utility/Endianness.h>
-#include <Containers/Array.h>
+#include <Corrade/Utility/Endianness.h>
+#include <Corrade/Containers/Array.h>
 
 #include "ColorFormat.h"
 #include "Trade/ImageData.h"

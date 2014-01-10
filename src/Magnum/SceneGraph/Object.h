@@ -28,7 +28,7 @@
  * @brief Class Magnum::SceneGraph::Object
  */
 
-#include <Containers/EnumSet.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "AbstractFeature.h"
 #include "AbstractObject.h"

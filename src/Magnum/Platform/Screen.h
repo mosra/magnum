@@ -28,7 +28,7 @@
  * @brief Class @ref Magnum::Platform::BasicScreen
  */
 
-#include <Containers/EnumSet.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Platform/ScreenedApplication.h"
 

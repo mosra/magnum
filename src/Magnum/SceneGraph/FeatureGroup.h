@@ -29,7 +29,7 @@
  */
 
 #include <vector>
-#include <Utility/Assert.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "SceneGraph/SceneGraph.h"
 #include "SceneGraph/magnumSceneGraphVisibility.h"

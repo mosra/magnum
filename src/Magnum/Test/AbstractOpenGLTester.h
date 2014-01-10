@@ -24,8 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
-#include <corradeCompatibility.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/compatibility.h>
 
 #include "Context.h"
 #include "Extensions.h"

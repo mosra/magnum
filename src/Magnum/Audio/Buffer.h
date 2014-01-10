@@ -30,7 +30,7 @@
 
 #include <utility>
 #include <al.h>
-#include <Containers/Array.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum.h"
 #include "Audio/magnumAudioVisibility.h"

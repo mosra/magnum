@@ -23,9 +23,9 @@
 */
 
 #include <sstream>
-#include <Containers/Array.h>
-#include <TestSuite/Tester.h>
-#include <Utility/Directory.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "WavAudioImporter/WavImporter.h"
 

@@ -24,7 +24,7 @@
 
 #include "TextureTools/DistanceField.h"
 
-#include <Utility/Resource.h>
+#include <Corrade/Utility/Resource.h>
 
 #include "Math/Range.h"
 #include "AbstractShaderProgram.h"

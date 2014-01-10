@@ -23,7 +23,7 @@
 */
 
 #include <sstream>
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "SceneGraph/Animable.h"
 #include "SceneGraph/AnimableGroup.h"

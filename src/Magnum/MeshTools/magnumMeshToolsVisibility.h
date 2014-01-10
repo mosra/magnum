@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Visibility.h>
+#include <Corrade/Utility/VisibilityMacros.h>
 
 #include "magnumConfigure.h"
 

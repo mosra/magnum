@@ -28,7 +28,8 @@
  * @brief OpenGL headers
  */
 
-#include <corradeConfigure.h>
+#include <Corrade/configure.h>
+
 #include "magnumConfigure.h"
 
 /** @todo Remove NaCl workaround when not needed */

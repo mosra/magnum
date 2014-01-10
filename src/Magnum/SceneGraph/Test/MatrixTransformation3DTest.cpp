@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "SceneGraph/MatrixTransformation3D.h"
 #include "SceneGraph/Scene.h"

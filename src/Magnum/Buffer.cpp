@@ -24,7 +24,7 @@
 
 #include "Buffer.h"
 
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Context.h"
 #include "Extensions.h"

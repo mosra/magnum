@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
 #include "SceneGraph/Camera2D.h"

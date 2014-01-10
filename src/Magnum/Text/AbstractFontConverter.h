@@ -29,7 +29,7 @@
  */
 
 #include <memory>
-#include <PluginManager/AbstractPlugin.h>
+#include <Corrade/PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
 #include "Text/Text.h"

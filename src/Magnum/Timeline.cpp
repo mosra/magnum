@@ -24,8 +24,8 @@
 
 #include "Timeline.h"
 
-#include <Utility/Debug.h>
-#include <Utility/utilities.h>
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/utilities.h>
 
 #include "Magnum.h"
 

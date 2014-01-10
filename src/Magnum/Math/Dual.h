@@ -29,7 +29,7 @@
  */
 
 #include <cmath>
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Math/TypeTraits.h"
 

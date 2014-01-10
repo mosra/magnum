@@ -24,7 +24,7 @@
 
 #include "AbstractObject.h"
 
-#include <Utility/Assert.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "Context.h"
 #include "Extensions.h"

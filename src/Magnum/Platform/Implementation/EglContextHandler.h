@@ -30,14 +30,13 @@
 #define SUPPORT_X11 // OpenGL ES on BeagleBoard needs this (?)
 #endif
 #include <EGL/egl.h>
-
 /* undef Xlib nonsense to avoid conflicts */
 #undef None
 
+#include <Corrade/compatibility.h>
+
 #include "Platform/AbstractXApplication.h"
 #include "Platform/Implementation/AbstractContextHandler.h"
-
-#include "corradeCompatibility.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 

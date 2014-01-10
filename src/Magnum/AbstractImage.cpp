@@ -24,7 +24,7 @@
 
 #include "AbstractImage.h"
 
-#include <Utility/Assert.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "Math/Vector.h"
 #include "ColorFormat.h"

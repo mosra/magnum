@@ -24,7 +24,7 @@
 
 #include "Sampler.h"
 
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Context.h"
 #include "Implementation/State.h"

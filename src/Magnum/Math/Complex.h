@@ -29,8 +29,8 @@
  */
 
 #include <limits>
-#include <Utility/Assert.h>
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Math/Matrix.h"
 #include "Math/Vector2.h"

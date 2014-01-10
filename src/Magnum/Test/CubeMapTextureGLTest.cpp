@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "BufferImage.h"
 #include "ColorFormat.h"

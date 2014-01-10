@@ -23,12 +23,11 @@
 */
 
 #include <sstream>
-#include <TestSuite/Tester.h>
+#include <Corrade/compatibility.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "AbstractResourceLoader.h"
 #include "ResourceManager.h"
-
-#include "corradeCompatibility.h"
 
 namespace Magnum { namespace Test {
 

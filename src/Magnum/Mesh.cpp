@@ -24,7 +24,7 @@
 
 #include "Mesh.h"
 
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Buffer.h"
 #include "Context.h"

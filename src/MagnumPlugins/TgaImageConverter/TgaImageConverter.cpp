@@ -27,8 +27,8 @@
 #include <fstream>
 #include <tuple>
 
-#include <Containers/Array.h>
-#include <Utility/Endianness.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Endianness.h>
 
 #include "ColorFormat.h"
 #include "Image.h"

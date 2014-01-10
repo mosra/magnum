@@ -25,7 +25,7 @@
 #include "Composition.h"
 
 #include <algorithm>
-#include <Utility/Assert.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "Shapes/Implementation/CollisionDispatch.h"
 

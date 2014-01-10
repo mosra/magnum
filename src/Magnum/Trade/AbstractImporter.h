@@ -29,8 +29,8 @@
  */
 
 #include <memory>
-#include <Containers/EnumSet.h>
-#include <PluginManager/AbstractPlugin.h>
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/PluginManager/AbstractPlugin.h>
 
 #include "Optional/optional.hpp"
 

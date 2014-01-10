@@ -28,8 +28,7 @@
  * @brief Class Magnum::Audio::WavImporter
  */
 
-#include <Containers/Array.h>
-#include <Utility/Visibility.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Audio/AbstractImporter.h"
 

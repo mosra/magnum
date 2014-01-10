@@ -22,8 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Directory.h>
-#include <TestSuite/Compare/File.h>
+#include <Corrade/Utility/Directory.h>
+#include <Corrade/TestSuite/Compare/File.h>
 
 #include "ColorFormat.h"
 #include "Extensions.h"

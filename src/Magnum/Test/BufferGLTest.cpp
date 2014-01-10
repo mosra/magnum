@@ -24,7 +24,7 @@
 
 #include <array>
 #include <vector>
-#include <Containers/Array.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Buffer.h"
 #include "Context.h"

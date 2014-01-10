@@ -24,9 +24,9 @@
 
 #include "AbstractImporter.h"
 
-#include <Containers/Array.h>
-#include <Utility/Assert.h>
-#include <Utility/Directory.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Trade/AbstractMaterialData.h"
 #include "Trade/CameraData.h"

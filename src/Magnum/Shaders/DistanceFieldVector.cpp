@@ -24,7 +24,7 @@
 
 #include "DistanceFieldVector.h"
 
-#include <Utility/Resource.h>
+#include <Corrade/Utility/Resource.h>
 
 #include "Context.h"
 #include "Extensions.h"

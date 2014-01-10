@@ -22,8 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Arguments.h>
-#include <PluginManager/Manager.h>
+#include <Corrade/Utility/Arguments.h>
+#include <Corrade/PluginManager/Manager.h>
 
 #include "Math/Range.h"
 #include "ColorFormat.h"

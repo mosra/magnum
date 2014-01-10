@@ -22,8 +22,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <TestSuite/Tester.h>
-
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Shapes/Point.h"

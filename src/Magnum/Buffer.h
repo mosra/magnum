@@ -31,9 +31,9 @@
 #include <cstddef>
 #include <array>
 #include <vector>
-#include <Containers/Array.h>
-#include <Containers/EnumSet.h>
-#include <Utility/Assert.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "AbstractObject.h"
 #include "Magnum.h"

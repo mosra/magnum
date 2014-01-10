@@ -24,7 +24,7 @@
 
 #include "shapeImplementation.h"
 
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 

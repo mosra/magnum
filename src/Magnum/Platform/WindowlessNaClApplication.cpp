@@ -26,8 +26,8 @@
 
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/cpp/completion_callback.h>
-#include <Utility/Assert.h>
-#include <Utility/NaClStreamBuffer.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/NaClStreamBuffer.h>
 
 #include "Context.h"
 

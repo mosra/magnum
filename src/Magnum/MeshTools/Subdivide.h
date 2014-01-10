@@ -29,7 +29,7 @@
  */
 
 #include <vector>
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace MeshTools {
 

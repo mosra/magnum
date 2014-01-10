@@ -28,7 +28,7 @@
  * @brief Class Magnum::Audio::AbstractImporter
  */
 
-#include <PluginManager/AbstractPlugin.h>
+#include <Corrade/PluginManager/AbstractPlugin.h>
 
 #include "Magnum.h"
 #include "Audio/Buffer.h"

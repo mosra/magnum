@@ -25,8 +25,8 @@
 #include "MagnumFontConverter.h"
 
 #include <sstream>
-#include <Containers/Array.h>
-#include <Utility/Directory.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "ColorFormat.h"
 #include "Image.h"

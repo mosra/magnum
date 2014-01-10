@@ -28,8 +28,8 @@
  * @brief Class @ref Magnum::SceneGraph::AbstractFeature, alias @ref Magnum::SceneGraph::AbstractBasicFeature2D, @ref Magnum::SceneGraph::AbstractBasicFeature3D, typedef @ref Magnum::SceneGraph::AbstractFeature2D, @ref Magnum::SceneGraph::AbstractFeature3D, enum @ref Magnum::SceneGraph::CachedTransformation, enum set @ref Magnum::SceneGraph::CachedTransformations
  */
 
-#include <Containers/EnumSet.h>
-#include <Containers/LinkedList.h>
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/LinkedList.h>
 
 #include "Magnum.h"
 #include "SceneGraph/AbstractObject.h"

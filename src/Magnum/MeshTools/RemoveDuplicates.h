@@ -31,7 +31,7 @@
 #include <limits>
 #include <unordered_map>
 #include <vector>
-#include <Utility/MurmurHash2.h>
+#include <Corrade/Utility/MurmurHash2.h>
 
 #include "Math/Functions.h"
 #include "Magnum.h"

@@ -24,9 +24,9 @@
 
 #include "Shader.h"
 
-#include <Containers/Array.h>
-#include <Utility/Assert.h>
-#include <Utility/Directory.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Context.h"
 #include "Extensions.h"

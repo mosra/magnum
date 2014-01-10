@@ -27,8 +27,8 @@
 #include "magnumConfigure.h"
 
 #ifdef MAGNUM_BUILD_STATIC
-#include <Utility/Resource.h>
-#include <Utility/Macros.h>
+#include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/Macros.h>
 
 static int magnumShadersResourceImport() {
     CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RCS)

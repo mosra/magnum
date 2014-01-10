@@ -22,8 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Assert.h>
-#include <Utility/Resource.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Resource.h>
 
 #include "AbstractShaderProgram.h"
 #include "Buffer.h"

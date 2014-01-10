@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/Directory.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Test/AbstractOpenGLTester.h"
 #include "Text/GlyphCache.h"

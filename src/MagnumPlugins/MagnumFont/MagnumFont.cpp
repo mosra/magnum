@@ -25,9 +25,9 @@
 #include "MagnumFont.h"
 
 #include <sstream>
-#include <Containers/Array.h>
-#include <Utility/Directory.h>
-#include <Utility/Unicode.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Unicode.h>
 
 #include "Text/GlyphCache.h"
 #include "Trade/ImageData.h"

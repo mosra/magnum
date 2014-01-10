@@ -30,8 +30,8 @@
 
 #include <type_traits>
 #include <utility>
-#include <Containers/Array.h>
-#include <Utility/Assert.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "DimensionTraits.h"
 #include "Shapes/Shapes.h"

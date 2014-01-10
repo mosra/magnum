@@ -28,9 +28,9 @@
  * @brief Forward declarations for Magnum::SceneGraph namespace
  */
 
-#include "Types.h"
+#include <Corrade/compatibility.h>
 
-#include "corradeCompatibility.h"
+#include "Types.h"
 
 namespace Magnum { namespace SceneGraph {
 

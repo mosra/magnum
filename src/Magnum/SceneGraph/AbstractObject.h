@@ -29,7 +29,7 @@
  */
 
 #include <vector>
-#include <Containers/LinkedList.h>
+#include <Corrade/Containers/LinkedList.h>
 
 #include "DimensionTraits.h"
 #include "SceneGraph.h"

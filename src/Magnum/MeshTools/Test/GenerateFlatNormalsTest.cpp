@@ -23,7 +23,7 @@
 */
 
 #include <sstream>
-#include <TestSuite/Tester.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "Math/Vector3.h"
 #include "MeshTools/GenerateFlatNormals.h"

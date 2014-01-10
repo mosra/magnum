@@ -24,7 +24,7 @@
 
 #include "DefaultFramebuffer.h"
 
-#include <Containers/Array.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Context.h"
 #include "Extensions.h"

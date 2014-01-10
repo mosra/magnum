@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/compatibility.h>
+
 #include "AbstractBoxRenderer.h"
-
 #include "Shapes/Shapes.h"
-
-#include "corradeCompatibility.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

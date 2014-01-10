@@ -27,7 +27,7 @@
 #include <ppapi/cpp/graphics_3d.h>
 #include <ppapi/cpp/fullscreen.h>
 #include <ppapi/cpp/completion_callback.h>
-#include <Utility/NaClStreamBuffer.h>
+#include <Corrade/Utility/NaClStreamBuffer.h>
 
 #include "Context.h"
 #include "Platform/ScreenedApplication.hpp"

@@ -24,9 +24,9 @@
 
 #include "WavImporter.h"
 
-#include <Utility/Assert.h>
-#include <Utility/Debug.h>
-#include <Utility/Endianness.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Endianness.h>
 
 #include "WavHeader.h"
 

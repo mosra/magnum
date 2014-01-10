@@ -24,7 +24,7 @@
 
 #include "Source.h"
 
-#include <Containers/Array.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Audio/Buffer.h"
 

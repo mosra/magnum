@@ -24,8 +24,8 @@
 
 #include "WindowlessGlxApplication.h"
 
-#include <Utility/Assert.h>
-#include <Utility/Debug.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Context.h"
 

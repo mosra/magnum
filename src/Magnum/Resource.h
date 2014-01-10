@@ -28,8 +28,8 @@
  * @brief Class Magnum::ResourceKey, Magnum::Resource, enum Magnum::ResourceState
  */
 
-#include <Utility/Assert.h>
-#include <Utility/MurmurHash2.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/MurmurHash2.h>
 
 #include "Magnum.h"
 

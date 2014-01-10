@@ -28,14 +28,14 @@
  * @brief Forward declarations for Magnum namespace
  */
 
-#include <Utility/Utility.h>
+#include <Corrade/Utility/Utility.h>
 
 #include "Math/Math.h"
 #include "Types.h"
 #include "magnumConfigure.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Utility/Macros.h>
+#include <Corrade/Utility/Macros.h>
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

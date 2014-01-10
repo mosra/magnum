@@ -26,8 +26,8 @@
 
 #include <string>
 #include <unordered_map>
-#include <Utility/Debug.h>
-#include <Utility/String.h>
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/String.h>
 
 #include "AbstractFramebuffer.h"
 #include "AbstractShaderProgram.h"

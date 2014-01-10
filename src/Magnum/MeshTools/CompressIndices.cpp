@@ -26,7 +26,7 @@
 
 #include <cstring>
 #include <algorithm>
-#include <Containers/Array.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Math/Functions.h"
 #include "Buffer.h"
