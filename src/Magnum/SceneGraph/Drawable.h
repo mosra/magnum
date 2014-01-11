@@ -147,12 +147,20 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          * If the drawable doesn't belong to any group, returns `nullptr`.
          */
         DrawableGroup<dimensions, T>* drawables() {
+            #ifndef CORRADE_GCC46_COMPATIBILITY
             return AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group();
+            #else
+            return static_cast<DrawableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group());
+            #endif
         }
 
         /** @overload */
         const DrawableGroup<dimensions, T>* drawables() const {
+            #ifndef CORRADE_GCC46_COMPATIBILITY
             return AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group();
+            #else
+            return static_cast<const DrawableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group());
+            #endif
         }
 
         /**
