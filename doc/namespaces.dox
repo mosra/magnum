@@ -22,8 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @dir Magnum
- * @brief Namespace Magnum
+/** @dir magnum/src/Magnum
+ * @brief Namespace Magnum (part of @ref building "Magnum library")
  */
 /** @namespace Magnum
 @brief Root namespace
@@ -141,10 +141,6 @@ package in CMake and link to `${MAGNUM_MESHTOOLS_LIBRARIES}`. See @ref building
 and @ref cmake for more information.
 */
 
-/** @dir MagnumPlugins
- * @brief Plugins for %Magnum library
- */
-
 /** @dir Magnum/Primitives
  * @brief Namespace Magnum::Primitives
  */
@@ -248,3 +244,7 @@ information. Additional plugins are enabled separately, see particular
 `*Importer` and `*ImageConverter` class documentation, @ref building-plugins,
 @ref cmake-plugins and @ref plugins for more information.
 */
+
+/** @dir magnum/src/MagnumPlugins
+ * @brief %Magnum plugins (part of @ref building "Magnum library")
+ */
