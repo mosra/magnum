@@ -31,7 +31,9 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#ifndef MAGNUM_TARGET_GLES
 #include "Magnum/BufferTexture.h"
+#endif
 #include "Magnum/Context.h"
 #include "Magnum/DebugMessage.h"
 #include "Magnum/Extensions.h"

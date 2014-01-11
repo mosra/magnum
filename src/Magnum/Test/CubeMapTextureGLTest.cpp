@@ -24,7 +24,10 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
+#include "Magnum/configure.h"
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#endif
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
 #include "Magnum/CubeMapTexture.h"

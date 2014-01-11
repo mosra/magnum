@@ -35,10 +35,13 @@
 
 #ifdef MAGNUM_TARGET_GLES
 #include <algorithm>
-#include "Math/Swizzle.h"
-#include "Math/Vector4.h"
-#include "Context.h"
-#include "Extensions.h"
+#include "Magnum/Math/Swizzle.h"
+#include "Magnum/Math/Vector4.h"
+#endif
+
+#ifdef MAGNUM_TARGET_GLES2
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #endif
 
 namespace Magnum { namespace Trade {

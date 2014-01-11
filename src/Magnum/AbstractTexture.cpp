@@ -24,7 +24,9 @@
 
 #include "AbstractTexture.h"
 
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#endif
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"

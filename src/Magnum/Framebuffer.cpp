@@ -24,7 +24,11 @@
 
 #include "Framebuffer.h"
 
+#include <Corrade/Containers/Array.h>
+
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#endif
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
