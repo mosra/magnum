@@ -280,6 +280,10 @@ typedef BasicDrawableGroup3D<Float> DrawableGroup3D;
 typedef DrawableGroup<3, Float> DrawableGroup3D;
 #endif
 
+#ifdef CORRADE_TARGET_WINDOWS
+extern template class MAGNUM_SCENEGRAPH_EXPORT Drawable<2, Float>;
+extern template class MAGNUM_SCENEGRAPH_EXPORT Drawable<3, Float>;
+#endif
 }}
 
 #endif

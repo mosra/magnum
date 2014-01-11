@@ -146,8 +146,8 @@ template<UnsignedInt dimensions> std::size_t AbstractImage::dataSize(Math::Vecto
     return rowSize*size.product();
 }
 
-template std::size_t AbstractImage::dataSize<1>(Math::Vector<1, Int>) const;
-template std::size_t AbstractImage::dataSize<2>(Math::Vector<2, Int>) const;
-template std::size_t AbstractImage::dataSize<3>(Math::Vector<3, Int>) const;
+template MAGNUM_EXPORT std::size_t AbstractImage::dataSize<1>(Math::Vector<1, Int>) const;
+template MAGNUM_EXPORT std::size_t AbstractImage::dataSize<2>(Math::Vector<2, Int>) const;
+template MAGNUM_EXPORT std::size_t AbstractImage::dataSize<3>(Math::Vector<3, Int>) const;
 
 }
