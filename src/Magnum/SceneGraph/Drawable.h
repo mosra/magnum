@@ -240,7 +240,7 @@ template<UnsignedInt dimensions, class T> class DrawableGroup: public FeatureGro
 
 Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See @ref Drawable for
 more information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
+@note Not available on GCC < 4.7. Use <tt>%DrawableGroup<2, T></tt> instead.
 @see @ref DrawableGroup2D, @ref BasicDrawableGroup3D
 */
 template<class T> using BasicDrawableGroup2D = DrawableGroup<2, T>;
@@ -263,7 +263,7 @@ typedef DrawableGroup<2, Float> DrawableGroup2D;
 
 Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See @ref Drawable for
 more information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
+@note Not available on GCC < 4.7. Use <tt>%DrawableGroup<3, T></tt> instead.
 @see @ref DrawableGroup3D, @ref BasicDrawableGroup2D
 */
 template<class T> using BasicDrawableGroup3D = DrawableGroup<3, T>;
