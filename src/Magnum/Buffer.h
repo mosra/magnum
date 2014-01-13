@@ -422,7 +422,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Minimal supported mapping alignment
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls.
+         * OpenGL calls. If extension @extension{ARB,map_buffer_alignment} is
+         * not available, returns `0`.
          * @see @ref map(), @fn_gl{Get} with @def_gl{MIN_MAP_BUFFER_ALIGNMENT}
          * @requires_gl No minimal value is specified for OpenGL ES.
          */

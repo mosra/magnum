@@ -80,6 +80,9 @@ void Buffer::initializeContextBasedFunctionality(Context& context) {
 
 #ifndef MAGNUM_TARGET_GLES
 Int Buffer::minMapAlignment() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>())
+        return 0;
+
     GLint& value = Context::current()->state().buffer->minMapAlignment;
 
     if(value == 0)
