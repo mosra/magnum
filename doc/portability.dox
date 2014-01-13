@@ -107,7 +107,7 @@ advantage of some extensions and enable faster code paths if given extension is
 available, but also have proper fallback when it's not, see for example
 @ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
 @ref AbstractTexture-performance-optimization "AbstractTexture" or
-@ref Mesh-performance-optimization "Mesh". See also @ref required-extensions.
+@ref Mesh-performance-optimization "Mesh". See also @ref opengl-required-extensions.
 
 @section portability-shaders Writing portable shaders
 

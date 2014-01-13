@@ -1,0 +1,337 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+/** @page opengl-support OpenGL support state
+@brief List of (un)supported OpenGL features and extensions.
+
+@tableofcontents
+
+@section opengl-support-state OpenGL implementation state
+
+The extension implementation is considered complete if all its defined types,
+functions and enum values are exposed through the API, except for features
+listed below in @ref opengl-unsupported-features.
+
+@subsection opengl-support-21 OpenGL 2.1
+
+The core subset of OpenGL 2.1 should be fully implemented, except for the
+following:
+
+-   Pixel store state (@fn_gl{PixelStore} function)
+-   Compressed texture upload
+-   Proxy textures
+-   Copying framebuffer to texture (@fn_gl{CopyTexImage2D} etc.)
+-   Some forgotten limit queries
+
+@subsection opengl-support-30 OpenGL 3.0
+
+@todo @extension{APPLE,flush_buffer_range} doesn't add anything to @extension{ARB,map_buffer_range}
+@todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{APPLE,flush_buffer_range}         | done (GL 3.0 subset)
+@extension{APPLE,vertex_array_object}        | done (GL 3.0 subset)
+@extension{ARB,map_buffer_range}             | done
+@extension{ARB,color_buffer_float}           | |
+@extension{ARB,half_float_pixel}             | done
+@extension{ARB,texture_float}                | done
+@extension{ARB,depth_buffer_float}           | done
+@extension{ARB,texture_rg}                   | done
+@extension{ARB,framebuffer_object}           | missing texture layer attachments
+@extension{EXT,gpu_shader4}                  | done
+@extension{EXT,packed_float}                 | done
+@extension{EXT,texture_array}                | missing texture layer attachments
+@extension{EXT,texture_compression_rgtc}     | done
+@extension{EXT,texture_shared_exponent}      | done
+@extension{EXT,framebuffer_sRGB}             | |
+@extension{EXT,draw_buffers2}                | |
+@extension{EXT,texture_integer}              | missing integer color specification functions
+@extension{EXT,transform_feedback}           | |
+@extension{NV,half_float}                    | done (GL 3.0 subset)
+@extension{NV,depth_buffer_float}            | |
+@extension{NV,conditional_render}            | done
+
+@subsection opengl-support-31 OpenGL 3.1
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,texture_rectangle}            | missing limit query
+@extension{ARB,draw_instanced}               | |
+@extension{ARB,texture_buffer_object}        | missing limit query
+@extension{ARB,uniform_buffer_object}        | |
+@extension{ARB,copy_buffer}                  | done
+@extension{EXT,texture_snorm}                | done
+@extension{NV,primitive_restart}             | |
+
+@subsection opengl-support-32 OpenGL 3.2
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,geometry_shader4}             | done (GL 3.2 subset)
+@extension{ARB,depth_clamp}                  | done
+@extension{ARB,draw_elements_base_vertex}    | |
+@extension{ARB,fragment_coord_conventions}   | done (shading language only)
+@extension{ARB,provoking_vertex}             | done
+@extension{ARB,seamless_cube_map}            | done
+@extension{ARB,sync}                         | |
+@extension{ARB,texture_multisample}          | |
+@extension{ARB,vertex_array_bgra}            | done
+
+@subsection opengl-support-33 OpenGL 3.3
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,instanced_arrays}             | |
+@extension{ARB,blend_func_extended}          | missing limit query
+@extension{ARB,explicit_attrib_location}     | done (shading language only)
+@extension{ARB,occlusion_query2}             | done
+@extension{ARB,sampler_objects}              | |
+@extension{ARB,shader_bit_encoding}          | done (shading language only)
+@extension{ARB,texture_rgb10_a2ui}           | done
+@extension{ARB,texture_swizzle}              | |
+@extension{ARB,timer_query}                  | missing direct query
+@extension{ARB,vertex_type_2_10_10_10_rev}   | done
+
+@subsection opengl-support-40 OpenGL 4.0
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,draw_buffers_blend}           | |
+@extension{ARB,sample_shading}               | |
+@extension{ARB,texture_cube_map_array}       | done
+@extension{ARB,texture_gather}               | missing limit queries
+@extension{ARB,texture_query_lod}            | done (shading language only)
+@extension{ARB,draw_indirect}                | |
+@extension{ARB,gpu_shader5}                  | missing limit queries
+@extension{ARB,gpu_shader_fp64}              | done
+@extension{ARB,shader_subroutine}            | |
+@extension{ARB,tessellation_shader}          | missing some limit queries and patch parameter specification function
+@extension{ARB,texture_buffer_object_rgb32}  | done
+@extension{ARB,transform_feedback2}          | |
+@extension{ARB,transform_feedback3}          | |
+
+@subsection opengl-support-41 OpenGL 4.1
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,ES2_compatibility}            | only float depth clear
+@extension{ARB,get_program_binary}           | |
+@extension{ARB,separate_shader_objects}      | |
+@extension{ARB,shader_precision}             | done (shading language only)
+@extension{ARB,vertex_attrib_64bit}          | done
+@extension{ARB,viewport_array}               | |
+
+@subsection opengl-support-42 OpenGL 4.2
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,texture_compression_bptc}     | done
+@extension{ARB,base_instance}                | |
+@extension{ARB,shading_language_420pack}     | done (shading language only)
+@extension{ARB,transform_feedback_instanced} | |
+@extension{ARB,compressed_texture_pixel_storage} | |
+@extension{ARB,conservative_depth}           | done (shading language only)
+@extension{ARB,internalformat_query}         | |
+@extension{ARB,map_buffer_alignment}         | done
+@extension{ARB,shader_atomic_counters}       | |
+@extension{ARB,shader_image_load_store}      | |
+@extension{ARB,shading_language_packing}     | done (shading language only)
+@extension{ARB,texture_storage}              | done
+
+@subsection opengl-support-43 OpenGL 4.3
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,arrays_of_arrays}             | done (shading language only)
+@extension{ARB,ES3_compatibility}            | only conservative sample query
+@extension{ARB,clear_buffer_object}          | |
+@extension{ARB,compute_shader}               | |
+@extension{ARB,copy_image}                   | |
+@extension{KHR,debug} (also in ES)           | missing log control and retrieval, sync, pipeline, transform feedback and sampler label and debug groups
+@extension{ARB,explicit_uniform_location}    | done
+@extension{ARB,fragment_layer_viewport}      | done (shading language only)
+@extension{ARB,framebuffer_no_attachments}   | |
+@extension{ARB,internalformat_query2}        | |
+@extension{ARB,invalidate_subdata}           | done
+@extension{ARB,multi_draw_indirect}          | |
+@extension{ARB,program_interface_query}      | |
+@extension{ARB,robust_buffer_access_behavior} | done (nothing to do)
+@extension{ARB,shader_image_size}            | done (shading language only)
+@extension{ARB,shader_storage_buffer_object} | only limit queries
+@extension{ARB,stencil_texturing}            | |
+@extension{ARB,texture_buffer_range}         | done
+@extension{ARB,texture_query_levels}         | done (shading language only)
+@extension{ARB,texture_storage_multisample}  | |
+@extension{ARB,texture_view}                 | |
+@extension{ARB,vertex_attrib_binding}        | |
+
+@subsection opengl-support-44 OpenGL 4.4
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,buffer_storage}               | |
+@extension{ARB,clear_texture}                | |
+@extension{ARB,enhanced_layouts}             | done (shading language only)
+@extension{ARB,multi_bind}                   | |
+@extension{ARB,query_buffer_object}          | |
+@extension{ARB,texture_mirror_clamp_to_edge} | done
+@extension{ARB,texture_stencil8}             | done
+@extension{ARB,vertex_type_10f_11f_11f_rev}  | |
+
+@subsection opengl-support-extensions OpenGL extensions
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{AMD,vertex_shader_layer}          | done (shading language only)
+@extension{AMD,shader_trinary_minmax}        | done (shading language only)
+@extension{ARB,robustness}                   | done
+@extension{ATI,texture_mirror_once}          | done (GL 4.4 subset)
+@extension{EXT,texture_filter_anisotropic} (also in ES) | done
+@extension{EXT,texture_mirror_clamp}         | only GL 4.4 subset
+@extension{EXT,direct_state_access}          | done for implemented functionality
+@extension2{EXT,debug_label} (also in ES)    | missing pipeline, transform feedback and sampler label
+@extension2{EXT,debug_marker} (also in ES)   | missing marker groups
+@extension{GREMEDY,string_marker}            | done
+
+@subsection opengl-support-es20 OpenGL ES 2.0
+
+Features that have their equivalents implemented in desktop version are
+supported.
+
+@subsection opengl-support-es30 OpenGL ES 3.0
+
+Features that have their equivalents implemented in desktop version are
+supported.
+
+@subsection opengl-support-es30-extensions OpenGL ES 2.0 extensions to match ES 3.0 functionality
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@es_extension{ANGLE,framebuffer_blit}        | done
+@es_extension{ANGLE,framebuffer_multisample} | done
+@es_extension{ANGLE,depth_texture}           | done
+@es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
+@es_extension{ARM,rgba8}                     | done
+@es_extension{EXT,texture_type_2_10_10_10_REV} | done
+@es_extension{EXT,discard_framebuffer}       | done
+@es_extension2{EXT,blend_minmax,blend_minmax} | done
+@es_extension{EXT,occlusion_query_boolean}   | done
+@es_extension{EXT,texture_rg}                | done
+@es_extension{EXT,texture_storage}           | done
+@es_extension{EXT,map_buffer_range}          | done
+@es_extension{NV,draw_buffers}               | done
+@es_extension{NV,fbo_color_attachments}      | done
+@es_extension{NV,read_buffer}                | done
+@es_extension{NV,framebuffer_blit}           | done
+@es_extension{NV,framebuffer_multisample}    | done
+@es_extension{OES,depth24}                   | done
+@es_extension{OES,element_index_uint}        | done
+@es_extension{OES,rgb8_rgba8}                | done (desktop-compatible subset)
+@es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
+@es_extension{OES,texture_float_linear}      | done
+@es_extension2{OES,texture_half_float,OES_texture_float} | done
+@es_extension{OES,texture_float}             | done
+@es_extension{OES,vertex_half_float}         | done
+@es_extension{OES,packed_depth_stencil}      | done
+@es_extension{OES,depth_texture}             | done
+@es_extension{OES,standard_derivatives}      | done
+@es_extension{OES,vertex_array_object}       | done
+@es_extension{OES,required_internalformat}   | done (desktop-compatible subset)
+@es_extension{OES,surfaceless_context}       | done
+
+@subsection opengl-support-es-extensions OpenGL ES extensions to match desktop functionality
+
+Only extensions not already listed in above tables are included here.
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@es_extension{APPLE,texture_format_BGRA8888} | done
+@es_extension{CHROMIUM,map_sub}              | only buffer mapping
+@es_extension{EXT,texture_format_BGRA8888}   | done
+@es_extension{EXT,read_format_bgra}          | done
+@es_extension{EXT,disjoint_timer_query}      | only time elapsed query
+@es_extension{EXT,separate_shader_objects}   | |
+@es_extension{EXT,sRGB}                      | done
+@es_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
+@es_extension{EXT,robustness}                | done
+@es_extension2{NV,read_buffer_front,NV_read_buffer} | done
+@es_extension2{NV,read_depth,NV_read_depth_stencil} | done
+@es_extension2{NV,read_stencil,NV_read_depth_stencil} | done
+@es_extension{NV,read_depth_stencil}         | done
+@es_extension{NV,texture_border_clamp}       | done
+@es_extension{OES,depth32}                   | done
+@es_extension{OES,mapbuffer}                 | done
+@es_extension{OES,stencil1}                  | done
+@es_extension{OES,stencil4}                  | done
+@es_extension{OES,texture_3D}                | missing limit query
+
+@section opengl-unsupported Unsupported OpenGL features
+
+Some functionality, which is either soon-to-be deprecated or isn't proven to
+add any performance gains, is not supported in %Magnum. See also
+@ref opengl-deprecated.
+
+@subsection opengl-unsupported-features Unsupported features
+
+-   State queries (various `glIs*()`, `glGet*()` functions) are not supported.
+    %Magnum API is designed to prevent the need for most of them. On the other
+    hand queries of implementation-defined values (various limits etc.) and
+    queries of generated values (buffer data, texture data) are supported.
+-   Line and polygon smoothing (`GL_LINE_SMOOTH`, `GL_POLYGON_SMOOTH`) and
+    related functions are not supported, as the driver might do it in software
+    with serious performance drops. Multisampling is far superior solution.
+-   Fixed precision data types (`GL_FIXED` in OpenGL ES) are not supported, as
+    they occupy the same memory as floats and they aren't faster than floats on
+    current hardware anymore.
+-   Shader compiler is assumed to be present (`GL_SHADER_COMPILER` returning
+    true), as all desktop GL implementations and also ES3 are required to
+    support it.
+-   Querying shader attribute locations (as opposed to setting them) is not
+    supported, as newer GL versions encourage setting them explicitly in shader
+    code.
+-   Direct vertex data specification (as opposed to using buffers) is not
+    supported, as it encourages bad practices.
+
+@subsection opengl-unsupported-extensions Unsupported extensions
+
+- @extension{INTEL,map_texture} negatively affects texture access performance.
+  Combination of buffer mapping and pixel buffers might be of the same or
+  better performance, without affecting texture access speed.
+- @extension{NV,draw_texture} can be done with framebuffer blitting and
+  doesn't make any full-screen postprocessing easier, as shaders are excluded.
+
+*/
+
+/** @page opengl-deprecated Deprecated OpenGL API list
+
+See also @ref opengl-unsupported and @ref deprecated.
+
+*/
+
+/** @page deprecated Deprecated list
+
+See also @ref opengl-deprecated.
+
+*/

@@ -22,21 +22,28 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @page required-extensions Functionality requiring specific OpenGL version or extensions
-@brief List of functions not available on OpenGL 2.1 / OpenGL ES 2.
+/** @page opengl OpenGL
+@brief State of OpenGL support, version and extension requirements.
 
-The engine is meant to be run on OpenGL 3 capable hardware, but most of the
-functionality is working in OpenGL 2.1 hardware too (i.e. integrated Intel
-GPUs), unless stated otherwise. OpenGL ES is also supported.
+The following table maps OpenGL function names to %Magnum API, useful for
+developers with existing OpenGL background. Note that, as reverse mapping, each
+function documentation also contains list of OpenGL functions used.
 
-@see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
-    @ref MAGNUM_TARGET_GLES2
+-   @subpage opengl-mapping
 
-Following are lists of functionality requiring specific OpenGL version. In
-most cases it is also specified which extension is required for given
-functionality, so if given hardware supports required extension, it doesn't
-need to have required OpenGL version too (e.g. `APPLE_vertex_array_object` is
-supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
+State of implementation of particular OpenGL versions and extensions is in the
+following table.
+
+-   @subpage opengl-support
+
+@section opengl-required-extensions Version and extension requirements
+
+The engine requires at least OpenGL 2.1 or OpenGL ES 2.0, but some specific
+functionality has greater requirements. Following are lists of features
+requiring specific OpenGL version. In most cases it is also specified which
+extension is required, so if given hardware supports required extension, it
+doesn't need to have required OpenGL version too (e.g. `APPLE_vertex_array_object`
+is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 
 - @subpage requires-gl30
 - @subpage requires-gl31
@@ -52,7 +59,9 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 - @subpage requires-gles20
 - @subpage requires-gles30
 - @subpage requires-es-extension
-- @subpage unsupported
+
+@see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
+    @ref MAGNUM_TARGET_GLES2
 
 @page requires-gl30 Functionality requiring OpenGL 3.0
 @page requires-gl31 Functionality requiring OpenGL 3.1
@@ -69,7 +78,7 @@ supported on Intel GPUs even if they are capable of OpenGL 2.1 only).
 @page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
 @see @ref MAGNUM_TARGET_GLES
 
-@page requires-gles20 Functionality requiring OpenGL ES 2.0 (not available in ES 3.0 and desktop OpenGL)
+@page requires-gles20 Functionality requiring OpenGL ES 2.0 (not available on desktop or ES 3.0)
 @see @ref MAGNUM_TARGET_GLES2
 
 @page requires-gles30 Functionality requiring OpenGL ES 3.0
