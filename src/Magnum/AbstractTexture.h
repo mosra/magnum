@@ -95,6 +95,7 @@ nothing.
 @todo `GL_MAX_TEXTURE_LOD_BIAS` when `TEXTURE_LOD_BIAS` is implemented
 @todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
 @todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
+@todo Query for immutable levels (@extension{ARB,ES3_compatibility})
 */
 class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend class Context;
@@ -293,7 +294,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @param level             Mip level
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * is not available, this function does nothing.
+         * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref Texture::invalidateSubImage() "invalidateSubImage()",
          *      @fn_gl{InvalidateTexImage}
          */

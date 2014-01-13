@@ -63,12 +63,14 @@ enum class MeshPrimitive: GLenum {
     /**
      * Line strip with adjacency information.
      * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
 
     /**
      * Lines with adjacency information.
      * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     LinesAdjacency = GL_LINES_ADJACENCY,
     #endif
@@ -92,18 +94,21 @@ enum class MeshPrimitive: GLenum {
     /**
      * Triangle strip with adjacency information.
      * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
 
     /**
      * Triangles with adjacency information.
      * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
 
     /**
      * Patches.
      * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+     * @requires_gl Tessellation shaders are not available in OpenGL ES.
      */
     Patches = GL_PATCHES
     #endif

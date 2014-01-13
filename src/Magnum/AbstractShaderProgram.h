@@ -589,7 +589,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Attach shader
          *
-         * @fn_gl{AttachShader}
+         * @see @fn_gl{AttachShader}
          */
         void attachShader(Shader& shader);
 

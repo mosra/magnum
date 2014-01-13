@@ -276,10 +276,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
-            /** @todo Why exactly this is not needed? */
             /**
              * Mismatched layered color attachments
-             * @requires_gl Not available in OpenGL ES.
+             * @requires_gl Geometry shaders are not available in OpenGL ES.
              */
             IncompleteLayerTargets = GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS
             #endif
@@ -494,8 +493,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture} or
-         *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl2{FramebufferTexture1D,FramebufferTexture}
+         *      or @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
         Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
@@ -514,8 +513,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @ref attachCubeMapTexture(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
-         *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
+         * @see @ref attachCubeMapTexture(), @fn_gl{BindFramebuffer},
+         *      @fn_gl2{FramebufferTexture2D,FramebufferTexture} or
+         *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
         Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
 
@@ -530,8 +530,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @ref attachTexture2D(), @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture}
-         *      or @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
+         * @see @ref attachTexture2D(), @fn_gl{BindFramebuffer},
+         *      @fn_gl2{FramebufferTexture2D,FramebufferTexture} or
+         *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
         Framebuffer& attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, Int level) {
             (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture.id(), level);
@@ -549,8 +550,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferTexture} or
-         *      @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl2{FramebufferTexture3D,FramebufferTexture}
+         *      or @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,texture_3D}
          */
         Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {

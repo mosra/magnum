@@ -741,7 +741,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * is not available, this function does nothing.
+         * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref MapFlag::InvalidateBuffer, @fn_gl{InvalidateBufferData}
          */
         Buffer& invalidateData() {
@@ -756,7 +756,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * is not available, this function does nothing.
+         * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref MapFlag::InvalidateRange, @fn_gl{InvalidateBufferData}
          */
         Buffer& invalidateSubData(GLintptr offset, GLsizeiptr length) {

@@ -426,7 +426,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param size              Size of invalidated data
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * is not available, this function does nothing.
+         * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
         void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {

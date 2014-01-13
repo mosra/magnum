@@ -281,7 +281,8 @@ class MAGNUM_EXPORT DebugMessage {
          * supported and @extension{KHR,debug} is not available, this function
          * does nothing.
          * @see @ref setDefaultCallback(),
-         *      @ref Renderer::Feature::DebugOutputSynchronous
+         *      @ref Renderer::Feature::DebugOutputSynchronous,
+         *      @fn_gl{DebugMessageCallback}
          */
         static void setCallback(Callback callback, const void* userParam = nullptr);
 
@@ -296,8 +297,8 @@ class MAGNUM_EXPORT DebugMessage {
          *      DebugMessage::Type::Marker, 1337, DebugMessage::Severity::Notification, "Hello from OpenGL command stream!");
          * @endcode
          *
-         * <pre>%DebugMessage::Source::Application %DebugMessage::Type::Marker -1 %DebugMessage::Severity::Notification
-         *     Hello from OpenGL command stream!</pre>
+         * > %DebugMessage::Source::Application %DebugMessage::Type::Marker -1 %DebugMessage::Severity::Notification\n
+         * > &nbsp;&nbsp;&nbsp;&nbsp;Hello from OpenGL command stream!
          */
         static void setDefaultCallback();
 
