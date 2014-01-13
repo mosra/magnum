@@ -177,15 +177,13 @@ endif()
 
 # Magnum Info
 if(WITH_MAGNUMINFO)
-    if(NOT UNIX AND NOT CORRADE_TARGET_NACL)
-        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to skip building it.")
-    endif()
-
     add_executable(magnum-info magnum-info.cpp)
-    if(UNIX AND NOT CORRADE_TARGET_NACL)
+    if(UNIX AND NOT CORRADE_TARGET_NACL AND NOT APPLE)
         target_link_libraries(magnum-info MagnumWindowlessGlxApplication ${X11_LIBRARIES})
     elseif(CORRADE_TARGET_NACL)
         target_link_libraries(magnum-info MagnumWindowlessNaClApplication ppapi_cpp ppapi)
+    else()
+        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to skip building it.")
     endif()
     target_link_libraries(magnum-info Magnum)
 
