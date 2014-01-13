@@ -1625,6 +1625,9 @@ void TextureGLTest::subImageRectangleBuffer() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::generateMipmap1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
+
     Texture1D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageReference1D(ColorFormat::RGBA, ColorType::UnsignedByte, 32));
@@ -1648,6 +1651,11 @@ void TextureGLTest::generateMipmap1D() {
 #endif
 
 void TextureGLTest::generateMipmap2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
+    #endif
+
     Texture2D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
@@ -1676,7 +1684,10 @@ void TextureGLTest::generateMipmap2D() {
 }
 
 void TextureGLTest::generateMipmap3D() {
-    #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
+    #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
         CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
     #endif
@@ -1710,6 +1721,8 @@ void TextureGLTest::generateMipmap3D() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::generateMipmap1DArray() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
 
@@ -1738,6 +1751,8 @@ void TextureGLTest::generateMipmap1DArray() {
 #ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::generateMipmap2DArray() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
