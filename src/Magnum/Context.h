@@ -269,7 +269,8 @@ class MAGNUM_EXPORT Context {
          * If no version from the list is supported, returns lowest available
          * OpenGL version (@ref Version::GL210 for desktop OpenGL,
          * @ref Version::GLES200 for OpenGL ES).
-         * @see @ref isExtensionSupported(Version)
+         * @see isExtensionSupported(Version) const
+         * @todoc Explicit reference when Doxygen is sane
          */
         Version supportedVersion(std::initializer_list<Version> versions) const;
 
@@ -286,8 +287,9 @@ class MAGNUM_EXPORT Context {
          * }
          * @endcode
          *
-         * @see @ref isExtensionSupported(const Extension&) const,
+         * @see isExtensionSupported(const Extension&) const,
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+         * @todoc Explicit reference when Doxygen is sane
          */
         template<class T> bool isExtensionSupported() const {
             return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
