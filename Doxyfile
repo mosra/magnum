@@ -214,6 +214,7 @@ ALIASES                = \
     "fn_gl_extension2{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "fn_gles_extension{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "def_gl{1}=`GL_\1`" \
+    "def_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">GL_\1_\2</a>" \
     "deprecated_gl=@xrefitem opengl-deprecated \"Deprecated OpenGL API\" \"Deprecated OpenGL API list\"" \
     "requires_gl30=@xrefitem requires-gl30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
     "requires_gl31=@xrefitem requires-gl31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \

@@ -29,10 +29,13 @@ namespace Magnum {
 
 @tableofcontents
 
-@section opengl-mapping-functions Functions
+Legend:
+-   *not needed* -- given feature is implemented in a way that makes the
+    function unnecessary
+-   *not queryable*, *not supported* -- see @ref opengl-unsupported
+-   (empty) -- given feature is not yet implemented
 
-Features mentioned in @ref opengl-unsupported are marked as *not supported*,
-empty value means that the feature is not implemented yet.
+@section opengl-mapping-functions Functions
 
 OpenGL function                        | Matching API
 -------------------------------------- | ------------
@@ -134,32 +137,24 @@ OpenGL function                        | Matching API
 @fn_gl{GenTransformFeedbacks}, @fn_gl{DeleteTransformFeedbacks} | |
 @fn_gl{GenVertexArrays}, @fn_gl{DeleteVertexArrays} | @ref Mesh constructor and destructor
 @fn_gl{GenerateMipmap}, \n @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access} | @ref AbstractTexture::generateMipmap()
-@fn_gl{Get}                            | see table below
-@fn_gl2{GetActiveAtomicCounterBuffer,GetActiveAtomicCounterBufferiv} | not supported
-@fn_gl{GetActiveAttrib}                | not supported
-@fn_gl{GetActiveSubroutineName}        | not supported
-@fn_gl{GetActiveSubroutineUniform}     | not supported
-@fn_gl{GetActiveSubroutineUniformName} | not supported
-@fn_gl{GetActiveUniform}               | not supported
-@fn_gl{GetActiveUniformBlock}          | not supported
-@fn_gl{GetActiveUniformBlockName}      | not supported
-@fn_gl{GetActiveUniformName}           | not supported
-@fn_gl{GetActiveUniforms}              | not supported
-@fn_gl{GetAttachedShaders}             | not supported
-@fn_gl{GetAttribLocation}              | not supported
+@fn_gl{Get}                            | see @ref opengl-mapping-state "table below"
+@fn_gl2{GetActiveAtomicCounterBuffer,GetActiveAtomicCounterBufferiv} | not queryable
+@fn_gl{GetActiveAttrib}, \n @fn_gl{GetActiveSubroutineName}, \n @fn_gl{GetActiveSubroutineUniform}, \n @fn_gl{GetActiveSubroutineUniformName}, \n @fn_gl{GetActiveUniform}, \n @fn_gl{GetActiveUniformBlock}, \n @fn_gl{GetActiveUniformBlockName}, \n @fn_gl{GetActiveUniformName}, \n @fn_gl{GetActiveUniforms} | not queryable
+@fn_gl{GetAttachedShaders}             | not queryable, @ref AbstractShaderProgram::attachShader() setter only
+@fn_gl{GetAttribLocation}              | not queryable, @ref AbstractShaderProgram::bindAttributeLocation() setter only
 @fn_gl{GetBufferParameter}, \n @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access} | @ref Buffer::size()
-@fn_gl2{GetBufferPointer,GetBufferPointerv} | not supported
+@fn_gl2{GetBufferPointer,GetBufferPointerv} | not queryable, @ref Buffer::map() setter only
 @fn_gl{GetBufferSubData}, \n @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access} | @ref Buffer::data(), \n @ref Buffer::subData()
 @fn_gl{GetCompressedTexImage}          | |
 @fn_gl{GetDebugMessageLog}             | |
 @fn_gl{GetError}                       | @ref Renderer::error()
-@fn_gl{GetFragDataIndex}, @fn_gl{GetFragDataLocation} | not supported
-@fn_gl{GetFramebufferAttachmentParameter} | not suppported
-@fn_gl{GetFramebufferParameter}        | not supported
+@fn_gl{GetFragDataIndex}, @fn_gl{GetFragDataLocation} | not queryable, @ref AbstractShaderProgram::bindFragmentDataLocation() and \n @ref AbstractShaderProgram::bindFragmentDataLocationIndexed() setters only
+@fn_gl{GetFramebufferAttachmentParameter} | not queryable, @ref Framebuffer setters only
+@fn_gl{GetFramebufferParameter}        | not queryable, @ref DefaultFramebuffer and \n @ref Framebuffer setters only
 @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness} | @ref Renderer::graphicsResetStatus()
 @fn_gl{GetInternalformat}              | |
 @fn_gl{GetMultisample}                 | |
-@fn_gl{GetObjectLabel}, \n @fn_gl{GetObjectPtrLabel} | not supported
+@fn_gl{GetObjectLabel}, \n @fn_gl{GetObjectPtrLabel} | not queryable, @ref AbstractShaderProgram::setLabel(), \n @ref AbstractQuery::setLabel(), \n @ref AbstractTexture::setLabel(), \n @ref Buffer::setLabel(), \n @ref Framebuffer::setLabel(), \n @ref Mesh::setLabel(), \n @ref Renderbuffer::setLabel() and \n @ref Shader::setLabel() setters only
 @fn_gl{GetProgram}, \n @fn_gl{GetProgramInfoLog} | @ref AbstractShaderProgram::link(), \n @ref AbstractShaderProgram::validate()
 @fn_gl{GetProgramBinary}               | |
 @fn_gl{GetProgramInterface}            | |
@@ -174,11 +169,12 @@ OpenGL function                        | Matching API
 @fn_gl{GetQueryIndexed}                | |
 @fn_gl{GetQueryObject}                 | @ref AbstractQuery::result()
 @fn_gl2{GetQuery,GetQueryiv}           | |
-@fn_gl{GetRenderbufferParameter}       | not supported
+@fn_gl{GetRenderbufferParameter}       | not queryable, @ref Renderbuffer::setStorage() and \n @ref Renderbuffer::setStorageMultisample() setter only
 @fn_gl{GetSamplerParameter}            | |
 @fn_gl{GetShader}, \n @fn_gl{GetShaderInfoLog} | @ref Shader::compile()
 @fn_gl{GetShaderPrecisionFormat}       | |
-@fn_gl{GetShaderSource}                | not supported
+@fn_gl{GetShaderSource}                | not queryable but tracked in @ref Shader::sources()
+@fn_gl{GetString}                      | @ref Context::supportedExtensions(), \n @ref Context::rendererString(), \n @ref Context::shadingLanguageVersionString(), \n @ref Context::vendorString(), \n @ref Context::versionString()
 @fn_gl{GetSubroutineIndex}             | |
 @fn_gl{GetSubroutineUniformLocation}   | |
 @fn_gl{GetSync}                        | |
@@ -186,20 +182,20 @@ OpenGL function                        | Matching API
 @fn_gl{GetTexLevelParameter}, \n @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access} | @ref Texture::imageSize(), \n @ref CubeMapTexture::imageSize(), \n @ref CubeMapTextureArray::imageSize()
 @fn_gl{GetTexParameter}                | |
 @fn_gl{GetTransformFeedbackVarying}    | |
-@fn_gl{GetUniform}                     | not supported
+@fn_gl{GetUniform}                     | not queryable, @ref AbstractShaderProgram::setUniform() setter only
 @fn_gl{GetUniformBlockIndex}           | |
 @fn_gl{GetUniformIndices}              | |
 @fn_gl{GetUniformLocation}             | @ref AbstractShaderProgram::uniformLocation()
 @fn_gl{GetUniformSubroutine}           | |
-@fn_gl{GetVertexAttrib}                | not supported
+@fn_gl{GetVertexAttrib}                | not queryable, @ref Mesh::addVertexBuffer() setter only
 @fn_gl{InvalidateBufferData}           | @ref Buffer::invalidateData()
 @fn_gl{InvalidateBufferSubData}        | @ref Buffer::invalidateSubData()
 @fn_gl{InvalidateFramebuffer}, \n @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
 @fn_gl{InvalidateSubFramebuffer}, \n @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
 @fn_gl{InvalidateTexImage}             | @ref AbstractTexture::invalidateImage()
 @fn_gl{InvalidateTexSubImage}          | @ref Texture::invalidateSubImage(),\n @ref CubeMapTexture::invalidateSubImage(), \n @ref CubeMapTextureArray::invalidateSubImage()
-`glIs*()`                              | not needed (objects are strongly typed)
-@fn_gl{IsEnabled}                      | not supported
+@fn_gl{IsBuffer}, \n @fn_gl{IsFramebuffer}, \n @fn_gl{IsProgram}, \n @fn_gl{IsProgramPipeline}, \n @fn_gl{IsQuery}, \n @fn_gl{IsRenderbuffer}, \n @fn_gl{IsSampler}, \n @fn_gl{IsShader}, \n @fn_gl{IsSync}, \n @fn_gl{IsTexture}, \n @fn_gl{IsTransformFeedback}, \n @fn_gl{IsVertexArray} | not needed, objects are strongly typed
+@fn_gl{IsEnabled}                      | not queryable, @ref Renderer::setFeature() setter only
 @fn_gl{LineWidth}                      | @ref Renderer::setLineWidth()
 @fn_gl{LinkProgram}                    | @ref AbstractShaderProgram::link()
 @fn_gl{LogicOp}                        | @ref Renderer::setLogicOperation()
@@ -255,7 +251,7 @@ OpenGL function                        | Matching API
 @fn_gl{UseProgramStages}               | |
 @fn_gl{ValidateProgram}                | @ref AbstractShaderProgram::validate()
 @fn_gl{ValidateProgramPipeline}        | |
-`glVertexAttrib*()`                    | not supported
+@fn_gl{VertexAttrib}                   | not supported (@ref opengl-unsupported "details")
 @fn_gl{VertexAttribBinding}            | |
 @fn_gl{VertexAttribDivisor}            | |
 @fn_gl{VertexAttribFormat}             | |
@@ -266,9 +262,128 @@ OpenGL function                        | Matching API
 @fn_gl{ViewportIndexed}                | |
 @fn_gl{WaitSync}                       | |
 
-@section opengl-mapping-limits Limit queries
+@section opengl-mapping-state Limit and state queries
 
-@todoc Do this also.
+@todo Things marked only as *not queryable* should have at least setter
+
+@fn_gl{Get} parameter                  | Matching API
+-------------------------------------- | ------------
+@def_gl{ACTIVE_TEXTURE}, \n @def_gl{TEXTURE_BINDING_1D_ARRAY}, \n @def_gl{TEXTURE_BINDING_1D}, \n @def_gl{TEXTURE_BINDING_2D_ARRAY}, \n @def_gl{TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY}, \n @def_gl{TEXTURE_BINDING_2D_MULTISAMPLE}, \n @def_gl{TEXTURE_BINDING_2D}           , \n @def_gl{TEXTURE_BINDING_3D}, \n @def_gl{TEXTURE_BINDING_BUFFER}, \n @def_gl{TEXTURE_BINDING_BUFFER}, \n @def_gl{TEXTURE_BINDING_CUBE_MAP}, \n @def_gl{TEXTURE_BINDING_RECTANGLE} | not queryable but tracked internally
+@def_gl{ALIASED_LINE_WIDTH_RANGE}      | |
+@def_gl{ARRAY_BUFFER_BINDING}, \n @def_gl{DISPATCH_INDIRECT_BUFFER_BINDING}, \n @def_gl{ELEMENT_ARRAY_BUFFER_BINDING}, \n @def_gl{PIXEL_PACK_BUFFER_BINDING}, \n @def_gl{PIXEL_UNPACK_BUFFER_BINDING} | not queryable but tracked internally
+@def_gl{BLEND_COLOR}                   | not queryable, @ref Renderer::setBlendColor() setter only
+@def_gl{BLEND_DST_ALPHA}, \n @def_gl{BLEND_DST_RGB}, \n @def_gl{BLEND_SRC_ALPHA}, \n @def_gl{BLEND_SRC_RGB} | not queryable, @ref Renderer::setBlendFunction() setter only
+@def_gl{BLEND_EQUATION_ALPHA}, \n @def_gl{BLEND_EQUATION_RGB} | not queryable, @ref Renderer::setBlendEquation() setter only
+@def_gl{BLEND}, \n @def_gl{COLOR_LOGIC_OP}, \n @def_gl{CULL_FACE}, \n @def_gl{DEBUG_OUTPUT}, \n @def_gl{DEBUG_OUTPUT_SYNCHRONOUS}, \n @def_gl{DEPTH_CLAMP}, \n @def_gl{DEPTH_TEST}, \n @def_gl{DITHER}, \n @def_gl{MULTISAMPLE}, \n @def_gl{POLYGON_OFFSET_FILL}, \n @def_gl{POLYGON_OFFSET_LINE}, \n @def_gl{POLYGON_OFFSET_POINT}, \n @def_gl{PROGRAM_POINT_SIZE}, \n @def_gl{SCISSOR}, \n @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}, \n @def_gl{STENCIL_TEST} | not queryable, @ref Renderer::setFeature() setter only
+@def_gl{COLOR_CLEAR_VALUE}, \n @def_gl{DEPTH_CLEAR_VALUE}, \n @def_gl{STENCIL_CLEAR_VALUE} | not queryable, @ref Renderer::setClearColor(), \n @ref Renderer::setClearDepth() and \n @ref Renderer::setClearStencil() setters only
+@def_gl{COLOR_WRITEMASK}, \n @def_gl{DEPTH_WRITEMASK}, \n @def_gl{STENCIL_BACK_WRITEMASK}, \n @def_gl{STENCIL_WRITEMASK}               | not queryable, @ref Renderer::setColorMask(), \n @ref Renderer::setDepthMask() and \n @ref Renderer::setStencilMask() setters only
+@def_gl{COMPRESSED_TEXTURE_FORMATS}    | |
+@def_gl{CONTEXT_FLAGS}                 | @ref Context::flags()
+@def_gl{CURRENT_PROGRAM}               | not queryable but tracked internally
+@def_gl{DEBUG_GROUP_STACK_DEPTH}       | |
+@def_gl{DEPTH_FUNC}                    | not queryable, @ref Renderer::setDepthFunction() setter only
+@def_gl{DEPTH_RANGE}                   | not queryable
+@def_gl{DOUBLEBUFFER}, \n @def_gl{STEREO} | |
+@def_gl{DRAW_BUFFERi}, \n @def_gl{DRAW_BUFFER}, \n @def_gl{READ_BUFFER} | not queryable, @ref DefaultFramebuffer::mapForDraw(), \n @ref DefaultFramebuffer::mapForRead(), \n @ref Framebuffer::mapForDraw() and \n @ref Framebuffer::mapForRead() setters only
+@def_gl{DRAW_FRAMEBUFFER_BINDING}, \n @def_gl{READ_FRAMEBUFFER_BINDING} | not queryable but tracked internally
+@def_gl{FRAGMENT_SHADER_DERIVATIVE_HINT}, \n @def_gl{LINE_SMOOTH_HINT}, \n @def_gl{POLYGON_SMOOTH_HINT}, \n @def_gl{TEXTURE_COMPRESSION_HINT} | not queryable
+@def_gl{IMPLEMENTATION_COLOR_READ_FORMAT} | |
+@def_gl{IMPLEMENTATION_COLOR_READ_TYPE} | |
+@def_gl{LAYER_PROVOKING_VERTEX}        | |
+@def_gl{LINE_SMOOTH}, \n @def_gl{POLYGON_SMOOTH} | not supported (@ref opengl-unsupported "details")
+@def_gl{LINE_WIDTH_GRANULARITY}, \n @def_gl{LINE_WIDTH_RANGE} | |
+@def_gl{LINE_WIDTH}                    | not queryable, @ref Renderer::setLineWidth() setter only
+@def_gl{LOGIC_OP_MODE}                 | not queryable, @ref Renderer::setLogicOperation() setter only
+@def_gl{MAJOR_VERSION}, \n @def_gl{MINOR_VERSION} | @ref Context::version()
+`GL_MAX_*_ATOMIC_COUNTER_BUFFERS`, \n @def_gl{MAX_COMBINED_ATOMIC_COUNTER_BUFFERS} | @ref Shader::maxAtomicCounterBuffers(), \n @ref Shader::maxCombinedAtomicCounterBuffers()
+`GL_MAX_*_ATOMIC_COUNTERS`, \n @def_gl{MAX_COMBINED_ATOMIC_COUNTERS} | @ref Shader::maxAtomicCounters(), \n @ref Shader::maxCombinedAtomicCounters()
+`GL_MAX_*_IMAGE_UNIFORMS`, \n @def_gl{MAX_COMBINED_IMAGE_UNIFORMS} | @ref Shader::maxImageUniforms(), \n @ref Shader::maxCombinedImageUniforms()
+`GL_MAX_*_SHADER_STORAGE_BLOCKS`, \n @def_gl{MAX_COMBINED_SHADER_STORAGE_BLOCKS} | @ref Shader::maxShaderStorageBlocks(), \n @ref Shader::maxCombinedShaderStorageBlocks()
+`GL_MAX_*_TEXTURE_IMAGE_UNITS`, \n @def_gl{MAX_TEXTURE_IMAGE_UNITS}, \n @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS} | @ref Shader::maxTextureImageUnits(), \n @ref Shader::maxCombinedTextureImageUnits()
+`GL_MAX_*_UNIFORM_BLOCKS`, \n @def_gl{MAX_COMBINED_UNIFORM_BLOCKS} | @ref Shader::maxUniformBlocks(), \n @ref Shader::maxCombinedUniformBlocks()
+`GL_MAX_*_UNIFORM_COMPONENTS`, \n @def_gl{MAX_VERTEX_UNIFORM_VECTORS}, \n @def_gl{MAX_FRAGMENT_UNIFORM_VECTORS} | @ref Shader::maxUniformComponents()
+`GL_MAX_COMBINED_*_UNIFORM_COMPONENTS` | @ref Shader::maxCombinedUniformComponents()
+@def_gl{MAX_3D_TEXTURE_SIZE}, \n @def_gl{MAX_ARRAY_TEXTURE_LAYERS}, \n @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}, \n @def_gl{MAX_RECTANGLE_TEXTURE_SIZE}, \n @def_gl{MAX_TEXTURE_SIZE} | |
+@def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE} | @ref AbstractShaderProgram::maxAtomicCounterBufferSize()
+@def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS} | @ref Buffer::maxAtomicCounterBindings()
+@def_gl{MAX_COLOR_ATTACHMENTS}         | @ref Framebuffer::maxColorAttachments()
+@def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES} | @ref AbstractShaderProgram::maxCombinedShaderOutputResources()
+@def_gl{MAX_COMPUTE_SHARED_MEMORY_SIZE} | @ref AbstractShaderProgram::maxComputeSharedMemorySize()
+@def_gl{MAX_COMPUTE_WORK_GROUP_COUNT}  | |
+@def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS} | @ref AbstractShaderProgram::maxComputeWorkGroupInvocations()
+@def_gl{MAX_COMPUTE_WORK_GROUP_SIZE}   | |
+@def_gl{MAX_DEBUG_LOGGED_MESSAGES}     | @ref DebugMessage::maxLoggedMessages()
+@def_gl{MAX_DEBUG_MESSAGE_LENGTH}      | @ref DebugMessage::maxMessageLength()
+@def_gl{MAX_DEBUG_GROUP_STACK_DEPTH}   | |
+@def_gl{MAX_CLIP_DISTANCES}            | |
+@def_gl{MAX_COLOR_TEXTURE_SAMPLES}, \n @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}, \n @def_gl{MAX_INTEGER_SAMPLES} | @ref AbstractTexture::maxColorSamples(), \n @ref AbstractTexture::maxDepthSamples(), \n @ref AbstractTexture::maxIntegerSamples()
+@def_gl{MAX_DRAW_BUFFERS}              | @ref AbstractFramebuffer::maxDrawBuffers()
+@def_gl{MAX_DUAL_SOURCE_DRAW_BUFFERS}  | @ref AbstractFramebuffer::maxDualSourceDrawBuffers()
+@def_gl{MAX_ELEMENTS_INDICES}          | @ref Mesh::maxElementsIndices()
+@def_gl{MAX_ELEMENTS_VERTICES}         | @ref Mesh::maxElementsVertices()
+@def_gl{MAX_ELEMENT_INDEX}             | |
+@def_gl{MAX_FRAMEBUFFER_HEIGHT}        | |
+@def_gl{MAX_FRAMEBUFFER_LAYERS}        | |
+@def_gl{MAX_FRAMEBUFFER_SAMPLES}       | |
+@def_gl{MAX_FRAMEBUFFER_WIDTH}         | |
+@def_gl{MAX_FRAGMENT_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_OUTPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VERTEX_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VARYING_COMPONENTS}, \n @def_gl{MAX_VARYING_FLOATS}, \n @def_gl{MAX_VARYING_VECTORS} | @ref Shader::maxFragmentInputComponents(), \n @ref Shader::maxGeometryInputComponents(), \n @ref Shader::maxGeometryOutputComponents(), \n @ref Shader::maxGeometryTotalOutputComponents(), \n @ref Shader::maxTessellationControlInputComponents(), \n @ref Shader::maxTessellationControlOutputComponents(), \n @ref Shader::maxTessellationControlTotalOutputComponents(), \n @ref Shader::maxTessellationEvaluationInputComponents(), \n @ref Shader::maxTessellationEvaluationOutputComponents(), \n @ref Shader::maxVertexOutputComponents()
+@def_gl{MAX_IMAGE_SAMPLES}             | @ref AbstractShaderProgram::maxImageSamples()
+@def_gl{MAX_IMAGE_UNITS}               | @ref AbstractShaderProgram::maxImageUnits()
+@def_gl{MAX_LABEL_LENGTH}              | @ref AbstractObject::maxLabelLength()
+@def_gl{MAX_RENDERBUFFER_SIZE}         | @ref Renderbuffer::maxSize()
+@def_gl{MAX_SAMPLE_MASK_WORDS}         | |
+@def_gl{MAX_SERVER_WAIT_TIMEOUT}       | |
+@def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE} | @ref AbstractShaderProgram::maxShaderStorageBlockSize()
+@def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS} | @ref Buffer::maxShaderStorageBindings()
+@def_gl{MAX_TEXTURE_BUFFER_SIZE}       | |
+@def_gl_extension{MAX_TEXTURE_MAX_ANISOTROPY,EXT,texture_filter_anisotropic} | @ref Sampler::maxMaxAnisotropy()
+@def_gl{MAX_TEXTURE_LOD_BIAS}          | |
+@def_gl{MAX_UNIFORM_BLOCK_SIZE}        | @ref AbstractShaderProgram::maxUniformBlockSize()
+@def_gl{MAX_UNIFORM_BUFFER_BINDINGS}   | @ref Buffer::maxUniformBindings()
+@def_gl{MAX_UNIFORM_LOCATIONS}         | @ref AbstractShaderProgram::maxUniformLocations()
+@def_gl{MAX_VERTEX_ATTRIBS}            | @ref AbstractShaderProgram::maxVertexAttributes()
+@def_gl{MAX_VERTEX_ATTRIB_BINDINGS}    | @ref Buffer::maxVertexAttributeBindings()
+@def_gl{MAX_VERTEX_ATTRIB_RELATIVE_OFFSET} | |
+@def_gl{MAX_VIEWPORTS}                 | |
+@def_gl{MAX_VIEWPORT_DIMS}             | @ref AbstractFramebuffer::maxViewportSize()
+@def_gl{MIN_MAP_BUFFER_ALIGNMENT}      | @ref Buffer::minMapAlignment()
+@def_gl{MIN_PROGRAM_TEXEL_OFFSET}, \n @def_gl{MAX_PROGRAM_TEXEL_OFFSET} | @ref AbstractShaderProgram::minTexelOffset(), \n @ref AbstractShaderProgram::maxTexelOffset()
+@def_gl{NUM_COMPRESSED_TEXTURE_FORMATS} | |
+@def_gl{NUM_EXTENSIONS}                | @ref Context::supportedExtensions()
+@def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
+@def_gl{NUM_SHADER_BINARY_FORMATS}, \n @def_gl{SHADER_BINARY_FORMATS} | |
+@def_gl{PACK_ALIGNMENT}, \n @def_gl{PACK_IMAGE_HEIGHT}, \n @def_gl{PACK_LSB_FIRST}, \n @def_gl{PACK_ROW_LENGTH}, \n @def_gl{PACK_SKIP_IMAGES}, \n @def_gl{PACK_SKIP_PIXELS}, \n @def_gl{PACK_SKIP_ROWS}, \n @def_gl{PACK_SWAP_BYTES}, \n @def_gl{UNPACK_ALIGNMENT}, \n @def_gl{UNPACK_IMAGE_HEIGHT}, \n @def_gl{UNPACK_LSB_FIRST}, \n @def_gl{UNPACK_ROW_LENGTH}, \n @def_gl{UNPACK_SKIP_IMAGES}, \n @def_gl{UNPACK_SKIP_PIXELS}, \n @def_gl{UNPACK_SKIP_ROWS}, \n @def_gl{UNPACK_SWAP_BYTES} | not queryable
+@def_gl{POINT_FADE_THRESHOLD_SIZE}     | |
+@def_gl{POINT_SIZE_GRANULARITY}, \n @def_gl{POINT_SIZE_RANGE} | |
+@def_gl{POINT_SIZE}                    | not queryable, @ref Renderer::setPointSize() setter only
+@def_gl{POLYGON_OFFSET_FACTOR}, \n @def_gl{POLYGON_OFFSET_UNITS} | not queryable, @ref Renderer::setPolygonOffset() setter only
+@def_gl{PRIMITIVE_RESTART_INDEX}       | not queryable
+@def_gl{PROGRAM_PIPELINE_BINDING}      | not queryable
+@def_gl{PROVOKING_VERTEX}              | not queryable, @ref Renderer::setProvokingVertex() setter only
+@def_gl{RENDERBUFFER_BINDING}          | not queryable but tracked internally
+@def_gl{SAMPLER_BINDING}               | not queryable
+@def_gl{SAMPLES}                       | @ref Renderbuffer::maxSamples()
+@def_gl{SAMPLE_BUFFERS}                | |
+@def_gl{SAMPLE_COVERAGE_INVERT}, \n @def_gl{SAMPLE_COVERAGE_VALUE} | |
+@def_gl{SCISSOR_BOX}                   | not queryable, @ref Renderer::setScissor() setter only
+@def_gl{SHADER_COMPILER}               | not supported (@ref opengl-unsupported "details")
+@def_gl{SHADER_STORAGE_BUFFER_BINDING}, \n @def_gl{SHADER_STORAGE_BUFFER_SIZE}, \n @def_gl{SHADER_STORAGE_BUFFER_START} | not queryable
+@def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT} | @ref Buffer::shaderStorageOffsetAlignment()
+@def_gl{SMOOTH_LINE_WIDTH_GRANULARITY}, \n @def_gl{SMOOTH_LINE_WIDTH_RANGE} | |
+@def_gl{STENCIL_BACK_FUNC}, \n @def_gl{STENCIL_BACK_REF}, \n @def_gl{STENCIL_BACK_VALUE_MASK}, \n @def_gl{STENCIL_FUNC}, \n @def_gl{STENCIL_REF}, \n @def_gl{STENCIL_VALUE_MASK} | not queryable, @ref Renderer::setStencilFunction() setter only
+@def_gl{STENCIL_BACK_FAIL}, \n @def_gl{STENCIL_BACK_PASS_DEPTH_FAIL}, \n @def_gl{STENCIL_BACK_PASS_DEPTH_PASS}, \n @def_gl{STENCIL_FAIL}, \n @def_gl{STENCIL_PASS_DEPTH_FAIL}, \n @def_gl{STENCIL_PASS_DEPTH_PASS} | not queryable, @ref Renderer::setStencilOperation() setter only
+@def_gl{SUBPIXEL_BITS}                 | |
+@def_gl{TEXTURE_BUFFER_OFFSET_ALIGNMENT} | @ref BufferTexture::offsetAlignment()
+@def_gl{TIMESTAMP}                     | |
+@def_gl{TRANSFORM_FEEDBACK_BUFFER_BINDING}, \n @def_gl{TRANSFORM_FEEDBACK_BUFFER_SIZE}, \n @def_gl{TRANSFORM_FEEDBACK_BUFFER_START} | not queryable
+@def_gl{UNIFORM_BUFFER_OFFSET_ALIGNMENT} | |
+@def_gl{UNIFORM_BUFFER_BINDING}, \n @def_gl{UNIFORM_BUFFER_SIZE}, \n @def_gl{UNIFORM_BUFFER_START} | not queryable
+@def_gl{VERTEX_BINDING_DIVISOR}, \n @def_gl{VERTEX_BINDING_OFFSET}, \n @def_gl{VERTEX_BINDING_STRIDE} | not queryable
+@def_gl{VERTEX_PROGRAM_POINT_SIZE}     | not queryable
+@def_gl{VIEWPORT_BOUNDS_RANGE}         | |
+@def_gl{VIEWPORT_INDEX_PROVOKING_VERTEX} | |
+@def_gl{VIEWPORT_SUBPIXEL_BITS}        | |
+@def_gl{VIEWPORT}                      | not queryable but tracked in @ref AbstractFramebuffer::viewport()
 
 */
 

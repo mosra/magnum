@@ -223,6 +223,7 @@ class MAGNUM_EXPORT Renderer {
          * @brief Hint
          *
          * @see setHint()
+         * @todo other hints
          */
         enum class Hint: GLenum {
             /**

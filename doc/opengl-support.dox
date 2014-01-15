@@ -296,9 +296,14 @@ add any performance gains, is not supported in %Magnum. See also
 @subsection opengl-unsupported-features Unsupported features
 
 -   State queries (various `glIs*()`, `glGet*()` functions) are not supported.
-    %Magnum API is designed to prevent the need for most of them. On the other
-    hand queries of implementation-defined values (various limits etc.) and
-    queries of generated values (buffer data, texture data) are supported.
+    %Magnum API is designed to prevent the need for majority of them, many of
+    them are tracked internally to avoid redundant state changes and in many
+    cases it is easier to set the state to some value rather than query it and
+    then decide on the result. For detailed state introspection please use
+    external debugger (such as ApiTrace), which is more convenient to use than
+    manual queries. Queries of implementation-defined values (various limits
+    etc.) and queries of generated values (buffer data, texture data) are
+    supported.
 -   Line and polygon smoothing (`GL_LINE_SMOOTH`, `GL_POLYGON_SMOOTH`) and
     related functions are not supported, as the driver might do it in software
     with serious performance drops. Multisampling is far superior solution.
