@@ -1,0 +1,93 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page troubleshooting Troubleshooting
+
+@brief Various tricks to overcome to common building and rendering issues.
+
+@section troubleshooting-building Building issues
+
+If your project suddenly stops building after %Magnum upgrade, check these
+things:
+
+-   If the building fails on CMake step, be sure that you have up-to-date
+    `FindCorrade.cmake`, `FindMagnum.cmake` and other CMake modules in your
+    project (`FindSDL2.cmake`). They are contained in `modules/` directory of
+    %Magnum sources (and sources of other projects) also are installed into
+    `share/cmake/Magnum`.
+-   In some cases when the changes done to build system are too drastic,
+    recreating the build dir or clearing CMake cache is needed, but this is
+    a very rare occasion.
+-   The library is constantly evolving, thus some API might get deprecated over
+    time (and later removed). Either build the libraries with `BUILD_DEPRECATED`
+    or switch to non-deprecated features. See @ref building for more
+    information.
+
+@section troubleshooting-rendering Rendering issues
+
+If you are experiencing so-called "black screen of death", you might want to
+try these things:
+
+-   Verify that @ref Renderer::error() "no OpenGL error was emitted".
+-   Check that you use only extensions that are
+    @ref Context::isExtensionSupported() "available on your system".
+-   Check that you didn't exceed any implementation-defined limit (see
+    `magnum-info` output for list of all of them).
+-   Enable @ref DebugMessage "debug output" to see more detailed errors,
+    warnings and performance hints.
+-   If using framebuffer objects, @ref Framebuffer::checkStatus() "check that they are complete".
+-   Change @ref Renderer::setClearColor() "framebuffer clear color" to
+    something else than black to verify that at least something is drawn.
+-   If nothing is drawn, use @ref PrimitiveQuery to check that at least some
+    primitives were generated. Use @ref SampleQuery to check whether fragments
+    were drawn.
+-   Verify that the mesh is properly set up -- nonzero vertex/index count,
+    matching type in buffer and @ref Mesh::addVertexBuffer() "vertex specification",
+    properly set up @ref Mesh::setIndexBuffer() "index buffer" and index count
+    for indexed mesh. If you specified index range, be sure that all indices
+    fall into it, otherwise you would get undefined behavior.
+-   Try disabling @ref Renderer::Feature::DepthTest "depth test",
+    @ref Renderer::Feature::FaceCulling "face culling" and other renderer
+    features that might affect the fragments.
+-   Verify that your projection and transformation matrix is properly set up --
+    try drawing points instead of triangles, to see if they are at least at
+    proper places.
+-   @ref AbstractShaderProgram::validate() "Validate the shader", check that
+    all used uniforms and attributes have proper locations. Try reducing it
+    until it is able to draw something, possibly also with some simpler mesh.
+
+@section troubleshooting-debugging Debugging rendering
+
+-   Enable @ref DebugMessage "debug output" to see additional performance hints
+    and implementation-dependent information.
+-   Use @ref TimeQuery to find hot spots in the rendering code.
+-   @ref DebugMessage::insert() "Mark relevant parts of code" to find them
+    easier in the debugger.
+-   Use ApiTrace to trace the program call by call, verify buffer and texture
+    contents, vertex binding and count of generated primitives, rendered
+    fragments and time spent in various calls.
+
+*/
+}
