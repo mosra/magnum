@@ -76,7 +76,7 @@ AbstractShaderProgramTest::AbstractShaderProgramTest() {
 void AbstractShaderProgramTest::attributeScalar() {
     typedef AbstractShaderProgram::Attribute<3, Float> Attribute;
     CORRADE_COMPARE(Int(Attribute::Location), 3);
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -94,7 +94,7 @@ void AbstractShaderProgramTest::attributeScalar() {
 void AbstractShaderProgramTest::attributeScalarInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Int> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -111,7 +111,7 @@ void AbstractShaderProgramTest::attributeScalarInt() {
 void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, UnsignedInt> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -128,7 +128,7 @@ void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
 void AbstractShaderProgramTest::attributeScalarDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Double> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -140,7 +140,7 @@ void AbstractShaderProgramTest::attributeScalarDouble() {
 
 void AbstractShaderProgramTest::attributeVector() {
     typedef AbstractShaderProgram::Attribute<3, Vector3> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -163,7 +163,7 @@ void AbstractShaderProgramTest::attributeVector() {
 void AbstractShaderProgramTest::attributeVectorInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Vector2i> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -182,7 +182,7 @@ void AbstractShaderProgramTest::attributeVectorInt() {
 void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Vector4ui> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -201,7 +201,7 @@ void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
 void AbstractShaderProgramTest::attributeVectorDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Vector2d> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
     Attribute a;
@@ -219,7 +219,7 @@ void AbstractShaderProgramTest::attributeVectorDouble() {
 
 void AbstractShaderProgramTest::attributeVector4() {
     typedef AbstractShaderProgram::Attribute<3, Vector4> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Custom type */
     #ifndef MAGNUM_TARGET_GLES
@@ -234,7 +234,7 @@ void AbstractShaderProgramTest::attributeVector4() {
 void AbstractShaderProgramTest::attributeVectorBGRA() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Vector4> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 1);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* BGRA */
     Attribute a(Attribute::Components::BGRA);
@@ -246,7 +246,7 @@ void AbstractShaderProgramTest::attributeVectorBGRA() {
 
 void AbstractShaderProgramTest::attributeMatrixNxN() {
     typedef AbstractShaderProgram::Attribute<3, Matrix3> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 3);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 3);
 
     /* Default constructor */
     Attribute a;
@@ -258,7 +258,7 @@ void AbstractShaderProgramTest::attributeMatrixNxN() {
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgramTest::attributeMatrixMxN() {
     typedef AbstractShaderProgram::Attribute<3, Matrix3x4> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 3);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 3);
 
     /* Default constructor */
     Attribute a;
@@ -271,7 +271,7 @@ void AbstractShaderProgramTest::attributeMatrixMxN() {
 void AbstractShaderProgramTest::attributeMatrixNxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Matrix4d> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 4);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 4);
 
     /* Default constructor */
     Attribute a;
@@ -286,7 +286,7 @@ void AbstractShaderProgramTest::attributeMatrixNxNd() {
 void AbstractShaderProgramTest::attributeMatrixMxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Matrix4x2d> Attribute;
-    CORRADE_COMPARE(Attribute::VectorCount, 4);
+    CORRADE_COMPARE(Int(Attribute::VectorCount), 4);
 
     /* Default constructor */
     Attribute a;
