@@ -42,7 +42,7 @@
 #include "Magnum/Math/Vector2.h"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
-#include "Version.h"
+#include "Magnum/Version.h"
 #endif
 
 namespace Magnum {
