@@ -671,7 +671,13 @@ namespace Implementation {
     }
 }
 
+#ifndef CORRADE_GCC45_COMPATIBILITY
 template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
+#else
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal) {
+    constructInternal({Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...});
+}
+#endif
 
 template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> RectangularMatrix<cols, rows, T>::row(std::size_t row) const {
     Vector<cols, T> out;
