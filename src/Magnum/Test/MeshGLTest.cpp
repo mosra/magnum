@@ -405,7 +405,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
 
 template<class T> T Checker::get(ColorFormat format, ColorType type) {
     Image2D image(format, type);
-    framebuffer.read({}, Vector2i(1), image);
+    framebuffer.read(Vector2i{}, Vector2i(1), image);
     return image.data<T>()[0];
 }
 #endif
