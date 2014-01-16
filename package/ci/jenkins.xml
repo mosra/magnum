@@ -123,9 +123,9 @@ cd build-${compiler}-${libraries}-${compatibility}-${gl}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries} \
+    -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl} \
-    -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}/lib;${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl}/lib" \
+    -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}/lib;${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl}/lib" \
     -DCMAKE_CXX_COMPILER=${compiler_binary} \
     "${compiler_flags[@]}" \
     -DBUILD_TESTS=ON \

@@ -85,8 +85,8 @@ repository.
 Directory `src/` contains the actual project. To keep things simple, the
 project consists of just one source file with the most minimal code possible:
 @code
-#include <Platform/GlutApplication.h>
-#include <DefaultFramebuffer.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Platform/GlutApplication.h>
 
 using namespace Magnum;
 
@@ -160,9 +160,9 @@ the concepts of graphics programming, we can change clear color to something
 else and also print basic information about the GPU the engine is running on.
 First include the needed headers:
 @code
-#include <Color.h>
-#include <Context.h>
-#include <Renderer.h>
+#include <Magnum/Color.h>
+#include <Magnum/Context.h>
+#include <Magnum/Renderer.h>
 @endcode
 
 And in the constructor (which is currently empty) change the clear color and

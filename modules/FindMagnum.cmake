@@ -7,7 +7,6 @@
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
-#  MAGNUM_PLUGINS_INCLUDE_DIR   - Include dir with plugins
 #  MAGNUM_PLUGINS_DIR           - Base directory with plugins. You can modify
 #   it (e.g. set it to `.` when deploying on Windows with plugins stored
 #   relatively to the executable), the following MAGNUM_PLUGINS_*_DIR
@@ -68,6 +67,11 @@
 #  MAGNUM_TARGET_DESKTOP_GLES   - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
 #
+# If `MAGNUM_BUILD_DEPRECATED` is defined, the `MAGNUM_INCLUDE_DIR` variable
+# also contains path directly to Magnum directory (i.e. for includes without
+# `Magnum/` prefix) and `MAGNUM_PLUGINS_INCLUDE_DIR` contains include dir for
+# plugins (i.e. instead of `MagnumPlugins/` prefix).
+#
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
 #   dependencies)
@@ -126,11 +130,10 @@ find_library(MAGNUM_LIBRARY Magnum)
 
 # Root include dir
 find_path(MAGNUM_INCLUDE_DIR
-    NAMES Magnum.h
-    PATH_SUFFIXES Magnum)
+    NAMES Magnum/Magnum.h)
 
 # Configuration
-file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
+file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
 
 string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_DEPRECATED" _BUILD_DEPRECATED)
 if(NOT _BUILD_DEPRECATED EQUAL -1)
@@ -208,7 +211,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Set plugin defaults, find the plugin
     if(_MAGNUM_${_COMPONENT}_IS_PLUGIN)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Plugins/${component})
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX MagnumPlugins/${component})
 
         # Don't override the one for *AudioImporter plugins
         if(NOT _MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
@@ -226,7 +229,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Set library defaults, find the library
     else()
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX ${component})
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/${component})
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
 
         find_library(MAGNUM_${_COMPONENT}_LIBRARY Magnum${component})
@@ -234,7 +237,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
     # Applications
     if(${component} MATCHES .+Application)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Platform)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
 
         # GLUT application dependencies
         if(${component} STREQUAL GlutApplication)
@@ -354,7 +357,7 @@ find_package_handle_standard_args(Magnum
 
 # Dependent libraries and includes
 set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
-    ${MAGNUM_INCLUDE_DIR}/OpenGL
+    ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL
     ${CORRADE_INCLUDE_DIR})
 set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
     ${CORRADE_UTILITY_LIBRARIES}
@@ -376,7 +379,7 @@ set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/audioimporters)
 set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
-set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum/Plugins)
+set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
 mark_as_advanced(FORCE
     MAGNUM_LIBRARY
     MAGNUM_INCLUDE_DIR
@@ -391,11 +394,19 @@ mark_as_advanced(FORCE
     MAGNUM_INCLUDE_INSTALL_DIR
     MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
 
+# Add Magnum dir to include path and create MAGNUM_PLUGINS_INCLUDE_DIR if this
+# is deprecated build
+if(MAGNUM_BUILD_DEPRECATED)
+    set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIRS}
+        ${MAGNUM_INCLUDE_DIR}/Magnum
+        ${MAGNUM_INCLUDE_DIR}/MagnumExternal)
+    set(MAGNUM_PLUGINS_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/MagnumPlugins)
+endif()
+
 set(MAGNUM_PLUGINS_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}
     CACHE PATH "Base directory where to look for Magnum plugins")
 
 # Plugin directories
-set(MAGNUM_PLUGINS_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/Plugins)
 set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONTCONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/fontconverters)
 set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/imageconverters)

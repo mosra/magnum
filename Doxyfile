@@ -132,7 +132,9 @@ FULL_PATH_NAMES        = YES
 # relative paths, which will be relative from the directory where doxygen is
 # started.
 
-STRIP_FROM_PATH        = ../
+STRIP_FROM_PATH        = ../magnum/src \
+                         ../magnum-plugins/src \
+                         ../magnum-integration/src
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of
 # the path mentioned in the documentation of a class, which tells
@@ -207,11 +209,13 @@ ALIASES                = \
     "collisionoperator{2}=@relates \1\n@brief %Collision of %\1 and %\2\n@see \2::operator/(const \1&) const" \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "fn_gl{1}=<a href=\"http://www.opengl.org/sdk/docs/man4/xhtml/gl\1.xml\">gl\1()</a>" \
+    "fn_gl2{2}=<a href=\"http://www.opengl.org/sdk/docs/man4/xhtml/gl\2.xml\">gl\1()</a>" \
     "fn_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">gl\1<b></b>\2()</a>" \
     "fn_gl_extension2{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "fn_gles_extension{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "def_gl{1}=`GL_\1`" \
-    "deprecated_gl=@xrefitem deprecated-gl \"Deprecated OpenGL API\" \"Deprecated OpenGL API list\"" \
+    "def_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">GL_\1_\2</a>" \
+    "deprecated_gl=@xrefitem opengl-deprecated \"Deprecated OpenGL API\" \"Deprecated OpenGL API list\"" \
     "requires_gl30=@xrefitem requires-gl30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
     "requires_gl31=@xrefitem requires-gl31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \
     "requires_gl32=@xrefitem requires-gl32 \"Requires OpenGL 3.2\" \"Functionality requiring OpenGL 3.2\"" \
@@ -478,7 +482,7 @@ HIDE_SCOPE_NAMES       = NO
 # will put a list of the files that are included by a file in the documentation
 # of that file.
 
-SHOW_INCLUDE_FILES     = NO
+SHOW_INCLUDE_FILES     = YES
 
 # If the FORCE_LOCAL_INCLUDES tag is set to YES then Doxygen
 # will list include files with double quotes in the documentation
@@ -584,7 +588,7 @@ MAX_INITIALIZER_LINES  = 30
 # at the bottom of the documentation of classes and structs. If set to YES the
 # list will mention the files that were used to generate the documentation.
 
-SHOW_USED_FILES        = YES
+SHOW_USED_FILES        = NO
 
 # Set the SHOW_FILES tag to NO to disable the generation of the Files page.
 # This will remove the Files entry from the Quick Index and from the
@@ -689,11 +693,12 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = src/ \
+INPUT                  = src/Magnum \
+                         src/MagnumPlugins \
                          doc/ \
-                         ../magnum-plugins/src/ \
+                         ../magnum-plugins/src/MagnumPlugins \
                          ../magnum-plugins/doc/ \
-                         ../magnum-integration/src/ \
+                         ../magnum-integration/src/Magnum \
                          ../magnum-integration/doc/ \
                          ../magnum-examples/doc/
 

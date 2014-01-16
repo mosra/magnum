@@ -22,11 +22,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @dir magnum
- * @brief %Magnum library
- */
-/** @dir magnum/src
- * @brief Namespace Magnum
+/** @dir magnum/src/Magnum
+ * @brief Namespace Magnum (part of @ref building "Magnum library")
  */
 /** @namespace Magnum
 @brief Root namespace
@@ -39,7 +36,7 @@ to `${MAGNUM_LIBRARIES}`. See @ref building and @ref cmake for more
 information.
 */
 
-/** @dir Platform
+/** @dir Magnum/Platform
  * @brief Namespace Magnum::Platform
  */
 /** @namespace Magnum::Platform
@@ -57,7 +54,7 @@ documentation, @ref building, @ref cmake and @ref platform for more
 information.
 */
 
-/** @dir Math
+/** @dir Magnum/Math
  * @brief Namespace Magnum::Math
  */
 /** @namespace Magnum::Math
@@ -71,7 +68,7 @@ to `${MAGNUM_LIBRARIES}`. See @ref building, @ref cmake, @ref matrix-vector and
 @ref transformations for more information.
 */
 
-/** @dir Math/Algorithms
+/** @dir Magnum/Math/Algorithms
  * @brief Namespace Magnum::Math::Algorithms
  */
 /** @namespace Magnum::Math::Algorithms
@@ -85,7 +82,7 @@ to `${MAGNUM_LIBRARIES}`. See @ref building and @ref cmake for more
 information.
 */
 
-/** @dir Math/Geometry
+/** @dir Magnum/Math/Geometry
  * @brief Namespace Magnum::Math::Geometry
  */
 /** @namespace Magnum::Math::Geometry
@@ -99,7 +96,7 @@ to `${MAGNUM_LIBRARIES}`. See @ref building and @ref cmake for more
 information.
 */
 
-/** @dir Audio
+/** @dir Magnum/Audio
  * @brief Namespace Magnum::Audio
  */
 /** @namespace Magnum::Audio
@@ -116,7 +113,7 @@ particular `*Importer` class documentation, @ref building-plugins,
 @ref cmake-plugins and @ref plugins for more information.
 */
 
-/** @dir DebugTools
+/** @dir Magnum/DebugTools
  * @brief Namespace Magnum::DebugTools
  */
 /** @namespace Magnum::DebugTools
@@ -130,7 +127,7 @@ package in CMake and link to `${MAGNUM_DEBUGTOOLS_LIBRARIES}`. See
 @ref building, @ref cmake and @ref debug-tools for more information.
 */
 
-/** @dir MeshTools
+/** @dir Magnum/MeshTools
  * @brief Namespace Magnum::MeshTools
  */
 /** @namespace Magnum::MeshTools
@@ -144,11 +141,7 @@ package in CMake and link to `${MAGNUM_MESHTOOLS_LIBRARIES}`. See @ref building
 and @ref cmake for more information.
 */
 
-/** @dir Plugins
- * @brief Basic plugins
- */
-
-/** @dir Primitives
+/** @dir Magnum/Primitives
  * @brief Namespace Magnum::Primitives
  */
 /** @namespace Magnum::Primitives
@@ -162,7 +155,7 @@ package in CMake and link to `${MAGNUM_PRIMITIVES_LIBRARIES}`. See
 @ref building and @ref cmake for more information.
 */
 
-/** @dir SceneGraph
+/** @dir Magnum/SceneGraph
  * @brief Namespace Magnum::SceneGraph
  */
 /**
@@ -177,7 +170,7 @@ package in CMake and link to `${MAGNUM_SCENEGRAPH_LIBRARIES}`. See
 @ref building, @ref cmake and @ref scenegraph for more information.
 */
 
-/** @dir Shaders
+/** @dir Magnum/Shaders
  * @brief Namespace Magnum::Shaders
  */
 /** @namespace Magnum::Shaders
@@ -191,7 +184,7 @@ in CMake and link to `${MAGNUM_MESHTOOLS_SHADERS}`. See @ref building and
 @ref cmake for more information.
 */
 
-/** @dir Shapes
+/** @dir Magnum/Shapes
  * @brief Namespace Magnum::Shapes
  */
 /** @namespace Magnum::Shapes
@@ -205,7 +198,7 @@ CMake and link to `${MAGNUM_SHAPES_LIBRARIES}`. See @ref building, @ref cmake
 and @ref shapes for more information.
 */
 
-/** @dir Text
+/** @dir Magnum/Text
  * @brief Namespace Magnum::Text
  */
 /** @namespace Magnum::Text
@@ -221,7 +214,7 @@ for more information. Additional plugins are enabled separately, see particular
 @ref cmake-plugins and @ref plugins for more information.
 */
 
-/** @dir TextureTools
+/** @dir Magnum/TextureTools
  * @brief Namespace Magnum::TextureTools
  */
 /** @namespace Magnum::TextureTools
@@ -235,7 +228,7 @@ package in CMake and link to `${MAGNUM_TEXTURETOOLS_LIBRARIES}`. See
 @ref building and @ref cmake for more information.
 */
 
-/** @dir Trade
+/** @dir Magnum/Trade
  * @brief Namespace Magnum::Trade
  */
 /** @namespace Magnum::Trade
@@ -251,3 +244,7 @@ information. Additional plugins are enabled separately, see particular
 `*Importer` and `*ImageConverter` class documentation, @ref building-plugins,
 @ref cmake-plugins and @ref plugins for more information.
 */
+
+/** @dir magnum/src/MagnumPlugins
+ * @brief %Magnum plugins (part of @ref building "Magnum library")
+ */

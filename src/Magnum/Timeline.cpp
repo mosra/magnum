@@ -1,0 +1,70 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include "Timeline.h"
+
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/utilities.h>
+
+#include "Magnum/Magnum.h"
+
+using namespace std::chrono;
+
+namespace Magnum {
+
+void Timeline::start() {
+    running = true;
+    _startTime = high_resolution_clock::now();
+    _previousFrameTime = _startTime;
+    _previousFrameDuration = 0;
+}
+
+void Timeline::stop() {
+    running = false;
+    _startTime = high_resolution_clock::time_point();
+    _previousFrameTime = _startTime;
+    _previousFrameDuration = 0;
+}
+
+void Timeline::nextFrame() {
+    if(!running) return;
+
+    auto now = high_resolution_clock::now();
+    auto duration = UnsignedInt(duration_cast<microseconds>(now-_previousFrameTime).count());
+    _previousFrameDuration = duration/1e6f;
+
+    if(_previousFrameDuration < _minimalFrameTime) {
+        Utility::sleep(std::size_t(_minimalFrameTime*1000) - duration/1000);
+        now = high_resolution_clock::now();
+        _previousFrameDuration = duration_cast<microseconds>(now-_previousFrameTime).count()/1e6f;
+    }
+
+    _previousFrameTime = now;
+}
+
+Float Timeline::previousFrameTime() const {
+    return duration_cast<microseconds>(_previousFrameTime-_startTime).count()/1e6f;
+}
+
+}

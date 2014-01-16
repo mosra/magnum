@@ -107,7 +107,7 @@ advantage of some extensions and enable faster code paths if given extension is
 available, but also have proper fallback when it's not, see for example
 @ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
 @ref AbstractTexture-performance-optimization "AbstractTexture" or
-@ref Mesh-performance-optimization "Mesh". See also @ref required-extensions.
+@ref Mesh-performance-optimization "Mesh". See also @ref opengl-required-extensions.
 
 @section portability-shaders Writing portable shaders
 
@@ -145,8 +145,8 @@ void main() {
 It is often desirable to query extension presence based on actually used GLSL
 version -- while the extension might be supported in the driver, it might not
 be available in given GLSL version (e.g. causing compilation errors). You can
-use @ref Context::isExtensionSupported(Version) to check that the extension
-is present in given version:
+use @ref Context::isExtensionSupported(Version) const to check that the
+extension is present in given version:
 @code
 if(!Context::instance()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
     bindAttributeLocation(Position::Location, "position");

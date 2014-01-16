@@ -30,5 +30,7 @@ namespace Magnum {
 - @subpage portability -- @copybrief portability
 - @subpage best-practices -- @copybrief best-practices
 - @subpage compilation-speedup -- @copybrief compilation-speedup
+- @subpage troubleshooting -- @copybrief troubleshooting
+
 */
 }

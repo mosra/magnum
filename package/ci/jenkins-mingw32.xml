@@ -77,7 +77,7 @@ cd build-mingw32-${libraries}-${compatibility}
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
-    -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/mingw32-${libraries} \
+    -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/mingw32-${libraries}-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/mingw32-${libraries}-${compatibility} \
     -DBUILD_TESTS=ON \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \

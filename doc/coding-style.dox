@@ -187,7 +187,7 @@ and OpenGL ES version/extension, first come desktop requirements, then ES
 requirements.
 
 All classes and functions using those commands are cross-referenced in page
-@ref required-extensions.
+@ref opengl-required-extensions.
 
 @section unit-tests Unit tests
 
