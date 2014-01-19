@@ -396,11 +396,15 @@ class Sdl2Application::Configuration {
         /**
          * @brief Window flags
          *
-         * @see @ref setFlags()
+         * @see @ref setWindowFlags()
          */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<WindowFlag, Uint32, SDL_WINDOW_RESIZABLE|
             SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
             SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> WindowFlags;
+        #else
+        typedef Containers::EnumSet<WindowFlag, Uint32> WindowFlags;
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
