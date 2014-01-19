@@ -90,7 +90,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 
+    #ifdef CORRADE_TARGET_NACL
+    Debug() << "Used application: Platform::WindowlessNaClApplication";
+    #else
     Debug() << "Used application: Platform::WindowlessGlxApplication";
+    #endif
     Debug() << "Compilation flags:";
     #ifdef CORRADE_GCC46_COMPATIBILITY
     Debug() << "    CORRADE_GCC46_COMPATIBILITY";
