@@ -42,6 +42,10 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Magnum/Version.h"
+#endif
+
 namespace pp {
     class Graphics3D;
     class Fullscreen;
