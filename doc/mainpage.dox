@@ -1,7 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014
+              Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -121,7 +122,8 @@ Feel free to get more information or contact the author at:
 %Magnum is licensed under MIT/Expat license:
 
 >
->   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš &lt;mosra@centrum.cz&gt;
+>   Copyright © 2010, 2011, 2012, 2013, 2014
+>             Vladimír Vondruš &lt;mosra@centrum.cz&gt;
 >
 >   Permission is hereby granted, free of charge, to any person obtaining a
 >   copy of this software and associated documentation files (the "Software"),
