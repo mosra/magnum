@@ -82,7 +82,7 @@ bool AbstractQuery::resultAvailable() {
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT_AVAILABLE, &result);
     #elif defined(CORRADE_TARGET_NACL)
-    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_AVAILABLE, &result);
+    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_AVAILABLE_EXT, &result);
     #else
     CORRADE_INTERNAL_ASSERT(false);
     #endif
@@ -98,7 +98,7 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
     #elif defined(CORRADE_TARGET_NACL)
-    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT, &result);
+    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
     CORRADE_INTERNAL_ASSERT(false);
     #endif
@@ -115,7 +115,7 @@ template<> Int AbstractQuery::result<Int>() {
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
     #elif defined(CORRADE_TARGET_NACL)
-    glGetQueryObjectivEXT(_id, GL_QUERY_RESULT, &result);
+    glGetQueryObjectivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
     CORRADE_INTERNAL_ASSERT(false);
     #endif
