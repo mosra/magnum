@@ -68,7 +68,7 @@ else
 fi
 
 mkdir -p build-nacl-${toolchain}-${compatibility}
-cd build-mingw32-${toolchain}-${compatibility}
+cd build-nacl-${toolchain}-${compatibility}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
