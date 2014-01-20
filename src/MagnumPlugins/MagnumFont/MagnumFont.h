@@ -62,6 +62,9 @@ The file syntax is as in following:
     # Font size
     fontSize=128
 
+    # Line height
+    lineHeight=270
+
     # Character
     [char]
 
