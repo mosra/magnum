@@ -103,7 +103,7 @@
 #
 #   This file is part of Corrade.
 #
-#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013
+#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -226,7 +226,7 @@ set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_U
 set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 
 # At least static build needs this
-if((UNIX OR CORRADE_TARGET_NACL) AND NOT CORRADE_TARGET_NACL_NEWLIB)
+if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_NACL_GLIBC)
     set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARIES} ${CMAKE_DL_LIBS})
 endif()
 

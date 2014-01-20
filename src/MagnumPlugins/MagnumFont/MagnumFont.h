@@ -3,7 +3,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014
+              Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -60,6 +61,9 @@ The file syntax is as in following:
 
     # Font size
     fontSize=128
+
+    # Line height
+    lineHeight=270
 
     # Character
     [char]

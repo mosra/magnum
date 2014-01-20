@@ -1,7 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014
+              Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -90,7 +91,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 
+    #ifdef CORRADE_TARGET_NACL
+    Debug() << "Used application: Platform::WindowlessNaClApplication";
+    #else
     Debug() << "Used application: Platform::WindowlessGlxApplication";
+    #endif
     Debug() << "Compilation flags:";
     #ifdef CORRADE_GCC44_COMPATIBILITY
     Debug() << "    CORRADE_GCC44_COMPATIBILITY";
