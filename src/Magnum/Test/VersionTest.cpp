@@ -38,7 +38,7 @@ class VersionTest: public TestSuite::Tester {
 };
 
 VersionTest::VersionTest() {
-    addTests({&VersionTest::fromNumber,
+    addTests<VersionTest>({&VersionTest::fromNumber,
               &VersionTest::toNumber});
 }
 

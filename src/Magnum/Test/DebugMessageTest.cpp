@@ -40,7 +40,7 @@ class DebugMessageTest: public TestSuite::Tester {
 };
 
 DebugMessageTest::DebugMessageTest() {
-    addTests({&DebugMessageTest::debugSource,
+    addTests<DebugMessageTest>({&DebugMessageTest::debugSource,
               &DebugMessageTest::debugType,
               &DebugMessageTest::debugSeverity});
 }

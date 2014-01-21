@@ -39,7 +39,7 @@ class ImageReferenceTest: public TestSuite::Tester {
 };
 
 ImageReferenceTest::ImageReferenceTest() {
-    addTests({&ImageReferenceTest::construct,
+    addTests<ImageReferenceTest>({&ImageReferenceTest::construct,
               &ImageReferenceTest::setData});
 }
 

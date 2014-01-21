@@ -38,7 +38,7 @@ class ShaderTest: public TestSuite::Tester {
 };
 
 ShaderTest::ShaderTest() {
-    addTests({&ShaderTest::debugType});
+    addTests<ShaderTest>({&ShaderTest::debugType});
 }
 
 void ShaderTest::debugType() {
