@@ -111,8 +111,8 @@ void ImageDataTest::toReference() {
 
     CORRADE_VERIFY((std::is_convertible<const Trade::ImageData2D&, ImageReference2D>::value));
     {
-        #ifdef CORRADE_GCC47_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
+        #if defined(CORRADE_GCC47_COMPATIBILITY) || defined(CORRADE_MSVC2013_COMPATIBILITY)
+        CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1 or MSVC.");
         #endif
         CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D, ImageReference2D>::value));
         CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D&&, ImageReference2D>::value));

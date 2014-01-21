@@ -73,13 +73,13 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
 
         /** @brief Conversion to reference */
         /*implicit*/ operator ImageReference<dimensions>()
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
         const &;
         #else
         const;
         #endif
 
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
         /** @overload */
         /*implicit*/ operator ImageReference<dimensions>() const && = delete;
         #endif
@@ -142,7 +142,7 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensi
 }
 
 template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>()
-#ifndef CORRADE_GCC47_COMPATIBILITY
+#if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
 const &
 #else
 const
