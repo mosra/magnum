@@ -129,7 +129,7 @@ find_library(CORRADE_TESTSUITE_LIBRARY CorradeTestSuite)
 find_program(CORRADE_RC_EXECUTABLE corrade-rc)
 
 # Include dir
-find_path(CORRADE_INCLUDE_DIR
+find_path(_CORRADE_INCLUDE_DIR
     NAMES Corrade/PluginManager Corrade/Utility)
 
 # CMake module dir
@@ -149,7 +149,7 @@ find_package_handle_standard_args(Corrade DEFAULT_MSG
     CORRADE_INTERCONNECT_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY
     CORRADE_TESTSUITE_LIBRARY
-    CORRADE_INCLUDE_DIR
+    _CORRADE_INCLUDE_DIR
     CORRADE_RC_EXECUTABLE
     _CORRADE_MODULE_DIR)
 
@@ -216,11 +216,14 @@ mark_as_advanced(CORRADE_UTILITY_LIBRARY
     CORRADE_INTERCONNECT_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY
     CORRADE_TESTSUITE_LIBRARY
+    _CORRADE_INCLUDE_DIR
     _CORRADE_MODULE_DIR)
 
 # Add Corrade dir to include path if this is deprecated build
 if(CORRADE_BUILD_DEPRECATED)
-    set(CORRADE_INCLUDE_DIR ${CORRADE_INCLUDE_DIR} ${CORRADE_INCLUDE_DIR}/Corrade)
+    set(CORRADE_INCLUDE_DIR ${_CORRADE_INCLUDE_DIR} ${CORRADE_INCLUDE_DIR}/Corrade)
+else()
+    set(CORRADE_INCLUDE_DIR ${_CORRADE_INCLUDE_DIR})
 endif()
 
 # Include our module dir, if we have any
