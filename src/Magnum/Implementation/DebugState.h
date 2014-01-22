@@ -26,13 +26,14 @@
 */
 
 #include <string>
+#include <vector>
 
 #include "Magnum/DebugMessage.h"
 
 namespace Magnum { namespace Implementation {
 
 struct DebugState {
-    DebugState(Context& context);
+    explicit DebugState(Context& context, std::vector<std::string>& extensions);
 
     std::string(*getLabelImplementation)(GLenum, GLuint);
     void(*labelImplementation)(GLenum, GLuint, const std::string&);

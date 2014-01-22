@@ -25,6 +25,8 @@
 
 #include "State.h"
 
+#include <algorithm>
+
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
@@ -39,32 +41,31 @@
 
 namespace Magnum { namespace Implementation {
 
-State::State(Context& context):
-    buffer(new BufferState),
-    debug(new DebugState(context)),
-    framebuffer(new FramebufferState),
-    mesh(new MeshState),
-    renderer(new RendererState),
-    shader(new ShaderState),
-    shaderProgram(new ShaderProgramState),
-    texture(new TextureState)
-{
+State::State(Context& context) {
+    /* List of extensions used in current context. Guesstimate count to avoid
+       unnecessary reallocations. */
+    std::vector<std::string> extensions;
+    #ifndef MAGNUM_TARGET_GLES
+    extensions.reserve(32);
+    #else
+    extensions.reserve(8);
+    #endif
+
+    buffer = new BufferState;
+    debug = new DebugState(context, extensions);
+    framebuffer = new FramebufferState;
+    mesh = new MeshState;
+    renderer = new RendererState;
+    shader = new ShaderState;
+    shaderProgram = new ShaderProgramState;
+    texture = new TextureState;
+
+    /* Sort the features and remove duplicates */
+    std::sort(extensions.begin(), extensions.end());
+    extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
 
     Debug() << "Using optional features:";
-
-    if(context.isExtensionSupported<Extensions::GL::KHR::debug>())
-        Debug() << "   " << Extensions::GL::KHR::debug::string();
-    else {
-        if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>())
-            Debug() << "   " << Extensions::GL::EXT::debug_label::string();
-
-        if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>())
-            Debug() << "   " << Extensions::GL::EXT::debug_marker::string();
-        #ifndef MAGNUM_TARGET_GLES
-        else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
-            Debug() << "   " << Extensions::GL::GREMEDY::string_marker::string();
-        #endif
-    }
+    for(const auto& ext: extensions) Debug() << "   " << ext;
 }
 
 State::~State() {

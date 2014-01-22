@@ -44,14 +44,14 @@ struct State {
 
     ~State();
 
-    BufferState* const buffer;
-    DebugState* const debug;
-    FramebufferState* const framebuffer;
-    MeshState* const mesh;
-    RendererState* const renderer;
-    ShaderState* const shader;
-    ShaderProgramState* const shaderProgram;
-    TextureState* const texture;
+    BufferState* buffer;
+    DebugState* debug;
+    FramebufferState* framebuffer;
+    MeshState* mesh;
+    RendererState* renderer;
+    ShaderState* shader;
+    ShaderProgramState* shaderProgram;
+    TextureState* texture;
 };
 
 }}
