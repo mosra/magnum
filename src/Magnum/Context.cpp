@@ -295,22 +295,60 @@ Context::Context() {
     }
     #endif
 
-    /* Version */
-    #ifndef MAGNUM_TARGET_GLES2
+    /* Get version */
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
     glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
     glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
     #else
-    _majorVersion = 2;
-    _minorVersion = 0;
+
+    /* On GL 2.1 and ES 2.0 there is no GL_{MAJOR,MINOR}_VERSION, we have to
+       parse version string. On desktop GL we have no way to check version
+       without version (duh) so we work around that by checking for invalid
+       enum error. */
+    #ifndef MAGNUM_TARGET_GLES2
+    glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
+    auto error = Renderer::error();
+    if(error == Renderer::Error::NoError)
+        glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
+    else
     #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES2
+        CORRADE_ASSERT(error == Renderer::Error::InvalidEnum,
+            "Context: cannot retrieve OpenGL version:" << error, );
+        #endif
+
+        const std::string version = versionString();
+        #ifndef MAGNUM_TARGET_GLES
+        if(version.find("OpenGL 2.1") != std::string::npos)
+        #else
+        if(version.find("OpenGL ES 2.0") != std::string::npos)
+        #endif
+        {
+            _majorVersion = 2;
+            #ifndef MAGNUM_TARGET_GLES
+            _minorVersion = 1;
+            #else
+            _minorVersion = 0;
+            #endif
+        } else {
+            Error() << "Context: unsupported version string:" << version;
+            std::exit(1);
+        }
+    }
+    #endif
+
+    /* Compose the version enum */
     _version = Magnum::version(_majorVersion, _minorVersion);
 
+    /* Check that version retrieval went right */
     #ifndef CORRADE_NO_ASSERT
-    const auto error = Renderer::error();
+    error = Renderer::error();
     CORRADE_ASSERT(error == Renderer::Error::NoError,
         "Context: cannot retrieve OpenGL version:" << error, );
     #endif
 
+    /* Check that the version is supported (now it probably is, but be sure) */
     #ifndef MAGNUM_TARGET_GLES
     if(!isVersionSupported(Version::GL210))
     #elif defined(MAGNUM_TARGET_GLES2)
