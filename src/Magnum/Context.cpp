@@ -305,8 +305,11 @@ Context::Context() {
     #endif
     _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
 
-    CORRADE_ASSERT(Renderer::error() == Renderer::Error::NoError,
-        "Context: cannot retrieve OpenGL version", );
+    #ifndef CORRADE_NO_ASSERT
+    const auto error = Renderer::error();
+    CORRADE_ASSERT(error == Renderer::Error::NoError,
+        "Context: cannot retrieve OpenGL version:" << error, );
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(isVersionSupported(Version::GL210), "Context: unsupported OpenGL version" << Int(_version), );
