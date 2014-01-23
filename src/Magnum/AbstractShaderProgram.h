@@ -39,6 +39,7 @@ namespace Magnum {
 
 namespace Implementation {
     template<class> struct Attribute;
+    class ShaderProgramState;
 }
 
 /**
@@ -322,7 +323,7 @@ comes in handy.
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
-    friend class Context;
+    friend class Implementation::ShaderProgramState;
 
     public:
         template<UnsignedInt, class> class Attribute;
@@ -718,44 +719,16 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @ref setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
          *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */
-        void setUniform(Int location, UnsignedInt count, const Float* values) {
-            (this->*uniform1fvImplementation)(location, count, values);
-        }
+        void setUniform(Int location, UnsignedInt count, const Float* values);
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Float>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Float>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Float>* values); /**< @overload */
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Float>* values) {
-            (this->*uniform2fvImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Float>* values) {
-            (this->*uniform3fvImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Float>* values) {
-            (this->*uniform4fvImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Int* values) {
-            (this->*uniform1ivImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Int>* values) {
-            (this->*uniform2ivImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Int>* values) {
-            (this->*uniform3ivImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Int>* values) {
-            (this->*uniform4ivImplementation)(location, count, values);
-        }
+        void setUniform(Int location, UnsignedInt count, const Int* values);
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Int>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Int>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Int>* values); /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -763,36 +736,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
-        void setUniform(Int location, UnsignedInt count, const UnsignedInt* values) {
-            (this->*uniform1uivImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
-         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, UnsignedInt>* values) {
-            (this->*uniform2uivImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
-         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, UnsignedInt>* values) {
-            (this->*uniform3uivImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
-         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, UnsignedInt>* values) {
-            (this->*uniform4uivImplementation)(location, count, values);
-        }
+        void setUniform(Int location, UnsignedInt count, const UnsignedInt* values);
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, UnsignedInt>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, UnsignedInt>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, UnsignedInt>* values); /**< @overload */
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -801,101 +748,28 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        void setUniform(Int location, UnsignedInt count, const Double* values) {
-            (this->*uniform1dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Double>* values) {
-            (this->*uniform2dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Double>* values) {
-            (this->*uniform3dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Double>* values) {
-            (this->*uniform4dvImplementation)(location, count, values);
-        }
+        void setUniform(Int location, UnsignedInt count, const Double* values);
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Double>* values); /**< @overload */
         #endif
 
         /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Float>* values) {
-            (this->*uniformMatrix2fvImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Float>* values) {
-            (this->*uniformMatrix3fvImplementation)(location, count, values);
-        }
-
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Float>* values) {
-            (this->*uniformMatrix4fvImplementation)(location, count, values);
-        }
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Float>* values);
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Float>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Float>* values); /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Float>* values) {
-            (this->*uniformMatrix2x3fvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Float>* values) {
-            (this->*uniformMatrix3x2fvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Float>* values) {
-            (this->*uniformMatrix2x4fvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Float>* values) {
-            (this->*uniformMatrix4x2fvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Float>* values) {
-            (this->*uniformMatrix3x4fvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Float>* values) {
-            (this->*uniformMatrix4x3fvImplementation)(location, count, values);
-        }
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Float>* values);
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Float>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Float>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Float>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Float>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Float>* values); /**< @overload */
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -904,106 +778,18 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values) {
-            (this->*uniformMatrix2dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Double>* values) {
-            (this->*uniformMatrix3dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Double>* values) {
-            (this->*uniformMatrix4dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Double>* values) {
-            (this->*uniformMatrix2x3dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Double>* values) {
-            (this->*uniformMatrix3x2dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Double>* values) {
-            (this->*uniformMatrix2x4dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Double>* values) {
-            (this->*uniformMatrix4x2dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Double>* values) {
-            (this->*uniformMatrix3x4dvImplementation)(location, count, values);
-        }
-
-        /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
-         */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Double>* values) {
-            (this->*uniformMatrix4x3dvImplementation)(location, count, values);
-        }
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values);
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Double>* values); /**< @overload */
+        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Double>* values); /**< @overload */
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
-        typedef void(AbstractShaderProgram::*Uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
-        typedef void(AbstractShaderProgram::*Uniform2fvImplementation)(GLint, GLsizei, const Math::Vector<2, GLfloat>*);
-        typedef void(AbstractShaderProgram::*Uniform3fvImplementation)(GLint, GLsizei, const Math::Vector<3, GLfloat>*);
-        typedef void(AbstractShaderProgram::*Uniform4fvImplementation)(GLint, GLsizei, const Math::Vector<4, GLfloat>*);
-        typedef void(AbstractShaderProgram::*Uniform1ivImplementation)(GLint, GLsizei, const GLint*);
-        typedef void(AbstractShaderProgram::*Uniform2ivImplementation)(GLint, GLsizei, const Math::Vector<2, GLint>*);
-        typedef void(AbstractShaderProgram::*Uniform3ivImplementation)(GLint, GLsizei, const Math::Vector<3, GLint>*);
-        typedef void(AbstractShaderProgram::*Uniform4ivImplementation)(GLint, GLsizei, const Math::Vector<4, GLint>*);
-        #ifndef MAGNUM_TARGET_GLES2
-        typedef void(AbstractShaderProgram::*Uniform1uivImplementation)(GLint, GLsizei, const GLuint*);
-        typedef void(AbstractShaderProgram::*Uniform2uivImplementation)(GLint, GLsizei, const Math::Vector<2, GLuint>*);
-        typedef void(AbstractShaderProgram::*Uniform3uivImplementation)(GLint, GLsizei, const Math::Vector<3, GLuint>*);
-        typedef void(AbstractShaderProgram::*Uniform4uivImplementation)(GLint, GLsizei, const Math::Vector<4, GLuint>*);
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        typedef void(AbstractShaderProgram::*Uniform1dvImplementation)(GLint, GLsizei, const GLdouble*);
-        typedef void(AbstractShaderProgram::*Uniform2dvImplementation)(GLint, GLsizei, const Math::Vector<2, GLdouble>*);
-        typedef void(AbstractShaderProgram::*Uniform3dvImplementation)(GLint, GLsizei, const Math::Vector<3, GLdouble>*);
-        typedef void(AbstractShaderProgram::*Uniform4dvImplementation)(GLint, GLsizei, const Math::Vector<4, GLdouble>*);
-        #endif
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const GLfloat* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
@@ -1040,49 +826,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
         #endif
-        static Uniform1fvImplementation uniform1fvImplementation;
-        static Uniform2fvImplementation uniform2fvImplementation;
-        static Uniform3fvImplementation uniform3fvImplementation;
-        static Uniform4fvImplementation uniform4fvImplementation;
-        static Uniform1ivImplementation uniform1ivImplementation;
-        static Uniform2ivImplementation uniform2ivImplementation;
-        static Uniform3ivImplementation uniform3ivImplementation;
-        static Uniform4ivImplementation uniform4ivImplementation;
-        #ifndef MAGNUM_TARGET_GLES2
-        static Uniform1uivImplementation uniform1uivImplementation;
-        static Uniform2uivImplementation uniform2uivImplementation;
-        static Uniform3uivImplementation uniform3uivImplementation;
-        static Uniform4uivImplementation uniform4uivImplementation;
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        static Uniform1dvImplementation uniform1dvImplementation;
-        static Uniform2dvImplementation uniform2dvImplementation;
-        static Uniform3dvImplementation uniform3dvImplementation;
-        static Uniform4dvImplementation uniform4dvImplementation;
-        #endif
 
-        typedef void(AbstractShaderProgram::*UniformMatrix2fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 2, GLfloat>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix3fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 3, GLfloat>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix4fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 4, GLfloat>*);
-        #ifndef MAGNUM_TARGET_GLES2
-        typedef void(AbstractShaderProgram::*UniformMatrix2x3fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 3, GLfloat>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix3x2fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 2, GLfloat>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix2x4fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 4, GLfloat>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix4x2fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 2, GLfloat>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix3x4fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 4, GLfloat>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix4x3fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 3, GLfloat>*);
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        typedef void(AbstractShaderProgram::*UniformMatrix2dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 2, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix3dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 3, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix4dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 4, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix2x3dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 3, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix3x2dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 2, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix2x4dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 4, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix4x2dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 2, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix3x4dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 4, GLdouble>*);
-        typedef void(AbstractShaderProgram::*UniformMatrix4x3dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 3, GLdouble>*);
-        #endif
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
@@ -1122,28 +866,6 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
-        #endif
-        static UniformMatrix2fvImplementation uniformMatrix2fvImplementation;
-        static UniformMatrix3fvImplementation uniformMatrix3fvImplementation;
-        static UniformMatrix4fvImplementation uniformMatrix4fvImplementation;
-        #ifndef MAGNUM_TARGET_GLES2
-        static UniformMatrix2x3fvImplementation uniformMatrix2x3fvImplementation;
-        static UniformMatrix3x2fvImplementation uniformMatrix3x2fvImplementation;
-        static UniformMatrix2x4fvImplementation uniformMatrix2x4fvImplementation;
-        static UniformMatrix4x2fvImplementation uniformMatrix4x2fvImplementation;
-        static UniformMatrix3x4fvImplementation uniformMatrix3x4fvImplementation;
-        static UniformMatrix4x3fvImplementation uniformMatrix4x3fvImplementation;
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        static UniformMatrix2dvImplementation uniformMatrix2dvImplementation;
-        static UniformMatrix3dvImplementation uniformMatrix3dvImplementation;
-        static UniformMatrix4dvImplementation uniformMatrix4dvImplementation;
-        static UniformMatrix2x3dvImplementation uniformMatrix2x3dvImplementation;
-        static UniformMatrix3x2dvImplementation uniformMatrix3x2dvImplementation;
-        static UniformMatrix2x4dvImplementation uniformMatrix2x4dvImplementation;
-        static UniformMatrix4x2dvImplementation uniformMatrix4x2dvImplementation;
-        static UniformMatrix3x4dvImplementation uniformMatrix3x4dvImplementation;
-        static UniformMatrix4x3dvImplementation uniformMatrix4x3dvImplementation;
         #endif
 
         GLuint _id;

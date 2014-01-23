@@ -57,7 +57,7 @@ State::State(Context& context) {
     mesh = new MeshState;
     renderer = new RendererState;
     shader = new ShaderState;
-    shaderProgram = new ShaderProgramState;
+    shaderProgram = new ShaderProgramState(context, extensions);
     texture = new TextureState(context, extensions);
 
     /* Sort the features and remove duplicates */

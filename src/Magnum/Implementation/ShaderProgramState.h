@@ -25,19 +25,60 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
+#include <vector>
+
+#include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 
 struct ShaderProgramState {
-    constexpr ShaderProgramState(): current(0), maxVertexAttributes(0)
-        #ifndef MAGNUM_TARGET_GLES
-        , maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxImageSamples(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0), maxShaderStorageBlockSize(0)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        , minTexelOffset(0), maxTexelOffset(0), maxUniformBlockSize(0)
-        #endif
-        {}
+    explicit ShaderProgramState(Context& context, std::vector<std::string>& extensions);
+
+    void(AbstractShaderProgram::*uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
+    void(AbstractShaderProgram::*uniform2fvImplementation)(GLint, GLsizei, const Math::Vector<2, GLfloat>*);
+    void(AbstractShaderProgram::*uniform3fvImplementation)(GLint, GLsizei, const Math::Vector<3, GLfloat>*);
+    void(AbstractShaderProgram::*uniform4fvImplementation)(GLint, GLsizei, const Math::Vector<4, GLfloat>*);
+    void(AbstractShaderProgram::*uniform1ivImplementation)(GLint, GLsizei, const GLint*);
+    void(AbstractShaderProgram::*uniform2ivImplementation)(GLint, GLsizei, const Math::Vector<2, GLint>*);
+    void(AbstractShaderProgram::*uniform3ivImplementation)(GLint, GLsizei, const Math::Vector<3, GLint>*);
+    void(AbstractShaderProgram::*uniform4ivImplementation)(GLint, GLsizei, const Math::Vector<4, GLint>*);
+    #ifndef MAGNUM_TARGET_GLES2
+    void(AbstractShaderProgram::*uniform1uivImplementation)(GLint, GLsizei, const GLuint*);
+    void(AbstractShaderProgram::*uniform2uivImplementation)(GLint, GLsizei, const Math::Vector<2, GLuint>*);
+    void(AbstractShaderProgram::*uniform3uivImplementation)(GLint, GLsizei, const Math::Vector<3, GLuint>*);
+    void(AbstractShaderProgram::*uniform4uivImplementation)(GLint, GLsizei, const Math::Vector<4, GLuint>*);
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void(AbstractShaderProgram::*uniform1dvImplementation)(GLint, GLsizei, const GLdouble*);
+    void(AbstractShaderProgram::*uniform2dvImplementation)(GLint, GLsizei, const Math::Vector<2, GLdouble>*);
+    void(AbstractShaderProgram::*uniform3dvImplementation)(GLint, GLsizei, const Math::Vector<3, GLdouble>*);
+    void(AbstractShaderProgram::*uniform4dvImplementation)(GLint, GLsizei, const Math::Vector<4, GLdouble>*);
+    #endif
+
+    void(AbstractShaderProgram::*uniformMatrix2fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 2, GLfloat>*);
+    void(AbstractShaderProgram::*uniformMatrix3fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 3, GLfloat>*);
+    void(AbstractShaderProgram::*uniformMatrix4fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 4, GLfloat>*);
+    #ifndef MAGNUM_TARGET_GLES2
+    void(AbstractShaderProgram::*uniformMatrix2x3fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 3, GLfloat>*);
+    void(AbstractShaderProgram::*uniformMatrix3x2fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 2, GLfloat>*);
+    void(AbstractShaderProgram::*uniformMatrix2x4fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 4, GLfloat>*);
+    void(AbstractShaderProgram::*uniformMatrix4x2fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 2, GLfloat>*);
+    void(AbstractShaderProgram::*uniformMatrix3x4fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 4, GLfloat>*);
+    void(AbstractShaderProgram::*uniformMatrix4x3fvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 3, GLfloat>*);
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void(AbstractShaderProgram::*uniformMatrix2dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 2, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix3dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 3, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix4dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 4, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix2x3dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 3, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix3x2dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 2, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix2x4dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<2, 4, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix4x2dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 2, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix3x4dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<3, 4, GLdouble>*);
+    void(AbstractShaderProgram::*uniformMatrix4x3dvImplementation)(GLint, GLsizei, const Math::RectangularMatrix<4, 3, GLdouble>*);
+    #endif
 
     /* Currently used program */
     GLuint current;
