@@ -8,7 +8,7 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal')
 makedepends=('cmake' 'ninja')
-options=(!strip)
+options=('!strip' 'staticlibs')
 provides=('magnum-git')
 
 build() {

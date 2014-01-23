@@ -1,6 +1,6 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-git
-pkgver=20130819
+pkgver=20140123
 pkgrel=1
 pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Git version)"
 arch=('i686' 'x86_64')
@@ -10,6 +10,7 @@ depends=('corrade-git' 'openal' 'freeglut')
 makedepends=('cmake' 'git')
 provides=('magnum')
 conflicts=('magnum')
+options=('staticlibs')
 
 _gitroot="git://github.com/mosra/magnum.git"
 _gitname="magnum"
