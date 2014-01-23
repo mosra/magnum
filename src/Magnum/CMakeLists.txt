@@ -55,6 +55,7 @@ set(Magnum_SRCS
     Implementation/BufferState.cpp
     Implementation/DebugState.cpp
     Implementation/FramebufferState.cpp
+    Implementation/MeshState.cpp
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp

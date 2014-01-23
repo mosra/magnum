@@ -449,7 +449,6 @@ Context::Context() {
 
     /* Initialize functionality based on current OpenGL version and extensions */
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
-    Mesh::initializeContextBasedFunctionality(*this);
     Renderer::initializeContextBasedFunctionality(*this);
 }
 

@@ -38,19 +38,6 @@
 
 namespace Magnum {
 
-Mesh::CreateImplementation Mesh::createImplementation = &Mesh::createImplementationDefault;
-Mesh::DestroyImplementation Mesh::destroyImplementation = &Mesh::destroyImplementationDefault;
-Mesh::AttributePointerImplementation Mesh::attributePointerImplementation = &Mesh::attributePointerImplementationDefault;
-#ifndef MAGNUM_TARGET_GLES2
-Mesh::AttributeIPointerImplementation Mesh::attributeIPointerImplementation = &Mesh::attributePointerImplementationDefault;
-#ifndef MAGNUM_TARGET_GLES
-Mesh::AttributeLPointerImplementation Mesh::attributeLPointerImplementation = &Mesh::attributePointerImplementationDefault;
-#endif
-#endif
-Mesh::BindIndexBufferImplementation Mesh::bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
-Mesh::BindImplementation Mesh::bindImplementation = &Mesh::bindImplementationDefault;
-Mesh::UnbindImplementation Mesh::unbindImplementation = &Mesh::unbindImplementationDefault;
-
 Int Mesh::maxVertexAttributes() { return AbstractShaderProgram::maxVertexAttributes(); }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -91,7 +78,7 @@ Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _vertexCount(0), _in
     #endif
     , _indexOffset(0), _indexType(IndexType::UnsignedInt), _indexBuffer(nullptr)
 {
-    (this->*createImplementation)();
+    (this->*Context::current()->state().mesh->createImplementation)();
 }
 
 Mesh::~Mesh() {
@@ -102,7 +89,7 @@ Mesh::~Mesh() {
     GLuint& current = Context::current()->state().mesh->currentVAO;
     if(current == _id) current = 0;
 
-    (this->*destroyImplementation)();
+    (this->*Context::current()->state().mesh->destroyImplementation)();
 }
 
 Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _vertexCount(other._vertexCount), _indexCount(other._indexCount)
@@ -175,7 +162,7 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
     static_cast<void>(start);
     static_cast<void>(end);
     #endif
-    (this->*bindIndexBufferImplementation)(buffer);
+    (this->*Context::current()->state().mesh->bindIndexBufferImplementation)(buffer);
     return *this;
 }
 
@@ -188,7 +175,7 @@ void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, 
     /* Nothing to draw */
     if(!vertexCount && !indexCount) return;
 
-    (this->*bindImplementation)();
+    (this->*Context::current()->state().mesh->bindImplementation)();
 
     /* Non-indexed mesh */
     if(!indexCount)
@@ -204,7 +191,7 @@ void Mesh::drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, 
     else
         glDrawElements(GLenum(_primitive), indexCount, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
 
-    (this->*unbindImplementation)();
+    (this->*Context::current()->state().mesh->unbindImplementation)();
 }
 
 void Mesh::bindVAO(GLuint vao) {
@@ -219,6 +206,22 @@ void Mesh::bindVAO(GLuint vao) {
         #endif
     }
 }
+
+void Mesh::attributePointerInternal(const Attribute& attribute) {
+    (this->*Context::current()->state().mesh->attributePointerImplementation)(attribute);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void Mesh::attributePointerInternal(const IntegerAttribute& attribute) {
+    (this->*Context::current()->state().mesh->attributeIPointerImplementation)(attribute);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::attributePointerInternal(const LongAttribute& attribute) {
+    (this->*Context::current()->state().mesh->attributeLPointerImplementation)(attribute);
+}
+#endif
+#endif
 
 void Mesh::vertexAttribPointer(const Attribute& attribute) {
     glEnableVertexAttribArray(attribute.location);
@@ -241,50 +244,6 @@ void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
 }
 #endif
 #endif
-
-void Mesh::initializeContextBasedFunctionality(Context& context) {
-    /** @todo Enable when some extension wrangler is available in ES 2.0 */
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
-    #elif defined(MAGNUM_TARGET_GLES2)
-    if(context.isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
-    #else
-    static_cast<void>(context);
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES
-        Debug() << "Mesh: using" << Extensions::GL::APPLE::vertex_array_object::string() << "features";
-        #elif defined(MAGNUM_TARGET_GLES2)
-        Debug() << "Mesh: using" << Extensions::GL::OES::vertex_array_object::string() << "features";
-        #endif
-
-        createImplementation = &Mesh::createImplementationVAO;
-        destroyImplementation = &Mesh::destroyImplementationVAO;
-
-        #ifndef MAGNUM_TARGET_GLES
-        if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-            Debug() << "Mesh: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
-
-            attributePointerImplementation = &Mesh::attributePointerImplementationDSA;
-            attributeIPointerImplementation = &Mesh::attributePointerImplementationDSA;
-            attributeLPointerImplementation = &Mesh::attributePointerImplementationDSA;
-        } else
-        #endif
-        {
-            attributePointerImplementation = &Mesh::attributePointerImplementationVAO;
-            #ifndef MAGNUM_TARGET_GLES2
-            attributeIPointerImplementation = &Mesh::attributePointerImplementationVAO;
-            #ifndef MAGNUM_TARGET_GLES
-            attributeLPointerImplementation = &Mesh::attributePointerImplementationVAO;
-            #endif
-            #endif
-        }
-
-        bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
-        bindImplementation = &Mesh::bindImplementationVAO;
-        unbindImplementation = &Mesh::unbindImplementationVAO;
-    }
-}
 
 void Mesh::createImplementationDefault() { _id = 0; }
 

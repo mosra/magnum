@@ -25,16 +25,28 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Magnum.h"
+#include <vector>
+#include <string>
+
+#include "Magnum/Mesh.h"
 
 namespace Magnum { namespace Implementation {
 
 struct MeshState {
-    constexpr MeshState(): currentVAO(0)
-        #ifndef MAGNUM_TARGET_GLES2
-        , maxElementsIndices(0), maxElementsVertices(0)
-        #endif
-        {}
+    explicit MeshState(Context& context, std::vector<std::string>& extensions);
+
+    void(Mesh::*createImplementation)();
+    void(Mesh::*destroyImplementation)();
+    void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
+    #ifndef MAGNUM_TARGET_GLES2
+    void(Mesh::*attributeIPointerImplementation)(const Mesh::IntegerAttribute&);
+    #ifndef MAGNUM_TARGET_GLES
+    void(Mesh::*attributeLPointerImplementation)(const Mesh::LongAttribute&);
+    #endif
+    #endif
+    void(Mesh::*bindIndexBufferImplementation)(Buffer&);
+    void(Mesh::*bindImplementation)();
+    void(Mesh::*unbindImplementation)();
 
     GLuint currentVAO;
     #ifndef MAGNUM_TARGET_GLES2
