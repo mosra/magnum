@@ -155,7 +155,7 @@ OpenGL function                        | Matching API
 @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness} | @ref Renderer::graphicsResetStatus()
 @fn_gl{GetInternalformat}              | |
 @fn_gl{GetMultisample}                 | |
-@fn_gl{GetObjectLabel}, \n @fn_gl{GetObjectPtrLabel} | not queryable, @ref AbstractShaderProgram::setLabel(), \n @ref AbstractQuery::setLabel(), \n @ref AbstractTexture::setLabel(), \n @ref Buffer::setLabel(), \n @ref Framebuffer::setLabel(), \n @ref Mesh::setLabel(), \n @ref Renderbuffer::setLabel() and \n @ref Shader::setLabel() setters only
+@fn_gl{GetObjectLabel}, \n @fn_gl{GetObjectPtrLabel} | @ref AbstractShaderProgram::label(), \n @ref AbstractQuery::label(), \n @ref AbstractTexture::label(), \n @ref Buffer::label(), \n @ref Framebuffer::label(), \n @ref Mesh::label(), \n @ref Renderbuffer::label(), \n @ref Shader::label()
 @fn_gl{GetProgram}, \n @fn_gl{GetProgramInfoLog} | @ref AbstractShaderProgram::link(), \n @ref AbstractShaderProgram::validate()
 @fn_gl{GetProgramBinary}               | |
 @fn_gl{GetProgramInterface}            | |
