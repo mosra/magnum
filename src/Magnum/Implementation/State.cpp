@@ -58,7 +58,7 @@ State::State(Context& context) {
     renderer = new RendererState;
     shader = new ShaderState;
     shaderProgram = new ShaderProgramState;
-    texture = new TextureState;
+    texture = new TextureState(context, extensions);
 
     /* Sort the features and remove duplicates */
     std::sort(extensions.begin(), extensions.end());

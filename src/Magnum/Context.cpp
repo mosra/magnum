@@ -449,11 +449,7 @@ Context::Context() {
 
     /* Initialize functionality based on current OpenGL version and extensions */
     AbstractShaderProgram::initializeContextBasedFunctionality(*this);
-    AbstractTexture::initializeContextBasedFunctionality(*this);
     Buffer::initializeContextBasedFunctionality(*this);
-    #ifndef MAGNUM_TARGET_GLES
-    BufferTexture::initializeContextBasedFunctionality(*this);
-    #endif
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
     Mesh::initializeContextBasedFunctionality(*this);
     Renderer::initializeContextBasedFunctionality(*this);

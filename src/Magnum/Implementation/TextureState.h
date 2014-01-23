@@ -25,16 +25,50 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
 #include <vector>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 
 struct TextureState {
-    explicit TextureState();
+    explicit TextureState(Context& context, std::vector<std::string>& extensions);
     ~TextureState();
 
+    void(AbstractTexture::*bindImplementation)(GLint);
+    void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
+    void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);
+    void(AbstractTexture::*parameterfvImplementation)(GLenum, const GLfloat*);
+    void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
+    void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
+    void(AbstractTexture::*mipmapImplementation)();
+    #ifndef MAGNUM_TARGET_GLES
+    void(AbstractTexture::*storage1DImplementation)(GLenum, GLsizei, TextureFormat, const Math::Vector<1, GLsizei>&);
+    #endif
+    void(AbstractTexture::*storage2DImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&);
+    void(AbstractTexture::*storage3DImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&);
+    #ifndef MAGNUM_TARGET_GLES
+    void(AbstractTexture::*getImageImplementation)(GLenum, GLint, ColorFormat, ColorType, std::size_t, GLvoid*);
+    void(AbstractTexture::*image1DImplementation)(GLenum, GLint, TextureFormat, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
+    #endif
+    void(AbstractTexture::*image2DImplementation)(GLenum, GLint, TextureFormat, const Vector2i&, ColorFormat, ColorType, const GLvoid*);
+    void(AbstractTexture::*image3DImplementation)(GLenum, GLint, TextureFormat, const Vector3i&, ColorFormat, ColorType, const GLvoid*);
+    #ifndef MAGNUM_TARGET_GLES
+    void(AbstractTexture::*subImage1DImplementation)(GLenum, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
+    #endif
+    void(AbstractTexture::*subImage2DImplementation)(GLenum, GLint, const Vector2i&, const Vector2i&, ColorFormat, ColorType, const GLvoid*);
+    void(AbstractTexture::*subImage3DImplementation)(GLenum, GLint, const Vector3i&, const Vector3i&, ColorFormat, ColorType, const GLvoid*);
+    void(AbstractTexture::*invalidateImageImplementation)(GLint);
+    void(AbstractTexture::*invalidateSubImageImplementation)(GLint, const Vector3i&, const Vector3i&);
+
+    #ifndef MAGNUM_TARGET_GLES
+    void(BufferTexture::*setBufferImplementation)(BufferTextureFormat, Buffer&);
+    void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
+    #endif
+
+    GLint maxLayers;
     GLfloat maxMaxAnisotropy;
     GLint currentLayer;
     #ifndef MAGNUM_TARGET_GLES
