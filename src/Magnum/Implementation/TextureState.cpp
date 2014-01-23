@@ -114,13 +114,16 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #endif
 
     /* Texture storage implementation */
-    #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::texture_storage>())
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(context.isExtensionSupported<Extensions::GL::EXT::texture_storage>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         extensions.push_back(Extensions::GL::ARB::texture_storage::string());
+        #elif defined(MAGNUM_TARGET_GLES2)
+        extensions.push_back(Extensions::GL::EXT::texture_storage::string());
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -138,12 +141,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
             storage3DImplementation = &AbstractTexture::storageImplementationDefault;
         }
     }
-    #endif
     #ifndef MAGNUM_TARGET_GLES3
-    #ifndef MAGNUM_TARGET_GLES
-    else
-    #endif
-    {
+    else {
         #ifndef MAGNUM_TARGET_GLES
         storage1DImplementation = &AbstractTexture::storageImplementationFallback;
         #endif
