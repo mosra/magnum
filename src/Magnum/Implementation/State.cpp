@@ -51,7 +51,7 @@ State::State(Context& context) {
     extensions.reserve(8);
     #endif
 
-    buffer = new BufferState;
+    buffer = new BufferState(context, extensions);
     debug = new DebugState(context, extensions);
     framebuffer = new FramebufferState(context, extensions);
     mesh = new MeshState;

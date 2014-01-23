@@ -36,49 +36,6 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES2
-Buffer::CopyImplementation Buffer::copyImplementation = &Buffer::copyImplementationDefault;
-#endif
-Buffer::GetParameterImplementation Buffer::getParameterImplementation = &Buffer::getParameterImplementationDefault;
-#ifndef MAGNUM_TARGET_GLES
-Buffer::GetSubDataImplementation Buffer::getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
-#endif
-Buffer::DataImplementation Buffer::dataImplementation = &Buffer::dataImplementationDefault;
-Buffer::SubDataImplementation Buffer::subDataImplementation = &Buffer::subDataImplementationDefault;
-Buffer::InvalidateImplementation Buffer::invalidateImplementation = &Buffer::invalidateImplementationNoOp;
-Buffer::InvalidateSubImplementation Buffer::invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
-Buffer::MapImplementation Buffer::mapImplementation = &Buffer::mapImplementationDefault;
-Buffer::MapRangeImplementation Buffer::mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
-Buffer::FlushMappedRangeImplementation Buffer::flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
-Buffer::UnmapImplementation Buffer::unmapImplementation = &Buffer::unmapImplementationDefault;
-
-void Buffer::initializeContextBasedFunctionality(Context& context) {
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        Debug() << "Buffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
-
-        copyImplementation = &Buffer::copyImplementationDSA;
-        getParameterImplementation = &Buffer::getParameterImplementationDSA;
-        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
-        dataImplementation = &Buffer::dataImplementationDSA;
-        subDataImplementation = &Buffer::subDataImplementationDSA;
-        mapImplementation = &Buffer::mapImplementationDSA;
-        mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
-        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
-        unmapImplementation = &Buffer::unmapImplementationDSA;
-    }
-
-    if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
-        Debug() << "Buffer: using" << Extensions::GL::ARB::invalidate_subdata::string() << "features";
-
-        invalidateImplementation = &Buffer::invalidateImplementationARB;
-        invalidateSubImplementation = &Buffer::invalidateSubImplementationARB;
-    }
-    #else
-    static_cast<void>(context);
-    #endif
-}
-
 #ifndef MAGNUM_TARGET_GLES
 Int Buffer::minMapAlignment() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>())
@@ -142,6 +99,12 @@ Int Buffer::maxUniformBindings() {
         glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &value);
 
     return value;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const GLintptr writeOffset, const GLsizeiptr size) {
+    Context::current()->state().buffer->copyImplementation(read, write, readOffset, writeOffset, size);
 }
 #endif
 
@@ -218,8 +181,34 @@ Int Buffer::size() {
      *      couldn't find any matching extension, though)
      */
     GLint size;
-    (this->*getParameterImplementation)(GL_BUFFER_SIZE, &size);
+    (this->*Context::current()->state().buffer->getParameterImplementation)(GL_BUFFER_SIZE, &size);
     return size;
+}
+
+Buffer& Buffer::setData(const Containers::ArrayReference<const void> data, const BufferUsage usage) {
+    (this->*Context::current()->state().buffer->dataImplementation)(data.size(), data, usage);
+    return *this;
+}
+
+Buffer& Buffer::setSubData(const GLintptr offset, const Containers::ArrayReference<const void> data) {
+    (this->*Context::current()->state().buffer->subDataImplementation)(offset, data.size(), data);
+    return *this;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+Buffer& Buffer::invalidateData() {
+    (this->*Context::current()->state().buffer->invalidateImplementation)();
+    return *this;
+}
+
+Buffer& Buffer::invalidateSubData(const GLintptr offset, const GLsizeiptr length) {
+    (this->*Context::current()->state().buffer->invalidateSubImplementation)(offset, length);
+    return *this;
+}
+#endif
+
+void* Buffer::map(const MapAccess access) {
+    return (this->*Context::current()->state().buffer->mapImplementation)(access);
 }
 
 #ifdef MAGNUM_TARGET_GLES2
@@ -235,7 +224,20 @@ void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAc
     static_cast<void>(access);
     #endif
 }
+#endif
 
+void* Buffer::map(const GLintptr offset, const GLsizeiptr length, const MapFlags flags) {
+    return (this->*Context::current()->state().buffer->mapRangeImplementation)(offset, length, flags);
+}
+
+Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length) {
+    (this->*Context::current()->state().buffer->flushMappedRangeImplementation)(offset, length);
+    return *this;
+}
+
+bool Buffer::unmap() { return (this->*Context::current()->state().buffer->unmapImplementation)(); }
+
+#ifdef MAGNUM_TARGET_GLES2
 void Buffer::unmapSub() {
     /** @todo Enable also in Emscripten (?) when extension loader is available */
     #ifdef CORRADE_TARGET_NACL
@@ -245,6 +247,12 @@ void Buffer::unmapSub() {
     #else
     CORRADE_INTERNAL_ASSERT(false);
     #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data) {
+    (this->*Context::current()->state().buffer->getSubDataImplementation)(offset, size, data);
 }
 #endif
 

@@ -27,6 +27,9 @@
 
 #include <Corrade/Utility/Assert.h>
 
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
 namespace Magnum { namespace Implementation {
 
 const Buffer::Target BufferState::targetForIndex[] = {
@@ -73,6 +76,64 @@ std::size_t BufferState::indexForTarget(Buffer::Target target) {
     }
 
     CORRADE_ASSERT_UNREACHABLE();
+}
+
+BufferState::BufferState(Context& context, std::vector<std::string>& extensions): bindings()
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    , minMapAlignment(0), maxAtomicCounterBindings(0), maxShaderStorageBindings(0), shaderStorageOffsetAlignment(0)
+    #endif
+    , maxUniformBindings(0)
+    #endif
+{
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
+
+        copyImplementation = &Buffer::copyImplementationDSA;
+        getParameterImplementation = &Buffer::getParameterImplementationDSA;
+        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
+        dataImplementation = &Buffer::dataImplementationDSA;
+        subDataImplementation = &Buffer::subDataImplementationDSA;
+        mapImplementation = &Buffer::mapImplementationDSA;
+        mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
+        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
+        unmapImplementation = &Buffer::unmapImplementationDSA;
+    } else
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES2
+        copyImplementation = &Buffer::copyImplementationDefault;
+        #endif
+        getParameterImplementation = &Buffer::getParameterImplementationDefault;
+        #ifndef MAGNUM_TARGET_GLES
+        getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
+        #endif
+        dataImplementation = &Buffer::dataImplementationDefault;
+        subDataImplementation = &Buffer::subDataImplementationDefault;
+        mapImplementation = &Buffer::mapImplementationDefault;
+        mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
+        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
+        unmapImplementation = &Buffer::unmapImplementationDefault;
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
+        extensions.push_back(Extensions::GL::ARB::invalidate_subdata::string());
+
+        invalidateImplementation = &Buffer::invalidateImplementationARB;
+        invalidateSubImplementation = &Buffer::invalidateSubImplementationARB;
+    } else
+    #endif
+    {
+        invalidateImplementation = &Buffer::invalidateImplementationNoOp;
+        invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
+    }
+
+    #ifdef MAGNUM_TARGET_GLES
+    static_cast<void>(context);
+    static_cast<void>(extensions);
+    #endif
 }
 
 }}
