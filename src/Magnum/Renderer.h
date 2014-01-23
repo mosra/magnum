@@ -37,6 +37,8 @@
 
 namespace Magnum {
 
+namespace Implementation { struct RendererState; }
+
 /** @nosubgrouping
 @brief Global renderer configuration.
 
@@ -46,6 +48,7 @@ namespace Magnum {
 @todo `GL_MAX_CLIP_DISTANCES`...
 */
 class MAGNUM_EXPORT Renderer {
+    friend class Implementation::RendererState;
     friend class Context;
 
     public:
@@ -287,9 +290,7 @@ class MAGNUM_EXPORT Renderer {
          * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
          * is not available, this function behaves exactly as setClearDepth(Double).
          */
-        static void setClearDepth(Float depth) {
-            clearDepthfImplementation(depth);
-        }
+        static void setClearDepth(Float depth);
 
         /**
          * @brief Set clear stencil
@@ -1037,26 +1038,20 @@ class MAGNUM_EXPORT Renderer {
          * is not available, this function always returns @ref GraphicsResetStatus::NoError.
          * @see @ref resetNotificationStrategy(), @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
          */
-        static GraphicsResetStatus graphicsResetStatus() {
-            return graphicsResetStatusImplementation();
-        }
+        static GraphicsResetStatus graphicsResetStatus();
 
         /*@}*/
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality();
 
-        typedef void(*ClearDepthfImplementation)(GLfloat);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL clearDepthfImplementationDefault(GLfloat depth);
         #endif
         static void MAGNUM_LOCAL clearDepthfImplementationES(GLfloat depth);
-        static ClearDepthfImplementation clearDepthfImplementation;
 
-        typedef GraphicsResetStatus(*GraphicsResetStatusImplementation)();
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationDefault();
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationRobustness();
-        static GraphicsResetStatusImplementation graphicsResetStatusImplementation;
 };
 
 /** @debugoperator{Renderer} */

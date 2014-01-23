@@ -28,19 +28,11 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/Color.h"
 #include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
 
 #include "Implementation/State.h"
 #include "Implementation/RendererState.h"
 
 namespace Magnum {
-
-#ifndef MAGNUM_TARGET_GLES
-Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
-#else
-Renderer::ClearDepthfImplementation Renderer::clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
-#endif
-Renderer::GraphicsResetStatusImplementation Renderer::graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationDefault;
 
 void Renderer::setFeature(const Feature feature, const bool enabled) {
     enabled ? glEnable(GLenum(feature)) : glDisable(GLenum(feature));
@@ -59,6 +51,10 @@ void Renderer::setClearDepth(const Double depth) {
     glClearDepth(depth);
 }
 #endif
+
+void Renderer::setClearDepth(Float depth) {
+    Context::current()->state().renderer->clearDepthfImplementation(depth);
+}
 
 void Renderer::setClearStencil(const Int stencil) {
     glClearStencil(stencil);
@@ -176,30 +172,11 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
     return strategy;
 }
 
-void Renderer::initializeContextBasedFunctionality(Context& context) {
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>()) {
-        Debug() << "Renderer: using" << Extensions::GL::ARB::ES2_compatibility::string() << "features";
+Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
+    return Context::current()->state().renderer->graphicsResetStatusImplementation();
+}
 
-        clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
-    }
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
-    #else
-    if(context.isExtensionSupported<Extensions::GL::EXT::robustness>())
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES
-        Debug() << "Renderer: using" << Extensions::GL::ARB::robustness::string() << "features";
-        #else
-        Debug() << "Renderer: using" << Extensions::GL::EXT::robustness::string() << "features";
-        #endif
-
-        graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationRobustness;
-    }
-
+void Renderer::initializeContextBasedFunctionality() {
     /* Set some "corporate identity" */
     setClearColor(Color3(0.125f));
 }

@@ -448,8 +448,9 @@ Context::Context() {
     _state = new Implementation::State(*this);
 
     /* Initialize functionality based on current OpenGL version and extensions */
+    /** @todo Get rid of these */
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
-    Renderer::initializeContextBasedFunctionality(*this);
+    Renderer::initializeContextBasedFunctionality();
 }
 
 Context::~Context() {
