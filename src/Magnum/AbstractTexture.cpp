@@ -907,7 +907,7 @@ void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vec
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLint level, Image<dimensions>& image) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, target, level);
-    const std::size_t dataSize = size.product()*image.pixelSize();
+    const std::size_t dataSize = image.dataSize(size);
     char* data = new char[dataSize];
     (this->*Context::current()->state().texture->getImageImplementation)(target, level, image.format(), image.type(), dataSize, data);
     image.setData(image.format(), image.type(), size, data);
@@ -919,7 +919,7 @@ template void MAGNUM_EXPORT AbstractTexture::image<3>(GLenum, GLint, Image<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::image(GLenum target, GLint level, BufferImage<dimensions>& image, BufferUsage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, target, level);
-    const std::size_t dataSize = size.product()*image.pixelSize();
+    const std::size_t dataSize = image.dataSize(size);
     if(image.size() != size)
         image.setData(image.format(), image.type(), size, nullptr, usage);
 
