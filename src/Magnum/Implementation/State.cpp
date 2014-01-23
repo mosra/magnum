@@ -53,7 +53,7 @@ State::State(Context& context) {
 
     buffer = new BufferState;
     debug = new DebugState(context, extensions);
-    framebuffer = new FramebufferState;
+    framebuffer = new FramebufferState(context, extensions);
     mesh = new MeshState;
     renderer = new RendererState;
     shader = new ShaderState;

@@ -316,9 +316,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
          */
-        Status checkStatus(FramebufferTarget target) {
-            return Status((this->*checkStatusImplementation)(target));
-        }
+        Status checkStatus(FramebufferTarget target);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -362,10 +360,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
-        DefaultFramebuffer& mapForDraw(DrawAttachment attachment) {
-            (this->*drawBufferImplementation)(GLenum(attachment));
-            return *this;
-        }
+        DefaultFramebuffer& mapForDraw(DrawAttachment attachment);
         #endif
 
         /**
@@ -380,10 +375,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          */
-        DefaultFramebuffer& mapForRead(ReadAttachment attachment) {
-            (this->*readBufferImplementation)(GLenum(attachment));
-            return *this;
-        }
+        DefaultFramebuffer& mapForRead(ReadAttachment attachment);
 
         /**
          * @brief Invalidate framebuffer

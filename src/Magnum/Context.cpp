@@ -448,7 +448,6 @@ Context::Context() {
     _state = new Implementation::State(*this);
 
     /* Initialize functionality based on current OpenGL version and extensions */
-    AbstractFramebuffer::initializeContextBasedFunctionality(*this);
     AbstractShaderProgram::initializeContextBasedFunctionality(*this);
     AbstractTexture::initializeContextBasedFunctionality(*this);
     Buffer::initializeContextBasedFunctionality(*this);
@@ -456,9 +455,7 @@ Context::Context() {
     BufferTexture::initializeContextBasedFunctionality(*this);
     #endif
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
-    Framebuffer::initializeContextBasedFunctionality(*this);
     Mesh::initializeContextBasedFunctionality(*this);
-    Renderbuffer::initializeContextBasedFunctionality(*this);
     Renderer::initializeContextBasedFunctionality(*this);
 }
 

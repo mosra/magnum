@@ -25,18 +25,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
-#include "Magnum/Math/Range.h"
+#include <string>
+#include <vector>
+
+#include "Magnum/Framebuffer.h"
 
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    constexpr FramebufferState(): readBinding(0), drawBinding(0), renderbufferBinding(0), maxDrawBuffers(0), maxColorAttachments(0), maxRenderbufferSize(0), maxSamples(0)
-        #ifndef MAGNUM_TARGET_GLES
-        , maxDualSourceDrawBuffers(0)
-        #endif
-        {}
+    explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
+
+    GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
+    void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
+    void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);
+    void(AbstractFramebuffer::*readBufferImplementation)(GLenum);
+
+    void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, Renderbuffer&);
+    #ifndef MAGNUM_TARGET_GLES
+    void(Framebuffer::*texture1DImplementation)(Framebuffer::BufferAttachment, Texture1D&, GLint);
+    #endif
+    void(Framebuffer::*texture2DImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
+    void(Framebuffer::*texture3DImplementation)(Framebuffer::BufferAttachment, Texture3D&, GLint, GLint);
+
+    void(Renderbuffer::*renderbufferStorageImplementation)(RenderbufferFormat, const Vector2i&);
+    void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
+
+    void(*readImplementation)(const Vector2i&, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
+
+    FramebufferTarget readTarget, drawTarget;
 
     GLuint readBinding, drawBinding, renderbufferBinding;
     GLint maxDrawBuffers, maxColorAttachments, maxRenderbufferSize, maxSamples;

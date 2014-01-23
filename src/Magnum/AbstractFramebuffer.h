@@ -127,6 +127,8 @@ enum class FramebufferTarget: GLenum {
     ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
 };
 
+namespace Implementation { struct FramebufferState; }
+
 /**
 @brief Base for default and named framebuffers
 
@@ -145,7 +147,7 @@ protected from buffer overflow.
 @todo @extension{ARB,viewport_array} (and `GL_MAX_VIEWPORTS`)
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
-    friend class Context;
+    friend class Implementation::FramebufferState;
 
     public:
         /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@extension{ARB,ES2_compatibility}). */
@@ -311,23 +313,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         FramebufferTarget MAGNUM_LOCAL bindInternal();
         void MAGNUM_LOCAL setViewportInternal();
 
-        #ifdef MAGNUM_TARGET_GLES2
-        static MAGNUM_LOCAL FramebufferTarget readTarget;
-        static MAGNUM_LOCAL FramebufferTarget drawTarget;
-        #endif
-
-        typedef GLenum(AbstractFramebuffer::*CheckStatusImplementation)(FramebufferTarget);
-        static CheckStatusImplementation checkStatusImplementation;
-
-        typedef void(AbstractFramebuffer::*DrawBuffersImplementation)(GLsizei, const GLenum*);
-        static MAGNUM_LOCAL DrawBuffersImplementation drawBuffersImplementation;
-
-        typedef void(AbstractFramebuffer::*DrawBufferImplementation)(GLenum);
-        static DrawBufferImplementation drawBufferImplementation;
-
-        typedef void(AbstractFramebuffer::*ReadBufferImplementation)(GLenum);
-        static ReadBufferImplementation readBufferImplementation;
-
         void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments);
         void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments, const Range2Di& rectangle);
 
@@ -335,8 +320,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         Range2Di _viewport;
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
         #ifndef MAGNUM_TARGET_GLES
         GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
@@ -357,10 +340,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
         #endif
 
-        typedef void(*ReadImplementation)(const Vector2i&, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
         static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        static ReadImplementation MAGNUM_LOCAL readImplementation;
 };
 
 CORRADE_ENUMSET_OPERATORS(FramebufferClearMask)

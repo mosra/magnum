@@ -42,13 +42,6 @@
 
 namespace Magnum {
 
-Framebuffer::RenderbufferImplementation Framebuffer::renderbufferImplementation = &Framebuffer::renderbufferImplementationDefault;
-#ifndef MAGNUM_TARGET_GLES
-Framebuffer::Texture1DImplementation Framebuffer::texture1DImplementation = &Framebuffer::texture1DImplementationDefault;
-#endif
-Framebuffer::Texture2DImplementation Framebuffer::texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
-Framebuffer::Texture3DImplementation Framebuffer::texture3DImplementation = &Framebuffer::texture3DImplementationDefault;
-
 const Framebuffer::DrawAttachment Framebuffer::DrawAttachment::None = Framebuffer::DrawAttachment(GL_NONE);
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Depth = Framebuffer::BufferAttachment(GL_DEPTH_ATTACHMENT);
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Stencil = Framebuffer::BufferAttachment(GL_STENCIL_ATTACHMENT);
@@ -104,6 +97,10 @@ Framebuffer& Framebuffer::setLabel(const std::string& label) {
     return *this;
 }
 
+Framebuffer::Status Framebuffer::checkStatus(const FramebufferTarget target) {
+    return Status((this->*Context::current()->state().framebuffer->checkStatusImplementation)(target));
+}
+
 Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
@@ -117,7 +114,17 @@ Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = GLenum(attachment.second);
 
-    (this->*drawBuffersImplementation)(max+1, _attachments);
+    (this->*Context::current()->state().framebuffer->drawBuffersImplementation)(max+1, _attachments);
+    return *this;
+}
+
+Framebuffer& Framebuffer::mapForDraw(const DrawAttachment attachment) {
+    (this->*Context::current()->state().framebuffer->drawBufferImplementation)(GLenum(attachment));
+    return *this;
+}
+
+Framebuffer& Framebuffer::mapForRead(const ColorAttachment attachment) {
+    (this->*Context::current()->state().framebuffer->readBufferImplementation)(GLenum(attachment));
     return *this;
 }
 
@@ -139,25 +146,33 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     invalidateImplementation(attachments.size(), _attachments, rectangle);
 }
 
-Framebuffer& Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int mipLevel) {
-    /** @todo Check for texture target compatibility */
-    (this->*texture2DImplementation)(attachment, GLenum(texture.target()), texture.id(), mipLevel);
+Framebuffer& Framebuffer::attachRenderbuffer(const BufferAttachment attachment, Renderbuffer& renderbuffer) {
+    (this->*Context::current()->state().framebuffer->renderbufferImplementation)(attachment, renderbuffer);
     return *this;
 }
 
-void Framebuffer::initializeContextBasedFunctionality(Context& context) {
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        Debug() << "Framebuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+#ifndef MAGNUM_TARGET_GLES
+Framebuffer& Framebuffer::attachTexture1D(const BufferAttachment attachment, Texture1D& texture, const Int level) {
+    (this->*Context::current()->state().framebuffer->texture1DImplementation)(attachment, texture, level);
+    return *this;
+}
+#endif
 
-        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
-        texture1DImplementation = &Framebuffer::texture1DImplementationDSA;
-        texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
-        texture3DImplementation = &Framebuffer::texture3DImplementationDSA;
-    }
-    #else
-    static_cast<void>(context);
-    #endif
+Framebuffer& Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int mipLevel) {
+    /** @todo Check for texture target compatibility */
+    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GLenum(texture.target()), texture.id(), mipLevel);
+    return *this;
+}
+
+Framebuffer& Framebuffer::attachCubeMapTexture(const BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, const Int level) {
+    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GLenum(coordinate), texture.id(), level);
+    return *this;
+}
+
+Framebuffer& Framebuffer::attachTexture3D(Framebuffer::BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
+    /** @todo Check for texture target compatibility */
+    (this->*Context::current()->state().framebuffer->texture3DImplementation)(attachment, texture, level, layer);
+    return *this;
 }
 
 void Framebuffer::renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer) {

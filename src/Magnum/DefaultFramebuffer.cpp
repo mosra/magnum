@@ -38,6 +38,10 @@ DefaultFramebuffer defaultFramebuffer;
 
 DefaultFramebuffer::DefaultFramebuffer() { _id = 0; }
 
+DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarget target) {
+    return Status((this->*Context::current()->state().framebuffer->checkStatusImplementation)(target));
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
@@ -52,10 +56,20 @@ DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = GLenum(attachment.second);
 
-    (this->*drawBuffersImplementation)(max+1, _attachments);
+    (this->*Context::current()->state().framebuffer->drawBuffersImplementation)(max+1, _attachments);
+    return *this;
+}
+
+DefaultFramebuffer& DefaultFramebuffer::mapForDraw(const DrawAttachment attachment) {
+    (this->*Context::current()->state().framebuffer->drawBufferImplementation)(GLenum(attachment));
     return *this;
 }
 #endif
+
+DefaultFramebuffer& DefaultFramebuffer::mapForRead(const ReadAttachment attachment) {
+    (this->*Context::current()->state().framebuffer->readBufferImplementation)(GLenum(attachment));
+    return *this;
+}
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
     /** @todo C++14: use VLA to avoid heap allocation */
