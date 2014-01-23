@@ -303,7 +303,7 @@ Context::Context() {
     _majorVersion = 2;
     _minorVersion = 0;
     #endif
-    _version = static_cast<Version>(_majorVersion*100+_minorVersion*10);
+    _version = Magnum::version(_majorVersion, _minorVersion);
 
     #ifndef CORRADE_NO_ASSERT
     const auto error = Renderer::error();
