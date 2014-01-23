@@ -722,7 +722,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Invalidate buffer data
          * @return Reference to self (for method chaining)
@@ -744,7 +743,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref MapFlag::InvalidateRange, @fn_gl{InvalidateBufferData}
          */
         Buffer& invalidateSubData(GLintptr offset, GLsizeiptr length);
-        #endif
 
         /**
          * @brief Map buffer to client memory

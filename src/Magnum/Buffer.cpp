@@ -195,7 +195,6 @@ Buffer& Buffer::setSubData(const GLintptr offset, const Containers::ArrayReferen
     return *this;
 }
 
-#ifndef MAGNUM_TARGET_GLES
 Buffer& Buffer::invalidateData() {
     (this->*Context::current()->state().buffer->invalidateImplementation)();
     return *this;
@@ -205,7 +204,6 @@ Buffer& Buffer::invalidateSubData(const GLintptr offset, const GLsizeiptr length
     (this->*Context::current()->state().buffer->invalidateSubImplementation)(offset, length);
     return *this;
 }
-#endif
 
 void* Buffer::map(const MapAccess access) {
     return (this->*Context::current()->state().buffer->mapImplementation)(access);
