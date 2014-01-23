@@ -28,6 +28,7 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/Color.h"
 #include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 
 #include "Implementation/State.h"
 #include "Implementation/RendererState.h"
@@ -159,6 +160,13 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
 #endif
 
 Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::robustness>())
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::robustness>())
+    #endif
+        return ResetNotificationStrategy::NoResetNotification;
+
     ResetNotificationStrategy& strategy = Context::current()->state().renderer->resetNotificationStrategy;
 
     if(strategy == ResetNotificationStrategy()) {
