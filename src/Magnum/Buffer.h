@@ -480,15 +480,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #endif
 
         /**
-         * @brief Max supported vertex buffer binding count
-         *
-         * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls.
-         * @see @fn_gl{Get} with @def_gl{MAX_VERTEX_ATTRIB_BINDINGS}
-         */
-        static Int maxVertexAttributeBindings();
-
-        /**
          * @brief Unbind any buffer from given target
          * @param target    %Target
          *

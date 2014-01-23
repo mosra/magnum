@@ -343,7 +343,7 @@ OpenGL function                        | Matching API
 @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}   | @ref Buffer::maxUniformBindings()
 @def_gl{MAX_UNIFORM_LOCATIONS}         | @ref AbstractShaderProgram::maxUniformLocations()
 @def_gl{MAX_VERTEX_ATTRIBS}            | @ref AbstractShaderProgram::maxVertexAttributes()
-@def_gl{MAX_VERTEX_ATTRIB_BINDINGS}    | @ref Buffer::maxVertexAttributeBindings()
+@def_gl{MAX_VERTEX_ATTRIB_BINDINGS}    | |
 @def_gl{MAX_VERTEX_ATTRIB_RELATIVE_OFFSET} | |
 @def_gl{MAX_VIEWPORTS}                 | |
 @def_gl{MAX_VIEWPORT_DIMS}             | @ref AbstractFramebuffer::maxViewportSize()
