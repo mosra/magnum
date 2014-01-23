@@ -101,7 +101,7 @@ nothing.
 @todo Query for immutable levels (@extension{ARB,ES3_compatibility})
 */
 class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
-    friend class Implementation::TextureState;
+    friend struct Implementation::TextureState;
 
     public:
         /**

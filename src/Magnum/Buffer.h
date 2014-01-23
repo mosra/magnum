@@ -114,7 +114,7 @@ enum class BufferUsage: GLenum {
     #endif
 };
 
-namespace Implementation { class BufferState; }
+namespace Implementation { struct BufferState; }
 
 /**
 @brief %Buffer
@@ -192,7 +192,7 @@ nothing.
 @todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
  */
 class MAGNUM_EXPORT Buffer: public AbstractObject {
-    friend class Implementation::BufferState;
+    friend struct Implementation::BufferState;
 
     public:
         /**

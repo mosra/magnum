@@ -48,8 +48,8 @@ namespace Implementation { struct RendererState; }
 @todo `GL_MAX_CLIP_DISTANCES`...
 */
 class MAGNUM_EXPORT Renderer {
-    friend class Implementation::RendererState;
     friend class Context;
+    friend struct Implementation::RendererState;
 
     public:
         Renderer() = delete;

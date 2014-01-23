@@ -200,7 +200,7 @@ and respective function documentation for more information.
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
 class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
-    friend class Implementation::TextureState;
+    friend struct Implementation::TextureState;
 
     public:
         /** @copydoc AbstractTexture::maxLabelLength() */

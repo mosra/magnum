@@ -56,7 +56,7 @@ See its documentation for more information.
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 */
 class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
-    friend class Implementation::FramebufferState;
+    friend struct Implementation::FramebufferState;
 
     public:
         /**

@@ -115,7 +115,7 @@ enum class MeshPrimitive: GLenum {
     #endif
 };
 
-namespace Implementation { class MeshState; }
+namespace Implementation { struct MeshState; }
 
 /**
 @brief %Mesh
@@ -315,8 +315,8 @@ drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @todo How to glDrawElementsBaseVertex()/vertex offset -- in draw()?
  */
 class MAGNUM_EXPORT Mesh: public AbstractObject {
-    friend class Implementation::MeshState;
     friend class MeshView;
+    friend struct Implementation::MeshState;
 
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED

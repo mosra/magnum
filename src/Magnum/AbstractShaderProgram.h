@@ -39,7 +39,7 @@ namespace Magnum {
 
 namespace Implementation {
     template<class> struct Attribute;
-    class ShaderProgramState;
+    struct ShaderProgramState;
 }
 
 /**
@@ -323,7 +323,7 @@ comes in handy.
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
-    friend class Implementation::ShaderProgramState;
+    friend struct Implementation::ShaderProgramState;
 
     public:
         template<UnsignedInt, class> class Attribute;

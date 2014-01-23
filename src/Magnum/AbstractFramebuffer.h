@@ -147,7 +147,7 @@ protected from buffer overflow.
 @todo @extension{ARB,viewport_array} (and `GL_MAX_VIEWPORTS`)
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
-    friend class Implementation::FramebufferState;
+    friend struct Implementation::FramebufferState;
 
     public:
         /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@extension{ARB,ES2_compatibility}). */

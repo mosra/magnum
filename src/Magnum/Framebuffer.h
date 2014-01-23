@@ -102,7 +102,7 @@ See their respective documentation for more information.
 @todo `MAX_COLOR_ATTACHMENTS`
 */
 class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObject {
-    friend class Implementation::FramebufferState;
+    friend struct Implementation::FramebufferState;
 
     public:
         /**
