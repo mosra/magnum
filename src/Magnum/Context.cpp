@@ -307,15 +307,15 @@ Context::Context() {
        enum error. */
     #ifndef MAGNUM_TARGET_GLES2
     glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
-    auto error = Renderer::error();
-    if(error == Renderer::Error::NoError)
+    const auto versionNumberError = Renderer::error();
+    if(versionNumberError == Renderer::Error::NoError)
         glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
     else
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
-        CORRADE_ASSERT(error == Renderer::Error::InvalidEnum,
-            "Context: cannot retrieve OpenGL version:" << error, );
+        CORRADE_ASSERT(versionNumberError == Renderer::Error::InvalidEnum,
+            "Context: cannot retrieve OpenGL version:" << versionNumberError, );
         #endif
 
         const std::string version = versionString();
@@ -343,7 +343,7 @@ Context::Context() {
 
     /* Check that version retrieval went right */
     #ifndef CORRADE_NO_ASSERT
-    error = Renderer::error();
+    const auto error = Renderer::error();
     CORRADE_ASSERT(error == Renderer::Error::NoError,
         "Context: cannot retrieve OpenGL version:" << error, );
     #endif
