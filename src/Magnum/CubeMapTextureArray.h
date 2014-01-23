@@ -94,7 +94,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::setWrapping() for more information.
          */
         CubeMapTextureArray& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
-            DataHelper<3>::setWrapping(this, wrapping);
+            DataHelper<3>::setWrapping(*this, wrapping);
             return *this;
         }
 
@@ -105,7 +105,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::imageSize() for more information.
          */
         Vector3i imageSize(Int level) {
-            return DataHelper<3>::imageSize(this, GL_TEXTURE_CUBE_MAP_ARRAY, level);
+            return DataHelper<3>::imageSize(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level);
         }
 
         /**
@@ -115,7 +115,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @ref Texture::setStorage() for more information.
          */
         CubeMapTextureArray& setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
-            DataHelper<3>::setStorage(this, _target, levels, internalFormat, size);
+            DataHelper<3>::setStorage(*this, _target, levels, internalFormat, size);
             return *this;
         }
 
@@ -163,13 +163,13 @@ class CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::setImage() for more information.
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
-            DataHelper<3>::setImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
+            DataHelper<3>::setImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
             return *this;
         }
 
         /** @overload */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, BufferImage3D& image) {
-            DataHelper<3>::setImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
+            DataHelper<3>::setImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
             return *this;
         }
 
@@ -192,13 +192,13 @@ class CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::setSubImage() for more information.
          */
         CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image) {
-            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
+            DataHelper<3>::setSubImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
             return *this;
         }
 
         /** @overload */
         CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, BufferImage3D& image) {
-            DataHelper<3>::setSubImage(this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
+            DataHelper<3>::setSubImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
             return *this;
         }
 
@@ -219,7 +219,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::invalidateSubImage() for more information.
          */
         void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
-            DataHelper<3>::invalidateSubImage(this, level, offset, size);
+            DataHelper<3>::invalidateSubImage(*this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */

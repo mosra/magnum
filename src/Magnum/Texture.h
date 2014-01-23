@@ -246,7 +246,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         typename DimensionTraits<Dimensions, Int>::VectorType imageSize(Int level) {
-            return DataHelper<Dimensions>::imageSize(this, _target, level);
+            return DataHelper<Dimensions>::imageSize(*this, _target, level);
         }
         #endif
 
@@ -268,7 +268,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @def_gl{TEXTURE_WRAP_R}
          */
         Texture<Dimensions>& setWrapping(const Array<Dimensions, Sampler::Wrapping>& wrapping) {
-            DataHelper<Dimensions>::setWrapping(this, wrapping);
+            DataHelper<Dimensions>::setWrapping(*this, wrapping);
             return *this;
         }
 
@@ -301,7 +301,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
          */
         Texture<Dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
-            DataHelper<Dimensions>::setStorage(this, _target, levels, internalFormat, size);
+            DataHelper<Dimensions>::setStorage(*this, _target, levels, internalFormat, size);
             return *this;
         }
 
@@ -368,14 +368,14 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
         Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
-            DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
+            DataHelper<Dimensions>::setImage(*this, _target, level, internalFormat, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>& image) {
-            DataHelper<Dimensions>::setImage(this, _target, level, internalFormat, image);
+            DataHelper<Dimensions>::setImage(*this, _target, level, internalFormat, image);
             return *this;
         }
 
@@ -403,14 +403,14 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
         Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const ImageReference<dimensions>& image) {
-            DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
+            DataHelper<Dimensions>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
-            DataHelper<Dimensions>::setSubImage(this, _target, level, offset, image);
+            DataHelper<Dimensions>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
@@ -431,7 +431,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
         void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
-            DataHelper<dimensions>::invalidateSubImage(this, level, offset, size);
+            DataHelper<dimensions>::invalidateSubImage(*this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */

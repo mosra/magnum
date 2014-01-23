@@ -103,7 +103,7 @@ class CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setWrapping() for more information.
          */
         CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
-            DataHelper<3>::setWrapping(this, wrapping);
+            DataHelper<3>::setWrapping(*this, wrapping);
             return *this;
         }
 
@@ -117,7 +117,7 @@ class CubeMapTexture: public AbstractTexture {
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         Vector2i imageSize(Coordinate coordinate, Int level) {
-            return DataHelper<2>::imageSize(this, GLenum(coordinate), level);
+            return DataHelper<2>::imageSize(*this, GLenum(coordinate), level);
         }
         #endif
 
@@ -127,7 +127,7 @@ class CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setStorage() for more information.
          */
         CubeMapTexture& setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
-            DataHelper<2>::setStorage(this, _target, levels, internalFormat, size);
+            DataHelper<2>::setStorage(*this, _target, levels, internalFormat, size);
             return *this;
         }
 
@@ -173,14 +173,14 @@ class CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setImage() for more information.
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
-            DataHelper<2>::setImage(this, GLenum(coordinate), level, internalFormat, image);
+            DataHelper<2>::setImage(*this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
-            DataHelper<2>::setImage(this, GLenum(coordinate), level, internalFormat, image);
+            DataHelper<2>::setImage(*this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
 
@@ -202,20 +202,20 @@ class CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setSubImage() for more information.
          */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image) {
-            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(*this, GLenum(coordinate), level, offset, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
-            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(*this, GLenum(coordinate), level, offset, image);
             return *this;
         }
 
         /** @overload */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D&& image) {
-            DataHelper<2>::setSubImage(this, GLenum(coordinate), level, offset, image);
+            DataHelper<2>::setSubImage(*this, GLenum(coordinate), level, offset, image);
             return *this;
         }
         #endif
@@ -233,7 +233,7 @@ class CubeMapTexture: public AbstractTexture {
          * See @ref Texture::invalidateSubImage() for more information.
          */
         void invalidateSubImage(Int level, const Vector3i& offset, const Vector3i& size) {
-            DataHelper<3>::invalidateSubImage(this, level, offset, size);
+            DataHelper<3>::invalidateSubImage(*this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
