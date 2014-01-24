@@ -320,7 +320,7 @@ Context::Context() {
 
         const std::string version = versionString();
         #ifndef MAGNUM_TARGET_GLES
-        if(version.find("OpenGL 2.1") != std::string::npos)
+        if(version.compare(0, 4, "2.1 ") == 0)
         #else
         if(version.find("OpenGL ES 2.0") != std::string::npos)
         #endif
