@@ -251,6 +251,9 @@ void Mesh::createImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glGenVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glGenVertexArrays(1, &_id);
+    #else
+    //glGenVertexArraysOES(1, &_id);
+    CORRADE_INTERNAL_ASSERT(false);
     #endif
 }
 
@@ -260,6 +263,9 @@ void Mesh::destroyImplementationVAO() {
     /** @todo Get some extension wrangler instead to avoid linker errors to glDeleteVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteVertexArrays(1, &_id);
+    #else
+    //glDeleteVertexArraysOES(1, &_id);
+    CORRADE_INTERNAL_ASSERT(false);
     #endif
 }
 
