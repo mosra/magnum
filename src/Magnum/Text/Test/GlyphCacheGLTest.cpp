@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <tuple>
+
 #include "Magnum/Test/AbstractOpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 
