@@ -48,12 +48,14 @@ Int BufferTexture::offsetAlignment() {
     return value;
 }
 
-void BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
+BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
     (this->*Context::current()->state().texture->setBufferImplementation)(internalFormat, buffer);
+    return *this;
 }
 
-void BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     (this->*Context::current()->state().texture->setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+    return *this;
 }
 
 void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer) {

@@ -226,6 +226,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @brief Set texture buffer
          * @param internalFormat    Internal format
          * @param buffer            %Buffer with data
+         * @return Reference to self (for method chaining)
          *
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using @ref Buffer "Buffer"'s
@@ -233,7 +234,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
          *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
+        BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
 
         /**
          * @brief Set texture buffer
@@ -241,6 +242,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @param buffer            %Buffer
          * @param offset            Offset
          * @param size              Data size
+         * @return Reference to self (for method chaining)
          *
          * Binds range of given buffer to this texture. The buffer itself can
          * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
@@ -249,7 +251,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
          *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
