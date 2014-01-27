@@ -436,8 +436,10 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @param version   Target version
          * @param type      %Shader type
          *
-         * Creates empty OpenGL shader and adds @c \#version directive at the
-         * beginning.
+         * Creates empty OpenGL shader and adds @c \#version directive
+         * corresponding to @p version parameter at the beginning. If
+         * @ref Version::None is specified, (not) adding the @c \#version
+         * directive is left to the user.
          * @see @fn_gl{CreateShader}
          */
         explicit Shader(Version version, Type type);
