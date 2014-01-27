@@ -200,13 +200,10 @@ and respective function documentation for more information.
 @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
-class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
+class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
     friend struct Implementation::TextureState;
 
     public:
-        /** @copydoc AbstractTexture::maxLabelLength() */
-        static Int maxLabelLength() { return AbstractTexture::maxLabelLength(); }
-
         /**
          * @brief Minimum required alignment for texture buffer offsets
          *
@@ -224,21 +221,6 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_BUFFER}
          */
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
-
-        /** @copydoc AbstractTexture::id() */
-        Int id() const { return AbstractTexture::id(); }
-
-        /** @copydoc AbstractTexture::label() */
-        std::string label() const { return AbstractTexture::label(); }
-
-        /** @copydoc AbstractTexture::setLabel() */
-        BufferTexture& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-
-        /** @copydoc AbstractTexture::bind() */
-        void bind(Int layer) { AbstractTexture::bind(layer); }
 
         /**
          * @brief Set texture buffer
@@ -268,6 +250,14 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
         void setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        BufferTexture& setLabel(const std::string& label) {
+            AbstractTexture::setLabel(label);
+            return *this;
+        }
+        #endif
 
     private:
         void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
