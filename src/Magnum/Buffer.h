@@ -174,8 +174,8 @@ The engine tracks currently bound buffers to avoid unnecessary calls to
 and @ref unmap() use that target instead of binding the buffer to some specific
 target. You can also use @ref setTargetHint() to possibly reduce unnecessary
 rebinding. %Buffer limits and implementation-defined values (such as
-@ref maxVertexAttributeBindings()) are cached, so repeated queries don't result
-in repeated @fn_gl{Get} calls.
+@ref maxUniformBindings()) are cached, so repeated queries don't result in
+repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, functions
 @ref copy(), @ref setData(), @ref setSubData(), @ref map(), @ref flushMappedRange()
@@ -664,7 +664,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Set buffer data
+         * @copybrief setData(Containers::ArrayReference<const void>, BufferUsage)
          * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, BufferUsage) "setData(Containers::ArrayReference<const void>, BufferUsage)"
          *      instead.
          */
@@ -701,7 +701,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Set buffer subdata
+         * @copybrief setSubData(GLintptr, Containers::ArrayReference<const void>)
          * @deprecated Use @ref Magnum::Buffer::setSubData(GLintptr, Containers::ArrayReference<const void>) "setSubData(GLintptr, Containers::ArrayReference<const void>)"
          *      instead.
          */

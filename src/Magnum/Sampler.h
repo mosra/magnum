@@ -122,7 +122,7 @@ class MAGNUM_EXPORT Sampler {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Mirror the texture once in negative coordinates and clamp to
-             * edge after that.
+             * edge after that. **Unavailable on rectangle textures.**
              * @requires_gl44 %Extension @extension{ARB,texture_mirror_clamp_to_edge},
              *      @extension{ATI,texture_mirror_once} or @extension{EXT,texture_mirror_clamp}
              * @requires_gl Only separate @ref Magnum::Sampler::Wrapping "Wrapping::MirroredRepeat"
