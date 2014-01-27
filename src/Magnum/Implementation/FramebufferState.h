@@ -42,10 +42,10 @@ struct FramebufferState {
 
     void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, Renderbuffer&);
     #ifndef MAGNUM_TARGET_GLES
-    void(Framebuffer::*texture1DImplementation)(Framebuffer::BufferAttachment, Texture1D&, GLint);
+    void(Framebuffer::*texture1DImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
     #endif
     void(Framebuffer::*texture2DImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
-    void(Framebuffer::*texture3DImplementation)(Framebuffer::BufferAttachment, Texture3D&, GLint, GLint);
+    void(Framebuffer::*textureLayerImplementation)(Framebuffer::BufferAttachment, GLuint, GLint, GLint);
 
     void(Renderbuffer::*renderbufferStorageImplementation)(RenderbufferFormat, const Vector2i&);
     void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);

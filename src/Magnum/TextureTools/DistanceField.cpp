@@ -149,7 +149,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     #endif
 
     Framebuffer framebuffer(rectangle);
-    framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), output, 0);
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), output, 0);
     framebuffer.bind(FramebufferTarget::Draw);
     framebuffer.clear(FramebufferClear::Color);
 

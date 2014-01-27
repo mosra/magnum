@@ -60,10 +60,10 @@ following:
 @extension{ARB,texture_float}                | done
 @extension{ARB,depth_buffer_float}           | done
 @extension{ARB,texture_rg}                   | done
-@extension{ARB,framebuffer_object}           | missing texture layer attachments
+@extension{ARB,framebuffer_object}           | done
 @extension{EXT,gpu_shader4}                  | done
 @extension{EXT,packed_float}                 | done
-@extension{EXT,texture_array}                | missing texture layer attachments
+@extension{EXT,texture_array}                | done
 @extension{EXT,texture_compression_rgtc}     | done
 @extension{EXT,texture_shared_exponent}      | done
 @extension{EXT,framebuffer_sRGB}             | |

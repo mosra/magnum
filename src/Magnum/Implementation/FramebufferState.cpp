@@ -49,7 +49,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
         texture1DImplementation = &Framebuffer::texture1DImplementationDSA;
         texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
-        texture3DImplementation = &Framebuffer::texture3DImplementationDSA;
+        textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
     } else
@@ -65,7 +65,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         texture1DImplementation = &Framebuffer::texture1DImplementationDefault;
         #endif
         texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
-        texture3DImplementation = &Framebuffer::texture3DImplementationDefault;
+        textureLayerImplementation = &Framebuffer::textureLayerImplementationDefault;
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDefault;
     }
