@@ -90,7 +90,7 @@ following:
 
 %Extension                                   | Status
 -------------------------------------------- | ------
-@extension{ARB,geometry_shader4}             | done (GL 3.2 subset)
+@extension{ARB,geometry_shader4}             | missing layered attachments
 @extension{ARB,depth_clamp}                  | done
 @extension{ARB,draw_elements_base_vertex}    | |
 @extension{ARB,fragment_coord_conventions}   | done (shading language only)
