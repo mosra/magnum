@@ -54,126 +54,122 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> empty;
     #ifndef MAGNUM_TARGET_GLES
     static const std::vector<Extension> extensions{
-        _extension(GL,AMD,vertex_shader_layer),             // done
-        _extension(GL,AMD,shader_trinary_minmax),           // done
-        _extension(GL,ARB,robustness),                      // done
+        _extension(GL,AMD,vertex_shader_layer),
+        _extension(GL,AMD,shader_trinary_minmax),
+        _extension(GL,ARB,robustness),
         _extension(GL,ATI,texture_mirror_once),
-        _extension(GL,EXT,texture_filter_anisotropic),      // done
+        _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,texture_mirror_clamp),
         _extension(GL,EXT,direct_state_access),
         _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
-        _extension(GL,GREMEDY,string_marker)};              // done
+        _extension(GL,GREMEDY,string_marker)};
     static const std::vector<Extension> extensions300{
-        /**
-         * @todo Remove as it doesn't have all functionality present in GL 3.0
-         *      and leave only ARB_map_buffer_range?
-         */
-        _extension(GL,APPLE,flush_buffer_range),            // done
-        _extension(GL,APPLE,vertex_array_object),           // done
-        _extension(GL,ARB,map_buffer_range),                // done, replaces APPLE_flush_buffer_range
+        _extension(GL,APPLE,flush_buffer_range),
+        _extension(GL,APPLE,vertex_array_object),
+        _extension(GL,ARB,map_buffer_range),
         _extension(GL,ARB,color_buffer_float),
-        _extension(GL,ARB,half_float_pixel),                // done
-        _extension(GL,ARB,texture_float),                   // done
-        _extension(GL,ARB,depth_buffer_float),              // done
-        _extension(GL,ARB,texture_rg),                      // done
+        _extension(GL,ARB,half_float_pixel),
+        _extension(GL,ARB,texture_float),
+        _extension(GL,ARB,depth_buffer_float),
+        _extension(GL,ARB,texture_rg),
         _extension(GL,ARB,framebuffer_object),
         _extension(GL,EXT,gpu_shader4),
-        _extension(GL,EXT,packed_float),                    // done
+        _extension(GL,EXT,packed_float),
         _extension(GL,EXT,texture_array),
-        _extension(GL,EXT,texture_compression_rgtc),        // done
-        _extension(GL,EXT,texture_shared_exponent),         // done
+        _extension(GL,EXT,texture_compression_rgtc),
+        _extension(GL,EXT,texture_shared_exponent),
         _extension(GL,EXT,framebuffer_sRGB),
         _extension(GL,EXT,draw_buffers2),
         _extension(GL,EXT,texture_integer),
         _extension(GL,EXT,transform_feedback),
-        _extension(GL,NV,half_float),                       // done
+        _extension(GL,NV,half_float),
         _extension(GL,NV,depth_buffer_float),
-        _extension(GL,NV,conditional_render)};              // done
+        _extension(GL,NV,conditional_render)};
     static const std::vector<Extension> extensions310{
         _extension(GL,ARB,texture_rectangle),
         _extension(GL,ARB,draw_instanced),
         _extension(GL,ARB,texture_buffer_object),
         _extension(GL,ARB,uniform_buffer_object),
-        _extension(GL,ARB,copy_buffer),                     // done
-        _extension(GL,EXT,texture_snorm),                   // done
+        _extension(GL,ARB,copy_buffer),
+        _extension(GL,EXT,texture_snorm),
         _extension(GL,NV,primitive_restart)};
     static const std::vector<Extension> extensions320{
         _extension(GL,ARB,geometry_shader4),
-        _extension(GL,ARB,depth_clamp),                     // done
+        _extension(GL,ARB,depth_clamp),
         _extension(GL,ARB,draw_elements_base_vertex),
-        _extension(GL,ARB,fragment_coord_conventions),      // done
-        _extension(GL,ARB,provoking_vertex),                // done
-        _extension(GL,ARB,seamless_cube_map),               // done
+        _extension(GL,ARB,fragment_coord_conventions),
+        _extension(GL,ARB,provoking_vertex),
+        _extension(GL,ARB,seamless_cube_map),
         _extension(GL,ARB,sync),
         _extension(GL,ARB,texture_multisample),
-        _extension(GL,ARB,vertex_array_bgra)};              // done
+        _extension(GL,ARB,vertex_array_bgra)};
     static const std::vector<Extension> extensions330{
         _extension(GL,ARB,instanced_arrays),
         _extension(GL,ARB,blend_func_extended),
-        _extension(GL,ARB,explicit_attrib_location),        // done
-        _extension(GL,ARB,occlusion_query2),                // done
+        _extension(GL,ARB,explicit_attrib_location),
+        _extension(GL,ARB,occlusion_query2),
         _extension(GL,ARB,sampler_objects),
-        _extension(GL,ARB,shader_bit_encoding),             // done
-        _extension(GL,ARB,texture_rgb10_a2ui),              // done
+        _extension(GL,ARB,shader_bit_encoding),
+        _extension(GL,ARB,texture_rgb10_a2ui),
         _extension(GL,ARB,texture_swizzle),
         _extension(GL,ARB,timer_query),
-        _extension(GL,ARB,vertex_type_2_10_10_10_rev)};     // done
+        _extension(GL,ARB,vertex_type_2_10_10_10_rev)};
     static const std::vector<Extension> extensions400{
         _extension(GL,ARB,draw_buffers_blend),
         _extension(GL,ARB,sample_shading),
-        _extension(GL,ARB,texture_cube_map_array),          // done
+        _extension(GL,ARB,texture_cube_map_array),
         _extension(GL,ARB,texture_gather),
-        _extension(GL,ARB,texture_query_lod),               // done
+        _extension(GL,ARB,texture_query_lod),
         _extension(GL,ARB,draw_indirect),
         _extension(GL,ARB,gpu_shader5),
-        _extension(GL,ARB,gpu_shader_fp64),                 // done
+        _extension(GL,ARB,gpu_shader_fp64),
         _extension(GL,ARB,shader_subroutine),
         _extension(GL,ARB,tessellation_shader),
-        _extension(GL,ARB,texture_buffer_object_rgb32),     // done
+        _extension(GL,ARB,texture_buffer_object_rgb32),
         _extension(GL,ARB,transform_feedback2),
         _extension(GL,ARB,transform_feedback3)};
     static const std::vector<Extension> extensions410{
         _extension(GL,ARB,ES2_compatibility),
         _extension(GL,ARB,get_program_binary),
         _extension(GL,ARB,separate_shader_objects),
-        _extension(GL,ARB,shader_precision),                // done
-        _extension(GL,ARB,vertex_attrib_64bit),             // done
+        _extension(GL,ARB,shader_precision),
+        _extension(GL,ARB,vertex_attrib_64bit),
         _extension(GL,ARB,viewport_array)};
     static const std::vector<Extension> extensions420{
-        _extension(GL,ARB,texture_compression_bptc),        // done
+        _extension(GL,ARB,texture_compression_bptc),
         _extension(GL,ARB,base_instance),
-        _extension(GL,ARB,shading_language_420pack),        // done
+        _extension(GL,ARB,shading_language_420pack),
         _extension(GL,ARB,transform_feedback_instanced),
         _extension(GL,ARB,compressed_texture_pixel_storage),
-        _extension(GL,ARB,conservative_depth),              // done
+        _extension(GL,ARB,conservative_depth),
         _extension(GL,ARB,internalformat_query),
         _extension(GL,ARB,map_buffer_alignment),
         _extension(GL,ARB,shader_atomic_counters),
         _extension(GL,ARB,shader_image_load_store),
         /* Mentioned in GLSL 4.20 specs as newly added */
-        _extension(GL,ARB,shading_language_packing),        // done
+        _extension(GL,ARB,shading_language_packing),
         _extension(GL,ARB,texture_storage)};
     static const std::vector<Extension> extensions430{
-        _extension(GL,ARB,arrays_of_arrays),                // done
+        _extension(GL,ARB,arrays_of_arrays),
         _extension(GL,ARB,ES3_compatibility),
         _extension(GL,ARB,clear_buffer_object),
         _extension(GL,ARB,compute_shader),
         _extension(GL,ARB,copy_image),
         _extension(GL,KHR,debug),
         _extension(GL,ARB,explicit_uniform_location),
-        _extension(GL,ARB,fragment_layer_viewport),         // done
+        _extension(GL,ARB,fragment_layer_viewport),
         _extension(GL,ARB,framebuffer_no_attachments),
         _extension(GL,ARB,internalformat_query2),
-        _extension(GL,ARB,invalidate_subdata),              // done
+        _extension(GL,ARB,invalidate_subdata),
         _extension(GL,ARB,multi_draw_indirect),
         _extension(GL,ARB,program_interface_query),
-        _extension(GL,ARB,robust_buffer_access_behavior),   // done
-        _extension(GL,ARB,shader_image_size),               // done
+        _extension(GL,ARB,robust_buffer_access_behavior),
+        _extension(GL,ARB,shader_image_size),
         _extension(GL,ARB,shader_storage_buffer_object),
         _extension(GL,ARB,stencil_texturing),
-        _extension(GL,ARB,texture_buffer_range),            // done
-        _extension(GL,ARB,texture_query_levels),            // done
+        _extension(GL,ARB,texture_buffer_range),
+        _extension(GL,ARB,texture_query_levels),
         _extension(GL,ARB,texture_storage_multisample),
         _extension(GL,ARB,texture_view),
         _extension(GL,ARB,vertex_attrib_binding)};
@@ -199,10 +195,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,sRGB),
-        /**
-         * @todo Support also IMG_multisampled_render_to_texture? It has
-         *      different enum values (!)
-         */
         _extension(GL,EXT,multisampled_render_to_texture),
         _extension(GL,EXT,robustness),
         _extension(GL,KHR,debug),
@@ -210,7 +202,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_stencil),
         _extension(GL,NV,read_depth_stencil),
-        _extension(GL,NV,texture_border_clamp),             // done
+        _extension(GL,NV,texture_border_clamp),
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
         _extension(GL,OES,stencil1),
@@ -219,7 +211,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
         _extension(GL,ANGLE,framebuffer_multisample),
-        _extension(GL,ANGLE,depth_texture),                 // done
+        _extension(GL,ANGLE,depth_texture),
         _extension(GL,APPLE,framebuffer_multisample),
         _extension(GL,ARM,rgba8),
         _extension(GL,EXT,texture_type_2_10_10_10_REV),
@@ -232,7 +224,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,draw_buffers),
         _extension(GL,NV,fbo_color_attachments),
         _extension(GL,NV,read_buffer),
-        _extension(GL,NV,framebuffer_blit),                 // done
+        _extension(GL,NV,framebuffer_blit),
         _extension(GL,NV,framebuffer_multisample),
         _extension(GL,OES,depth24),
         _extension(GL,OES,element_index_uint),
@@ -245,10 +237,10 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,vertex_half_float),
         _extension(GL,OES,packed_depth_stencil),
         _extension(GL,OES,depth_texture),
-        _extension(GL,OES,standard_derivatives),            // done
+        _extension(GL,OES,standard_derivatives),
         _extension(GL,OES,vertex_array_object),
         _extension(GL,OES,required_internalformat),
-        _extension(GL,OES,surfaceless_context)};            // done
+        _extension(GL,OES,surfaceless_context)};
     #endif
     #endif
 

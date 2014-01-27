@@ -47,7 +47,8 @@ following:
 
 @subsection opengl-support-30 OpenGL 3.0
 
-@todo @extension{APPLE,flush_buffer_range} doesn't add anything to @extension{ARB,map_buffer_range}
+@todo Replace @extension{APPLE,vertex_array_object} with ARB version (we use only ARB functions without APPLE fallback)
+@todo @extension{APPLE,flush_buffer_range} doesn't add anything to @extension{ARB,map_buffer_range} (remove it and leave only ARB one)
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
 
 %Extension                                   | Status
@@ -266,6 +267,9 @@ supported.
 @subsection opengl-support-es-extensions OpenGL ES extensions to match desktop functionality
 
 Only extensions not already listed in above tables are included here.
+
+@todo Support also IMG_multisampled_render_to_texture? It has different enum
+    values (!)
 
 %Extension                                   | Status
 -------------------------------------------- | ------
