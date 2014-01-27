@@ -29,10 +29,29 @@
  * @brief Class @ref Magnum::Texture, typedef @ref Magnum::Texture1D, @ref Magnum::Texture2D, @ref Magnum::Texture3D
  */
 
+#include <Corrade/Utility/Macros.h>
+
 #include "Magnum/AbstractTexture.h"
+#include "Magnum/Array.h"
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum {
+
+namespace Implementation {
+    template<UnsignedInt> constexpr GLenum textureTarget();
+    #ifndef MAGNUM_TARGET_GLES
+    template<> inline constexpr GLenum textureTarget<1>() { return GL_TEXTURE_1D; }
+    #endif
+    template<> inline constexpr GLenum textureTarget<2>() { return GL_TEXTURE_2D; }
+    template<> inline constexpr GLenum textureTarget<3>() {
+        #ifndef MAGNUM_TARGET_GLES2
+        return GL_TEXTURE_3D;
+        #else
+        return GL_TEXTURE_3D_OES;
+        #endif
+    }
+}
 
 /**
 @brief %Texture
@@ -58,180 +77,95 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .generateMipmap();
 @endcode
 
-@attention Don't forget to fully configure the texture before use. Note that
-    default configuration (if @ref setMinificationFilter() is not called with
-    another value) is to use mipmaps, so be sure to either call @ref setMinificationFilter(),
-    explicitly specify all mip levels with @ref setStorage() and @ref setImage()
-    or call @ref generateMipmap(). If using rectangle texture, you must also
-    call @ref setWrapping(), because the initial value is not supported on
-    rectangle textures. See also @ref setMagnificationFilter() and
-    @ref setBorderColor().
+@attention Note that default configuration (if @ref setMinificationFilter() is
+    not called with another value) is to use mipmaps, so be sure to either call
+    @ref setMinificationFilter(), explicitly specify all mip levels with
+    @ref setStorage() and @ref setImage() or call @ref generateMipmap().
 
 The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `sampler2D` and friends, see @ref Target enum
-documentation for more information. See also AbstractShaderProgram
-documentation for more information about usage in shaders.
+the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
+`sampler1DShadow`/`sampler2DShadow`/`sampler3DShadow`,
+`isampler1D`/`isampler2D`/`isampler3D` or `usampler1D`/`usampler2D`/`usampler3D`.
+See @ref AbstractShaderProgram documentation for more information about usage
+in shaders.
 
-@section Texture-array Texture arrays
+@requires_gles30 %Extension @es_extension{OES,texture_3D} for 3D textures.
+@requires_gl 1D textures are not available in OpenGL ES, only 2D and 3D ones.
 
-You can create texture arrays by passing
-@ref Target::Texture1DArray "Texture2D::Target::Texture1DArray" or
-@ref Target::Texture2DArray "Texture3D::Target::Texture2DArray" to constructor.
-
-It is possible to specify each layer separately using @ref setSubImage(), but
-you have to allocate the memory for all layers first by calling @ref setStorage().
-Example: 2D texture array with 16 layers of 64x64 images:
-@code
-Texture3D texture(Texture3D::Target::Texture2DArray);
-texture.setMagnificationFilter(Sampler::Filter::Linear)
-    // ...
-    .setStorage(levels, TextureFormat::RGBA8, {64, 64,16});
-
-for(std::size_t i = 0; i != 16; ++i) {
-    // ...
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {64, 64}, data[i]);
-    texture.setSubImage(0, Vector3i::zAxis(i), image);
-}
-
-// ...
-@endcode
-
-Similar approach can be used for any other texture types (e.g. setting
-@ref Texture3D data using 2D layers, @ref Texture2D data using one-dimensional
-chunks etc.).
-
-@requires_gl30 %Extension @extension{EXT,texture_array} for texture arrays.
-@requires_gles30 %Array textures are not available in OpenGL ES 2.0.
-
-@section Texture-multisample Multisample textures
-
-You can create multisample textures by passing
-@ref Target::Texture2DMultisample "Texture2D::Target::Texture2DMultisample" or
-@ref Target::Texture2DMultisampleArray "Texture3D::Target::Texture2DMultisampleArray"
-to constructor.
-
-@todoc finish this when fully implemented
-
-@requires_gl32 %Extension @extension{ARB,texture_multisample} for multisample
-    textures.
-@requires_gl Multisample textures are not available in OpenGL ES.
-
-@section Texture-rectangle Rectangle textures
-
-Rectangle texture is created by passing @ref Target::Rectangle "Texture2D::Target::Rectangle"
-to constructor. In shader, the texture is used via `sampler2DRect` and friends.
-Unlike `sampler2D`, which accepts coordinates between 0 and 1, `sampler2DRect`
-accepts coordinates between 0 and `textureSizeInGivenDirection-1`. Note that
-rectangle textures don't support mipmapping and repeating wrapping modes, see
-@ref Sampler::Filter, @ref Sampler::Mipmap and @ref generateMipmap()
-documentation for more information.
-
-@requires_gl31 %Extension @extension{ARB,texture_rectangle} for rectangle
-    textures.
-@requires_gl Rectangle textures are not available in OpenGL ES.
-
-@see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref CubeMapTexture,
-    @ref CubeMapTextureArray, @ref BufferTexture
-@todo @extension{AMD,sparse_texture}
-@todo Separate multisample, array and rectangle texture classes to avoid confusion, then remove Target enum
+@see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
+    @ref BufferTexture, @ref CubeMapTexture, @ref CubeMapTextureArray,
+    @ref MultisampleTexture, @ref RectangleTexture
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
         static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
 
-        #ifdef DOXYGEN_GENERATING_OUTPUT
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief %Texture target
          *
-         * Each dimension has its own unique subset of these targets.
+         * @deprecated Use dedicated classes instead, see documentation of
+         *      particular enum value for more information.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Target: GLenum {
-            /**
-             * One-dimensional texture.  Use `sampler1D`, `sampler1DShadow`,
-             * `isampler1D` or `usampler1D` in shader.
-             * @requires_gl Only 2D and 3D textures are available in OpenGL
-             *      ES.
-             */
+            /** @deprecated Used implicitly in @ref Magnum::Texture1D "Texture1D" class. */
             Texture1D = GL_TEXTURE_1D,
 
-            /**
-             * Two-dimensional texture. Use `sampler2D`, `sampler2DShadow`,
-             * `isampler2D` or `usampler2D` in shader.
-             */
+            /** @deprecated Used implicitly in @ref Magnum::Texture2D "Texture2D" class. */
             Texture2D = GL_TEXTURE_2D,
 
-            /**
-             * Three-dimensional texture. Use `sampler3D`, `isampler3D` or
-             * `usampler3D` in shader.
-             * @requires_gles30 %Extension @es_extension{OES,texture_3D}
-             */
+            /** @deprecated Used implicitly in @ref Magnum::Texture3D "Texture3D" class. */
             Texture3D = GL_TEXTURE_3D,
 
-            /**
-             * One-dimensional texture array (i.e. two dimensions in total).
-             * Use `sampler1DArray`, `sampler1DArrayShadow`, `isampler1DArray`
-             * or `usampler1DArray` in shader.
-             * @requires_gl30 %Extension @extension{EXT,texture_array}
-             * @requires_gl Only 2D and 3D textures are available in OpenGL
-             *      ES.
-             */
+            /** @deprecated Use @ref Magnum::Texture1DArray "Texture1DArray" class instead. */
             Texture1DArray = GL_TEXTURE_1D_ARRAY,
 
-            /**
-             * Two-dimensional texture array (i.e. three dimensions in total).
-             * Use `sampler2DArray`, `sampler2DArrayShadow`, `isampler2DArray`
-             * or `usampler2DArray` in shader.
-             * @requires_gl30 %Extension @extension{EXT,texture_array}
-             * @requires_gles30 %Array textures are not available in OpenGL ES
-             *      2.0.
-             */
+            /** @deprecated Use @ref Magnum::Texture2DArray "Texture2DArray" class instead. */
             Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
-            /**
-             * Multisampled two-dimensional texture. Use `sampler2DMS`,
-             * `isampler2DMS` or `usampler2DMS` in shader.
-             * @requires_gl32 %Extension @extension{ARB,texture_multisample}
-             * @requires_gl Multisample textures are not available in OpenGL
-             *      ES.
-             */
+            /** @deprecated Use @ref Magnum::MultisampleTexture2D "MultisampleTexture2D" class instead. */
             Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
 
-            /**
-             * Multisampled two-dimensional texture array (i.e. three
-             * dimensions in total). Use `sampler2DMSArray`,
-             * `isampler2DMSArray` or `usampler2DMSArray` in shader.
-             * @requires_gl32 %Extension @extension{ARB,texture_multisample}
-             * @requires_gl Multisample textures are not available in OpenGL
-             *      ES.
-             */
+            /** @deprecated Use @ref Magnum::MultisampleTexture2DArray "MultisampleTexture2DArray" class instead. */
             Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
 
-            /**
-             * Rectangle texture (i.e. two dimensions). Use `sampler2DRect`,
-             * `sampler2DRectShadow`, `isampler2DRect` or `usampler2DRect` in
-             * shader.
-             * @requires_gl31 %Extension @extension{ARB,texture_rectangle}
-             * @requires_gl Rectangle textures are not available in OpenGL ES.
-             */
+            /** @deprecated Use @ref Magnum::RectangleTexture "RectangleTexture" class instead. */
             Rectangle = GL_TEXTURE_RECTANGLE
         };
         #else
-        typedef typename DataHelper<Dimensions>::Target Target; /**< @brief %Texture target */
+        typedef typename DataHelper<Dimensions>::Target Target;
+        #endif
         #endif
 
         /**
          * @brief Constructor
-         * @param target            %Texture target. If not set, default value
-         *      is `Target::Texture1D`, `Target::Texture2D` or
-         *      `Target::Texture3D` based on dimension count.
          *
-         * Creates new OpenGL texture.
-         * @see @fn_gl{GenTextures}
+         * Creates new OpenGL texture object.
+         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_1D}, @def_gl{TEXTURE_2D}
+         *      or @def_gl{TEXTURE_3D}
          */
-        explicit Texture(Target target = DataHelper<Dimensions>::target()): AbstractTexture(GLenum(target)) {}
+        explicit Texture(): AbstractTexture(Implementation::textureTarget<dimensions>()) {}
 
-        /** @brief %Texture target */
-        constexpr Target target() const { return static_cast<Target>(_target); }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief Texture()
+         * @deprecated Use the parameterless @ref Magnum::Texture::Texture() "Texture()"
+         *      constructor or dedicated @ref Magnum::TextureArray "TextureArray",
+         *      @ref Magnum::MultisampleTexture "MultisampleTexture",
+         *      @ref Magnum::RectangleTexture "RectangleTexture" classes
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use the parameterless constructor or dedicated TextureArray, MultisampleTexture, RectangleTexture classes instead") Texture(Target target): AbstractTexture(GLenum(target)) {}
+
+        /** @brief %Texture target
+         * @deprecated Use dedicated @ref Magnum::Texture "Texture",
+         *      @ref Magnum::TextureArray "TextureArray",
+         *      @ref Magnum::MultisampleTexture "MultisampleTexture",
+         *      @ref Magnum::RectangleTexture "RectangleTexture" classes
+         *      instead.
+         */
+        constexpr CORRADE_DEPRECATED("use dedicated Texture, TextureArray, MultisampleTexture, RectangleTexture classes instead") Target target() const { return static_cast<Target>(_target); }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -245,10 +179,49 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH}.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        typename DimensionTraits<Dimensions, Int>::VectorType imageSize(Int level) {
-            return DataHelper<Dimensions>::imageSize(*this, _target, level);
+        typename DimensionTraits<dimensions, Int>::VectorType imageSize(Int level) {
+            return DataHelper<dimensions>::imageSize(*this, _target, level);
         }
         #endif
+
+        /**
+         * @brief Set minification filter
+         * @param filter        Filter
+         * @param mipmap        Mipmap filtering. If set to anything else than
+         *      @ref Sampler::Mipmap::Base, make sure textures for all mip
+         *      levels are set or call @ref generateMipmap().
+         * @return Reference to self (for method chaining)
+         *
+         * Sets filter used when the object pixel size is smaller than the
+         * texture size. If @extension{EXT,direct_state_access} is not
+         * available, the texture is bound to some layer before the operation.
+         * Initial value is (@ref Sampler::Filter::Nearest, @ref Sampler::Mipmap::Linear).
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_MIN_FILTER}
+         */
+        Texture<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+            AbstractTexture::setMinificationFilter(filter, mipmap);
+            return *this;
+        }
+
+        /**
+         * @brief Set magnification filter
+         * @param filter        Filter
+         * @return Reference to self (for method chaining)
+         *
+         * Sets filter used when the object pixel size is larger than largest
+         * texture size. If @extension{EXT,direct_state_access} is not
+         * available, the texture is bound to some layer before the operation.
+         * Initial value is @ref Sampler::Filter::Linear.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_MAG_FILTER}
+         */
+        Texture<dimensions>& setMagnificationFilter(Sampler::Filter filter) {
+            AbstractTexture::setMagnificationFilter(filter);
+            return *this;
+        }
 
         /**
          * @brief Set wrapping
@@ -260,15 +233,51 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * textures. If @extension{EXT,direct_state_access} is not available,
          * the texture is bound to some layer before the operation. Initial
          * value is @ref Sampler::Wrapping::Repeat.
-         * @attention For rectangle textures only some modes are supported,
-         *      see @ref Sampler::Wrapping documentation for more information.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
          */
-        Texture<Dimensions>& setWrapping(const Array<Dimensions, Sampler::Wrapping>& wrapping) {
-            DataHelper<Dimensions>::setWrapping(*this, wrapping);
+        Texture<dimensions>& setWrapping(const Array<dimensions, Sampler::Wrapping>& wrapping) {
+            DataHelper<dimensions>::setWrapping(*this, wrapping);
+            return *this;
+        }
+
+        /**
+         * @brief Set border color
+         * @return Reference to self (for method chaining)
+         *
+         * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
+         * If @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some layer before the operation. Initial value is
+         * `{0.0f, 0.0f, 0.0f, 0.0f}`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
+         */
+        Texture<dimensions>& setBorderColor(const Color4& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+
+        /**
+         * @brief Set max anisotropy
+         * @return Reference to self (for method chaining)
+         *
+         * Default value is `1.0f`, which means no anisotropy. Set to value
+         * greater than `1.0f` for anisotropic filtering. If extension
+         * @extension{EXT,texture_filter_anisotropic} (desktop or ES) is not
+         * available, this function does nothing. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some layer before the operation.
+         * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
+         */
+        Texture<dimensions>& setMaxAnisotropy(Float anisotropy) {
+            AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
 
@@ -301,8 +310,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
          */
-        Texture<Dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
-            DataHelper<Dimensions>::setStorage(*this, _target, levels, internalFormat, size);
+        Texture<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
+            DataHelper<dimensions>::setStorage(*this, _target, levels, internalFormat, size);
             return *this;
         }
 
@@ -368,20 +377,20 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
-        Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
-            DataHelper<Dimensions>::setImage(*this, _target, level, internalFormat, image);
+        Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
+            DataHelper<dimensions>::setImage(*this, _target, level, internalFormat, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>& image) {
-            DataHelper<Dimensions>::setImage(*this, _target, level, internalFormat, image);
+        Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>& image) {
+            DataHelper<dimensions>::setImage(*this, _target, level, internalFormat, image);
             return *this;
         }
 
         /** @overload */
-        Texture<Dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>&& image) {
+        Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>&& image) {
             return setImage(level, internalFormat, image);
         }
         #endif
@@ -403,23 +412,49 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const ImageReference<dimensions>& image) {
+        Texture<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, const ImageReference<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
+        Texture<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
         /** @overload */
-        Texture<Dimensions>& setSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, BufferImage<dimensions>&& image) {
+        Texture<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, BufferImage<dimensions>&& image) {
             return setSubImage(level, offset, image);
         }
         #endif
+
+        /**
+         * @brief Generate mipmap
+         * @return Reference to self (for method chaining)
+         *
+         * If @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some layer before the operation.
+         * @see setMinificationFilter(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
+         *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
+         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         */
+        Texture<dimensions>& generateMipmap() {
+            AbstractTexture::generateMipmap();
+            return *this;
+        }
+
+        /**
+         * @brief Invalidate texture image
+         * @param level             Mip level
+         *
+         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
+         * (part of OpenGL 4.3) is not available, this function does nothing.
+         * @see @ref invalidateSubImage(), @fn_gl{InvalidateTexImage}
+         */
+        void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
         /**
          * @brief Invalidate texture subimage
@@ -431,34 +466,14 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
-        void invalidateSubImage(Int level, const typename DimensionTraits<Dimensions, Int>::VectorType& offset, const typename DimensionTraits<Dimensions, Int>::VectorType& size) {
+        void invalidateSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::invalidateSubImage(*this, level, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Texture<Dimensions>& setLabel(const std::string& label) {
+        Texture<dimensions>& setLabel(const std::string& label) {
             AbstractTexture::setLabel(label);
-            return *this;
-        }
-        Texture<Dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
-            AbstractTexture::setMinificationFilter(filter, mipmap);
-            return *this;
-        }
-        Texture<Dimensions>& setMagnificationFilter(Sampler::Filter filter) {
-            AbstractTexture::setMagnificationFilter(filter);
-            return *this;
-        }
-        Texture<Dimensions>& setBorderColor(const Color4& color) {
-            AbstractTexture::setBorderColor(color);
-            return *this;
-        }
-        Texture<Dimensions>& setMaxAnisotropy(Float anisotropy) {
-            AbstractTexture::setMaxAnisotropy(anisotropy);
-            return *this;
-        }
-        Texture<Dimensions>& generateMipmap() {
-            AbstractTexture::generateMipmap();
             return *this;
         }
         #endif

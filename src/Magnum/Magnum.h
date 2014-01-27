@@ -560,8 +560,8 @@ typedef ColorFormat ImageFormat;
 typedef ColorType ColorType;
 
 class Context;
-class CubeMapTexture;
 
+class CubeMapTexture;
 #ifndef MAGNUM_TARGET_GLES
 class CubeMapTextureArray;
 #endif
@@ -588,10 +588,18 @@ enum class MeshPrimitive: GLenum;
 class Mesh;
 class MeshView;
 
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt> class MultisampleTexture;
+typedef MultisampleTexture<2> MultisampleTexture2D;
+typedef MultisampleTexture<3> MultisampleTexture2DArray;
+#endif
+
 /* AbstractQuery is not used directly */
 class PrimitiveQuery;
 class SampleQuery;
 class TimeQuery;
+
+class RectangleTexture;
 
 class Renderbuffer;
 enum class RenderbufferFormat: GLenum;
@@ -612,6 +620,14 @@ typedef Texture<1> Texture1D;
 #endif
 typedef Texture<2> Texture2D;
 typedef Texture<3> Texture3D;
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt> class TextureArray;
+#ifndef MAGNUM_TARGET_GLES
+typedef TextureArray<1> Texture1DArray;
+#endif
+typedef TextureArray<2> Texture2DArray;
+#endif
 
 enum class TextureFormat: GLenum;
 

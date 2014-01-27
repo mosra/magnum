@@ -29,8 +29,6 @@
  * @brief Class @ref Magnum::AbstractTexture
  */
 
-#include "Magnum/Array.h"
-#include "Magnum/Color.h"
 #include "Magnum/Sampler.h"
 #include "Magnum/AbstractObject.h"
 
@@ -81,7 +79,7 @@ OpenGL ES 3.0 or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
 available, the feature is emulated with sequence of @ref Texture::setImage() "setImage()"
 calls.
 
-You can use functions @ref invalidateImage() and
+You can use functions @ref Texture::invalidateImage() and
 @ref Texture::invalidateSubImage() "invalidateSubImage()" if you don't need
 texture data anymore to avoid unnecessary memory operations performed by OpenGL
 in order to preserve the data. If running on OpenGL ES or extension
@@ -158,6 +156,14 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static Int maxIntegerSamples();
         #endif
 
+        /**
+         * @brief Destructor
+         *
+         * Deletes associated OpenGL texture.
+         * @see @fn_gl{DeleteTextures}
+         */
+        ~AbstractTexture();
+
         /** @brief Copying is not allowed */
         AbstractTexture(const AbstractTexture&) = delete;
 
@@ -211,116 +217,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          */
         void bind(Int layer);
 
-        /**
-         * @brief Set minification filter
-         * @param filter        Filter
-         * @param mipmap        Mipmap filtering. If set to anything else than
-         *      @ref Sampler::Mipmap::Base, make sure textures for all mip
-         *      levels are set or call @ref generateMipmap().
-         * @return Reference to self (for method chaining)
-         *
-         * Sets filter used when the object pixel size is smaller than the
-         * texture size. If @extension{EXT,direct_state_access} is not
-         * available, the texture is bound to some layer before the operation.
-         * Initial value is (@ref Sampler::Filter::Nearest, @ref Sampler::Mipmap::Linear).
-         * @attention For rectangle textures only some modes are supported,
-         *      see @ref Sampler::Filter and @ref Sampler::Mipmap documentation
-         *      for more information.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MIN_FILTER}
-         */
-        AbstractTexture& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base);
-
-        /**
-         * @brief Set magnification filter
-         * @param filter        Filter
-         * @return Reference to self (for method chaining)
-         *
-         * Sets filter used when the object pixel size is larger than largest
-         * texture size. If @extension{EXT,direct_state_access} is not
-         * available, the texture is bound to some layer before the operation.
-         * Initial value is @ref Sampler::Filter::Linear.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MAG_FILTER}
-         */
-        AbstractTexture& setMagnificationFilter(Sampler::Filter filter);
-
-        /**
-         * @brief Set border color
-         * @return Reference to self (for method chaining)
-         *
-         * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
-         * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation. Initial value is
-         * `{0.0f, 0.0f, 0.0f, 0.0f}`.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
-         */
-        AbstractTexture& setBorderColor(const Color4& color);
-
-        /**
-         * @brief Set max anisotropy
-         * @return Reference to self (for method chaining)
-         *
-         * Default value is `1.0f`, which means no anisotropy. Set to value
-         * greater than `1.0f` for anisotropic filtering. If extension
-         * @extension{EXT,texture_filter_anisotropic} (desktop or ES) is not
-         * available, this function does nothing. If
-         * @extension{EXT,direct_state_access} is not available, the texture is
-         * bound to some layer before the operation.
-         * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
-         *      @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
-         */
-        AbstractTexture& setMaxAnisotropy(Float anisotropy);
-
-        /**
-         * @brief Invalidate texture image
-         * @param level             Mip level
-         *
-         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * (part of OpenGL 4.3) is not available, this function does nothing.
-         * @see @ref Texture::invalidateSubImage() "invalidateSubImage()",
-         *      @fn_gl{InvalidateTexImage}
-         */
-        void invalidateImage(Int level);
-
-        /**
-         * @brief Generate mipmap
-         * @return Reference to self (for method chaining)
-         *
-         * Can not be used for rectangle textures. If
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation.
-         * @see setMinificationFilter(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
-         *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
-         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
-         */
-        AbstractTexture& generateMipmap();
-
-    protected:
-        /**
-         * @brief Constructor
-         *
-         * Creates new OpenGL texture.
-         * @see @fn_gl{GenTextures}
-         */
-        explicit AbstractTexture(GLenum target);
-
-        /**
-         * @brief Destructor
-         *
-         * Deletes assigned OpenGL texture.
-         * @see @fn_gl{DeleteTextures}
-         */
-        ~AbstractTexture();
-
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #else
@@ -328,8 +224,17 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     #endif
         template<UnsignedInt textureDimensions> struct DataHelper {};
 
+        explicit AbstractTexture(GLenum target);
+
         /* Unlike bind() this also sets the binding layer as active */
         void MAGNUM_LOCAL bindInternal();
+
+        void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
+        void setMagnificationFilter(Sampler::Filter filter);
+        void setBorderColor(const Color4& color);
+        void setMaxAnisotropy(Float anisotropy);
+        void invalidateImage(Int level);
+        void generateMipmap();
 
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt dimensions> void image(GLenum target, GLint level, Image<dimensions>& image);
@@ -445,11 +350,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
+    #ifdef MAGNUM_BUILD_DEPRECATED
     enum class Target: GLenum {
         Texture1D = GL_TEXTURE_1D
     };
-
-    constexpr static Target target() { return Target::Texture1D; }
+    #endif
 
     static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLenum target, GLint level);
 
@@ -467,6 +372,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
 };
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
+    #ifdef MAGNUM_BUILD_DEPRECATED
     enum class Target: GLenum {
         Texture2D = GL_TEXTURE_2D,
         #ifndef MAGNUM_TARGET_GLES
@@ -475,8 +381,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
         Rectangle = GL_TEXTURE_RECTANGLE
         #endif
     };
-
-    constexpr static Target target() { return Target::Texture2D; }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     static Vector2i imageSize(AbstractTexture& texture, GLenum target, GLint level);
@@ -499,6 +404,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const Vector2i& size);
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
+    #ifdef MAGNUM_BUILD_DEPRECATED
     enum class Target: GLenum {
         #ifndef MAGNUM_TARGET_GLES2
         Texture3D = GL_TEXTURE_3D,
@@ -510,8 +416,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
         Texture3D = GL_TEXTURE_3D_OES
         #endif
     };
-
-    constexpr static Target target() { return Target::Texture3D; }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     static Vector3i imageSize(AbstractTexture& texture, GLenum target, GLint level);

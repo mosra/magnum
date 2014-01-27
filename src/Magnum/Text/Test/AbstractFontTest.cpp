@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractFont.h"
 
 #include "configure.h"

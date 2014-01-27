@@ -28,6 +28,8 @@
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
 #endif
+#include "Magnum/Array.h"
+#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -134,45 +136,32 @@ void AbstractTexture::bindImplementationDSA(GLint layer) {
 }
 #endif
 
-AbstractTexture& AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE || mipmap == Sampler::Mipmap::Base, "AbstractTexture: rectangle textures cannot have mipmaps", *this);
-    #endif
-
+void AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MIN_FILTER, GLint(filter)|GLint(mipmap));
-    return *this;
 }
 
-AbstractTexture& AbstractTexture::setMagnificationFilter(const Sampler::Filter filter) {
+void AbstractTexture::setMagnificationFilter(const Sampler::Filter filter) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
-    return *this;
 }
 
-AbstractTexture& AbstractTexture::setBorderColor(const Color4& color) {
+void AbstractTexture::setBorderColor(const Color4& color) {
     #ifndef MAGNUM_TARGET_GLES
     (this->*Context::current()->state().texture->parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
     #else
     (this->*Context::current()->state().texture->parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR_NV, color.data());
     #endif
-    return *this;
 }
 
-AbstractTexture& AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
+void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
-    return *this;
 }
 
 void AbstractTexture::invalidateImage(const Int level) {
     (this->*Context::current()->state().texture->invalidateImageImplementation)(level);
 }
 
-AbstractTexture& AbstractTexture::generateMipmap() {
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(_target != GL_TEXTURE_RECTANGLE, "AbstractTexture: rectangle textures cannot have mipmaps", *this);
-    #endif
-
+void AbstractTexture::generateMipmap() {
     (this->*Context::current()->state().texture->mipmapImplementation)();
-    return *this;
 }
 
 void AbstractTexture::mipmapImplementationDefault() {

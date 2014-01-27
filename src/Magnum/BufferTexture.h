@@ -195,7 +195,8 @@ functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @ref AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
 and respective function documentation for more information.
 
-@see @ref Texture, @ref CubeMapTexture, @ref CubeMapTextureArray
+@see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
+    @ref CubeMapTextureArray, @ref MultisampleTexture, @ref RectangleTexture
 @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
@@ -216,6 +217,12 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          */
         static Int offsetAlignment();
 
+        /**
+         * @brief Constructor
+         *
+         * Creates new OpenGL texture object.
+         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_BUFFER}
+         */
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         /** @copydoc AbstractTexture::id() */

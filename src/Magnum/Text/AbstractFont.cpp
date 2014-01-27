@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Unicode.h>
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text {

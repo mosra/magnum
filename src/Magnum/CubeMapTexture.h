@@ -30,6 +30,8 @@
  */
 
 #include "Magnum/AbstractTexture.h"
+#include "Magnum/Array.h"
+#include "Magnum/Math/Vector2.h"
 
 namespace Magnum {
 
@@ -92,18 +94,38 @@ class CubeMapTexture: public AbstractTexture {
         /**
          * @brief Constructor
          *
-         * Creates one cube map OpenGL texture.
+         * Creates new OpenGL texture object.
          * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_CUBE_MAP}
          */
         explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
-        /**
-         * @brief Set wrapping
-         *
-         * See @ref Texture::setWrapping() for more information.
-         */
+        /** @copydoc Texture::setMinificationFilter() */
+        CubeMapTexture& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+            AbstractTexture::setMinificationFilter(filter, mipmap);
+            return *this;
+        }
+
+        /** @copydoc Texture::setMagnificationFilter() */
+        CubeMapTexture& setMagnificationFilter(Sampler::Filter filter) {
+            AbstractTexture::setMagnificationFilter(filter);
+            return *this;
+        }
+
+        /** @copydoc Texture::setWrapping() */
         CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(*this, wrapping);
+            return *this;
+        }
+
+        /** @copydoc Texture::setBorderColor() */
+        CubeMapTexture& setBorderColor(const Color4& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+
+        /** @copydoc Texture::setMaxAnisotropy() */
+        CubeMapTexture& setMaxAnisotropy(Float anisotropy) {
+            AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
 
@@ -220,6 +242,15 @@ class CubeMapTexture: public AbstractTexture {
         }
         #endif
 
+        /** @copydoc Texture::generateMipmap() */
+        CubeMapTexture& generateMipmap() {
+            AbstractTexture::generateMipmap();
+            return *this;
+        }
+
+        /** @copydoc Texture::invalidateImage() */
+        void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
+
         /**
          * @brief Invalidate texture subimage
          * @param level             Mip level
@@ -240,26 +271,6 @@ class CubeMapTexture: public AbstractTexture {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         CubeMapTexture& setLabel(const std::string& label) {
             AbstractTexture::setLabel(label);
-            return *this;
-        }
-        CubeMapTexture& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
-            AbstractTexture::setMinificationFilter(filter, mipmap);
-            return *this;
-        }
-        CubeMapTexture& setMagnificationFilter(Sampler::Filter filter) {
-            AbstractTexture::setMagnificationFilter(filter);
-            return *this;
-        }
-        CubeMapTexture& setBorderColor(const Color4& color) {
-            AbstractTexture::setBorderColor(color);
-            return *this;
-        }
-        CubeMapTexture& setMaxAnisotropy(Float anisotropy) {
-            AbstractTexture::setMaxAnisotropy(anisotropy);
-            return *this;
-        }
-        CubeMapTexture& generateMipmap() {
-            AbstractTexture::generateMipmap();
             return *this;
         }
         #endif

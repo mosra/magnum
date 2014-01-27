@@ -28,6 +28,7 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Shaders/AbstractVector.h"
 #include "Magnum/Text/AbstractFont.h"
 

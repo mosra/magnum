@@ -24,6 +24,7 @@
 */
 
 #include "Magnum/Buffer.h"
+#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"

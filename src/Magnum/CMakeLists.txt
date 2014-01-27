@@ -138,14 +138,17 @@ endif()
 if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferTexture.h
-        CubeMapTextureArray.h)
+        CubeMapTextureArray.h
+        MultisampleTexture.h
+        RectangleTexture.h)
     set(Magnum_SRCS ${Magnum_SRCS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
 # Not-ES2 headers
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
-        BufferImage.h)
+        BufferImage.h
+        TextureArray.h)
 endif()
 
 # Files shared between main library and math unit test library
