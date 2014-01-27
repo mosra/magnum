@@ -559,7 +559,6 @@ enum class ColorType: GLenum;
 typedef ColorFormat ImageFormat;
 typedef ColorType ColorType;
 
-enum class Version: Int;
 class Context;
 class CubeMapTexture;
 
@@ -617,6 +616,8 @@ typedef Texture<3> Texture3D;
 enum class TextureFormat: GLenum;
 
 class Timeline;
+
+enum class Version: Int;
 
 }
 
