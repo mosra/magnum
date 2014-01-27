@@ -276,8 +276,8 @@ namespace GL {
         #endif
         _extension(GL,OES,stencil1,                 GLES200,    None) // #31
         _extension(GL,OES,stencil4,                 GLES200,    None) // #32
-        _extension(GL,OES,texture_3D,               GLES200,    None) // #34
         #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,OES,texture_3D,               GLES200, GLES300) // #34
         _extension(GL,OES,texture_half_float_linear, GLES200, GLES300) // #35
         _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #35
         _extension(GL,OES,texture_half_float,       GLES200, GLES300) // #36

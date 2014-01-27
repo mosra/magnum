@@ -214,8 +214,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
         _extension(GL,OES,stencil1),
-        _extension(GL,OES,stencil4),
-        _extension(GL,OES,texture_3D)};
+        _extension(GL,OES,stencil4)};
     #ifdef MAGNUM_TARGET_GLES2
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
@@ -238,6 +237,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,depth24),
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,rgb8_rgba8),
+        _extension(GL,OES,texture_3D),
         _extension(GL,OES,texture_half_float_linear),
         _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float),
@@ -468,7 +468,6 @@ Context::Context() {
     _disable(GL,KHR,debug)
     _disable(GL,NV,read_buffer_front)
     _disable(GL,OES,mapbuffer)
-    _disable(GL,OES,texture_3D)
     #ifdef MAGNUM_TARGET_GLES2
     _disable(GL,ANGLE,framebuffer_blit)
     _disable(GL,ANGLE,framebuffer_multisample)
@@ -484,6 +483,7 @@ Context::Context() {
     _disable(GL,NV,fbo_color_attachments) // ??
     _disable(GL,NV,read_buffer)
     _disable(GL,NV,framebuffer_multisample)
+    _disable(GL,OES,texture_3D)
     _disable(GL,OES,vertex_array_object)
     #endif
     #undef _disable
