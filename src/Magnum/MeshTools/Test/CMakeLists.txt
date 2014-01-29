@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp)
+corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp)
 corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)

@@ -26,74 +26,105 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::combineIndexedArrays()
+ * @brief Function @ref Magnum::MeshTools::combineIndexArrays(), @ref Magnum::MeshTools::combineIndexedArrays()
  */
 
-#include <vector>
-#include <numeric>
+#include <functional>
 #include <tuple>
+#include <vector>
 
-#include "Magnum/Math/Vector.h"
-#include "Magnum/MeshTools/RemoveDuplicates.h"
+#include "Magnum/Types.h"
+#include "Magnum/MeshTools/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum { namespace MeshTools {
 
+/**
+@brief Combine index arrays
+
+Creates new combined index array and updates the original ones with translation
+to new ones. For example, when you have position and normal array, each indexed
+with separate indices and you want to index both of them with single index
+array:
+
+    a b c d e f         // positions
+    A B C D E F G       // normals
+
+    0 2 5 0 0 1 3 2 2   // position indices
+    1 3 4 1 4 6 1 3 1   // normal indices
+
+In particular, first triangle in the mesh will have positions `a c f` and
+normals `B D E`. You can see that not all combinations are unique and also that
+there are some vertices unused. When you pass the two index arrays above to
+this function, the following combined index array is returned:
+
+    0 1 2 0 3 4 5 1 6
+
+And the original arrays are cleaned up to have only unique combinations:
+
+    0 2 5 0 1 3 2
+    1 3 4 4 6 1 1
+
+You can use these as translation table to create new vertex and normal arrays
+which can be then indexed with the combined index array:
+
+    a c f a b d c
+    B D E E G B B
+
+Again, first triangle in the mesh will have positions `a c f` and normals
+`B D E`.
+
+This function calls @ref combineIndexArrays(std::vector<UnsignedInt>&, UnsignedInt)
+internally. See also @ref combineIndexedArrays() which does the vertex data
+reordering automatically.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays);
+
+/**
+@brief Combine index arrays
+
+Unlike above, this function takes one interleaved array instead of separate
+index arrays. Continuing with the above example, you would call this function
+with the following array (odd value is vertex index, even is normal index,
+@p stride is thus 2):
+
+    0 1 2 3 5 4 0 1 0 4 1 6 3 1 2 3 2 1
+
+Similarly to above this function will return the following combined index
+array as first pair value:
+
+    0 1 2 0 3 4 5 1 6
+
+And second pair value is the cleaned up interleaved array:
+
+    0 1 2 3 5 4 0 4 1 6 3 1 2 1
+
+@see @ref combineIndexedArrays()
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> combineIndexArrays(const std::vector<UnsignedInt>& interleavedArrays, UnsignedInt stride);
+
 namespace Implementation {
 
-class CombineIndexedArrays {
-    public:
-        template<class ...T> std::vector<UnsignedInt> operator()(const std::tuple<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
-            /* Compute index count */
-            std::size_t _indexCount = indexCount(std::get<0>(indexedArrays)...);
+MAGNUM_MESHTOOLS_EXPORT std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> interleaveAndCombineIndexArrays(const std::reference_wrapper<const std::vector<UnsignedInt>>* begin, const std::reference_wrapper<const std::vector<UnsignedInt>>* end);
 
-            /* Resulting index array */
-            std::vector<UnsignedInt> result;
-            result.resize(_indexCount);
-            std::iota(result.begin(), result.end(), 0);
+template<class T> void writeCombinedArray(const UnsignedInt stride, const UnsignedInt offset, const std::vector<UnsignedInt>& interleavedCombinedIndexArrays, std::vector<T>& array) {
+    std::vector<T> output;
+    output.reserve(interleavedCombinedIndexArrays.size()/stride);
+    for(std::size_t i = 0, max = interleavedCombinedIndexArrays.size()/stride; i != max; ++i)
+        output.push_back(array[interleavedCombinedIndexArrays[offset + i*stride]]);
+    std::swap(output, array);
+}
 
-            /* All index combinations */
-            std::vector<Math::Vector<sizeof...(indexedArrays), UnsignedInt> > indexCombinations(_indexCount);
-            writeCombinedIndices(indexCombinations, std::get<0>(indexedArrays)...);
+/* Terminator for recursive calls */
+inline void writeCombinedArrays(UnsignedInt, UnsignedInt, const std::vector<UnsignedInt>&) {}
 
-            /* Make the combinations unique */
-            MeshTools::removeDuplicates(result, indexCombinations);
-
-            /* Write combined arrays */
-            writeCombinedArrays(indexCombinations, std::get<1>(indexedArrays)...);
-
-            return result;
-        }
-
-    private:
-        template<class ...T> static std::size_t indexCount(const std::vector<UnsignedInt>& first, const std::vector<T>&... next) {
-            CORRADE_ASSERT(sizeof...(next) == 0 || indexCount(next...) == first.size(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.", 0);
-
-            return first.size();
-        }
-
-        template<std::size_t size, class ...T> static void writeCombinedIndices(std::vector<Math::Vector<size, UnsignedInt>>& output, const std::vector<UnsignedInt>& first, const std::vector<T>&... next) {
-            /* Copy the data to output */
-            for(std::size_t i = 0; i != output.size(); ++i)
-                output[i][size-sizeof...(next)-1] = first[i];
-
-            writeCombinedIndices(output, next...);
-        }
-
-        template<std::size_t size, class T, class ...U> static void writeCombinedArrays(const std::vector<Math::Vector<size, UnsignedInt>>& combinedIndices, std::vector<T>& first, std::vector<U>&... next) {
-            /* Rewrite output array */
-            std::vector<T> output;
-            for(std::size_t i = 0; i != combinedIndices.size(); ++i)
-                output.push_back(first[combinedIndices[i][size-sizeof...(next)-1]]);
-            std::swap(output, first);
-
-            writeCombinedArrays(combinedIndices, next...);
-        }
-
-        /* Terminator functions for recursive calls */
-        static std::size_t indexCount() { return 0; }
-        template<std::size_t size> static void writeCombinedIndices(std::vector<Math::Vector<size, UnsignedInt>>&) {}
-        template<std::size_t size> static void writeCombinedArrays(const std::vector<Math::Vector<size, UnsignedInt>>&) {}
-};
+template<class T, class ...U> inline void writeCombinedArrays(UnsignedInt stride, UnsignedInt offset, const std::vector<UnsignedInt>& interleavedCombinedIndexArrays, std::vector<T>& first, std::vector<U>&... next) {
+    writeCombinedArray(stride, offset, interleavedCombinedIndexArrays, first);
+    writeCombinedArrays(stride, offset + 1, interleavedCombinedIndexArrays, next...);
+}
 
 }
 
@@ -102,15 +133,13 @@ class CombineIndexedArrays {
 @param[in,out] indexedArrays Index and attribute arrays
 @return %Array with resulting indices
 
-When you have e.g. vertex, normal and texture array, each indexed with
-different indices, you can use this function to combine them to use the same
-indices. The function returns array with resulting indices and replaces
-original attribute arrays with combined ones.
+Creates new combined index array and reorders original attribute arrays so they
+can be indexed with the new single index array.
 
 The index array must be passed as const reference (to avoid copying) and
 attribute array as reference, so it can be replaced with combined data. To
 avoid explicit verbose specification of tuple type, you can write it with help
-of some STL functions like shown below. Also if one index array is shader by
+of some STL functions like shown below. Also if one index array is shared by
 more than one attribute array, just pass the index array more times. Example:
 @code
 std::vector<UnsignedInt> vertexIndices;
@@ -120,24 +149,42 @@ std::vector<Vector3> normals;
 std::vector<Vector2> textureCoordinates;
 
 std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
-    std::make_tuple(std::cref(vertexIndices), std::ref(positions)),
-    std::make_tuple(std::cref(normalTextureIndices), std::ref(normals)),
-    std::make_tuple(std::cref(normalTextureIndices), std::ref(textureCoordinates))
+    std::make_pair(std::cref(vertexIndices), std::ref(positions)),
+    std::make_pair(std::cref(normalTextureIndices), std::ref(normals)),
+    std::make_pair(std::cref(normalTextureIndices), std::ref(textureCoordinates))
 );
 @endcode
-`positions`, `normals` and `textureCoordinates` will then contain combined
-attributes indexed with `indices`.
 
-@attention The function expects that all arrays have the same size.
-@todo Use `std::pair` (to avoid `std::make_tuple`), make this usable also at
-    runtime
+See @ref combineIndexArrays() documentation for more information about the
+procedure.
+@todo Invent a way which avoids these overly verbose parameters (`std::pair`
+    doesn't help)
 */
 /* Implementation note: It's done using tuples because it is more clear which
    parameter is index array and which is attribute array, mainly when both are
    of the same type. */
-template<class ...T> std::vector<UnsignedInt> combineIndexedArrays(const std::tuple<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
-    return Implementation::CombineIndexedArrays()(indexedArrays...);
+template<class ...T> std::vector<UnsignedInt> combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
+    /* Interleave and combine index arrays */
+    std::vector<UnsignedInt> combinedIndices;
+    std::vector<UnsignedInt> interleavedCombinedIndexArrays;
+    auto i = {std::ref(indexedArrays.first)...};
+    std::tie(combinedIndices, interleavedCombinedIndexArrays) = Implementation::interleaveAndCombineIndexArrays(i.begin(), i.end());
+
+    /* Write combined arrays */
+    Implementation::writeCombinedArrays(sizeof...(T), 0, interleavedCombinedIndexArrays, indexedArrays.second...);
+
+    return combinedIndices;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @copybrief combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...)
+ * @deprecated Use @ref Magnum::MeshTools::combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...) "combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...)" instead.
+ */
+template<class ...T> inline CORRADE_DEPRECATED("use combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...) instead") std::vector<UnsignedInt> combineIndexedArrays(const std::tuple<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
+    return combineIndexedArrays(std::make_pair(std::cref(std::get<0>(indexedArrays)), std::ref(std::get<1>(indexedArrays)))...);
+}
+#endif
 
 }}
 
