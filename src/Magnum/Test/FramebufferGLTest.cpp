@@ -879,7 +879,7 @@ void FramebufferGLTest::blit() {
     CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub());
 
     /* And have given color after */
-    Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::ColorBuffer);
+    Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::Color);
     b.read({}, Vector2i(1), image);
 
     MAGNUM_VERIFY_NO_ERROR();

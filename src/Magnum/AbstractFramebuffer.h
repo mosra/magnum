@@ -43,9 +43,9 @@ namespace Magnum {
 @see @ref AbstractFramebuffer, @ref FramebufferClearMask
 */
 enum class FramebufferClear: GLbitfield {
-    Color = GL_COLOR_BUFFER_BIT,    /**< Color */
-    Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth value */
-    Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil value */
+    Color = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
+    Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth buffer */
+    Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil buffer */
 };
 
 /**
@@ -63,12 +63,28 @@ typedef Containers::EnumSet<FramebufferClear, GLbitfield,
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
-@todo Remove redundant `%Buffer`
 */
 enum class FramebufferBlit: GLbitfield {
-    ColorBuffer = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
-    DepthBuffer = GL_DEPTH_BUFFER_BIT,    /**< Depth buffer */
-    StencilBuffer = GL_STENCIL_BUFFER_BIT /**< Stencil buffer */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /** @copydoc FramebufferBlit::Color
+     * @deprecated Use @ref Magnum::FramebufferBlit::Color "FramebufferBlit::Color" instead.
+     */
+    ColorBuffer = GL_COLOR_BUFFER_BIT,
+
+    /** @copydoc FramebufferBlit::Depth
+     * @deprecated Use @ref Magnum::FramebufferBlit::Depth "FramebufferBlit::Depth" instead.
+     */
+    DepthBuffer = GL_DEPTH_BUFFER_BIT,
+
+    /** @copydoc FramebufferBlit::Stencil
+     * @deprecated Use @ref Magnum::FramebufferBlit::Stencil "FramebufferBlit::Stencil" instead.
+     */
+    StencilBuffer = GL_STENCIL_BUFFER_BIT,
+    #endif
+
+    Color = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
+    Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth buffer */
+    Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil buffer */
 };
 
 /**
