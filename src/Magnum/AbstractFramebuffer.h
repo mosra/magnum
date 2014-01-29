@@ -62,7 +62,7 @@ typedef Containers::EnumSet<FramebufferClear, GLbitfield,
 @see @ref AbstractFramebuffer, @ref FramebufferBlitMask
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit}
+    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 @todo Remove redundant `%Buffer`
 */
 enum class FramebufferBlit: GLbitfield {
@@ -77,7 +77,7 @@ enum class FramebufferBlit: GLbitfield {
 @see @ref AbstractFramebuffer::blit()
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit}
+    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
 typedef Containers::EnumSet<FramebufferBlit, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferBlitMask;
@@ -88,7 +88,7 @@ typedef Containers::EnumSet<FramebufferBlit, GLbitfield,
 @see @ref AbstractFramebuffer::blit()
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit}
+    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
 enum class FramebufferBlitFilter: GLenum {
     Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
@@ -106,6 +106,7 @@ enum class FramebufferTarget: GLenum {
      * For reading only.
      * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
      *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
+     *      in OpenGL ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     Read = GL_READ_FRAMEBUFFER,
@@ -117,6 +118,7 @@ enum class FramebufferTarget: GLenum {
      * For drawing only.
      * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
      *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
+     *      in OpenGL ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     Draw = GL_DRAW_FRAMEBUFFER,
@@ -204,7 +206,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * for blitting operation.
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
-         *      @es_extension{NV,framebuffer_blit}
+         *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
          *      exists for ES)
          */
@@ -223,7 +225,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @ref FramebufferBlitFilter::Nearest filtering is used by default.
          * @see @fn_gl{BlitFramebuffer}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
-         *      @es_extension{NV,framebuffer_blit}
+         *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& rectangle, FramebufferBlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);

@@ -983,6 +983,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
              * Half float. Only for float attribute types.
              * @requires_gl30 %Extension @extension{NV,half_float}
              * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
+             *      in OpenGL ES 2.0
              */
             HalfFloat = GL_HALF_FLOAT,
 
@@ -1005,7 +1006,8 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
              * float vector attribute type.
              * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
              * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Packed attributes are not available in OpenGL
+             *      ES 2.0
              */
             UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
 
@@ -1013,7 +1015,8 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
              * Signed 2.10.10.10 packed integer. Only for four-component float
              * vector attribute type.
              * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
-             * @requires_gles30 (no extension providing this functionality)
+             * @requires_gles30 Packed attributes are not available in OpenGL
+             *      ES 2.0
              */
             Int2101010Rev = GL_INT_2_10_10_10_REV
             #endif

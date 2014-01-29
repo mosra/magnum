@@ -252,8 +252,9 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 // render full version of the object only if the query returns nonzero result
 q.endConditionalRender();
 @endcode
-@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 
+@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean} in
+    OpenGL ES 2.0
 @see @ref PrimitiveQuery, @ref TimeQuery
 */
 class SampleQuery: public AbstractQuery {

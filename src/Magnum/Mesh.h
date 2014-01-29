@@ -339,6 +339,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             /**
              * Unsigned int
              * @requires_gles30 %Extension @es_extension{OES,element_index_uint}
+             *      in OpenGL ES 2.0
              */
             UnsignedInt = GL_UNSIGNED_INT
         };

@@ -162,7 +162,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @see @ref maxSize(), @ref maxSamples(), @fn_gl{BindRenderbuffer},
          *      @fn_gl{RenderbufferStorageMultisample} or @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
-         *      or @es_extension{NV,framebuffer_multisample}
+         *      or @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
          * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}
          */

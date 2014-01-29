@@ -350,7 +350,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref MapFlags, @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
         enum class MapFlag: GLbitfield {
             /** Map buffer for reading. */
@@ -416,7 +417,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
         typedef Containers::EnumSet<MapFlag, GLbitfield> MapFlags;
 
@@ -800,7 +802,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref map(MapAccess), @ref setTargetHint(), @fn_gl{BindBuffer}
          *      and @fn_gl{MapBufferRange} or @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
         void* map(GLintptr offset, GLsizeiptr length, MapFlags flags);
 
@@ -820,7 +823,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{FlushMappedBufferRange}
          *      or @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
         Buffer& flushMappedRange(GLintptr offset, GLsizeiptr length);
 
@@ -836,7 +840,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * is bound to hinted target before the operation.
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{UnmapBuffer} or
          *      @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access}
-         * @requires_gles30 %Extension @es_extension{OES,mapbuffer}
+         * @requires_gles30 %Extension @es_extension{OES,mapbuffer} in OpenGL
+         *      ES 2.0
          */
         bool unmap();
 

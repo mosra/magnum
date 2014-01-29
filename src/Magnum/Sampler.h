@@ -57,7 +57,7 @@ class MAGNUM_EXPORT Sampler {
              *      for linear interpolation of textures with
              *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
              *      @ref Magnum::TextureFormat "TextureFormat::Float" in OpenGL
-             *      ES 2.0.
+             *      ES 2.0
              */
             Linear = GL_LINEAR
         };
@@ -83,7 +83,7 @@ class MAGNUM_EXPORT Sampler {
              *      for linear interpolation of textures with
              *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
              *      @ref Magnum::TextureFormat "TextureFormat::Float" in OpenGL
-             *      ES 2.0.
+             *      ES 2.0
              */
             Linear = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };

@@ -233,6 +233,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Accuracy of derivative calculation in fragment shader.
              * @requires_gles30 %Extension @es_extension{OES,standard_derivatives}
+             *      in OpenGL ES 2.0
              */
             #ifndef MAGNUM_TARGET_GLES2
             FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT
@@ -643,12 +644,14 @@ class MAGNUM_EXPORT Renderer {
             /**
              * `min(source, destination)`
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
+             *      in OpenGL ES 2.0
              */
             Min = GL_MIN,
 
             /**
              * `max(source, destination)`
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
+             *      in OpenGL ES 2.0
              */
             Max = GL_MAX
             #endif

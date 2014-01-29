@@ -55,8 +55,9 @@ See documentation of these values for possible limitations when using OpenGL ES
 enum class ColorFormat: GLenum {
     /**
      * Floating-point red channel.
-     * @requires_gles30 For texture data only, extension @es_extension{EXT,texture_rg}.
-     * @requires_es_extension For framebuffer reading, extension @es_extension{EXT,texture_rg}.
+     * @requires_gles30 For texture data only, extension @es_extension{EXT,texture_rg}
+     *      in OpenGL ES 2.0
+     * @requires_es_extension For framebuffer reading, extension @es_extension{EXT,texture_rg}
      */
     #ifndef MAGNUM_TARGET_GLES2
     Red = GL_RED,
@@ -95,7 +96,8 @@ enum class ColorFormat: GLenum {
     /**
      * Floating-point red and green channel.
      * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
-     * @requires_gles30 For texture data only, extension @es_extension{EXT,texture_rg}.
+     * @requires_gles30 For texture data only, extension @es_extension{EXT,texture_rg}
+     *      in OpenGL ES 2.0
      * @requires_es_extension For framebuffer reading, extension @es_extension{EXT,texture_rg}.
      */
     #ifndef MAGNUM_TARGET_GLES2
@@ -223,7 +225,8 @@ enum class ColorFormat: GLenum {
 
     /**
      * Depth component.
-     * @requires_gles30 For texture data only, extension @es_extension{ANGLE,depth_texture}.
+     * @requires_gles30 For texture data only, extension @es_extension{OES,depth_texture}
+     *      or @es_extension{ANGLE,depth_texture} in OpenGL ES 2.0
      * @requires_es_extension For framebuffer reading only, extension
      *      @es_extension2{NV,read_depth,GL_NV_read_depth_stencil}.
      */
@@ -246,9 +249,10 @@ enum class ColorFormat: GLenum {
     /**
      * Depth and stencil.
      * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
-     * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}.
+     * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}
+     *      in OpenGL ES 2.0
      * @requires_es_extension For framebuffer reading only, extension
-     *      @es_extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}.
+     *      @es_extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}
      */
     #ifndef MAGNUM_TARGET_GLES2
     DepthStencil = GL_DEPTH_STENCIL
@@ -293,7 +297,7 @@ enum class ColorType: GLenum {
      * Each component unsigned short.
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
      * @requires_gles30 For texture data only, extension @es_extension{OES,depth_texture}
-     *      or @es_extension{ANGLE,depth_texture}.
+     *      or @es_extension{ANGLE,depth_texture} in OpenGL ES 2.0
      */
     UnsignedShort = GL_UNSIGNED_SHORT,
 
@@ -312,7 +316,7 @@ enum class ColorType: GLenum {
      * Each component unsigned int.
      * @requires_gles30 Can't be used for framebuffer reading in OpenGL ES 2.0.
      * @requires_gles30 For texture data only, extension @es_extension{OES,depth_texture}
-     *      or @es_extension{ANGLE,depth_texture}.
+     *      or @es_extension{ANGLE,depth_texture} in OpenGL ES 2.0
      */
     UnsignedInt = GL_UNSIGNED_INT,
 
@@ -320,7 +324,7 @@ enum class ColorType: GLenum {
     /**
      * Each component signed int.
      * @requires_gles30 Only @ref Magnum::ColorType::UnsignedInt "ColorType::UnsignedInt"
-     *      is available in OpenGL ES 2.0.
+     *      is available in OpenGL ES 2.0 in OpenGL ES 2.0
      */
     Int = GL_INT,
     #endif
@@ -329,7 +333,8 @@ enum class ColorType: GLenum {
      * Each component half float.
      * @requires_gl30 %Extension @extension{NV,half_float} / @extension{ARB,half_float_pixel}
      * @requires_gles30 For texture data only, extension
-     *      @es_extension2{OES,texture_half_float,OES_texture_float}.
+     *      @es_extension2{OES,texture_half_float,OES_texture_float} in OpenGL
+     *      ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     HalfFloat = GL_HALF_FLOAT,
@@ -339,7 +344,8 @@ enum class ColorType: GLenum {
 
     /**
      * Each component float.
-     * @requires_gles30 For texture data only, extension @es_extension{OES,texture_float}.
+     * @requires_gles30 For texture data only, extension @es_extension{OES,texture_float}
+     *      in OpenGL ES 2.0
      */
     Float = GL_FLOAT,
 
@@ -434,7 +440,7 @@ enum class ColorType: GLenum {
      * ABGR, unsigned int, each RGB component 10bit, alpha component 2bit.
      * @requires_gles30 Can't be used for framebuffer reading in OpenGL ES 2.0.
      * @requires_gles30 For texture data only, extension
-     *      @es_extension{EXT,texture_type_2_10_10_10_REV}.
+     *      @es_extension{EXT,texture_type_2_10_10_10_REV} in OpenGL ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
@@ -463,7 +469,8 @@ enum class ColorType: GLenum {
     /**
      * Unsigned int, depth component 24bit, stencil index 8bit.
      * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
-     * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}.
+     * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}
+     *      in OpenGL ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     UnsignedInt248 = GL_UNSIGNED_INT_24_8,

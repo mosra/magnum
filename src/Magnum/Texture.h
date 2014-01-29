@@ -89,7 +89,8 @@ the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
 See @ref AbstractShaderProgram documentation for more information about usage
 in shaders.
 
-@requires_gles30 %Extension @es_extension{OES,texture_3D} for 3D textures.
+@requires_gles30 %Extension @es_extension{OES,texture_3D} for 3D textures in
+    OpenGL ES 2.0
 @requires_gl 1D textures are not available in OpenGL ES, only 2D and 3D ones.
 
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
@@ -494,7 +495,7 @@ typedef Texture<2> Texture2D;
 /**
 @brief Three-dimensional texture
 
-@requires_gles30 %Extension @es_extension{OES,texture_3D}
+@requires_gles30 %Extension @es_extension{OES,texture_3D} in OpenGL ES 2.0
 */
 typedef Texture<3> Texture3D;
 
