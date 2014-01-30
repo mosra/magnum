@@ -296,11 +296,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * allowed.
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation. If OpenGL 4.2,
-         * @extension{ARB,texture_storage}, OpenGL ES 3.0 or
-         * @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
-         * available, the feature is emulated with sequence of @ref setImage()
-         * calls.
+         * is bound to some layer before the operation. If @extension{ARB,texture_storage}
+         * (part of OpenGL 4.2), OpenGL ES 3.0 or @es_extension{EXT,texture_storage}
+         * in OpenGL ES 2.0 is not available, the feature is emulated with
+         * sequence of @ref setImage() calls.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/

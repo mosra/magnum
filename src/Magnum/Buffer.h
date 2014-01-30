@@ -185,8 +185,8 @@ and @ref unmap() use DSA functions to avoid unnecessary calls to
 You can use functions @ref invalidateData() and @ref invalidateSubData() if you
 don't need buffer data anymore to avoid unnecessary memory operations performed
 by OpenGL in order to preserve the data. If running on OpenGL ES or extension
-@extension{ARB,invalidate_subdata} is not available, these functions do
-nothing.
+@extension{ARB,invalidate_subdata} (part of OpenGL 4.3) is not available, these
+functions do nothing.
  */
 class MAGNUM_EXPORT Buffer: public AbstractObject {
     friend struct Implementation::BufferState;
@@ -544,9 +544,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief %Buffer label
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function returns empty string.
+         * OpenGL calls. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{BUFFER} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
@@ -557,9 +557,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Set buffer label
          * @return Reference to self (for method chaining)
          *
-         * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function does nothing.
+         * Default is empty string. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with @def_gl{BUFFER}
          *      or @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}

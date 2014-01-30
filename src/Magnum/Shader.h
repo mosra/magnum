@@ -471,9 +471,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief %Shader label
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function returns empty string.
+         * OpenGL calls. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{SHADER} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{SHADER_OBJECT_EXT}
@@ -484,9 +484,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Set shader label
          * @return Reference to self (for method chaining)
          *
-         * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function does nothing.
+         * Default is empty string. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
          *      @def_gl{SHADER} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{SHADER_OBJECT_EXT}
