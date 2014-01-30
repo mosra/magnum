@@ -806,7 +806,7 @@ void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const
 
 namespace Implementation {
 
-std::size_t FloatAttribute::size(GLint components, DataType dataType) {
+UnsignedInt FloatAttribute::size(GLint components, DataType dataType) {
     switch(dataType) {
         case DataType::UnsignedByte:
         case DataType::Byte:
@@ -829,7 +829,7 @@ std::size_t FloatAttribute::size(GLint components, DataType dataType) {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-std::size_t IntAttribute::size(GLint components, DataType dataType) {
+UnsignedInt IntAttribute::size(GLint components, DataType dataType) {
     switch(dataType) {
         case DataType::UnsignedByte:
         case DataType::Byte:
@@ -847,7 +847,7 @@ std::size_t IntAttribute::size(GLint components, DataType dataType) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-std::size_t DoubleAttribute::size(GLint components, DataType dataType) {
+UnsignedInt DoubleAttribute::size(GLint components, DataType dataType) {
     switch(dataType) {
         case DataType::Double:
             return 8*components;
@@ -857,7 +857,7 @@ std::size_t DoubleAttribute::size(GLint components, DataType dataType) {
 }
 #endif
 
-std::size_t Attribute<Math::Vector<4, Float>>::size(GLint components, DataType dataType) {
+UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType dataType) {
     #ifndef MAGNUM_TARGET_GLES
     if(components == GL_BGRA) components = 4;
     #endif

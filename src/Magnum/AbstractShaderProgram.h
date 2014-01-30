@@ -1195,7 +1195,7 @@ struct FloatAttribute {
     };
     typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
+    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
 CORRADE_ENUMSET_OPERATORS(FloatAttribute::DataOptions)
@@ -1220,7 +1220,7 @@ struct IntAttribute {
     enum class DataOption: UnsignedByte {};
     typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
+    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
 Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
@@ -1235,7 +1235,7 @@ struct UnsignedIntAttribute {
     typedef IntAttribute::DataOption DataOption;
     typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    static std::size_t size(GLint components, DataType dataType) {
+    static UnsignedInt size(GLint components, DataType dataType) {
         return IntAttribute::size(components, dataType);
     }
 };
@@ -1254,7 +1254,7 @@ struct DoubleAttribute {
     enum class DataOption: UnsignedByte {};
     typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
 
-    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
+    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
 Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
@@ -1308,7 +1308,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
 
     enum: UnsignedInt { VectorCount = 1 };
 
-    static std::size_t MAGNUM_EXPORT size(GLint components, DataType dataType);
+    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
 typedef Math::Vector<4, Float> _Vector4;
