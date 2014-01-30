@@ -120,10 +120,6 @@ lifetime of all plugin instances created from it.
         std::exit(1);
     }
     std::unique_ptr<Trade::AbstractImporter> tgaImporter = manager.instance("TgaImporter");
-    if(!tgaImporter) {
-        Error() << "Cannot instantiate TgaImporter plugin";
-        std::exit(2);
-    }
 
     // Use the plugin...
 

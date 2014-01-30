@@ -66,23 +66,17 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Wind
 }
 
 int DistanceFieldConverter::exec() {
-    /* Load plugins */
+    /* Load importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> importerManager(MAGNUM_IMPORTER_PLUGIN_DIR);
-    if(!(importerManager.load(args.value("importer")) & PluginManager::LoadState::Loaded)) {
-        Error() << "Cannot load importer plugin" << args.value("importer") << "from" << MAGNUM_IMPORTER_PLUGIN_DIR;
+    if(!(importerManager.load(args.value("importer")) & PluginManager::LoadState::Loaded))
         return 1;
-    }
-    PluginManager::Manager<Trade::AbstractImageConverter> converterManager(MAGNUM_IMAGECONVERTER_PLUGIN_DIR);
-    if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded)) {
-        Error() << "Cannot load converter plugin" << args.value("converter") << "from" << MAGNUM_IMAGECONVERTER_PLUGIN_DIR;
-        return 1;
-    }
-
-    /* Instance plugins */
     std::unique_ptr<Trade::AbstractImporter> importer = importerManager.instance(args.value("importer"));
-    CORRADE_INTERNAL_ASSERT(importer);
+
+    /* Load converter plugin */
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager(MAGNUM_IMAGECONVERTER_PLUGIN_DIR);
+    if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
+        return 1;
     std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.instance(args.value("converter"));
-    CORRADE_INTERNAL_ASSERT(converter);
 
     /* Open input file */
     std::optional<Trade::ImageData2D> image;
