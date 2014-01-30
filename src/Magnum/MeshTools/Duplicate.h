@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::duplicate()
+ * @brief Function @ref Magnum::MeshTools::duplicate()
  */
 
 #include <vector>
@@ -36,18 +36,18 @@
 namespace Magnum { namespace MeshTools {
 
 /**
-@brief Duplicate vertices using index array
+@brief Duplicate data using index array
 
-Converts indexed array to non-indexed, for example vertices `{a, b, c, d}` with
+Converts indexed array to non-indexed, for example data `{a, b, c, d}` with
 index array `{1, 1, 0, 3, 2, 2}` will be converted to `{b, b, a, d, c, c}`.
-@see removeDuplicates()
+@see @ref removeDuplicates(), @ref combineIndexedArrays()
 */
-template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& vertices) {
+template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& data) {
     std::vector<T> out;
     out.reserve(indices.size());
     for(const UnsignedInt index: indices)
-        out.push_back(vertices[index]);
-    return std::move(out);
+        out.push_back(data[index]);
+    return out;
 }
 
 }}
