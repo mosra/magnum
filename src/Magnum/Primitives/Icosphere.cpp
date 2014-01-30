@@ -27,8 +27,9 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector3.h"
-#include "Magnum/MeshTools/Subdivide.h"
+#include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
+#include "Magnum/MeshTools/Subdivide.h"
 #include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
@@ -77,7 +78,7 @@ Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
             return (a+b).normalized();
         });
 
-    MeshTools::removeDuplicates(indices, positions);
+    indices = MeshTools::duplicate(indices, MeshTools::removeDuplicates(positions));
 
     std::vector<Vector3> normals(positions);
     return Trade::MeshData3D(MeshPrimitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)}, std::vector<std::vector<Vector2>>{});
