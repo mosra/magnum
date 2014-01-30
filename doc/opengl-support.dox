@@ -50,6 +50,8 @@ following:
 @todo Replace @extension{APPLE,vertex_array_object} with ARB version (we use only ARB functions without APPLE fallback)
 @todo @extension{APPLE,flush_buffer_range} doesn't add anything to @extension{ARB,map_buffer_range} (remove it and leave only ARB one)
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
+@todo Replace @extension{NV,depth_buffer_float} with @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function
+@todo @extension{ARB,half_float_pixel}, @extension{ARB,half_float_vertex}?
 
 %Extension                                   | Status
 -------------------------------------------- | ------
@@ -191,6 +193,8 @@ following:
 
 @subsection opengl-support-44 OpenGL 4.4
 
+@todo Also fallback to @extension{AMD,query_buffer_object}
+
 %Extension                                   | Status
 -------------------------------------------- | ------
 @extension{ARB,buffer_storage}               | |
@@ -203,6 +207,10 @@ following:
 @extension{ARB,vertex_type_10f_11f_11f_rev}  | |
 
 @subsection opengl-support-extensions OpenGL extensions
+
+@todo @extension{ARB,sparse_texture}, @extension{ARB,bindless_texture} + their vendor equivalents
+@todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature
+@todo @extension{AMD,performance_monitor}, @extension{INTEL,performance_query}
 
 %Extension                                   | Status
 -------------------------------------------- | ------

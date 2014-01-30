@@ -41,7 +41,6 @@ namespace Magnum {
 
 See @ref PrimitiveQuery, @ref SampleQuery and @ref TimeQuery documentation for
 more information.
-@todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {

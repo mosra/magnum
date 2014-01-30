@@ -162,7 +162,6 @@ in repeated @fn_gl{Get} calls.
 
 If @extension{ARB,robustness} is available, @ref read() operations are
 protected from buffer overflow.
-@todo @extension{ARB,viewport_array} (and `GL_MAX_VIEWPORTS`)
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
     friend struct Implementation::FramebufferState;

@@ -310,7 +310,6 @@ If index range is specified in @ref setIndexBuffer(), range-based version of
 drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @ref draw() for more information.
 
-@todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
 @todo How to glDrawElementsBaseVertex()/vertex offset -- in draw()?
  */

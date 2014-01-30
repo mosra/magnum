@@ -91,8 +91,6 @@ through @ref Context::current() is automatically created during construction of
 *Application classes in @ref Platform namespace. You can safely assume that the
 instance is available during whole lifetime of *Application object. See
 @ref platform documentation for more information about engine setup.
-@todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature?
-    (here or where?)
 */
 class MAGNUM_EXPORT Context {
     Context(const Context&) = delete;
