@@ -44,10 +44,11 @@ variables:
 -   `MAGNUM_FOUND` -- Whether the library was found
 -   `MAGNUM_LIBRARIES` -- %Magnum library and dependent libraries
 -   `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
--   `MAGNUM_PLUGINS_DIR` -- Base directory with plugins. You can modify it
-    (e.g. set it to `.` when deploying on Windows with plugins stored
-    relatively to the executable), the following `MAGNUM_PLUGINS_*_DIR`
-    variables depend on it.
+-   `MAGNUM_PLUGINS_DIR` -- Base directory with plugins, defaults to `magnum/`
+    subdirectory of dir where Magnum library was found. You can modify it (e.g.
+    set it to `.` when deploying on Windows with plugins stored relatively to
+    the executable), the following `MAGNUM_PLUGINS_*_DIR` variables depend on
+    it.
 -   `MAGNUM_PLUGINS_FONT_DIR` -- Directory with font plugins
 -   `MAGNUM_PLUGINS_FONTCONVERTER_DIR` -- Directory with font converter plugins
 -   `MAGNUM_PLUGINS_IMAGECONVERTER_DIR` -- Directory with image converter
