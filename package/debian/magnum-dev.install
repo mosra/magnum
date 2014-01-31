@@ -3,4 +3,3 @@ usr/include/MagnumExternal/*
 usr/include/MagnumPlugins/*
 usr/lib*/lib*.so
 usr/lib*/lib*.a
-usr/share/cmake*
