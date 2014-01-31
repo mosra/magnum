@@ -269,6 +269,20 @@ project root:
 
     makepkg -p package/archlinux/<file>
 
+@subsection building-packages-deb DEB packages
+
+There is also `package/debian/` directory with all files needed for building
+Debian packages. You need to have `corrade-dev` DEB packages installed and in
+addition also `dpkg-dev` package. Building is easy, just change directory to
+package root, copy `package/debian` directory there and run `dpkg-buildpackage`:
+
+    cp -r package/debian .
+    dpkg-buildpackage
+
+This will compile binary and development packages, which will then appear in
+parent directory. If you need to modify CMake flags (enabling/disabling some
+features, for example), modify the last entry in `debian/rules`.
+
 @section building-crosscompiling Crosscompiling
 
 For crosscompiling you need to have *both* target and native version of
