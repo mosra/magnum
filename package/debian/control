@@ -18,7 +18,7 @@ Description: Magnum development files
 Package: magnum
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, corrage, libgl1, freeglut3, libopenal1
+Depends: ${shlibs:Depends}, ${misc:Depends}, corrade, libgl1, freeglut3, libopenal1
 Description: C++11 and OpenGL 2D/3D graphics engine
  Magnum is 2D/3D graphics engine written in C++11 and modern OpenGL. Its goal
  is to simplify low-level graphics development and interaction with OpenGL
