@@ -809,6 +809,28 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<2, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
+        #endif
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLfloat* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLint* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLint>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLint>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLint>* values);
+        #ifndef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLuint* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLuint>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLuint>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLuint>* values);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLdouble* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const GLfloat* values);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
@@ -848,6 +870,30 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
+        #endif
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
+        #ifndef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* values);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
+        void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSA(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);

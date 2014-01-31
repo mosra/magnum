@@ -321,9 +321,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform1fv(location, count, values);
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const GLfloat* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform1fv(_id, location, count, values);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform1fvEXT(_id, location, count, values);
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const GLfloat* const values) {
-    glProgramUniform1fv(_id, location, count, values);
+    glProgramUniform1fvEXT(_id, location, count, values);
 }
 #endif
 
@@ -336,9 +349,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform2fv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<2, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform2fv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform2fvEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<2, GLfloat>* const values) {
-    glProgramUniform2fv(_id, location, count, values[0].data());
+    glProgramUniform2fvEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -351,9 +377,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform3fv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<3, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform3fv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform3fvEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<3, GLfloat>* const values) {
-    glProgramUniform3fv(_id, location, count, values[0].data());
+    glProgramUniform3fvEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -366,9 +405,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform4fv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<4, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform4fv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform4fvEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<4, GLfloat>* const values) {
-    glProgramUniform4fv(_id, location, count, values[0].data());
+    glProgramUniform4fvEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -381,9 +433,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform1iv(location, count, values);
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const GLint* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform1iv(_id, location, count, values);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform1ivEXT(_id, location, count, values);
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const GLint* const values) {
-    glProgramUniform1iv(_id, location, count, values);
+    glProgramUniform1ivEXT(_id, location, count, values);
 }
 #endif
 
@@ -396,9 +461,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform2iv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<2, GLint>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform2iv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform2ivEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<2, GLint>* const values) {
-    glProgramUniform2iv(_id, location, count, values[0].data());
+    glProgramUniform2ivEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -411,9 +489,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform3iv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<3, GLint>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform3iv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform3ivEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<3, GLint>* const values) {
-    glProgramUniform3iv(_id, location, count, values[0].data());
+    glProgramUniform3ivEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -426,9 +517,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform4iv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<4, GLint>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform4iv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform4ivEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<4, GLint>* const values) {
-    glProgramUniform4iv(_id, location, count, values[0].data());
+    glProgramUniform4ivEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -442,9 +546,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform1uiv(location, count, values);
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const GLuint* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform1uiv(_id, location, count, values);
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform1uivEXT(_id, location, count, values);
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const GLuint* const values) {
-    glProgramUniform1uiv(_id, location, count, values);
+    glProgramUniform1uivEXT(_id, location, count, values);
 }
 #endif
 
@@ -457,9 +574,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform2uiv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<2, GLuint>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform2uiv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform2uivEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<2, GLuint>* const values) {
-    glProgramUniform2uiv(_id, location, count, values[0].data());
+    glProgramUniform2uivEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -472,9 +602,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform3uiv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<3, GLuint>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform3uiv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform3uivEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<3, GLuint>* const values) {
-    glProgramUniform3uiv(_id, location, count, values[0].data());
+    glProgramUniform3uivEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -487,9 +630,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform4uiv(location, count, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<4, GLuint>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniform4uiv(_id, location, count, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniform4uivEXT(_id, location, count, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<4, GLuint>* const values) {
-    glProgramUniform4uiv(_id, location, count, values[0].data());
+    glProgramUniform4uivEXT(_id, location, count, values[0].data());
 }
 #endif
 #endif
@@ -504,8 +660,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform1dv(location, count, values);
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const GLdouble* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const GLdouble* const values) {
     glProgramUniform1dv(_id, location, count, values);
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const GLdouble* const values) {
+    glProgramUniform1dvEXT(_id, location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::Vector<2, Double>* const values) {
@@ -517,8 +677,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform2dv(location, count, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<2, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<2, GLdouble>* const values) {
     glProgramUniform2dv(_id, location, count, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<2, GLdouble>* const values) {
+    glProgramUniform2dvEXT(_id, location, count, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::Vector<3, Double>* const values) {
@@ -530,8 +694,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform3dv(location, count, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<3, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<3, GLdouble>* const values) {
     glProgramUniform3dv(_id, location, count, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<3, GLdouble>* const values) {
+    glProgramUniform3dvEXT(_id, location, count, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::Vector<4, Double>* const values) {
@@ -543,8 +711,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniform4dv(location, count, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<4, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<4, GLdouble>* const values) {
     glProgramUniform4dv(_id, location, count, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::Vector<4, GLdouble>* const values) {
+    glProgramUniform4dvEXT(_id, location, count, values[0].data());
 }
 #endif
 
@@ -557,9 +729,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix2fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix2fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix2fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* const values) {
-    glProgramUniformMatrix2fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix2fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -572,9 +757,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix3fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix3fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix3fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* const values) {
-    glProgramUniformMatrix3fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix3fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -587,9 +785,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix4fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix4fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix4fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* const values) {
-    glProgramUniformMatrix4fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix4fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -603,9 +814,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix2x3fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix2x3fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix2x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* const values) {
-    glProgramUniformMatrix2x3fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix2x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -618,9 +842,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix3x2fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix3x2fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix3x2fv(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* const values) {
-    glProgramUniformMatrix3x2fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix3x2fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -633,9 +870,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix2x4fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix2x4fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix2x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* const values) {
-    glProgramUniformMatrix2x4fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix2x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -648,9 +898,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix4x2fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix4x2fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix4x2fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* const values) {
-    glProgramUniformMatrix4x2fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix4x2fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -663,9 +926,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix3x4fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix3x4fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix3x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* const values) {
-    glProgramUniformMatrix3x4fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix3x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
@@ -678,9 +954,22 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix4x3fv(location, count, GL_FALSE, values[0].data());
 }
 
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* const values) {
+    /** @todo Enable when extension loader for ES is available */
+    #ifndef MAGNUM_TARGET_GLES
+    glProgramUniformMatrix4x3fv(_id, location, count, GL_FALSE, values[0].data());
+    #else
+    CORRADE_INTERNAL_ASSERT(false);
+    //glProgramUniformMatrix4x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
+    static_cast<void>(location);
+    static_cast<void>(count);
+    static_cast<void>(values);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* const values) {
-    glProgramUniformMatrix4x3fv(_id, location, count, GL_FALSE, values[0].data());
+    glProgramUniformMatrix4x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 #endif
@@ -695,8 +984,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix2dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* const values) {
     glProgramUniformMatrix2dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* const values) {
+    glProgramUniformMatrix2dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<3, 3, Double>* const values) {
@@ -708,8 +1001,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix3dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* const values) {
     glProgramUniformMatrix3dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* const values) {
+    glProgramUniformMatrix3dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<4, 4, Double>* const values) {
@@ -721,8 +1018,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix4dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* const values) {
     glProgramUniformMatrix4dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* const values) {
+    glProgramUniformMatrix4dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<2, 3, Double>* const values) {
@@ -734,8 +1035,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix2x3dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* const values) {
     glProgramUniformMatrix2x3dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* const values) {
+    glProgramUniformMatrix2x3dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<3, 2, Double>* const values) {
@@ -747,8 +1052,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix3x2dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* const values) {
     glProgramUniformMatrix3x2dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* const values) {
+    glProgramUniformMatrix3x2dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<2, 4, Double>* const values) {
@@ -760,8 +1069,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix2x4dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* const values) {
     glProgramUniformMatrix2x4dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* const values) {
+    glProgramUniformMatrix2x4dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<4, 2, Double>* const values) {
@@ -773,8 +1086,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix4x2dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* const values) {
     glProgramUniformMatrix4x2dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* const values) {
+    glProgramUniformMatrix4x2dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<3, 4, Double>* const values) {
@@ -786,8 +1103,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix3x4dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* const values) {
     glProgramUniformMatrix3x4dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* const values) {
+    glProgramUniformMatrix3x4dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const UnsignedInt count, const Math::RectangularMatrix<4, 3, Double>* const values) {
@@ -799,8 +1120,12 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
     glUniformMatrix4x3dv(location, count, GL_FALSE, values[0].data());
 }
 
-void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* const values) {
+void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* const values) {
     glProgramUniformMatrix4x3dv(_id, location, count, GL_FALSE, values[0].data());
+}
+
+void AbstractShaderProgram::uniformImplementationDSA(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* const values) {
+    glProgramUniformMatrix4x3dvEXT(_id, location, count, GL_FALSE, values[0].data());
 }
 #endif
 
