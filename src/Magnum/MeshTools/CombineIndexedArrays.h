@@ -77,7 +77,7 @@ which can be then indexed with the combined index array:
 Again, first triangle in the mesh will have positions `a c f` and normals
 `B D E`.
 
-This function calls @ref combineIndexArrays(std::vector<UnsignedInt>&, UnsignedInt)
+This function calls @ref combineIndexArrays(const std::vector<UnsignedInt>&, UnsignedInt)
 internally. See also @ref combineIndexedArrays() which does the vertex data
 reordering automatically.
 */
