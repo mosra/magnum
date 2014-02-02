@@ -34,7 +34,9 @@ namespace Magnum {
 Get latest version from GitHub and install it. Read full guide on
 @ref building "how to download, build and install Magnum" on platform of your
 choice. For our first project we will use GLUT toolkit, don't forget to enable
-it for building using `WITH_GLUTAPPLICATION` CMake parameter.
+it for building using `WITH_GLUTAPPLICATION` CMake parameter. On newer systems,
+Mac OS X and Windows you might want to use SDL2 toolkit instead, it is enabled
+using `WITH_SDL2APPLICATION` CMake parameter.
 
 @section getting-started-bootstrap Download bootstrap project
 
@@ -51,6 +53,12 @@ archive](https://github.com/mosra/magnum-bootstrap/archive/base.zip) and
 extract it somewhere. Do it rather than cloning the full repository, as it's
 better to init your own repository from scratch to avoid having the history
 polluted.
+
+If you want to use SDL2 instead of GLUT, download the `base-sdl2` branch
+[archive](https://github.com/mosra/magnum-bootstrap/archive/base-sdl2.zip).
+The code will be slightly different from what is presented below, but the
+changes are only minor (two modified lines and one additional file) and the
+main principles are the same.
 
 @section getting-started-review Review project structure
 
