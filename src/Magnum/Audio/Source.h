@@ -451,12 +451,6 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief rewind(std::initializer_list<std::reference_wrapper<Source>>)
-         * @deprecated Use @ref Magnum::Audio::Source::rewind(std::initializer_list<std::reference_wrapper<Source>>) "rewind(std::initializer_list<std::reference_wrapper<Source>>)" instead.
-         */
-        static CORRADE_DEPRECATED("use rewind(std::initializer_list<std::reference_wrapper<Source>>) instead") void rewind(std::initializer_list<Source*> sources);
-
-        /**
          * @copybrief rewind(const std::vector<std::reference_wrapper<Source>>&)
          * @deprecated Use @ref Magnum::Audio::Source::rewind(const std::vector<std::reference_wrapper<Source>>&) "rewind(const std::vector<std::reference_wrapper<Source>>&)" instead.
          */
