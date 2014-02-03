@@ -46,11 +46,11 @@ class MAGNUM_EXPORT MeshObjectData3D: public ObjectData3D {
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
-         * @param material          Material ID
+         * @param material          Material ID or `-1`
          *
          * Creates object with mesh instance type.
          */
-        explicit MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, UnsignedInt material);
+        explicit MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, Int material);
 
         /** @brief Copying is not allowed */
         MeshObjectData3D(const MeshObjectData3D&) = delete;
@@ -64,11 +64,15 @@ class MAGNUM_EXPORT MeshObjectData3D: public ObjectData3D {
         /** @brief Move assignment */
         MeshObjectData3D& operator=(MeshObjectData3D&&) = default;
 
-        /** @brief Material ID */
-        UnsignedInt material() const { return _material; }
+        /**
+         * @brief Material ID
+         *
+         * Returns `-1` if the object has no material assigned.
+         */
+        Int material() const { return _material; }
 
     private:
-        UnsignedInt _material;
+        Int _material;
 };
 
 }}
