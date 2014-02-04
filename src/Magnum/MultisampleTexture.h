@@ -52,8 +52,7 @@ also @ref AbstractTexture documentation for more information.
 
 @todoc Finish when fully implemented
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `sampler2DMS`/`sampler2DMSArray`,
+In shader, the texture is used via `sampler2DMS`/`sampler2DMSArray`,
 `isampler2DMS`/`isampler2DMSArray` or `usampler2DMS`/`usampler2DMSArray`. See
 @ref AbstractShaderProgram documentation for more information about usage in
 shaders.

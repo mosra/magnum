@@ -82,8 +82,7 @@ for(std::size_t i = 0; i != 16; ++i) {
     @ref setMinificationFilter(), explicitly specify all mip levels with
     @ref setStorage() and @ref setImage() or call @ref generateMipmap().
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `sampler1DArray`/`sampler2DArray`,
+In shader, the texture is used via `sampler1DArray`/`sampler2DArray`,
 `sampler1DArrayShadow`/`sampler1DArrayShadow`, `isampler1DArray`/`isampler2DArray`
 or `usampler1DArray`/`usampler2DArray`. See @ref AbstractShaderProgram
 documentation for more information about usage in shaders.

@@ -173,8 +173,8 @@ depends on features supported by particular font and its layouter.
 
 Immutable text (e.g. menu items, credits) can be simply rendered using static
 methods, returning result either as data arrays or as fully configured mesh.
-The text can be then drawn by configuring text shader, binding font texture
-and drawing the mesh:
+The text can be then drawn as usual by configuring the shader and drawing the
+mesh:
 @code
 Text::AbstractFont* font;
 Text::GlyphCache cache;
@@ -190,8 +190,8 @@ std::tie(mesh, rectangle) = Text::Renderer2D::render(*font, cache, 0.15f,
 
 // Draw white text centered on the screen
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
-    .setColor(Color3(1.0f));
-glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
+    .setColor(Color3(1.0f))
+    .setVectorTexture(glyphCache->texture());
 mesh.draw(shader);
 @endcode
 See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
@@ -215,8 +215,8 @@ renderer.render("Hello World Countdown: 10");
 
 // Draw the text centered on the screen
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
-    .setColor(Color3(1.0f));
-glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
+    .setColor(Color3(1.0f))
+    .setVectorTexture(glyphCache->texture());
 renderer.mesh().draw(shader);
 @endcode
 

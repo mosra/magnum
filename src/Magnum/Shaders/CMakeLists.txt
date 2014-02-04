@@ -26,6 +26,7 @@
 corrade_add_resource(MagnumShaders_RCS resources.conf)
 
 set(MagnumShaders_SRCS
+    AbstractVector.cpp
     DistanceFieldVector.cpp
     Flat.cpp
     MeshVisualizer.cpp

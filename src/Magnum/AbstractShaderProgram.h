@@ -63,14 +63,6 @@ enum: UnsignedInt {
     NormalOutput = 1
 };
 @endcode
--   **Layers for texture uniforms** to which the textures will be bound before
-    rendering, for example:
-@code
-enum: Int {
-    DiffuseTextureLayer = 0,
-    SpecularTextureLayer = 1
-};
-@endcode
 -   **Uniform locations** for setting uniform data (see below) (private
     variables), for example:
 @code
@@ -108,6 +100,18 @@ MyShader& setTransformation(const Matrix4& matrix) {
 }
 MyShader& setProjection(const Matrix4& matrix) {
     setUniform(ProjectionUniform, matrix);
+    return *this;
+}
+@endcode
+-   **Texture setting functions** in which you bind the textures to particular
+    layers using @ref AbstractTexture::bind() and equivalent, for example:
+@code
+MyShader& setDiffuseTexture(Texture2D& texture) {
+    texture->bind(0);
+    return *this;
+}
+MyShader& setSpecularTexture(Texture2D& texture) {
+    texture->bind(1);
     return *this;
 }
 @endcode
@@ -230,8 +234,8 @@ uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 @endcode
 @code
-setUniform(DiffuseTextureUniform, DiffuseTextureLayer);
-setUniform(SpecularTextureUniform, SpecularTextureLayer);
+setUniform(DiffuseTextureUniform, 0);
+setUniform(SpecularTextureUniform, 1);
 @endcode
 
 @see @ref Shader::maxTextureImageUnits()
@@ -248,15 +252,13 @@ Basic workflow with %AbstractShaderProgram subclasses is: instance shader
 class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
 for more information) and map shader outputs to framebuffer attachments if
 needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
-information). In each draw event set uniforms, bind specific framebuffer (if
-needed) and bind required textures to their respective layers using
-@ref AbstractTexture::bind(Int). Then call @ref Mesh::draw(). Example:
+information). In each draw event set all required shader parameters, bind
+specific framebuffer (if needed) and then call @ref Mesh::draw(). Example:
 @code
 shader.setTransformation(transformation)
-    .setProjection(projection);
-
-diffuseTexture.bind(MyShader::DiffuseTextureLayer);
-specularTexture.bind(MyShader::SpecularTextureLayer);
+    .setProjection(projection)
+    .setDiffuseTexture(diffuseTexture)
+    .setSpecularTexture(specularTexture);
 
 mesh.draw(shader);
 @endcode

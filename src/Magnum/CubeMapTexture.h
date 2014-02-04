@@ -69,12 +69,11 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
 @endcode
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `samplerCube`, `samplerCubeShadow`, `isamplerCube` or
-`usamplerCube`. Unlike in classic textures, coordinates for cube map textures
-is signed three-part vector from the center of the cube, which intersects one
-of the six sides of the cube map. See also @ref AbstractShaderProgram for more
-information about usage in shaders.
+In shader, the texture is used via `samplerCube`, `samplerCubeShadow`,
+`isamplerCube` or `usamplerCube`. Unlike in classic textures, coordinates for
+cube map textures is signed three-part vector from the center of the cube,
+which intersects one of the six sides of the cube map. See
+@ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTextureArray,
     @ref Texture, @ref BufferTexture

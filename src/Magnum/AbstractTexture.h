@@ -208,10 +208,13 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Bind texture for rendering
          *
-         * Sets current texture as active in given layer. The layer must be
-         * between 0 and @ref maxLayers(). Note that only one texture can be
-         * bound to given layer. If @extension{EXT,direct_state_access} is not
-         * available, the layer is made active before binding the texture.
+         * Sets current texture as active in given layer. Note that only one
+         * texture can be bound to given layer. If @extension{EXT,direct_state_access}
+         * is not available, the layer is made active before binding the
+         * texture.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
          * @see @ref maxLayers(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
          *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */

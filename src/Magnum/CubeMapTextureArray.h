@@ -67,12 +67,11 @@ for(std::size_t i = 0; i != 4; i += 6) {
 texture.generateMipmap();
 @endcode
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `samplerCubeArray`, `samplerCubeArrayShadow`,
+In shader, the texture is used via `samplerCubeArray`, `samplerCubeArrayShadow`,
 `isamplerCubeArray` or `usamplerCubeArray`. Unlike in classic textures,
 coordinates for cube map texture arrays is signed four-part vector. First three
 parts define vector from the center of the cube which intersects with one of
-the six sides of the cube map, fourth part is layer in the array. See also
+the six sides of the cube map, fourth part is layer in the array. See
 @ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTexture,

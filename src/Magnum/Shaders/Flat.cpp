@@ -30,10 +30,13 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
+#include "Magnum/Texture.h"
 
 namespace Magnum { namespace Shaders {
 
 namespace {
+    enum: Int { TextureLayer = 0 };
+
     template<UnsignedInt> constexpr const char* vertexShaderName();
     template<> constexpr const char* vertexShaderName<2>() { return "Flat2D.vert"; }
     template<> constexpr const char* vertexShaderName<3>() { return "Flat3D.vert"; }
@@ -94,6 +97,11 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     #ifdef MAGNUM_TARGET_GLES
     setColor(Color4(1.0f)); // Default to white, with full transperancy (so we can see the texture)
     #endif
+}
+
+template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setTexture(Texture2D& texture) {
+    if(_flags & Flag::Textured)  texture.bind(TextureLayer);
+    return *this;
 }
 
 template class Flat<2>;

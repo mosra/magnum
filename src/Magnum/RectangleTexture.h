@@ -59,10 +59,9 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setSubImage({}, image);
 @endcode
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via sampler2DRect`, `sampler2DRectShadow`, `isampler2DRect`
-or `usampler2DRect`. See @ref AbstractShaderProgram documentation for more
-information about usage in shaders.
+In shader, the texture is used via sampler2DRect`, `sampler2DRectShadow`,
+`isampler2DRect` or `usampler2DRect`. See @ref AbstractShaderProgram
+documentation for more information about usage in shaders.
 
 @requires_gl31 %Extension @extension{ARB,texture_rectangle}
 @requires_gl Rectangle textures are not available in OpenGL ES.

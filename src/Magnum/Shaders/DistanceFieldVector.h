@@ -116,6 +116,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
             return *this;
         }
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Overloads to remove WTF-factor from method chaining order */
+        DistanceFieldVector<dimensions>& setVectorTexture(Texture2D& texture) {
+            AbstractVector<dimensions>::setVectorTexture(texture);
+            return *this;
+        }
+        #endif
+
     private:
         Int transformationProjectionMatrixUniform,
             colorUniform,

@@ -181,11 +181,10 @@ constexpr static Vector3 data[] = {
 buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `samplerBuffer`, `isamplerBuffer` or `usamplerBuffer`.
-Unlike in classic textures, coordinates for buffer textures are integer
-coordinates passed to `texelFetch()`. See also @ref AbstractShaderProgram
-documentation for more information.
+In shader, the texture is used via `samplerBuffer`, `isamplerBuffer` or
+`usamplerBuffer`. Unlike in classic textures, coordinates for buffer textures
+are integer coordinates passed to `texelFetch()`. See @ref AbstractShaderProgram
+documentation for more information about usage in shaders.
 
 @section BufferTexture-performance-optimization Performance optimizations
 

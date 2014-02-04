@@ -52,15 +52,9 @@ need to provide @ref Position attribute in your triangle mesh and call at least
 
 If you want to use texture instead of color, you need to provide also
 @ref TextureCoordinates attribute. Pass @ref Flag::Textured to constructor and
-then at render time bind the texture to its respective layer instead of calling
-@ref setColor(). Example:
-@code
-Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
-
-// ...
-
-myTexture.bind(Shaders::Flat2D::TextureLayer);
-@endcode
+then at render time don't forget to set also the texture via @ref setTexture().
+The texture will be multiplied with the color (which is white by default, thus
+it doesn't change texture color).
 
 For coloring the texture based on intensity you can use the @ref Vector shader.
 @see @ref Flat2D, @ref Flat3D
@@ -77,10 +71,15 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
-            /** Layer for color texture. Used only if @ref Flag::Textured is set. */
+            /**
+             * Layer for color texture. Used only if @ref Flag::Textured is set.
+             * @deprecated use @ref Magnum::Shaders::Flat::setTexture() "setTexture()" instead.
+             */
             TextureLayer = 0
         };
+        #endif
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -125,10 +124,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
-         * Color will be multiplied with texture
-         * if @ref Flag::Textured is set.
+         * If not set, default value is fully opaque white. Color will be
+         * multiplied with texture if @ref Flag::Textured is set.
+         * @see @ref setTexture()
          */
         Flat<dimensions>& setColor(const Color4& color);
+
+        /**
+         * @brief Set texture
+         * @return Reference to self (for method chaining)
+         *
+         * Has effect only if @ref Flag::Textured is set.
+         * @see @ref setColor()
+         */
+        Flat<dimensions>& setTexture(Texture2D& texture);
 
     private:
         Int transformationProjectionMatrixUniform,

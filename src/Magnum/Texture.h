@@ -82,8 +82,7 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     @ref setMinificationFilter(), explicitly specify all mip levels with
     @ref setStorage() and @ref setImage() or call @ref generateMipmap().
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
+In shader, the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
 `sampler1DShadow`/`sampler2DShadow`/`sampler3DShadow`,
 `isampler1D`/`isampler2D`/`isampler3D` or `usampler1D`/`usampler2D`/`usampler3D`.
 See @ref AbstractShaderProgram documentation for more information about usage
