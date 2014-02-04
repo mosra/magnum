@@ -248,7 +248,7 @@ OpenGL function                        | Matching API
 @fn_gl{Uniform}, \n @fn_gl{ProgramUniform}, \n @fn_gl_extension{ProgramUniform,EXT,direct_state_access} | @ref AbstractShaderProgram::setUniform()
 @fn_gl{UniformBlockBinding}            | |
 @fn_gl{UniformSubroutines}             | |
-@fn_gl{UseProgram}                     | @ref AbstractShaderProgram::use()
+@fn_gl{UseProgram}                     | @ref Mesh::draw(), @ref MeshView::draw()
 @fn_gl{UseProgramStages}               | |
 @fn_gl{ValidateProgram}                | @ref AbstractShaderProgram::validate()
 @fn_gl{ValidateProgramPipeline}        | |

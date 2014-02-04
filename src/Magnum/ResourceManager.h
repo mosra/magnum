@@ -212,9 +212,8 @@ if(!cube) {
 @endcode
 - Using the resource data.
 @code
-shader->use();
 texture->bind(layer);
-cube->draw();
+cube->draw(*shader);
 @endcode
 - Destroying resource references and deleting manager instance when nothing
   references the resources anymore.

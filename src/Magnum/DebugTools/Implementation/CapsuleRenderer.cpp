@@ -100,20 +100,19 @@ template<UnsignedInt dimensions> CapsuleRenderer<dimensions>::CapsuleRenderer(co
 
 template<UnsignedInt dimensions> void CapsuleRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     std::array<typename DimensionTraits<dimensions, Float>::MatrixType, 3> transformations = Implementation::capsuleRendererTransformation<dimensions>(capsule.a(), capsule.b(), capsule.radius());
-    AbstractShapeRenderer<dimensions>::wireframeShader->setColor(options->color())
-        .use();
+    AbstractShapeRenderer<dimensions>::wireframeShader->setColor(options->color());
 
     /* Bottom */
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*transformations[0]);
-    AbstractCapsuleRenderer<dimensions>::bottom->draw();
+    AbstractCapsuleRenderer<dimensions>::bottom->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 
     /* Cylinder */
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*transformations[1]);
-    AbstractCapsuleRenderer<dimensions>::cylinder->draw();
+    AbstractCapsuleRenderer<dimensions>::cylinder->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 
     /* Top */
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*transformations[2]);
-    AbstractCapsuleRenderer<dimensions>::top->draw();
+    AbstractCapsuleRenderer<dimensions>::top->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 }
 
 template class CapsuleRenderer<2>;

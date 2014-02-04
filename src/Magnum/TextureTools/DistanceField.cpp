@@ -162,8 +162,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
 
     DistanceFieldShader shader;
     shader.setRadius(radius)
-        .setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
-        .use();
+        .setScaling(Vector2(imageSize)/Vector2(rectangle.size()));
 
     input.bind(DistanceFieldShader::TextureLayer);
 
@@ -198,7 +197,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     }
 
     /* Draw the mesh */
-    mesh.draw();
+    mesh.draw(shader);
 }
 
 }}

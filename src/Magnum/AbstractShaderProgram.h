@@ -248,19 +248,17 @@ Basic workflow with %AbstractShaderProgram subclasses is: instance shader
 class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
 for more information) and map shader outputs to framebuffer attachments if
 needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
-information). In each draw event set uniforms, mark the shader for use, bind
-specific framebuffer (if needed) and bind required textures to their
-respective layers using @ref AbstractTexture::bind(Int). Then call
-@ref Mesh::draw(). Example:
+information). In each draw event set uniforms, bind specific framebuffer (if
+needed) and bind required textures to their respective layers using
+@ref AbstractTexture::bind(Int). Then call @ref Mesh::draw(). Example:
 @code
 shader.setTransformation(transformation)
-    .setProjection(projection)
-    .use();
+    .setProjection(projection);
 
 diffuseTexture.bind(MyShader::DiffuseTextureLayer);
 specularTexture.bind(MyShader::SpecularTextureLayer);
 
-mesh.draw();
+mesh.draw(shader);
 @endcode
 
 @section AbstractShaderProgram-types Mapping between GLSL and Magnum types
@@ -303,9 +301,8 @@ also @ref Attribute::DataType enum for additional type options.
 
 @section AbstractShaderProgram-performance-optimization Performance optimizations
 
-The engine tracks currently used shader program to avoid unnecessary calls to
-@fn_gl{UseProgram}. %Shader limits (such as @ref maxVertexAttributes())
-are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
+%Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
+queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1) or
 @extension{EXT,direct_state_access} is available, uniform setting functions
@@ -323,6 +320,8 @@ comes in handy.
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
+    friend class Mesh;
+    friend class MeshView;
     friend struct Implementation::ShaderProgramState;
 
     public:
@@ -549,12 +548,13 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         std::pair<bool, std::string> validate();
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Use shader for rendering
-         *
-         * @see @fn_gl{UseProgram}
+         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) "Mesh::draw(AbstractShaderProgram&)" instead.
          */
         void use();
+        #endif
 
     protected:
         #ifndef MAGNUM_TARGET_GLES2
@@ -790,6 +790,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
     private:
+        #ifndef MAGNUM_BUILD_DEPRECATED
+        void use();
+        #endif
+
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const GLfloat* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);

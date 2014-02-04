@@ -58,9 +58,8 @@ template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRen
 template<UnsignedInt dimensions> void LineSegmentRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         Implementation::lineSegmentRendererTransformation<dimensions>(line.a(), line.b()))
-        .setColor(options->color())
-        .use();
-    AbstractShapeRenderer<dimensions>::wireframeMesh->draw();
+        .setColor(options->color());
+    AbstractShapeRenderer<dimensions>::wireframeMesh->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 }
 
 template class LineSegmentRenderer<2>;

@@ -191,9 +191,8 @@ std::tie(mesh, rectangle) = Text::Renderer2D::render(*font, cache, 0.15f,
 // Draw white text centered on the screen
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-rectangle.width()/2.0f))
     .setColor(Color3(1.0f));
-    .use();
 glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
-mesh.draw();
+mesh.draw(shader);
 @endcode
 See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
 @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, BufferUsage, Alignment)
@@ -217,9 +216,8 @@ renderer.render("Hello World Countdown: 10");
 // Draw the text centered on the screen
 shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-renderer.rectangle().width()/2.0f))
     .setColor(Color3(1.0f));
-    .use();
 glyphCache->texture()->bind(Shaders::VectorShader2D::FontTextureLayer);
-renderer.mesh().draw();
+renderer.mesh().draw(shader);
 @endcode
 
 @section Renderer-extensions Required OpenGL functionality

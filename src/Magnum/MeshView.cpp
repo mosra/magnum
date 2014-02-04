@@ -44,6 +44,17 @@ MeshView& MeshView::setIndexRange(Int first, Int count, UnsignedInt, UnsignedInt
     return *this;
 }
 
+void MeshView::draw(AbstractShaderProgram& shader) {
+    shader.use();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    _original->drawInternal(_firstVertex, _vertexCount,  _indexOffset, _indexCount, _indexStart, _indexEnd);
+    #else
+    _original->drawInternal(_firstVertex, _vertexCount, _indexOffset, _indexCount);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 void MeshView::draw() {
     #ifndef MAGNUM_TARGET_GLES2
     _original->drawInternal(_firstVertex, _vertexCount,  _indexOffset, _indexCount, _indexStart, _indexEnd);
@@ -51,5 +62,6 @@ void MeshView::draw() {
     _original->drawInternal(_firstVertex, _vertexCount, _indexOffset, _indexCount);
     #endif
 }
+#endif
 
 }

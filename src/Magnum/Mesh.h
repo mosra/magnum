@@ -296,10 +296,11 @@ for more infromation) and call @ref Mesh::draw().
 If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
 @es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
-in each @ref draw() call. The engine tracks currently bound VAO to avoid
-unnecessary calls to @fn_gl{BindVertexArray}. %Mesh limits and
-implementation-defined values (such as @ref maxVertexAttributes()) are cached,
-so repeated queries don't result in repeated @fn_gl{Get} calls.
+in each @ref draw() call. The engine tracks currently bound VAO and currently
+active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
+@fn_gl{UseProgram}. %Mesh limits and implementation-defined values (such as
+@ref maxVertexAttributes()) are cached, so repeated queries don't result in
+repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} and VAOs are available,
 DSA functions are used for specifying attribute locations to avoid unnecessary
@@ -607,14 +608,34 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @brief Draw the mesh
+         * @param shader    Shader to use for drawing
          *
-         * Expects an active shader with all uniforms set. See
+         * Expects that the shader is compatible with this mesh and is fully
+         * set up. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information.
-         * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
+         * @see @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
+         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
+         *      @extension{APPLE,vertex_array_object} is available), @fn_gl{DrawArrays}
+         *      or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
+         */
+        void draw(AbstractShaderProgram& shader) {
+            shader.use();
+
+            #ifndef MAGNUM_TARGET_GLES2
+            drawInternal(0, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+            #else
+            drawInternal(0, _vertexCount, _indexOffset, _indexCount);
+            #endif
+        }
+
+        void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief draw(AbstractShaderProgram&)
+         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) instead.
          */
         void draw() {
             #ifndef MAGNUM_TARGET_GLES2
@@ -623,6 +644,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             drawInternal(0, _vertexCount, _indexOffset, _indexCount);
             #endif
         }
+        #endif
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT

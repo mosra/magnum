@@ -50,9 +50,8 @@ template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         DimensionTraits<dimensions, Float>::MatrixType::translation(sphere.position())*
         DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(sphere.radius())))
-        .setColor(options->color())
-        .use();
-    AbstractShapeRenderer<dimensions>::wireframeMesh->draw();
+        .setColor(options->color());
+    AbstractShapeRenderer<dimensions>::wireframeMesh->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 }
 
 template class SphereRenderer<2>;

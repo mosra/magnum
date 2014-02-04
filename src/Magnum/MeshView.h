@@ -120,7 +120,16 @@ class MAGNUM_EXPORT MeshView {
          *
          * See @ref Mesh::draw() for more information.
          */
-        void draw();
+        void draw(AbstractShaderProgram& shader);
+        void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief draw(AbstractShaderProgram&)
+         * @deprecated Use
+         */
+        CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw();
+        #endif
 
     private:
         Mesh* _original;
