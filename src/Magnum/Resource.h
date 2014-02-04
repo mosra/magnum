@@ -191,26 +191,37 @@ class Resource {
          * @brief Reference to resource data
          *
          * The resource must be loaded before accessing it. Use boolean
-         * conversion operator or state() for testing whether it is loaded.
+         * conversion operator or @ref state() for testing whether it is
+         * loaded.
          */
-        operator U&() {
-            acquire();
-            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
-            return *static_cast<U*>(data);
-        }
-
-        /** @overload */
-        U* operator->() {
-            acquire();
-            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
-            return static_cast<U*>(data);
-        }
-
-        /** @overload */
         U& operator*() {
             acquire();
             CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
             return *static_cast<U*>(data);
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @overload
+         * @deprecated Use the explicit @ref Magnum::Resource::operator*() "operator*()" or
+         *      @ref Magnum::Resource::operator->() "operator->()" instead.
+         *      Implicit conversion is no longer allowed if it might throw an
+         *      assertion.
+         */
+        CORRADE_DEPRECATED("use operator*() or operator->() instead") operator U&() { return **this; }
+        #endif
+
+        /**
+         * @brief Access to resource data
+         *
+         * The resource must be loaded before accessing it. Use boolean
+         * conversion operator or @ref state() for testing whether it is
+         * loaded.
+         */
+        U* operator->() {
+            acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
+            return static_cast<U*>(data);
         }
 
     private:
