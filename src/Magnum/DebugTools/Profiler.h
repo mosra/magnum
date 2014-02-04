@@ -76,7 +76,7 @@ void MyApplication::drawEvent() {
 
     p.start(sections.draw);
 
-    scene.draw()
+    camera.draw(drawables);
 
     p.start(sections.bufferSwap);
 
