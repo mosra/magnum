@@ -34,8 +34,11 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
-#include "Magnum/Shader.h"
 #include "Magnum/TextureFormat.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Shader.h"
+#endif
 
 #include "Implementation/DebugState.h"
 #include "Implementation/State.h"
@@ -43,7 +46,10 @@
 
 namespace Magnum {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 Int AbstractTexture::maxLayers() { return Shader::maxCombinedTextureImageUnits(); }
+Int AbstractTexture::maxSupportedLayerCount() { return Shader::maxCombinedTextureImageUnits(); }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 Int AbstractTexture::maxColorSamples() {
@@ -183,7 +189,8 @@ void AbstractTexture::bindInternal() {
         return;
 
     /* Set internal layer as active if not already */
-    const GLint internalLayer = maxLayers()-1;
+    CORRADE_INTERNAL_ASSERT(textureState->maxLayers > 1);
+    const GLint internalLayer = textureState->maxLayers-1;
     if(textureState->currentLayer != internalLayer)
         glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = internalLayer));
 

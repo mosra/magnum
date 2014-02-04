@@ -102,23 +102,22 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend struct Implementation::TextureState;
 
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Max supported layer count
-         *
-         * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. This function is in fact alias to
-         * @ref Shader::maxCombinedTextureImageUnits().
-         * @see @ref bind(Int)
+         * @copybrief Shader::maxCombinedTextureImageUnits()
+         * @deprecated Use @ref Magnum::Shader::maxCombinedTextureImageUnits() "Shader::maxCombinedTextureImageUnits()"
+         *      instead.
          */
-        static Int maxLayers();
+        static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxLayers();
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief maxLayers()
-         * @deprecated Use @ref Magnum::AbstractTexture::maxLayers() "maxLayers()"
+         * @copybrief Shader::maxCombinedTextureImageUnits()
+         * @deprecated Use @ref Magnum::Shader::maxCombinedTextureImageUnits() "Shader::maxCombinedTextureImageUnits()"
          *      instead.
          */
-        static CORRADE_DEPRECATED("use maxLayers() instead") Int maxSupportedLayerCount() { return maxLayers(); }
+        static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxSupportedLayerCount();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
