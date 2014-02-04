@@ -165,10 +165,10 @@ class Bomb: public Object3D, SceneGraph::Drawable3D, SceneGraph::Animable3D {
 
     protected:
         // drawing implementation for Drawable feature
-        void draw() override;
+        void draw(...) override;
 
         // animation step for Animable feature
-        void animationStep() override;
+        void animationStep(...) override;
 };
 @endcode
 
