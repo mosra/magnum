@@ -174,7 +174,11 @@ void ObjectTest::transformations() {
     Matrix4 initial = Matrix4::rotationX(Deg(90.0f)).inverted();
 
     /* Empty list */
+    #ifndef MAGNUM_BUILD_DEPRECATED
     CORRADE_COMPARE(s.transformations({}, initial), std::vector<Matrix4>());
+    #else
+    CORRADE_COMPARE(s.transformations(std::vector<std::reference_wrapper<Object3D>>{}, initial), std::vector<Matrix4>());
+    #endif
 
     /* Scene alone */
     CORRADE_COMPARE(s.transformations({s}, initial), std::vector<Matrix4>{initial});
@@ -418,7 +422,11 @@ void ObjectTest::setCleanListHierarchy() {
 
 void ObjectTest::setCleanListBulk() {
     /* Verify it doesn't crash when passed empty list */
+    #ifndef MAGNUM_BUILD_DEPRECATED
     Object3D::setClean({});
+    #else
+    Object3D::setClean(std::vector<std::reference_wrapper<Object3D>>{});
+    #endif
 
     Scene3D scene;
     Object3D a(&scene);
