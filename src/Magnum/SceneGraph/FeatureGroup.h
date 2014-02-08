@@ -51,7 +51,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeatureGroup {
     void add(AbstractFeature<dimensions, T>& feature);
     void remove(AbstractFeature<dimensions, T>& feature);
 
-    std::vector<AbstractFeature<dimensions, T>*> features;
+    std::vector<std::reference_wrapper<AbstractFeature<dimensions, T>>> features;
 };
 
 /**
@@ -86,12 +86,12 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
 
         /** @brief Feature at given index */
         Feature& operator[](std::size_t index) {
-            return *static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
+            return static_cast<Feature&>(AbstractFeatureGroup<dimensions, T>::features[index].get());
         }
 
         /** @overload */
         const Feature& operator[](std::size_t index) const {
-            return *static_cast<Feature*>(AbstractFeatureGroup<dimensions, T>::features[index]);
+            return static_cast<Feature&>(AbstractFeatureGroup<dimensions, T>::features[index].get());
         }
 
         /**
@@ -160,7 +160,7 @@ template<class Feature> using FeatureGroup3D = BasicFeatureGroup3D<Feature, Floa
 #endif
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>::~FeatureGroup() {
-    for(auto i: AbstractFeatureGroup<dimensions, T>::features) static_cast<Feature*>(i)->_group = nullptr;
+    for(auto i: AbstractFeatureGroup<dimensions, T>::features) static_cast<Feature&>(i.get())._group = nullptr;
 }
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>& FeatureGroup<dimensions, Feature, T>::add(Feature& feature) {
