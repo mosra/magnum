@@ -257,6 +257,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @deprecated Use @ref Magnum::SceneGraph::Object::transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) "transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)" instead.
          */
         CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+
+        #ifdef CORRADE_GCC47_COMPATIBILITY
+        /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
+           thought 4.7 was bug-free. */
+        std::vector<MatrixType> transformationMatrices(std::initializer_list<std::reference_wrapper<Object<Transformation>>> objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
+            return transformationMatrices(std::vector<std::reference_wrapper<Object<Transformation>>>{objects}, initialTransformationMatrix);
+        }
+        CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(std::initializer_list<Object<Transformation>*> objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+        #endif
         #endif
 
         /**
@@ -276,6 +285,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @deprecated Use @ref Magnum::SceneGraph::Object::transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) "transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)" instead.
          */
         CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+
+        #ifdef CORRADE_GCC47_COMPATIBILITY
+        /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
+           thought 4.7 was bug-free. */
+        std::vector<typename Transformation::DataType> transformations(std::initializer_list<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const {
+            return transformations(std::vector<std::reference_wrapper<Object<Transformation>>>{objects}, initialTransformation);
+        }
+        CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(std::initializer_list<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+        #endif
         #endif
 
         /*@}*/
@@ -301,6 +319,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @deprecated Use @ref Magnum::SceneGraph::Object::setClean(std::vector<std::reference_wrapper<Object<Transformation>>> "setClean(std::vector<std::reference_wrapper<Object<Transformation>>>" instead.
          */
         CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") static void setClean(std::vector<Object<Transformation>*> objects);
+
+        #ifdef CORRADE_GCC47_COMPATIBILITY
+        /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
+           thought 4.7 was bug-free. */
+        static void setClean(std::initializer_list<std::reference_wrapper<Object<Transformation>>> objects) {
+            setClean(std::vector<std::reference_wrapper<Object<Transformation>>>{objects});
+        }
+        static CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") void setClean(std::initializer_list<Object<Transformation>*> objects);
+        #endif
         #endif
 
         /** @copydoc AbstractObject::isDirty() */

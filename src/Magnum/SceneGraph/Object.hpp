@@ -49,6 +49,12 @@ template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::se
 
     setClean(references);
 }
+
+#ifdef CORRADE_GCC47_COMPATIBILITY
+template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::setClean(std::initializer_list<AbstractObject<dimensions, T>*> objects) {
+    return setClean(std::vector<AbstractObject<dimensions, T>*>{objects});
+}
+#endif
 #endif
 
 template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
@@ -65,6 +71,12 @@ template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::tr
 
     return transformationMatrices(references, initialTransformationMatrix);
 }
+
+#ifdef CORRADE_GCC47_COMPATIBILITY
+template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::transformationMatrices(std::initializer_list<AbstractObject<dimensions, T>*> objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+    return transformationMatrices(std::vector<AbstractObject<dimensions, T>*>{objects}, initialTransformationMatrix);
+}
+#endif
 #endif
 
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
@@ -219,6 +231,12 @@ template<class Transformation> auto Object<Transformation>::transformationMatric
 
     return transformationMatrices(references, initialTransformationMatrix);
 }
+
+#ifdef CORRADE_GCC47_COMPATIBILITY
+template<class Transformation> auto Object<Transformation>::transformationMatrices(std::initializer_list<Object<Transformation>*> objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+    return transformationMatrices(std::vector<Object<Transformation>*>{objects}, initialTransformationMatrix);
+}
+#endif
 #endif
 
 /*
@@ -339,6 +357,12 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 
     return transformations(references, initialTransformation);
 }
+
+#ifdef CORRADE_GCC47_COMPATIBILITY
+template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::initializer_list<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
+    return transformations(std::vector<Object<Transformation>*>{objects}, initialTransformation);
+}
+#endif
 #endif
 
 template<class Transformation> typename Transformation::DataType Object<Transformation>::computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const {
@@ -437,6 +461,12 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 
     return setClean(references);
 }
+
+#ifdef CORRADE_GCC47_COMPATIBILITY
+template<class Transformation> void Object<Transformation>::setClean(std::initializer_list<Object<Transformation>*> objects) {
+    setClean(std::vector<Object<Transformation>*>{objects});
+}
+#endif
 #endif
 
 template<class Transformation> void Object<Transformation>::setCleanInternal(const typename Transformation::DataType& absoluteTransformation) {
