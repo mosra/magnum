@@ -40,7 +40,7 @@ namespace Magnum { namespace SceneGraph {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
-    std::vector<std::reference_wrapper<const AbstractObject<dimensions, T>>> references;
+    std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> references;
     references.reserve(objects.size());
     for(auto o: objects) {
         CORRADE_INTERNAL_ASSERT(o != nullptr);
@@ -56,7 +56,7 @@ template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~Abstra
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    std::vector<std::reference_wrapper<const AbstractObject<dimensions, T>>> references;
+    std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> references;
     references.reserve(objects.size());
     for(auto o: objects) {
         CORRADE_INTERNAL_ASSERT(o != nullptr);
