@@ -93,6 +93,8 @@ class documentation or @ref compilation-speedup-hpp for more information.
 
 @see @ref Scene, @ref AbstractFeature, @ref AbstractTransformation,
     @ref DebugTools::ObjectRenderer
+@todo Consider using `mutable` for flags to make transformation computation
+    available on const refs
 */
 template<class Transformation> class Object: public AbstractObject<Transformation::Dimensions, typename Transformation::Type>, public Transformation
     #ifndef DOXYGEN_GENERATING_OUTPUT

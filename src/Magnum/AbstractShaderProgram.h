@@ -181,6 +181,9 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
     ES 2.0, similar functionality is available in extension
     @es_extension{NV,draw_buffers}.
 
+@todo @es_extension{EXT,separate_shader_objects} supports explicit attrib
+    location
+
 @subsection AbstractShaderProgram-uniform-location Uniform locations
 
 The preferred workflow is to specify uniform locations directly in the shader

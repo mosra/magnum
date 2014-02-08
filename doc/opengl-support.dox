@@ -50,7 +50,7 @@ following:
 @todo Replace @extension{APPLE,vertex_array_object} with ARB version (we use only ARB functions without APPLE fallback)
 @todo @extension{APPLE,flush_buffer_range} doesn't add anything to @extension{ARB,map_buffer_range} (remove it and leave only ARB one)
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
-@todo Replace @extension{NV,depth_buffer_float} with @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function
+@todo Add @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @extension{NV,depth_buffer_float} for non-linear depth buffer
 @todo @extension{ARB,half_float_pixel}, @extension{ARB,half_float_vertex}?
 
 %Extension                                   | Status
@@ -194,6 +194,7 @@ following:
 @subsection opengl-support-44 OpenGL 4.4
 
 @todo Also fallback to @extension{AMD,query_buffer_object}
+@todo @extension{AMD,pinned_memory} "fallback" for @extension{ARB,buffer_storage}
 
 %Extension                                   | Status
 -------------------------------------------- | ------
@@ -276,6 +277,7 @@ supported.
 
 Only extensions not already listed in above tables are included here.
 
+@todo @es_extension{NV,non_square_matrices}
 @todo Support also IMG_multisampled_render_to_texture? It has different enum
     values (!)
 
