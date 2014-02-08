@@ -347,7 +347,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
+template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(const std::vector<Object<Transformation>*>& objects, const typename Transformation::DataType& initialTransformation) const {
     std::vector<std::reference_wrapper<Object<Transformation>>> references;
     references.reserve(objects.size());
     for(auto o: objects) {
@@ -355,7 +355,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
         references.push_back(*o);
     }
 
-    return transformations(references, initialTransformation);
+    return transformations(std::move(references), initialTransformation);
 }
 
 #ifdef CORRADE_GCC47_COMPATIBILITY
@@ -451,7 +451,7 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-template<class Transformation> void Object<Transformation>::setClean(std::vector<Object<Transformation>*> objects) {
+template<class Transformation> void Object<Transformation>::setClean(const std::vector<Object<Transformation>*>& objects) {
     std::vector<std::reference_wrapper<Object<Transformation>>> references;
     references.reserve(objects.size());
     for(auto o: objects) {
@@ -459,7 +459,7 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
         references.push_back(*o);
     }
 
-    setClean(references);
+    setClean(std::move(references));
 }
 
 #ifdef CORRADE_GCC47_COMPATIBILITY

@@ -284,7 +284,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @copybrief transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)
          * @deprecated Use @ref Magnum::SceneGraph::Object::transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) "transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)" instead.
          */
-        CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+        CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(const std::vector<Object<Transformation>*>& objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
 
         #ifdef CORRADE_GCC47_COMPATIBILITY
         /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
@@ -318,7 +318,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @copybrief setClean(std::vector<std::reference_wrapper<Object<Transformation>>>)
          * @deprecated Use @ref Magnum::SceneGraph::Object::setClean(std::vector<std::reference_wrapper<Object<Transformation>>> "setClean(std::vector<std::reference_wrapper<Object<Transformation>>>" instead.
          */
-        CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") static void setClean(std::vector<Object<Transformation>*> objects);
+        CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") static void setClean(const std::vector<Object<Transformation>*>& objects);
 
         #ifdef CORRADE_GCC47_COMPATIBILITY
         /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
