@@ -459,7 +459,7 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
         references.push_back(*o);
     }
 
-    return setClean(references);
+    setClean(references);
 }
 
 #ifdef CORRADE_GCC47_COMPATIBILITY
