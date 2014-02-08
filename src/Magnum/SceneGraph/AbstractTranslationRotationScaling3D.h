@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotationScaling3D, typedef Magnum::SceneGraph::AbstractTranslationRotationScaling3D
+ * @brief Class @ref Magnum::SceneGraph::AbstractBasicTranslationRotationScaling3D, typedef @ref Magnum::SceneGraph::AbstractTranslationRotationScaling3D
  */
 
 #include "Magnum/SceneGraph/AbstractTranslationRotation3D.h"
@@ -48,7 +48,8 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
+         * @see @ref Math::Vector3::xScale(), @ref Math::Vector3::yScale(),
+         *      @ref Math::Vector3::zScale()
          */
         AbstractBasicTranslationRotationScaling3D<T>& scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             doScale(vector, type);
@@ -91,7 +92,7 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
     #else
     private:
     #endif
-        /** @brief Polymorphic implementation for scale() */
+        /** @brief Polymorphic implementation for @ref scale() */
         virtual void doScale(const Math::Vector3<T>& vector, TransformationType type) = 0;
 };
 

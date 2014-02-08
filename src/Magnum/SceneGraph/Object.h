@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Object
+ * @brief Class @ref Magnum::SceneGraph::Object
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -196,7 +196,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @brief Set parent object
          * @return Reference to self (for method chaining)
          *
-         * @see setParentKeepTransformation()
+         * @see @ref setParentKeepTransformation()
          */
         Object<Transformation>& setParent(Object<Transformation>* parent);
 
@@ -204,8 +204,9 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @brief Set parent object and keep absolute transformation
          * @return Reference to self (for method chaining)
          *
-         * While setParent() preserves only relative transformation of the
-         * object, this funcition preserves absolute transformation.
+         * While @ref setParent() preserves relative transformation of the
+         * object, this function preserves absolute transformation (i.e., the
+         * object stays in place after reparenting).
          */
         Object<Transformation>& setParentKeepTransformation(Object<Transformation>* parent);
 
@@ -216,7 +217,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @brief Transformation matrix
          *
-         * @see transformation()
+         * See also `transformation()` function of various transformation
+         * classes.
          */
         MatrixType transformationMatrix() const {
             return Implementation::Transformation<Transformation>::toMatrix(Transformation::transformation());
@@ -225,7 +227,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @brief Transformation matrix relative to root object
          *
-         * @see absoluteTransformation()
+         * @see @ref absoluteTransformation()
          */
         MatrixType absoluteTransformationMatrix() const {
             return Implementation::Transformation<Transformation>::toMatrix(absoluteTransformation());
@@ -234,7 +236,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @brief Transformation relative to root object
          *
-         * @see absoluteTransformationMatrix()
+         * @see @ref absoluteTransformationMatrix()
          */
         typename Transformation::DataType absoluteTransformation() const;
 
@@ -243,7 +245,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          *
          * All transformations are premultiplied with @p initialTransformationMatrix,
          * if specified.
-         * @see transformations()
+         * @see @ref transformations()
          */
         std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
 
@@ -252,7 +254,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          *
          * All transformations can be premultiplied with @p initialTransformation,
          * if specified.
-         * @see transformationMatrices()
+         * @see @ref transformationMatrices()
          */
         /* `objects` passed by copy intentionally (to allow move from
            transformationMatrices() and avoid copy in the function itself) */
@@ -270,7 +272,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @brief Clean absolute transformations of given set of objects
          *
          * Only dirty objects in the list are cleaned.
-         * @see setClean()
+         * @see @ref setClean()
          */
         /* `objects` passed by copy intentionally (to avoid copy internally) */
         static void setClean(std::vector<Object<Transformation>*> objects);
@@ -281,7 +283,20 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /** @copydoc AbstractObject::setDirty() */
         void setDirty();
 
-        /** @copydoc AbstractObject::setClean() */
+        /**
+         * @brief Clean object absolute transformation
+         *
+         * Calls @ref AbstractFeature::clean() and/or @ref AbstractFeature::cleanInverted()
+         * on all object features which have caching enabled and recursively
+         * calls @ref setClean() on every parent which is not already clean. If
+         * the object is already clean, the function does nothing.
+         *
+         * See also @ref setClean(std::vector<Object<Transformation>*>),
+         * which cleans given set of objects more efficiently than when calling
+         * @ref setClean() on each object individually.
+         * @see @ref scenegraph-caching, @ref setDirty(), @ref isDirty()
+         */
+        /* note: doc verbatim copied from AbstractObject::setClean() */
         void setClean();
 
         /*@}*/

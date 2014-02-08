@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractObject, alias Magnum::SceneGraph::AbstractBasicObject2D, Magnum::SceneGraph::AbstractBasicObject3D, typedef Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
+ * @brief Class @ref Magnum::SceneGraph::AbstractObject, alias @ref Magnum::SceneGraph::AbstractBasicObject2D, @ref Magnum::SceneGraph::AbstractBasicObject3D, typedef @ref Magnum::SceneGraph::AbstractObject2D, @ref Magnum::SceneGraph::AbstractObject3D
  */
 
 #include <vector>
@@ -129,7 +129,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @brief Transformation matrix
          *
-         * @see Object::transformation()
+         * See also `transformation()` function of various transformation
+         * classes.
          */
         MatrixType transformationMatrix() const {
             return doTransformationMatrix();
@@ -138,7 +139,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @brief Transformation matrix relative to root object
          *
-         * @see Object::absoluteTransformation()
+         * @see @ref Object::absoluteTransformation()
          */
         MatrixType absoluteTransformationMatrix() const {
             return doAbsoluteTransformationMatrix();
@@ -150,8 +151,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * All transformations are premultiplied with @p initialTransformationMatrix,
          * if specified.
          * @warning This function cannot check if all objects are of the same
-         *      Object type, use typesafe Object::transformationMatrices() when
-         *      possible.
+         *      @ref Object type, use typesafe @ref Object::transformationMatrices()
+         *      when possible.
          */
         std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
             return doTransformationMatrices(objects, initialTransformationMatrix);
@@ -170,7 +171,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          *
          * Only dirty objects in the list are cleaned.
          * @warning This function cannot check if all objects are of the same
-         *      Object type, use typesafe Object::setClean() when possible.
+         *      @ref Object type, use typesafe @ref Object::setClean() when
+         *      possible.
          */
         static void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
             if(objects.empty()) return;
@@ -181,10 +183,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * @brief Whether absolute transformation is dirty
          *
          * Returns `true` if transformation of the object or any parent has
-         * changed since last call to setClean(), `false` otherwise.
-         *
-         * All objects are dirty by default.
-         *
+         * changed since last call to @ref setClean(), `false` otherwise. All
+         * objects are dirty by default.
          * @see @ref scenegraph-caching
          */
         bool isDirty() const { return doIsDirty(); }
@@ -192,26 +192,26 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @brief Set object absolute transformation as dirty
          *
-         * Calls AbstractFeature::markDirty() on all object features and
-         * recursively calls setDirty() on every child object which is not
+         * Calls @ref AbstractFeature::markDirty() on all object features and
+         * recursively calls @ref setDirty() on every child object which is not
          * already dirty. If the object is already marked as dirty, the
          * function does nothing.
-         * @see @ref scenegraph-caching, setClean(), isDirty()
+         * @see @ref scenegraph-caching, @ref setClean(), @ref isDirty()
          */
         void setDirty() { doSetDirty(); }
 
         /**
          * @brief Clean object absolute transformation
          *
-         * Calls AbstractFeature::clean() and/or AbstractFeature::cleanInverted()
+         * Calls @ref AbstractFeature::clean() and/or @ref AbstractFeature::cleanInverted()
          * on all object features which have caching enabled and recursively
-         * calls setClean() on every parent which is not already clean. If the
-         * object is already clean, the function does nothing.
+         * calls @ref setClean() on every parent which is not already clean. If
+         * the object is already clean, the function does nothing.
          *
-         * See also setClean(const std::vector& objects), which cleans given
-         * set of objects more efficiently than when calling setClean() on
-         * each object individually.
-         * @see @ref scenegraph-caching, setDirty(), isDirty()
+         * See also @ref setClean(const std::vector<AbstractObject<dimensions, T>*>&),
+         * which cleans given set of objects more efficiently than when calling
+         * @ref setClean() on each object individually.
+         * @see @ref scenegraph-caching, @ref setDirty(), @ref isDirty()
          */
         void setClean() { doSetClean(); }
 
@@ -235,8 +235,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 /**
 @brief Base object for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<2, T></tt>. See AbstractObject
-for more information.
+Convenience alternative to <tt>%AbstractObject<2, T></tt>. See
+@ref AbstractObject for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
 @see @ref AbstractObject2D, @ref AbstractBasicObject3D
 */
@@ -258,10 +258,10 @@ typedef AbstractObject<2, Float> AbstractObject2D;
 /**
 @brief Base object for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<3, T></tt>. See AbstractObject
-for more information.
+Convenience alternative to <tt>%AbstractObject<3, T></tt>. See
+@ref AbstractObject for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
-@see AbstractObject2D
+@see @ref AbstractObject3D, @ref AbstractBasicObject2D
 */
 template<class T> using AbstractBasicObject3D = AbstractObject<3, T>;
 #endif

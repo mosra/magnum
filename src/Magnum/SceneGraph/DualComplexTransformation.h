@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicDualComplexTransformation, typedef Magnum::SceneGraph::DualComplexTransformation
+ * @brief Class @ref Magnum::SceneGraph::BasicDualComplexTransformation, typedef @ref Magnum::SceneGraph::DualComplexTransformation
  */
 
 #include "Magnum/Math/DualComplex.h"
@@ -39,12 +39,13 @@ namespace Magnum { namespace SceneGraph {
 @brief Two-dimensional transformation implemented using dual complex numbers
 
 This class allows only rigid transformation (i.e. only rotation and
-translation).
-@see @ref DualComplexTransformation, @ref scenegraph, Math::DualComplex, @ref BasicDualQuaternionTransformation
+translation). Uses @ref Math::DualComplex as underlying transformation type.
+@see @ref DualComplexTransformation, @ref scenegraph,
+    @ref BasicDualQuaternionTransformation
 */
 template<class T> class BasicDualComplexTransformation: public AbstractBasicTranslationRotation2D<T> {
     public:
-        /** @brief Transformation type */
+        /** @brief Underlying transformation type */
         typedef Math::DualComplex<T> DataType;
 
         /** @brief Object transformation */
@@ -55,7 +56,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
          * @return Reference to self (for method chaining)
          *
          * Expects that the dual complex number is normalized.
-         * @see DualComplex::isNormalized()
+         * @see @ref Math::DualComplex::isNormalized()
          */
         Object<BasicDualComplexTransformation<T>>& setTransformation(const Math::DualComplex<T>& transformation) {
             CORRADE_ASSERT(transformation.isNormalized(),
@@ -75,7 +76,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
          *
          * Normalizes the rotation part to prevent rounding errors when rotating
          * the object subsequently.
-         * @see DualComplex::normalized()
+         * @see @ref Math::DualComplex::normalized()
          */
         Object<BasicDualComplexTransformation<T>>& normalizeRotation() {
             return setTransformationInternal(_transformation.normalized());
@@ -88,7 +89,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
          * @return Reference to self (for method chaining)
          *
          * Expects that the dual complex number is normalized.
-         * @see DualComplex::isNormalized()
+         * @see @ref Math::DualComplex::isNormalized()
          */
         Object<BasicDualComplexTransformation<T>>& transform(const Math::DualComplex<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isNormalized(),
@@ -99,7 +100,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
-         * Same as calling transform() with DualComplex::translation().
+         * Same as calling @ref transform() with @ref Math::DualComplex::translation().
          */
         Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::DualComplex<T>::translation(vector), type);
@@ -111,8 +112,8 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with DualComplex::rotation().
-         * @see normalizeRotation()
+         * Same as calling @ref transform() with @ref Math::DualComplex::rotation().
+         * @see @ref normalizeRotation()
          */
         Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::DualComplex<T>::rotation(angle), type);

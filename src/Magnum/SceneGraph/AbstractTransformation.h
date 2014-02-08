@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractTransformation, alias Magnum::SceneGraph::AbstractBasicTransformation2D, Magnum::SceneGraph::AbstractBasicTransformation3D, typedef Magnum::SceneGraph::AbstractTransformation2D, Magnum::SceneGraph::AbstractTransformation3D, enum Magnum::SceneGraph::TransformationType
+ * @brief Class @ref Magnum::SceneGraph::AbstractTransformation, alias @ref Magnum::SceneGraph::AbstractBasicTransformation2D, @ref Magnum::SceneGraph::AbstractBasicTransformation3D, typedef @ref Magnum::SceneGraph::AbstractTransformation2D, @ref Magnum::SceneGraph::AbstractTransformation3D, enum @ref Magnum::SceneGraph::TransformationType
  */
 
 #include "Magnum/SceneGraph/SceneGraph.h"
@@ -80,7 +80,7 @@ template<UnsignedInt dimensions, class T> class AbstractTransformation {
     #else
     private:
     #endif
-        /** @brief Polymorphic implementation for resetTransformation() */
+        /** @brief Polymorphic implementation for @ref resetTransformation() */
         virtual void doResetTransformation() = 0;
 };
 
@@ -102,7 +102,7 @@ enum class TransformationType: UnsignedByte {
 @brief Base transformation for two-dimensional scenes
 
 Convenience alternative to <tt>%AbstractTransformation<2, T></tt>. See
-AbstractTransformation for more information.
+@ref AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<2, T></tt>
     instead.
 @see @ref AbstractTransformation2D, @ref AbstractBasicTransformation3D
@@ -126,7 +126,7 @@ typedef AbstractTransformation<2, Float> AbstractTransformation2D;
 @brief Base transformation for three-dimensional scenes
 
 Convenience alternative to <tt>%AbstractTransformation<3, T></tt>. See
-AbstractTransformation for more information.
+@ref AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
     instead.
 @see @ref AbstractTransformation3D, @ref AbstractBasicTransformation2D

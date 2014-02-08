@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotation2D, typedef Magnum::SceneGraph::AbstractTranslationRotation2D
+ * @brief Class @ref Magnum::SceneGraph::AbstractBasicTranslationRotation2D, typedef @ref Magnum::SceneGraph::AbstractTranslationRotation2D
  */
 
 #include "Magnum/SceneGraph/AbstractTranslation.h"
@@ -70,7 +70,7 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractTrans
     #else
     private:
     #endif
-        /** @brief Polymorphic implementation for rotate() */
+        /** @brief Polymorphic implementation for @ref rotate() */
         virtual void doRotate(Math::Rad<T> angle, TransformationType type) = 0;
 };
 

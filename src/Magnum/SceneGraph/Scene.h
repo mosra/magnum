@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::Scene
+ * @brief Class @ref Magnum::SceneGraph::Scene
  */
 
 #include "Magnum/SceneGraph/Object.h"
@@ -36,7 +36,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief %Scene
 
-Basically Object which cannot have parent or non-default transformation.
+Basically @ref Object which cannot have parent or non-default transformation.
 See @ref scenegraph for introduction.
 */
 template<class Transformation> class Scene: public Object<Transformation> {
