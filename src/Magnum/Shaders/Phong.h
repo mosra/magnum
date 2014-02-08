@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::Phong
+ * @brief Class @ref Magnum::Shaders::Phong
  */
 
 #include "Magnum/Color.h"

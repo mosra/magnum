@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::VertexColor
+ * @brief Class @ref Magnum::Shaders::VertexColor
  */
 
 #include "Magnum/Color.h"
@@ -42,7 +42,7 @@ namespace Magnum { namespace Shaders {
 @brief Vertex color shader
 
 Draws vertex-colored mesh.
-@see VertexColor2D, VertexColor3D
+@see @ref VertexColor2D, @ref VertexColor3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public AbstractShaderProgram {
     public:

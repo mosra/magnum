@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::AbstractVector, typedef Magnum::Shaders::AbstractVector2D, Magnum::Shaders::AbstractVector3D
+ * @brief Class @ref Magnum::Shaders::AbstractVector, typedef @ref Magnum::Shaders::AbstractVector2D, @ref Magnum::Shaders::AbstractVector3D
  */
 
 #include "Magnum/Shaders/Generic.h"
@@ -36,7 +36,7 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Base for vector shaders
 
-@see AbstractVector2D, AbstractVector3D
+@see @ref AbstractVector2D, @ref AbstractVector3D
 */
 template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
     public:
