@@ -247,7 +247,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * if specified.
          * @see @ref transformations()
          */
-        std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+        std::vector<MatrixType> transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)
+         * @deprecated Use @ref Magnum::SceneGraph::Object::transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) "transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)" instead.
+         */
+        CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+        #endif
 
         /**
          * @brief Transformations of given group of objects relative to this object
@@ -258,7 +266,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          */
         /* `objects` passed by copy intentionally (to allow move from
            transformationMatrices() and avoid copy in the function itself) */
-        std::vector<typename Transformation::DataType> transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+        std::vector<typename Transformation::DataType> transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)
+         * @deprecated Use @ref Magnum::SceneGraph::Object::transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) "transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)" instead.
+         */
+        CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+        #endif
 
         /*@}*/
 
@@ -275,7 +291,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * @see @ref setClean()
          */
         /* `objects` passed by copy intentionally (to avoid copy internally) */
-        static void setClean(std::vector<Object<Transformation>*> objects);
+        static void setClean(std::vector<std::reference_wrapper<Object<Transformation>>> objects);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief setClean(std::vector<std::reference_wrapper<Object<Transformation>>>)
+         * @deprecated Use @ref Magnum::SceneGraph::Object::setClean(std::vector<std::reference_wrapper<Object<Transformation>>> "setClean(std::vector<std::reference_wrapper<Object<Transformation>>>" instead.
+         */
+        CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") static void setClean(std::vector<Object<Transformation>*> objects);
+        #endif
 
         /** @copydoc AbstractObject::isDirty() */
         bool isDirty() const { return !!(flags & Flag::Dirty); }
@@ -291,7 +315,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * calls @ref setClean() on every parent which is not already clean. If
          * the object is already clean, the function does nothing.
          *
-         * See also @ref setClean(std::vector<Object<Transformation>*>),
+         * See also @ref setClean(std::vector<std::reference_wrapper<Object<Transformation>>>),
          * which cleans given set of objects more efficiently than when calling
          * @ref setClean() on each object individually.
          * @see @ref scenegraph-caching, @ref setDirty(), @ref isDirty()
@@ -317,16 +341,16 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             return absoluteTransformationMatrix();
         }
 
-        std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const override final;
+        std::vector<MatrixType> doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects, const MatrixType& initialTransformationMatrix) const override final;
 
-        typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
+        typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
 
         bool MAGNUM_SCENEGRAPH_LOCAL doIsDirty() const override final { return isDirty(); }
         void MAGNUM_SCENEGRAPH_LOCAL doSetDirty() override final { setDirty(); }
         void MAGNUM_SCENEGRAPH_LOCAL doSetClean() override final { setClean(); }
-        void doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) override final;
+        void doSetClean(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects) override final;
 
-        void MAGNUM_SCENEGRAPH_LOCAL setClean(const typename Transformation::DataType& absoluteTransformation);
+        void MAGNUM_SCENEGRAPH_LOCAL setCleanInternal(const typename Transformation::DataType& absoluteTransformation);
 
         typedef Implementation::ObjectFlag Flag;
         typedef Implementation::ObjectFlags Flags;

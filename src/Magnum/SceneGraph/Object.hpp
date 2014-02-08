@@ -38,8 +38,34 @@
 
 namespace Magnum { namespace SceneGraph {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
+    std::vector<std::reference_wrapper<const AbstractObject<dimensions, T>>> references;
+    references.reserve(objects.size());
+    for(auto o: objects) {
+        CORRADE_INTERNAL_ASSERT(o != nullptr);
+        references.push_back(*o);
+    }
+
+    setClean(references);
+}
+#endif
+
 template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
 template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+    std::vector<std::reference_wrapper<const AbstractObject<dimensions, T>>> references;
+    references.reserve(objects.size());
+    for(auto o: objects) {
+        CORRADE_INTERNAL_ASSERT(o != nullptr);
+        references.push_back(*o);
+    }
+
+    return transformationMatrices(references, initialTransformationMatrix);
+}
+#endif
 
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 
@@ -159,22 +185,21 @@ template<class Transformation> void Object<Transformation>::setClean() {
         /* Compose transformation and clean object */
         absoluteTransformation = Implementation::Transformation<Transformation>::compose(absoluteTransformation, o->transformation());
         CORRADE_INTERNAL_ASSERT(o->isDirty());
-        o->setClean(absoluteTransformation);
+        o->setCleanInternal(absoluteTransformation);
         CORRADE_ASSERT(!o->isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
     }
 }
 
-template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    std::vector<Object<Transformation>*> castObjects(objects.size());
-    for(std::size_t i = 0; i != objects.size(); ++i)
-        /* Non-null is checked in transformations() */
-        /** @todo Ensure this doesn't crash, somehow */
-        castObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
+template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+    std::vector<std::reference_wrapper<Object<Transformation>>> castObjects;
+    castObjects.reserve(objects.size());
+    /** @todo Ensure this doesn't crash, somehow */
+    for(auto o: objects) castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
 
     return transformationMatrices(std::move(castObjects), initialTransformationMatrix);
 }
 
-template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Implementation::Transformation<Transformation>::fromMatrix(initialTransformationMatrix));
     std::vector<MatrixType> transformationMatrices(transformations.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
@@ -182,6 +207,19 @@ template<class Transformation> auto Object<Transformation>::transformationMatric
 
     return transformationMatrices;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+    std::vector<std::reference_wrapper<Object<Transformation>>> references;
+    references.reserve(objects.size());
+    for(auto o: objects) {
+        CORRADE_INTERNAL_ASSERT(o != nullptr);
+        references.push_back(*o);
+    }
+
+    return transformationMatrices(references, initialTransformationMatrix);
+}
+#endif
 
 /*
 Computing absolute transformations for given list of objects
@@ -197,7 +235,7 @@ Then for all joints their transformation (relative to parent joint) is
 computed and recursively concatenated together. Resulting transformations for
 joints which were originally in `object` list is then returned.
 */
-template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
+template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation) const {
     CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", std::vector<typename Transformation::DataType>{});
 
     /* Remember object count for later */
@@ -206,16 +244,14 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Mark all original objects as joints and create initial list of joints
        from them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
-        CORRADE_INTERNAL_ASSERT(objects[i]);
-
         /* Multiple occurences of one object in the array, don't overwrite it
            with different counter */
-        if(objects[i]->counter != 0xFFFFu) continue;
+        if(objects[i].get().counter != 0xFFFFu) continue;
 
-        objects[i]->counter = UnsignedShort(i);
-        objects[i]->flags |= Flag::Joint;
+        objects[i].get().counter = UnsignedShort(i);
+        objects[i].get().flags |= Flag::Joint;
     }
-    std::vector<Object<Transformation>*> jointObjects(objects);
+    std::vector<std::reference_wrapper<Object<Transformation>>> jointObjects(objects);
 
     /* Scene object */
     const Scene<Transformation>* scene = this->scene();
@@ -227,19 +263,19 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     auto it = objects.begin();
     while(!objects.empty()) {
         /* Already visited, remove and continue to next (duplicate occurence) */
-        if((*it)->flags & Flag::Visited) {
+        if(it->get().flags & Flag::Visited) {
             it = objects.erase(it);
             continue;
         }
 
         /* Mark the object as visited */
-        (*it)->flags |= Flag::Visited;
+        it->get().flags |= Flag::Visited;
 
-        Object<Transformation>* parent = (*it)->parent();
+        Object<Transformation>* parent = it->get().parent();
 
         /* If this is root object, remove from list */
         if(!parent) {
-            CORRADE_ASSERT(*it == scene, "SceneGraph::Object::transformations(): the objects are not part of the same tree", std::vector<typename Transformation::DataType>{});
+            CORRADE_ASSERT(&it->get() == scene, "SceneGraph::Object::transformations(): the objects are not part of the same tree", std::vector<typename Transformation::DataType>{});
             it = objects.erase(it);
 
         /* Parent is an joint or already visited - remove current from list */
@@ -254,11 +290,11 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
                 CORRADE_INTERNAL_ASSERT(parent->counter == 0xFFFFu);
                 parent->counter = UnsignedShort(jointObjects.size());
                 parent->flags |= Flag::Joint;
-                jointObjects.push_back(parent);
+                jointObjects.push_back(*parent);
             }
 
         /* Else go up the hierarchy */
-        } else *it = parent;
+        } else *it = *parent;
 
         /* Cycle if reached end */
         if(it == objects.end()) it = objects.begin();
@@ -274,17 +310,17 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     /* Copy transformation for second or next occurences from first occurence
        of duplicate object */
     for(std::size_t i = 0; i != objectCount; ++i) {
-        if(jointObjects[i]->counter != i)
-            jointTransformations[i] = jointTransformations[jointObjects[i]->counter];
+        if(jointObjects[i].get().counter != i)
+            jointTransformations[i] = jointTransformations[jointObjects[i].get().counter];
     }
 
     /* All visited marks are now cleaned, clean joint marks and counters */
     for(auto i: jointObjects) {
         /* All not-already cleaned objects (...duplicate occurences) should
            have joint mark */
-        CORRADE_INTERNAL_ASSERT(i->counter == 0xFFFFu || i->flags & Flag::Joint);
-        i->flags &= ~Flag::Joint;
-        i->counter = 0xFFFFu;
+        CORRADE_INTERNAL_ASSERT(i.get().counter == 0xFFFFu || i.get().flags & Flag::Joint);
+        i.get().flags &= ~Flag::Joint;
+        i.get().counter = 0xFFFFu;
     }
 
     /* Shrink the array to contain only transformations of requested objects and return */
@@ -292,27 +328,40 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     return jointTransformations;
 }
 
-template<class Transformation> typename Transformation::DataType Object<Transformation>::computeJointTransformation(const std::vector<Object<Transformation>*>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const {
-    Object<Transformation>* o = jointObjects[joint];
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
+    std::vector<std::reference_wrapper<Object<Transformation>>> references;
+    references.reserve(objects.size());
+    for(auto o: objects) {
+        CORRADE_INTERNAL_ASSERT(o != nullptr);
+        references.push_back(*o);
+    }
+
+    return transformations(references, initialTransformation);
+}
+#endif
+
+template<class Transformation> typename Transformation::DataType Object<Transformation>::computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const {
+    std::reference_wrapper<Object<Transformation>> o = jointObjects[joint];
 
     /* Transformation already computed ("unvisited" by this function before
        either due to recursion or duplicate object occurences), done */
-    if(!(o->flags & Flag::Visited)) return jointTransformations[joint];
+    if(!(o.get().flags & Flag::Visited)) return jointTransformations[joint];
 
     /* Initialize transformation */
-    jointTransformations[joint] = o->transformation();
+    jointTransformations[joint] = o.get().transformation();
 
     /* Go up until next joint or root */
     for(;;) {
         /* Clean visited mark */
-        CORRADE_INTERNAL_ASSERT(o->flags & Flag::Visited);
-        o->flags &= ~Flag::Visited;
+        CORRADE_INTERNAL_ASSERT(o.get().flags & Flag::Visited);
+        o.get().flags &= ~Flag::Visited;
 
-        Object<Transformation>* parent = o->parent();
+        Object<Transformation>* parent = o.get().parent();
 
         /* Root object, compose transformation with initial, done */
         if(!parent) {
-            CORRADE_INTERNAL_ASSERT(o->isScene());
+            CORRADE_INTERNAL_ASSERT(o.get().isScene());
             return (jointTransformations[joint] =
                 Implementation::Transformation<Transformation>::compose(initialTransformation, jointTransformations[joint]));
 
@@ -324,23 +373,23 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
         /* Else compose transformation with parent, go up the hierarchy */
         } else {
             jointTransformations[joint] = Implementation::Transformation<Transformation>::compose(parent->transformation(), jointTransformations[joint]);
-            o = parent;
+            o = *parent;
         }
     }
 }
 
-template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<AbstractObject<Transformation::Dimensions, typename Transformation::Type>*>& objects) {
-    std::vector<Object<Transformation>*> castObjects(objects.size());
-    for(std::size_t i = 0; i != objects.size(); ++i)
-        /** @todo Ensure this doesn't crash, somehow */
-        castObjects[i] = static_cast<Object<Transformation>*>(objects[i]);
+template<class Transformation> void Object<Transformation>::doSetClean(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects) {
+    std::vector<std::reference_wrapper<Object<Transformation>>> castObjects;
+    castObjects.reserve(objects.size());
+    /** @todo Ensure this doesn't crash, somehow */
+    for(auto o: objects) castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
 
     setClean(std::move(castObjects));
 }
 
-template<class Transformation> void Object<Transformation>::setClean(std::vector<Object<Transformation>*> objects) {
+template<class Transformation> void Object<Transformation>::setClean(std::vector<std::reference_wrapper<Object<Transformation>>> objects) {
     /* Remove all clean objects from the list */
-    auto firstClean = std::remove_if(objects.begin(), objects.end(), [](Object<Transformation>* o) { return !o->isDirty(); });
+    auto firstClean = std::remove_if(objects.begin(), objects.end(), [](Object<Transformation>& o) { return !o.isDirty(); });
     objects.erase(firstClean, objects.end());
 
     /* No dirty objects left, done */
@@ -349,35 +398,48 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
     /* Add non-clean parents to the list. Mark each added object as visited, so
        they aren't added more than once */
     for(std::size_t end = objects.size(), i = 0; i != end; ++i) {
-        Object<Transformation>* o = objects[i];
-        o->flags |= Flag::Visited;
+        Object<Transformation>& o = objects[i];
+        o.flags |= Flag::Visited;
 
-        Object<Transformation>* parent = o->parent();
+        Object<Transformation>* parent = o.parent();
         while(parent && !(parent->flags & Flag::Visited) && parent->isDirty()) {
-            objects.push_back(parent);
+            objects.push_back(*parent);
             parent = parent->parent();
         }
     }
 
     /* Cleanup all marks */
-    for(auto o: objects) o->flags &= ~Flag::Visited;
+    for(auto o: objects) o.get().flags &= ~Flag::Visited;
 
     /* Compute absolute transformations */
-    Scene<Transformation>* scene = objects[0]->scene();
+    Scene<Transformation>* scene = objects[0].get().scene();
     CORRADE_ASSERT(scene, "Object::setClean(): objects must be part of some scene", );
     std::vector<typename Transformation::DataType> transformations(scene->transformations(objects));
 
     /* Go through all objects and clean them */
     for(std::size_t i = 0; i != objects.size(); ++i) {
         /* The object might be duplicated in the list, don't clean it more than once */
-        if(!objects[i]->isDirty()) continue;
+        if(!objects[i].get().isDirty()) continue;
 
-        objects[i]->setClean(transformations[i]);
-        CORRADE_ASSERT(!objects[i]->isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
+        objects[i].get().setCleanInternal(transformations[i]);
+        CORRADE_ASSERT(!objects[i].get().isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
     }
 }
 
-template<class Transformation> void Object<Transformation>::setClean(const typename Transformation::DataType& absoluteTransformation) {
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<class Transformation> void Object<Transformation>::setClean(std::vector<Object<Transformation>*> objects) {
+    std::vector<std::reference_wrapper<Object<Transformation>>> references;
+    references.reserve(objects.size());
+    for(auto o: objects) {
+        CORRADE_INTERNAL_ASSERT(o != nullptr);
+        references.push_back(*o);
+    }
+
+    return setClean(objects);
+}
+#endif
+
+template<class Transformation> void Object<Transformation>::setCleanInternal(const typename Transformation::DataType& absoluteTransformation) {
     /* "Lazy storage" for transformation matrix and inverted transformation matrix */
     CachedTransformations cached;
     MatrixType matrix, invertedMatrix;

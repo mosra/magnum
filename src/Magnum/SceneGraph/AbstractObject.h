@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::SceneGraph::AbstractObject, alias @ref Magnum::SceneGraph::AbstractBasicObject2D, @ref Magnum::SceneGraph::AbstractBasicObject3D, typedef @ref Magnum::SceneGraph::AbstractObject2D, @ref Magnum::SceneGraph::AbstractObject3D
  */
 
+#include <functional>
 #include <vector>
 #include <Corrade/Containers/LinkedList.h>
 
@@ -154,9 +155,17 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          *      @ref Object type, use typesafe @ref Object::transformationMatrices()
          *      when possible.
          */
-        std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
+        std::vector<MatrixType> transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
             return doTransformationMatrices(objects, initialTransformationMatrix);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractObject::transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) "transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)" instead.
+         */
+        CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+        #endif
 
         /*@}*/
 
@@ -174,10 +183,18 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          *      @ref Object type, use typesafe @ref Object::setClean() when
          *      possible.
          */
-        static void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
+        static void setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects) {
             if(objects.empty()) return;
-            objects.front()->doSetClean(objects);
+            objects.front().get().doSetClean(objects);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&)
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractObject::setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) "setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&)" instead.
+         */
+        static CORRADE_DEPRECATED("use setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead") void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects);
+        #endif
 
         /**
          * @brief Whether absolute transformation is dirty
@@ -223,12 +240,12 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 
         virtual MatrixType doTransformationMatrix() const = 0;
         virtual MatrixType doAbsoluteTransformationMatrix() const = 0;
-        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const = 0;
+        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix) const = 0;
 
         virtual bool doIsDirty() const = 0;
         virtual void doSetDirty() = 0;
         virtual void doSetClean() = 0;
-        virtual void doSetClean(const std::vector<AbstractObject<dimensions, T>*>& objects) = 0;
+        virtual void doSetClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects) = 0;
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
