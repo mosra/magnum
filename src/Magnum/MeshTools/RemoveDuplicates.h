@@ -174,7 +174,7 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
 */
 template<class Vector> void removeDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
     std::vector<UnsignedInt> uniqueIndices;
-    std::tie(uniqueIndices, data) = removeDuplicates(data);
+    std::tie(uniqueIndices, data) = removeDuplicates(data, epsilon);
     indices = MeshTools::duplicate(indices, uniqueIndices);
 }
 #endif
