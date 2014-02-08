@@ -435,7 +435,7 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
         references.push_back(*o);
     }
 
-    return setClean(objects);
+    return setClean(references);
 }
 #endif
 
