@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::ResourceManager, enum Magnum::ResourceDataState, Magnum::ResourcePolicy
+ * @brief Class @ref Magnum::ResourceManager, @ref Magnum::ResourceDataState, @ref Magnum::ResourcePolicy
  */
 
 #include <unordered_map>
@@ -35,44 +35,44 @@
 
 namespace Magnum {
 
-/** @relates ResourceManager
- * @brief %Resource data state
- *
- * @see ResourceManager::set(), ResourceState
- */
+/**
+@brief %Resource data state
+
+@see @ref ResourceManager::set(), @ref ResourceState
+*/
 enum class ResourceDataState: UnsignedByte {
     /**
-     * The resource is currently loading. Parameter @p data in ResourceManager::set()
-     * should be set to `null`.
+     * The resource is currently loading. Parameter @p data in
+     * @ref ResourceManager::set() should be set to `nullptr`.
      */
     Loading = UnsignedByte(ResourceState::Loading),
 
     /**
-     * The resource was not found. Parameter @p data in ResourceManager::set()
-     * should be set to `null`.
+     * The resource was not found. Parameter @p data in
+     * @ref ResourceManager::set() should be set to `nullptr`.
      */
     NotFound = UnsignedByte(ResourceState::NotFound),
 
     /**
      * The resource can be changed by the manager in the future. This is
-     * slower, as Resource needs to ask the manager for new version every time
-     * the data are accessed, but allows changing the data for e.g. debugging
-     * purposes.
+     * slower, as @ref Resource needs to ask the manager for new version every
+     * time the data are accessed, but allows changing the data for e.g.
+     * debugging purposes.
      */
     Mutable = UnsignedByte(ResourceState::Mutable),
 
     /**
      * The resource cannot be changed by the manager in the future. This is
-     * faster, as Resource instances will ask for the data only one time, thus
-     * suitable for production code.
+     * faster, as @ref Resource instances will ask for the data only one time,
+     * thus suitable for production code.
      */
     Final = UnsignedByte(ResourceState::Final)
 };
 
-/** @relates ResourceManager
+/**
 @brief %Resource policy
 
-@see ResourceManager::set(), ResourceManager::free()
+@see @ref ResourceManager::set(), @ref ResourceManager::free()
  */
 enum class ResourcePolicy: UnsignedByte {
     /** The resource will stay resident for whole lifetime of resource manager. */
@@ -80,7 +80,7 @@ enum class ResourcePolicy: UnsignedByte {
 
     /**
      * The resource will be unloaded when manually calling
-     * ResourceManager::free() if nothing references it.
+     * @ref ResourceManager::free() if nothing references it.
      */
     Manual,
 
@@ -160,43 +160,43 @@ template<class T> class ResourceManagerData {
 @brief %Resource manager
 
 Provides storage for arbitrary set of types, accessible globally using
-instance().
+@ref instance().
 
 @section ResourceManager-usage Usage
 
-Each resource is referenced from Resource class. For optimizing performance,
-each resource can be set as mutable or final. Mutable resources can be
-modified by the manager and thus each %Resource instance asks the manager for
-modifications on each access. On the other hand, final resources cannot be
-modified by the manager, so %Resource instances don't have to ask the manager
-every time, which is faster.
+Each resource is referenced from @ref Resource class. For optimizing
+performance, each resource can be set as mutable or final. Mutable resources
+can be modified by the manager and thus each @ref Resource instance asks the
+manager for modifications on each access. On the other hand, final resources
+cannot be modified by the manager, so @ref Resource instances don't have to ask
+the manager every time, which is faster.
 
 It's possible to provide fallback for resources which are not available using
-setFallback(). Accessing data of such resources will access the fallback
+@ref setFallback(). Accessing data of such resources will access the fallback
 instead of failing on null pointer dereference. Availability and state of each
-resource can be queried through function state() on the manager or
-Resource::state() on each resource.
+resource can be queried through function @ref state() on the manager or
+@ref Resource::state() on each resource.
 
 The resources can be managed in three ways - resident resources, which stay in
 memory for whole lifetime of the manager, manually managed resources, which
-can be deleted by calling free() if nothing references them anymore, and
+can be deleted by calling @ref free() if nothing references them anymore, and
 reference counted resources, which are deleted as soon as the last reference
 to them is removed.
 
 %Resource state and policy is configured when setting the resource data in
-set() and can be changed each time the data are updated, although already
+@ref set() and can be changed each time the data are updated, although already
 final resources cannot obviously be set as mutable again.
 
 Basic usage is:
-- Typedef'ing manager of desired types, creating its instance.
+-   Typedef'ing manager of desired types, creating its instance.
 @code
 typedef ResourceManager<Mesh, Texture2D, AbstractShaderProgram> MyResourceManager;
 MyResourceManager manager;
 @endcode
-- Filling the manager with resource data and acquiring the resources. Note
-  that a resource can be acquired with get() even before the manager contains
-  the data for it, as long as the resource data are not accessed (or fallback
-  is provided).
+-   Filling the manager with resource data and acquiring the resources. Note
+    that a resource can be acquired with @ref get() even before the manager
+    contains the data for it, as long as the resource data are not accessed (or
+    fallback is provided).
 @code
 MyResourceManager* manager = MyResourceManager::instance();
 Resource<Texture2D> texture(manager->get<Texture2D>("texture"));
@@ -210,13 +210,13 @@ if(!cube) {
     manager->set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 @endcode
-- Using the resource data.
+-   Using the resource data.
 @code
 shader->setTexture(layer);
 cube->draw(*shader);
 @endcode
-- Destroying resource references and deleting manager instance when nothing
-  references the resources anymore.
+-   Destroying resource references and deleting manager instance when nothing
+    references the resources anymore.
 
 @see AbstractResourceLoader
 */
@@ -238,7 +238,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * Sets global instance pointer to itself.
          * @attention Only one instance of given ResourceManager type can be
          *      created.
-         * @see instance()
+         * @see @ref instance()
          */
         explicit ResourceManager();
 
@@ -246,7 +246,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Destructor
          *
          * Sets global instance pointer to `nullptr`.
-         * @see instance()
+         * @see @ref instance()
          */
         ~ResourceManager();
 
@@ -274,7 +274,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         /**
          * @brief Reference count of given resource
          *
-         * @see set()
+         * @see @ref set()
          */
         template<class T> std::size_t referenceCount(ResourceKey key) const {
             return this->Implementation::ResourceManagerData<T>::referenceCount(key);
@@ -283,7 +283,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         /**
          * @brief %Resource state
          *
-         * @see set(), Resource::state()
+         * @see @ref set(), @ref Resource::state()
          */
         template<class T> ResourceState state(ResourceKey key) const {
             return this->Implementation::ResourceManagerData<T>::state(key);
@@ -293,20 +293,20 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Set resource data
          * @return Reference to self (for method chaining)
          *
-         * If @p policy is set to `ResourcePolicy::ReferenceCounted`, there
+         * If @p policy is set to @ref ResourcePolicy::ReferenceCounted, there
          * must be already at least one reference to given resource, otherwise
-         * the data will be deleted immediately and no resource will be
-         * added. To avoid spending unnecessary loading time, add
-         * reference-counted resources only if they are already referenced:
+         * the data will be deleted immediately and no resource will be added.
+         * To avoid spending unnecessary loading time, add reference-counted
+         * resources only if they are already referenced:
          * @code
          * if(manager.referenceCount<T>("myresource")) {
          *     // load data...
          *     manager.set("myresource", data, state, ResourcePolicy::ReferenceCounted);
          * }
          * @endcode
-         * @attention If resource state is already `ResourceState::Final`,
-         *      subsequent updates are not possible.
-         * @see referenceCount(), state()
+         * @attention Subsequent updates are not possible if resource state is
+         *      already @ref ResourceState::Final.
+         * @see @ref referenceCount(), @ref state()
          */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
             this->Implementation::ResourceManagerData<T>::set(key, data, state, policy);
@@ -380,7 +380,8 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Clear all resources of given type
          * @return Reference to self (for method chaining)
          *
-         * Unlike free() this function assumes that no resource is referenced.
+         * Unlike @ref free() this function assumes that no resource is
+         * referenced.
          */
         template<class T> ResourceManager<Types...>& clear() {
             this->Implementation::ResourceManagerData<T>::clear();
@@ -391,7 +392,8 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Clear all resources
          * @return Reference to self (for method chaining)
          *
-         * Unlike free() this function assumes that no resource is referenced.
+         * Unlike @ref free() this function assumes that no resource is
+         * referenced.
          */
         ResourceManager<Types...>& clear() {
             clearInternal<Types...>();
@@ -413,7 +415,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @param loader    Loader or `nullptr` if unsetting previous loader.
          * @return Reference to self (for method chaining)
          *
-         * See AbstractResourceLoader documentation for more information.
+         * See @ref AbstractResourceLoader documentation for more information.
          * @attention The loader is deleted on destruction before unloading
          *      all resources.
          */

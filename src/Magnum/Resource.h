@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::ResourceKey, Magnum::Resource, enum Magnum::ResourceState
+ * @brief Class @ref Magnum::ResourceKey, @ref Magnum::Resource, enum @ref Magnum::ResourceState
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -37,11 +37,11 @@
 
 namespace Magnum {
 
-/** @relates Resource
- * @brief %Resource state
- *
- * @see Resource::state(), ResourceManager::state()
- */
+/**
+@brief %Resource state
+
+@see @ref Resource::state(), @ref ResourceManager::state()
+*/
 enum class ResourceState: UnsignedByte {
     /** The resource is not yet loaded (and no fallback is available). */
     NotLoaded,
@@ -74,9 +74,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value);
 /**
 @brief Key for accessing resource
 
-See ResourceManager for more information.
-@see ResourceManager::referenceCount(), ResourceManager::state(),
-    ResourceManager::get(), ResourceManager::set(), Resource::key()
+See @ref ResourceManager for more information.
 */
 class ResourceKey: public Utility::MurmurHash2::Digest {
     public:
@@ -110,7 +108,7 @@ namespace Implementation {
 /**
 @brief %Resource reference
 
-See ResourceManager for more information.
+See @ref ResourceManager for more information.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U = T>
@@ -125,7 +123,7 @@ class Resource {
          * @brief Default constructor
          *
          * Creates empty resource. Resources are acquired from the manager by
-         * calling ResourceManager::get().
+         * calling @ref ResourceManager::get().
          */
         explicit Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
 
@@ -157,7 +155,7 @@ class Resource {
         /**
          * @brief %Resource state
          *
-         * @see operator bool(), ResourceManager::state()
+         * @see @ref operator bool(), @ref ResourceManager::state()
          */
         ResourceState state() {
             acquire();
