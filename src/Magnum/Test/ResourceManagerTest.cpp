@@ -43,6 +43,7 @@ class ResourceManagerTest: public TestSuite::Tester {
         void residentPolicy();
         void referenceCountedPolicy();
         void manualPolicy();
+        void defaults();
         void clear();
         void clearWhileReferenced();
         void loader();
@@ -68,6 +69,7 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::residentPolicy,
               &ResourceManagerTest::referenceCountedPolicy,
               &ResourceManagerTest::manualPolicy,
+              &ResourceManagerTest::defaults,
               &ResourceManagerTest::clear,
               &ResourceManagerTest::clearWhileReferenced,
               &ResourceManagerTest::loader});
@@ -227,6 +229,12 @@ void ResourceManagerTest::manualPolicy() {
     rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     CORRADE_COMPARE(Data::count, 1);
+}
+
+void ResourceManagerTest::defaults() {
+    ResourceManager rm;
+    rm.set("data", new Data);
+    CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::Final);
 }
 
 void ResourceManagerTest::clear() {
