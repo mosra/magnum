@@ -255,6 +255,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @copybrief transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)
          * @deprecated Use @ref Magnum::SceneGraph::Object::transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) "transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)" instead.
+         * @todoc fix this when Doxygen is sane (see this function in AbstractObject)
          */
         CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
 
@@ -283,6 +284,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @copybrief transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)
          * @deprecated Use @ref Magnum::SceneGraph::Object::transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) "transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)" instead.
+         * @todoc fix this when Doxygen is sane (see related function in AbstractObject)
          */
         CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(const std::vector<Object<Transformation>*>& objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
 

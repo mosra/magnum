@@ -163,6 +163,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @copybrief transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)
          * @deprecated Use @ref Magnum::SceneGraph::AbstractObject::transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) "transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)" instead.
+         * @todoc The `ref` works when `const` is added, but then the quoted thing is not taken as a part of the reference. The  `copybrief` doesn't parse the `const` at all. Doxygen I hate you.
          */
         CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
 
