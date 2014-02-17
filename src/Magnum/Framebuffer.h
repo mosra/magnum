@@ -102,7 +102,7 @@ See their respective documentation for more information.
 @todo `MAX_COLOR_ATTACHMENTS`
 */
 class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObject {
-    friend class Context;
+    friend struct Implementation::FramebufferState;
 
     public:
         /**
@@ -121,7 +121,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
                  * @param id        Color attachment ID
                  *
                  * @requires_gles30 %Extension @es_extension{NV,fbo_color_attachments}
-                 *      is required for @p id greater than 0.
+                 *      is required for @p id greater than 0 in OpenGL ES 2.0
                  */
                 constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
@@ -216,6 +216,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @ref invalidate()
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
          * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         *      in OpenGL ES 2.0
          */
         class InvalidationAttachment {
             public:
@@ -284,7 +285,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
              * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample},
              *      @es_extension{APPLE,framebuffer_multisample},
              *      @es_extension{EXT,multisampled_render_to_texture} or
-             *      @es_extension{NV,framebuffer_multisample}
+             *      @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0
              */
             #ifndef MAGNUM_TARGET_GLES2
             IncompleteMultisample = GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE,
@@ -348,9 +349,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief %Framebuffer label
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function returns empty string.
+         * OpenGL calls. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
@@ -361,9 +362,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Set framebuffer label
          * @return Reference to self (for method chaining)
          *
-         * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function does nothing.
+         * Default is empty string. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
@@ -380,9 +381,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{BindFramebuffer}, @fn_gl{CheckFramebufferStatus} or
          *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access}
          */
-        Status checkStatus(FramebufferTarget target) {
-            return Status((this->*checkStatusImplementation)(target));
-        }
+        Status checkStatus(FramebufferTarget target);
 
         /**
          * @brief Map shader output to attachments
@@ -405,6 +404,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers} or
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
+         *      in OpenGL ES 2.0
          */
         Framebuffer& mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
@@ -424,11 +424,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 %Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
+         *      in OpenGL ES 2.0
          */
-        Framebuffer& mapForDraw(DrawAttachment attachment) {
-            (this->*drawBufferImplementation)(GLenum(attachment));
-            return *this;
-        }
+        Framebuffer& mapForDraw(DrawAttachment attachment);
 
         /**
          * @brief Map given color attachment for reading
@@ -441,11 +439,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @ref mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer}
          *      or @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         *      in OpenGL ES 2.0
          */
-        Framebuffer& mapForRead(ColorAttachment attachment) {
-            (this->*readBufferImplementation)(GLenum(attachment));
-            return *this;
-        }
+        Framebuffer& mapForRead(ColorAttachment attachment);
 
         /**
          * @brief Invalidate framebuffer
@@ -458,9 +454,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
          *      @ref Magnum::Framebuffer::clear() "clear()" instead where the
          *      extension is not supported.
-         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use @ref Magnum::Framebuffer::clear() "clear()" instead where
-         *      the extension is not supported.
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         *      in OpenGL ES 2.0. Use @ref Magnum::Framebuffer::clear() "clear()"
+         *      instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
 
@@ -476,9 +472,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
          *      @ref Magnum::Framebuffer::clear() "clear()" instead where the
          *      extension is not supported.
-         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}.
-         *      Use @ref Magnum::Framebuffer::clear() "clear()" instead where
-         *      the extension is not supported.
+         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         *      in OpenGL ES 2.0. Use @ref Magnum::Framebuffer::clear() "clear()"
+         *      instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 
@@ -494,36 +490,31 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
          *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
          */
-        Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer& renderbuffer) {
-            (this->*renderbufferImplementation)(attachment, renderbuffer);
-            return *this;
-        }
+        Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer& renderbuffer);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Attach 1D texture to given buffer
+         * @brief Attach texture to given buffer
          * @param attachment        %Buffer attachment
-         * @param texture           1D texture
+         * @param texture           Texture
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl2{FramebufferTexture1D,FramebufferTexture}
-         *      or @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
+         * @see @ref attachCubeMapTexture(), @fn_gl{BindFramebuffer},
+         *      @fn_gl2{FramebufferTexture1D,FramebufferTexture} or
+         *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES.
          */
-        Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
-            (this->*texture1DImplementation)(attachment, texture, level);
-            return *this;
-        }
+        Framebuffer& attachTexture(BufferAttachment attachment, Texture1D& texture, Int level);
         #endif
 
         /**
-         * @brief Attach 2D texture to given buffer
+         * @brief Attach texture to given buffer
          * @param attachment        %Buffer attachment
-         * @param texture           2D texture
+         * @param texture           Texture
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
@@ -534,7 +525,21 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl2{FramebufferTexture2D,FramebufferTexture} or
          *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
+        Framebuffer& attachTexture(BufferAttachment attachment, Texture2D& texture, Int level);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @overload
+         * @requires_gl31 %Extension @extension{ARB,texture_rectangle}
+         * @requires_gl Rectangle textures are not available in OpenGL ES.
+         */
+        Framebuffer& attachTexture(BufferAttachment attachment, RectangleTexture& texture, Int level);
+
+        /** @overload
+         * @requires_gl32 %Extension @extension{ARB,texture_multisample}
+         * @requires_gl Multisample textures are not available in OpenGL ES.
+         */
+        Framebuffer& attachTexture(BufferAttachment attachment, MultisampleTexture2D& texture, Int level);
+        #endif
 
         /**
          * @brief Attach cube map texture to given buffer
@@ -551,31 +556,82 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl2{FramebufferTexture2D,FramebufferTexture} or
          *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access}
          */
-        Framebuffer& attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, Int level) {
-            (this->*texture2DImplementation)(attachment, GLenum(coordinate), texture.id(), level);
-            return *this;
-        }
+        Framebuffer& attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, Int level);
 
         /**
-         * @brief Attach 3D texture to given buffer
+         * @brief Attach texture layer to given buffer
          * @param attachment        %Buffer attachment
-         * @param texture           3D texture
+         * @param texture           Texture
          * @param level             Mip level
-         * @param layer             Layer of 2D image within a 3D texture
+         * @param layer             Layer
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl2{FramebufferTexture3D,FramebufferTexture}
-         *      or @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access}
-         * @requires_es_extension %Extension @es_extension{OES,texture_3D}
+         * @see @fn_gl{BindFramebuffer}, @fn_gl2{FramebufferTextureLayer,FramebufferTexture}
+         *      or @fn_gl_extension{NamedFramebufferTextureLayer,EXT,direct_state_access},
+         *      @fn_gles_extension{FramebufferTexture3D,OES,texture_3D} in OpenGL ES 2.0
+         * @requires_gles30 %Extension @es_extension{OES,texture_3D} in OpenGL
+         *      ES 2.0
+         */
+        Framebuffer& attachTextureLayer(BufferAttachment attachment, Texture3D& texture, Int level, Int layer);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @overload
+         * @requires_gl30 %Extension @extension{EXT,texture_array}
+         * @requires_gl Only 2D array textures are available in OpenGL ES.
+         */
+        Framebuffer& attachTextureLayer(BufferAttachment attachment, Texture1DArray& texture, Int level, Int layer);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @overload
+         * @requires_gl30 %Extension @extension{EXT,texture_array}
+         * @requires_gles30 %Array textures are not available in OpenGL ES 2.0
+         */
+        Framebuffer& attachTextureLayer(BufferAttachment attachment, Texture2DArray& texture, Int level, Int layer);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @overload
+         * @requires_gl40 %Extension @extension{ARB,texture_cube_map_array}
+         * @requires_gl Cube map texture arrays are not available in OpenGL ES.
+         */
+        Framebuffer& attachTextureLayer(BufferAttachment attachment, CubeMapTextureArray& texture, Int level, Int layer);
+
+        /** @overload
+         * @requires_gl32 %Extension @extension{ARB,texture_multisample}
+         * @requires_gl Multisample textures are not available in OpenGL ES.
+         */
+        Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int level, Int layer);
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copybrief attachTexture()
+         * @deprecated Use one of @ref Magnum::Framebuffer::attachTexture() "attachTexture()" overloads instead.
+         */
+        Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
+            return attachTexture(attachment, texture, level);
+        }
+        #endif
+
+        /**
+         * @copybrief attachTexture()
+         * @deprecated Use one of @ref Magnum::Framebuffer::attachTexture() "attachTexture()" overloads instead.
+         */
+        Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
+
+        /**
+         * @copybrief attachTextureLayer()
+         * @deprecated Use one of @ref Magnum::Framebuffer::attachTextureLayer() "attachTextureLayer()" overloads instead.
          */
         Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
-            /** @todo Check for texture target compatibility */
-            (this->*texture3DImplementation)(attachment, texture, level, layer);
-            return *this;
+            return attachTextureLayer(attachment, texture, level, layer);
         }
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -586,35 +642,25 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
-        typedef void(Framebuffer::*RenderbufferImplementation)(BufferAttachment, Renderbuffer&);
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #endif
-        static RenderbufferImplementation renderbufferImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
-        typedef void(Framebuffer::*Texture1DImplementation)(BufferAttachment, Texture1D&, GLint);
-        void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, Texture1D& texture, GLint level);
-        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, Texture1D& texture, GLint level);
-        static Texture1DImplementation texture1DImplementation;
+        void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
+        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
-        typedef void(Framebuffer::*Texture2DImplementation)(BufferAttachment, GLenum, GLuint, GLint);
         void MAGNUM_LOCAL texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
-        static Texture2DImplementation texture2DImplementation;
 
-        typedef void(Framebuffer::*Texture3DImplementation)(BufferAttachment, Texture3D&, GLint, GLint);
-        void MAGNUM_LOCAL texture3DImplementationDefault(BufferAttachment attachment, Texture3D& texture, GLint level, GLint layer);
+        void MAGNUM_LOCAL textureLayerImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL texture3DImplementationDSA(BufferAttachment attachment, Texture3D& texture, GLint level, GLint layer);
+        void MAGNUM_LOCAL textureLayerImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #endif
-        static Texture3DImplementation texture3DImplementation;
 };
 
 /** @debugoperator{DefaultFramebuffer} */

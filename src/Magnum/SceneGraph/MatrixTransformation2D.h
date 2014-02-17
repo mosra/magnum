@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicMatrixTransformation2D, typedef Magnum::SceneGraph::MatrixTransformation2D
+ * @brief Class @ref Magnum::SceneGraph::BasicMatrixTransformation2D, typedef @ref Magnum::SceneGraph::MatrixTransformation2D
  */
 
 #include "Magnum/Math/Matrix3.h"
@@ -38,8 +38,9 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Two-dimensional transformation implemented using matrices
 
-Uses Math::Matrix3 as underlying type.
-@see @ref MatrixTransformation2D, @ref scenegraph, @ref BasicRigidMatrixTransformation2D, @ref BasicMatrixTransformation3D
+Uses @ref Math::Matrix3 as underlying transformation type.
+@see @ref MatrixTransformation2D, @ref scenegraph,
+    @ref BasicRigidMatrixTransformation2D, @ref BasicMatrixTransformation3D
 */
 template<class T> class BasicMatrixTransformation2D: public AbstractBasicTranslationRotationScaling2D<T> {
     public:
@@ -83,7 +84,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
-         * Same as calling transform() with Matrix3::translation().
+         * Same as calling @ref transform() with @ref Math::Matrix3::translation().
          */
         Object<BasicMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix3<T>::translation(vector), type);
@@ -91,7 +92,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::rotate()
-         * Same as calling transform() with Matrix3::rotation().
+         * Same as calling @ref transform() with @ref Math::Matrix3::rotation().
          */
         Object<BasicMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix3<T>::rotation(angle), type);
@@ -99,7 +100,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::scale()
-         * Same as calling transform() with Matrix3::scaling().
+         * Same as calling @ref transform() with @ref Math::Matrix3::scaling().
          */
         Object<BasicMatrixTransformation2D<T>>& scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix3<T>::scaling(vector), type);
@@ -112,7 +113,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with Matrix3::reflection().
+         * Same as calling @ref transform() with @ref Math::Matrix3::reflection().
          */
         Object<BasicMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix3<T>::reflection(normal), type);

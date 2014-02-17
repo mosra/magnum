@@ -39,6 +39,7 @@ class ShaderGLTest: public AbstractOpenGLTester {
         explicit ShaderGLTest();
 
         void construct();
+        void constructNoVersion();
         void constructCopy();
         void constructMove();
 
@@ -51,6 +52,7 @@ class ShaderGLTest: public AbstractOpenGLTester {
 
 ShaderGLTest::ShaderGLTest() {
     addTests({&ShaderGLTest::construct,
+              &ShaderGLTest::constructNoVersion,
               &ShaderGLTest::constructCopy,
               &ShaderGLTest::constructMove,
 
@@ -80,6 +82,11 @@ void ShaderGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void ShaderGLTest::constructNoVersion() {
+    const Shader shader(Version::None, Shader::Type::Fragment);
+    CORRADE_VERIFY(shader.sources().empty());
 }
 
 void ShaderGLTest::constructCopy() {

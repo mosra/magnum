@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::DistanceFieldVector, typedef Magnum::Shaders::DistanceFieldVector2D, Magnum::Shaders::DistanceFieldVector3D
+ * @brief Class @ref Magnum::Shaders::DistanceFieldVector, typedef @ref Magnum::Shaders::DistanceFieldVector2D, @ref Magnum::Shaders::DistanceFieldVector3D
  */
 
 #include "Magnum/Color.h"
@@ -41,10 +41,10 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Distance field vector shader
 
-Renders vector art in form of signed distance field. See TextureTools::distanceField()
+Renders vector art in form of signed distance field. See @ref TextureTools::distanceField()
 for more information. Note that the final rendered outlook will greatly depend
-on radius of input distance field and value passed to setSmoothness().
-@see DistanceFieldVector2D, DistanceFieldVector3D
+on radius of input distance field and value passed to @ref setSmoothness().
+@see @ref DistanceFieldVector2D, @ref DistanceFieldVector3D
 @todo Use fragment shader derivations to have proper smoothness in perspective/
     large zoom levels, make it optional as it might have negative performance
     impact
@@ -66,7 +66,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Set fill color
          * @return Reference to self (for method chaining)
          *
-         * @see setOutlineColor()
+         * @see @ref setOutlineColor()
          */
         DistanceFieldVector& setColor(const Color4& color) {
             AbstractShaderProgram::setUniform(colorUniform, color);
@@ -77,7 +77,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Set outline color
          * @return Reference to self (for method chaining)
          *
-         * @see setOutlineRange(), setColor()
+         * @see @ref setOutlineRange(), @ref setColor()
          */
         DistanceFieldVector& setOutlineColor(const Color4& color) {
             AbstractShaderProgram::setUniform(outlineColorUniform, color);
@@ -96,7 +96,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * larger than @p start the outline is not drawn. Initial value is
          * `1.0f`.
          *
-         * @see setOutlineColor()
+         * @see @ref setOutlineColor()
          */
         DistanceFieldVector& setOutlineRange(Float start, Float end) {
             AbstractShaderProgram::setUniform(outlineRangeUniform, Vector2(start, end));
@@ -107,14 +107,22 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Set smoothness radius
          * @return Reference to self (for method chaining)
          *
-         * Larger values will make edges look less aliased (but blurry), smaller
-         * values will make them look more crisp (but possibly aliased). Initial
-         * value is `0.04f`.
+         * Larger values will make edges look less aliased (but blurry),
+         * smaller values will make them look more crisp (but possibly
+         * aliased). Initial value is `0.04f`.
          */
         DistanceFieldVector& setSmoothness(Float value) {
             AbstractShaderProgram::setUniform(smoothnessUniform, value);
             return *this;
         }
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Overloads to remove WTF-factor from method chaining order */
+        DistanceFieldVector<dimensions>& setVectorTexture(Texture2D& texture) {
+            AbstractVector<dimensions>::setVectorTexture(texture);
+            return *this;
+        }
+        #endif
 
     private:
         Int transformationProjectionMatrixUniform,

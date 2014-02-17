@@ -563,13 +563,11 @@ enum class ColorType: GLenum;
 /** @todo Remove this when dropping backward compatibility */
 typedef ColorFormat ImageFormat;
 typedef ColorType ColorType;
-
-enum class Version: Int;
 #endif
 
 class Context;
-class CubeMapTexture;
 
+class CubeMapTexture;
 #ifndef MAGNUM_TARGET_GLES
 class CubeMapTextureArray;
 #endif
@@ -597,10 +595,18 @@ enum class MeshPrimitive: GLenum;
 class Mesh;
 class MeshView;
 
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt> class MultisampleTexture;
+typedef MultisampleTexture<2> MultisampleTexture2D;
+typedef MultisampleTexture<3> MultisampleTexture2DArray;
+#endif
+
 /* AbstractQuery is not used directly */
 class PrimitiveQuery;
 class SampleQuery;
 class TimeQuery;
+
+class RectangleTexture;
 
 class Renderbuffer;
 #ifndef CORRADE_GCC45_COMPATIBILITY
@@ -626,11 +632,23 @@ typedef Texture<1> Texture1D;
 typedef Texture<2> Texture2D;
 typedef Texture<3> Texture3D;
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt> class TextureArray;
+#ifndef MAGNUM_TARGET_GLES
+typedef TextureArray<1> Texture1DArray;
+#endif
+typedef TextureArray<2> Texture2DArray;
+#endif
+
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class TextureFormat: GLenum;
 #endif
 
 class Timeline;
+
+#ifndef CORRADE_GCC45_COMPATIBILITY
+enum class Version: Int;
+#endif
 
 }
 

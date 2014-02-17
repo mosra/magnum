@@ -97,8 +97,7 @@ void PrimitiveQueryGLTest::query() {
     q.begin(PrimitiveQuery::Target::PrimitivesGenerated);
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
-    shader.use();
-    mesh.draw();
+    mesh.draw(shader);
 
     q.end();
     const bool availableBefore = q.resultAvailable();

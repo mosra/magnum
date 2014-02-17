@@ -213,10 +213,6 @@ void AbstractShaderProgramGLTest::create() {
     CORRADE_VERIFY(multiplierUniform >= 0);
     CORRADE_VERIFY(colorUniform >= 0);
     CORRADE_VERIFY(additionsUniform >= 0);
-
-    program.use();
-
-    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void AbstractShaderProgramGLTest::createMultipleOutputs() {
@@ -250,10 +246,6 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_VERIFY(linked);
     CORRADE_VERIFY(valid);
-
-    program.use();
-
-    MAGNUM_VERIFY_NO_ERROR();
     #elif !defined(MAGNUM_TARGET_GLES2)
     CORRADE_SKIP("Only explicit location specification supported in ES 3.0.");
     #else
@@ -292,10 +284,6 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_VERIFY(linked);
     CORRADE_VERIFY(valid);
-
-    program.use();
-
-    MAGNUM_VERIFY_NO_ERROR();
 }
 #endif
 

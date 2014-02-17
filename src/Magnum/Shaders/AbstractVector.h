@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::AbstractVector, typedef Magnum::Shaders::AbstractVector2D, Magnum::Shaders::AbstractVector3D
+ * @brief Class @ref Magnum::Shaders::AbstractVector, typedef @ref Magnum::Shaders::AbstractVector2D, @ref Magnum::Shaders::AbstractVector3D
  */
 
 #include "Magnum/Shaders/Generic.h"
@@ -36,7 +36,7 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Base for vector shaders
 
-@see AbstractVector2D, AbstractVector3D
+@see @ref AbstractVector2D, @ref AbstractVector3D
 */
 template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
     public:
@@ -46,13 +46,29 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
         /** @brief Texture coordinates */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
-            VectorTextureLayer = 16 /**< Layer for vector texture */
+            /**
+             * Layer for vector texture
+             * @deprecated Use @ref Magnum::Shaders::AbstractVector::setVectorTexture() "setVectorTexture()" instead.
+             */
+            VectorTextureLayer = 16
         };
+        #endif
+
+        /**
+         * @brief Set vector texture
+         * @return Reference to self (for method chaining)
+         */
+        AbstractVector<dimensions>& setVectorTexture(Texture2D& texture);
 
     protected:
         explicit AbstractVector();
         ~AbstractVector();
+
+        #ifndef MAGNUM_BUILD_DEPRECATED
+        enum: Int { VectorTextureLayer = 16 };
+        #endif
 };
 
 /** @brief Base for two-dimensional text shaders */

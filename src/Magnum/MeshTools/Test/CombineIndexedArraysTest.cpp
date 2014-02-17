@@ -27,7 +27,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Types.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
@@ -37,12 +37,14 @@ class CombineIndexedArraysTest: public TestSuite::Tester {
         CombineIndexedArraysTest();
 
         void wrongIndexCount();
-        void combine();
+        void indexArrays();
+        void indexedArrays();
 };
 
 CombineIndexedArraysTest::CombineIndexedArraysTest() {
     addTests<CombineIndexedArraysTest>({&CombineIndexedArraysTest::wrongIndexCount,
-              &CombineIndexedArraysTest::combine});
+              &CombineIndexedArraysTest::indexArrays,
+              &CombineIndexedArraysTest::indexedArrays});
 }
 
 void CombineIndexedArraysTest::wrongIndexCount() {
@@ -50,16 +52,24 @@ void CombineIndexedArraysTest::wrongIndexCount() {
     Error::setOutput(&ss);
     std::vector<UnsignedInt> a{0, 1, 0};
     std::vector<UnsignedInt> b{3, 4};
-    std::vector<UnsignedInt> array;
-    std::vector<UnsignedInt> result = MeshTools::combineIndexedArrays(
-        std::make_tuple(std::cref(a), std::ref(array)),
-        std::make_tuple(std::cref(b), std::ref(array)));
+    std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({a, b});
 
-    CORRADE_COMPARE(result.size(), 0);
-    CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexedArrays(): index arrays don't have the same length, nothing done.\n");
+    CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexArrays(): the arrays don't have the same size\n");
 }
 
-void CombineIndexedArraysTest::combine() {
+void CombineIndexedArraysTest::indexArrays() {
+    std::vector<UnsignedInt> a{0, 1, 0};
+    std::vector<UnsignedInt> b{3, 4, 3};
+    std::vector<UnsignedInt> c{6, 7, 6};
+
+    std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({a, b, c});
+    CORRADE_COMPARE(result, (std::vector<UnsignedInt>{0, 1, 0}));
+    CORRADE_COMPARE(a, (std::vector<UnsignedInt>{0, 1}));
+    CORRADE_COMPARE(b, (std::vector<UnsignedInt>{3, 4}));
+    CORRADE_COMPARE(c, (std::vector<UnsignedInt>{6, 7}));
+}
+
+void CombineIndexedArraysTest::indexedArrays() {
     std::vector<UnsignedInt> a{0, 1, 0};
     std::vector<UnsignedInt> b{3, 4, 3};
     std::vector<UnsignedInt> c{6, 7, 6};
@@ -68,9 +78,9 @@ void CombineIndexedArraysTest::combine() {
     std::vector<UnsignedInt> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
 
     std::vector<UnsignedInt> result = MeshTools::combineIndexedArrays(
-        std::make_tuple(std::cref(a), std::ref(array1)),
-        std::make_tuple(std::cref(b), std::ref(array2)),
-        std::make_tuple(std::cref(c), std::ref(array3)));
+        std::make_pair(std::cref(a), std::ref(array1)),
+        std::make_pair(std::cref(b), std::ref(array2)),
+        std::make_pair(std::cref(c), std::ref(array3)));
 
     CORRADE_COMPARE(result, (std::vector<UnsignedInt>{0, 1, 0}));
     CORRADE_COMPARE(array1, (std::vector<UnsignedInt>{0, 1}));

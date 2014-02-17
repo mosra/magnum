@@ -30,8 +30,17 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
+#include "Magnum/Texture.h"
 
 namespace Magnum { namespace Shaders {
+
+namespace {
+    enum: Int {
+        AmbientTextureLayer = 0,
+        DiffuseTextureLayer = 1,
+        SpecularTextureLayer = 2
+    };
+}
 
 Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8), _flags(flags) {
     Utility::Resource rs("MagnumShaders");
@@ -103,6 +112,21 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     setLightColor(Vector3(1.0f));
     setShininess(80.0f);
     #endif
+}
+
+Phong& Phong::setAmbientTexture(Texture2D& texture) {
+    if(_flags & Flag::AmbientTexture) texture.bind(AmbientTextureLayer);
+    return *this;
+}
+
+Phong& Phong::setDiffuseTexture(Texture2D& texture) {
+    if(_flags & Flag::DiffuseTexture) texture.bind(DiffuseTextureLayer);
+    return *this;
+}
+
+Phong& Phong::setSpecularTexture(Texture2D& texture) {
+    if(_flags & Flag::SpecularTexture) texture.bind(SpecularTextureLayer);
+    return *this;
 }
 
 }}

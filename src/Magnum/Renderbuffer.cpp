@@ -34,14 +34,6 @@
 
 namespace Magnum {
 
-Renderbuffer::StorageImplementation Renderbuffer::storageImplementation = &Renderbuffer::storageImplementationDefault;
-Renderbuffer::StorageMultisampleImplementation Renderbuffer::storageMultisampleImplementation =
-    #ifndef MAGNUM_TARGET_GLES2
-    &Renderbuffer::storageMultisampleImplementationDefault;
-    #else
-    nullptr;
-    #endif
-
 Int Renderbuffer::maxSize() {
     GLint& value = Context::current()->state().framebuffer->maxRenderbufferSize;
 
@@ -94,6 +86,14 @@ Renderbuffer& Renderbuffer::setLabel(const std::string& label) {
     return *this;
 }
 
+void Renderbuffer::setStorage(const RenderbufferFormat internalFormat, const Vector2i& size) {
+    (this->*Context::current()->state().framebuffer->renderbufferStorageImplementation)(internalFormat, size);
+}
+
+void Renderbuffer::setStorageMultisample(const Int samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    (this->*Context::current()->state().framebuffer->renderbufferStorageMultisampleImplementation)(samples, internalFormat, size);
+}
+
 void Renderbuffer::bind() {
     GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;
 
@@ -101,29 +101,6 @@ void Renderbuffer::bind() {
 
     binding = _id;
     glBindRenderbuffer(GL_RENDERBUFFER, _id);
-}
-
-void Renderbuffer::initializeContextBasedFunctionality(Context& context) {
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        Debug() << "Renderbuffer: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
-
-        storageImplementation = &Renderbuffer::storageImplementationDSA;
-        storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSA;
-    }
-    #elif !defined(MAGNUM_TARGET_GLES3)
-    if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>()) {
-        Debug() << "Renderbuffer: using" << Extensions::GL::ANGLE::framebuffer_multisample::string() << "features";
-
-        storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationANGLE;
-    } else if (context.isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>()) {
-        Debug() << "Renderbuffer: using" << Extensions::GL::NV::framebuffer_multisample::string() << "features";
-
-        storageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationNV;
-    }
-    #else
-    static_cast<void>(context);
-    #endif
 }
 
 void Renderbuffer::storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size) {

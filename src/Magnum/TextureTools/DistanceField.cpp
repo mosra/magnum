@@ -45,10 +45,6 @@ class DistanceFieldShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector2> Position;
 
-        enum: Int {
-            TextureLayer = 8
-        };
-
         explicit DistanceFieldShader();
 
         DistanceFieldShader& setRadius(Int radius) {
@@ -66,7 +62,14 @@ class DistanceFieldShader: public AbstractShaderProgram {
             return *this;
         }
 
+        DistanceFieldShader& setTexture(Texture2D& texture) {
+            texture.bind(TextureLayer);
+            return *this;
+        }
+
     private:
+        enum: Int { TextureLayer = 8 };
+
         Int radiusUniform,
             scalingUniform,
             imageSizeInvertedUniform;
@@ -149,7 +152,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     #endif
 
     Framebuffer framebuffer(rectangle);
-    framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), output, 0);
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), output, 0);
     framebuffer.bind(FramebufferTarget::Draw);
     framebuffer.clear(FramebufferClear::Color);
 
@@ -163,9 +166,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     DistanceFieldShader shader;
     shader.setRadius(radius)
         .setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
-        .use();
-
-    input.bind(DistanceFieldShader::TextureLayer);
+        .setTexture(input);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isVersionSupported(Version::GL300))
@@ -198,7 +199,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     }
 
     /* Draw the mesh */
-    mesh.draw();
+    mesh.draw(shader);
 }
 
 }}

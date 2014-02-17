@@ -127,8 +127,7 @@ void SampleQueryGLTest::querySamplesPassed() {
     #endif
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
-    shader.use();
-    mesh.draw();
+    mesh.draw(shader);
 
     q.end();
     const bool availableBefore = q.resultAvailable();
@@ -167,7 +166,6 @@ void SampleQueryGLTest::conditionalRender() {
 
     MyShader shader;
     framebuffer.bind(FramebufferTarget::ReadDraw);
-    shader.use();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -175,13 +173,13 @@ void SampleQueryGLTest::conditionalRender() {
 
     /* This should generate some samples */
     qYes.begin(SampleQuery::Target::SamplesPassed);
-    mesh.draw();
+    mesh.draw(shader);
     qYes.end();
 
     /* Thus this should be rendered */
     qYes.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
     q.begin(SampleQuery::Target::SamplesPassed);
-    mesh.draw();
+    mesh.draw(shader);
     q.end();
     qYes.endConditionalRender();
 
@@ -196,7 +194,7 @@ void SampleQueryGLTest::conditionalRender() {
     /* Thus this should not be rendered */
     qNo.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
     q.begin(SampleQuery::Target::SamplesPassed);
-    mesh.draw();
+    mesh.draw(shader);
     q.end();
     qNo.endConditionalRender();
 

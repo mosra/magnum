@@ -47,8 +47,11 @@ following:
 
 @subsection opengl-support-30 OpenGL 3.0
 
-@todo @extension{APPLE,flush_buffer_range} doesn't add anything to @extension{ARB,map_buffer_range}
+@todo Replace @extension{APPLE,vertex_array_object} with ARB version (we use only ARB functions without APPLE fallback)
+@todo @extension{APPLE,flush_buffer_range} doesn't add anything to @extension{ARB,map_buffer_range} (remove it and leave only ARB one)
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
+@todo Add @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @extension{NV,depth_buffer_float} for non-linear depth buffer
+@todo @extension{ARB,half_float_pixel}, @extension{ARB,half_float_vertex}?
 
 %Extension                                   | Status
 -------------------------------------------- | ------
@@ -60,10 +63,10 @@ following:
 @extension{ARB,texture_float}                | done
 @extension{ARB,depth_buffer_float}           | done
 @extension{ARB,texture_rg}                   | done
-@extension{ARB,framebuffer_object}           | missing texture layer attachments
+@extension{ARB,framebuffer_object}           | done
 @extension{EXT,gpu_shader4}                  | done
 @extension{EXT,packed_float}                 | done
-@extension{EXT,texture_array}                | missing texture layer attachments
+@extension{EXT,texture_array}                | done
 @extension{EXT,texture_compression_rgtc}     | done
 @extension{EXT,texture_shared_exponent}      | done
 @extension{EXT,framebuffer_sRGB}             | |
@@ -90,7 +93,7 @@ following:
 
 %Extension                                   | Status
 -------------------------------------------- | ------
-@extension{ARB,geometry_shader4}             | done (GL 3.2 subset)
+@extension{ARB,geometry_shader4}             | missing layered attachments
 @extension{ARB,depth_clamp}                  | done
 @extension{ARB,draw_elements_base_vertex}    | |
 @extension{ARB,fragment_coord_conventions}   | done (shading language only)
@@ -139,7 +142,7 @@ following:
 -------------------------------------------- | ------
 @extension{ARB,ES2_compatibility}            | only float depth clear
 @extension{ARB,get_program_binary}           | |
-@extension{ARB,separate_shader_objects}      | |
+@extension{ARB,separate_shader_objects}      | only direct uniform binding
 @extension{ARB,shader_precision}             | done (shading language only)
 @extension{ARB,vertex_attrib_64bit}          | done
 @extension{ARB,viewport_array}               | |
@@ -190,6 +193,9 @@ following:
 
 @subsection opengl-support-44 OpenGL 4.4
 
+@todo Also fallback to @extension{AMD,query_buffer_object}
+@todo @extension{AMD,pinned_memory} "fallback" for @extension{ARB,buffer_storage}
+
 %Extension                                   | Status
 -------------------------------------------- | ------
 @extension{ARB,buffer_storage}               | |
@@ -202,6 +208,10 @@ following:
 @extension{ARB,vertex_type_10f_11f_11f_rev}  | |
 
 @subsection opengl-support-extensions OpenGL extensions
+
+@todo @extension{ARB,sparse_texture}, @extension{ARB,bindless_texture} + their vendor equivalents
+@todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature
+@todo @extension{AMD,performance_monitor}, @extension{INTEL,performance_query}
 
 %Extension                                   | Status
 -------------------------------------------- | ------
@@ -250,6 +260,7 @@ supported.
 @es_extension{OES,depth24}                   | done
 @es_extension{OES,element_index_uint}        | done
 @es_extension{OES,rgb8_rgba8}                | done (desktop-compatible subset)
+@es_extension{OES,texture_3D}                | missing limit query
 @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
 @es_extension{OES,texture_float_linear}      | done
 @es_extension2{OES,texture_half_float,OES_texture_float} | done
@@ -266,6 +277,10 @@ supported.
 
 Only extensions not already listed in above tables are included here.
 
+@todo @es_extension{NV,non_square_matrices}
+@todo Support also IMG_multisampled_render_to_texture? It has different enum
+    values (!)
+
 %Extension                                   | Status
 -------------------------------------------- | ------
 @es_extension{APPLE,texture_format_BGRA8888} | done
@@ -273,7 +288,7 @@ Only extensions not already listed in above tables are included here.
 @es_extension{EXT,texture_format_BGRA8888}   | done
 @es_extension{EXT,read_format_bgra}          | done
 @es_extension{EXT,disjoint_timer_query}      | only time elapsed query
-@es_extension{EXT,separate_shader_objects}   | |
+@es_extension{EXT,separate_shader_objects}   | only direct uniform binding
 @es_extension{EXT,sRGB}                      | done
 @es_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
 @es_extension{EXT,robustness}                | done
@@ -286,7 +301,6 @@ Only extensions not already listed in above tables are included here.
 @es_extension{OES,mapbuffer}                 | done
 @es_extension{OES,stencil1}                  | done
 @es_extension{OES,stencil4}                  | done
-@es_extension{OES,texture_3D}                | missing limit query
 
 @section opengl-unsupported Unsupported OpenGL features
 

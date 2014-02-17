@@ -71,11 +71,6 @@ void SubdivideTest::subdivide() {
 
     CORRADE_VERIFY(positions == (std::vector<Vector1>{0, 2, 6, 8, 1, 4, 3, 4, 7, 5}));
     CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
-
-    MeshTools::removeDuplicates(indices, positions);
-
-    /* Positions 0, 1, 2, 3, 4, 5, 6, 7, 8 */
-    CORRADE_COMPARE(positions.size(), 9);
 }
 
 }}}

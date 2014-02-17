@@ -38,6 +38,8 @@
 
 namespace Magnum {
 
+namespace Implementation { struct FramebufferState; }
+
 /**
 @brief %Renderbuffer
 
@@ -58,7 +60,7 @@ See its documentation for more information.
 @requires_gl30 %Extension @extension{ARB,framebuffer_object}
 */
 class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
-    friend class Context;
+    friend struct Implementation::FramebufferState;
 
     public:
         /**
@@ -117,9 +119,9 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @brief %Renderbuffer label
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function returns empty string.
+         * OpenGL calls. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
@@ -130,9 +132,9 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @brief Set renderbuffer label
          * @return Reference to self (for method chaining)
          *
-         * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function does nothing.
+         * Default is empty string. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
@@ -150,9 +152,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @see @ref maxSize(), @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage}
          *      or @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
          */
-        void setStorage(RenderbufferFormat internalFormat, const Vector2i& size) {
-            (this->*storageImplementation)(internalFormat, size);
-        }
+        void setStorage(RenderbufferFormat internalFormat, const Vector2i& size);
 
         /**
          * @brief Set multisample renderbuffer storage
@@ -166,35 +166,27 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @see @ref maxSize(), @ref maxSamples(), @fn_gl{BindRenderbuffer},
          *      @fn_gl{RenderbufferStorageMultisample} or @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access}
          * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
-         *      or @es_extension{NV,framebuffer_multisample}
+         *      or @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
          * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}
          */
-        void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size) {
-            (this->*storageMultisampleImplementation)(samples, internalFormat, size);
-        }
+        void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
-        typedef void(Renderbuffer::*StorageImplementation)(RenderbufferFormat, const Vector2i&);
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
-        static StorageImplementation storageImplementation;
 
-        typedef void(Renderbuffer::*StorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
         #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        #endif
         #else
         void MAGNUM_LOCAL storageMultisampleImplementationANGLE(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageMultisampleImplementationNV(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
-        #endif
-        static StorageMultisampleImplementation storageMultisampleImplementation;
 
         void MAGNUM_LOCAL bind();
 

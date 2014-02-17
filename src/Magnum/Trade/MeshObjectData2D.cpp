@@ -27,7 +27,7 @@
 
 namespace Magnum { namespace Trade {
 
-MeshObjectData2D::MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, UnsignedInt material): ObjectData2D(std::move(children), transformation, ObjectInstanceType2D::Mesh, instance), _material(material) {}
+MeshObjectData2D::MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, Int material): ObjectData2D(std::move(children), transformation, ObjectInstanceType2D::Mesh, instance), _material(material) {}
 
 /* GCC 4.4 doesn't like it defaulted */
 MeshObjectData2D::MeshObjectData2D(MeshObjectData2D&& other): ObjectData2D(std::move(other)), _material(other._material) {}

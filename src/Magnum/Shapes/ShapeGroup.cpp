@@ -32,9 +32,10 @@ namespace Magnum { namespace Shapes {
 template<UnsignedInt dimensions> void ShapeGroup<dimensions>::setClean() {
     /* Clean all objects */
     if(!this->isEmpty()) {
-        std::vector<SceneGraph::AbstractObject<dimensions, Float>*> objects(this->size());
+        std::vector<std::reference_wrapper<SceneGraph::AbstractObject<dimensions, Float>>> objects;
+        objects.reserve(this->size());
         for(std::size_t i = 0; i != this->size(); ++i)
-            objects[i] = &(*this)[i].object();
+            objects.push_back((*this)[i].object());
 
         SceneGraph::AbstractObject<dimensions, Float>::setClean(objects);
     }

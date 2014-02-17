@@ -61,7 +61,9 @@ void Tipsify::operator()(std::size_t cacheSize) {
             emitted[t] = true;
 
             /* Write all vertices of the triangle to output buffer */
-            for(UnsignedInt vi = 0, v = indices[t*3]; vi != 3; v = indices[++vi+t*3]) {
+            for(UnsignedInt vi = 0; vi != 3; ++vi) {
+                const UnsignedInt v = indices[vi + t*3];
+
                 outputIndices.push_back(v);
 
                 /* Add to dead end stack and candidates array */

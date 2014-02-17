@@ -45,21 +45,21 @@ AbstractCapsuleRenderer<2>::AbstractCapsuleRenderer(): AbstractShapeRenderer<2>(
 
     /* Bottom hemisphere */
     if(!(bottom = ResourceManager::instance().get<MeshView>("capsule2d-bottom"))) {
-        auto view = new MeshView(wireframeMesh);
+        auto view = new MeshView(*wireframeMesh);
         view->setIndexRange(0, rings*4, 0, rings*2+1);
         ResourceManager::instance().set(bottom.key(), view, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Cylinder */
     if(!(cylinder = ResourceManager::instance().get<MeshView>("capsule2d-cylinder"))) {
-        auto view = new MeshView(wireframeMesh);
+        auto view = new MeshView(*wireframeMesh);
         view->setIndexRange(rings*4, 4, rings*2+1, rings*2+3);
         ResourceManager::instance().set(cylinder.key(), view, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Top hemisphere */
     if(!(top = ResourceManager::instance().get<MeshView>("capsule2d-top"))) {
-        auto view = new MeshView(wireframeMesh);
+        auto view = new MeshView(*wireframeMesh);
         view->setIndexRange(rings*4+4, rings*4, rings*2+3, rings*4+4);
         ResourceManager::instance().set(top.key(), view, ResourceDataState::Final, ResourcePolicy::Manual);
     }
@@ -72,21 +72,21 @@ AbstractCapsuleRenderer<3>::AbstractCapsuleRenderer(): AbstractShapeRenderer<3>(
 
     /* Bottom hemisphere */
     if(!(bottom = ResourceManager::instance().get<MeshView>("capsule3d-bottom"))) {
-        auto view = new MeshView(wireframeMesh);
+        auto view = new MeshView(*wireframeMesh);
         view->setIndexRange(0, rings*8, 0, rings*4+1);
         ResourceManager::instance().set(bottom.key(), view, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Cylinder */
     if(!(cylinder = ResourceManager::instance().get<MeshView>("capsule3d-cylinder"))) {
-        auto view = new MeshView(wireframeMesh);
+        auto view = new MeshView(*wireframeMesh);
         view->setIndexRange(rings*8, segments*4+8, rings*4+1, rings*4+segments*2+5);
         ResourceManager::instance().set(cylinder.key(), view, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Top */
     if(!(top = ResourceManager::instance().get<MeshView>("capsule3d-top"))) {
-        auto view = new MeshView(wireframeMesh);
+        auto view = new MeshView(*wireframeMesh);
         view->setIndexRange(rings*8+segments*4+8, rings*8, rings*4+segments*2+5, rings*8+segments*2+6);
         ResourceManager::instance().set(top.key(), view, ResourceDataState::Final, ResourcePolicy::Manual);
     }
@@ -100,20 +100,19 @@ template<UnsignedInt dimensions> CapsuleRenderer<dimensions>::CapsuleRenderer(co
 
 template<UnsignedInt dimensions> void CapsuleRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
     std::array<typename DimensionTraits<dimensions, Float>::MatrixType, 3> transformations = Implementation::capsuleRendererTransformation<dimensions>(capsule.a(), capsule.b(), capsule.radius());
-    AbstractShapeRenderer<dimensions>::wireframeShader->setColor(options->color())
-        .use();
+    AbstractShapeRenderer<dimensions>::wireframeShader->setColor(options->color());
 
     /* Bottom */
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*transformations[0]);
-    AbstractCapsuleRenderer<dimensions>::bottom->draw();
+    AbstractCapsuleRenderer<dimensions>::bottom->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 
     /* Cylinder */
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*transformations[1]);
-    AbstractCapsuleRenderer<dimensions>::cylinder->draw();
+    AbstractCapsuleRenderer<dimensions>::cylinder->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 
     /* Top */
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*transformations[2]);
-    AbstractCapsuleRenderer<dimensions>::top->draw();
+    AbstractCapsuleRenderer<dimensions>::top->draw(*AbstractShapeRenderer<dimensions>::wireframeShader);
 }
 
 template class CapsuleRenderer<2>;

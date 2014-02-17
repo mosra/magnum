@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for Magnum::SceneGraph namespace
+ * @brief Forward declarations for @ref Magnum::SceneGraph namespace
  */
 
 #include <Corrade/compatibility.h>

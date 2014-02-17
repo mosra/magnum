@@ -36,6 +36,8 @@ namespace Magnum {
 
 namespace {
 
+/** @todo Re-enable when extension wrangler is available for ES */
+#ifndef MAGNUM_TARGET_GLES
 void
 #ifdef CORRADE_TARGET_WINDOWS
 APIENTRY
@@ -43,6 +45,7 @@ APIENTRY
 callbackWrapper(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
     Context::current()->state().debug->messageCallback(DebugMessage::Source(source), DebugMessage::Type(type), id, DebugMessage::Severity(severity), std::string(message, length), userParam);
 }
+#endif
 
 void defaultCallback(const DebugMessage::Source source, const DebugMessage::Type type, const UnsignedInt id, const DebugMessage::Severity severity, const std::string& string, const void*) {
     switch(severity) {

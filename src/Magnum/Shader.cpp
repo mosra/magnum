@@ -559,11 +559,11 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GLES300: _sources.push_back("#version 300\n"); return;
         #endif
 
-        case Version::None:
-            CORRADE_ASSERT(false, "Shader::Shader(): unsupported version" << version, );
+        /* The user is responsible for (not) adding #version directive */
+        case Version::None: return;
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT(false, "Shader::Shader(): unsupported version" << version, );
 }
 
 Shader::~Shader() {

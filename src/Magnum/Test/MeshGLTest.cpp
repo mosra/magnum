@@ -24,6 +24,7 @@
 */
 
 #include "Magnum/Buffer.h"
+#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
@@ -396,12 +397,11 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
-    shader.use();
     mesh.setVertexCount(2)
         .setPrimitive(MeshPrimitive::Points);
 
     /* Skip first vertex so we test also offsets */
-    MeshView(mesh).setVertexRange(1, 1).draw();
+    MeshView(mesh).setVertexRange(1, 1).draw(shader);
 }
 
 template<class T> T Checker::get(ColorFormat format, ColorType type) {
@@ -1151,13 +1151,11 @@ IndexChecker::IndexChecker(Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
-    MultipleShader shader;
-    shader.use();
     mesh.setIndexCount(2)
         .setPrimitive(MeshPrimitive::Points);
 
     /* Skip first vertex so we test also offsets */
-    MeshView(mesh).setIndexRange(1, 1).draw();
+    MeshView(mesh).setIndexRange(1, 1).draw(MultipleShader{});
 }
 
 Color4ub IndexChecker::get() {

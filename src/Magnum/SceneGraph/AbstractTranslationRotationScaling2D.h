@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotationScaling2D, typedef Magnum::SceneGraph::AbstractTranslationRotationScaling2D
+ * @brief Class @ref Magnum::SceneGraph::AbstractBasicTranslationRotationScaling2D, typedef @ref Magnum::SceneGraph::AbstractTranslationRotationScaling2D
  */
 
 #include "Magnum/SceneGraph/AbstractTranslationRotation2D.h"
@@ -48,7 +48,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see Vector2::xScale(), Vector2::yScale()
+         * @see @ref Math::Vector2::xScale(), @ref Math::Vector2::yScale()
          */
         AbstractBasicTranslationRotationScaling2D<T>& scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             doScale(vector, type);
@@ -79,7 +79,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
     #else
     private:
     #endif
-        /** @brief Polymorphic implementation for scale() */
+        /** @brief Polymorphic implementation for @ref scale() */
         virtual void doScale(const Math::Vector2<T>& vector, TransformationType type) = 0;
 };
 

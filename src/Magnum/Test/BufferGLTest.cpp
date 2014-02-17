@@ -53,9 +53,7 @@ class BufferGLTest: public AbstractOpenGLTester {
         #ifndef MAGNUM_TARGET_GLES2
         void copy();
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
         void invalidate();
-        #endif
 };
 
 BufferGLTest::BufferGLTest() {
@@ -71,10 +69,7 @@ BufferGLTest::BufferGLTest() {
               #ifndef MAGNUM_TARGET_GLES2
               &BufferGLTest::copy,
               #endif
-              #ifndef MAGNUM_TARGET_GLES
-              &BufferGLTest::invalidate
-              #endif
-              });
+              &BufferGLTest::invalidate});
 }
 
 void BufferGLTest::construct() {
@@ -352,11 +347,7 @@ void BufferGLTest::copy() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
 void BufferGLTest::invalidate() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>())
-        CORRADE_SKIP(Extensions::GL::ARB::invalidate_subdata::string() + std::string(" is not supported"));
-
     Buffer buffer;
     constexpr char data[] = {2, 7, 5, 13, 25};
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -369,7 +360,6 @@ void BufferGLTest::invalidate() {
     buffer.invalidateData();
     MAGNUM_VERIFY_NO_ERROR();
 }
-#endif
 
 }}
 

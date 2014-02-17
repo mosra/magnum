@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::ResourceKey, Magnum::Resource, enum Magnum::ResourceState
+ * @brief Class @ref Magnum::ResourceKey, @ref Magnum::Resource, enum @ref Magnum::ResourceState
  */
 
 #include <functional>
@@ -39,11 +39,11 @@
 
 namespace Magnum {
 
-/** @relates Resource
- * @brief %Resource state
- *
- * @see Resource::state(), ResourceManager::state()
- */
+/**
+@brief %Resource state
+
+@see @ref Resource::state(), @ref ResourceManager::state()
+*/
 enum class ResourceState: UnsignedByte {
     /** The resource is not yet loaded (and no fallback is available). */
     NotLoaded,
@@ -76,9 +76,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value);
 /**
 @brief Key for accessing resource
 
-See ResourceManager for more information.
-@see ResourceManager::referenceCount(), ResourceManager::state(),
-    ResourceManager::get(), ResourceManager::set(), Resource::key()
+See @ref ResourceManager for more information.
 */
 class ResourceKey: public Utility::MurmurHash2::Digest {
     public:
@@ -112,7 +110,7 @@ namespace Implementation {
 /**
 @brief %Resource reference
 
-See ResourceManager for more information.
+See @ref ResourceManager for more information.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U = T>
@@ -127,7 +125,7 @@ class Resource {
          * @brief Default constructor
          *
          * Creates empty resource. Resources are acquired from the manager by
-         * calling ResourceManager::get().
+         * calling @ref ResourceManager::get().
          */
         explicit Resource(): manager(nullptr), lastCheck(0), _state(ResourceState::Final), data(nullptr) {}
 
@@ -159,7 +157,7 @@ class Resource {
         /**
          * @brief %Resource state
          *
-         * @see operator bool(), ResourceManager::state()
+         * @see @ref operator bool(), @ref ResourceManager::state()
          */
         ResourceState state() {
             acquire();
@@ -193,26 +191,37 @@ class Resource {
          * @brief Reference to resource data
          *
          * The resource must be loaded before accessing it. Use boolean
-         * conversion operator or state() for testing whether it is loaded.
+         * conversion operator or @ref state() for testing whether it is
+         * loaded.
          */
-        operator U&() {
-            acquire();
-            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
-            return *static_cast<U*>(data);
-        }
-
-        /** @overload */
-        U* operator->() {
-            acquire();
-            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
-            return static_cast<U*>(data);
-        }
-
-        /** @overload */
         U& operator*() {
             acquire();
             CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), *static_cast<U*>(data));
             return *static_cast<U*>(data);
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @overload
+         * @deprecated Use the explicit @ref Magnum::Resource::operator*() "operator*()" or
+         *      @ref Magnum::Resource::operator->() "operator->()" instead.
+         *      Implicit conversion is no longer allowed if it might throw an
+         *      assertion.
+         */
+        CORRADE_DEPRECATED("use operator*() or operator->() instead") operator U&() { return **this; }
+        #endif
+
+        /**
+         * @brief Access to resource data
+         *
+         * The resource must be loaded before accessing it. Use boolean
+         * conversion operator or @ref state() for testing whether it is
+         * loaded.
+         */
+        U* operator->() {
+            acquire();
+            CORRADE_ASSERT(data, "Resource: accessing not loaded data with key" << key(), nullptr);
+            return static_cast<U*>(data);
         }
 
     private:

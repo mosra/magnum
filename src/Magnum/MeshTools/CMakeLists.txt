@@ -31,6 +31,7 @@ set(MagnumMeshTools_SRCS
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS
+    CombineIndexedArrays.cpp
     FlipNormals.cpp
     GenerateFlatNormals.cpp)
 

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicMatrixTransformation3D, typedef Magnum::SceneGraph::MatrixTransformation3D
+ * @brief Class @ref Magnum::SceneGraph::BasicMatrixTransformation3D, typedef @ref Magnum::SceneGraph::MatrixTransformation3D
  */
 
 #include "Magnum/Math/Matrix4.h"
@@ -38,7 +38,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Three-dimensional transformation implemented using matrices
 
-Uses Math::Matrix4 as underlying type.
+Uses @ref Math::Matrix4 as underlying transformation type.
 @see @ref MatrixTransformation3D, @ref scenegraph, @ref BasicRigidMatrixTransformation3D, @ref BasicMatrixTransformation2D
 */
 template<class T> class BasicMatrixTransformation3D: public AbstractBasicTranslationRotationScaling3D<T> {
@@ -83,7 +83,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::translate()
-         * Same as calling transform() with Matrix4::translation().
+         * Same as calling @ref transform() with @ref Math::Matrix4::translation().
          */
         Object<BasicMatrixTransformation3D<T>>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix4<T>::translation(vector), type);
@@ -91,7 +91,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::rotate()
-         * Same as calling transform() with Matrix4::rotation().
+         * Same as calling @ref transform() with @ref Math::Matrix4::rotation().
          */
         Object<BasicMatrixTransformation3D<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix4<T>::rotation(angle, normalizedAxis), type);
@@ -103,7 +103,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::rotationX().
+         * Same as calling @ref transform() with @ref Math::Matrix4::rotationX().
          */
         Object<BasicMatrixTransformation3D<T>>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix4<T>::rotationX(angle), type);
@@ -115,7 +115,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::rotationY().
+         * Same as calling @ref transform() with @ref Math::Matrix4::rotationY().
          */
         Object<BasicMatrixTransformation3D<T>>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix4<T>::rotationY(angle), type);
@@ -127,7 +127,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::rotationZ().
+         * Same as calling @ref transform() with @ref Math::Matrix4::rotationZ().
          */
         Object<BasicMatrixTransformation3D<T>>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix4<T>::rotationZ(angle), type);
@@ -135,7 +135,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::scale()
-         * Same as calling transform() with Matrix4::scaling().
+         * Same as calling @ref transform() with @ref Math::Matrix4::scaling().
          */
         Object<BasicMatrixTransformation3D<T>>& scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix4<T>::scaling(vector), type);
@@ -148,7 +148,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with Matrix4::reflection().
+         * Same as calling @ref transform() with @ref Math::Matrix4::reflection().
          */
         Object<BasicMatrixTransformation3D<T>>& reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
             return transform(Math::Matrix4<T>::reflection(normal), type);

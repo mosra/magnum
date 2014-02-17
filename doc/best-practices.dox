@@ -80,6 +80,10 @@ vertex and index buffers in both Native Client and Emscripten.
 
 - [PowerVR Performance Recommendations](https://github.com/burningsun/pecker_framework/blob/master/参考资料/PowerVR.Performance%20Recommendations.pdf?raw=true) [PDF]
 
+@subsection best-practices-amd AMD hardware
+
+- [ATI Radeon HD 2000 programming guide](http://developer.amd.com/wordpress/media/2012/10/ATI_Radeon_HD_2000_programming_guide.pdf)
+
 @subsection best-practices-tegra NVidia Tegra hardware
 
 - [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/index.html#GLES2_Perf_Main.html)

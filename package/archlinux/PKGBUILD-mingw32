@@ -8,7 +8,7 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('mingw32-runtime' 'mingw32-corrade' 'mingw32-freeglut' 'mingw32-openal')
 makedepends=('mingw32-gcc' 'cmake' 'ninja' 'corrade')
-options=(!buildflags !strip)
+options=('!buildflags' '!strip' 'staticlibs')
 
 build() {
     mkdir -p "$startdir/build-win"

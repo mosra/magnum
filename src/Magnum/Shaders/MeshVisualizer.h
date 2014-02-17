@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::MeshVisualizer
+ * @brief Class @ref Magnum::Shaders::MeshVisualizer
  */
 
 #include "Magnum/Math/Matrix4.h"
@@ -56,9 +56,9 @@ If you have geometry shaders available, you don't need to do anything else.
 
 If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
 (it's enabled by default in OpenGL ES) and use only **non-indexed** triangle
-meshes (see MeshTools::duplicate() for possible solution). Additionaly, if you
-have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also @ref VertexIndex
-attribute.
+meshes (see @ref MeshTools::duplicate() for possible solution). Additionaly, if
+you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also
+@ref VertexIndex attribute.
 
 @requires_es_extension %Extension @extension{OES,standard_derivatives} for
     wireframe rendering.
@@ -83,7 +83,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
         /**
          * @brief %Flag
          *
-         * @see Flags, MeshVisualizer()
+         * @see @ref Flags, @ref MeshVisualizer()
          */
         enum class Flag: UnsignedByte {
             /**
@@ -98,8 +98,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
 
             /**
              * Don't use geometry shader for wireframe visualization. If
-             * enabled, you might need to provide also VertexIndex attribute in
-             * the mesh. In OpenGL ES enabled alongside @ref Flag::Wireframe.
+             * enabled, you might need to provide also @ref VertexIndex
+             * attribute in the mesh. In OpenGL ES enabled alongside
+             * @ref Flag::Wireframe.
              */
             NoGeometryShader = 1 << 1
         };

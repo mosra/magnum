@@ -94,9 +94,10 @@ template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::dr
     AbstractFeature<dimensions, T>::object().setClean();
 
     /* Compute transformations of all objects in the group relative to the camera */
-    std::vector<AbstractObject<dimensions, T>*> objects(group.size());
+    std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> objects;
+    objects.reserve(group.size());
     for(std::size_t i = 0; i != group.size(); ++i)
-        objects[i] = &group[i].object();
+        objects.push_back(group[i].object());
     std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformations =
         scene->transformationMatrices(objects, _cameraMatrix);
 

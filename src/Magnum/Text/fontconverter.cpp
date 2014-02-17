@@ -72,21 +72,15 @@ int FontConverter::exec() {
 
     /* Load font */
     PluginManager::Manager<Text::AbstractFont> fontManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fonts/"));
-    std::unique_ptr<Text::AbstractFont> font;
-    if(!(fontManager.load(args.value("font")) & PluginManager::LoadState::Loaded) ||
-       !(font = fontManager.instance(args.value("font")))) {
-        Error() << "Cannot load plugin" << args.value("font") << "from" << fontManager.pluginDirectory();
+    if(!(fontManager.load(args.value("font")) & PluginManager::LoadState::Loaded))
         std::exit(1);
-    }
+    std::unique_ptr<Text::AbstractFont> font = fontManager.instance(args.value("font"));
 
     /* Load font converter */
     PluginManager::Manager<Text::AbstractFontConverter> converterManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fontconverters/"));
-    std::unique_ptr<Text::AbstractFontConverter> converter;
-    if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded) ||
-       !(converter = converterManager.instance(args.value("converter")))) {
-        Error() << "Cannot load plugin" << args.value("converter") << "from" << converterManager.pluginDirectory();
+    if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
         std::exit(1);
-    }
+    std::unique_ptr<Text::AbstractFontConverter> converter = converterManager.instance(args.value("converter"));
 
     /* Open font */
     if(!font->openFile(args.value("input"), args.value<Float>("font-size"))) {

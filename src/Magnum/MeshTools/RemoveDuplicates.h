@@ -26,10 +26,11 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::removeDuplicates()
+ * @brief Function @ref Magnum::MeshTools::removeDuplicates()
  */
 
 #include <limits>
+#include <numeric>
 #include <unordered_map>
 #include <vector>
 #include <Corrade/Utility/MurmurHash2.h>
@@ -37,122 +38,146 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Functions.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
+
+#include "Magnum/MeshTools/Duplicate.h"
+#endif
+
 namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
-
-template<class Vertex, std::size_t vertexSize = Vertex::Size> class RemoveDuplicates {
-    public:
-        RemoveDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
-
-        void operator()(typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon());
-
-    private:
-        class IndexHash {
-            public:
-                std::size_t operator()(const Math::Vector<vertexSize, std::size_t>& data) const {
-                    return *reinterpret_cast<const std::size_t*>(Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
-                }
-        };
-
-        struct HashedVertex {
-            UnsignedInt oldIndex, newIndex;
-
-            HashedVertex(UnsignedInt oldIndex, UnsignedInt newIndex): oldIndex(oldIndex), newIndex(newIndex) {}
-        };
-
-        std::vector<UnsignedInt>& indices;
-        std::vector<Vertex>& vertices;
-};
-
+    template<std::size_t size> class VectorHash {
+        public:
+            std::size_t operator()(const Math::Vector<size, std::size_t>& data) const {
+                return *reinterpret_cast<const std::size_t*>(Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
+            }
+    };
 }
 
 /**
-@brief %Remove duplicate vertices from the mesh
-@tparam Vertex          Vertex data type
-@tparam vertexSize      How many initial vertex fields are important (for
-    example, when dealing with perspective in 3D space, only first three
-    fields of otherwise 4D vertex are important)
-@param[in,out] indices  Index array to operate on
-@param[in,out] vertices Vertex array to operate on
-@param[in] epsilon      Epsilon value, vertices nearer than this distance will
-    be melt together.
+@brief %Remove duplicate floating-point vector data from given array
+@param[in,out] data Input data array
+@param[out] epsilon Epsilon value, vertices nearer than this distance will be
+    melt together
+@return Index array and unique data
 
-Removes duplicate vertices from the mesh.
-@see duplicate()
+Removes duplicate data from the array by collapsing them into buckets of size
+@p epsilon. First vector in given bucket is used, other ones are thrown away,
+no interpolation is done. Note that this function is meant to be used for
+floating-point data (or generally with non-zero @p epsilon), for discrete data
+the usual sorting method is much more efficient.
 
-@todo Different (no cycle) implementation for integral vertices
-@todo Interpolate vertices, not collapse them to first in the cell
-@todo Ability to specify other attributes for interpolation
+If you want to remove duplicate data from already indexed array, first remove
+duplicates as if the array wasn't indexed at all and then use @ref duplicate()
+to combine the two index arrays:
+@code
+std::vector<UnsignedInt> indices;
+std::vector<Vector3> positions;
+
+indices = MeshTools::duplicate(indices, MeshTools::removeDuplicates(positions));
+@endcode
+
+Removing duplicates in multiple indcidental arrays is also possible -- first
+remove duplicates in each array separately and then use @ref combineIndexedArrays()
+to combine the resulting index arrays to single index array and reorder the
+data accordingly:
+@code
+std::vector<Vector3> positions;
+std::vector<Vector2> texCoords;
+
+std::vector<UnsignedInt> positionIndices;
+std::tie(positionIndices, positions) = MeshTools::removeDuplicates(positions);
+
+std::vector<UnsignedInt> texCoordIndices;
+std::tie(texCoordIndices, texCoords) = MeshTools::removeDuplicates(texCoords);
+
+std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
+    std::make_pair(std::cref(positionIndices), std::ref(positions)),
+    std::make_pair(std::cref(texCoordIndices), std::ref(texCoords))
+);
+@endcode
 */
-template<class Vertex, std::size_t vertexSize = Vertex::Size> inline void removeDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, typename Vertex::Type epsilon = Math::TypeTraits<typename Vertex::Type>::epsilon()) {
-    Implementation::RemoveDuplicates<Vertex, vertexSize>(indices, vertices)(epsilon);
-}
-
-namespace Implementation {
-
-template<class Vertex, std::size_t vertexSize> void RemoveDuplicates<Vertex, vertexSize>::operator()(typename Vertex::Type epsilon) {
-    if(indices.empty()) return;
-
-    /* Get mesh bounds */
-    Vertex min = vertices[0], max = vertices[0];
-    for(auto it = vertices.begin(); it != vertices.end(); ++it) {
-        min = Math::min(*it, min);
-        max = Math::max(*it, max);
+template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
+    /* Get bounds */
+    Vector min = data[0], max = data[0];
+    for(const auto& v: data) {
+        min = Math::min(v, min);
+        max = Math::max(v, max);
     }
 
-    /* Make epsilon so large that std::size_t can index all vertices inside
-       mesh bounds. */
-    epsilon = Math::max(epsilon, static_cast<typename Vertex::Type>((max-min).max()/std::numeric_limits<std::size_t>::max()));
+    /* Make epsilon so large that std::size_t can index all vectors inside the
+       bounds. */
+    epsilon = Math::max(epsilon, typename Vector::Type((max-min).max()/std::numeric_limits<std::size_t>::max()));
 
-    /* First go with original vertex coordinates, then move them by
-       epsilon/2 in each direction. */
-    Vertex moved;
-    for(std::size_t moving = 0; moving <= vertexSize; ++moving) {
+    /* Resulting index array */
+    std::vector<UnsignedInt> resultIndices(data.size());
+    std::iota(resultIndices.begin(), resultIndices.end(), 0);
 
-        /* Under each index is pointer to face which contains given vertex
-           and index of vertex in the face. */
-        std::unordered_map<Math::Vector<vertexSize, std::size_t>, HashedVertex, IndexHash> table;
+    /* Table containing original vector index for each discretized vector.
+       Reserving more buckets than necessary (i.e. as if each vector was
+       unique). */
+    std::unordered_map<Math::Vector<Vector::Size, std::size_t>, UnsignedInt, Implementation::VectorHash<Vector::Size>> table(data.size());
 
-        #ifndef CORRADE_GCC44_COMPATIBILITY
-        /* Reserve space for all vertices */
-        table.reserve(vertices.size());
-        #endif
+    /* Index array for each pass, new data array */
+    std::vector<UnsignedInt> indices;
+    indices.reserve(data.size());
 
-        /* Go through all faces' vertices */
-        for(auto it = indices.begin(); it != indices.end(); ++it) {
-            /* Index of a vertex in vertexSize-dimensional table */
-            std::size_t index[vertexSize];
-            for(std::size_t ii = 0; ii != vertexSize; ++ii)
-                index[ii] = std::size_t((vertices[*it][ii]+moved[ii]-min[ii])/epsilon);
-
-            /* Try inserting the vertex into table, if it already
-               exists, change vertex pointer of the face to already
-               existing vertex */
-            HashedVertex v(*it, table.size());
+    /* First go with original coordinates, then move them by epsilon/2 in each
+       direction. */
+    Vector moved;
+    for(std::size_t moving = 0; moving <= Vector::Size; ++moving) {
+        /* Go through all vectors */
+        for(std::size_t i = 0; i != data.size(); ++i) {
+            /* Try to insert new vertex to the table */
+            const Math::Vector<Vector::Size, std::size_t> v((data[i] + moved - min)/epsilon);
             #ifndef CORRADE_GCC46_COMPATIBILITY
-            auto result = table.emplace(Math::Vector<vertexSize, std::size_t>::from(index), v);
+            const auto result = table.emplace(v, table.size());
             #else
-            auto result = table.insert({Math::Vector<vertexSize, std::size_t>::from(index), v});
+            const auto result = table.insert({v, table.size()});
             #endif
-            *it = result.first->second.newIndex;
+
+            /* Add the (either new or already existing) index to index array */
+            indices.push_back(result.first->second);
+
+            /* If this is new combination, copy the data to new (earlier)
+               possition in the array */
+            if(result.second && i != table.size()-1) data[table.size()-1] = data[i];
         }
 
-        /* Shrink vertices array */
-        std::vector<Vertex> newVertices(table.size());
-        for(auto it = table.cbegin(); it != table.cend(); ++it)
-            newVertices[it->second.newIndex] = vertices[it->second.oldIndex];
-        std::swap(newVertices, vertices);
+        /* Shrink the data array */
+        CORRADE_INTERNAL_ASSERT(data.size() >= table.size());
+        data.resize(table.size());
+
+        /* Remap the resulting index array */
+        for(auto& i: resultIndices) i = indices[i];
+
+        /* Finished */
+        if(moving == Vector::Size) continue;
 
         /* Move vertex coordinates by epsilon/2 in next direction */
-        if(moving != Vertex::Size) {
-            moved = Vertex();
-            moved[moving] = epsilon/2;
-        }
+        moved = Vector();
+        moved[moving] = epsilon/2;
+
+        /* Clear the structures for next pass */
+        table.clear();
+        indices.clear();
     }
+
+    return resultIndices;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief removeDuplicates(std::vector<Vector>&, typename Vector::Type)
+@deprecated Use @ref Magnum::MeshTools::removeDuplicates(std::vector<Vector>&, typename Vector::Type) "removeDuplicates(std::vector<Vector>&, typename Vector::Type)" instead.
+*/
+template<class Vector> void removeDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
+    std::vector<UnsignedInt> uniqueIndices;
+    std::tie(uniqueIndices, data) = removeDuplicates(data, epsilon);
+    indices = MeshTools::duplicate(indices, uniqueIndices);
 }
+#endif
 
 }}
 

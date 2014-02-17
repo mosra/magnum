@@ -115,6 +115,8 @@ enum class MeshPrimitive: GLenum {
     #endif
 };
 
+namespace Implementation { struct MeshState; }
+
 /**
 @brief %Mesh
 
@@ -294,10 +296,11 @@ for more infromation) and call @ref Mesh::draw().
 If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
 @es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
-in each @ref draw() call. The engine tracks currently bound VAO to avoid
-unnecessary calls to @fn_gl{BindVertexArray}. %Mesh limits and
-implementation-defined values (such as @ref maxVertexAttributes()) are cached,
-so repeated queries don't result in repeated @fn_gl{Get} calls.
+in each @ref draw() call. The engine tracks currently bound VAO and currently
+active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
+@fn_gl{UseProgram}. %Mesh limits and implementation-defined values (such as
+@ref maxVertexAttributes()) are cached, so repeated queries don't result in
+repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} and VAOs are available,
 DSA functions are used for specifying attribute locations to avoid unnecessary
@@ -308,13 +311,12 @@ If index range is specified in @ref setIndexBuffer(), range-based version of
 drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @ref draw() for more information.
 
-@todo Support for indirect draw buffer (OpenGL 4.0, @extension{ARB,draw_indirect})
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
 @todo How to glDrawElementsBaseVertex()/vertex offset -- in draw()?
  */
 class MAGNUM_EXPORT Mesh: public AbstractObject {
-    friend class Context;
     friend class MeshView;
+    friend struct Implementation::MeshState;
 
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -337,6 +339,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             /**
              * Unsigned int
              * @requires_gles30 %Extension @es_extension{OES,element_index_uint}
+             *      in OpenGL ES 2.0
              */
             UnsignedInt = GL_UNSIGNED_INT
         };
@@ -424,9 +427,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief %Mesh label
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function returns empty string.
+         * OpenGL calls. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{VERTEX_ARRAY} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{VERTEX_ARRAY_OBJECT_EXT}
@@ -437,9 +440,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Set mesh label
          * @return Reference to self (for method chaining)
          *
-         * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function does nothing.
+         * Default is empty string. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
          *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{VERTEX_ARRAY_OBJECT_EXT}
@@ -605,14 +608,34 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @brief Draw the mesh
+         * @param shader    Shader to use for drawing
          *
-         * Expects an active shader with all uniforms set. See
+         * Expects that the shader is compatible with this mesh and is fully
+         * set up. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information.
-         * @see @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{DrawArrays} or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
+         * @see @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
+         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
+         *      @extension{APPLE,vertex_array_object} is available), @fn_gl{DrawArrays}
+         *      or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
+         */
+        void draw(AbstractShaderProgram& shader) {
+            shader.use();
+
+            #ifndef MAGNUM_TARGET_GLES2
+            drawInternal(0, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+            #else
+            drawInternal(0, _vertexCount, _indexOffset, _indexCount);
+            #endif
+        }
+
+        void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief draw(AbstractShaderProgram&)
+         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) instead.
          */
         void draw() {
             #ifndef MAGNUM_TARGET_GLES2
@@ -621,6 +644,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             drawInternal(0, _vertexCount, _indexOffset, _indexCount);
             #endif
         }
+        #endif
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -657,8 +681,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
 
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> inline static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             return attribute.vectorSize()*AbstractShaderProgram::Attribute<location, T>::VectorCount + strideOfInterleaved(attributes...);
@@ -683,7 +705,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, Float>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
-                (this->*attributePointerImplementation)(Attribute{
+                attributePointerInternal(Attribute{
                     &buffer,
                     location+i,
                     GLint(attribute.components()),
@@ -696,7 +718,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES2
         template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::Type>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
-            (this->*attributeIPointerImplementation)(IntegerAttribute{
+            attributePointerInternal(IntegerAttribute{
                 &buffer,
                 location,
                 GLint(attribute.components()),
@@ -709,7 +731,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, Double>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
-                (this->*attributeLPointerImplementation)(LongAttribute{
+                attributePointerInternal(LongAttribute{
                     &buffer,
                     location+i,
                     GLint(attribute.components()),
@@ -722,6 +744,14 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
         static void MAGNUM_LOCAL bindVAO(GLuint vao);
+
+        void attributePointerInternal(const Attribute& attribute);
+        #ifndef MAGNUM_TARGET_GLES2
+        void attributePointerInternal(const IntegerAttribute& attribute);
+        #ifndef MAGNUM_TARGET_GLES
+        void attributePointerInternal(const LongAttribute& attribute);
+        #endif
+        #endif
 
         void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
         #ifndef MAGNUM_TARGET_GLES2
@@ -737,56 +767,40 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount);
         #endif
 
-        typedef void(Mesh::*CreateImplementation)();
         void MAGNUM_LOCAL createImplementationDefault();
         void MAGNUM_LOCAL createImplementationVAO();
-        static MAGNUM_LOCAL CreateImplementation createImplementation;
 
-        typedef void(Mesh::*DestroyImplementation)();
         void MAGNUM_LOCAL destroyImplementationDefault();
         void MAGNUM_LOCAL destroyImplementationVAO();
-        static MAGNUM_LOCAL DestroyImplementation destroyImplementation;
 
-        typedef void(Mesh::*AttributePointerImplementation)(const Attribute&);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const Attribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const Attribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL attributePointerImplementationDSA(const Attribute& attribute);
         #endif
-        static AttributePointerImplementation attributePointerImplementation;
 
         #ifndef MAGNUM_TARGET_GLES2
-        typedef void(Mesh::*AttributeIPointerImplementation)(const IntegerAttribute&);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const IntegerAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const IntegerAttribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL attributePointerImplementationDSA(const IntegerAttribute& attribute);
         #endif
-        static AttributeIPointerImplementation attributeIPointerImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
-        typedef void(Mesh::*AttributeLPointerImplementation)(const LongAttribute&);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDSA(const LongAttribute& attribute);
-        static AttributeLPointerImplementation attributeLPointerImplementation;
         #endif
         #endif
 
-        typedef void(Mesh::*BindIndexBufferImplementation)(Buffer&);
         void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer& buffer);
         void MAGNUM_LOCAL bindIndexBufferImplementationVAO(Buffer& buffer);
-        static MAGNUM_LOCAL BindIndexBufferImplementation bindIndexBufferImplementation;
 
-        typedef void(Mesh::*BindImplementation)();
         void MAGNUM_LOCAL bindImplementationDefault();
         void MAGNUM_LOCAL bindImplementationVAO();
-        static MAGNUM_LOCAL BindImplementation bindImplementation;
 
-        typedef void(Mesh::*UnbindImplementation)();
         void MAGNUM_LOCAL unbindImplementationDefault();
         void MAGNUM_LOCAL unbindImplementationVAO();
-        static MAGNUM_LOCAL UnbindImplementation unbindImplementation;
 
         GLuint _id;
         MeshPrimitive _primitive;

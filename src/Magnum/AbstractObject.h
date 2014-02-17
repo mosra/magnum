@@ -50,9 +50,9 @@ class MAGNUM_EXPORT AbstractObject {
          * @brief Max object label length
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If @extension{KHR,debug} desktop or ES extension is
-         * not available, returns `0`. Note that @extension2{EXT,debug_label}
-         * has no such limit.
+         * OpenGL calls. If OpenGL 4.3 is not supported and @extension{KHR,debug}
+         * desktop or ES extension is not available, returns `0`. Note that
+         * @extension2{EXT,debug_label} has no such limit.
          * @see @ref AbstractQuery::setLabel(), @ref AbstractShaderProgram::setLabel(),
          *      @ref AbstractTexture::setLabel(), @ref Buffer::setLabel(),
          *      @ref BufferTexture::setLabel(), @ref Framebuffer::setLabel(),

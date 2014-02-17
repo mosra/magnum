@@ -31,8 +31,10 @@
 
 namespace Magnum { namespace Implementation {
 
-DebugState::DebugState(Context& context): maxLabelLength(0), maxLoggedMessages(0), maxMessageLength(0), messageCallback(nullptr) {
+DebugState::DebugState(Context& context, std::vector<std::string>& extensions): maxLabelLength(0), maxLoggedMessages(0), maxMessageLength(0), messageCallback(nullptr) {
     if(context.isExtensionSupported<Extensions::GL::KHR::debug>()) {
+        extensions.push_back(Extensions::GL::KHR::debug::string());
+
         getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
         labelImplementation = &AbstractObject::labelImplementationKhr;
         messageInsertImplementation = &DebugMessage::insertImplementationKhr;
@@ -40,6 +42,8 @@ DebugState::DebugState(Context& context): maxLabelLength(0), maxLoggedMessages(0
 
     } else {
         if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
+            extensions.push_back(Extensions::GL::EXT::debug_label::string());
+
             getLabelImplementation = &AbstractObject::getLabelImplementationExt;
             labelImplementation = &AbstractObject::labelImplementationExt;
         } else {
@@ -47,14 +51,17 @@ DebugState::DebugState(Context& context): maxLabelLength(0), maxLoggedMessages(0
             labelImplementation = &AbstractObject::labelImplementationNoOp;
         }
 
-        if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>())
+        if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>()) {
+            extensions.push_back(Extensions::GL::EXT::debug_marker::string());
+
             messageInsertImplementation = &DebugMessage::insertImplementationExt;
         #ifndef MAGNUM_TARGET_GLES
-        else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+        } else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()) {
+            extensions.push_back(Extensions::GL::GREMEDY::string_marker::string());
+
             messageInsertImplementation = &DebugMessage::insertImplementationGremedy;
         #endif
-        else
-            messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
+        } else messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
 
         messageCallbackImplementation = &DebugMessage::callbackImplementationNoOp;
     }

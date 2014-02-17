@@ -114,6 +114,8 @@ enum class BufferUsage: GLenum {
     #endif
 };
 
+namespace Implementation { struct BufferState; }
+
 /**
 @brief %Buffer
 
@@ -172,8 +174,8 @@ The engine tracks currently bound buffers to avoid unnecessary calls to
 and @ref unmap() use that target instead of binding the buffer to some specific
 target. You can also use @ref setTargetHint() to possibly reduce unnecessary
 rebinding. %Buffer limits and implementation-defined values (such as
-@ref maxVertexAttributeBindings()) are cached, so repeated queries don't result
-in repeated @fn_gl{Get} calls.
+@ref maxUniformBindings()) are cached, so repeated queries don't result in
+repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} is available, functions
 @ref copy(), @ref setData(), @ref setSubData(), @ref map(), @ref flushMappedRange()
@@ -183,14 +185,11 @@ and @ref unmap() use DSA functions to avoid unnecessary calls to
 You can use functions @ref invalidateData() and @ref invalidateSubData() if you
 don't need buffer data anymore to avoid unnecessary memory operations performed
 by OpenGL in order to preserve the data. If running on OpenGL ES or extension
-@extension{ARB,invalidate_subdata} is not available, these functions do
-nothing.
-
-@todo Support for AMD/ARB's query buffer (@extension{AMD,query_buffer_object}, @extension{ARB,query_buffer_object})
-@todo BindBufferRange/BindBufferOffset/BindBufferBase for transform feedback (3.0, @extension{EXT,transform_feedback})
+@extension{ARB,invalidate_subdata} (part of OpenGL 4.3) is not available, these
+functions do nothing.
  */
 class MAGNUM_EXPORT Buffer: public AbstractObject {
-    friend class Context;
+    friend struct Implementation::BufferState;
 
     public:
         /**
@@ -348,7 +347,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref MapFlags, @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
         enum class MapFlag: GLbitfield {
             /** Map buffer for reading. */
@@ -414,7 +414,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
         typedef Containers::EnumSet<MapFlag, GLbitfield> MapFlags;
 
@@ -478,15 +479,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #endif
 
         /**
-         * @brief Max supported vertex buffer binding count
-         *
-         * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls.
-         * @see @fn_gl{Get} with @def_gl{MAX_VERTEX_ATTRIB_BINDINGS}
-         */
-        static Int maxVertexAttributeBindings();
-
-        /**
          * @brief Unbind any buffer from given target
          * @param target    %Target
          *
@@ -512,9 +504,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gl31 %Extension @extension{ARB,copy_buffer}
          * @requires_gles30 %Buffer copying is not available in OpenGL ES 2.0.
          */
-        static void copy(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-            copyImplementation(read, write, readOffset, writeOffset, size);
-        }
+        static void copy(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
 
         /**
@@ -554,9 +544,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief %Buffer label
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function returns empty string.
+         * OpenGL calls. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{BUFFER} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
@@ -567,9 +557,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Set buffer label
          * @return Reference to self (for method chaining)
          *
-         * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function does nothing.
+         * Default is empty string. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with @def_gl{BUFFER}
          *      or @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
@@ -669,14 +659,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferData}
          *      or @fn_gl_extension{NamedBufferData,EXT,direct_state_access}
          */
-        Buffer& setData(Containers::ArrayReference<const void> data, BufferUsage usage) {
-            (this->*dataImplementation)(data.size(), data, usage);
-            return *this;
-        }
+        Buffer& setData(Containers::ArrayReference<const void> data, BufferUsage usage);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Set buffer data
+         * @copybrief setData(Containers::ArrayReference<const void>, BufferUsage)
          * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, BufferUsage) "setData(Containers::ArrayReference<const void>, BufferUsage)"
          *      instead.
          */
@@ -709,14 +696,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
          *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
-        Buffer& setSubData(GLintptr offset, Containers::ArrayReference<const void> data) {
-            (this->*subDataImplementation)(offset, data.size(), data);
-            return *this;
-        }
+        Buffer& setSubData(GLintptr offset, Containers::ArrayReference<const void> data);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Set buffer subdata
+         * @copybrief setSubData(GLintptr, Containers::ArrayReference<const void>)
          * @deprecated Use @ref Magnum::Buffer::setSubData(GLintptr, Containers::ArrayReference<const void>) "setSubData(GLintptr, Containers::ArrayReference<const void>)"
          *      instead.
          */
@@ -737,7 +721,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Invalidate buffer data
          * @return Reference to self (for method chaining)
@@ -746,10 +729,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref MapFlag::InvalidateBuffer, @fn_gl{InvalidateBufferData}
          */
-        Buffer& invalidateData() {
-            (this->*invalidateImplementation)();
-            return *this;
-        }
+        Buffer& invalidateData();
 
         /**
          * @brief Invalidate buffer subdata
@@ -761,11 +741,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref MapFlag::InvalidateRange, @fn_gl{InvalidateBufferData}
          */
-        Buffer& invalidateSubData(GLintptr offset, GLsizeiptr length) {
-            (this->*invalidateSubImplementation)(offset, length);
-            return *this;
-        }
-        #endif
+        Buffer& invalidateSubData(GLintptr offset, GLsizeiptr length);
 
         /**
          * @brief Map buffer to client memory
@@ -784,9 +760,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      in OpenGL ES 3.0 instead.
          */
-        void* map(MapAccess access) {
-            return (this->*mapImplementation)(access);
-        }
+        void* map(MapAccess access);
 
         #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
@@ -825,11 +799,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref map(MapAccess), @ref setTargetHint(), @fn_gl{BindBuffer}
          *      and @fn_gl{MapBufferRange} or @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
-        void* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
-            return (this->*mapRangeImplementation)(offset, length, flags);
-        }
+        void* map(GLintptr offset, GLsizeiptr length, MapFlags flags);
 
         /**
          * @brief Flush mapped range
@@ -847,12 +820,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{FlushMappedBufferRange}
          *      or @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range}
+         * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
+         *      OpenGL ES 2.0
          */
-        Buffer& flushMappedRange(GLintptr offset, GLsizeiptr length) {
-            (this->*flushMappedRangeImplementation)(offset, length);
-            return *this;
-        }
+        Buffer& flushMappedRange(GLintptr offset, GLsizeiptr length);
 
         /**
          * @brief Unmap buffer
@@ -866,11 +837,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * is bound to hinted target before the operation.
          * @see setTargetHint(), @fn_gl{BindBuffer} and @fn_gl{UnmapBuffer} or
          *      @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access}
-         * @requires_gles30 %Extension @es_extension{OES,mapbuffer}
+         * @requires_gles30 %Extension @es_extension{OES,mapbuffer} in OpenGL
+         *      ES 2.0
          */
-        bool unmap() {
-            return (this->*unmapImplementation)();
-        }
+        bool unmap();
 
         #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
@@ -888,89 +858,69 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
         static void bind(Target hint, GLuint id);
         Target MAGNUM_LOCAL bindInternal(Target hint);
 
         #ifndef MAGNUM_TARGET_GLES2
-        typedef void(*CopyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
-        static CopyImplementation copyImplementation;
         #endif
 
-        typedef void(Buffer::*GetParameterImplementation)(GLenum, GLint*);
+        #ifndef MAGNUM_TARGET_GLES
+        void subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        #endif
+
         void MAGNUM_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
         #endif
-        static MAGNUM_LOCAL GetParameterImplementation getParameterImplementation;
 
         #ifndef MAGNUM_TARGET_GLES
-        typedef void(Buffer::*GetSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
         void MAGNUM_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
         void MAGNUM_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
-        static GetSubDataImplementation getSubDataImplementation;
         #endif
 
-        typedef void(Buffer::*DataImplementation)(GLsizeiptr, const GLvoid*, BufferUsage);
         void MAGNUM_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
-        static DataImplementation dataImplementation;
 
-        typedef void(Buffer::*SubDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
         void MAGNUM_LOCAL subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
-        static SubDataImplementation subDataImplementation;
 
-        typedef void(Buffer::*InvalidateImplementation)();
         void MAGNUM_LOCAL invalidateImplementationNoOp();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL invalidateImplementationARB();
         #endif
-        static InvalidateImplementation invalidateImplementation;
 
-        typedef void(Buffer::*InvalidateSubImplementation)(GLintptr, GLsizeiptr);
         void MAGNUM_LOCAL invalidateSubImplementationNoOp(GLintptr offset, GLsizeiptr length);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length);
         #endif
-        static InvalidateSubImplementation invalidateSubImplementation;
 
-        typedef void*(Buffer::*MapImplementation)(MapAccess);
         void MAGNUM_LOCAL * mapImplementationDefault(MapAccess access);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL * mapImplementationDSA(MapAccess access);
         #endif
-        static MapImplementation mapImplementation;
 
-        typedef void*(Buffer::*MapRangeImplementation)(GLintptr, GLsizeiptr, MapFlags);
         void MAGNUM_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL * mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access);
         #endif
-        static MapRangeImplementation mapRangeImplementation;
 
-        typedef void(Buffer::*FlushMappedRangeImplementation)(GLintptr, GLsizeiptr);
         void MAGNUM_LOCAL flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length);
         #endif
-        static FlushMappedRangeImplementation flushMappedRangeImplementation;
 
-        typedef bool(Buffer::*UnmapImplementation)();
         bool MAGNUM_LOCAL unmapImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         bool MAGNUM_LOCAL unmapImplementationDSA();
         #endif
-        static UnmapImplementation unmapImplementation;
 
         GLuint _id;
         Target _targetHint;
@@ -1007,7 +957,7 @@ template<class T> Containers::Array<T> inline Buffer::data() {
 
 template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
     Containers::Array<T> data(size);
-    if(size) (this->*getSubDataImplementation)(offset, size*sizeof(T), data);
+    if(size) subDataInternal(offset, size*sizeof(T), data);
     return std::move(data);
 }
 #endif

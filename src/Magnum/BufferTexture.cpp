@@ -35,9 +35,6 @@
 
 namespace Magnum {
 
-BufferTexture::SetBufferImplementation BufferTexture::setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
-BufferTexture::SetBufferRangeImplementation BufferTexture::setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
-
 Int BufferTexture::offsetAlignment() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
         return 0;
@@ -51,13 +48,14 @@ Int BufferTexture::offsetAlignment() {
     return value;
 }
 
-void BufferTexture::initializeContextBasedFunctionality(Context& context) {
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        Debug() << "BufferTexture: using" << Extensions::GL::EXT::direct_state_access::string() << "features";
+BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
+    (this->*Context::current()->state().texture->setBufferImplementation)(internalFormat, buffer);
+    return *this;
+}
 
-        setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
-        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
-    }
+BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    (this->*Context::current()->state().texture->setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+    return *this;
 }
 
 void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer) {

@@ -181,11 +181,10 @@ constexpr static Vector3 data[] = {
 buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 
-The texture is bound to layer specified by shader via @ref bind(). In shader,
-the texture is used via `samplerBuffer`, `isamplerBuffer` or `usamplerBuffer`.
-Unlike in classic textures, coordinates for buffer textures are integer
-coordinates passed to `texelFetch()`. See also @ref AbstractShaderProgram
-documentation for more information.
+In shader, the texture is used via `samplerBuffer`, `isamplerBuffer` or
+`usamplerBuffer`. Unlike in classic textures, coordinates for buffer textures
+are integer coordinates passed to `texelFetch()`. See @ref AbstractShaderProgram
+documentation for more information about usage in shaders.
 
 @section BufferTexture-performance-optimization Performance optimizations
 
@@ -195,17 +194,15 @@ functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @ref AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
 and respective function documentation for more information.
 
-@see @ref Texture, @ref CubeMapTexture, @ref CubeMapTextureArray
+@see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
+    @ref CubeMapTextureArray, @ref MultisampleTexture, @ref RectangleTexture
 @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
-class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
-    friend class Context;
+class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
+    friend struct Implementation::TextureState;
 
     public:
-        /** @copydoc AbstractTexture::maxLabelLength() */
-        static Int maxLabelLength() { return AbstractTexture::maxLabelLength(); }
-
         /**
          * @brief Minimum required alignment for texture buffer offsets
          *
@@ -216,6 +213,12 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          */
         static Int offsetAlignment();
 
+        /**
+         * @brief Constructor
+         *
+         * Creates new OpenGL texture object.
+         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_BUFFER}
+         */
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         #ifdef CORRADE_GCC45_COMPATIBILITY
@@ -228,25 +231,11 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
         }
         #endif
 
-        /** @copydoc AbstractTexture::id() */
-        Int id() const { return AbstractTexture::id(); }
-
-        /** @copydoc AbstractTexture::label() */
-        std::string label() const { return AbstractTexture::label(); }
-
-        /** @copydoc AbstractTexture::setLabel() */
-        BufferTexture& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-
-        /** @copydoc AbstractTexture::bind() */
-        void bind(Int layer) { AbstractTexture::bind(layer); }
-
         /**
          * @brief Set texture buffer
          * @param internalFormat    Internal format
          * @param buffer            %Buffer with data
+         * @return Reference to self (for method chaining)
          *
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using @ref Buffer "Buffer"'s
@@ -254,9 +243,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
          *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer& buffer) {
-            (this->*setBufferImplementation)(internalFormat, buffer);
-        }
+        BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
 
         /**
          * @brief Set texture buffer
@@ -264,6 +251,7 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @param buffer            %Buffer
          * @param offset            Offset
          * @param size              Data size
+         * @return Reference to self (for method chaining)
          *
          * Binds range of given buffer to this texture. The buffer itself can
          * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
@@ -272,22 +260,22 @@ class MAGNUM_EXPORT BufferTexture: private AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
          *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
-        void setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
-            (this->*setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+        BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        BufferTexture& setLabel(const std::string& label) {
+            AbstractTexture::setLabel(label);
+            return *this;
         }
+        #endif
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
-
-        typedef void(BufferTexture::*SetBufferImplementation)(BufferTextureFormat, Buffer&);
         void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
         void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
-        static SetBufferImplementation setBufferImplementation;
 
-        typedef void(BufferTexture::*SetBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
         void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
-        static SetBufferRangeImplementation setBufferRangeImplementation;
 };
 
 }

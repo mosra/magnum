@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shaders::Phong
+ * @brief Class @ref Magnum::Shaders::Phong
  */
 
 #include "Magnum/Color.h"
@@ -46,15 +46,8 @@ call at least @ref setTransformationMatrix(), @ref setNormalMatrix(),
 
 If you want to use texture instead of color, you need to provide also
 @ref TextureCoordinates attribute. Pass appropriate flags to constructor and
-then at render time bind the texture to its respective layer instead of setting
-the color. Example:
-@code
-Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture);
-
-// ...
-
-myDiffuseTexture.bind(Shaders::Phong::DiffuseTextureLayer);
-@endcode
+then at render time don't forget to also call appropriate subset of
+@ref setAmbientTexture(), @ref setDiffuseTexture() and @ref setSpecularTexture().
 */
 class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
     public:
@@ -69,25 +62,33 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          */
         typedef Generic3D::TextureCoordinates TextureCoordinates;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
             /**
              * Layer for ambient texture. Used only if @ref Flag::AmbientTexture
              * is set.
+             * @deprecated Use @ref Magnum::Shaders::Phong::setAmbientTexture() "setAmbientTexture()"
+             *      instead.
              */
             AmbientTextureLayer = 0,
 
             /**
              * Layer for diffuse texture. Used only if @ref Flag::DiffuseTexture
              * is set.
+             * @deprecated Use @ref Magnum::Shaders::Phong::setDiffuseTexture() "setDiffuseTexture()"
+             *      instead.
              */
             DiffuseTextureLayer = 1,
 
             /**
              * Layer for specular texture. Used only if @ref Flag::SpecularTexture
              * is set.
+             * @deprecated Use @ref Magnum::Shaders::Phong::setSpecularTexture() "setSpecularTexture()"
+             *      instead.
              */
             SpecularTextureLayer = 2
         };
+        #endif
 
         /**
          * @brief Shader flag
@@ -122,16 +123,36 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(0.0f, 0.0f, 0.0f)`. Has no effect if
          * @ref Flag::AmbientTexture is set.
+         * @see @ref setAmbientTexture()
          */
         Phong& setAmbientColor(const Color3& color);
+
+        /**
+         * @brief Set ambient texture
+         * @return Reference to self (for method chaining)
+         *
+         * Has effect only if @ref Flag::AmbientTexture is set.
+         * @see @ref setAmbientColor()
+         */
+        Phong& setAmbientTexture(Texture2D& texture);
 
         /**
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
          *
-         * Has no effect if @ref Flag::AmbientTexture is used.
+         * Has no effect if @ref Flag::DiffuseTexture is used.
+         * @see @ref setDiffuseTexture()
          */
         Phong& setDiffuseColor(const Color3& color);
+
+        /**
+         * @brief Set diffuse texture
+         * @return Reference to self (for method chaining)
+         *
+         * Has effect only if @ref Flag::DiffuseTexture is set.
+         * @see @ref setDiffuseColor()
+         */
+        Phong& setDiffuseTexture(Texture2D& texture);
 
         /**
          * @brief Set specular color
@@ -139,8 +160,18 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * If not set, default value is `(1.0f, 1.0f, 1.0f)`. Has no effect if
          * @ref Flag::SpecularTexture is set.
+         * @see @ref setSpecularTexture()
          */
         Phong& setSpecularColor(const Color3& color);
+
+        /**
+         * @brief Set specular texture
+         * @return Reference to self (for method chaining)
+         *
+         * Has effect only if @ref Flag::SpecularTexture is set.
+         * @see @ref setSpecularColor()
+         */
+        Phong& setSpecularTexture(Texture2D& texture);
 
         /**
          * @brief Set shininess

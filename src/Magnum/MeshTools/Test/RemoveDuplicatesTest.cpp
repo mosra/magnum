@@ -25,6 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools { namespace Test {
@@ -33,23 +34,30 @@ class RemoveDuplicatesTest: public TestSuite::Tester {
     public:
         RemoveDuplicatesTest();
 
-        void cleanMesh();
+        void removeDuplicates();
 };
 
-typedef Math::Vector<1, int> Vector1;
-
 RemoveDuplicatesTest::RemoveDuplicatesTest() {
-    addTests<RemoveDuplicatesTest>({&RemoveDuplicatesTest::cleanMesh});
+    addTests<RemoveDuplicatesTest>({&RemoveDuplicatesTest::removeDuplicates});
 }
 
-void RemoveDuplicatesTest::cleanMesh() {
-    std::vector<Vector1> positions{1, 2, 1, 4};
-    std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
-    MeshTools::removeDuplicates(indices, positions);
+void RemoveDuplicatesTest::removeDuplicates() {
+    /* Numbers with distance 1 should be merged, numbers with distance 2 should
+       be kept. Testing both even-odd and odd-even sequence to verify that
+       half-epsilon translations are applied properly. */
+    std::vector<Vector2i> data{
+        {1, 0},
+        {2, 1},
+        {0, 4},
+        {1, 5}
+    };
 
-    /* Verify cleanup */
-    CORRADE_VERIFY(positions == (std::vector<Vector1>{1, 2, 4}));
-    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 1, 0, 1, 0, 2}));
+    const std::vector<UnsignedInt> indices = MeshTools::removeDuplicates(data, 2);
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 0, 1, 1}));
+    CORRADE_COMPARE(data, (std::vector<Vector2i>{
+        {1, 0},
+        {0, 4}
+    }));
 }
 
 }}}

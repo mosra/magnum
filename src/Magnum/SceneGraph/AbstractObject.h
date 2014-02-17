@@ -26,9 +26,10 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractObject, alias Magnum::SceneGraph::AbstractBasicObject2D, Magnum::SceneGraph::AbstractBasicObject3D, typedef Magnum::SceneGraph::AbstractObject2D, Magnum::SceneGraph::AbstractObject3D
+ * @brief Class @ref Magnum::SceneGraph::AbstractObject, alias @ref Magnum::SceneGraph::AbstractBasicObject2D, @ref Magnum::SceneGraph::AbstractBasicObject3D, typedef @ref Magnum::SceneGraph::AbstractObject2D, @ref Magnum::SceneGraph::AbstractObject3D
  */
 
+#include <functional>
 #include <vector>
 #include <Corrade/Containers/LinkedList.h>
 
@@ -129,7 +130,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @brief Transformation matrix
          *
-         * @see Object::transformation()
+         * See also `transformation()` function of various transformation
+         * classes.
          */
         MatrixType transformationMatrix() const {
             return doTransformationMatrix();
@@ -138,7 +140,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @brief Transformation matrix relative to root object
          *
-         * @see Object::absoluteTransformation()
+         * @see @ref Object::absoluteTransformation()
          */
         MatrixType absoluteTransformationMatrix() const {
             return doAbsoluteTransformationMatrix();
@@ -150,12 +152,30 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * All transformations are premultiplied with @p initialTransformationMatrix,
          * if specified.
          * @warning This function cannot check if all objects are of the same
-         *      Object type, use typesafe Object::transformationMatrices() when
-         *      possible.
+         *      @ref Object type, use typesafe @ref Object::transformationMatrices()
+         *      when possible.
          */
-        std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
+        std::vector<MatrixType> transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
             return doTransformationMatrices(objects, initialTransformationMatrix);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractObject::transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) "transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)" instead.
+         * @todoc The `ref` works when `const` is added, but then the quoted thing is not taken as a part of the reference. The  `copybrief` doesn't parse the `const` at all. Doxygen I hate you.
+         */
+        CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+
+        #ifdef CORRADE_GCC47_COMPATIBILITY
+        /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
+           thought 4.7 was bug-free. */
+        std::vector<MatrixType> transformationMatrices(std::initializer_list<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) {
+            return transformationMatrices(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>{objects}, initialTransformationMatrix);
+        }
+        CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(std::initializer_list<AbstractObject<dimensions, T>*> objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+        #endif
+        #endif
 
         /*@}*/
 
@@ -170,21 +190,37 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          *
          * Only dirty objects in the list are cleaned.
          * @warning This function cannot check if all objects are of the same
-         *      Object type, use typesafe Object::setClean() when possible.
+         *      @ref Object type, use typesafe @ref Object::setClean() when
+         *      possible.
          */
-        static void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
+        static void setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects) {
             if(objects.empty()) return;
-            objects.front()->doSetClean(objects);
+            objects.front().get().doSetClean(objects);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&)
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractObject::setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) "setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&)" instead.
+         */
+        static CORRADE_DEPRECATED("use setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead") void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects);
+
+        #ifdef CORRADE_GCC47_COMPATIBILITY
+        /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
+           thought 4.7 was bug-free. */
+        static void setClean(std::initializer_list<std::reference_wrapper<AbstractObject<dimensions, T>>> objects) {
+            return setClean(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>{objects});
+        }
+        static CORRADE_DEPRECATED("use setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead") void setClean(std::initializer_list<AbstractObject<dimensions, T>*> objects);
+        #endif
+        #endif
 
         /**
          * @brief Whether absolute transformation is dirty
          *
          * Returns `true` if transformation of the object or any parent has
-         * changed since last call to setClean(), `false` otherwise.
-         *
-         * All objects are dirty by default.
-         *
+         * changed since last call to @ref setClean(), `false` otherwise. All
+         * objects are dirty by default.
          * @see @ref scenegraph-caching
          */
         bool isDirty() const { return doIsDirty(); }
@@ -192,26 +228,26 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @brief Set object absolute transformation as dirty
          *
-         * Calls AbstractFeature::markDirty() on all object features and
-         * recursively calls setDirty() on every child object which is not
+         * Calls @ref AbstractFeature::markDirty() on all object features and
+         * recursively calls @ref setDirty() on every child object which is not
          * already dirty. If the object is already marked as dirty, the
          * function does nothing.
-         * @see @ref scenegraph-caching, setClean(), isDirty()
+         * @see @ref scenegraph-caching, @ref setClean(), @ref isDirty()
          */
         void setDirty() { doSetDirty(); }
 
         /**
          * @brief Clean object absolute transformation
          *
-         * Calls AbstractFeature::clean() and/or AbstractFeature::cleanInverted()
+         * Calls @ref AbstractFeature::clean() and/or @ref AbstractFeature::cleanInverted()
          * on all object features which have caching enabled and recursively
-         * calls setClean() on every parent which is not already clean. If the
-         * object is already clean, the function does nothing.
+         * calls @ref setClean() on every parent which is not already clean. If
+         * the object is already clean, the function does nothing.
          *
-         * See also setClean(const std::vector& objects), which cleans given
-         * set of objects more efficiently than when calling setClean() on
-         * each object individually.
-         * @see @ref scenegraph-caching, setDirty(), isDirty()
+         * See also @ref setClean(const std::vector<AbstractObject<dimensions, T>*>&),
+         * which cleans given set of objects more efficiently than when calling
+         * @ref setClean() on each object individually.
+         * @see @ref scenegraph-caching, @ref setDirty(), @ref isDirty()
          */
         void setClean() { doSetClean(); }
 
@@ -223,20 +259,20 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 
         virtual MatrixType doTransformationMatrix() const = 0;
         virtual MatrixType doAbsoluteTransformationMatrix() const = 0;
-        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const = 0;
+        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix) const = 0;
 
         virtual bool doIsDirty() const = 0;
         virtual void doSetDirty() = 0;
         virtual void doSetClean() = 0;
-        virtual void doSetClean(const std::vector<AbstractObject<dimensions, T>*>& objects) = 0;
+        virtual void doSetClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects) = 0;
 };
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base object for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<2, T></tt>. See AbstractObject
-for more information.
+Convenience alternative to <tt>%AbstractObject<2, T></tt>. See
+@ref AbstractObject for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
 @see @ref AbstractObject2D, @ref AbstractBasicObject3D
 */
@@ -262,10 +298,10 @@ typedef AbstractObject<2, Float> AbstractObject2D;
 /**
 @brief Base object for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<3, T></tt>. See AbstractObject
-for more information.
+Convenience alternative to <tt>%AbstractObject<3, T></tt>. See
+@ref AbstractObject for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
-@see AbstractObject2D
+@see @ref AbstractObject3D, @ref AbstractBasicObject2D
 */
 #ifndef CORRADE_MSVC2013_COMPATIBILITY /* Apparently cannot have multiply defined aliases */
 template<class T> using AbstractBasicObject3D = AbstractObject<3, T>;

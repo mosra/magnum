@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::AbstractBasicTranslationRotation3D, typedef Magnum::SceneGraph::AbstractTranslationRotation3D
+ * @brief Class @ref Magnum::SceneGraph::AbstractBasicTranslationRotation3D, typedef @ref Magnum::SceneGraph::AbstractTranslationRotation3D
  */
 
 #include "Magnum/SceneGraph/AbstractTranslation.h"
@@ -50,8 +50,9 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see rotateX(), rotateY(), rotateZ(), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis()
+         * @see @ref rotateX(), @ref rotateY(), @ref rotateZ(),
+         *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
+         *      @ref Math::Vector3::zAxis()
          */
         AbstractBasicTranslationRotation3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             doRotate(angle, normalizedAxis, type);
@@ -65,7 +66,8 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, Vector3::xAxis())`.
+         * `rotate(angle, Vector3::xAxis())`, see subclasses for more
+         * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateX(angle, type);
@@ -79,7 +81,8 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, Vector3::yAxis())`.
+         * `rotate(angle, Vector3::yAxis())`, see subclasses for more
+         * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateX(angle, type);
@@ -93,7 +96,8 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, Vector3::zAxis())`.
+         * `rotate(angle, Vector3::zAxis())`, see subclasses for more
+         * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             doRotateZ(angle, type);
@@ -116,31 +120,34 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
     #else
     private:
     #endif
-        /** @brief Polymorphic implementation for rotate() */
+        /** @brief Polymorphic implementation for @ref rotate() */
         virtual void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) = 0;
 
         /**
-         * @brief Polymorphic implementation for rotateX()
+         * @brief Polymorphic implementation for @ref rotateX()
          *
-         * Default implementation calls rotate() with Math::Vector3::xAxis().
+         * Default implementation calls @ref rotate() with
+         * @ref Math::Vector3::xAxis().
          */
         virtual void doRotateX(Math::Rad<T> angle, TransformationType type) {
             rotate(angle, Math::Vector3<T>::xAxis(), type);
         }
 
         /**
-         * @brief Polymorphic implementation for rotateY()
+         * @brief Polymorphic implementation for @ref rotateY()
          *
-         * Default implementation calls rotate() with Math::Vector3::yAxis().
+         * Default implementation calls @ref rotate() with
+         * @ref Math::Vector3::yAxis().
          */
         virtual void doRotateY(Math::Rad<T> angle, TransformationType type) {
             rotate(angle, Math::Vector3<T>::yAxis(), type);
         }
 
         /**
-         * @brief Polymorphic implementation for rotateZ()
+         * @brief Polymorphic implementation for @ref rotateZ()
          *
-         * Default implementation calls rotate() with Math::Vector3::zAxis().
+         * Default implementation calls @ref rotate() with
+         * @ref Math::Vector3::zAxis().
          */
         virtual void doRotateZ(Math::Rad<T> angle, TransformationType type) {
             rotate(angle, Math::Vector3<T>::zAxis(), type);

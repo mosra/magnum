@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractResourceLoader
+ * @brief Class @ref Magnum::AbstractResourceLoader
  */
 
 #include <string>
@@ -38,28 +38,30 @@ namespace Magnum {
 /**
 @brief Base for resource loaders
 
-Provides (a)synchronous resource loading for ResourceManager.
+Provides (a)synchronous resource loading for @ref ResourceManager.
 
 @section AbstractResourceLoader-usage Usage and subclassing
 
 Usage is done by subclassing. Subclass instances can be added to
-ResourceManager using ResourceManager::setLoader(). After adding the loader,
-each call to ResourceManager::get() will call load() implementation unless the
-resource is already loaded (or loading is in progress). Note that resources
-requested before the loader was added are not be affected by the loader.
+@ref ResourceManager using @ref ResourceManager::setLoader(). After adding the
+loader, each call to @ref ResourceManager::get() will call @ref load()
+implementation unless the resource is already loaded (or loading is in
+progress). Note that resources requested before the loader was added are not
+affected by the loader.
 
-Subclassing is done by implementing at least doLoad() function. The loading can
-be done synchronously or asynchronously (i.e., in another thread). The base
-implementation provides interface to ResourceManager and manages loading
-progress (which is then available through functions requestedCount(),
-loadedCount() and notFoundCount()). You shouldn't access the ResourceManager
-directly when loading the data.
+Subclassing is done by implementing at least @ref doLoad() function. The
+loading can be done synchronously or asynchronously (i.e., in another thread).
+The base implementation provides interface to @ref ResourceManager and manages
+loading progress (which is then available through functions @ref requestedCount(),
+@ref loadedCount() and @ref notFoundCount()). You shouldn't access the
+@ref ResourceManager directly when loading the data.
 
-In your doLoad() implementation, after your resources are loaded, call set() to
-pass them to ResourceManager or call setNotFound() to indicate that the
-resource was not found.
+In your @ref doLoad() implementation, after your resources are loaded, call
+@ref set() to pass them to @ref ResourceManager or call @ref setNotFound() to
+indicate that the resource was not found.
 
-You can also implement name() to provide meaningful names for resource keys.
+You can also implement @ref name() to provide meaningful names for resource
+keys.
 
 Example implementation for synchronous mesh loader:
 @code
@@ -109,23 +111,23 @@ template<class T> class AbstractResourceLoader {
         /**
          * @brief Count of requested resources
          *
-         * Count of resources requested by calling load().
+         * Count of resources requested by calling @ref load().
          */
         std::size_t requestedCount() const { return _requestedCount; }
 
         /**
          * @brief Count of not found resources
          *
-         * Count of resources requested by calling load(), but not found by
-         * the loader.
+         * Count of resources requested by calling @ref load(), but not found
+         * by the loader.
          */
         std::size_t notFoundCount() const { return _notFoundCount; }
 
         /**
          * @brief Count of loaded resources
          *
-         * Count of resources requested by calling load(), but not found by
-         * the loader.
+         * Count of resources requested by calling @ref load(), but not found
+         * by the loader.
          */
         std::size_t loadedCount() const { return _loadedCount; }
 
@@ -145,8 +147,8 @@ template<class T> class AbstractResourceLoader {
          * features is incremented. Depending on implementation the resource
          * might be loaded synchronously or asynchronously.
          *
-         * @see ResourceManager::state(), requestedCount(), notFoundCount(),
-         *      loadedCount()
+         * @see @ref ResourceManager::state(), @ref requestedCount(),
+         *      @ref notFoundCount(), @ref loadedCount()
          */
         void load(ResourceKey key);
 
@@ -155,9 +157,10 @@ template<class T> class AbstractResourceLoader {
          * @brief Set loaded resource to resource manager
          *
          * Also increments count of loaded resources. Parameter @p state must
-         * be either @ref ResourceDataState::Mutable or @ref ResourceDataState::Final.
-         * See @ref ResourceManager::set() for more information.
-         * @see loadedCount()
+         * be either @ref ResourceDataState::Mutable or
+         * @ref ResourceDataState::Final. See @ref ResourceManager::set() for
+         * more information.
+         * @see @ref loadedCount()
          */
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
 
@@ -184,9 +187,9 @@ template<class T> class AbstractResourceLoader {
         /**
          * @brief Mark resource as not found
          *
-         * Also increments count of not found resources. See
-         * ResourceManager::setNotFound() for more information.
-         * @see notFountCount()
+         * Also increments count of not found resources. See also
+         * @ref ResourceManager::set() for more information.
+         * @see @ref notFoundCount()
          */
         void setNotFound(ResourceKey key);
 
@@ -196,14 +199,14 @@ template<class T> class AbstractResourceLoader {
     protected:
     #endif
         /**
-         * @brief Implementation for name()
+         * @brief Implementation for @ref name()
          *
          * Default implementation returns empty string.
          */
         virtual std::string doName(ResourceKey key) const;
 
         /**
-         * @brief Implementation for load()
+         * @brief Implementation for @ref load()
          *
          * See class documentation for reimplementation guide.
          */

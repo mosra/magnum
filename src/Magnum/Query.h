@@ -41,7 +41,6 @@ namespace Magnum {
 
 See @ref PrimitiveQuery, @ref SampleQuery and @ref TimeQuery documentation for
 more information.
-@todo Support for AMD's query buffer (@extension{AMD,query_buffer_object})
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
@@ -65,9 +64,9 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @brief %Query label
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function returns empty string.
+         * OpenGL calls. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{QUERY} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{QUERY_OBJECT_EXT}
@@ -78,9 +77,9 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @brief Set query label
          * @return Reference to self (for method chaining)
          *
-         * Default is empty string. If neither @extension{KHR,debug} nor
-         * @extension2{EXT,debug_label} desktop or ES extension is available,
-         * this function does nothing.
+         * Default is empty string. If OpenGL 4.3 is not supported and neither
+         * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
+         * extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
          *      @def_gl{QUERY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{QUERY_OBJECT_EXT}
@@ -262,8 +261,9 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 // render full version of the object only if the query returns nonzero result
 q.endConditionalRender();
 @endcode
-@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean}
 
+@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean} in
+    OpenGL ES 2.0
 @see @ref PrimitiveQuery, @ref TimeQuery
 */
 class SampleQuery: public AbstractQuery {

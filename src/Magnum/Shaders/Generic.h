@@ -54,8 +54,7 @@ mesh.addVertexBuffer(vertexBuffer, 0,
 
 Shaders::Phong phong;
 // ...
-phong.use();
-mesh.draw();
+mesh.draw(phong);
 @endcode
 
 @see @ref Generic2D, @ref Generic3D

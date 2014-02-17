@@ -9,6 +9,7 @@ license=('MIT')
 depends=('corrade' 'openal' 'sdl2' 'freeglut')
 makedepends=('cmake' 'ninja')
 provides=('magnum-git')
+options=('staticlibs')
 
 build() {
     mkdir -p "$startdir/build"

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicDualQuaternionTransformation, typedef Magnum::SceneGraph::DualQuaternionTransformation
+ * @brief Class @ref Magnum::SceneGraph::BasicDualQuaternionTransformation, typedef @ref Magnum::SceneGraph::DualQuaternionTransformation
  */
 
 #include "Magnum/Math/DualQuaternion.h"
@@ -39,8 +39,9 @@ namespace Magnum { namespace SceneGraph {
 @brief Three-dimensional transformation implemented using dual quaternions
 
 This class allows only rigid transformation (i.e. only rotation and
-translation).
-@see @ref DualQuaternionTransformation @ref scenegraph, Math::DualQuaternion, @ref BasicDualComplexTransformation
+translation). Uses @ref Math::DualQuaternion as underlying transformation type.
+@see @ref DualQuaternionTransformation @ref scenegraph,
+    @ref BasicDualComplexTransformation
 */
 template<class T> class BasicDualQuaternionTransformation: public AbstractBasicTranslationRotation3D<T> {
     public:
@@ -55,7 +56,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * @return Reference to self (for method chaining)
          *
          * Expects that the dual quaternion is normalized.
-         * @see DualQuaternion::isNormalized()
+         * @see @ref Math::DualQuaternion::isNormalized()
          */
         Object<BasicDualQuaternionTransformation<T>>& setTransformation(const Math::DualQuaternion<T>& transformation) {
             CORRADE_ASSERT(transformation.isNormalized(),
@@ -75,7 +76,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          *
          * Normalizes the rotation part to prevent rounding errors when rotating
          * the object subsequently.
-         * @see DualQuaternion::normalized()
+         * @see @ref Math::DualQuaternion::normalized()
          */
         Object<BasicDualQuaternionTransformation<T>>& normalizeRotation() {
             return setTransformationInternal(_transformation.normalized());
@@ -88,7 +89,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * @return Reference to self (for method chaining)
          *
          * Expects that the dual quaternion is normalized.
-         * @see DualQuaternion::isNormalized()
+         * @see @ref Math::DualQuaternion::isNormalized()
          */
         Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isNormalized(),
@@ -99,7 +100,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
 
         /**
          * @copydoc AbstractTranslationRotationScaling3D::translate()
-         * Same as calling transform() with DualQuaternion::translation().
+         * Same as calling @ref transform() with @ref Math::DualQuaternion::translation().
          */
         Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::DualQuaternion<T>::translation(vector), type);
@@ -112,9 +113,9 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with DualQuaternion::rotation().
-         * @see Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
-         *      normalizeRotation()
+         * Same as calling @ref transform() with @ref Math::DualQuaternion::rotation().
+         * @see @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
+         *      @ref Math::Vector3::zAxis(), @ref normalizeRotation()
          */
         Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);

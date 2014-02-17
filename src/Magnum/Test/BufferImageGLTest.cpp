@@ -51,7 +51,7 @@ BufferImageTest::BufferImageTest() {
 }
 
 void BufferImageTest::construct() {
-    const unsigned char data[] = { 'a', 'b', 'c' };
+    const unsigned char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0 };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -67,7 +67,7 @@ void BufferImageTest::construct() {
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
-                       std::vector<UnsignedByte>(data, data + 3),
+                       std::vector<UnsignedByte>(data, data + 12),
                        TestSuite::Compare::Container);
     #endif
 }

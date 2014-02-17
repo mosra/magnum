@@ -37,6 +37,8 @@
 
 namespace Magnum {
 
+namespace Implementation { struct RendererState; }
+
 /** @nosubgrouping
 @brief Global renderer configuration.
 
@@ -47,6 +49,7 @@ namespace Magnum {
 */
 class MAGNUM_EXPORT Renderer {
     friend class Context;
+    friend struct Implementation::RendererState;
 
     public:
         Renderer() = delete;
@@ -230,6 +233,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Accuracy of derivative calculation in fragment shader.
              * @requires_gles30 %Extension @es_extension{OES,standard_derivatives}
+             *      in OpenGL ES 2.0
              */
             #ifndef MAGNUM_TARGET_GLES2
             FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT
@@ -287,9 +291,7 @@ class MAGNUM_EXPORT Renderer {
          * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
          * is not available, this function behaves exactly as setClearDepth(Double).
          */
-        static void setClearDepth(Float depth) {
-            clearDepthfImplementation(depth);
-        }
+        static void setClearDepth(Float depth);
 
         /**
          * @brief Set clear stencil
@@ -642,12 +644,14 @@ class MAGNUM_EXPORT Renderer {
             /**
              * `min(source, destination)`
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
+             *      in OpenGL ES 2.0
              */
             Min = GL_MIN,
 
             /**
              * `max(source, destination)`
              * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
+             *      in OpenGL ES 2.0
              */
             Max = GL_MAX
             #endif
@@ -1037,26 +1041,20 @@ class MAGNUM_EXPORT Renderer {
          * is not available, this function always returns @ref GraphicsResetStatus::NoError.
          * @see @ref resetNotificationStrategy(), @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
          */
-        static GraphicsResetStatus graphicsResetStatus() {
-            return graphicsResetStatusImplementation();
-        }
+        static GraphicsResetStatus graphicsResetStatus();
 
         /*@}*/
 
     private:
-        static void MAGNUM_LOCAL initializeContextBasedFunctionality(Context& context);
+        static void MAGNUM_LOCAL initializeContextBasedFunctionality();
 
-        typedef void(*ClearDepthfImplementation)(GLfloat);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL clearDepthfImplementationDefault(GLfloat depth);
         #endif
         static void MAGNUM_LOCAL clearDepthfImplementationES(GLfloat depth);
-        static ClearDepthfImplementation clearDepthfImplementation;
 
-        typedef GraphicsResetStatus(*GraphicsResetStatusImplementation)();
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationDefault();
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationRobustness();
-        static GraphicsResetStatusImplementation graphicsResetStatusImplementation;
 };
 
 /** @debugoperator{Renderer} */

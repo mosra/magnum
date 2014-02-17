@@ -25,12 +25,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
+#include <vector>
+
 #include "Magnum/Renderer.h"
 
 namespace Magnum { namespace Implementation {
 
 struct RendererState {
-    constexpr RendererState(): resetNotificationStrategy() {}
+    explicit RendererState(Context& context, std::vector<std::string>& extensions);
+
+    void(*clearDepthfImplementation)(GLfloat);
+    Renderer::GraphicsResetStatus(*graphicsResetStatusImplementation)();
 
     Renderer::ResetNotificationStrategy resetNotificationStrategy;
 };

@@ -7,9 +7,10 @@
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
-#  MAGNUM_PLUGINS_DIR           - Base directory with plugins. You can modify
-#   it (e.g. set it to `.` when deploying on Windows with plugins stored
-#   relatively to the executable), the following MAGNUM_PLUGINS_*_DIR
+#  MAGNUM_PLUGINS_DIR           - Base directory with plugins, defaults to
+#   `magnum/` subdirectory of dir where Magnum library was found. You can
+#   modify it (e.g. set it to `.` when deploying on Windows with plugins
+#   stored relatively to the executable), the following MAGNUM_PLUGINS_*_DIR
 #   variables depend on it.
 #  MAGNUM_PLUGINS_FONT_DIR      - Directory with font plugins
 #  MAGNUM_PLUGINS_FONTCONVERTER_DIR - Directory with font converter plugins
@@ -244,7 +245,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         if(${component} STREQUAL GlutApplication)
             find_package(GLUT)
             if(GLUT_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_glut_LIBRARY} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -404,7 +405,9 @@ if(MAGNUM_BUILD_DEPRECATED)
     set(MAGNUM_PLUGINS_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/MagnumPlugins)
 endif()
 
-set(MAGNUM_PLUGINS_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}
+# Get base plugin directory from main library location
+get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY} PATH)
+set(MAGNUM_PLUGINS_DIR ${_MAGNUM_LIBRARY_PATH}/magnum
     CACHE PATH "Base directory where to look for Magnum plugins")
 
 # Plugin directories

@@ -55,7 +55,8 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red component, normalized unsigned byte.
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 %Extension @es_extension{EXT,texture_rg}
+     * @requires_gles30 %Extension @es_extension{EXT,texture_rg} in OpenGL ES
+     *      2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     R8 = GL_R8,
@@ -78,7 +79,8 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red and green component, each normalized unsigned byte.
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 %Extension @es_extension{EXT,texture_rg}
+     * @requires_gles30 %Extension @es_extension{EXT,texture_rg} in OpenGL ES
+     *      2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     RG8 = GL_RG8,
@@ -99,6 +101,7 @@ enum class RenderbufferFormat: GLenum {
     /**
      * RGBA, each component normalized unsigned byte.
      * @requires_gles30 %Extension @es_extension{ARM,rgba8} or @es_extension{OES,rgb8_rgba8}
+     *      in OpenGL ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     RGBA8 = GL_RGBA8,
@@ -372,7 +375,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * sRGBA, each component normalized unsigned byte.
-     * @requires_gles30 %Extension @es_extension{EXT,sRGB}
+     * @requires_gles30 %Extension @es_extension{EXT,sRGB} in OpenGL ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     SRGB8Alpha8 = GL_SRGB8_ALPHA8,
@@ -396,7 +399,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Depth component, 24bit.
-     * @requires_gles30 %Extension @es_extension{OES,depth24}
+     * @requires_gles30 %Extension @es_extension{OES,depth24} in OpenGL ES 2.0
      */
     #ifndef MAGNUM_TARGET_GLES2
     DepthComponent24 = GL_DEPTH_COMPONENT24,
@@ -475,7 +478,8 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * 24bit depth and 8bit stencil component.
-     * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil}
+     * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} in
+     *      OpenGL ES 2.0
      */
     #ifdef MAGNUM_TARGET_GLES2
     Depth24Stencil8 = GL_DEPTH24_STENCIL8_OES

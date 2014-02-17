@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::SceneGraph::BasicRigidMatrixTransformation2D, typedef Magnum::SceneGraph::RigidMatrixTransformation2D
+ * @brief Class @ref Magnum::SceneGraph::BasicRigidMatrixTransformation2D, typedef @ref Magnum::SceneGraph::RigidMatrixTransformation2D
  */
 
 #include "Magnum/Math/Matrix3.h"
@@ -39,11 +39,12 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Two-dimensional rigid transformation implemented using matrices
 
-Unlike BasicMatrixTransformation2D this class allows only rotation, reflection
-and translation (no scaling or setting arbitrary transformations). This allows
-to use Matrix3::invertedRigid() for faster computation of inverse
-transformations.
-@see @ref RigidMatrixTransformation2D, @ref scenegraph, @ref BasicRigidMatrixTransformation3D
+Unlike @ref BasicMatrixTransformation2D this class allows only rotation,
+reflection and translation (no scaling or setting arbitrary transformations).
+This allows to use @ref Math::Matrix3::invertedRigid() for faster computation
+of inverse transformations.
+@see @ref RigidMatrixTransformation2D, @ref scenegraph,
+    @ref BasicRigidMatrixTransformation3D
 */
 template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTranslationRotation2D<T> {
     public:
@@ -58,7 +59,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @return Reference to self (for method chaining)
          *
          * Expects that the matrix represents rigid transformation.
-         * @see Matrix3::isRigidTransformation()
+         * @see @ref Math::Matrix3::isRigidTransformation()
          */
         Object<BasicRigidMatrixTransformation2D<T>>& setTransformation(const Math::Matrix3<T>& transformation) {
             CORRADE_ASSERT(transformation.isRigidTransformation(),
@@ -76,8 +77,9 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @brief Normalize rotation part
          * @return Reference to self (for method chaining)
          *
-         * Normalizes the rotation part using Math::Algorithms::gramSchmidt()
-         * to prevent rounding errors when rotating the object subsequently.
+         * Normalizes the rotation part using
+         * @ref Math::Algorithms::gramSchmidtOrthonormalize() to prevent
+         * rounding errors when rotating the object subsequently.
          */
         Object<BasicRigidMatrixTransformation2D<T>>& normalizeRotation() {
             return setTransformationInternal(Math::Matrix3<T>::from(
@@ -92,7 +94,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @return Reference to self (for method chaining)
          *
          * Expects that the matrix represents rigid transformation.
-         * @see Matrix3::isRigidTransformation()
+         * @see @ref Math::Matrix3::isRigidTransformation()
          */
         Object<BasicRigidMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
             CORRADE_ASSERT(transformation.isRigidTransformation(),
@@ -103,7 +105,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
-         * Same as calling transform() with Matrix3::translation().
+         * Same as calling @ref transform() with @ref Math::Matrix3::translation().
          */
         Object<BasicRigidMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::Matrix3<T>::translation(vector), type);
@@ -115,8 +117,8 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with Matrix3::rotation().
-         * @see normalizeRotation()
+         * Same as calling @ref transform() with @ref Math::Matrix3::rotation().
+         * @see @ref normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::Matrix3<T>::rotation(angle), type);
@@ -129,7 +131,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling transform() with Matrix3::reflection().
+         * Same as calling @ref transform() with @ref Math::Matrix3::reflection().
          */
         Object<BasicRigidMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::Matrix3<T>::reflection(normal), type);

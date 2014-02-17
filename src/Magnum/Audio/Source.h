@@ -29,6 +29,7 @@
  * @brief Class Magnum::Audio::Source
  */
 
+#include <functional>
 #include <initializer_list>
 #include <vector>
 #include <al.h>
@@ -377,52 +378,84 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * The operation is guaranteed to be done for all sources at the same
          * time. `nullptr` is not allowed.
-         * @see @ref play(), @ref pause(std::initializer_list<Source*>),
-         *      @ref stop(std::initializer_list<Source*>),
-         *      @ref rewind(std::initializer_list<Source*>),
+         * @see @ref play(), @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
          *      @fn_al{SourcePlayv}
          */
-        static void play(std::initializer_list<Source*> sources);
-        static void play(const std::vector<Source*>& sources); /**< @overload */
+        static void play(std::initializer_list<std::reference_wrapper<Source>> sources);
+        static void play(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief play(const std::vector<std::reference_wrapper<Source>>&)
+         * @deprecated Use @ref Magnum::Audio::Source::play(const std::vector<std::reference_wrapper<Source>>&) "play(const std::vector<std::reference_wrapper<Source>>&)" instead.
+         */
+        static CORRADE_DEPRECATED("use play(const std::vector<std::reference_wrapper<Source>>&) instead") void play(const std::vector<Source*>& sources);
+        #endif
 
         /**
          * @brief Pause more sources at once
          *
          * The operation is guaranteed to be done for all sources at the same
-         * time. `nullptr` is not allowed.
-         * @see @ref pause(), @ref play(std::initializer_list<Source*>),
-         *      @ref stop(std::initializer_list<Source*>),
-         *      @ref rewind(std::initializer_list<Source*>),
+         * time.
+         * @see @ref pause(), @ref play(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
          *      @fn_al{SourcePausev}
          */
-        static void pause(std::initializer_list<Source*> sources);
-        static void pause(const std::vector<Source*>& sources); /**< @overload */
+        static void pause(std::initializer_list<std::reference_wrapper<Source>> sources);
+        static void pause(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief pause(const std::vector<std::reference_wrapper<Source>>&)
+         * @deprecated Use @ref Magnum::Audio::Source::pause(const std::vector<std::reference_wrapper<Source>>&) "pause(const std::vector<std::reference_wrapper<Source>>&)" instead.
+         */
+        static CORRADE_DEPRECATED("use pause(const std::vector<std::reference_wrapper<Source>>&) instead") void pause(const std::vector<Source*>& sources);
+        #endif
 
         /**
          * @brief Stop more sources at once
          *
          * The operation is guaranteed to be done for all sources at the same
-         * time. `nullptr` is not allowed.
-         * @see @ref stop(), @ref play(std::initializer_list<Source*>),
-         *      @ref pause(std::initializer_list<Source*>),
-         *      @ref rewind(std::initializer_list<Source*>),
+         * time.
+         * @see @ref stop(), @ref play(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
          *      @fn_al{SourceStopv}
          */
-        static void stop(std::initializer_list<Source*> sources);
-        static void stop(const std::vector<Source*>& sources); /**< @overload */
+        static void stop(std::initializer_list<std::reference_wrapper<Source>> sources);
+        static void stop(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief stop(const std::vector<std::reference_wrapper<Source>>&)
+         * @deprecated Use @ref Magnum::Audio::Source::stop(const std::vector<std::reference_wrapper<Source>>&) "stop(const std::vector<std::reference_wrapper<Source>>&)" instead.
+         */
+        static CORRADE_DEPRECATED("use stop(const std::vector<std::reference_wrapper<Source>>&) instead") void stop(const std::vector<Source*>& sources);
+        #endif
 
         /**
          * @brief Rewind more sources at once
          *
          * The operation is guaranteed to be done for all sources at the same
-         * time. `nullptr` is not allowed.
-         * @see @ref rewind(), @ref play(std::initializer_list<Source*>),
-         *      @ref pause(std::initializer_list<Source*>),
-         *      @ref stop(std::initializer_list<Source*>),
+         * time.
+         * @see @ref rewind(), @ref play(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
          *      @fn_al{SourceRewindv}
          */
-        static void rewind(std::initializer_list<Source*> sources);
-        static void rewind(const std::vector<Source*>& sources); /**< @overload */
+        static void rewind(std::initializer_list<std::reference_wrapper<Source>> sources);
+        static void rewind(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rewind(const std::vector<std::reference_wrapper<Source>>&)
+         * @deprecated Use @ref Magnum::Audio::Source::rewind(const std::vector<std::reference_wrapper<Source>>&) "rewind(const std::vector<std::reference_wrapper<Source>>&)" instead.
+         */
+        static CORRADE_DEPRECATED("use rewind(const std::vector<std::reference_wrapper<Source>>&) instead") void rewind(const std::vector<Source*>& sources);
+        #endif
 
         /**
          * @brief State
@@ -435,32 +468,36 @@ class MAGNUM_AUDIO_EXPORT Source {
         /**
          * @brief Play
          *
-         * @see @ref play(std::initializer_list<Source*>), @ref state(),
-         *      @ref pause(), @ref stop(), @ref rewind(), @fn_al{SourcePlay}
+         * @see @ref play(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref state(), @ref pause(), @ref stop(), @ref rewind(),
+         *      @fn_al{SourcePlay}
          */
         void play() { alSourcePlay(_id); }
 
         /**
          * @brief Pause
          *
-         * @see @ref pause(std::initializer_list<Source*>), @ref state(),
-         *      @ref play(), @ref stop(), @ref rewind(), @fn_al{SourcePause}
+         * @see @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref state(), @ref play(), @ref stop(), @ref rewind(),
+         *      @fn_al{SourcePause}
          */
         void pause() { alSourcePause(_id); }
 
         /**
          * @brief Stop
          *
-         * @see @ref stop(std::initializer_list<Source*>), @ref state(),
-         *      @ref play(), @ref pause(), @ref rewind(), @fn_al{SourceStop}
+         * @see @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref state(), @ref play(), @ref pause(), @ref rewind(),
+         *      @fn_al{SourceStop}
          */
         void stop() { alSourceStop(_id); }
 
         /**
          * @brief Rewind
          *
-         * @see @ref rewind(std::initializer_list<Source*>), @ref state(),
-         *      @ref play(), @ref pause(), @ref stop(), @fn_al{SourceRewind}
+         * @see @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
+         *      @ref state(), @ref play(), @ref pause(), @ref stop(),
+         *      @fn_al{SourceRewind}
          */
         void rewind() { alSourceRewind(_id); }
 

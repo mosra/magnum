@@ -24,9 +24,7 @@
 */
 
 #include "Magnum/configure.h"
-#ifndef MAGNUM_TARGET_GLES2
-#include "Magnum/BufferImage.h"
-#endif
+#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -37,6 +35,16 @@
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
+
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/BufferImage.h"
+#include "Magnum/TextureArray.h"
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/CubeMapTextureArray.h"
+#include "Magnum/RectangleTexture.h"
+#endif
 
 namespace Magnum { namespace Test {
 
@@ -302,8 +310,8 @@ void FramebufferGLTest::attachTexture1D() {
     depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, 128);
 
     Framebuffer framebuffer({{}, {128, 1}});
-    framebuffer.attachTexture1D(Framebuffer::ColorAttachment(0), color, 0)
-               .attachTexture1D(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color, 0)
+               .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
@@ -331,7 +339,7 @@ void FramebufferGLTest::attachTexture2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), color, 0);
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -346,11 +354,11 @@ void FramebufferGLTest::attachTexture2D() {
         Texture2D depthStencil;
         #ifndef MAGNUM_TARGET_GLES2
         depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i(128));
-        framebuffer.attachTexture2D(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+        framebuffer.attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
         #else
         depthStencil.setStorage(1, TextureFormat::DepthStencil, Vector2i(128));
-        framebuffer.attachTexture2D(Framebuffer::BufferAttachment::Depth, depthStencil, 0)
-                   .attachTexture2D(Framebuffer::BufferAttachment::Stencil, depthStencil, 0);
+        framebuffer.attachTexture(Framebuffer::BufferAttachment::Depth, depthStencil, 0)
+                   .attachTexture(Framebuffer::BufferAttachment::Stencil, depthStencil, 0);
         #endif
     }
 
@@ -360,7 +368,7 @@ void FramebufferGLTest::attachTexture2D() {
 
         Texture2D depth;
         depth.setStorage(1, TextureFormat::DepthComponent16, Vector2i(128));
-        framebuffer.attachTexture2D(Framebuffer::BufferAttachment::Depth, depth, 0);
+        framebuffer.attachTexture(Framebuffer::BufferAttachment::Depth, depth, 0);
     }
     #endif
 
@@ -375,8 +383,6 @@ void FramebufferGLTest::attachTexture3D() {
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
         CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not available."));
-    #else
-    CORRADE_SKIP("Not properly implemented yet.");
     #endif
 
     Texture3D color;
@@ -387,7 +393,7 @@ void FramebufferGLTest::attachTexture3D() {
     #endif
 
     Framebuffer framebuffer({{}, Vector2i(128)});
-    framebuffer.attachTexture3D(Framebuffer::ColorAttachment(0), color, 0, 0);
+    framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
@@ -398,17 +404,16 @@ void FramebufferGLTest::attachTexture1DArray() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
 
-    Texture2D color(Texture2D::Target::Texture1DArray);
+    Texture1DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 8});
 
-    Texture2D depthStencil(Texture2D::Target::Texture1DArray);
+    Texture1DArray depthStencil;
     depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, {128, 8});
 
     Framebuffer framebuffer({{}, {128, 1}});
-    framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), color, 0)
-               .attachTexture2D(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+    framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 3)
+               .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
-    CORRADE_EXPECT_FAIL("Not properly implemented yet.");
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
 }
@@ -419,21 +424,20 @@ void FramebufferGLTest::attachTexture2DArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    #else
-    CORRADE_SKIP("Not properly implemented yet.");
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
     #endif
 
-    Texture3D color(Texture3D::Target::Texture2DArray);
+    Texture2DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 128, 8});
 
-    Texture3D depthStencil(Texture3D::Target::Texture2DArray);
+    Texture2DArray depthStencil;
     depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, {128, 128, 8});
 
     Framebuffer framebuffer({{}, Vector2i(128)});
-    framebuffer.attachTexture3D(Framebuffer::ColorAttachment(0), color, 0, 0)
-               .attachTexture3D(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 0);
+    framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 3)
+               .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
-    CORRADE_EXPECT_FAIL("Not properly implemented yet.");
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
 }
@@ -454,15 +458,15 @@ void FramebufferGLTest::attachRectangleTexture() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not available."));
 
-    Texture2D color(Texture2D::Target::Rectangle);
-    color.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
+    RectangleTexture color;
+    color.setStorage(TextureFormat::RGBA8, Vector2i(128));
 
-    Texture2D depthStencil(Texture2D::Target::Rectangle);
-    depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i(128));
+    RectangleTexture depthStencil;
+    depthStencil.setStorage(TextureFormat::Depth24Stencil8, Vector2i(128));
 
     Framebuffer framebuffer({{}, Vector2i(128)});
-    framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), color, 0)
-               .attachTexture2D(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color, 0)
+               .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
@@ -520,7 +524,23 @@ void FramebufferGLTest::attachCubeMapTexture() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachCubeMapTextureArray() {
-    CORRADE_SKIP("Not implemented yet.");
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+
+    CubeMapTextureArray color;
+    color.setStorage(1, TextureFormat::RGBA8, {128, 128, 18});
+
+    CubeMapTextureArray depthStencil;
+    depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, {128, 128, 18});
+
+    Framebuffer framebuffer({{}, Vector2i(128)});
+    framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 3)
+               .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -551,8 +571,8 @@ void FramebufferGLTest::multipleColorOutputs() {
     depth.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
 
     Framebuffer framebuffer({{}, Vector2i(128)});
-    framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), color1, 0)
-               .attachTexture2D(Framebuffer::ColorAttachment(1), color2, 0)
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color1, 0)
+               .attachTexture(Framebuffer::ColorAttachment(1), color2, 0)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depth)
                .mapForDraw({{0, Framebuffer::ColorAttachment(1)},
                             {1, Framebuffer::ColorAttachment(0)}});
@@ -863,7 +883,7 @@ void FramebufferGLTest::blit() {
     CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub());
 
     /* And have given color after */
-    Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::ColorBuffer);
+    Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::Color);
     b.read({}, Vector2i(1), image);
 
     MAGNUM_VERIFY_NO_ERROR();

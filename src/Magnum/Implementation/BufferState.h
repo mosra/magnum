@@ -44,14 +44,23 @@ struct BufferState {
     static std::size_t indexForTarget(Buffer::Target target);
     static const Buffer::Target targetForIndex[TargetCount-1];
 
-    constexpr BufferState(): bindings()
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_GLES
-        , minMapAlignment(0), maxAtomicCounterBindings(0), maxShaderStorageBindings(0), shaderStorageOffsetAlignment(0)
-        #endif
-        , maxUniformBindings(0)
-        #endif
-        {}
+    explicit BufferState(Context& context, std::vector<std::string>& extensions);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void(*copyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
+    #endif
+    void(Buffer::*getParameterImplementation)(GLenum, GLint*);
+    #ifndef MAGNUM_TARGET_GLES2
+    void(Buffer::*getSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
+    #endif
+    void(Buffer::*dataImplementation)(GLsizeiptr, const GLvoid*, BufferUsage);
+    void(Buffer::*subDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
+    void(Buffer::*invalidateImplementation)();
+    void(Buffer::*invalidateSubImplementation)(GLintptr, GLsizeiptr);
+    void*(Buffer::*mapImplementation)(Buffer::MapAccess);
+    void*(Buffer::*mapRangeImplementation)(GLintptr, GLsizeiptr, Buffer::MapFlags);
+    void(Buffer::*flushMappedRangeImplementation)(GLintptr, GLsizeiptr);
+    bool(Buffer::*unmapImplementation)();
 
     /* Currently bound buffer for all targets */
     GLuint bindings[TargetCount];
