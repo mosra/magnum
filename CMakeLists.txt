@@ -90,6 +90,13 @@ if(BUILD_TESTS)
     enable_testing()
 endif()
 
+# Check compiler compatibility
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.6.0")
+    message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with GCC < 4.6. See the documentation for more information.")
+elseif(MSVC)
+    message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with MSVC. See the documentation for more information.")
+endif()
+
 # If targeting NaCl or Emscripten, set explicit OpenGL ES 2.0 support
 if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
     set(TARGET_GLES 1)
