@@ -181,19 +181,22 @@ void ObjectTest::transformations() {
     #endif
 
     /* Scene alone */
-    CORRADE_COMPARE(s.transformations({s}, initial), std::vector<Matrix4>{initial});
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(s.transformations({std::reference_wrapper<Object3D>(s)}, initial), std::vector<Matrix4>{initial});
 
     /* One object */
     Object3D first(&s);
     first.rotateZ(Deg(30.0f));
     Object3D second(&first);
     second.scale(Vector3(0.5f));
-    CORRADE_COMPARE(s.transformations({second}, initial), std::vector<Matrix4>{
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(s.transformations({std::ref(second)}, initial), std::vector<Matrix4>{
         initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f))
     });
 
     /* One object and scene */
-    CORRADE_COMPARE(s.transformations({second, s}, initial), (std::vector<Matrix4>{
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(s.transformations({std::ref(second), std::reference_wrapper<Object3D>(s)}, initial), (std::vector<Matrix4>{
         initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial
     }));
@@ -201,13 +204,15 @@ void ObjectTest::transformations() {
     /* Two objects with foreign joint */
     Object3D third(&first);
     third.translate(Vector3::xAxis(5.0f));
-    CORRADE_COMPARE(s.transformations({second, third}, initial), (std::vector<Matrix4>{
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(s.transformations({std::ref(second), std::ref(third)}, initial), (std::vector<Matrix4>{
         initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
     }));
 
     /* Three objects with joint as one of them */
-    CORRADE_COMPARE(s.transformations({second, third, first}, initial), (std::vector<Matrix4>{
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(s.transformations({std::ref(second), std::ref(third), std::ref(first)}, initial), (std::vector<Matrix4>{
         initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f)),
         initial*Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f)),
         initial*Matrix4::rotationZ(Deg(30.0f)),
@@ -226,7 +231,8 @@ void ObjectTest::transformationsRelative() {
     third.translate(Vector3::xAxis(5.0f));
 
     /* Transformation relative to another object */
-    CORRADE_COMPARE(second.transformations({third}), std::vector<Matrix4>{
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(second.transformations({std::ref(third)}), std::vector<Matrix4>{
         Matrix4::scaling(Vector3(0.5f)).inverted()*Matrix4::translation(Vector3::xAxis(5.0f))
     });
 
@@ -238,7 +244,8 @@ void ObjectTest::transformationsRelative() {
     orphan1.scale(Vector3::xScale(3.0f));
     Object3D orphan2(&orphanParent);
     orphan2.translate(Vector3::zAxis(5.0f));
-    CORRADE_COMPARE(orphan1.transformations({orphan2}), std::vector<Matrix4>{
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(orphan1.transformations({std::ref(orphan2)}), std::vector<Matrix4>{
         Matrix4::scaling(Vector3::xScale(3.0f)).inverted()*Matrix4::translation(Vector3::zAxis(5.0f))
     });
 }
@@ -250,7 +257,8 @@ void ObjectTest::transformationsOrphan() {
     /* Transformation of objects not part of the same scene */
     Scene3D s;
     Object3D orphan;
-    CORRADE_COMPARE(s.transformations({orphan}), std::vector<Matrix4>());
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(s.transformations({std::ref(orphan)}), std::vector<Matrix4>());
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::transformations(): the objects are not part of the same tree\n");
 }
 
@@ -266,7 +274,8 @@ void ObjectTest::transformationsDuplicate() {
     Matrix4 firstExpected = Matrix4::rotationZ(Deg(30.0f));
     Matrix4 secondExpected = Matrix4::rotationZ(Deg(30.0f))*Matrix4::scaling(Vector3(0.5f));
     Matrix4 thirdExpected = Matrix4::rotationZ(Deg(30.0f))*Matrix4::translation(Vector3::xAxis(5.0f));
-    CORRADE_COMPARE(s.transformations({second, third, second, first, third}), (std::vector<Matrix4>{
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    CORRADE_COMPARE(s.transformations({std::ref(second), std::ref(third), std::ref(second), std::ref(first), std::ref(third)}), (std::vector<Matrix4>{
         secondExpected, thirdExpected, secondExpected, firstExpected, thirdExpected
     }));
 }
@@ -396,7 +405,8 @@ void ObjectTest::setCleanListHierarchy() {
     childThree->rotate(Deg(90.0f), Vector3::yAxis());
 
     /* Clean the object and all its dirty parents (but not children) */
-    Scene3D::setClean({*childTwo});
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    Scene3D::setClean({std::reference_wrapper<Object3D>(*childTwo)});
     CORRADE_VERIFY(!scene.isDirty());
     CORRADE_VERIFY(!childOne->isDirty());
     CORRADE_VERIFY(!childTwo->isDirty());
@@ -410,13 +420,15 @@ void ObjectTest::setCleanListHierarchy() {
     /* If the object itself is already clean, it shouldn't clean it again */
     childOne->cleanedAbsoluteTransformation = Matrix4(Matrix4::Zero);
     CORRADE_VERIFY(!childOne->isDirty());
-    Scene3D::setClean({*childOne});
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    Scene3D::setClean({std::reference_wrapper<Object3D>(*childOne)});
     CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
 
     /* If any object in the hierarchy is already clean, it shouldn't clean it again */
     CORRADE_VERIFY(!childOne->isDirty());
     childTwo->setDirty();
-    Scene3D::setClean({*childTwo});
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    Scene3D::setClean({std::reference_wrapper<Object3D>(*childTwo)});
     CORRADE_COMPARE(childOne->cleanedAbsoluteTransformation, Matrix4(Matrix4::Zero));
 }
 
@@ -444,7 +456,8 @@ void ObjectTest::setCleanListBulk() {
     CORRADE_VERIFY(c.isDirty());
     CORRADE_VERIFY(d.isDirty());
     CORRADE_VERIFY(e.isDirty());
-    Object3D::setClean({a, b, c, d, e});
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    Object3D::setClean({std::ref(a), std::ref(b), std::ref(c), std::reference_wrapper<Object3D>(d), std::ref(e)});
     CORRADE_VERIFY(!a.isDirty());
     CORRADE_VERIFY(!b.isDirty());
     CORRADE_VERIFY(!c.isDirty());

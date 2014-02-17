@@ -42,7 +42,8 @@ template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::A
 template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::~AbstractFeatureGroup() {}
 
 template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::add(AbstractFeature<dimensions, T>& feature) {
-    features.push_back(feature);
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    features.push_back(std::ref(feature));
 }
 
 template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::remove(AbstractFeature<dimensions, T>& feature) {

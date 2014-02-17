@@ -52,7 +52,8 @@ void CombineIndexedArraysTest::wrongIndexCount() {
     Error::setOutput(&ss);
     std::vector<UnsignedInt> a{0, 1, 0};
     std::vector<UnsignedInt> b{3, 4};
-    std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({a, b});
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    MeshTools::combineIndexArrays({std::ref(a), std::ref(b)});
 
     CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexArrays(): the arrays don't have the same size\n");
 }
@@ -62,7 +63,8 @@ void CombineIndexedArraysTest::indexArrays() {
     std::vector<UnsignedInt> b{3, 4, 3};
     std::vector<UnsignedInt> c{6, 7, 6};
 
-    std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({a, b, c});
+    /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+    std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({std::ref(a), std::ref(b), std::ref(c)});
     CORRADE_COMPARE(result, (std::vector<UnsignedInt>{0, 1, 0}));
     CORRADE_COMPARE(a, (std::vector<UnsignedInt>{0, 1}));
     CORRADE_COMPARE(b, (std::vector<UnsignedInt>{3, 4}));

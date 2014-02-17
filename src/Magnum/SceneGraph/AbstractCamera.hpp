@@ -97,7 +97,8 @@ template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::dr
     std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> objects;
     objects.reserve(group.size());
     for(std::size_t i = 0; i != group.size(); ++i)
-        objects.push_back(group[i].object());
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        objects.push_back(std::ref(group[i].object()));
     std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformations =
         scene->transformationMatrices(objects, _cameraMatrix);
 

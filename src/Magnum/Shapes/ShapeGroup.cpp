@@ -35,7 +35,8 @@ template<UnsignedInt dimensions> void ShapeGroup<dimensions>::setClean() {
         std::vector<std::reference_wrapper<SceneGraph::AbstractObject<dimensions, Float>>> objects;
         objects.reserve(this->size());
         for(std::size_t i = 0; i != this->size(); ++i)
-            objects.push_back((*this)[i].object());
+            /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+            objects.push_back(std::ref((*this)[i].object()));
 
         SceneGraph::AbstractObject<dimensions, Float>::setClean(objects);
     }

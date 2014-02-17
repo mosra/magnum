@@ -44,7 +44,8 @@ template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::se
     references.reserve(objects.size());
     for(auto it = objects.begin(); it != objects.end(); ++it) {
         CORRADE_INTERNAL_ASSERT(*it != nullptr);
-        references.push_back(**it);
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        references.push_back(std::ref(**it));
     }
 
     setClean(references);
@@ -67,7 +68,8 @@ template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::tr
     references.reserve(objects.size());
     for(auto it = objects.begin(); it != objects.end(); ++it) {
         CORRADE_INTERNAL_ASSERT(*it != nullptr);
-        references.push_back(**it);
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        references.push_back(std::ref(**it));
     }
 
     return transformationMatrices(references, initialTransformationMatrix);
@@ -210,7 +212,8 @@ template<class Transformation> auto Object<Transformation>::doTransformationMatr
     castObjects.reserve(objects.size());
     /** @todo Ensure this doesn't crash, somehow */
     for(auto it = objects.begin(); it != objects.end(); ++it)
-        castObjects.push_back(static_cast<Object<Transformation>&>(it->get()));
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        castObjects.push_back(std::ref(static_cast<Object<Transformation>&>(it->get())));
 
     return transformationMatrices(std::move(castObjects), initialTransformationMatrix);
 }
@@ -230,7 +233,8 @@ template<class Transformation> auto Object<Transformation>::transformationMatric
     references.reserve(objects.size());
     for(auto it = objects.begin(); it != objects.end(); ++it) {
         CORRADE_INTERNAL_ASSERT(*it != nullptr);
-        references.push_back(**it);
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        references.push_back(std::ref(**it));
     }
 
     return transformationMatrices(references, initialTransformationMatrix);
@@ -313,11 +317,13 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
                 CORRADE_INTERNAL_ASSERT(parent->counter == 0xFFFFu);
                 parent->counter = UnsignedShort(jointObjects.size());
                 parent->flags |= Flag::Joint;
-                jointObjects.push_back(*parent);
+                /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+                jointObjects.push_back(std::ref(*parent));
             }
 
         /* Else go up the hierarchy */
-        } else *it = *parent;
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        } else *it = std::ref(*parent);
 
         /* Cycle if reached end */
         if(it == objects.end()) it = objects.begin();
@@ -364,7 +370,8 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     references.reserve(objects.size());
     for(auto it = objects.begin(); it != objects.end(); ++it) {
         CORRADE_INTERNAL_ASSERT(*it != nullptr);
-        references.push_back(**it);
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        references.push_back(std::ref(**it));
     }
 
     return transformations(std::move(references), initialTransformation);
@@ -416,7 +423,8 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
         /* Else compose transformation with parent, go up the hierarchy */
         } else {
             jointTransformations[joint] = Implementation::Transformation<Transformation>::compose(parent->transformation(), jointTransformations[joint]);
-            o = *parent;
+            /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+            o = std::ref(*parent);
         }
     }
 }
@@ -426,7 +434,8 @@ template<class Transformation> void Object<Transformation>::doSetClean(const std
     castObjects.reserve(objects.size());
     /** @todo Ensure this doesn't crash, somehow */
     for(auto it = objects.begin(); it != objects.end(); ++it)
-        castObjects.push_back(static_cast<Object<Transformation>&>(it->get()));
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        castObjects.push_back(std::ref(static_cast<Object<Transformation>&>(it->get())));
 
     setClean(std::move(castObjects));
 }
@@ -447,7 +456,8 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 
         Object<Transformation>* parent = o.parent();
         while(parent && !(parent->flags & Flag::Visited) && parent->isDirty()) {
-            objects.push_back(*parent);
+            /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+            objects.push_back(std::ref(*parent));
             parent = parent->parent();
         }
     }
@@ -483,7 +493,8 @@ template<class Transformation> void Object<Transformation>::setClean(const std::
     references.reserve(objects.size());
     for(auto it = objects.begin(); it != objects.end(); ++it) {
         CORRADE_INTERNAL_ASSERT(*it != nullptr);
-        references.push_back(**it);
+        /* GCC 4.4 has explicit constructor for std::reference_wrapper. WHY ON EARTH. WHY. */
+        references.push_back(std::ref(**it));
     }
 
     setClean(std::move(references));
