@@ -46,9 +46,21 @@ template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, 
     features.push_back(std::ref(feature));
 }
 
+namespace {
+    template<UnsignedInt dimensions, class T> struct PointerCompare {
+        PointerCompare(AbstractFeature<dimensions, T>& feature): feature(feature) {}
+
+        bool operator()(AbstractFeature<dimensions, T>& f) {
+            return &f == &feature;
+        };
+
+        private:
+            AbstractFeature<dimensions, T>& feature;
+    };
+}
+
 template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::remove(AbstractFeature<dimensions, T>& feature) {
-    features.erase(std::find_if(features.begin(), features.end(),
-        [&feature](AbstractFeature<dimensions, T>& f) { return &f == &feature; }));
+    features.erase(std::find_if(features.begin(), features.end(), PointerCompare<dimensions, T>{feature}));
 }
 
 }}
