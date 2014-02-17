@@ -101,9 +101,9 @@ std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
 template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
     /* Get bounds */
     Vector min = data[0], max = data[0];
-    for(const auto& v: data) {
-        min = Math::min(v, min);
-        max = Math::max(v, max);
+    for(auto it = data.begin(); it != data.end(); ++it) {
+        min = Math::min(*it, min);
+        max = Math::max(*it, max);
     }
 
     /* Make epsilon so large that std::size_t can index all vectors inside the
@@ -150,7 +150,8 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
         data.resize(table.size());
 
         /* Remap the resulting index array */
-        for(auto& i: resultIndices) i = indices[i];
+        for(auto it = resultIndices.begin(); it != resultIndices.end(); ++it)
+            *it = indices[*it];
 
         /* Finished */
         if(moving == Vector::Size) continue;

@@ -65,7 +65,8 @@ State::State(Context& context) {
     extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
 
     Debug() << "Using optional features:";
-    for(const auto& ext: extensions) Debug() << "   " << ext;
+    for(auto it = extensions.begin(); it != extensions.end(); ++it)
+        Debug() << "   " << *it;
 }
 
 State::~State() {

@@ -42,9 +42,9 @@ namespace Magnum { namespace SceneGraph {
 template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
     std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> references;
     references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
+    for(auto it = objects.begin(); it != objects.end(); ++it) {
+        CORRADE_INTERNAL_ASSERT(*it != nullptr);
+        references.push_back(**it);
     }
 
     setClean(references);
@@ -64,9 +64,9 @@ template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~Abstra
 template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> references;
     references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
+    for(auto it = objects.begin(); it != objects.end(); ++it) {
+        CORRADE_INTERNAL_ASSERT(*it != nullptr);
+        references.push_back(**it);
     }
 
     return transformationMatrices(references, initialTransformationMatrix);
@@ -207,7 +207,8 @@ template<class Transformation> auto Object<Transformation>::doTransformationMatr
     std::vector<std::reference_wrapper<Object<Transformation>>> castObjects;
     castObjects.reserve(objects.size());
     /** @todo Ensure this doesn't crash, somehow */
-    for(auto o: objects) castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
+    for(auto it = objects.begin(); it != objects.end(); ++it)
+        castObjects.push_back(static_cast<Object<Transformation>&>(it->get()));
 
     return transformationMatrices(std::move(castObjects), initialTransformationMatrix);
 }
@@ -225,9 +226,9 @@ template<class Transformation> auto Object<Transformation>::transformationMatric
 template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<std::reference_wrapper<Object<Transformation>>> references;
     references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
+    for(auto it = objects.begin(); it != objects.end(); ++it) {
+        CORRADE_INTERNAL_ASSERT(*it != nullptr);
+        references.push_back(**it);
     }
 
     return transformationMatrices(references, initialTransformationMatrix);
@@ -358,9 +359,9 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(const std::vector<Object<Transformation>*>& objects, const typename Transformation::DataType& initialTransformation) const {
     std::vector<std::reference_wrapper<Object<Transformation>>> references;
     references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
+    for(auto it = objects.begin(); it != objects.end(); ++it) {
+        CORRADE_INTERNAL_ASSERT(*it != nullptr);
+        references.push_back(**it);
     }
 
     return transformations(std::move(references), initialTransformation);
@@ -420,7 +421,8 @@ template<class Transformation> void Object<Transformation>::doSetClean(const std
     std::vector<std::reference_wrapper<Object<Transformation>>> castObjects;
     castObjects.reserve(objects.size());
     /** @todo Ensure this doesn't crash, somehow */
-    for(auto o: objects) castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
+    for(auto it = objects.begin(); it != objects.end(); ++it)
+        castObjects.push_back(static_cast<Object<Transformation>&>(it->get()));
 
     setClean(std::move(castObjects));
 }
@@ -475,9 +477,9 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
 template<class Transformation> void Object<Transformation>::setClean(const std::vector<Object<Transformation>*>& objects) {
     std::vector<std::reference_wrapper<Object<Transformation>>> references;
     references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
+    for(auto it = objects.begin(); it != objects.end(); ++it) {
+        CORRADE_INTERNAL_ASSERT(*it != nullptr);
+        references.push_back(**it);
     }
 
     setClean(std::move(references));
