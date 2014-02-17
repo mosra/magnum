@@ -32,7 +32,9 @@
 #include "Magnum/OpenGL.h"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
+#ifndef MAGNUM_TARGET_GLES
 #include "Magnum/BufferTexture.h"
+#endif
 #include "Magnum/ColorFormat.h"
 #include "Magnum/TextureFormat.h"
 #endif
