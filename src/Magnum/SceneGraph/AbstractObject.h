@@ -171,7 +171,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
            thought 4.7 was bug-free. */
         std::vector<MatrixType> transformationMatrices(std::initializer_list<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) {
-            return transformationMatrices(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>{objects}, initialTransformationMatrix);
+            /* GCC 4.5 doesn't like {} here */
+            return transformationMatrices(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>(objects), initialTransformationMatrix);
         }
         CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(std::initializer_list<AbstractObject<dimensions, T>*> objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
         #endif
@@ -209,7 +210,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
            thought 4.7 was bug-free. */
         static void setClean(std::initializer_list<std::reference_wrapper<AbstractObject<dimensions, T>>> objects) {
-            return setClean(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>{objects});
+            /* GCC 4.5 doesn't like {} here */
+            return setClean(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>(objects));
         }
         static CORRADE_DEPRECATED("use setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead") void setClean(std::initializer_list<AbstractObject<dimensions, T>*> objects);
         #endif

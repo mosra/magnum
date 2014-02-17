@@ -263,7 +263,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
            thought 4.7 was bug-free. */
         std::vector<MatrixType> transformationMatrices(std::initializer_list<std::reference_wrapper<Object<Transformation>>> objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
-            return transformationMatrices(std::vector<std::reference_wrapper<Object<Transformation>>>{objects}, initialTransformationMatrix);
+            /* GCC 4.5 doesn't like {} here */
+            return transformationMatrices(std::vector<std::reference_wrapper<Object<Transformation>>>(objects), initialTransformationMatrix);
         }
         CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(std::initializer_list<Object<Transformation>*> objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
         #endif
@@ -292,7 +293,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
            thought 4.7 was bug-free. */
         std::vector<typename Transformation::DataType> transformations(std::initializer_list<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const {
-            return transformations(std::vector<std::reference_wrapper<Object<Transformation>>>{objects}, initialTransformation);
+            /* GCC 4.5 doesn't like {} here */
+            return transformations(std::vector<std::reference_wrapper<Object<Transformation>>>(objects), initialTransformation);
         }
         CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(std::initializer_list<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
         #endif
@@ -326,7 +328,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
            thought 4.7 was bug-free. */
         static void setClean(std::initializer_list<std::reference_wrapper<Object<Transformation>>> objects) {
-            setClean(std::vector<std::reference_wrapper<Object<Transformation>>>{objects});
+            /* GCC 4.5 doesn't like {} here */
+            setClean(std::vector<std::reference_wrapper<Object<Transformation>>>(objects));
         }
         static CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") void setClean(std::initializer_list<Object<Transformation>*> objects);
         #endif
