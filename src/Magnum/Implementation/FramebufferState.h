@@ -30,6 +30,10 @@
 
 #include "Magnum/Framebuffer.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Magnum/RenderbufferFormat.h"
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {

@@ -31,6 +31,12 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Magnum/BufferTexture.h"
+#include "Magnum/ColorFormat.h"
+#include "Magnum/TextureFormat.h"
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct TextureState {
