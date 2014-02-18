@@ -288,7 +288,8 @@ class MAGNUM_EXPORT Context {
          * @endcode
          *
          * @see isExtensionSupported(const Extension&) const,
-         *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+         *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(),
+         *      @ref isExtensionDisabled()
          * @todoc Explicit reference when Doxygen is sane
          */
         template<class T> bool isExtensionSupported() const {
@@ -325,6 +326,39 @@ class MAGNUM_EXPORT Context {
          */
         bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(_extensionRequiredVersion[extension._index]) && extensionStatus[extension._index];
+        }
+
+        /**
+         * @brief Whether given extension is supported by the driver but disabled
+         *
+         * Can be used for detecting driver bug workarounds. Disabled
+         * extensions return `false` in @ref isExtensionSupported() even if
+         * they are advertised as being supported by the driver.
+         */
+        template<class T> bool isExtensionDisabled() const {
+            return isExtensionDisabled<T>(version());
+        }
+
+        /**
+         * @brief Whether given extension is supported by the driver but disabled for given version
+         *
+         * Similar to above, but can also check for extensions which are
+         * disabled only for particular versions.
+         */
+        template<class T> bool isExtensionDisabled(Version version) const {
+            /* The extension is advertised, but the minimal version has been increased */
+            return T::requiredVersion() <= version && extensionStatus[T::Index] && _extensionRequiredVersion[T::Index] > version;
+        }
+
+        /**
+         * @brief Whether given extension is supported by the driver but disabled
+         *
+         * Can be used e.g. for listing extensions available on current
+         * hardware, but for general usage prefer isExtensionDisabled() const,
+         * as it does most operations in compile time.
+         */
+        bool isExtensionDisabled(const Extension& extension) const {
+            return isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index] && !isVersionSupported(_extensionRequiredVersion[extension._index]);
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT

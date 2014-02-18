@@ -36,12 +36,14 @@ class ContextGLTest: public AbstractOpenGLTester {
         void isVersionSupported();
         void supportedVersion();
         void isExtensionSupported();
+        void isExtensionDisabled();
 };
 
 ContextGLTest::ContextGLTest() {
     addTests({&ContextGLTest::isVersionSupported,
               &ContextGLTest::supportedVersion,
-              &ContextGLTest::isExtensionSupported});
+              &ContextGLTest::isExtensionSupported,
+              &ContextGLTest::isExtensionDisabled});
 }
 
 void ContextGLTest::isVersionSupported() {
@@ -75,6 +77,18 @@ void ContextGLTest::isExtensionSupported() {
     std::string extensions(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)));
     CORRADE_VERIFY(extensions.find(Extensions::GL::EXT::texture_filter_anisotropic::string()) != std::string::npos);
     CORRADE_VERIFY(extensions.find(Extensions::GL::GREMEDY::string_marker::string()) == std::string::npos);
+    #else
+    CORRADE_SKIP("No useful extensions to test on OpenGL ES");
+    #endif
+}
+
+void ContextGLTest::isExtensionDisabled() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+        CORRADE_SKIP(Extensions::GL::APPLE::vertex_array_object::string() + std::string(" extension should be supported, can't test"));
+
+    /* This is not disabled anywhere */
+    CORRADE_VERIFY(!Context::current()->isExtensionDisabled<Extensions::GL::APPLE::vertex_array_object>());
     #else
     CORRADE_SKIP("No useful extensions to test on OpenGL ES");
     #endif
