@@ -33,24 +33,18 @@ class ContextGLTest: public AbstractOpenGLTester {
     public:
         explicit ContextGLTest();
 
-        void version();
-        void versionList();
-        void supportedExtension();
-        void unsupportedExtension();
-        void pastExtension();
-        void versionDependentExtension();
+        void isVersionSupported();
+        void supportedVersion();
+        void isExtensionSupported();
 };
 
 ContextGLTest::ContextGLTest() {
-    addTests({&ContextGLTest::version,
-              &ContextGLTest::versionList,
-              &ContextGLTest::supportedExtension,
-              &ContextGLTest::unsupportedExtension,
-              &ContextGLTest::pastExtension,
-              &ContextGLTest::versionDependentExtension});
+    addTests({&ContextGLTest::isVersionSupported,
+              &ContextGLTest::supportedVersion,
+              &ContextGLTest::isExtensionSupported});
 }
 
-void ContextGLTest::version() {
+void ContextGLTest::isVersionSupported() {
     const Version v = Context::current()->version();
     CORRADE_VERIFY(Context::current()->isVersionSupported(v));
     CORRADE_VERIFY(Context::current()->isVersionSupported(Version(Int(v)-1)));
@@ -61,7 +55,7 @@ void ContextGLTest::version() {
     MAGNUM_ASSERT_VERSION_SUPPORTED(Version(Int(v)-1));
 }
 
-void ContextGLTest::versionList() {
+void ContextGLTest::supportedVersion() {
     const Version v = Context::current()->version();
 
     /* Selects first supported version (thus not necessarily the highest) */
@@ -69,61 +63,20 @@ void ContextGLTest::versionList() {
     CORRADE_VERIFY(Context::current()->supportedVersion({Version(Int(v)+1), Version(Int(v)-1), v}) == Version(Int(v)-1));
 }
 
-void ContextGLTest::supportedExtension() {
+void ContextGLTest::isExtensionSupported() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+        CORRADE_SKIP(Extensions::GL::GREMEDY::string_marker::string() + std::string(" extension should not be supported, can't test"));
+
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_filter_anisotropic::string() + std::string(" extension should be supported, can't test"));
 
+    /* Test that we have proper extension list parser */
     std::string extensions(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)));
     CORRADE_VERIFY(extensions.find(Extensions::GL::EXT::texture_filter_anisotropic::string()) != std::string::npos);
-}
-
-void ContextGLTest::unsupportedExtension() {
-    #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
-        CORRADE_SKIP(Extensions::GL::GREMEDY::string_marker::string() + std::string(" extension shouldn't be supported, can't test"));
-
-    std::string extensions(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)));
     CORRADE_VERIFY(extensions.find(Extensions::GL::GREMEDY::string_marker::string()) == std::string::npos);
-    #elif !defined(CORRADE_TARGET_NACL)
-    if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>())
-        CORRADE_SKIP(Extensions::GL::CHROMIUM::map_sub::string() + std::string(" extension shouldn't be supported, can't test"));
-
-    std::string extensions(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)));
-    CORRADE_VERIFY(extensions.find(Extensions::GL::CHROMIUM::map_sub::string()) == std::string::npos);
     #else
-    if(Context::current()->isExtensionSupported<Extensions::GL::NV::read_buffer_front>())
-        CORRADE_SKIP(Extensions::GL::NV::read_buffer_front::string() + std::string(" extension shouldn't be supported, can't test"));
-
-    std::string extensions(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)));
-    CORRADE_VERIFY(extensions.find(Extensions::GL::NV::read_buffer_front::string()) == std::string::npos);
-    #endif
-}
-
-void ContextGLTest::pastExtension() {
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL300))
-        CORRADE_SKIP("No already supported extensions are listed for OpenGL 2.1");
-
-    CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>());
-    /* No assertion should be fired */
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::APPLE::vertex_array_object);
-    #elif defined(MAGNUM_TARGET_GLES2)
-    CORRADE_SKIP("No already supported extensions are listed for OpenGL ES 2.0");
-    #else
-    CORRADE_SKIP("No already supported extensions are listed for OpenGL ES 3.0");
-    #endif
-}
-
-void ContextGLTest::versionDependentExtension() {
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(Extensions::GL::ARB::get_program_binary::requiredVersion(), Version::GL300);
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_program_binary>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_program_binary::string() + std::string("extension isn't supported, can't test"));
-
-    CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::GL::ARB::get_program_binary>(Context::current()->version()));
-    CORRADE_VERIFY(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_program_binary>(Version::GL210));
-    #else
-    CORRADE_SKIP("No OpenGL ES 3.0-only extensions exist yet");
+    CORRADE_SKIP("No useful extensions to test on OpenGL ES");
     #endif
 }
 
