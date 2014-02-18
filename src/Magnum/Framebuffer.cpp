@@ -221,12 +221,12 @@ Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attac
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Framebuffer& Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int mipLevel) {
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #endif
     (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GLenum(texture.target()), texture.id(), mipLevel);
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic pop
     #endif
     return *this;

@@ -111,12 +111,12 @@ void DebugGLTest::insertMessageFallback() {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void DebugGLTest::deprecated() {
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #endif
     DebugMarker::mark("hello");
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic pop
     #endif
 
