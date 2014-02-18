@@ -30,6 +30,7 @@
  */
 
 #include <cstdlib>
+#include <array>
 #include <bitset>
 #include <vector>
 #include <Corrade/Containers/EnumSet.h>
@@ -291,7 +292,7 @@ class MAGNUM_EXPORT Context {
          * @todoc Explicit reference when Doxygen is sane
          */
         template<class T> bool isExtensionSupported() const {
-            return isVersionSupported(T::coreVersion()) || (isVersionSupported(T::requiredVersion()) && extensionStatus[T::Index]);
+            return isExtensionSupported<T>(version());
         }
 
         /**
@@ -310,7 +311,7 @@ class MAGNUM_EXPORT Context {
          * @endcode
          */
         template<class T> bool isExtensionSupported(Version version) const {
-            return T::coreVersion() <= version || (T::requiredVersion() <= version && extensionStatus[T::Index]);
+            return _extensionRequiredVersion[T::Index] <= version && extensionStatus[T::Index];
         }
 
         /**
@@ -319,12 +320,11 @@ class MAGNUM_EXPORT Context {
          * Can be used e.g. for listing extensions available on current
          * hardware, but for general usage prefer isExtensionSupported() const,
          * as it does most operations in compile time.
-         *
          * @see @ref supportedExtensions(), @ref Extension::extensions(),
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
         bool isExtensionSupported(const Extension& extension) const {
-            return isVersionSupported(extension._coreVersion) || (isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index]);
+            return isVersionSupported(_extensionRequiredVersion[extension._index]) && extensionStatus[extension._index];
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -334,11 +334,14 @@ class MAGNUM_EXPORT Context {
     private:
         static Context* _current;
 
+        MAGNUM_LOCAL void setupDriverWorkarounds();
+
         Version _version;
         Int _majorVersion;
         Int _minorVersion;
         Flags _flags;
 
+        std::array<Version, 160> _extensionRequiredVersion;
         std::bitset<160> extensionStatus;
         std::vector<Extension> _supportedExtensions;
 
