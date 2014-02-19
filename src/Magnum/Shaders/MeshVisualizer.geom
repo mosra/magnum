@@ -27,7 +27,11 @@
 #define const
 #endif
 
+#ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1) uniform vec2 viewportSize;
+#else
+uniform vec2 viewportSize;
+#endif
 
 layout(triangles) in;
 
