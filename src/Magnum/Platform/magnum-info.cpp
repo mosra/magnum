@@ -184,10 +184,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
             d << "   " << extensionName << std::string(60-extensionName.size(), ' ');
             if(c->isExtensionSupported(extension))
                 d << "SUPPORTED";
+            else if(c->isExtensionDisabled(extension))
+                d << " removed";
             else if(c->isVersionSupported(extension.requiredVersion()))
                 d << "    -";
             else
-                d << "   ---";
+                d << "   n/a";
         }
 
         Debug() << "";
