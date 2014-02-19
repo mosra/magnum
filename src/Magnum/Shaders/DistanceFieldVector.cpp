@@ -31,6 +31,8 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
 
+#include "Implementation/CreateCompatibilityShader.h"
+
 namespace Magnum { namespace Shaders {
 
 namespace {
@@ -48,16 +50,14 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader frag(version, Shader::Type::Vertex);
-    frag.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("generic.glsl"))
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     AbstractShaderProgram::attachShader(frag);
 
-    Shader vert(version, Shader::Type::Fragment);
-    vert.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("DistanceFieldVector.frag"));
+    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    vert.addSource(rs.get("DistanceFieldVector.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     AbstractShaderProgram::attachShader(vert);
 

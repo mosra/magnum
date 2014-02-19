@@ -31,6 +31,8 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
 
+#include "Implementation/CreateCompatibilityShader.h"
+
 namespace Magnum { namespace Shaders {
 
 MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationProjectionMatrixUniform(0), viewportSizeUniform(1), colorUniform(2), wireframeColorUniform(3), wireframeWidthUniform(4), smoothnessUniform(5) {
@@ -53,10 +55,9 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert(version, Shader::Type::Vertex);
+    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
-        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
@@ -65,19 +66,17 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
 
     #ifndef MAGNUM_TARGET_GLES
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
-        Shader geom(version, Shader::Type::Geometry);
-        geom.addSource(rs.get("compatibility.glsl"))
-            .addSource(rs.get("MeshVisualizer.geom"));
+        Shader geom = Implementation::createCompatibilityShader(version, Shader::Type::Geometry);
+        geom.addSource(rs.get("MeshVisualizer.geom"));
         CORRADE_INTERNAL_ASSERT_OUTPUT(geom.compile());
         geom.compile();
         attachShader(geom);
     }
     #endif
 
-    Shader frag(version, Shader::Type::Fragment);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
-        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("MeshVisualizer.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     frag.compile();

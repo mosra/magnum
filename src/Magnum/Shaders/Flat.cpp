@@ -32,6 +32,8 @@
 #include "Magnum/Shader.h"
 #include "Magnum/Texture.h"
 
+#include "Implementation/CreateCompatibilityShader.h"
+
 namespace Magnum { namespace Shaders {
 
 namespace {
@@ -51,17 +53,15 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert(version, Shader::Type::Vertex);
+    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
-        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(version, Shader::Type::Fragment);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
-        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Flat.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);

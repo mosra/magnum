@@ -33,6 +33,9 @@ set(MagnumShaders_SRCS
     Phong.cpp
     Vector.cpp
     VertexColor.cpp
+
+    Implementation/CreateCompatibilityShader.cpp
+
     ${MagnumShaders_RCS})
 
 set(MagnumShaders_HEADERS
