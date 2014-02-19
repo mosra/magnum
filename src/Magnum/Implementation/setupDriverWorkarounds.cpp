@@ -33,6 +33,42 @@ void Context::setupDriverWorkarounds() {
         if(_extensionRequiredVersion[Extensions::extension::Index] < Version::version) \
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
 
+    #ifdef MAGNUM_TARGET_GLES
+    /* Disable extensions for which we need extension loader, as they would
+       crash otherwise. */
+    /** @todo Remove this when extension loader for ES is available */
+    #ifndef CORRADE_TARGET_NACL
+    _setRequiredVersion(GL::CHROMIUM::map_sub, None);
+    #endif
+    _setRequiredVersion(GL::EXT::debug_label, None);
+    _setRequiredVersion(GL::EXT::debug_marker, None);
+    _setRequiredVersion(GL::EXT::disjoint_timer_query, None);
+    _setRequiredVersion(GL::EXT::separate_shader_objects, None);
+    _setRequiredVersion(GL::EXT::multisampled_render_to_texture, None);
+    _setRequiredVersion(GL::EXT::robustness, None);
+    _setRequiredVersion(GL::KHR::debug, None);
+    _setRequiredVersion(GL::NV::read_buffer_front, None);
+    _setRequiredVersion(GL::OES::mapbuffer, None);
+    #ifdef MAGNUM_TARGET_GLES2
+    _setRequiredVersion(GL::ANGLE::framebuffer_blit, None);
+    _setRequiredVersion(GL::ANGLE::framebuffer_multisample, None);
+    _setRequiredVersion(GL::APPLE::framebuffer_multisample, None);
+    _setRequiredVersion(GL::EXT::discard_framebuffer, None);
+    _setRequiredVersion(GL::EXT::blend_minmax, None);
+    #ifndef CORRADE_TARGET_NACL
+    _setRequiredVersion(GL::EXT::occlusion_query_boolean, None);
+    #endif
+    _setRequiredVersion(GL::EXT::texture_storage, None);
+    _setRequiredVersion(GL::EXT::map_buffer_range, None);
+    _setRequiredVersion(GL::NV::draw_buffers, None);
+    _setRequiredVersion(GL::NV::fbo_color_attachments, None); // ??
+    _setRequiredVersion(GL::NV::read_buffer, None);
+    _setRequiredVersion(GL::NV::framebuffer_multisample, None);
+    _setRequiredVersion(GL::OES::texture_3D, None);
+    _setRequiredVersion(GL::OES::vertex_array_object, None);
+    #endif
+    #endif
+
     #undef _setRequiredVersion
 }
 
