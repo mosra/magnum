@@ -34,6 +34,13 @@ void Context::setupDriverWorkarounds() {
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
 
     #ifndef MAGNUM_TARGET_GLES
+    /* This extension causes crash in GLSL compiler on AMD linux drivers 13.251 */
+    const std::string renderer = rendererString();
+    if(renderer.find("Advanced Micro Devices") != std::string::npos)
+        _setRequiredVersion(GL::ARB::explicit_uniform_location, None);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
     /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL 1.30
        on NVidia and 1.40 on Mac OS X */
     /** @todo Different version on different vendors? */
