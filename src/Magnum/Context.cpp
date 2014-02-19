@@ -394,8 +394,8 @@ Context::Context() {
 
     /* Mark all extensions from past versions as supported */
     for(std::size_t i = 0; i != future; ++i)
-        for(const Extension& extension: Extension::extensions(versions[i]))
-            extensionStatus.set(extension._index);
+        for(auto it = Extension::extensions(versions[i]).begin(); it != Extension::extensions(versions[i]).end(); ++it)
+            extensionStatus.set(it->_index);
 
     /* List of extensions from future versions (extensions from current and
        previous versions should be supported automatically, so we don't need
@@ -453,12 +453,13 @@ Context::Context() {
     #endif
 
     /* Reset minimal required version to Version::None for whole array */
-    for(auto& i: _extensionRequiredVersion) i = Version::None;
+    for(auto it = _extensionRequiredVersion.begin(); it != _extensionRequiredVersion.end(); ++it)
+        *it = Version::None;
 
     /* Initialize required versions from extension info */
-    for(const auto version: versions)
-        for(const Extension& extension: Extension::extensions(version))
-            _extensionRequiredVersion[extension._index] = extension._requiredVersion;
+    for(auto vit = versions.begin(); vit != versions.end(); ++vit)
+        for(auto eit = Extension::extensions(*vit).begin(); eit != Extension::extensions(*vit).end(); ++eit)
+            _extensionRequiredVersion[eit->_index] = eit->_requiredVersion;
 
     /* Setup driver workarounds (increase required version for particular
        extensions), see Implementation/driverWorkarounds.cpp */
