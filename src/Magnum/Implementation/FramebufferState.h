@@ -34,6 +34,12 @@
 #include "Magnum/RenderbufferFormat.h"
 #endif
 
+/* We did't get memory corruption like in e.g. TextureState here, but include
+   the header just to be sure */
+#ifndef CORRADE_MSVC2013_COMPATIBILITY
+#include "Magnum/Renderbuffer.h"
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {

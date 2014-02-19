@@ -31,6 +31,12 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 
+/* Otherwise we get a pretty nice memory corruption without any warning or
+   error whatsoever (!) */
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
+#include "Magnum/AbstractShaderProgram.h"
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct ShaderProgramState {

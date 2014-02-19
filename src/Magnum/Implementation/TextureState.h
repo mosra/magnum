@@ -39,6 +39,16 @@
 #include "Magnum/TextureFormat.h"
 #endif
 
+/* Otherwise we get a pretty nice memory corruption only with a warning about
+   architecture-dependent alignment of `setBufferImplementation` variable */
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferTexture.h"
+#else
+#include "Magnum/AbstractTexture.h"
+#endif
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct TextureState {
