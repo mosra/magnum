@@ -33,6 +33,15 @@ void Context::setupDriverWorkarounds() {
         if(_extensionRequiredVersion[Extensions::extension::Index] < Version::version) \
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL 1.30
+       on NVidia and 1.40 on Mac OS X */
+    /** @todo Different version on different vendors? */
+    _setRequiredVersion(GL::ARB::explicit_attrib_location, GL320);
+    _setRequiredVersion(GL::ARB::explicit_uniform_location, GL320);
+    _setRequiredVersion(GL::ARB::shading_language_420pack, GL320);
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES
     /* Disable extensions for which we need extension loader, as they would
        crash otherwise. */

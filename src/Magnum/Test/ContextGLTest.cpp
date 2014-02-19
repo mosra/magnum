@@ -73,10 +73,17 @@ void ContextGLTest::isExtensionSupported() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_filter_anisotropic::string() + std::string(" extension should be supported, can't test"));
 
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(Extensions::GL::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
+
     /* Test that we have proper extension list parser */
     std::string extensions(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)));
     CORRADE_VERIFY(extensions.find(Extensions::GL::EXT::texture_filter_anisotropic::string()) != std::string::npos);
     CORRADE_VERIFY(extensions.find(Extensions::GL::GREMEDY::string_marker::string()) == std::string::npos);
+
+    /* This is disabled in GL < 3.2 to work around GLSL compiler bugs */
+    CORRADE_VERIFY(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(Version::GL310));
+    CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(Version::GL320));
     #else
     CORRADE_SKIP("No useful extensions to test on OpenGL ES");
     #endif
@@ -87,8 +94,15 @@ void ContextGLTest::isExtensionDisabled() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
         CORRADE_SKIP(Extensions::GL::APPLE::vertex_array_object::string() + std::string(" extension should be supported, can't test"));
 
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(Extensions::GL::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
+
     /* This is not disabled anywhere */
     CORRADE_VERIFY(!Context::current()->isExtensionDisabled<Extensions::GL::APPLE::vertex_array_object>());
+
+    /* This is disabled in GL < 3.2 to work around GLSL compiler bugs */
+    CORRADE_VERIFY(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(Version::GL310));
+    CORRADE_VERIFY(!Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(Version::GL320));
     #else
     CORRADE_SKIP("No useful extensions to test on OpenGL ES");
     #endif
