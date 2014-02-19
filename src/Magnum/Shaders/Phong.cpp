@@ -32,6 +32,8 @@
 #include "Magnum/Shader.h"
 #include "Magnum/Texture.h"
 
+#include "Implementation/CreateCompatibilityShader.h"
+
 namespace Magnum { namespace Shaders {
 
 namespace {
@@ -51,19 +53,17 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert(version, Shader::Type::Vertex);
+    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
     vert.addSource(flags ? "#define TEXTURED\n" : "")
-        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(version, Shader::Type::Fragment);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
-        .addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("Phong.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);

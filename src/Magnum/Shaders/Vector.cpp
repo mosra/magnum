@@ -31,6 +31,8 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
 
+#include "Implementation/CreateCompatibilityShader.h"
+
 namespace Magnum { namespace Shaders {
 
 namespace {
@@ -51,16 +53,14 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     #endif
     Version version = Context::current()->supportedVersion(vs);
 
-    Shader vert(version, Shader::Type::Vertex);
-    vert.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("generic.glsl"))
+    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     AbstractShaderProgram::attachShader(vert);
 
-    Shader frag(version, Shader::Type::Fragment);
-    frag.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("Vector.frag"));
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    frag.addSource(rs.get("Vector.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     AbstractShaderProgram::attachShader(frag);
 

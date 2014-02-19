@@ -1,3 +1,5 @@
+#ifndef Magnum_Shaders_Implementation_CreateCompatibilityShader_h
+#define Magnum_Shaders_Implementation_CreateCompatibilityShader_h
 /*
     This file is part of Magnum.
 
@@ -23,46 +25,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef RUNTIME_CONST
-#define const
+#include "Magnum/Shader.h"
+
+namespace Magnum { namespace Shaders { namespace Implementation {
+
+Shader createCompatibilityShader(Version version, Shader::Type type);
+
+}}}
+
 #endif
-
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1) uniform vec2 viewportSize;
-#else
-uniform vec2 viewportSize;
-#endif
-
-layout(triangles) in;
-
-layout(triangle_strip, max_vertices = 3) out;
-
-/* Interpolate in screen space */
-noperspective out vec3 dist;
-
-void main() {
-    /* Screen position of each vertex */
-    vec2 p[3];
-    for(int i = 0; i != 3; ++i)
-        p[i] = viewportSize*gl_in[i].gl_Position.xy/gl_in[i].gl_Position.w;
-
-    /* Vector of each triangle side */
-    const vec2 v[3] = {
-        p[2]-p[1],
-        p[2]-p[0],
-        p[1]-p[0]
-    };
-
-    /* Compute area using perp-dot product */
-    const float area = abs(dot(vec2(-v[1].y, v[1].x), v[2]));
-
-    /* Add distance to opposite side to each vertex */
-    for(int i = 0; i != 3; ++i) {
-        dist = vec3(0.0, 0.0, 0.0);
-        dist[i] = area/length(v[i]);
-        gl_Position = gl_in[i].gl_Position;
-        EmitVertex();
-    }
-
-    EndPrimitive();
-}

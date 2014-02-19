@@ -60,6 +60,7 @@ set(Magnum_SRCS
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp
+    Implementation/setupDriverWorkarounds.cpp
 
     Trade/AbstractImageConverter.cpp
     Trade/AbstractImporter.cpp

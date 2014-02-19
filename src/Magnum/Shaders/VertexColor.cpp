@@ -31,6 +31,8 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
 
+#include "Implementation/CreateCompatibilityShader.h"
+
 namespace Magnum { namespace Shaders {
 
 namespace {
@@ -59,16 +61,14 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     Version version = Context::current()->supportedVersion(vs);
     #endif
 
-    Shader vert(version, Shader::Type::Vertex);
-    vert.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("generic.glsl"))
+    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
     attachShader(vert);
 
-    Shader frag(version, Shader::Type::Fragment);
-    frag.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("VertexColor.frag"));
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    frag.addSource(rs.get("VertexColor.frag"));
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
 

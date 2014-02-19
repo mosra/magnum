@@ -369,7 +369,6 @@ Context::Context() {
         glGetIntegerv(GL_CONTEXT_FLAGS, reinterpret_cast<GLint*>(&_flags));
     #endif
 
-    /* Get first future (not supported) version */
     std::vector<Version> versions{
         #ifndef MAGNUM_TARGET_GLES
         Version::GL300,
@@ -387,9 +386,16 @@ Context::Context() {
         #endif
         Version::None
     };
+
+    /* Get first future (not supported) version */
     std::size_t future = 0;
     while(versions[future] != Version::None && isVersionSupported(versions[future]))
         ++future;
+
+    /* Mark all extensions from past versions as supported */
+    for(std::size_t i = 0; i != future; ++i)
+        for(const Extension& extension: Extension::extensions(versions[i]))
+            extensionStatus.set(extension._index);
 
     /* List of extensions from future versions (extensions from current and
        previous versions should be supported automatically, so we don't need
@@ -446,44 +452,17 @@ Context::Context() {
     }
     #endif
 
-    /* Disable extensions for which we need extension loader, as they would
-       crash otherwise. */
-    /** @todo Remove this when extension loader for ES is available */
-    #ifdef MAGNUM_TARGET_GLES
-    #define _disable(prefix, vendor, extension)                           \
-        extensionStatus.reset(Extensions::prefix::vendor::extension::Index);
-    #ifndef CORRADE_TARGET_NACL
-    _disable(GL,CHROMIUM,map_sub)
-    #endif
-    _disable(GL,EXT,debug_label)
-    _disable(GL,EXT,debug_marker)
-    _disable(GL,EXT,disjoint_timer_query)
-    _disable(GL,EXT,separate_shader_objects)
-    _disable(GL,EXT,multisampled_render_to_texture)
-    _disable(GL,EXT,robustness)
-    _disable(GL,KHR,debug)
-    _disable(GL,NV,read_buffer_front)
-    _disable(GL,OES,mapbuffer)
-    #ifdef MAGNUM_TARGET_GLES2
-    _disable(GL,ANGLE,framebuffer_blit)
-    _disable(GL,ANGLE,framebuffer_multisample)
-    _disable(GL,APPLE,framebuffer_multisample)
-    _disable(GL,EXT,discard_framebuffer)
-    _disable(GL,EXT,blend_minmax)
-    #ifndef CORRADE_TARGET_NACL
-    _disable(GL,EXT,occlusion_query_boolean)
-    #endif
-    _disable(GL,EXT,texture_storage)
-    _disable(GL,EXT,map_buffer_range)
-    _disable(GL,NV,draw_buffers)
-    _disable(GL,NV,fbo_color_attachments) // ??
-    _disable(GL,NV,read_buffer)
-    _disable(GL,NV,framebuffer_multisample)
-    _disable(GL,OES,texture_3D)
-    _disable(GL,OES,vertex_array_object)
-    #endif
-    #undef _disable
-    #endif
+    /* Reset minimal required version to Version::None for whole array */
+    for(auto& i: _extensionRequiredVersion) i = Version::None;
+
+    /* Initialize required versions from extension info */
+    for(const auto version: versions)
+        for(const Extension& extension: Extension::extensions(version))
+            _extensionRequiredVersion[extension._index] = extension._requiredVersion;
+
+    /* Setup driver workarounds (increase required version for particular
+       extensions), see Implementation/driverWorkarounds.cpp */
+    setupDriverWorkarounds();
 
     /* Set this context as current */
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );

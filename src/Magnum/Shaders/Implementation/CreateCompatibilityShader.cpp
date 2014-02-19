@@ -23,46 +23,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef RUNTIME_CONST
-#define const
-#endif
+#include "CreateCompatibilityShader.h"
 
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1) uniform vec2 viewportSize;
-#else
-uniform vec2 viewportSize;
-#endif
+#include <Corrade/Utility/Resource.h>
 
-layout(triangles) in;
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 
-layout(triangle_strip, max_vertices = 3) out;
+namespace Magnum { namespace Shaders { namespace Implementation {
 
-/* Interpolate in screen space */
-noperspective out vec3 dist;
+Shader createCompatibilityShader(const Version version, const Shader::Type type) {
+    Shader shader(version, type);
 
-void main() {
-    /* Screen position of each vertex */
-    vec2 p[3];
-    for(int i = 0; i != 3; ++i)
-        p[i] = viewportSize*gl_in[i].gl_Position.xy/gl_in[i].gl_Position.w;
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(version))
+        shader.addSource("#define DISABLE_GL_ARB_explicit_attrib_location\n");
+    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::shading_language_420pack>(version))
+        shader.addSource("#define DISABLE_GL_ARB_shading_language_420pack\n");
+    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_uniform_location>(version))
+        shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n");
+    #endif
 
-    /* Vector of each triangle side */
-    const vec2 v[3] = {
-        p[2]-p[1],
-        p[2]-p[0],
-        p[1]-p[0]
-    };
-
-    /* Compute area using perp-dot product */
-    const float area = abs(dot(vec2(-v[1].y, v[1].x), v[2]));
-
-    /* Add distance to opposite side to each vertex */
-    for(int i = 0; i != 3; ++i) {
-        dist = vec3(0.0, 0.0, 0.0);
-        dist[i] = area/length(v[i]);
-        gl_Position = gl_in[i].gl_Position;
-        EmitVertex();
-    }
-
-    EndPrimitive();
+    shader.addSource(Utility::Resource("MagnumShaders").get("compatibility.glsl"));
+    return shader;
 }
+
+}}}
