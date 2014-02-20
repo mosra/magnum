@@ -25,6 +25,8 @@
 
 #include "TextureState.h"
 
+#include <Corrade/Utility/Assert.h>
+
 #include "Magnum/AbstractTexture.h"
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/BufferTexture.h"
