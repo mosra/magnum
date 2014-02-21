@@ -67,7 +67,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
         #ifndef MAGNUM_TARGET_GLES
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
         #elif defined(MAGNUM_TARGET_GLES3)
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
         #elif defined(MAGNUM_TARGET_GLES2)
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         #else
