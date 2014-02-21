@@ -61,8 +61,8 @@ elseif(CORRADE_TARGET_UNIX AND NOT APPLE)
     cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
 endif()
 
-# Platform-independent application libraries
-if(NOT CORRADE_TARGET_NACL)
+# Platform-independent (almost) application libraries
+if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_ANDROID)
     cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
