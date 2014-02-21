@@ -36,6 +36,7 @@
 #  CORRADE_TARGET_NACL_GLIBC    - Defined if compiled for Google Chrome
 #   Native Client with `glibc` toolchain
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
+#  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
 #
 # If CORRADE_BUILD_DEPRECATED is defined, the CORRADE_INCLUDE_DIR variable also
 # contains path directly to Corrade directory (i.e. for includes without
@@ -200,6 +201,10 @@ endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_EMSCRIPTEN" _TARGET_EMSCRIPTEN)
 if(NOT _TARGET_EMSCRIPTEN EQUAL -1)
     set(CORRADE_TARGET_EMSCRIPTEN 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_ANDROID" _TARGET_ANDROID)
+if(NOT _TARGET_ANDROID EQUAL -1)
+    set(CORRADE_TARGET_ANDROID 1)
 endif()
 
 set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
