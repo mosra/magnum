@@ -36,7 +36,7 @@
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
 #include <sstream>
 #endif
 
@@ -593,7 +593,8 @@ std::vector<std::string> Shader::sources() const { return _sources; }
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
+        /** @todo Remove when newlib has this fixed (also the include above) */
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
         std::ostringstream converter;
         converter << (_sources.size()+1)/2;
         #endif
@@ -601,7 +602,7 @@ Shader& Shader::addSource(std::string source) {
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
         _sources.push_back("#line 1 " +
-            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(__MINGW32__)
+            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
             std::to_string((_sources.size()+1)/2) +
             #else
             converter.str() +
