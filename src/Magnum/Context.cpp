@@ -346,9 +346,9 @@ Context::Context() {
     #ifndef MAGNUM_TARGET_GLES
     if(!isVersionSupported(Version::GL210))
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!isVersionSupported(Version::GLES200))
+    if(_version != Version::GLES200)
     #else
-    if(!isVersionSupported(Version::GLES300))
+    if(_version != Version::GLES300)
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
