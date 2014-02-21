@@ -103,6 +103,12 @@ if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
     set(TARGET_GLES2 1)
 endif()
 
+# If targeting Android, set explicit OpenGL ES support. Decision between 2.0
+# and 3.0 is up to the user
+if(CORRADE_TARGET_ANDROID)
+    set(TARGET_GLES 1)
+endif()
+
 # NaCl newlib toolchain supports only static linking, dynamic linking is
 # meaningless on Emscripten
 if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN)
