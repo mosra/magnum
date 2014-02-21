@@ -1,0 +1,40 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=android-arm-magnum
+pkgver=dev
+pkgrel=1
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Android ARM)"
+arch=('any')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('android-arm-corrade')
+makedepends=('cmake' 'ninja' 'android-ndk')
+options=('!strip' '!buildflags' 'staticlibs')
+
+build() {
+    if [ ! -d "$startdir/build-android-arm" ] ; then
+        mkdir "$startdir/build-android-arm"
+        cd "$startdir/build-android-arm"
+
+        cmake .. \
+            -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
+            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Android-ARM.cmake" \
+            -DTARGET_GLES=ON \
+            -DTARGET_GLES2=ON \
+            -G Ninja
+    fi
+
+    cd "$startdir/build-android-arm"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON
+    ninja
+}
+
+package() {
+    cd "$startdir/build-android-arm"
+    DESTDIR="$pkgdir/" ninja install
+}
