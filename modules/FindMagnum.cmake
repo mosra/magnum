@@ -164,8 +164,10 @@ endif()
 
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
-else()
+elseif(MAGNUM_TARGET_GLES2)
     find_package(OpenGLES2 REQUIRED)
+elseif(MAGNUM_TARGET_GLES3)
+    find_package(OpenGLES3 REQUIRED)
 endif()
 
 # On Windows and in static builds, *Application libraries need to have
@@ -366,8 +368,10 @@ set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
     ${CORRADE_PLUGINMANAGER_LIBRARIES})
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGL_gl_LIBRARY})
-else()
+elseif(MAGNUM_TARGET_GLES2)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES2_LIBRARY})
+else()
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES3_LIBRARY})
 endif()
 
 # Installation dirs
