@@ -283,7 +283,7 @@ Context::Context() {
        everything possible. */
     if(ogl_LoadFunctions() == ogl_LOAD_FAILED) {
         Error() << "ExtensionWrangler: cannot initialize glLoadGen";
-        std::exit(1);
+        std::exit(64);
     }
     #endif
 
@@ -327,7 +327,7 @@ Context::Context() {
             #endif
         } else {
             Error() << "Context: unsupported version string:" << version;
-            std::exit(1);
+            std::exit(65);
         }
     }
     #endif
@@ -356,7 +356,7 @@ Context::Context() {
         #else
         Error() << "Context: unsupported OpenGL ES version" << Magnum::version(_version);
         #endif
-        std::exit(1);
+        std::exit(66);
     }
 
     /* Context flags are supported since GL 3.0 */
