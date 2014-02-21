@@ -20,7 +20,6 @@ build() {
         -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
-        -DWITH_AUDIO=OFF \
         -DWITH_MAGNUMINFO=ON \
         -DWITH_NACLAPPLICATION=ON \
         -DWITH_WINDOWLESSNACLAPPLICATION=ON \
@@ -42,7 +41,6 @@ build() {
         -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
-        -DWITH_AUDIO=OFF \
         -DWITH_MAGNUMINFO=ON \
         -DWITH_NACLAPPLICATION=ON \
         -DWITH_WINDOWLESSNACLAPPLICATION=ON \

@@ -17,8 +17,7 @@ build() {
 
         cmake .. \
             -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Emscripten.cmake" \
-            -DWITH_AUDIO=OFF \
+            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Emscripten.cmake \
             -G Ninja
     fi
 
@@ -27,7 +26,6 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
-        -DWITH_AUDIO=OFF \
         -DWITH_SDL2APPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
