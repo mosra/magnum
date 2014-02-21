@@ -352,9 +352,9 @@ Context::Context() {
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        Error() << "Context: unsupported OpenGL version" << Int(_version);
+        Error() << "Context: unsupported OpenGL version" << Magnum::version(_version);
         #else
-        Error() << "Context: unsupported OpenGL ES version" << Int(_version);
+        Error() << "Context: unsupported OpenGL ES version" << Magnum::version(_version);
         #endif
         std::exit(1);
     }
