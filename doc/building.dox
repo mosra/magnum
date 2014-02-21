@@ -419,6 +419,49 @@ depending projects.
 If you have Node.js installed, you can also build and run unit tests using
 `ctest`. See `BUILD_TESTS` above.
 
+@subsection building-cross-android Crosscompiling for Android ARM and x86
+
+You will need [Android NDK](https://developer.android.com/tools/sdk/ndk/index.html)
+installed and configured.
+
+Don't forget to adapt `ANDROID_NDK_ROOT` in `generic/Android-*.cmake` to path
+where NDK is installed. Default is `/opt/android-ndk`. Adapt also
+`ANDROID_SYSROOT` to your preferred API level. You might also need to update
+`ANDROID_TOOLCHAIN_PREFIX` and `ANDROID_TOOLCHAIN_ROOT` to fit your system.
+
+Then create build directory and run cmake and make in it. The toolchain needs
+access to its platform file, so be sure to properly set **absolute** path to
+`modules/` directory containing `Platform/Android.cmake`. Also set
+`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT`.
+
+Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
+depending shared libraries using JNI would be too inconvenient. Decision
+between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
+`TARGET_GLES2` to `ON` or `OFF`).
+
+    mkdir -p build-android-arm
+    cd build-android-arm
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
+        -DTARGET_GLES=ON -DTARGET_GLES2=ON
+    make
+
+    mkdir -p build-android-x86
+    cd build-android-x86
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-x86/usr \
+        -DTARGET_GLES=ON -DTARGET_GLES2=ON
+    make
+
+Then you can install the library using `make install` to make it available for
+depending projects.
+
 @section building-ci-jenkins Jenkins Continuous Integration
 
 In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
