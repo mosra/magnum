@@ -49,23 +49,31 @@ cmake_dependent_option(WITH_SHAPES "Build Shapes library" ON "NOT WITH_DEBUGTOOL
 option(WITH_TEXT "Build Text library" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 
-# Application libraries
+# NaCl-specific application libraries
 if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSNACLAPPLICATION "Build WindowlessNaClApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
-else()
+
+# X11, GLX and EGL-specific application libraries
+elseif(CORRADE_TARGET_UNIX AND NOT APPLE)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_DISTANCEFIELDCONVERTER" ON)
     cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
+endif()
+
+# Platform-independent application libraries
+if(NOT CORRADE_TARGET_NACL)
     cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 
-# Utilities (currently depending on WindowlessGlxApplication)
-if(UNIX OR CORRADE_TARGET_NACL)
+# Magnum Info (currently only using GLX or NaCl)
+if((CORRADE_TARGET_UNIX AND NOT APPLE) OR CORRADE_TARGET_NACL)
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
-if(UNIX)
+
+# Utilities (currently depending on WindowlessGlxApplication)
+if(CORRADE_TARGET_UNIX AND NOT APPLE)
     cmake_dependent_option(WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT TARGET_GLES" OFF)
     cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
 endif()
