@@ -34,7 +34,11 @@
 
 # Library
 find_library(OPENGLES3_LIBRARY NAMES
-    GLESv2) # wtf?
+    GLESv3
+
+    # On some platforms (e.g. desktop emulation with Mesa or NVidia) ES3
+    # support is provided in ES2 lib
+    GLESv2)
 
 # Include dir
 find_path(OPENGLES3_INCLUDE_DIR
