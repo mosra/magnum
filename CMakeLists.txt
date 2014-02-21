@@ -110,8 +110,8 @@ if(CORRADE_TARGET_ANDROID)
 endif()
 
 # NaCl newlib toolchain supports only static linking, dynamic linking is
-# meaningless on Emscripten
-if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN)
+# meaningless on Emscripten and too inconvenient on Android
+if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(BUILD_STATIC ON)
 endif()
 
