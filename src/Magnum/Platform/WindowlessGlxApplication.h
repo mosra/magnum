@@ -53,15 +53,32 @@ Application for offscreen rendering using pure X11 and GLX.
 This application library is available on desktop OpenGL and
 @ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
 depends on **X11** library and is built if `WITH_WINDOWLESSGLXAPPLICATION` is
-enabled in CMake. To use it, you need to request `%WindowlessGlxApplication`
-component in CMake, add `${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to
-include path and link to `${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no
-other windowless application is requested, you can also use generic
+enabled in CMake.
+
+## Bootstrap application
+
+Fully contained windowless application using @ref WindowlessGlxApplication
+along with CMake setup is available in `base-windowless` branch of
+[Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+repository, download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-windowless.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-windowless.zip)
+file. After extracting the downloaded archive you can build and run the
+application with these four commands:
+
+    mkdir build && cd build
+    cmake ..
+    cmake --build .
+    ./src/MyApplication # or ./src/Debug/MyApplication
+
+## General usage
+
+In CMake you need to request `%WindowlessGlxApplication` component, add
+`${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no other windowless
+application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
 @ref building and @ref cmake for more information.
-
-@section WindowlessGlxApplication-usage Usage
 
 Place your code into @ref exec(). The subclass can be then used directly in
 `main()` -- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().

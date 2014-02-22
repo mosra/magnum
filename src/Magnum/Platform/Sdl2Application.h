@@ -59,21 +59,69 @@ Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
 Supports keyboard and mouse handling.
 
 This application library is in theory available for all platforms for which
-SDL2 is ported (thus also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", but not
-@ref CORRADE_TARGET_NACL "NaCl"). It depends on **SDL2** library (Emscripten
-has it built in) and is built if `WITH_SDL2APPLICATION` is enabled in CMake. To
-use it, you need to copy `FindSDL2.cmake` from `modules/` directory in %Magnum
-source to `modules/` dir in your project (so CMake is able to find SDL2),
-request `%Sdl2Application` component in CMake, add
-`${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other application is requested,
-you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+SDL2 is ported (thus also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see
+respective sections in @ref building-corrade-cross-emscripten "Corrade's" and
+@ref building-cross-emscripten "Magnum's" building documentation). It depends
+on **SDL2** library (Emscripten has it built in) and is built if
+`WITH_SDL2APPLICATION` is enabled in CMake.
+
+## Bootstrap application
+
+Fully contained base application using @ref Sdl2Application along with
+CMake setup is available in `base-sdl2` branch of
+[Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
+download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-sdl2.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-sdl2.zip) file.
+After extracting the downloaded archive you can build and run the application
+with these four commands:
+
+    mkdir build && cd build
+    cmake ..
+    cmake --build .
+    ./src/MyApplication # or ./src/Debug/MyApplication
+
+## Bootstrap application for Emscripten
+
+Fully contained base application using @ref Sdl2Application for both desktop
+and Emscripten build along with full HTML markup and CMake setup is available
+in `base-emscripten` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+repository, download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-emscripten.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-emscripten.zip)
+file. After extracting the downloaded archive, you can do the desktop build in
+the same way as above. For the Emscripten build you also need to put the
+contents of toolchains repository from https://github.com/mosra/toolchains
+in `toolchains/` subdirectory. Don't forget to adapt `EMSCRIPTEN_PREFIX`
+variable in `toolchains/generic/Emscripten.cmake` to path where Emscripten is
+installed. Default is `/usr/emscripten`.
+
+Then create build directory and run `cmake` and build/install commands in it.
+The toolchain needs access to its platform file, so be sure to properly set
+**absolute** path to `toolchains/modules/` directory containing `Platform/Emscripten.cmake`.
+Set `CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
+webserver, e.g.  `/srv/http/emscripten`).
+
+    mkdir build-emscripten && cd build-emscripten
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake"
+        -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
+    cmake --build .
+    cmake --build . --target install
+
+You can then open `MyApplication.html` in Chrome or Firefox (through webserver,
+e.g. `http://localhost/emscripten/MyApplication.html`).
+
+## General usage
+
+For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
+%Magnum source to `modules/` dir in your project (so it is able to find SDL2),
+request `%Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
+to include path and link to `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other
+application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
+and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
 @ref building and @ref cmake for more information.
 
-@section Sdl2Application-usage Usage
-
-You need to implement at least @ref drawEvent() to be able to draw on the
+In C++ code you need to implement at least @ref drawEvent() to be able to draw on the
 screen. The subclass can be then used directly in `main()` -- see convenience
 macro @ref MAGNUM_SDL2APPLICATION_MAIN(). See @ref platform for more
 information.
@@ -88,14 +136,15 @@ If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 
-@section Sdl2Application-html Usage with Emscripten
+### Usage with Emscripten
 
-If you are targetting @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", you need to
-provide HTML markup for your application. Template one is below, you can modify
-it to your liking. The markup references two files, `EmscriptenApplication.js`
-and `WebApplication.css`, both are in `Platform/` directory in the source tree
-and are also installed into `share/magnum/` inside your Emscripten toolchain.
-Change `&lt;application&gt;` to name of your executable.
+If you are targetting Emscripten, you need to provide HTML markup for your
+application. Template one is below or in the bootstrap application, you can
+modify it to your liking. The markup references two files,
+`EmscriptenApplication.js` and `WebApplication.css`, both are in `Platform/`
+directory in the source tree and are also installed into `share/magnum/` inside
+your Emscripten toolchain. Change `&lt;application&gt;` to name of your
+executable.
 @code
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -123,9 +172,11 @@ file contains event listeners which print loading status on the page. The
 status displayed in the remaining two `&lt;div&gt;`s, if they are available.
 The CSS file contains rudimentary style to avoid eye bleeding.
 
-The application redirects @ref Corrade::Utility::Debug "Debug",
-@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
-output to JavaScript console.
+## Redirecting output to JavaScript console
+
+The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
+@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
+to JavaScript console.
 */
 class Sdl2Application {
     public:

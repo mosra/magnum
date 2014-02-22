@@ -54,19 +54,36 @@ warping.
 
 This application library is available only on desktop OpenGL (Linux, Windows,
 OS X). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION` is
-enabled in CMake. To use it, you need to request `%GlutApplication` component
-in CMake, add `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link
-to `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
+enabled in CMake.
+
+## Bootstrap application
+
+Fully contained base application using @ref GlutApplication along with
+CMake setup is available in `base` branch of
+[Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
+download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base.zip) file.
+After extracting the downloaded archive you can build and run the application
+with these four commands:
+
+    mkdir build && cd build
+    cmake ..
+    cmake --build .
+    ./src/MyApplication # or ./src/Debug/MyApplication
+
+## General usage
+
+In CMake you need to request `%GlutApplication` component, add
+`${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link to
+`${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
 @ref building and @ref cmake for more information.
 
-@section GlutApplication-usage Usage
-
-You need to implement at least @ref drawEvent() to be able to draw on the
-screen. The subclass can be then used directly in `main()` -- see convenience
-macro @ref MAGNUM_GLUTAPPLICATION_MAIN(). See @ref platform for more
-information.
+In C++ code you need to implement at least @ref drawEvent() to be able to draw
+on the screen. The subclass can be then used directly in `main()` -- see
+convenience macro @ref MAGNUM_GLUTAPPLICATION_MAIN(). See @ref platform for
+more information.
 @code
 class MyApplication: public Platform::GlutApplication {
     // implement required methods...
