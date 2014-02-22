@@ -88,7 +88,7 @@ MyApplication::MyApplication(const Arguments& arguments): Platform::Application(
 
 void MyApplication::drawEvent() {
     // Clear the window
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
+    defaultFramebuffer.clear(FramebufferClear::Color);
 
     // The context is double-buffered, swap buffers
     swapBuffers();
