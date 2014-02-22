@@ -66,10 +66,10 @@ blue color is shown in the following code listing.
     repository.
 
 @code
-#include <Color.h>
-#include <DefaultFramebuffer.h>
-#include <Renderer.h>
-#include <Platform/GlutApplication.h>
+#include <Magnum/Color.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/Platform/GlutApplication.h>
 
 using namespace Magnum;
 
@@ -148,8 +148,8 @@ renderer string and exits is in the following code listing.
     repository.
 
 @code
-#include <Context.h>
-#include <Platform/WindowlessGlxApplication.h>
+#include <Magnum/Context.h>
+#include <Magnum/Platform/WindowlessGlxApplication.h>
 
 using namespace Magnum;
 
