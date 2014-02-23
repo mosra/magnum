@@ -48,9 +48,8 @@ namespace Platform {
 /** @nosubgrouping
 @brief GLUT application
 
-Application using GLUT toolkit. Supports keyboard handling for limited subset
-of keys, mouse handling with support for changing cursor and mouse tracking and
-warping.
+Application using GLUT toolkit. Supports keyboard and mouse handling with
+support for changing cursor and mouse tracking and warping.
 
 This application library is available only on desktop OpenGL (Linux, Windows,
 OS X). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION` is
@@ -182,12 +181,7 @@ class GlutApplication {
         /** @copydoc Sdl2Application::keyPressEvent() */
         virtual void keyPressEvent(KeyEvent& event);
 
-        /**
-         * @brief Key release event
-         *
-         * Included only for compatibility with other toolkits, doesn't get
-         * called at all.
-         */
+        /** @copydoc Sdl2Application::keyReleaseEvent() */
         virtual void keyReleaseEvent(KeyEvent& event);
 
         /*@}*/
@@ -254,7 +248,11 @@ class GlutApplication {
             instance->viewportEvent({x, y});
         }
 
-        static void staticKeyEvent(int key, int x, int y);
+        static void staticKeyPressEvent(unsigned char key, int x, int y);
+        static void staticKeyReleaseEvent(unsigned char key, int x, int y);
+
+        static void staticSpecialKeyPressEvent(int key, int x, int y);
+        static void staticSpecialKeyReleaseEvent(int key, int x, int y);
 
         static void staticMouseEvent(int button, int state, int x, int y);
 
@@ -396,27 +394,76 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
          *
          * @see @ref key()
          */
-        enum class Key: int {
-            Up = GLUT_KEY_UP,               /**< Up arrow */
-            Down = GLUT_KEY_DOWN,           /**< Down arrow */
-            Left = GLUT_KEY_LEFT,           /**< Left arrow */
-            Right = GLUT_KEY_RIGHT,         /**< Right arrow */
-            F1 = GLUT_KEY_F1,               /**< F1 */
-            F2 = GLUT_KEY_F2,               /**< F2 */
-            F3 = GLUT_KEY_F3,               /**< F3 */
-            F4 = GLUT_KEY_F4,               /**< F4 */
-            F5 = GLUT_KEY_F5,               /**< F5 */
-            F6 = GLUT_KEY_F6,               /**< F6 */
-            F7 = GLUT_KEY_F7,               /**< F7 */
-            F8 = GLUT_KEY_F8,               /**< F8 */
-            F9 = GLUT_KEY_F9,               /**< F9 */
-            F10 = GLUT_KEY_F10,             /**< F10 */
-            F11 = GLUT_KEY_F11,             /**< F11 */
-            F12 = GLUT_KEY_F12,             /**< F12 */
-            Home = GLUT_KEY_HOME,           /**< Home */
-            End = GLUT_KEY_END,             /**< End */
-            PageUp = GLUT_KEY_PAGE_UP,      /**< Page up */
-            PageDown = GLUT_KEY_PAGE_DOWN   /**< Page down */
+        enum class Key: UnsignedInt {
+            Esc = '\x1b',               /**< Escape */
+
+            Up = GLUT_KEY_UP << 16,     /**< Up arrow */
+            Down = GLUT_KEY_DOWN << 16, /**< Down arrow */
+            Left = GLUT_KEY_LEFT << 16, /**< Left arrow */
+            Right = GLUT_KEY_RIGHT << 16, /**< Right arrow */
+            F1 = GLUT_KEY_F1 << 16,     /**< F1 */
+            F2 = GLUT_KEY_F2 << 16,     /**< F2 */
+            F3 = GLUT_KEY_F3 << 16,     /**< F3 */
+            F4 = GLUT_KEY_F4 << 16,     /**< F4 */
+            F5 = GLUT_KEY_F5 << 16,     /**< F5 */
+            F6 = GLUT_KEY_F6 << 16,     /**< F6 */
+            F7 = GLUT_KEY_F7 << 16,     /**< F7 */
+            F8 = GLUT_KEY_F8 << 16,     /**< F8 */
+            F9 = GLUT_KEY_F9 << 16,     /**< F9 */
+            F10 = GLUT_KEY_F10 << 16,   /**< F10 */
+            F11 = GLUT_KEY_F11 << 16,   /**< F11 */
+            F12 = GLUT_KEY_F12 << 16,   /**< F12 */
+            Home = GLUT_KEY_HOME << 16, /**< Home */
+            End = GLUT_KEY_END << 16,   /**< End */
+            PageUp = GLUT_KEY_PAGE_UP << 16, /**< Page up */
+            PageDown = GLUT_KEY_PAGE_DOWN << 16, /**< Page down */
+
+            Space = ' ',                /**< Space */
+            Comma = ',',                /**< Comma */
+            Period = '.',               /**< Period */
+            Minus = '-',                /**< Minus */
+            Plus = '+',                 /**< Plus */
+            Slash = '/',                /**< Slash */
+            Percent = '%',              /**< Percent */
+            Equal = '=',                /**< Equal */
+
+            Zero = '0',                 /**< Zero */
+            One = '1',                  /**< One */
+            Two = '2',                  /**< Two */
+            Three = '3',                /**< Three */
+            Four = '4',                 /**< Four */
+            Five = '5',                 /**< Five */
+            Six = '6',                  /**< Six */
+            Seven = '7',                /**< Seven */
+            Eight = '8',                /**< Eight */
+            Nine = '9',                 /**< Nine */
+
+            A = 'a',                    /**< Letter A */
+            B = 'b',                    /**< Letter B */
+            C = 'c',                    /**< Letter C */
+            D = 'd',                    /**< Letter D */
+            E = 'e',                    /**< Letter E */
+            F = 'f',                    /**< Letter F */
+            G = 'g',                    /**< Letter G */
+            H = 'h',                    /**< Letter H */
+            I = 'i',                    /**< Letter I */
+            J = 'j',                    /**< Letter J */
+            K = 'k',                    /**< Letter K */
+            L = 'l',                    /**< Letter L */
+            M = 'm',                    /**< Letter M */
+            N = 'n',                    /**< Letter N */
+            O = 'o',                    /**< Letter O */
+            P = 'p',                    /**< Letter P */
+            Q = 'q',                    /**< Letter Q */
+            R = 'r',                    /**< Letter R */
+            S = 's',                    /**< Letter S */
+            T = 't',                    /**< Letter T */
+            U = 'u',                    /**< Letter U */
+            V = 'v',                    /**< Letter V */
+            W = 'w',                    /**< Letter W */
+            X = 'x',                    /**< Letter X */
+            Y = 'y',                    /**< Letter Y */
+            Z = 'z'                     /**< Letter Z */
         };
 
         /** @brief Key */

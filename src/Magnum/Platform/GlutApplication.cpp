@@ -95,7 +95,10 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
         return false;
     }
     glutReshapeFunc(staticViewportEvent);
-    glutSpecialFunc(staticKeyEvent);
+    glutKeyboardFunc(staticKeyPressEvent);
+    glutKeyboardUpFunc(staticKeyReleaseEvent);
+    glutSpecialFunc(staticSpecialKeyPressEvent);
+    glutSpecialUpFunc(staticSpecialKeyReleaseEvent);
     glutMouseFunc(staticMouseEvent);
     glutMotionFunc(staticMouseMoveEvent);
     glutDisplayFunc(staticDrawEvent);
@@ -108,9 +111,24 @@ GlutApplication::~GlutApplication() {
     delete c;
 }
 
-void GlutApplication::staticKeyEvent(int key, int x, int y){
+void GlutApplication::staticKeyPressEvent(unsigned char key, int x, int y) {
     KeyEvent e(static_cast<KeyEvent::Key>(key), {x, y});
     instance->keyPressEvent(e);
+}
+
+void GlutApplication::staticKeyReleaseEvent(unsigned char key, int x, int y) {
+    KeyEvent e(static_cast<KeyEvent::Key>(key), {x, y});
+    instance->keyReleaseEvent(e);
+}
+
+void GlutApplication::staticSpecialKeyPressEvent(int key, int x, int y){
+    KeyEvent e(static_cast<KeyEvent::Key>(key << 16), {x, y});
+    instance->keyPressEvent(e);
+}
+
+void GlutApplication::staticSpecialKeyReleaseEvent(int key, int x, int y){
+    KeyEvent e(static_cast<KeyEvent::Key>(key << 16), {x, y});
+    instance->keyReleaseEvent(e);
 }
 
 void GlutApplication::staticMouseEvent(int button, int state, int x, int y) {
