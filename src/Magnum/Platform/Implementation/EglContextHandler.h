@@ -71,8 +71,6 @@ class EglContextHandler: public AbstractContextHandler<AbstractXApplication::Con
         }
 
     private:
-        const char* errorString(EGLint error);
-
         EGLDisplay display;
         EGLConfig config;
         EGLSurface surface;

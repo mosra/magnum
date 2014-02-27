@@ -32,6 +32,8 @@
 #include "Magnum/Context.h"
 #include "Magnum/Version.h"
 
+#include "Egl.h"
+
 namespace Magnum { namespace Platform { namespace Implementation {
 
 EglContextHandler::~EglContextHandler() {
@@ -44,7 +46,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     /* Initialize */
     display = eglGetDisplay(nativeDisplay);
     if(!eglInitialize(display, nullptr, nullptr)) {
-        Error() << "Cannot initialize EGL:" << errorString(eglGetError());
+        Error() << "Cannot initialize EGL:" << Implementation::eglErrorString(eglGetError());
         std::exit(1);
     }
 
@@ -54,7 +56,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     EGLenum api = EGL_OPENGL_ES_API;
     #endif
     if(!eglBindAPI(api)) {
-        Error() << "Cannot bind EGL API:" << errorString(eglGetError());
+        Error() << "Cannot bind EGL API:" << Implementation::eglErrorString(eglGetError());
         std::exit(1);
     }
 
@@ -77,7 +79,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     };
     EGLint configCount;
     if(!eglChooseConfig(display, attribs, &config, 1, &configCount)) {
-        Error() << "Cannot get EGL visual config:" << errorString(eglGetError());
+        Error() << "Cannot get EGL visual config:" << Implementation::eglErrorString(eglGetError());
         std::exit(1);
     }
 
@@ -89,7 +91,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     /* Get visual ID */
     EGLint visualId;
     if(!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &visualId)) {
-        Error() << "Cannot get native visual ID:" << errorString(eglGetError());
+        Error() << "Cannot get native visual ID:" << Implementation::eglErrorString(eglGetError());
         std::exit(1);
     }
 
@@ -140,40 +142,16 @@ void EglContextHandler::createContext(const AbstractXApplication::Configuration&
     }
     #endif
 
-    if(!eglCreateContext(display, config, EGL_NO_CONTEXT, attributes)) {
-        Error() << "Cannot create EGL context:" << errorString(eglGetError());
+    if(!(context = eglCreateContext(display, config, EGL_NO_CONTEXT, attributes))) {
+        Error() << "Cannot create EGL context:" << Implementation::eglErrorString(eglGetError());
         std::exit(1);
     }
     if(!(surface = eglCreateWindowSurface(display, config, window, nullptr))) {
-        Error() << "Cannot create window surface:" << errorString(eglGetError());
+        Error() << "Cannot create window surface:" << Implementation::eglErrorString(eglGetError());
         std::exit(1);
     }
 
     /** @bug Fixme: On desktop OpenGL and Mesa EGL implementation OpenGL version is 1.0, which is wrong */
-}
-
-const char* EglContextHandler::errorString(EGLint error) {
-    switch(error) {
-        #define _error(name) case name: return #name;
-        _error(EGL_SUCCESS)
-        _error(EGL_NOT_INITIALIZED)
-        _error(EGL_BAD_ACCESS)
-        _error(EGL_BAD_ALLOC)
-        _error(EGL_BAD_ATTRIBUTE)
-        _error(EGL_BAD_CONTEXT)
-        _error(EGL_BAD_CONFIG)
-        _error(EGL_BAD_CURRENT_SURFACE)
-        _error(EGL_BAD_DISPLAY)
-        _error(EGL_BAD_SURFACE)
-        _error(EGL_BAD_MATCH)
-        _error(EGL_BAD_PARAMETER)
-        _error(EGL_BAD_NATIVE_PIXMAP)
-        _error(EGL_BAD_NATIVE_WINDOW)
-        _error(EGL_CONTEXT_LOST)
-        #undef _error
-    }
-
-    return {};
 }
 
 }}}

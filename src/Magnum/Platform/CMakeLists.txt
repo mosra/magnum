@@ -171,7 +171,9 @@ if(NEED_EGLCONTEXT)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
-    add_library(MagnumEglContextHandler OBJECT Implementation/EglContextHandler.cpp)
+    add_library(MagnumEglContextHandler OBJECT
+        Implementation/EglContextHandler.cpp
+        Implementation/Egl.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
 endif()
