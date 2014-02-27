@@ -130,7 +130,9 @@ class WindowlessGlxApplication {
 
         /**
          * @brief Execute application
-         * @return Value for returning from `main()`.
+         * @return Value for returning from `main()`
+         *
+         * See @ref MAGNUM_WINDOWLESSAPPLICATION_MAIN() for usage information.
          */
         virtual int exec() = 0;
 
@@ -174,9 +176,10 @@ class WindowlessGlxApplication::Configuration {
 @brief Entry point for windowless GLX application
 @param className Class name
 
-Can be used with @ref Magnum::Platform::WindowlessGlxApplication "Platform::WindowlessGlxApplication"
-subclasses as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+See @ref Magnum::Platform::WindowlessGlxApplication "Platform::WindowlessGlxApplication"
+for usage information. This macro abstracts out platform-specific entry point
+code and is equivalent to the following, see @ref portability-applications for
+more information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

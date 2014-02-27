@@ -92,9 +92,10 @@ class GlxApplication: public AbstractXApplication {
 @brief Entry point for GLX-based applications
 @param className Class name
 
-Can be used with @ref Magnum::Platform::GlxApplication "Platform::GlxApplication"
-subclasses as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+See @ref Magnum::Platform::GlxApplication "Platform::GlxApplication" for usage
+information. This macro abstracts out platform-specific entry point code and is
+equivalent to the following, see @ref portability-applications for more
+information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

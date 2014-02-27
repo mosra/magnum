@@ -750,7 +750,9 @@ namespace Implementation {
 @brief Entry point for NaCl application
 @param application  Application class name
 
-See @ref Magnum::Platform::NaClApplication "Platform::NaClApplication" and
+See @ref Magnum::Platform::NaClApplication "Platform::NaClApplication" for
+usage information. This macro abstracts out platform-specific entry point code
+(the classic `main()` function cannot be used in NaCl). See
 @ref portability-applications for more information. When no other application
 header is included this macro is also aliased to `MAGNUM_APPLICATION_MAIN()`.
 */

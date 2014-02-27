@@ -132,7 +132,12 @@ class GlutApplication {
         /** @brief Moving is not allowed */
         GlutApplication& operator=(GlutApplication&&) = delete;
 
-        /** @copydoc Sdl2Application::exec() */
+        /**
+         * @brief Execute main loop
+         * @return Value for returning from `main()`
+         *
+         * See @ref MAGNUM_GLUTAPPLICATION_MAIN() for usage information.
+         */
         int exec() {
             glutMainLoop();
             return 0;
@@ -560,9 +565,10 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
 @brief Entry point for GLUT-based applications
 @param className Class name
 
-Can be with @ref Magnum::Platform::GlutApplication "Platform::GlutApplication"
-subclasses used as equivalent to the following code to achieve better
-portability, see @ref portability-applications for more information.
+See @ref Magnum::Platform::GlutApplication "Platform::GlutApplication" for
+usage information. This macro abstracts out platform-specific entry point code
+and is equivalent to the following, see @ref portability-applications for more
+information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

@@ -133,9 +133,17 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         /** @brief Moving is not allowed */
         WindowlessNaClApplication& operator=(WindowlessNaClApplication&&) = delete;
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
         /**
          * @brief Execute application
-         * @return Value for returning from `main()`.
+         * @return Value for returning from `main()`
+         *
+         * This function is not meant to be called from user code, see
+         * @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() for usage information.
          */
         virtual int exec() = 0;
 
@@ -199,8 +207,10 @@ namespace Implementation {
 @param application  Application class name
 
 See @ref Magnum::Platform::WindowlessNaClApplication "Platform::WindowlessNaClApplication"
-and @ref portability-applications for more information. When no other
-windowless application header is included this macro is also aliased to
+for usage information. This macro abstracts out platform-specific entry point
+code (the classic `main()` function cannot be used in NaCl). See
+@ref portability-applications for more information. When no other windowless
+application header is included this macro is also aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 /* look at that insane placement of __attribute__. WTF. */

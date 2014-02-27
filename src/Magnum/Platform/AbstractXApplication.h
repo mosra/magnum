@@ -88,7 +88,10 @@ class AbstractXApplication {
 
         /**
          * @brief Execute main loop
-         * @return Value for returning from `main()`.
+         * @return Value for returning from `main()`
+         *
+         * See @ref MAGNUM_GLXAPPLICATION_MAIN() or
+         * @ref MAGNUM_XEGLAPPLICATION_MAIN() for usage information.
          */
         int exec();
 

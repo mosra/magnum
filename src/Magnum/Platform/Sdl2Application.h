@@ -232,7 +232,9 @@ class Sdl2Application {
 
         /**
          * @brief Execute main loop
-         * @return Value for returning from `main()`.
+         * @return Value for returning from `main()`
+         *
+         * See @ref MAGNUM_SDL2APPLICATION_MAIN() for usage information.
          */
         int exec();
 
@@ -876,9 +878,10 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 @brief Entry point for SDL2-based applications
 @param className Class name
 
-Can be used with @ref Magnum::Platform::Sdl2Application "Platform::Sdl2Application"
-subclasses as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+See @ref Magnum::Platform::Sdl2Application "Platform::Sdl2Application" for
+usage information. This macro abstracts out platform-specific entry point code
+and is equivalent to the following, see @ref portability-applications for more
+information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});
