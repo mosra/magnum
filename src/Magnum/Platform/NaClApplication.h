@@ -48,6 +48,10 @@ namespace pp {
     class Fullscreen;
 }
 
+#ifndef CORRADE_TARGET_NACL
+#error This header is available only on Google Chrome Native Client
+#endif
+
 namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
