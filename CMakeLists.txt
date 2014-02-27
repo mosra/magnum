@@ -54,6 +54,10 @@ if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSNACLAPPLICATION "Build WindowlessNaClApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
 
+# Android-specific application libraries
+elseif(CORRADE_TARGET_ANDROID)
+    option(WITH_ANDROIDAPPLICATION "Build AndroidApplication library" OFF)
+
 # X11, GLX and EGL-specific application libraries
 elseif(CORRADE_TARGET_UNIX AND NOT APPLE)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)

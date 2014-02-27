@@ -32,6 +32,25 @@ set(Platform_HEADERS
 
 install(FILES ${Platform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
+# Android application
+if(WITH_ANDROIDAPPLICATION)
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android)
+        message(FATAL_ERROR "AndroidApplication is available only when targeting Android. Set WITH_ANDROIDAPPLICATION to OFF to skip building it.")
+    endif()
+
+    include_directories(${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
+
+    add_library(MagnumAndroidApplication STATIC
+        AndroidApplication.cpp
+        Implementation/Egl.cpp
+        ${ANDROID_NATIVE_APP_GLUE_SRC})
+    install(FILES AndroidApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumAndroidApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)

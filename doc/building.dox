@@ -185,6 +185,7 @@ None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
 platform best:
 
+-   `WITH_ANDROIDAPPLICATION` - @ref Platform::AndroidApplication "AndroidApplication"
 -   `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
 -   `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
 -   `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"

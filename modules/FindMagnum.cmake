@@ -253,6 +253,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     if(${component} MATCHES .+Application)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
 
+        # Android application dependencies
+        if(${component} STREQUAL AndroidApplication)
+            find_package(EGL)
+            if(EGL_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES android ${EGL_LIBRARY} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+
         # GLUT application dependencies
         if(${component} STREQUAL GlutApplication)
             find_package(GLUT)
