@@ -30,7 +30,8 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
-        -DWITH_TGAIMPORTER=ON
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_ANDROIDAPPLICATION=ON
     ninja
 }
 
