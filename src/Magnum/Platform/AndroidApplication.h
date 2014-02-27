@@ -144,8 +144,8 @@ contents:
     <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="cz.mosra.magnum.{{application}}" android:versionCode="1" android:versionName="1.0">
         <uses-sdk android:minSdkVersion="9" />
         <uses-feature android:glEsVersion="0x00020000" />
-        <application android:label="{{name}}" android:hasCode="false">
-            <activity android:name="android.app.NativeActivity" android:label="{{name}}">
+        <application android:label="Magnum Android Application" android:hasCode="false">
+            <activity android:name="android.app.NativeActivity" android:label="Magnum Android Application">
                 <meta-data android:name="android.app.lib_name" android:value="{{application}}" />
                 <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -155,8 +155,8 @@ contents:
         </application>
     </manifest>
 
-Replace `{{name}}` with the actual application name and `{{application}}` with
-name of the binary file (without extension). If you plan to use OpenGL ES, set
+Modify `android:label` to your liking and replace `{{application}}` with name
+of the binary file (without extension). If you plan to use OpenGL ES, set
 `android:glEsVersion` to `0x00030000`.
 
 ## Redirecting output to Android log buffer
