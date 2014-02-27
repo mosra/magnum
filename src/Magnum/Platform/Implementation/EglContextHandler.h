@@ -31,6 +31,7 @@
 #include <EGL/egl.h>
 /* undef Xlib nonsense to avoid conflicts */
 #undef None
+#undef Complex
 
 #include <Corrade/compatibility.h>
 
