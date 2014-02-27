@@ -132,7 +132,8 @@ class WindowlessGlxApplication {
          * @brief Execute application
          * @return Value for returning from `main()`
          *
-         * See @ref MAGNUM_WINDOWLESSAPPLICATION_MAIN() for usage information.
+         * See @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN() for usage
+         * information.
          */
         virtual int exec() = 0;
 

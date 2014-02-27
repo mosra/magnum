@@ -114,8 +114,9 @@ e.g. `http://localhost/emscripten/MyApplication.html`).
 ## General usage
 
 For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
-%Magnum source to `modules/` dir in your project (so it is able to find SDL2),
-request `%Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
+%Magnum source to `modules/` dir in your project (so it is able to find SDL2).
+In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
+`%Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See

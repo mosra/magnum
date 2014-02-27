@@ -111,7 +111,9 @@ You can then open `MyApplication` through your webserver in Chrome (e.g.
 
 ## General usage
 
-In CMake you need to request `%NaClApplication` component, add
+For CMake you need to copy `FindOpenGLES2.cmake` from `modules/` directory in
+%Magnum source to `modules/` dir in your project (so it is able to find OpenGL
+ES). Request `%NaClApplication` component, add
 `${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
