@@ -233,6 +233,19 @@ class MAGNUM_EXPORT Context {
          */
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
+        /**
+         * @brief Extension strings
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. Note that this function returns list of all extensions
+         * reported by the driver (even those not supported by %Magnum), see
+         * @ref supportedExtensions(), @ref Extension::extensions() or
+         * @ref isExtensionSupported() for alternatives.
+         * @see @fn_gl{Get} with @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString}
+         *      with @def_gl{EXTENSIONS}
+         */
+        std::vector<std::string> extensionStrings() const;
+
         /** @brief Context flags */
         Flags flags() const { return _flags; }
 

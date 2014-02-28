@@ -409,46 +409,15 @@ Context::Context() {
             futureExtensions.insert({extension._string, extension});
             #endif
 
-    /* Check for presence of extensions in future versions */
-    #ifndef MAGNUM_TARGET_GLES2
-    GLint extensionCount = 0;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
-    #ifndef MAGNUM_TARGET_GLES3
-    if(extensionCount || isVersionSupported(Version::GL300))
-    #endif
-    {
-        _supportedExtensions.reserve(extensionCount);
-        for(GLint i = 0; i != extensionCount; ++i) {
-            const std::string extension(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
-            auto found = futureExtensions.find(extension);
-            if(found != futureExtensions.end()) {
-                _supportedExtensions.push_back(found->second);
-                extensionStatus.set(found->second._index);
-            }
+    /* Check for presence of future and vendor extensions */
+    const std::vector<std::string> extensions = extensionStrings();
+    for(const std::string& extension: extensions) {
+        const auto found = futureExtensions.find(extension);
+        if(found != futureExtensions.end()) {
+            _supportedExtensions.push_back(found->second);
+            extensionStatus.set(found->second._index);
         }
     }
-    #ifndef MAGNUM_TARGET_GLES3
-    else
-    #endif
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES3
-    /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-    {
-        /* Don't crash when glGetString() returns nullptr */
-        const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-        if(e) {
-            std::vector<std::string> extensions = Utility::String::split(e, ' ');
-            for(const std::string& extension: extensions) {
-                auto found = futureExtensions.find(extension);
-                if(found != futureExtensions.end()) {
-                    _supportedExtensions.push_back(found->second);
-                    extensionStatus.set(found->second._index);
-                }
-            }
-        }
-    }
-    #endif
 
     /* Reset minimal required version to Version::None for whole array */
     for(auto& i: _extensionRequiredVersion) i = Version::None;
@@ -499,6 +468,38 @@ std::vector<std::string> Context::shadingLanguageVersionStrings() const {
     #else
     return {shadingLanguageVersionString()};
     #endif
+}
+
+std::vector<std::string> Context::extensionStrings() const {
+    std::vector<std::string> extensions;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint extensionCount = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
+    #ifndef MAGNUM_TARGET_GLES3
+    if(extensionCount || isVersionSupported(Version::GL300))
+    #endif
+    {
+        extensions.reserve(extensionCount);
+        for(GLint i = 0; i != extensionCount; ++i)
+            extensions.push_back(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
+    }
+    #ifndef MAGNUM_TARGET_GLES3
+    else
+    #endif
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES3
+    /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
+    {
+        /* Don't crash when glGetString() returns nullptr (i.e. don't trust the
+           old implementations) */
+        const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+        if(e) extensions = Utility::String::splitWithoutEmptyParts(e, ' ');
+    }
+    #endif
+
+    return extensions;
 }
 
 Version Context::supportedVersion(std::initializer_list<Version> versions) const {
