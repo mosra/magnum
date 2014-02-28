@@ -555,7 +555,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GL440: _sources.push_back("#version 440\n"); return;
         #else
         case Version::GLES200: _sources.push_back("#version 100\n"); return;
-        case Version::GLES300: _sources.push_back("#version 300\n"); return;
+        case Version::GLES300: _sources.push_back("#version 300 es\n"); return;
         #endif
 
         /* The user is responsible for (not) adding #version directive */
