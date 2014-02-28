@@ -141,7 +141,7 @@ The application needs at least the `AndroidManifest.xml` with the following
 contents:
 
     <?xml version="1.0" encoding="utf-8"?>
-    <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="cz.mosra.magnum.{{application}}" android:versionCode="1" android:versionName="1.0">
+    <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="cz.mosra.magnum.application" android:versionCode="1" android:versionName="1.0">
         <uses-sdk android:minSdkVersion="9" />
         <uses-feature android:glEsVersion="0x00020000" />
         <application android:label="Magnum Android Application" android:hasCode="false">
@@ -155,9 +155,11 @@ contents:
         </application>
     </manifest>
 
-Modify `android:label` to your liking and replace `{{application}}` with name
-of the binary file (without extension). If you plan to use OpenGL ES, set
-`android:glEsVersion` to `0x00030000`.
+Modify `android:label` to your liking, set unique `package` name and replace
+`{{application}}` with name of the binary file (without extension). If you plan
+to use OpenGL ES, set `android:glEsVersion` to `0x00030000`. The resulting APK
+file will be named `NativeActivity.apk` by default, you can change that by
+editing first line of the generated `build.xml` file.
 
 ## Redirecting output to Android log buffer
 
@@ -291,7 +293,7 @@ class AndroidApplication::Configuration {
          *
          * @note This function does nothing and is included only for
          *      compatibility with other toolkits. You need to set the title
-         *      separately in the XML file.
+         *      separately in the `AndroidManifest.xml` file.
          */
         template<class T> Configuration& setTitle(const T&) { return *this; }
 
