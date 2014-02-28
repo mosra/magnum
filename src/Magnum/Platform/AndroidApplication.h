@@ -254,7 +254,7 @@ class AndroidApplication {
         struct LogOutput;
 
         enum class Flag: UnsignedByte {
-            Redraw = 1 << 1
+            Redraw = 1 << 0
         };
         typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
 
