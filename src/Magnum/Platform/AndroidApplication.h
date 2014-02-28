@@ -158,8 +158,9 @@ contents:
 Modify `android:label` to your liking, set unique `package` name and replace
 `{{application}}` with name of the binary file (without extension). If you plan
 to use OpenGL ES, set `android:glEsVersion` to `0x00030000`. The resulting APK
-file will be named `NativeActivity.apk` by default, you can change that by
-editing first line of the generated `build.xml` file.
+file will be named `NativeActivity.apk` by default, you can change that either
+by passing `-n` parameter to `android update project` or later by editing first
+line of the generated `build.xml` file.
 
 ## Redirecting output to Android log buffer
 
