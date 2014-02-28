@@ -41,6 +41,9 @@
 #error This file is available only on Android
 #endif
 
+/* Undef Xlib nonsense which might get pulled in by EGL */
+#undef None
+
 namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
@@ -176,6 +179,9 @@ class AndroidApplication {
         typedef android_app* Arguments;
 
         class Configuration;
+        class InputEvent;
+        class MouseEvent;
+        class MouseMoveEvent;
 
         /**
          * @brief Execute the application
@@ -247,6 +253,38 @@ class AndroidApplication {
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
+        virtual void mousePressEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse move event
+         *
+         * Called when mouse is moved. Default implementation does nothing.
+         */
+        virtual void mouseMoveEvent(MouseMoveEvent& event);
 
         /*@}*/
 
@@ -327,6 +365,148 @@ class AndroidApplication::Configuration {
     private:
         Vector2i _size;
 };
+
+/**
+@brief Base for input events
+
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mousePressEvent(),
+    @ref mouseReleaseEvent(), @ref mouseMoveEvent()
+*/
+class AndroidApplication::InputEvent {
+    public:
+        /** @brief Copying is not allowed */
+        InputEvent(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent(InputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        InputEvent& operator=(const InputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        InputEvent& operator=(InputEvent&&) = delete;
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it will be
+         * propagated elsewhere, for example to the Android system or to
+         * another screen when using @ref BasicScreenedApplication "ScreenedApplication".
+         * By default is each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Whether the event is accepted */
+        bool isAccepted() const { return _accepted; }
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+        explicit InputEvent(AInputEvent* event): _event(event), _accepted(false) {}
+
+        ~InputEvent() = default;
+
+        AInputEvent* _event;
+    #endif
+
+    private:
+        bool _accepted;
+};
+
+/**
+@brief Mouse event
+
+@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
+*/
+class AndroidApplication::MouseEvent: public InputEvent {
+    friend class AndroidApplication;
+
+    public:
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref button()
+         */
+        enum class Button: std::int32_t {
+            /** No button was pressed (touch or stylus event) */
+            None = 0,
+
+            /**
+             * Left mouse button. Note that this button is not set if only
+             * touch or stylus event occured.
+             */
+            Left = AMOTION_EVENT_BUTTON_PRIMARY,
+
+            /** Middle mouse button or second stylus button */
+            Middle = AMOTION_EVENT_BUTTON_TERTIARY,
+
+            /** Right mouse button or first stylus button */
+            Right = AMOTION_EVENT_BUTTON_SECONDARY
+        };
+
+        /** @brief Button */
+        Button button() { return Button(AMotionEvent_getButtonState(_event)); }
+
+        /** @brief Position */
+        Vector2i position() {
+            return {Int(AMotionEvent_getX(_event, 0)),
+                    Int(AMotionEvent_getY(_event, 0))};
+        }
+
+    private:
+        MouseEvent(AInputEvent* event): InputEvent(event) {}
+};
+
+/**
+@brief Mouse move event
+
+@see @ref MouseEvent, @ref mouseMoveEvent()
+*/
+class AndroidApplication::MouseMoveEvent: public InputEvent {
+    friend class AndroidApplication;
+
+    public:
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref button()
+         */
+        enum class Button: std::int32_t {
+            /**
+             * Left mouse button. Note that this button is not set if only
+             * touch or stylus event occured.
+             */
+            Left = AMOTION_EVENT_BUTTON_PRIMARY,
+
+            /** Middle mouse button or second stylus button */
+            Middle = AMOTION_EVENT_BUTTON_TERTIARY,
+
+            /** Right mouse button or first stylus button */
+            Right = AMOTION_EVENT_BUTTON_SECONDARY
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button, std::int32_t> Buttons;
+
+        /** @brief Position */
+        Vector2i position() const {
+            return {Int(AMotionEvent_getX(_event, 0)),
+                    Int(AMotionEvent_getY(_event, 0))};
+        }
+
+        /** @brief Mouse buttons */
+        Buttons buttons() const {
+            return Button(AMotionEvent_getButtonState(_event));
+        }
+
+    private:
+        MouseMoveEvent(AInputEvent* event): InputEvent(event) {}
+};
+
+CORRADE_ENUMSET_OPERATORS(AndroidApplication::MouseMoveEvent::Buttons)
 
 /** @hideinitializer
 @brief Entry point for Android applications

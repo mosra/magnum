@@ -155,6 +155,9 @@ void AndroidApplication::swapBuffers() {
 }
 
 void AndroidApplication::viewportEvent(const Vector2i&) {}
+void AndroidApplication::mousePressEvent(MouseEvent&) {}
+void AndroidApplication::mouseReleaseEvent(MouseEvent&) {}
+void AndroidApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 namespace {
     struct Data {
@@ -193,8 +196,29 @@ void AndroidApplication::commandEvent(android_app* state, int32_t cmd) {
     }
 }
 
-std::int32_t AndroidApplication::inputEvent(android_app*, AInputEvent*) {
-    /** @todo Implement input events */
+std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* event) {
+    CORRADE_INTERNAL_ASSERT(static_cast<Data*>(state->userData)->instance);
+    AndroidApplication& app = *static_cast<Data*>(state->userData)->instance;
+    if(AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
+        const std::int32_t action = AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK;
+        switch(action) {
+            case AMOTION_EVENT_ACTION_DOWN:
+            case AMOTION_EVENT_ACTION_UP: {
+                MouseEvent e(event);
+                action == AMOTION_EVENT_ACTION_DOWN ? app.mousePressEvent(e) : app.mouseReleaseEvent(e);
+                return e.isAccepted() ? 1 : 0;
+            }
+
+            case AMOTION_EVENT_ACTION_MOVE: {
+                MouseMoveEvent e(event);
+                app.mouseMoveEvent(e);
+                return e.isAccepted() ? 1 : 0;
+            }
+        }
+
+    /** @todo Implement also other input events */
+    }
+
     return 0;
 }
 
