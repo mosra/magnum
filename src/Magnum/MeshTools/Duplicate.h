@@ -30,6 +30,7 @@
  */
 
 #include <vector>
+#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Types.h"
 
@@ -45,8 +46,10 @@ index array `{1, 1, 0, 3, 2, 2}` will be converted to `{b, b, a, d, c, c}`.
 template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& data) {
     std::vector<T> out;
     out.reserve(indices.size());
-    for(const UnsignedInt index: indices)
+    for(const UnsignedInt index: indices) {
+        CORRADE_ASSERT(index < data.size(), "MeshTools::duplicate(): index out of range", out);
         out.push_back(data[index]);
+    }
     return out;
 }
 
