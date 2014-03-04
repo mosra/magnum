@@ -216,6 +216,7 @@ default.
 -   `WITH_MAGNUMFONTCONVERTER` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
     plugin. Available only if `WITH_TEXT` is enabled. Enables also building of
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
+-   `WITH_OBJIMPORTER` -- @ref Trade::ObjImporter "ObjImporter" plugin.
 -   `WITH_TGAIMPORTER` -- @ref Trade::TgaImporter "TgaImporter" plugin.
 -   `WITH_TGAIMAGECONVERTER` -- @ref Trade::TgaImageConverter "TgaImageConverter"
     plugin.

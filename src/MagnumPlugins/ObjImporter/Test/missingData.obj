@@ -1,0 +1,23 @@
+o MissingPositionData
+p 1
+
+o MissingPositionIndices
+v 1 2 3
+
+o MissingNormalData
+v 1 2 3
+p 1//1
+
+o MissingNormalIndices
+v 1 2 3
+vn 1 2 3
+p 1
+
+o MissingTextureData
+v 1 2 3
+p 1/1
+
+o MissingTextureIndices
+v 1 2 3
+vt 1 2
+p 1

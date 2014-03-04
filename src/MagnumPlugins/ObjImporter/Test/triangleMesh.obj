@@ -1,0 +1,9 @@
+# Positions
+v 0.5 2 3
+v 0 1.5 1
+v 2 3 5.0
+v 2.5 0 1
+
+# Triangles
+f 1 2 3
+f 4 2 1

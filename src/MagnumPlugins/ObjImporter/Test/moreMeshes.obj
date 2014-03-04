@@ -1,0 +1,21 @@
+# Points
+o PointMesh
+v 0.5 2 3
+v 0 1.5 1
+p 1
+p 2
+
+# Lines
+o LineMesh
+v 0.5 2 3
+v 0 1.5 1
+l 1 2
+l 2 1
+
+# Triangles
+o TriangleMesh
+v 0.5 2 3
+v 0 1.5 1
+v 2 3 5.5
+f 1 2 3
+f 3 2 1

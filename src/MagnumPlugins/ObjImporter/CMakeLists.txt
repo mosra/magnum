@@ -23,35 +23,31 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Wrapper for creating given plugin type
-macro(add_plugin)
-    if(NOT BUILD_STATIC)
-        corrade_add_plugin(${ARGN})
-    else()
-        corrade_add_static_plugin(${ARGN})
+add_library(ObjImporterObjects OBJECT ObjImporter.cpp)
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(ObjImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+endif()
+
+add_plugin(ObjImporter ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR}
+    ObjImporter.conf
+    $<TARGET_OBJECTS:ObjImporterObjects>
+    pluginRegistration.cpp)
+target_link_libraries(ObjImporter Magnum MagnumMeshTools)
+
+install(FILES ObjImporter.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
+
+if(BUILD_TESTS)
+    add_library(ObjImporterTestLib STATIC $<TARGET_OBJECTS:ObjImporterObjects>)
+    target_link_libraries(ObjImporterTestLib Magnum MagnumMeshTools)
+
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
+        install(TARGETS ObjImporterTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
     endif()
-endmacro()
 
-if(WITH_TEXT AND WITH_MAGNUMFONT)
-    add_subdirectory(MagnumFont)
-endif()
-
-if(WITH_TEXT AND WITH_MAGNUMFONTCONVERTER AND NOT MAGNUM_TARGET_GLES)
-    add_subdirectory(MagnumFontConverter)
-endif()
-
-if(WITH_OBJIMPORTER)
-    add_subdirectory(ObjImporter)
-endif()
-
-if(WITH_TGAIMAGECONVERTER)
-    add_subdirectory(TgaImageConverter)
-endif()
-
-if(WITH_TGAIMPORTER)
-    add_subdirectory(TgaImporter)
-endif()
-
-if(WITH_AUDIO AND WITH_WAVAUDIOIMPORTER)
-    add_subdirectory(WavAudioImporter)
+    add_subdirectory(Test)
 endif()

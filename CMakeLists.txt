@@ -41,7 +41,7 @@ option(WITH_FIND_MODULE "Install FindMagnum.cmake module into CMake's module dir
 # Parts of the library
 option(WITH_AUDIO "Build Audio library" OFF)
 option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
-cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_OBJIMPORTER" ON)
 cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" ON "NOT WITH_DEBUGTOOLS" ON)
 cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_SHAPES" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS" ON)
@@ -85,6 +85,7 @@ endif()
 # Plugins
 cmake_dependent_option(WITH_MAGNUMFONT "Build MagnumFont plugin" OFF "WITH_TEXT" OFF)
 cmake_dependent_option(WITH_MAGNUMFONTCONVERTER "Build MagnumFontConverter plugin" OFF "NOT MAGNUM_TARGET_GLES;WITH_TEXT" OFF)
+option(WITH_OBJIMPORTER "Build ObjImporter plugin" OFF)
 cmake_dependent_option(WITH_TGAIMAGECONVERTER "Build TgaImageConverter plugin" OFF "NOT WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(WITH_TGAIMPORTER "Build TgaImporter plugin" OFF "NOT WITH_MAGNUMFONT" ON)
 cmake_dependent_option(WITH_WAVAUDIOIMPORTER "Build WavAudioImporter plugin" OFF "WITH_AUDIO" OFF)

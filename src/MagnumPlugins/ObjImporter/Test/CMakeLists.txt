@@ -23,35 +23,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Wrapper for creating given plugin type
-macro(add_plugin)
-    if(NOT BUILD_STATIC)
-        corrade_add_plugin(${ARGN})
-    else()
-        corrade_add_static_plugin(${ARGN})
-    endif()
-endmacro()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-if(WITH_TEXT AND WITH_MAGNUMFONT)
-    add_subdirectory(MagnumFont)
-endif()
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
-if(WITH_TEXT AND WITH_MAGNUMFONTCONVERTER AND NOT MAGNUM_TARGET_GLES)
-    add_subdirectory(MagnumFontConverter)
-endif()
-
-if(WITH_OBJIMPORTER)
-    add_subdirectory(ObjImporter)
-endif()
-
-if(WITH_TGAIMAGECONVERTER)
-    add_subdirectory(TgaImageConverter)
-endif()
-
-if(WITH_TGAIMPORTER)
-    add_subdirectory(TgaImporter)
-endif()
-
-if(WITH_AUDIO AND WITH_WAVAUDIOIMPORTER)
-    add_subdirectory(WavAudioImporter)
-endif()
+corrade_add_test(ObjImporterTest Test.cpp LIBRARIES ObjImporterTestLib)

@@ -35,6 +35,7 @@
 #                     and TgaImporter plugin)
 #  MagnumFontConverter - Magnum bitmap font converter plugin (depends on Text
 #                     component and TgaImageConverter plugin)
+#  ObjImporter      - OBJ importer plugin
 #  TgaImageConverter - TGA image converter plugin
 #  TgaImporter      - TGA importer plugin
 #  WavAudioImporter - WAV audio importer plugin (depends on Audio component)
@@ -333,6 +334,9 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     elseif(${component} STREQUAL TextureTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
     endif()
+
+    # The plugins don't have any dependencies, nothing additional to do for
+    # them
 
     # Try to find the includes
     if(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)

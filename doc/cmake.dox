@@ -103,6 +103,8 @@ dependencies, you need to find the dependency and then link to it.
     `%Text` component and `TgaImporter` plugin)
 -   `MagnumFontConverter` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
     plugin (depends on `%Text` component and `%TgaImageConverter` plugin)
+-   `ObjImporter` -- @ref Trade::ObjImporter "ObjImporter" plugin (depends on
+    `%MeshTools` component)
 -   `TgaImageConverter` -- @ref Trade::TgaImageConverter "TgaImageConverter"
     plugin
 -   `TgaImporter` -- @ref Trade::TgaImporter "TgaImporter" plugin
