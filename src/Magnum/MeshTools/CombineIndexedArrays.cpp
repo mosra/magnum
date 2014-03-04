@@ -116,6 +116,7 @@ class IndexEqual {
 }
 
 std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> combineIndexArrays(const std::vector<UnsignedInt>& interleavedArrays, const UnsignedInt stride) {
+    CORRADE_ASSERT(stride != 0, "MeshTools::combineIndexArrays(): stride can't be zero", {});
     CORRADE_ASSERT(interleavedArrays.size() % stride == 0, "MeshTools::combineIndexArrays(): array size is not divisible by stride", {});
 
     /* Hash map with index combinations, containing just indices into
