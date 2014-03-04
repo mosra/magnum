@@ -43,7 +43,7 @@ namespace Magnum { namespace Trade {
 struct ObjImporter::File {
     std::unordered_map<std::string, UnsignedInt> meshesForName;
     std::vector<std::string> meshNames;
-    std::vector<std::pair<std::streampos, std::streampos>> meshes;
+    std::vector<std::tuple<std::streampos, std::streampos, UnsignedInt, UnsignedInt, UnsignedInt>> meshes;
     std::unique_ptr<std::istream> in;
 };
 
@@ -115,11 +115,20 @@ void ObjImporter::doOpenData(Containers::ArrayReference<const unsigned char> dat
 }
 
 void ObjImporter::parseMeshNames() {
-    bool hasData = false;
-    std::string name;
-    std::streampos begin = 0;
+    /* First mesh starts at the beginning, its indices start from 1. The end
+       offset will be updated to proper value later. */
+    UnsignedInt positionIndexOffset = 1;
+    UnsignedInt normalIndexOffset = 1;
+    UnsignedInt textureCoordinateIndexOffset = 1;
+    _file->meshes.emplace_back(0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset);
+
+    /* The first mesh doesn't have name by default but we might find it later,
+       so we need to track whether there are any data before first name */
+    bool thisIsFirstMeshAndItHasNoData = true;
+    _file->meshNames.emplace_back();
+
     while(_file->in->good()) {
-        /* The previous object ends at the beginning of this line */
+        /* The previous object might end at the beginning of this line */
         const std::streampos end = _file->in->tellg();
 
         /* Comment line */
@@ -132,31 +141,56 @@ void ObjImporter::parseMeshNames() {
         std::string keyword;
         *_file->in >> keyword;
 
-        /* Object name */
+        /* Mesh name */
         if(keyword == "o") {
-            /* If there was any previous object, this is name of new object,
-               save the previous one */
-            if(hasData) {
-                if(!name.empty()) _file->meshesForName.emplace(name, _file->meshes.size());
-                _file->meshNames.emplace_back(std::move(name));
-                _file->meshes.emplace_back(begin, end);
-
-            /* Otherwise it's the name of first object (there weren't any data
-               before) */
-            } else hasData = true;
-
-            /* Get name of new object, the object then starts at the next line */
+            std::string name;
             std::getline(*_file->in, name);
             name = Utility::String::trim(name);
-            begin = _file->in->tellg();
-            continue;
-        }
 
-        /* If there are any data before the first name, it means that the first
-           object can be unnamed */
-        if(!hasData) for(const std::string& data: {"v", "vt", "vn", "p", "l", "f"}) {
+            /* This is the name of first mesh */
+            if(thisIsFirstMeshAndItHasNoData) {
+                thisIsFirstMeshAndItHasNoData = false;
+
+                /* Update its name and add it to name map */
+                if(!name.empty()) _file->meshesForName.emplace(name, _file->meshes.size() - 1);
+                _file->meshNames.back() = std::move(name);
+
+                /* Update its begin offset to be more precise */
+                std::get<0>(_file->meshes.back()) = _file->in->tellg();
+
+            /* Otherwise this is a name of new mesh */
+            } else {
+                /* Set end of the previous one */
+                std::get<1>(_file->meshes.back()) = end;
+
+                /* Save name and offset of the new one. The end offset will be
+                   updated later. */
+                if(!name.empty()) _file->meshesForName.emplace(name, _file->meshes.size());
+                _file->meshNames.emplace_back(std::move(name));
+                _file->meshes.emplace_back(_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
+            }
+
+            continue;
+
+        /* If there are any data/indices before the first name, it means that
+           the first object is unnamed. We need to check for them. */
+
+        /* Vertex data, update index offset for the following meshes */
+        } else if(keyword == "v") {
+            ++positionIndexOffset;
+            thisIsFirstMeshAndItHasNoData = false;
+        } else if(keyword == "vt") {
+            ++textureCoordinateIndexOffset;
+            thisIsFirstMeshAndItHasNoData = false;
+        } else if(keyword == "vn") {
+            ++normalIndexOffset;
+            thisIsFirstMeshAndItHasNoData = false;
+
+        /* Index data, just mark that we found something for first unnamed
+           object */
+        } else if(thisIsFirstMeshAndItHasNoData) for(const std::string& data: {"p", "l", "f"}) {
             if(keyword == data) {
-                hasData = true;
+                thisIsFirstMeshAndItHasNoData = false;
                 break;
             }
         }
@@ -165,12 +199,10 @@ void ObjImporter::parseMeshNames() {
         ignoreLine(*_file->in);
     }
 
-    /* Add also the last object */
+    /* Set end of the last object */
     _file->in->clear();
     _file->in->seekg(0, std::ios::end);
-    if(!name.empty()) _file->meshesForName.emplace(name, _file->meshes.size());
-    _file->meshNames.emplace_back(std::move(name));
-    _file->meshes.emplace_back(begin, _file->in->tellg());
+    std::get<1>(_file->meshes.back()) = _file->in->tellg();
 }
 
 UnsignedInt ObjImporter::doMesh3DCount() const { return _file->meshes.size(); }
@@ -185,9 +217,10 @@ std::string ObjImporter::doMesh3DName(UnsignedInt id) {
 }
 
 std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
-    /* Seek the file */
+    /* Seek the file, set mesh parsing parameters */
     std::streampos begin, end;
-    std::tie(begin, end) = _file->meshes[id];
+    UnsignedInt positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset;
+    std::tie(begin, end, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset) = _file->meshes[id];
     _file->in->seekg(begin);
 
     std::optional<MeshPrimitive> primitive;
@@ -311,18 +344,16 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
                     return std::nullopt;
                 }
 
-                /* Indices in OBJ file start from 1 */
-
                 /* Position indices */
-                positionIndices.push_back(std::stoul(indices[0])-1);
+                positionIndices.push_back(std::stoul(indices[0]) - positionIndexOffset);
 
                 /* Texture coordinates */
                 if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty()))
-                    textureCoordinateIndices.push_back(std::stoul(indices[1])-1);
+                    textureCoordinateIndices.push_back(std::stoul(indices[1]) - textureCoordinateIndexOffset);
 
                 /* Normal indices */
                 if(indices.size() == 3)
-                    normalIndices.push_back(std::stoul(indices[2])-1);
+                    normalIndices.push_back(std::stoul(indices[2]) - normalIndexOffset);
             }
 
         /* Ignore unsupported keywords, error out on unknown keywords */
