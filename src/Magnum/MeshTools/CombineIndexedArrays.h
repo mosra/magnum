@@ -42,6 +42,10 @@
 
 namespace Magnum { namespace MeshTools {
 
+namespace Implementation {
+    MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(const std::reference_wrapper<std::vector<UnsignedInt>>* begin, const std::reference_wrapper<std::vector<UnsignedInt>>* end);
+}
+
 /**
 @brief Combine index arrays
 
@@ -81,7 +85,14 @@ This function calls @ref combineIndexArrays(const std::vector<UnsignedInt>&, Uns
 internally. See also @ref combineIndexedArrays() which does the vertex data
 reordering automatically.
 */
-MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays);
+inline std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays) {
+    return Implementation::combineIndexArrays(&arrays[0], &arrays[0] + arrays.size());
+}
+
+/** @overload */
+inline std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays) {
+    return Implementation::combineIndexArrays(arrays.begin(), arrays.end());
+}
 
 /**
 @brief Combine index arrays
