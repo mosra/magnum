@@ -35,7 +35,9 @@ set(WavAudioImporter_HEADERS
     WavImporter.h)
 
 add_library(WavAudioImporterObjects OBJECT ${WavAudioImporter_SRCS})
-set_target_properties(WavAudioImporterObjects PROPERTIES COMPILE_FLAGS "-DWavAudioImporterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(WavAudioImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+endif()
 
 add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR}
     WavAudioImporter.conf
