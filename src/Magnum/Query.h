@@ -153,10 +153,10 @@ template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
-@brief Query for primitives and elapsed time
+@brief Query for primitives
 
 Queries count of generated primitives from vertex shader, geometry shader or
-transform feedback and elapsed time. Example usage:
+transform feedback. Example usage:
 @code
 PrimitiveQuery q;
 
