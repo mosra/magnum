@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::interleave()
+ * @brief Function @ref Magnum::MeshTools::interleave(), @ref Magnum::MeshTools::interleaveInto()
  */
 
 #include <cstring>
@@ -121,8 +121,8 @@ std::size_t stride;
 Containers::Array<char> data;
 std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
 @endcode
-This way vertex stride is 24 bytes, without gaps it would be 21 bytes, causing
-possible performance loss.
+All gap bytes are set zero. This way vertex stride is 24 bytes, without gaps it
+would be 21 bytes, causing possible performance loss.
 
 @attention The function expects that all arrays have the same size.
 
@@ -132,7 +132,9 @@ possible performance loss.
     will be `std::vector` or `std::array`.
 
 See also @ref interleave(Mesh&, Buffer&, BufferUsage, const T&...),
-which writes the interleaved array directly into buffer of given mesh.
+which writes the interleaved array directly into buffer of given mesh or
+@ref interleaveInto() which writes the data into existing buffer instead of
+creating new one.
 */
 /* enable_if to avoid clash with overloaded function below */
 template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, Containers::Array<char>>>::type interleave(const T& first, const U&... next) {
@@ -149,6 +151,30 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
 
     /* Otherwise return nullptr */
     } else return std::make_tuple(0, stride, nullptr);
+}
+
+/**
+@brief %Interleave vertex attributes into existing buffer
+
+Unlike @ref interleave() this function interleaves the data into existing
+buffer and leaves gaps untouched instead of zero-initializing them. This
+function can thus be used for interleaving data depending on runtime
+parameters.
+
+@attention Similarly to @ref interleave(), this function expects that all
+    arrays have the same size. The passed buffer must also be large enough to
+    contain the interleaved data.
+*/
+template<class T, class ...U> std::tuple<std::size_t, std::size_t> interleaveInto(Containers::ArrayReference<char> buffer, const T& first, const U&... next) {
+    /* Verify expected buffer size */
+    const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
+    const std::size_t stride = Implementation::Stride{}(first, next...);
+    CORRADE_ASSERT(attributeCount*stride <= buffer.size(), "MeshTools::interleaveInto(): the data buffer is too small, expected" << attributeCount*stride << "but got" << buffer.size(), {});
+
+    /* Write data */
+    Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
+
+    return std::make_tuple(attributeCount, stride);
 }
 
 /**
