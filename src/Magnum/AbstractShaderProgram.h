@@ -960,6 +960,14 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
         };
 
         /**
+         * @brief Type
+         *
+         * Type used in shader code.
+         * @see @ref ScalarType, @ref DataType
+         */
+        typedef T Type;
+
+        /**
          * @brief Scalar type
          *
          * The underlying scalar type of the attribute.
