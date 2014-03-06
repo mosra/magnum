@@ -155,8 +155,8 @@ It's often desirable to align data for one vertex on 32bit boundaries. To
 achieve that, you can specify gaps between the attributes:
 @code
 std::vector<Vector4> positions;
-std::vector<GLushort> weights;
-std::vector<BasicColor3<GLubyte>> vertexColors;
+std::vector<UnsignedShort> weights;
+std::vector<Color3ub> vertexColors;
 std::size_t attributeCount;
 std::size_t stride;
 Containers::Array<char> data;

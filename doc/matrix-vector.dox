@@ -77,8 +77,8 @@ Vector3i b;  // zero-filled
 Matrix3 identity;           // diagonal set to 1
 Matrix3 zero(Matrix::Zero); // zero-filled
 
-Color4 black1;                    // {0.0f, 0.0f, 0.0f, 1.0f}
-BasicColor4<UnsignedByte> black2; // {0, 0, 0, 255}
+Color4 black1;      // {0.0f, 0.0f, 0.0f, 1.0f}
+Color4ub black2;    // {0, 0, 0, 255}
 @endcode
 
 Most common and most efficient way to create vector is to pass all values to
@@ -193,8 +193,8 @@ In %Magnum all mulitplication/division operations involving integral vectors
 will have integral result, you need to convert both arguments to the same
 floating-point type to have floating-point result.
 @code
-BasicColor3<UnsignedByte> color(80, 116, 34);
-BasicColor3<UnsignedByte> lighter = color*1.5f; // lighter = {120, 174, 51}
+Color3ub color(80, 116, 34);
+Color3ub lighter = color*1.5f; // lighter = {120, 174, 51}
 
 Vector3i a(4, 18, -90);
 Vector3 multiplier(2.2f, 0.25f, 0.1f);
