@@ -115,9 +115,6 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         Shaders::Generic3D::Position(),
         stride - sizeof(Shaders::Generic3D::Position::Type));
 
-    Debug() << stride << sizeof(Shaders::Generic3D::Position::Type) << vertexCount << normalOffset << textureCoordsOffset;
-    Debug() << data;
-
     /* Add also normals, if present */
     if(meshData.hasNormals()) {
         MeshTools::interleaveInto(data,
