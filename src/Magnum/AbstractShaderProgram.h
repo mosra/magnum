@@ -960,12 +960,12 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
         };
 
         /**
-         * @brief Type
+         * @brief Scalar type
          *
-         * Type used in shader code.
-         * @see @ref DataType
+         * The underlying scalar type of the attribute.
+         * @see @ref Type, @ref DataType
          */
-        typedef typename Implementation::Attribute<T>::Type Type;
+        typedef typename Implementation::Attribute<T>::ScalarType ScalarType;
 
         /**
          * @brief Component count
@@ -1222,7 +1222,7 @@ template<class> struct Attribute;
 
 /* Base for float attributes */
 struct FloatAttribute {
-    typedef Float Type;
+    typedef Float ScalarType;
 
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
@@ -1260,7 +1260,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, FloatAttribute::DataType value);
 #ifndef MAGNUM_TARGET_GLES2
 /* Base for int attributes */
 struct IntAttribute {
-    typedef Int Type;
+    typedef Int ScalarType;
 
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
@@ -1282,7 +1282,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
 
 /* Base for unsigned int attributes */
 struct UnsignedIntAttribute {
-    typedef UnsignedInt Type;
+    typedef UnsignedInt ScalarType;
 
     typedef IntAttribute::DataType DataType;
     constexpr static DataType DefaultDataType = DataType::UnsignedInt;
@@ -1299,7 +1299,7 @@ struct UnsignedIntAttribute {
 #ifndef MAGNUM_TARGET_GLES
 /* Base for double attributes */
 struct DoubleAttribute {
-    typedef Double Type;
+    typedef Double ScalarType;
 
     enum class DataType: GLenum {
         Double = GL_DOUBLE
@@ -1317,7 +1317,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
 
 /* Floating-point four-component vector is absolutely special case */
 template<> struct Attribute<Math::Vector<4, Float>> {
-    typedef Float Type;
+    typedef Float ScalarType;
 
     enum class Components: GLint {
         One = 1,
