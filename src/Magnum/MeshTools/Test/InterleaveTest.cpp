@@ -56,30 +56,30 @@ InterleaveTest::InterleaveTest() {
 void InterleaveTest::attributeCount() {
     std::stringstream ss;
     Error::setOutput(&ss);
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<Byte>{0, 1, 2},
+    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
         std::vector<Byte>{0, 1, 2, 3, 4, 5})), std::size_t(0));
     CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, expected 3 but got 6\n");
 
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<Byte>{0, 1, 2},
+    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
         std::vector<Byte>{3, 4, 5})), std::size_t(3));
 }
 
 void InterleaveTest::attributeCountGaps() {
-    CORRADE_COMPARE((Implementation::Interleave::attributeCount(std::vector<Byte>{0, 1, 2}, 3,
+    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2}, 3,
         std::vector<Byte>{3, 4, 5}, 5)), std::size_t(3));
 
     /* No arrays from which to get size */
-    CORRADE_COMPARE(Implementation::Interleave::attributeCount(3, 5), ~std::size_t(0));
+    CORRADE_COMPARE(Implementation::AttributeCount{}(3, 5), ~std::size_t(0));
 }
 
 void InterleaveTest::stride() {
-    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<Byte>()), std::size_t(1));
-    CORRADE_COMPARE(Implementation::Interleave::stride(std::vector<Int>()), std::size_t(4));
-    CORRADE_COMPARE((Implementation::Interleave::stride(std::vector<Byte>(), std::vector<Int>())), std::size_t(5));
+    CORRADE_COMPARE(Implementation::Stride{}(std::vector<Byte>()), std::size_t(1));
+    CORRADE_COMPARE(Implementation::Stride{}(std::vector<Int>()), std::size_t(4));
+    CORRADE_COMPARE((Implementation::Stride{}(std::vector<Byte>(), std::vector<Int>())), std::size_t(5));
 }
 
 void InterleaveTest::strideGaps() {
-    CORRADE_COMPARE((Implementation::Interleave::stride(2, std::vector<Byte>(), 1, std::vector<Int>(), 12)), std::size_t(20));
+    CORRADE_COMPARE((Implementation::Stride{}(2, std::vector<Byte>(), 1, std::vector<Int>(), 12)), std::size_t(20));
 }
 
 void InterleaveTest::write() {
