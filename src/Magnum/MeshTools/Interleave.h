@@ -71,26 +71,21 @@ struct Stride {
 };
 
 /* Copy data to the buffer */
-template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOneInterleaved(std::size_t attributeCount, std::size_t stride, char* startingOffset, const T& attributeList) {
+template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOneInterleaved(std::size_t stride, char* startingOffset, const T& attributeList) {
     auto it = attributeList.begin();
-    for(std::size_t i = 0; i != attributeCount; ++i, ++it)
+    for(std::size_t i = 0; i != attributeList.size(); ++i, ++it)
         std::memcpy(startingOffset + i*stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
 
     return sizeof(typename T::value_type);
 }
 
-/* Fill gap with zeros */
-inline std::size_t writeOneInterleaved(std::size_t attributeCount, std::size_t stride, char* startingOffset, std::size_t gap) {
-    for(std::size_t i = 0; i != attributeCount; ++i)
-        std::memset(startingOffset + i*stride, 0, gap);
-
-    return gap;
-}
+/* Skip gap */
+inline constexpr std::size_t writeOneInterleaved(std::size_t, char*, std::size_t gap) { return gap; }
 
 /* Write interleaved data */
-inline void writeInterleaved(std::size_t, std::size_t, char*) {}
-template<class T, class ...U> void writeInterleaved(std::size_t attributeCount, std::size_t stride, char* startingOffset, const T& first, const U&... next) {
-    writeInterleaved(attributeCount, stride, startingOffset + writeOneInterleaved(attributeCount, stride, startingOffset, first), next...);
+inline void writeInterleaved(std::size_t, char*) {}
+template<class T, class ...U> void writeInterleaved(std::size_t stride, char* startingOffset, const T& first, const U&... next) {
+    writeInterleaved(stride, startingOffset + writeOneInterleaved(stride, startingOffset, first), next...);
 }
 
 }
@@ -144,15 +139,15 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
     /* Compute buffer size and stride */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
     const std::size_t stride = Implementation::Stride{}(first, next...);
+
+    /* Create output buffer only if we have some attributes */
     if(attributeCount && attributeCount != ~std::size_t(0)) {
+        Containers::Array<char> data = Containers::Array<char>::zeroInitialized(attributeCount*stride);
+        Implementation::writeInterleaved(stride, data.begin(), first, next...);
 
-        /* Create output buffer */
-        Containers::Array<char> data = Containers::Array<char>(attributeCount*stride);
-
-        /* Save the data */
-        Implementation::writeInterleaved(attributeCount, stride, data.begin(), first, next...);
         return std::make_tuple(attributeCount, stride, std::move(data));
 
+    /* Otherwise return nullptr */
     } else return std::make_tuple(0, stride, nullptr);
 }
 
