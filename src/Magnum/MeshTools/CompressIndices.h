@@ -69,7 +69,7 @@ function writes the output to given buffer and calls @ref Mesh::setIndexCount()
 and @ref Mesh::setIndexBuffer(), thus you don't need to do anything else for
 mesh index configuration.
 
-@see @ref MeshTools::interleave()
+@see @ref MeshTools::interleave(), @ref MeshTools::compile()
 */
 void MAGNUM_MESHTOOLS_EXPORT compressIndices(Mesh& mesh, Buffer& buffer, BufferUsage usage, const std::vector<UnsignedInt>& indices);
 

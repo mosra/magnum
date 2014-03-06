@@ -25,6 +25,7 @@
 
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
+    Compile.cpp
     CompressIndices.cpp
     FullScreenTriangle.cpp
     Tipsify.cpp)
@@ -37,6 +38,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
 
 set(MagnumMeshTools_HEADERS
     CombineIndexedArrays.h
+    Compile.h
     CompressIndices.h
     Duplicate.h
     FlipNormals.h
