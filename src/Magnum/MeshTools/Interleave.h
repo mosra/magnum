@@ -46,28 +46,28 @@ namespace Implementation {
    resolution (the functions would otherwise need to be de-inlined to break
    cyclic dependencies) */
 struct AttributeCount {
-    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&... next) {
+    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&... next) const {
         CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
 
         return first.size();
     }
-    template<class T, class... U> std::size_t operator()(std::size_t, const T& first, const U&... next) {
+    template<class T, class... U> std::size_t operator()(std::size_t, const T& first, const U&... next) const {
         return AttributeCount{}(first, next...);
     }
-    constexpr std::size_t operator()(std::size_t) { return ~std::size_t(0); }
-    constexpr std::size_t operator()() { return 0; }
+    constexpr std::size_t operator()(std::size_t) const { return ~std::size_t(0); }
+    constexpr std::size_t operator()() const { return 0; }
 };
 
 /* Stride, taking gaps into account. It must be in the structure, same reason
    as above */
 struct Stride {
-    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T&, const U&... next) {
+    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T&, const U&... next) const {
         return sizeof(typename T::value_type) + Stride{}(next...);
     }
-    template<class... T> std::size_t operator()(std::size_t gap, const T&... next) {
+    template<class... T> std::size_t operator()(std::size_t gap, const T&... next) const {
         return gap + Stride{}(next...);
     }
-    constexpr std::size_t operator()() { return 0; }
+    constexpr std::size_t operator()() const { return 0; }
 };
 
 /* Copy data to the buffer */
