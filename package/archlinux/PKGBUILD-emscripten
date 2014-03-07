@@ -28,6 +28,7 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
         -DWITH_SDL2APPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
+        -DWITH_OBJIMPORTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON
