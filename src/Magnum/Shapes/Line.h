@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Line, typedef Magnum::Shapes::Line2D, Magnum::Shapes::Line3D
+ * @brief Class @ref Magnum::Shapes::Line, typedef @ref Magnum::Shapes::Line2D, @ref Magnum::Shapes::Line3D
  */
 
 #include "Magnum/DimensionTraits.h"
@@ -39,8 +39,8 @@ namespace Magnum { namespace Shapes {
 @brief Infinite line, defined by two points
 
 See @ref shapes for brief introduction.
-@see Line2D, Line3D
-@todo collision detection of two Line2D
+@see @ref Line2D, @ref Line3D
+@todo collision detection of two @ref Line2D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Line {
     public:

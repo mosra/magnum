@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Plane
+ * @brief Class @ref Magnum::Shapes::Plane
  */
 
 #include "Magnum/Magnum.h"

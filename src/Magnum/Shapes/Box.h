@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Box, typedef Magnum::Shapes::Box2D, Magnum::Shapes::Box3D
+ * @brief Class @ref Magnum::Shapes::Box, typedef @ref Magnum::Shapes::Box2D, @ref Magnum::Shapes::Box3D
  */
 
 #include "Magnum/DimensionTraits.h"
@@ -41,8 +41,8 @@ namespace Magnum { namespace Shapes {
 
 Unit-size means that half extents are equal to 1, equivalent to e.g. sphere
 radius. See @ref shapes for brief introduction.
+@see @ref Box2D, @ref Box3D
 @todo Use quat + position + size instead?
-@see Box2D, Box3D
 @todo Assert for skew
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Box {

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Collision
+ * @brief Class @ref Magnum::Shapes::Collision, typedef @ref Magnum::Shapes::Collision2D, @ref Magnum::Shapes::Collision3D
  */
 
 #include "Magnum/DimensionTraits.h"

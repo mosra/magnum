@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::AbstractShape, typedef Magnum::Shapes::AbstractShape2D, Magnum::Shapes::AbstractShape3D
+ * @brief Class @ref Magnum::Shapes::AbstractShape, typedef @ref Magnum::Shapes::AbstractShape2D, @ref Magnum::Shapes::AbstractShape3D
  */
 
 #include "Magnum/Magnum.h"
@@ -46,9 +46,9 @@ namespace Implementation {
 /**
 @brief Base class for object shapes
 
-This class is not directly instantiable, see Shape instead. See @ref shapes for
-brief introduction.
-@see AbstractShape2D, AbstractShape3D
+This class is not directly instantiable, use @ref Shape instead. See
+@ref shapes for brief introduction.
+@see @ref AbstractShape2D, @ref AbstractShape3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float> {
     friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const AbstractShape<dimensions>&);
@@ -90,9 +90,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
         ShapeGroup<dimensions>* group();
         const ShapeGroup<dimensions>* group() const; /**< @overload */
 
-        /**
-         * @brief Shape type
-         */
+        /** @brief Shape type */
         Type type() const;
 
         /**

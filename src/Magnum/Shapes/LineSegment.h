@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::LineSegment, typedef Magnum::Shapes::LineSegment2D, Magnum::Shapes::LineSegment3D
+ * @brief Class @ref Magnum::Shapes::LineSegment, typedef @ref Magnum::Shapes::LineSegment2D, @ref Magnum::Shapes::LineSegment3D
  */
 
 #include "Magnum/Shapes/Line.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace Shapes {
 @brief %Line segment, defined by starting and ending point
 
 See @ref shapes for brief introduction.
-@see LineSegment2D, LineSegment3D
+@see @ref LineSegment2D, @ref LineSegment3D
 */
 template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {
     public:

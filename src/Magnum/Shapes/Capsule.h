@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Capsule, typedef Magnum::Shapes::Capsule2D, Magnum::Shapes::Capsule3D
+ * @brief Class @ref Magnum::Shapes::Capsule, typedef @ref Magnum::Shapes::Capsule2D, @ref Magnum::Shapes::Capsule3D
  */
 
 #include "Magnum/DimensionTraits.h"
@@ -41,7 +41,7 @@ namespace Magnum { namespace Shapes {
 
 Unlike other elements the capsule expects uniform scaling. See @ref shapes for
 brief introduction.
-@see Capsule2D, Capsule3D, Cylinder
+@see @ref Capsule2D, @ref Capsule3D, @ref Cylinder
 @todo Store the radius as squared value to avoid sqrt/pow? Will complicate
     collision detection with sphere.
 */
