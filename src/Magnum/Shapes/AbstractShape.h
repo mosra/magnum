@@ -102,6 +102,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
          */
         bool collides(const AbstractShape<dimensions>& other) const;
 
+        /**
+         * @brief Collision with other shape
+         *
+         * Default implementation returns empty collision.
+         */
+        Collision<dimensions> collision(const AbstractShape<dimensions>& other) const;
+
     protected:
         /** Marks also the group as dirty */
         void markDirty() override;

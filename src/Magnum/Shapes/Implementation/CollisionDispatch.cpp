@@ -65,6 +65,21 @@ template<> bool collides(const AbstractShape<2>& a, const AbstractShape<2>& b) {
     return false;
 }
 
+template<> Collision<2> collision(const AbstractShape<2>& a, const AbstractShape<2>& b) {
+    if(a.type() < b.type()) return collision(b, a);
+
+    switch(UnsignedInt(a.type())*UnsignedInt(b.type())) {
+        #define _c(aType, aClass, bType, bClass) \
+            case UnsignedInt(ShapeDimensionTraits<2>::Type::aType)*UnsignedInt(ShapeDimensionTraits<2>::Type::bType): \
+                return static_cast<const Shape<aClass>&>(a).shape / static_cast<const Shape<bClass>&>(b).shape;
+        _c(Sphere, Sphere2D, Point, Point2D)
+        _c(Sphere, Sphere2D, Sphere, Sphere2D)
+        #undef _c
+    }
+
+    return {};
+}
+
 template<> bool collides(const AbstractShape<3>& a, const AbstractShape<3>& b) {
     if(a.type() < b.type()) return collides(b, a);
 
@@ -94,6 +109,21 @@ template<> bool collides(const AbstractShape<3>& a, const AbstractShape<3>& b) {
     }
 
     return false;
+}
+
+template<> Collision<3> collision(const AbstractShape<3>& a, const AbstractShape<3>& b) {
+    if(a.type() < b.type()) return collision(b, a);
+
+    switch(UnsignedInt(a.type())*UnsignedInt(b.type())) {
+        #define _c(aType, aClass, bType, bClass) \
+            case UnsignedInt(ShapeDimensionTraits<3>::Type::aType)*UnsignedInt(ShapeDimensionTraits<3>::Type::bType): \
+                return static_cast<const Shape<aClass>&>(a).shape / static_cast<const Shape<bClass>&>(b).shape;
+        _c(Sphere, Sphere3D, Point, Point3D)
+        _c(Sphere, Sphere3D, Sphere, Sphere3D)
+        #undef _c
+    }
+
+    return {};
 }
 
 }}}

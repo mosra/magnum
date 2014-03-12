@@ -27,6 +27,7 @@
 
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Shapes/Collision.h"
 #include "Magnum/Shapes/ShapeGroup.h"
 #include "Magnum/Shapes/Implementation/CollisionDispatch.h"
 
@@ -50,6 +51,10 @@ template<UnsignedInt dimensions> auto AbstractShape<dimensions>::type() const ->
 
 template<UnsignedInt dimensions> bool AbstractShape<dimensions>::collides(const AbstractShape<dimensions>& other) const {
     return Implementation::collides(abstractTransformedShape(), other.abstractTransformedShape());
+}
+
+template<UnsignedInt dimensions> Collision<dimensions> AbstractShape<dimensions>::collision(const AbstractShape<dimensions>& other) const {
+    return Implementation::collision(abstractTransformedShape(), other.abstractTransformedShape());
 }
 
 template<UnsignedInt dimensions> void AbstractShape<dimensions>::markDirty() {
