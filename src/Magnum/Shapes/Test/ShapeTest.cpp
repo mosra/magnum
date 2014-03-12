@@ -192,9 +192,6 @@ void ShapeTest::firstCollision() {
     Object3D b(&scene);
     Shape<Shapes::Point3D> bShape(b, {{3.0f, -2.0f, 3.0f}}, &shapes);
 
-    Object3D c(&scene);
-    Shape<Shapes::Composition3D> cShape(c, &shapes);
-
     /* No collisions initially */
     CORRADE_VERIFY(!shapes.firstCollision(aShape));
     CORRADE_VERIFY(!shapes.firstCollision(bShape));
