@@ -138,8 +138,8 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         /**
          * @brief Release data storage
          *
-         * Returns the data pointer and resets internal state to default.
-         * Deleting the returned array is user responsibility.
+         * Releases the ownership of the data pointer and resets internal state
+         * to default. Deleting the returned array is then user responsibility.
          * @see @ref setData()
          */
         unsigned char* release();
