@@ -222,6 +222,7 @@ following:
 @extension{EXT,texture_filter_anisotropic} (also in ES) | done
 @extension{EXT,texture_mirror_clamp}         | only GL 4.4 subset
 @extension{EXT,direct_state_access}          | done for implemented functionality
+@extension{EXT,shader_integer_mix} (also in ES) | done (shading language only)
 @extension2{EXT,debug_label} (also in ES)    | missing pipeline, transform feedback and sampler label
 @extension2{EXT,debug_marker} (also in ES)   | missing marker groups
 @extension{GREMEDY,string_marker}            | done
