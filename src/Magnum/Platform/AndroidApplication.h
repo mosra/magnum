@@ -436,7 +436,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */
-            #if __ANDROID_API__ >= 14
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Left = AMOTION_EVENT_BUTTON_PRIMARY,
             #else
             Left = 1 << 0,
@@ -447,7 +447,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */
-            #if __ANDROID_API__ >= 14
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Middle = AMOTION_EVENT_BUTTON_TERTIARY,
             #else
             Middle = 1 << 1,
@@ -458,7 +458,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */
-            #if __ANDROID_API__ >= 14
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Right = AMOTION_EVENT_BUTTON_SECONDARY
             #else
             Right = 1 << 2
@@ -496,7 +496,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
         /**
          * @brief Mouse button
          *
-         * @see @ref button()
+         * @see @ref buttons()
          */
         enum class Button: std::int32_t {
             /**
@@ -505,7 +505,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */
-            #if __ANDROID_API__ >= 14
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Left = AMOTION_EVENT_BUTTON_PRIMARY,
             #else
             Left = 1 << 0,
@@ -516,7 +516,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */
-            #if __ANDROID_API__ >= 14
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Middle = AMOTION_EVENT_BUTTON_TERTIARY,
             #else
             Middle = 1 << 1,
@@ -527,7 +527,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
              * @attention Available since Android 4.0 (API level 14), not
              *      detectable in earlier versions.
              */
-            #if __ANDROID_API__ >= 14
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || __ANDROID_API__ >= 14
             Right = AMOTION_EVENT_BUTTON_SECONDARY
             #else
             Right = 1 << 2
