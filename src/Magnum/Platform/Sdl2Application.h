@@ -283,7 +283,8 @@ class Sdl2Application {
          * @brief Redraw immediately
          *
          * Marks the window for redrawing, resulting in call to @ref drawEvent()
-         * in the next iteration.
+         * in the next iteration. You can call it from @ref drawEvent() itself
+         * to redraw immediately without waiting for user input.
          */
         void redraw() { flags |= Flag::Redraw; }
 
