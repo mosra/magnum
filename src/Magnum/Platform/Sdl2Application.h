@@ -42,10 +42,6 @@
 #include <SDL.h>
 #include <SDL_scancode.h>
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum {
 
 class Context;
@@ -441,14 +437,6 @@ class Sdl2Application::Configuration {
             MouseLocked = SDL_WINDOW_INPUT_GRABBED  /**< Window with mouse locked */
         };
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief WindowFlag
-         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::WindowFlag "WindowFlag" instead.
-         */
-        typedef CORRADE_DEPRECATED("use WindowFlag instead") WindowFlag Flag;
-        #endif
-
         /**
          * @brief Window flags
          *
@@ -460,14 +448,6 @@ class Sdl2Application::Configuration {
             SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> WindowFlags;
         #else
         typedef Containers::EnumSet<WindowFlag, Uint32> WindowFlags;
-        #endif
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief WindowFlags
-         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::WindowFlags "WindowFlags" instead.
-         */
-        typedef CORRADE_DEPRECATED("use WindowFlags instead") WindowFlags Flags;
         #endif
 
         /*implicit*/ Configuration();
@@ -517,16 +497,6 @@ class Sdl2Application::Configuration {
         /** @brief Window flags */
         WindowFlags windowFlags() const { return _windowFlags; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief windowFlags()
-         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::windowFlags() "windowFlags()" instead.
-         */
-        CORRADE_DEPRECATED("use windowFlags() instead") WindowFlags flags() const {
-            return windowFlags();
-        }
-        #endif
-
         /**
          * @brief Set window flags
          * @return Reference to self (for method chaining)
@@ -537,16 +507,6 @@ class Sdl2Application::Configuration {
             _windowFlags = flags;
             return *this;
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief setWindowFlags()
-         * @deprecated Use @ref Magnum::Platform::Sdl2Application::Configuration::setWindowFlags "setWindowFlags()" instead.
-         */
-        CORRADE_DEPRECATED("use setWindowFlags() instead") Configuration& setFlags(WindowFlags flags) {
-            return setWindowFlags(flags);
-        }
-        #endif
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
