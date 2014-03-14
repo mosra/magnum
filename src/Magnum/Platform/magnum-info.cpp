@@ -73,11 +73,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     args.parse(arguments.argc, arguments.argv);
     #endif
 
-    /* Create context after parsing arguments, so the help can be displayed
-       without creating context */
-    createContext();
-    Context* c = Context::current();
-
     /* Pass debug output as messages to JavaScript */
     #ifdef CORRADE_TARGET_NACL
     Utility::NaClMessageStreamBuffer buffer(this);
@@ -138,6 +133,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     Debug() << "";
 
+    /* Create context here, so the context creation info is displayed at proper
+       place */
+    createContext();
+    Context* c = Context::current();
     Debug() << "Vendor:" << c->vendorString();
     Debug() << "Renderer:" << c->rendererString();
     Debug() << "OpenGL version:" << c->version() << '(' + c->versionString() + ')';
