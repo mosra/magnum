@@ -152,7 +152,12 @@ void ObjImporter::parseMeshNames() {
                 thisIsFirstMeshAndItHasNoData = false;
 
                 /* Update its name and add it to name map */
-                if(!name.empty()) _file->meshesForName.emplace(name, _file->meshes.size() - 1);
+                if(!name.empty())
+                    #ifndef CORRADE_GCC46_COMPATIBILITY
+                    _file->meshesForName.emplace(name, _file->meshes.size() - 1);
+                    #else
+                    _file->meshesForName.insert({name, _file->meshes.size() - 1});
+                    #endif
                 _file->meshNames.back() = std::move(name);
 
                 /* Update its begin offset to be more precise */
@@ -165,7 +170,12 @@ void ObjImporter::parseMeshNames() {
 
                 /* Save name and offset of the new one. The end offset will be
                    updated later. */
-                if(!name.empty()) _file->meshesForName.emplace(name, _file->meshes.size());
+                if(!name.empty())
+                    #ifndef CORRADE_GCC46_COMPATIBILITY
+                    _file->meshesForName.emplace(name, _file->meshes.size());
+                    #else
+                    _file->meshesForName.insert({name, _file->meshes.size()});
+                    #endif
                 _file->meshNames.emplace_back(std::move(name));
                 _file->meshes.emplace_back(_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
             }
