@@ -47,7 +47,7 @@ build() {
 
 check() {
     cd "$startdir/build-gcc47"
-    ctest --output-on-failure
+    ctest --output-on-failure -j5
 }
 
 package() {

@@ -153,7 +153,7 @@ cmake .. \
     -G Ninja
 
 ninja
-ctest --output-on-failure -E GLTest || true
+ctest --output-on-failure -E GLTest -j5 || true
 ninja install
 ]]>
     </command>

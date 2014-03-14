@@ -40,7 +40,7 @@ build() {
 
 check() {
     cd "$startdir/build"
-    ctest --output-on-failure
+    ctest --output-on-failure -j5
 }
 
 package() {
