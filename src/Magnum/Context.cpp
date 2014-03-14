@@ -514,4 +514,14 @@ Version Context::supportedVersion(std::initializer_list<Version> versions) const
     #endif
 }
 
+Debug operator<<(Debug debug, const Context::Flag value) {
+    switch(value) {
+        #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
+        _c(Debug)
+        _c(RobustAccess)
+    }
+
+    return debug << "Context::Flag::(invalid)";
+}
+
 }

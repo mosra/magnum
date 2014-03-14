@@ -403,6 +403,9 @@ class MAGNUM_EXPORT Context {
         Implementation::State* _state;
 };
 
+/** @debugoperator{Magnum::Context} */
+MAGNUM_EXPORT Debug operator<<(Debug debug, Context::Flag value);
+
 /** @hideinitializer
 @brief Assert that given OpenGL version is supported
 @param version      Version
