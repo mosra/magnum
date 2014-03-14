@@ -61,8 +61,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Utility::Arguments args;
     args.addBooleanOption("all-extensions")
         .setHelp("all-extensions", "show extensions also for fully supported versions")
-        .addBooleanOption("no-limits")
-        .setHelp("no-limits", "don't display limits and implementation-defined values")
+        .addBooleanOption("limits")
+        .setHelp("limits", "display also limits and implementation-defined values")
         .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
 
     /**
@@ -198,7 +198,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         Debug() << "";
     }
 
-    if(args.isSet("no-limits")) return;
+    if(!args.isSet("limits")) return;
 
     /* Limits and implementation-defined values */
     #define _h(val) Debug() << "\n " << Extensions::GL::val::string() + std::string(":");
