@@ -519,6 +519,7 @@ Debug operator<<(Debug debug, const Context::Flag value) {
         #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
         _c(Debug)
         _c(RobustAccess)
+        #undef _c
     }
 
     return debug << "Context::Flag::(invalid)";
