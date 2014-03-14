@@ -142,7 +142,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "OpenGL version:" << c->version() << '(' + c->versionString() + ')';
 
     Debug() << "Context flags:";
+    #ifndef MAGNUM_TARGET_GLES
     for(const auto flag: {Context::Flag::Debug, Context::Flag::RobustAccess})
+    #else
+    for(const auto flag: {Context::Flag::Debug})
+    #endif
         if(c->flags() & flag) Debug() << "   " << flag;
 
     Debug() << "Supported GLSL versions:";
