@@ -90,6 +90,9 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
         #endif
     }
 
+    /* Set context flags */
+    glutInitContextFlags(int(configuration.flags()));
+
     if(!glutCreateWindow(configuration.title().data())) {
         Error() << "Platform::GlutApplication::tryCreateContext(): cannot create context";
         return false;

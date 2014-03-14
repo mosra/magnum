@@ -280,6 +280,26 @@ Double-buffered RGBA window with depth and stencil buffers.
 */
 class GlutApplication::Configuration {
     public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags @ref setFlags()
+         */
+        enum class Flag: int {
+            Debug = GLUT_DEBUG  /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags()
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, int, GLUT_DEBUG> Flags;
+        #else
+        typedef Containers::EnumSet<Flag, int> Flags;
+        #endif
+
         /*implicit*/ Configuration();
         ~Configuration();
 
@@ -308,6 +328,20 @@ class GlutApplication::Configuration {
          */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
+            return *this;
+        }
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag.
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
             return *this;
         }
 
@@ -348,7 +382,10 @@ class GlutApplication::Configuration {
         Vector2i _size;
         Int _sampleCount;
         Version _version;
+        Flags _flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(GlutApplication::Configuration::Flags)
 
 /**
 @brief Base for input events
