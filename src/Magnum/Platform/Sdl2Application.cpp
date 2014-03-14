@@ -109,6 +109,9 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, configuration.sampleCount() > 1 ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration.sampleCount());
 
+    /* Context flags */
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags()));
+
     /* Flags: if not hidden, set as shown */
     Uint32 windowFlags(configuration.windowFlags());
     if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden)) windowFlags |= SDL_WINDOW_SHOWN;

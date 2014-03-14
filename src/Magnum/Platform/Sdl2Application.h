@@ -424,6 +424,30 @@ depth buffer.
 class Sdl2Application::Configuration {
     public:
         /**
+         * @brief Context flag
+         *
+         * @see @ref Flags @ref setFlags()
+         */
+        enum class Flag: int {
+            Debug = SDL_GL_CONTEXT_DEBUG_FLAG,  /**< Create debug context */
+
+            /** Create context with robust access */
+            RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags()
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, int, SDL_GL_CONTEXT_DEBUG_FLAG|
+            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG> Flags;
+        #else
+        typedef Containers::EnumSet<Flag, int> Flags;
+        #endif
+
+        /**
          * @brief Window flag
          *
          * @see @ref WindowFlags, @ref setWindowFlags()
@@ -508,6 +532,20 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag.
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Context version
@@ -561,8 +599,10 @@ class Sdl2Application::Configuration {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         Version _version;
         #endif
+        Flags _flags;
 };
 
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 
 /**

@@ -103,7 +103,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref flags()
+         * @see @ref Flags, @ref flags(), @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
         enum class Flag: GLint {
             /**
