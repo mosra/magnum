@@ -142,6 +142,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "Renderer:" << c->rendererString();
     Debug() << "OpenGL version:" << c->version() << '(' + c->versionString() + ')';
 
+    Debug() << "Context flags:";
+    for(const auto flag: {Context::Flag::Debug, Context::Flag::RobustAccess})
+        if(c->flags() & flag) Debug() << "   " << flag;
+
     Debug() << "Supported GLSL versions:";
     const std::vector<std::string> shadingLanguageVersions = c->shadingLanguageVersionStrings();
     for(const auto& version: shadingLanguageVersions)
