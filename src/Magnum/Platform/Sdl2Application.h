@@ -423,10 +423,13 @@ depth buffer.
 */
 class Sdl2Application::Configuration {
     public:
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Context flag
          *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref Flags @ref setFlags()
+         * @todo re-enable when Emscripten has proper SDL2 support
          */
         enum class Flag: int {
             Debug = SDL_GL_CONTEXT_DEBUG_FLAG,  /**< Create debug context */
@@ -438,6 +441,7 @@ class Sdl2Application::Configuration {
         /**
          * @brief Context flags
          *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref setFlags()
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -445,6 +449,7 @@ class Sdl2Application::Configuration {
             SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG> Flags;
         #else
         typedef Containers::EnumSet<Flag, int> Flags;
+        #endif
         #endif
 
         /**
@@ -532,7 +537,12 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
-        /** @brief Context flags */
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Context flags
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
         Flags flags() const { return _flags; }
 
         /**
@@ -540,13 +550,13 @@ class Sdl2Application::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is no flag.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
             return *this;
         }
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Context version
          *
@@ -598,11 +608,13 @@ class Sdl2Application::Configuration {
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         Version _version;
-        #endif
         Flags _flags;
+        #endif
 };
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
+#endif
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 
 /**
