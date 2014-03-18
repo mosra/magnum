@@ -514,6 +514,7 @@ Version Context::supportedVersion(std::initializer_list<Version> versions) const
     #endif
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, const Context::Flag value) {
     switch(value) {
         #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
@@ -526,5 +527,6 @@ Debug operator<<(Debug debug, const Context::Flag value) {
 
     return debug << "Context::Flag::(invalid)";
 }
+#endif
 
 }

@@ -83,7 +83,7 @@ OpenGL ES 3.0 or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
 available, the feature is emulated with sequence of @ref Texture::setImage() "setImage()"
 calls.
 
-You can use functions @ref Texture::invalidateImage() and
+You can use functions @ref Texture::invalidateImage() "invalidateImage()" and
 @ref Texture::invalidateSubImage() "invalidateSubImage()" if you don't need
 texture data anymore to avoid unnecessary memory operations performed by OpenGL
 in order to preserve the data. If running on OpenGL ES or extension
