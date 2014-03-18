@@ -52,11 +52,15 @@ affect active bindings in user layers. %Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
 repeated queries don't result in repeated @fn_gl{Get} calls.
 
-If extension @extension{EXT,direct_state_access} is available, @ref bind() uses
-DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all
-texture configuration and data updating functions use DSA functions to avoid
-unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
-respective function documentation for more information.
+If extension @extension{ARB,multi_bind} is available, @ref bind() uses
+@fn_gl{BindTextures} to avoid unnecessary calls to @fn_gl{ActiveTexture}.
+Otherwise, if extension @extension{EXT,direct_state_access} is available,
+@ref bind() uses the DSA function.
+
+In addition, if extension @extension{EXT,direct_state_access} is available,
+also all texture configuration and data updating functions use DSA functions
+to avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
+See respective function documentation for more information.
 
 If extension @extension{ARB,robustness} is available, image reading operations
 (such as @ref Texture::image()) are protected from buffer overflow. However, if
@@ -208,13 +212,14 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @brief Bind texture for rendering
          *
          * Sets current texture as active in given layer. Note that only one
-         * texture can be bound to given layer. If @extension{EXT,direct_state_access}
-         * is not available, the layer is made active before binding the
-         * texture.
+         * texture can be bound to given layer. If @extension{ARB,multi_bind}
+         * (part of OpenGL 4.4) or @extension{EXT,direct_state_access} is not
+         * available, the layer is made active before binding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref maxLayers(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
+         * @see @ref maxLayers(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture},
+         *      @fn_gl{BindTextures} or
          *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
         void bind(Int layer);
@@ -248,6 +253,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     private:
         void MAGNUM_LOCAL bindImplementationDefault(GLint layer);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL bindImplementationMulti(GLint layer);
         void MAGNUM_LOCAL bindImplementationDSA(GLint layer);
         #endif
 

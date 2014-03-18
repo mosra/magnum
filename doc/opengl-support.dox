@@ -201,7 +201,7 @@ following:
 @extension{ARB,buffer_storage}               | |
 @extension{ARB,clear_texture}                | |
 @extension{ARB,enhanced_layouts}             | done (shading language only)
-@extension{ARB,multi_bind}                   | |
+@extension{ARB,multi_bind}                   | only single texture binding
 @extension{ARB,query_buffer_object}          | |
 @extension{ARB,texture_mirror_clamp_to_edge} | done
 @extension{ARB,texture_stencil8}             | done

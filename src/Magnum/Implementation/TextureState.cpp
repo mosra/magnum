@@ -41,12 +41,25 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0), bufferOffsetAlignment(0)
     #endif
 {
+    /* Bind implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+        bindImplementation = &AbstractTexture::bindImplementationMulti;
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        /* Extension name added below */
+        bindImplementation = &AbstractTexture::bindImplementationDSA;
+    } else
+    #endif
+    {
+        bindImplementation = &AbstractTexture::bindImplementationDefault;
+    }
+
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-        bindImplementation = &AbstractTexture::bindImplementationDSA;
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
@@ -65,7 +78,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     } else
     #endif
     {
-        bindImplementation = &AbstractTexture::bindImplementationDefault;
         parameteriImplementation = &AbstractTexture::parameterImplementationDefault;
         parameterfImplementation = &AbstractTexture::parameterImplementationDefault;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDefault;

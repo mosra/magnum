@@ -137,6 +137,10 @@ void AbstractTexture::bindImplementationDefault(GLint layer) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::bindImplementationMulti(GLint layer) {
+    glBindTextures(layer, 1, &_id);
+}
+
 void AbstractTexture::bindImplementationDSA(GLint layer) {
     glBindMultiTextureEXT(GL_TEXTURE0 + layer, _target, (Context::current()->state().texture->bindings[layer] = _id));
 }
@@ -182,6 +186,10 @@ void AbstractTexture::mipmapImplementationDSA() {
 #endif
 
 void AbstractTexture::bindInternal() {
+    /* Using glBindTextures() here is meaningless, because the non-DSA
+       functions need to have the texture bound in *currently active* layer,
+       so we would need to call glActiveTexture() afterwards anyway. */
+
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
     /* If the texture is already bound in current layer, nothing to do */
