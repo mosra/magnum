@@ -87,6 +87,66 @@ underlying type.
 Any super- or sub-class of the same size and underlying type can be used
 equivalently (e.g. @ref Math::Vector or @ref Color3 instead of @ref Vector3).
 
+@section types-binary Binary representation
+
+Scalar types with GLSL equivalent are verified to be exactly the same as
+corresponding `GL*` types. Matrix and vector classes have the same binary
+representation as corresponding array of numeric values without any additional
+data or padding (e.g. `sizeof(Vector3i) == sizeof(Int[3])`), all matrices are
+stored in column-major order.
+
+This means that all scalar, matrix and vector types can be used directly for
+filling GPU buffers and textures without any need for data extraction or
+conversion. For convenience all vector and matrix classes provide
+@ref Math::RectangularMatrix::data() "data()" function, which returns pointer
+to the internal data array.
+
+@section types-special Special types
+
+%Magnum has special type for strongly-typed representation of angles, namely
+the @ref Deg and @ref Rad classes (or @ref Degd and @ref Radd with @ref Double
+as underlying type). Their only purpose is to avoid common degree-vs-radian
+bugs (i.e. entering degree value where radians should be) and make the
+conversion between these two representations easier. They are just a tiny
+`inline` `constexpr` wrapper around the native type and they support all
+meaningful numeric operations, so using them won't have any performance or
+usability impact in practice.
+
+These classes are *not* implicitly constructible or convertible from/to
+@ref Float or @ref Double, you have to either construct/convert them explicitly
+or use custom `_degf`/`_deg` and `_radf`/`_rad` literals:
+@code
+//Deg a = 60.0f         // error, no implicit conversion from Float
+Deg a = 60.0_degf;      // okay
+
+Float b = 3.2831853f;
+auto tau = Rad{b} + 3.0_radf;
+Radd pi = 3.141592653589793_rad;
+
+//Double c = pi;        // error, no implicit conversion to Double
+auto c = Double{pi};    // okay
+@endcode
+
+They can be implicitly converted to each other, but conversion to different
+underlying type is *explicit* to avoid precision loss (or, on the other hand,
+unnecessarily high precision) during computations:
+@code
+Rad d = 60.0_degf;      // 1.0471976f
+auto e = Degd{pi};      // 180.0
+
+//Rad f = pi;           // error, no implicit conversion of underlying types
+auto f = Rad{pi};       // 3.141592654f
+@endcode
+
+These classes are used exclusively in all functions taking and returning angles
+-- trigonometry, angle computation, rotating transformation etc. Thanks to
+implicit conversion you can seamlessly use either radians or degrees without
+any need to care about what input the function expects:
+@code
+Float a = Math::sin(1.32457_radf);
+Complex b = Complex::rotation(60.0_degf);
+@endcode
+
 @section types-other Other types
 
 Other types, which don't have their GLSL equivalent, are:
