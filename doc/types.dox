@@ -92,16 +92,17 @@ equivalently (e.g. @ref Math::Vector or @ref Color3 instead of @ref Vector3).
 Other types, which don't have their GLSL equivalent, are:
 
 -   @ref Complex or @ref Complexd, @ref DualComplex or @ref DualComplexd
--   @ref Quaternion or @ref Quaterniond, @ref DualQuaternion or @ref DualQuaterniond
--   @ref Range1D / @ref Range2D / @ref Range3D, @ref Range1Di / @ref Range2Di / @ref Range3Di or
-    @ref Range1Dd / @ref Range2Dd / @ref Range3Dd
+-   @ref Quaternion or @ref Quaterniond, @ref DualQuaternion or
+    @ref DualQuaterniond
+-   @ref Range1D / @ref Range2D / @ref Range3D, @ref Range1Di / @ref Range2Di /
+    @ref Range3Di or @ref Range1Dd / @ref Range2Dd / @ref Range3Dd
 
 These types can be used in GLSL either by extracting values from their
 underlying structure or converting them to types supported by GLSL (e.g.
 quaternion to matrix).
 
-For your convenience, there is also alias for class with often used constants --
-@ref Constants or @ref Constantsd.
+For your convenience, there is also alias for class with often used constants
+-- @ref Constants or @ref Constantsd.
 
 -   Previous page: @ref platform
 -   Next page: @ref matrix-vector

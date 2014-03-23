@@ -98,7 +98,7 @@ The requirement of explicit conversions from and to unitless types helps to
 reduce unit-based errors. Consider following example with implicit conversions
 allowed:
 @code
-Float std::sin(Float angle);
+namespace std { float sin(float angle); }
 Float sine(Rad<Float> angle);
 
 Float a = 60.0f;                // degrees
@@ -110,13 +110,13 @@ std::sin(b);                    // silent error, std::sin() expected radians
 
 These silent errors are easily avoided by requiring explicit conversions:
 @code
-//sine(angleInDegrees);                     // compilation error
-sine(Deg<Float>(angleInDegrees));           // explicitly specifying unit
+//sine(a);                      // compilation error
+sine(Deg<Float>{a});            // explicitly specifying unit
 
-//std::sin(angleInDegrees);                 // compilation error
-std::sin(Float(Rad<Float>(angleInDegrees)); // required explicit conversion hints
-                                            // to user that this case needs special
-                                            // attention (i.e., conversion to radians)
+//std::sin(b);                  // compilation error
+std::sin(Float(Rad<Float>(b));  // required explicit conversion hints to user
+                                // that this case needs special attention
+                                // (i.e., conversion to radians)
 @endcode
 
 @see Magnum::Deg, Magnum::Degd
