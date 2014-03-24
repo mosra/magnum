@@ -57,7 +57,7 @@ Renderer::setPolygonMode(Renderer::PolygonMode::Lines);
 Each feature is marked accordingly if it is not available in some targets. See
 also @ref requires-gl, @ref requires-gles20 and @ref requires-gles30.
 
-@section portability-compiler Compiler-specific code
+@section portability-compiler Compiler- and platform-specific code
 
 %Magnum is attempting to be future-proof and as intuitive for users as
 possible. Many features from C++11 are used to simplify things and make them
@@ -72,6 +72,10 @@ see @ref SceneGraph::DrawableGroup3D for an example. It is up to you (or your
 platform) which compiler your code will support, code written for e.g. GCC 4.6
 will work also on Magnum compiled with support for newer compilers, although
 newer compilers may catch errors that weren't spotted by earlier versions.
+
+Some functionality (such as dynamic plugin loading or filesystem access) might
+not be available on particular platforms. @ref Corrade.h contains defintions
+which you can use for platform-aware code.
 
 @section portability-extensions Extension-aware code
 

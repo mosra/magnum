@@ -124,7 +124,7 @@ Defined if the engine is built for OpenGL ES 3.0. Implies also
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0 emulated
 within standard desktop OpenGL. Implies also @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES2, @ref building
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3, @ref building
 */
 #define MAGNUM_TARGET_DESKTOP_GLES
 #undef MAGNUM_TARGET_DESKTOP_GLES

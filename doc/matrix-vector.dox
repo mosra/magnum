@@ -258,9 +258,9 @@ Matrix4x3 e = b*d;
 @section matrix-vector-componentwise Component-wise and inter-vector operations
 
 As shown above, vectors can be added and multiplied component-wise using the
-`+` or `*` operator. You can use @ref Vector::sum() "sum()" and
-@ref Vector::product() "product()" for sum or product of components in one
-vector:
+`+` or `*` operator. You can use @ref Math::Vector::sum() "sum()" and
+@ref Math::Vector::product() "product()" for sum or product of components in
+one vector:
 @code
 Float a = Vector3{1.5f, 0.3f, 8.0f}.sum();  // 8.8f
 Int b = Vector3i{32, -5, 7}.product()       // 1120
