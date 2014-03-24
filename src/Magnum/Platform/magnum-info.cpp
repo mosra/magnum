@@ -131,6 +131,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef MAGNUM_TARGET_DESKTOP_GLES
     Debug() << "    MAGNUM_TARGET_DESKTOP_GLES";
     #endif
+    #ifdef MAGNUM_TARGET_WEBGL
+    Debug() << "    MAGNUM_TARGET_WEBGL";
+    #endif
     Debug() << "";
 
     /* Create context here, so the context creation info is displayed at proper
