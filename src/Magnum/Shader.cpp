@@ -675,7 +675,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 
         /* Or just warnings, if any */
         } else if(!message.empty()) {
-            Error out;
+            Warning out;
             out.setFlag(Debug::NewLineAtTheEnd, false);
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "Shader::compile(): compilation of " << shaderName(shader._type)

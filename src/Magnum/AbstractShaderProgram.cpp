@@ -301,7 +301,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 
         /* Or just warnings, if any */
         } else if(!message.empty()) {
-            Debug out;
+            Warning out;
             out.setFlag(Debug::NewLineAtTheEnd, false);
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "AbstractShaderProgram::link(): linking";
