@@ -64,27 +64,21 @@ enum: UnsignedInt {
     NormalOutput = 1
 };
 @endcode
--   **Uniform locations** for setting uniform data (see below) (private
-    variables), for example:
-@code
-Int TransformationUniform = 0,
-    ProjectionUniform = 1,
-    DiffuseTextureUniform = 2,
-    SpecularTextureUniform = 3;
-@endcode
--   **Constructor**, which attaches particular shaders, links the program and
-    gets uniform locations, for example:
+-   **Constructor**, which loads, compiles and attaches particular shaders and
+    links the program together, for example:
 @code
 MyShader() {
-    // Load shaders, compile them and attach them to the program
+    // Load shader sources
     Shader vert(Version::GL430, Shader::Type::Vertex);
-    vert.attachFile("PhongShader.vert");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
     Shader frag(Version::GL430, Shader::Type::Fragment);
-    frag.attachFile("PhongShader.vert");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    vert.addFile("PhongShader.vert");
+    frag.addFile("PhongShader.vert");
+
+    // Invoke parallel compilation for best performance
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    // Attach the shaders
+    attachShader(vert);
     attachShader(frag);
 
     // Link the program together
@@ -95,24 +89,29 @@ MyShader() {
     protected @ref setUniform() functions. For usability purposes you can
     implement also method chaining. Example:
 @code
-MyShader& setTransformation(const Matrix4& matrix) {
-    setUniform(TransformationUniform, matrix);
+MyShader& setProjectionMatrix(const Matrix4& matrix) {
+    setUniform(0, matrix);
     return *this;
 }
-MyShader& setProjection(const Matrix4& matrix) {
-    setUniform(ProjectionUniform, matrix);
+MyShader& setTransformationMatrix(const Matrix4& matrix) {
+    setUniform(1, matrix);
+    return *this;
+}
+MyShader& setNormalMatrix(const Matrix3x3& matrix) {
+    setUniform(2, matrix);
     return *this;
 }
 @endcode
--   **Texture setting functions** in which you bind the textures to particular
-    layers using @ref AbstractTexture::bind() and equivalent, for example:
+-   <strong>%Texture setting functions</strong> in which you bind the textures
+    to particular layers using @ref *Texture::bind() and equivalents, for
+    example:
 @code
 MyShader& setDiffuseTexture(Texture2D& texture) {
-    texture->bind(0);
+    texture.bind(0);
     return *this;
 }
 MyShader& setSpecularTexture(Texture2D& texture) {
-    texture->bind(1);
+    texture.bind(1);
     return *this;
 }
 @endcode
@@ -142,7 +141,7 @@ If you don't have the required extension, declare the attributes without
 `layout()` qualifier and use functions @ref bindAttributeLocation() and
 @ref bindFragmentDataLocation() / @ref bindFragmentDataLocationIndexed() between
 attaching the shaders and linking the program. Note that additional syntax
-changes may be needed for GLSL 1.20 and GLSL ES 1.0.
+changes may be needed for GLSL 1.20 and GLSL ES.
 @code
 in vec4 position;
 in vec3 normal;
@@ -192,21 +191,24 @@ code, e.g.:
 @code
 // GLSL 4.30, or
 #extension GL_ARB_explicit_uniform_location: enable
-layout(location = 0) uniform mat4 transformation;
-layout(location = 1) uniform mat4 projection;
+layout(location = 0) uniform mat4 projectionMatrix;
+layout(location = 1) uniform mat4 transformationMatrix;
+layout(location = 2) uniform mat3 normalMatrix;
 @endcode
 
 If you don't have the required extension, declare the uniforms without the
-`layout()` qualifier and get uniform location using @ref uniformLocation()
-*after* linking stage. Note that additional syntax changes may be needed for
-GLSL 1.20 and GLSL ES 1.0.
+`layout()` qualifier, get uniform location using @ref uniformLocation() *after*
+linking stage and then use the queried location in uniform setting functions.
+Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES.
 @code
-uniform mat4 transformation;
-uniform mat4 projection;
+uniform mat4 projectionMatrix;
+uniform mat4 transformationMatrix;
+uniform mat3 normalMatrix;
 @endcode
 @code
-Int transformationUniform = uniformLocation("transformation");
-Int projectionUniform = uniformLocation("projection");
+Int projectionMatrixUniform = uniformLocation("projectionMatrix");
+Int transformationMatrixUniform = uniformLocation("transformationMatrix");
+Int normalMatrixUniform = uniformLocation("normalMatrix");
 @endcode
 
 @see @ref maxUniformLocations()
@@ -238,8 +240,8 @@ uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 @endcode
 @code
-setUniform(DiffuseTextureUniform, 0);
-setUniform(SpecularTextureUniform, 1);
+setUniform(uniformLocation("diffuseTexture"), 0);
+setUniform(uniformLocation("specularTexture"), 1);
 @endcode
 
 @see @ref Shader::maxTextureImageUnits()
