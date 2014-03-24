@@ -128,6 +128,20 @@ within standard desktop OpenGL. Implies also @ref MAGNUM_TARGET_GLES.
 */
 #define MAGNUM_TARGET_DESKTOP_GLES
 #undef MAGNUM_TARGET_DESKTOP_GLES
+
+/**
+@brief WebGL target
+
+Defined if the engine is built for WebGL (using Emscripten). WebGL is nearly
+equivalent to OpenGL ES 2.0, thus in most cases you don't need to treat it
+differently, but there are some
+[specific restrictions and features](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
+which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES and
+@ref MAGNUM_TARGET_GLES2.
+@see @ref CORRADE_TARGET_EMSCRIPTEN, @ref building
+*/
+#define MAGNUM_TARGET_WEBGL
+#undef MAGNUM_TARGET_WEBGL
 #endif
 
 /** @{ @name Basic type definitions
