@@ -167,11 +167,21 @@ typedef std::uint32_t UnsignedInt;
 /** @brief Signed int (32bit) */
 typedef std::int32_t Int;
 
-/** @brief Unsigned long (64bit) */
+#ifndef MAGNUM_TARGET_WEBGL
+/**
+@brief Unsigned long (64bit)
+
+@attention 64-bit integers are not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
+*/
 typedef std::uint64_t UnsignedLong;
 
-/** @brief Signed long (64bit) */
+/**
+@brief Signed long (64bit)
+
+@attention 64-bit integers are not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
+*/
 typedef std::int64_t Long;
+#endif
 
 /** @brief Float (32bit) */
 typedef float Float;

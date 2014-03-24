@@ -107,6 +107,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
          *      @ref Magnum::Long "Long".
+         * @attention @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
+         *      result type is not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
          */
         template<class T> T result();
 
@@ -147,8 +149,10 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
 template<> bool MAGNUM_EXPORT AbstractQuery::result<bool>();
 template<> UnsignedInt MAGNUM_EXPORT AbstractQuery::result<UnsignedInt>();
 template<> Int MAGNUM_EXPORT AbstractQuery::result<Int>();
+#ifndef MAGNUM_TARGET_WEBGL
 template<> UnsignedLong MAGNUM_EXPORT AbstractQuery::result<UnsignedLong>();
 template<> Long MAGNUM_EXPORT AbstractQuery::result<Long>();
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2

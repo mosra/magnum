@@ -42,8 +42,10 @@ typedef std::uint16_t UnsignedShort;
 typedef std::int16_t Short;
 typedef std::uint32_t UnsignedInt;
 typedef std::int32_t Int;
+#ifndef MAGNUM_TARGET_WEBGL
 typedef std::uint64_t UnsignedLong;
 typedef std::int64_t Long;
+#endif
 
 /** @todo C++14: use std::float32_t and std::float_64t [N3626](http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3626.pdf) */
 typedef float Float;
