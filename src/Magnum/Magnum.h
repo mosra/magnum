@@ -100,7 +100,7 @@ Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
 #undef MAGNUM_TARGET_GLES
 
 /**
-@brief OpenGL ES 2.0 target.
+@brief OpenGL ES 2.0 target
 
 Defined if the engine is built for OpenGL ES 2.0. Implies also
 @ref MAGNUM_TARGET_GLES.
@@ -110,7 +110,7 @@ Defined if the engine is built for OpenGL ES 2.0. Implies also
 #undef MAGNUM_TARGET_GLES2
 
 /**
-@brief OpenGL ES 3.0 target.
+@brief OpenGL ES 3.0 target
 
 Defined if the engine is built for OpenGL ES 3.0. Implies also
 @ref MAGNUM_TARGET_GLES.

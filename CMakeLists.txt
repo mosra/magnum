@@ -141,7 +141,7 @@ else()
     find_package(OpenGLES3 REQUIRED)
 endif()
 
-# Configuration variables (saved later to corradeConfigure.h)
+# Configuration variables (saved later to configure.h)
 if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
     if(TARGET_GLES2)
