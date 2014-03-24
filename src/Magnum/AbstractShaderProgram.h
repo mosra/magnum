@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::AbstractShaderProgram
  */
 
+#include <functional>
 #include <string>
 #include <Corrade/Containers/EnumSet.h>
 
@@ -320,8 +321,6 @@ comes in handy.
 @see @ref portability-shaders
 
 @todo Use Containers::ArrayReference for setting uniform arrays?
-@todo Compiling and linking more than one shader in parallel, then checking
-    status, should be faster -- https://twitter.com/g_truc/status/352778836657700866
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
@@ -562,6 +561,21 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
     protected:
+        /**
+         * @brief Link the shader
+         *
+         * Returns `false` if linking of any shader failed, `true` if
+         * everything succeeded. Linker message (if any) is printed to error
+         * output. All attached shaders must be compiled with
+         * @ref Shader::compile() before linking. The operation is batched in a
+         * way that allows the driver to link multiple shaders simultaenously
+         * (i.e. in multiple threads).
+         * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
+         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
+         *      @fn_gl{GetProgramInfoLog}
+         */
+        static bool link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders);
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Allow retrieving program binary
@@ -655,14 +669,12 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Link the shader
          *
-         * Returns `false` if linking failed, `true` otherwise. Compiler
-         * message (if any) is printed to error output. All attached shaders
-         * must be compiled with @ref Shader::compile() before linking.
-         * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
-         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
-         *      @fn_gl{GetProgramInfoLog}
+         * Links single shader. If possible, prefer to link multiple shaders
+         * at once using @ref link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>>)
+         * for improved performance, see its documentation for more
+         * information.
          */
-        bool link();
+        bool link() { return link({*this}); }
 
         /**
          * @brief Get uniform location

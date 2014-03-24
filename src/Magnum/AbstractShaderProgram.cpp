@@ -269,40 +269,53 @@ void AbstractShaderProgram::bindFragmentDataLocationIndexed(UnsignedInt location
 }
 #endif
 
-bool AbstractShaderProgram::link() {
-    /* Link shader program */
-    glLinkProgram(_id);
+bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders) {
+    bool allSuccess = true;
 
-    /* Check link status */
-    GLint success, logLength;
-    glGetProgramiv(_id, GL_LINK_STATUS, &success);
-    glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
+    /* Invoke (possibly parallel) linking on all shaders */
+    for(AbstractShaderProgram& shader: shaders) glLinkProgram(shader._id);
 
-    /* Error or warning message. The string is returned null-terminated, scrap
-       the \0 at the end afterwards */
-    std::string message(logLength, '\n');
-    if(message.size() > 1)
-        glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
-    message.resize(std::max(logLength, 1)-1);
+    /* After linking phase, check status of all shaders */
+    Int i = 1;
+    for(AbstractShaderProgram& shader: shaders) {
+        GLint success, logLength;
+        glGetProgramiv(shader._id, GL_LINK_STATUS, &success);
+        glGetProgramiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
 
-    /* Show error log and delete shader */
-    if(!success) {
-        Error out;
-        out.setFlag(Debug::NewLineAtTheEnd, false);
-        out.setFlag(Debug::SpaceAfterEachValue, false);
-        out << "AbstractShaderProgram: linking failed with the following message:\n"
-            << message;
+        /* Error or warning message. The string is returned null-terminated,
+           scrap the \0 at the end afterwards */
+        std::string message(logLength, '\n');
+        if(message.size() > 1)
+            glGetProgramInfoLog(shader._id, message.size(), nullptr, &message[0]);
+        message.resize(std::max(logLength, 1)-1);
 
-    /* Or just warnings, if there are any */
-    } else if(!message.empty()) {
-        Debug out;
-        out.setFlag(Debug::NewLineAtTheEnd, false);
-        out.setFlag(Debug::SpaceAfterEachValue, false);
-        out << "AbstractShaderProgram: linking succeeded with the following message:\n"
-            << message;
+        /* Show error log */
+        if(!success) {
+            Error out;
+            out.setFlag(Debug::NewLineAtTheEnd, false);
+            out.setFlag(Debug::SpaceAfterEachValue, false);
+            out << "AbstractShaderProgram::link(): linking";
+            if(shaders.size() != 1) out << " of shader " << std::to_string(i);
+            out << " failed with the following message:\n"
+                << message;
+
+        /* Or just warnings, if any */
+        } else if(!message.empty()) {
+            Debug out;
+            out.setFlag(Debug::NewLineAtTheEnd, false);
+            out.setFlag(Debug::SpaceAfterEachValue, false);
+            out << "AbstractShaderProgram::link(): linking";
+            if(shaders.size() != 1) out << " of shader " << std::to_string(i);
+            out << " succeeded with the following message:\n"
+                << message;
+        }
+
+        /* Success of all depends on each of them */
+        allSuccess = allSuccess && success;
+        ++i;
     }
 
-    return success;
+    return allSuccess;
 }
 
 Int AbstractShaderProgram::uniformLocation(const std::string& name) {

@@ -29,8 +29,9 @@
  * @brief Class @ref Magnum::Shader
  */
 
-#include <vector>
+#include <functional>
 #include <string>
+#include <vector>
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
@@ -432,6 +433,20 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         #endif
 
         /**
+         * @brief Compile multiple shaders simultaenously
+         *
+         * Returns `false` if compilation of any shader failed, `true` if
+         * everything succeeded. Compiler messages (if any) are printed to
+         * error output. The operation is batched in a way that allows the
+         * driver to perform multiple compilations simultaenously (i.e. in
+         * multiple threads).
+         * @see @fn_gl{ShaderSource}, @fn_gl{CompileShader}, @fn_gl{GetShader}
+         *      with @def_gl{COMPILE_STATUS} and @def_gl{INFO_LOG_LENGTH},
+         *      @fn_gl{GetShaderInfoLog}
+         */
+        static bool compile(std::initializer_list<std::reference_wrapper<Shader>> shaders);
+
+        /**
          * @brief Constructor
          * @param version   Target version
          * @param type      %Shader type
@@ -524,13 +539,12 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         /**
          * @brief Compile shader
          *
-         * Returns `false` if compilation failed, `true` otherwise. Compiler
-         * message (if any) is printed to error output.
-         * @see @fn_gl{ShaderSource}, @fn_gl{CompileShader}, @fn_gl{GetShader}
-         *      with @def_gl{COMPILE_STATUS} and @def_gl{INFO_LOG_LENGTH},
-         *      @fn_gl{GetShaderInfoLog}
+         * Compiles single shader. Prefer to compile multiple shaders at once
+         * using @ref compile(std::initializer_list<std::reference_wrapper<Shader>>)
+         * for improved performance, see its documentation for more
+         * information.
          */
-        bool compile();
+        bool compile() { return compile({*this}); }
 
     private:
         Type _type;
