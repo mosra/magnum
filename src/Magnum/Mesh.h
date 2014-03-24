@@ -646,7 +646,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief draw(AbstractShaderProgram&)
-         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) instead.
+         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) "draw(AbstractShaderProgram&)"
+         *      instead.
          */
         void draw() {
             #ifndef MAGNUM_TARGET_GLES2
