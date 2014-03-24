@@ -314,7 +314,7 @@ Context::Context() {
         const std::string version = versionString();
         #ifndef MAGNUM_TARGET_GLES
         if(version.compare(0, 4, "2.1 ") == 0)
-        #elif defined(CORRADE_TARGET_EMSCRIPTEN)
+        #elif defined(MAGNUM_TARGET_WEBGL)
         if(version.find("WebGL 1") != std::string::npos)
         #else
         if(version.find("OpenGL ES 2.0") != std::string::npos)
