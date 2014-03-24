@@ -166,6 +166,23 @@ for(std::size_t i: {7, 27, 56, 128}) {
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 
+@section Buffer-webgl-restrictions WebGL and NaCl restrictions
+
+Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" and @ref CORRADE_TARGET_NACL "NaCl"
+need to be bound only to one unique target, i.e., @ref Buffer bound to
+@ref Buffer::Target::Array cannot be later rebound to
+@ref Buffer::Target::ElementArray. However, %Magnum by default uses any
+sufficient target when binding the buffer internally (e.g. for setting data).
+To avoid GL errors, set target hint to desired target, either in constructor or
+using @ref Buffer::setTargetHint():
+@code
+Buffer vertices{Buffer::Target::Array};
+Buffer indices{Buffer::Target::ElementArray};
+@endcode
+
+To ease up the development, @ref Mesh checks proper target hint when adding
+vertex and index buffers in both WebGL and NaCl.
+
 @section Buffer-performance-optimization Performance optimizations
 
 The engine tracks currently bound buffers to avoid unnecessary calls to

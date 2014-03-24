@@ -519,6 +519,9 @@ class MAGNUM_EXPORT Renderer {
          * @param mask              Mask for both reference and buffer value.
          *      Initial value is all `1`s.
          *
+         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the reference value
+         *      and mask must be the same for both front and back polygon
+         *      facing.
          * @see @ref Feature::StencilTest, @ref setStencilFunction(StencilFunction, Int, UnsignedInt),
          *      @ref setStencilOperation(), @fn_gl{StencilFuncSeparate}
          */
@@ -606,6 +609,9 @@ class MAGNUM_EXPORT Renderer {
          *
          * Set given bit to `0` to disallow writing stencil value for given
          * faces to it. Initial value is all `1`s.
+         *
+         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the mask must be the
+         *      same for both front and back polygon facing.
          * @see setStencilMask(UnsignedInt), setColorMask(), setDepthMask(),
          *      @fn_gl{StencilMaskSeparate}
          */
@@ -812,6 +818,9 @@ class MAGNUM_EXPORT Renderer {
          * @param destination   How the destination blending factor is
          *      computed from framebuffer. Initial value is @ref BlendFunction::Zero.
          *
+         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL", constant color and
+         *      constant alpha cannot be used together as source and
+         *      destination factors.
          * @see @ref Feature::Blending, @ref setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
          *      @ref setBlendEquation(), @ref setBlendColor(),
          *      @fn_gl{BlendFunc}

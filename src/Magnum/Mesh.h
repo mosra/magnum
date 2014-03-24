@@ -291,6 +291,11 @@ respective shader, bind required textures (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call @ref Mesh::draw().
 
+@section Mesh-webgl-restrictions WebGL restrictions
+
+@ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
+layout, see @ref addVertexBuffer() for details.
+
 @section Mesh-performance-optimization Performance optimizations
 
 If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
@@ -552,6 +557,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @attention The buffer passed as parameter is not managed by the
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
+         *
+         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the data must be
+         *      properly aligned (e.g. all float data must start at addresses
+         *      divisible by four). Also the maximum stride of attribute data
+         *      must be at most 255 bytes. This is not required anywhere else,
+         *      but doing so may have performance benefits.
          *
          * @see @ref maxVertexAttributes(), @ref setPrimitive(),
          *      @ref setVertexCount(), @fn_gl{BindVertexArray},

@@ -299,6 +299,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * (part of OpenGL 4.2), OpenGL ES 3.0 or @es_extension{EXT,texture_storage}
          * in OpenGL ES 2.0 is not available, the feature is emulated with
          * sequence of @ref setImage() calls.
+         * @todo allow the user to specify ColorType explicitly to avoid
+         *      issues in WebGL (see setSubImage())
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
@@ -404,6 +406,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some layer before the operation.
+         *
+         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref ColorType of
+         *      data passed in @p image must match the original one specified
+         *      in @ref setImage(). It means that you might not be able to use
+         *      @ref setStorage() as it uses implicit @ref ColorType value.
+         *
          * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexSubImage1D}/
          *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D} or
