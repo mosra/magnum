@@ -197,6 +197,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         /**
          * @brief Set normal matrix
          * @return Reference to self (for method chaining)
+         *
+         * The matrix doesn't need to be normalized, as the renormalization
+         * must be done in the shader anyway.
          */
         Phong& setNormalMatrix(const Matrix3x3& matrix) {
             setUniform(normalMatrixUniform, matrix);

@@ -375,8 +375,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @ref AbstractTexture::maxLayers(), @ref maxTextureImageUnits(),
-         *      @fn_gl{Get} with @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS}
+         * @see @ref maxTextureImageUnits(), @fn_gl{Get} with
+         *      @def_gl{MAX_COMBINED_TEXTURE_IMAGE_UNITS}
          */
         static Int maxCombinedTextureImageUnits();
 
