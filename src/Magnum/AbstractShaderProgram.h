@@ -103,8 +103,8 @@ MyShader& setNormalMatrix(const Matrix3x3& matrix) {
 }
 @endcode
 -   <strong>%Texture setting functions</strong> in which you bind the textures
-    to particular layers using @ref *Texture::bind() and equivalents, for
-    example:
+    to particular texture units using @ref *Texture::bind() and equivalents,
+    for example:
 @code
 MyShader& setDiffuseTexture(Texture2D& texture) {
     texture.bind(0);
@@ -219,10 +219,10 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
     @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()"
     instead.
 
-@subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
+@subsection AbstractShaderProgram-texture-units Specifying texture binding units
 
-The preferred workflow is to specify texture layers directly in the shader
-code, e.g.:
+The preferred workflow is to specify texture binding unit directly in the
+shader code, e.g.:
 @code
 // GLSL 4.20, or
 #extension GL_ARB_shading_language_420pack: enable
@@ -230,11 +230,10 @@ layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
 
-If you don't have the required extension (or if you want to change the layer
-later), declare the uniforms without the `layout()` qualifier and set the
-texture layer uniform using @ref setUniform(Int, const T&) "setUniform(Int, Int)".
-Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES
-1.0.
+If you don't have the required extension, declare the uniforms without the
+`layout()` qualifier and set the texture binding unit using
+@ref setUniform(Int, const T&) "setUniform(Int, Int)". Note that additional
+syntax changes may be needed for GLSL 1.20 and GLSL ES 1.0.
 @code
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
@@ -246,9 +245,9 @@ setUniform(uniformLocation("specularTexture"), 1);
 
 @see @ref Shader::maxTextureImageUnits()
 @requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
-    texture layer binding instead of using
+    texture binding unit instead of using
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
-@requires_gl Explicit texture layer binding is not supported in OpenGL ES. Use
+@requires_gl Explicit texture binding unit is not supported in OpenGL ES. Use
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
 

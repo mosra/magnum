@@ -63,12 +63,12 @@ class DistanceFieldShader: public AbstractShaderProgram {
         }
 
         DistanceFieldShader& setTexture(Texture2D& texture) {
-            texture.bind(TextureLayer);
+            texture.bind(TextureUnit);
             return *this;
         }
 
     private:
-        enum: Int { TextureLayer = 8 };
+        enum: Int { TextureUnit = 8 };
 
         Int radiusUniform,
             scalingUniform,
@@ -130,7 +130,7 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
     #endif
     {
-        setUniform(uniformLocation("textureData"), TextureLayer);
+        setUniform(uniformLocation("textureData"), TextureUnit);
     }
 }
 

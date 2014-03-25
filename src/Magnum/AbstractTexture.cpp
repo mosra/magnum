@@ -116,33 +116,33 @@ AbstractTexture& AbstractTexture::setLabel(const std::string& label) {
     return *this;
 }
 
-void AbstractTexture::bind(Int layer) {
+void AbstractTexture::bind(Int textureUnit) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
-    /* If already bound in given layer, nothing to do */
-    if(textureState->bindings[layer] == _id) return;
+    /* If already bound in given texture unit, nothing to do */
+    if(textureState->bindings[textureUnit] == _id) return;
 
-    (this->*Context::current()->state().texture->bindImplementation)(layer);
+    (this->*Context::current()->state().texture->bindImplementation)(textureUnit);
 }
 
-void AbstractTexture::bindImplementationDefault(GLint layer) {
+void AbstractTexture::bindImplementationDefault(GLint textureUnit) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
-    /* Change to given layer, if not already there */
-    if(textureState->currentLayer != layer)
-        glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = layer));
+    /* Activate given texture unit, if not already active */
+    if(textureState->currentTextureUnit != textureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = textureUnit));
 
-    /* Bind the texture to the layer */
-    glBindTexture(_target, (textureState->bindings[layer] = _id));
+    /* Bind the texture to the unit */
+    glBindTexture(_target, (textureState->bindings[textureUnit] = _id));
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::bindImplementationMulti(GLint layer) {
-    glBindTextures(layer, 1, &_id);
+void AbstractTexture::bindImplementationMulti(GLint textureUnit) {
+    glBindTextures(textureUnit, 1, &_id);
 }
 
-void AbstractTexture::bindImplementationDSA(GLint layer) {
-    glBindMultiTextureEXT(GL_TEXTURE0 + layer, _target, (Context::current()->state().texture->bindings[layer] = _id));
+void AbstractTexture::bindImplementationDSA(GLint textureUnit) {
+    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, _target, (Context::current()->state().texture->bindings[textureUnit] = _id));
 }
 #endif
 
@@ -187,24 +187,24 @@ void AbstractTexture::mipmapImplementationDSA() {
 
 void AbstractTexture::bindInternal() {
     /* Using glBindTextures() here is meaningless, because the non-DSA
-       functions need to have the texture bound in *currently active* layer,
+       functions need to have the texture bound in *currently active* unit,
        so we would need to call glActiveTexture() afterwards anyway. */
 
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
-    /* If the texture is already bound in current layer, nothing to do */
-    if(textureState->bindings[textureState->currentLayer] == _id)
+    /* If the texture is already bound in current unit, nothing to do */
+    if(textureState->bindings[textureState->currentTextureUnit] == _id)
         return;
 
-    /* Set internal layer as active if not already */
-    CORRADE_INTERNAL_ASSERT(textureState->maxLayers > 1);
-    const GLint internalLayer = textureState->maxLayers-1;
-    if(textureState->currentLayer != internalLayer)
-        glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = internalLayer));
+    /* Set internal unit as active if not already */
+    CORRADE_INTERNAL_ASSERT(textureState->maxTextureUnits > 1);
+    const GLint internalTextureUnit = textureState->maxTextureUnits-1;
+    if(textureState->currentTextureUnit != internalTextureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = internalTextureUnit));
 
-    /* Bind the texture to internal layer, if not already */
-    if(textureState->bindings[internalLayer] != _id)
-        glBindTexture(_target, (textureState->bindings[internalLayer] = _id));
+    /* Bind the texture to internal unit, if not already */
+    if(textureState->bindings[internalTextureUnit] != _id)
+        glBindTexture(_target, (textureState->bindings[internalTextureUnit] = _id));
 }
 
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {

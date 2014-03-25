@@ -158,7 +158,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * allowed.
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation. If
+         * is bound to some texture unit before the operation. If
          * @extension{ARB,texture_storage} (part of OpenGL 4.2) or OpenGL ES
          * 3.0 is not available, the feature is emulated with sequence of
          * @ref setImage() calls.
@@ -200,7 +200,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @ref setStorage() and @ref setSubImage() instead.
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
@@ -233,7 +233,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
          * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
          *      or @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/

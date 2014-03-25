@@ -86,8 +86,8 @@ class RectangleTexture: public AbstractTexture {
          *
          * Sets filter used when the object pixel size is smaller than the
          * texture size. If @extension{EXT,direct_state_access} is not
-         * available, the texture is bound to some layer before the operation.
-         * Initial value is @ref Sampler::Filter::Linear.
+         * available, the texture is bound to some texture unit before the
+         * operation. Initial value is @ref Sampler::Filter::Linear.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MIN_FILTER}
@@ -109,7 +109,7 @@ class RectangleTexture: public AbstractTexture {
          *
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation.
+         * is bound to some texture unit before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH} and @def_gl{TEXTURE_HEIGHT}
@@ -124,9 +124,9 @@ class RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Sets wrapping type for coordinates out of (0, textureSizeInGivenDirection-1)
-         * range for rectangle textures. If @extension{EXT,direct_state_access}
-         * is not available, the texture is bound to some layer before the
-         * operation. Initial value is @ref Sampler::Wrapping::ClampToEdge.
+         * range. If @extension{EXT,direct_state_access} is not available, the
+         * texture is bound to some texture unit before the operation. Initial
+         * value is @ref Sampler::Wrapping::ClampToEdge.
          * @attention Only @ref Sampler::Wrapping::ClampToEdge and
          *      @ref Sampler::Wrapping::ClampToBorder is supported on this
          *      texture type.
@@ -165,10 +165,10 @@ class RectangleTexture: public AbstractTexture {
          * allowed.
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation. If @extension{ARB,texture_storage}
-         * (part of OpenGL 4.2), OpenGL ES 3.0 or @es_extension{EXT,texture_storage}
-         * in OpenGL ES 2.0 is not available, the feature is emulated with
-         * @ref setImage() call.
+         * is bound to some texture unit before the operation. If
+         * @extension{ARB,texture_storage} (part of OpenGL 4.2), OpenGL ES 3.0
+         * or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
+         * available, the feature is emulated with @ref setImage() call.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexStorage2D}
          *      or @fn_gl_extension{TextureStorage2D,EXT,direct_state_access},
          *      eventually @fn_gl{TexImage2D} or
@@ -189,7 +189,7 @@ class RectangleTexture: public AbstractTexture {
          * @ref imageSize().
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation. If
+         * texture is bound to some texture unit before the operation. If
          * @extension{ARB,robustness} is available, the operation is protected
          * from buffer overflow. However, if both @extension{EXT,direct_state_access}
          * and @extension{ARB,robustness} are available, the DSA version is
@@ -230,7 +230,7 @@ class RectangleTexture: public AbstractTexture {
          * use @ref setStorage() and @ref setSubImage() instead.
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexImage2D}
          *      or @fn_gl_extension{TextureImage2D,EXT,direct_state_access}
          */
@@ -260,7 +260,7 @@ class RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
          * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexSubImage2D} or
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}

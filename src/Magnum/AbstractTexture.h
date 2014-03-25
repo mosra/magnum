@@ -51,17 +51,18 @@ documentation for details.
 
 @section AbstractTexture-performance-optimization Performance optimizations and security
 
-The engine tracks currently bound textures in all available layers to avoid
-unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. %Texture
-configuration functions use dedicated highest available texture layer to not
-affect active bindings in user layers. %Texture limits and
+The engine tracks currently bound textures in all available texture units to
+avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
+%Texture configuration functions use dedicated highest available texture unit
+to not affect active bindings in user units. %Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
 repeated queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{ARB,multi_bind} is available, @ref bind() uses
 @fn_gl{BindTextures} to avoid unnecessary calls to @fn_gl{ActiveTexture}.
 Otherwise, if extension @extension{EXT,direct_state_access} is available,
-@ref bind() uses the DSA function.
+@ref bind() uses @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+function.
 
 In addition, if extension @extension{EXT,direct_state_access} is available,
 also all texture configuration and data updating functions use DSA functions
@@ -76,7 +77,7 @@ there isn't any function combining both features.
 
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
-dedicated layers, not occupied by other textures. First configure the texture
+dedicated units, not occupied by other textures. First configure the texture
 and *then* set the data, so OpenGL can optimize them to match the settings. To
 avoid redundant consistency checks and memory reallocations when updating
 texture data, set texture storage at once using @ref Texture::setStorage() "setStorage()"
@@ -215,20 +216,19 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief Bind texture for rendering
+         * @brief Bind texture to given texture unit
          *
-         * Sets current texture as active in given layer. Note that only one
-         * texture can be bound to given layer. If @extension{ARB,multi_bind}
-         * (part of OpenGL 4.4) or @extension{EXT,direct_state_access} is not
-         * available, the layer is made active before binding the texture.
+         * If @extension{ARB,multi_bind} (part of OpenGL 4.4) or
+         * @extension{EXT,direct_state_access} is not available, the texture
+         * unit is made active before binding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref maxLayers(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture},
-         *      @fn_gl{BindTextures} or
-         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         * @see @ref Shader::maxCombinedTextureImageUnits(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture}, @fn_gl{BindTextures}
+         *      or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
-        void bind(Int layer);
+        void bind(Int textureUnit);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -239,7 +239,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         explicit AbstractTexture(GLenum target);
 
-        /* Unlike bind() this also sets the binding layer as active */
+        /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();
 
         void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
@@ -257,10 +257,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         GLenum _target;
 
     private:
-        void MAGNUM_LOCAL bindImplementationDefault(GLint layer);
+        void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL bindImplementationMulti(GLint layer);
-        void MAGNUM_LOCAL bindImplementationDSA(GLint layer);
+        void MAGNUM_LOCAL bindImplementationMulti(GLint textureUnit);
+        void MAGNUM_LOCAL bindImplementationDSA(GLint textureUnit);
         #endif
 
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);

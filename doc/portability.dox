@@ -161,8 +161,8 @@ if(!Context::instance()->isExtensionSupported<Extensions::GL::ARB::explicit_attr
 @endcode
 
 See also @ref AbstractShaderProgram class documentation for information about
-specifying attribute location, uniform location and texture layer in various
-OpenGL versions.
+specifying attribute location, uniform location and texture binding unit in
+various OpenGL versions.
 
 All shaders in @ref Shaders namespace support desktop OpenGL starting from
 version 2.1 and also OpenGL ES 2.0 and 3.0. Feel free to look into their

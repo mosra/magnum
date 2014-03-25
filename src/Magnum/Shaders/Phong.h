@@ -65,24 +65,24 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
             /**
-             * Layer for ambient texture. Used only if @ref Flag::AmbientTexture
-             * is set.
+             * Ambient texture binding unit. Used only if
+             * @ref Flag::AmbientTexture is set.
              * @deprecated Use @ref Magnum::Shaders::Phong::setAmbientTexture() "setAmbientTexture()"
              *      instead.
              */
             AmbientTextureLayer = 0,
 
             /**
-             * Layer for diffuse texture. Used only if @ref Flag::DiffuseTexture
-             * is set.
+             * Diffuse texture binding unit. Used only if
+             * @ref Flag::DiffuseTexture is set.
              * @deprecated Use @ref Magnum::Shaders::Phong::setDiffuseTexture() "setDiffuseTexture()"
              *      instead.
              */
             DiffuseTextureLayer = 1,
 
             /**
-             * Layer for specular texture. Used only if @ref Flag::SpecularTexture
-             * is set.
+             * Specular texture binding unit. Used only if
+             * @ref Flag::SpecularTexture is set.
              * @deprecated Use @ref Magnum::Shaders::Phong::setSpecularTexture() "setSpecularTexture()"
              *      instead.
              */

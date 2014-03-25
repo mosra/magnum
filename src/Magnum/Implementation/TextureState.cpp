@@ -36,7 +36,7 @@
 
 namespace Magnum { namespace Implementation {
 
-TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxLayers(0), maxMaxAnisotropy(0.0f), currentLayer(0)
+TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxTextureUnits(0), maxMaxAnisotropy(0.0f), currentTextureUnit(0)
     #ifndef MAGNUM_TARGET_GLES
     , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0), bufferOffsetAlignment(0)
     #endif
@@ -172,10 +172,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
     } else setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 
-    /* Resize bindings array to hold all possible layers */
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxLayers);
-    CORRADE_INTERNAL_ASSERT(maxLayers > 0);
-    bindings.resize(maxLayers);
+    /* Resize bindings array to hold all possible texture units */
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
+    bindings.resize(maxTextureUnits);
 }
 
 TextureState::~TextureState() = default;

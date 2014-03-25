@@ -68,9 +68,9 @@ struct TextureState {
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 
-    GLint maxLayers;
+    GLint maxTextureUnits;
     GLfloat maxMaxAnisotropy;
-    GLint currentLayer;
+    GLint currentTextureUnit;
     #ifndef MAGNUM_TARGET_GLES
     GLint maxColorSamples,
         maxDepthSamples,
