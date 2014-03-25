@@ -51,14 +51,15 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    AbstractShaderProgram::attachShader(vert);
-
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(rs.get("Vector.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    AbstractShaderProgram::attachShader(vert);
     AbstractShaderProgram::attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES

@@ -30,6 +30,7 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
+#include "MagnumExternal/Optional/optional.hpp"
 
 #include "Implementation/CreateCompatibilityShader.h"
 
@@ -56,31 +57,35 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    vert.compile();
-    attachShader(vert);
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
-        Shader geom = Implementation::createCompatibilityShader(version, Shader::Type::Geometry);
-        geom.addSource(rs.get("MeshVisualizer.geom"));
-        CORRADE_INTERNAL_ASSERT_OUTPUT(geom.compile());
-        geom.compile();
-        attachShader(geom);
-    }
-    #endif
-
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("MeshVisualizer.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-    frag.compile();
+
+    #ifndef MAGNUM_TARGET_GLES
+    std::optional<Shader> geom;
+    if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
+        geom = Implementation::createCompatibilityShader(version, Shader::Type::Geometry);
+        geom->addSource(rs.get("MeshVisualizer.geom"));
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(geom) Shader::compile({vert, *geom, frag});
+    else
+    #endif
+        Shader::compile({vert, frag});
+
+    attachShader(vert);
     attachShader(frag);
+    #ifndef MAGNUM_TARGET_GLES
+    if(geom) attachShader(*geom);
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
@@ -99,7 +104,6 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     }
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
-    link();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))

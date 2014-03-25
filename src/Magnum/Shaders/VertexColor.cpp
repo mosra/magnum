@@ -51,14 +51,15 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(rs.get("VertexColor.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShader(vert);
     attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES

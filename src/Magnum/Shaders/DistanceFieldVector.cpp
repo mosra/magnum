@@ -51,14 +51,15 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     #endif
 
     Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-    AbstractShaderProgram::attachShader(frag);
-
-    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     vert.addSource(rs.get("DistanceFieldVector.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({frag, vert}));
+
+    AbstractShaderProgram::attachShader(frag);
     AbstractShaderProgram::attachShader(vert);
 
     #ifndef MAGNUM_TARGET_GLES
