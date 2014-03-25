@@ -77,7 +77,7 @@ void ShaderGLTest::construct() {
         #ifndef MAGNUM_TARGET_GLES
         CORRADE_COMPARE(shader.sources(), std::vector<std::string>{"#version 130\n"});
         #else
-        CORRADE_COMPARE(shader.sources(), std::vector<std::string>{"#version 300\n"});
+        CORRADE_COMPARE(shader.sources(), std::vector<std::string>{"#version 300 es\n"});
         #endif
     }
 
@@ -116,7 +116,7 @@ void ShaderGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(b.sources(), std::vector<std::string>{"#version 130\n"});
     #else
-    CORRADE_COMPARE(b.sources(), std::vector<std::string>{"#version 300\n"});
+    CORRADE_COMPARE(b.sources(), std::vector<std::string>{"#version 300 es\n"});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -135,7 +135,7 @@ void ShaderGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(c.sources(), std::vector<std::string>{"#version 130\n"});
     #else
-    CORRADE_COMPARE(c.sources(), std::vector<std::string>{"#version 300\n"});
+    CORRADE_COMPARE(c.sources(), std::vector<std::string>{"#version 300 es\n"});
     #endif
 }
 
