@@ -263,33 +263,6 @@ class AbstractXApplication::InputEvent {
             Ctrl = ControlMask,         /**< Ctrl */
             Alt = Mod1Mask,             /**< Alt */
             AltGr = Mod5Mask,           /**< AltGr */
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * @copybrief Button::Left
-             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Left "Button::Left"
-             *      instead.
-             */
-            LeftButton = Button1Mask,
-
-            /**
-             * @copybrief Button::Middle
-             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Middle "Button::Middle"
-             *      instead.
-             */
-            MiddleButton = Button2Mask,
-
-            /**
-             * @copybrief Button::Right
-             * @deprecated Use @ref Magnum::Platform::AbstractXApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::AbstractXApplication::InputEvent::Button::Right "Button::Right"
-             *      instead.
-             */
-            RightButton = Button3Mask,
-            #endif
-
             CapsLock = LockMask,        /**< Caps lock */
             NumLock = Mod2Mask          /**< Num lock */
         };

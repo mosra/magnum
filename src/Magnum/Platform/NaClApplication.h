@@ -474,33 +474,6 @@ class NaClApplication::InputEvent {
             Ctrl = PP_INPUTEVENT_MODIFIER_CONTROLKEY,   /**< Ctrl */
             Alt = PP_INPUTEVENT_MODIFIER_ALTKEY,        /**< Alt */
             Meta = PP_INPUTEVENT_MODIFIER_METAKEY,      /**< Meta */
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * @copybrief Button::Left
-             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Left "Button::Left"
-             *      instead.
-             */
-            LeftButton = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,
-
-            /**
-             * @copybrief Button::Middle
-             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Middle "Button::Middle"
-             *      instead.
-             */
-            MiddleButton = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN,
-
-            /**
-             * @copybrief Button::Right
-             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Right "Button::Right"
-             *      instead.
-             */
-            RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,
-            #endif
-
             CapsLock = PP_INPUTEVENT_MODIFIER_CAPSLOCKKEY,  /**< Caps lock */
             NumLock = PP_INPUTEVENT_MODIFIER_NUMLOCKKEY     /**< Num lock */
         };
