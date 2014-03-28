@@ -103,8 +103,8 @@ MyShader& setNormalMatrix(const Matrix3x3& matrix) {
 }
 @endcode
 -   <strong>%Texture setting functions</strong> in which you bind the textures
-    to particular texture units using @ref *Texture::bind() and equivalents,
-    for example:
+    to particular texture units using @ref Texture::bind() "*Texture::bind()"
+    and equivalents, for example:
 @code
 MyShader& setDiffuseTexture(Texture2D& texture) {
     texture.bind(0);
