@@ -234,14 +234,6 @@ typedef Math::Matrix2x2<Float> Matrix2x2;
 typedef Math::Matrix<2, Float> Matrix2x2;
 #endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Matrix2x2
-@deprecated Use @ref Magnum::Matrix2x2 "Matrix2x2" instead.
-*/
-typedef Math::Matrix<2, Float> Matrix2;
-#endif
-
 /**
 @brief 3x3 float matrix
 
@@ -409,14 +401,6 @@ typedef Math::Matrix4<Double> Matrix4d;
 typedef Math::Matrix2x2<Double> Matrix2x2d;
 #else
 typedef Math::Matrix<2, Double> Matrix2x2d;
-#endif
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Matrix2x2d
-@deprecated Use @ref Magnum::Matrix2x2d "Matrix2x2d" instead.
-*/
-typedef CORRADE_DEPRECATED("use Matrix2x2d instead") Math::Matrix<2, Double> Matrix2d;
 #endif
 
 /**
