@@ -343,15 +343,6 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         static Int maxVertexAttributes();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copydoc maxVertexAttributes()
-         * @deprecated Use @ref Magnum::AbstractShaderProgram::maxVertexAttributes() "maxVertexAttributes()"
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use maxVertexAttributes() instead") Int maxSupportedVertexAttributeCount() { return maxVertexAttributes(); }
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Max supported atomic counter buffer size

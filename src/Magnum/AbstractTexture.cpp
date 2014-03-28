@@ -48,7 +48,6 @@ namespace Magnum {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Int AbstractTexture::maxLayers() { return Shader::maxCombinedTextureImageUnits(); }
-Int AbstractTexture::maxSupportedLayerCount() { return Shader::maxCombinedTextureImageUnits(); }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

@@ -122,15 +122,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxLayers();
         #endif
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief Shader::maxCombinedTextureImageUnits()
-         * @deprecated Use @ref Magnum::Shader::maxCombinedTextureImageUnits() "Shader::maxCombinedTextureImageUnits()"
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxSupportedLayerCount();
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Max supported color sample count
