@@ -50,6 +50,10 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
         #endif
         void sampling2D();
 
+        #ifdef MAGNUM_TARGET_GLES2
+        void samplingMaxLevel2D();
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger1D();
         void samplingBorderInteger2D();
@@ -105,6 +109,10 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::sampling1D,
         #endif
         &TextureArrayGLTest::sampling2D,
+
+        #ifdef MAGNUM_TARGET_GLES2
+        &TextureArrayGLTest::samplingMaxLevel2D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingBorderInteger1D,
@@ -189,6 +197,8 @@ void TextureArrayGLTest::sampling1D() {
     Texture1DArray texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           .setBaseLevel(1)
+           .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
@@ -220,6 +230,10 @@ void TextureArrayGLTest::sampling2D() {
     Texture2DArray texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           #ifndef MAGNUM_TARGET_GLES2
+           .setBaseLevel(1)
+           .setMaxLevel(750)
+           #endif
            #ifndef MAGNUM_TARGET_GLES
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
@@ -230,6 +244,18 @@ void TextureArrayGLTest::sampling2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+void TextureArrayGLTest::samplingMaxLevel2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
+        CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::samplingBorderInteger2D() {

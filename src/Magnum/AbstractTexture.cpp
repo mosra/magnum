@@ -146,6 +146,22 @@ void AbstractTexture::bindImplementationDSA(GLint textureUnit) {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::setBaseLevel(Int level) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_BASE_LEVEL, level);
+}
+#endif
+
+void AbstractTexture::setMaxLevel(Int level) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_TEXTURE_MAX_LEVEL
+        #else
+        GL_TEXTURE_MAX_LEVEL_APPLE
+        #endif
+    , level);
+}
+
 void AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MIN_FILTER, GLint(filter)|GLint(mipmap));
 }

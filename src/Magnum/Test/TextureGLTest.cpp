@@ -54,6 +54,11 @@ class TextureGLTest: public AbstractOpenGLTester {
         void sampling2D();
         void sampling3D();
 
+        #ifdef MAGNUM_TARGET_GLES2
+        void samplingMaxLevel2D();
+        void samplingMaxLevel3D();
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger2D();
         void samplingBorderInteger3D();
@@ -128,6 +133,11 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::sampling2D,
         &TextureGLTest::sampling3D,
+
+        #ifdef MAGNUM_TARGET_GLES2
+        &TextureGLTest::samplingMaxLevel2D,
+        &TextureGLTest::samplingMaxLevel3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::samplingBorderInteger2D,
@@ -234,6 +244,8 @@ void TextureGLTest::sampling1D() {
     Texture1D texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           .setBaseLevel(1)
+           .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
@@ -246,6 +258,10 @@ void TextureGLTest::sampling2D() {
     Texture2D texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           #ifndef MAGNUM_TARGET_GLES2
+           .setBaseLevel(1)
+           .setMaxLevel(750)
+           #endif
            #ifndef MAGNUM_TARGET_GLES
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
@@ -256,6 +272,18 @@ void TextureGLTest::sampling2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingMaxLevel2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
+        CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::samplingBorderInteger2D() {
@@ -293,6 +321,10 @@ void TextureGLTest::sampling3D() {
     Texture3D texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           #ifndef MAGNUM_TARGET_GLES2
+           .setBaseLevel(1)
+           .setMaxLevel(750)
+           #endif
            #ifndef MAGNUM_TARGET_GLES
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
@@ -303,6 +335,20 @@ void TextureGLTest::sampling3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingMaxLevel3D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
+        CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
+
+    Texture3D texture;
+    texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::samplingBorderInteger3D() {

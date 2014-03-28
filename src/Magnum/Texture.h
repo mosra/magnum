@@ -77,10 +77,12 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .generateMipmap();
 @endcode
 
-@attention Note that default configuration (if @ref setMinificationFilter() is
-    not called with another value) is to use mipmaps, so be sure to either call
-    @ref setMinificationFilter(), explicitly specify all mip levels with
-    @ref setStorage() and @ref setImage() or call @ref generateMipmap().
+@attention Note that default configuration is to use mipmaps. Be sure to either
+    reduce mip level count using @ref setBaseLevel() and @ref setMaxLevel(),
+    explicitly allocate all mip levels using @ref setStorage(), call
+    @ref generateMipmap() after uploading the base level to generate the rest
+    of the mip chain or call @ref setMinificationFilter() with another value to
+    disable mipmapping.
 
 In shader, the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
 `sampler1DShadow`/`sampler2DShadow`/`sampler3DShadow`,
@@ -184,6 +186,47 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         }
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set base mip level
+         * @return Reference to self (for method chaining)
+         *
+         * Taken into account when generating mipmap using @ref generateMipmap()
+         * and when considering texture completeness when using mipmap
+         * filtering. Initial value is `0`.
+         * @see @ref setMaxLevel(), @ref setMinificationFilter(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BASE_LEVEL}
+         * @requires_gles30 Base level is always `0` in OpenGL ES 2.0.
+         */
+        Texture<dimensions>& setBaseLevel(Int level) {
+            AbstractTexture::setBaseLevel(level);
+            return *this;
+        }
+        #endif
+
+        /**
+         * @brief Set max mip level
+         * @return Reference to self (for method chaining)
+         *
+         * Taken into account when generating mipmap using @ref generateMipmap()
+         * and when considering texture completeness when using mipmap
+         * filtering. Initial value is `1000`, which is clamped to count of
+         * levels specified when using @ref setStorage().
+         * @see @ref setBaseLevel(), @ref setMinificationFilter(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_MAX_LEVEL}
+         * @requires_gles30 %Extension @es_extension{APPLE,texture_max_level},
+         *      otherwise the max level is always set to largest possible value
+         *      in OpenGL ES 2.0.
+         */
+        Texture<dimensions>& setMaxLevel(Int level) {
+            AbstractTexture::setMaxLevel(level);
+            return *this;
+        }
+
         /**
          * @brief Set minification filter
          * @param filter        Filter
@@ -197,9 +240,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * available, the texture is bound to some texture unit before the
          * operation. Initial value is {@ref Sampler::Filter::Nearest,
          * @ref Sampler::Mipmap::Linear}.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MIN_FILTER}
+         * @see @ref setBaseLevel(), @ref setMaxLevel(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MIN_FILTER}
          */
         Texture<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
@@ -330,8 +374,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * calls.
          * @todo allow the user to specify ColorType explicitly to avoid
          *      issues in WebGL (see setSubImage())
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
+         * @see @ref setMaxLevel(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},

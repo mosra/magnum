@@ -55,6 +55,8 @@ Template class for one- and two-dimensional texture arrays. See also
 
 @section Texture-usage Usage
 
+See @ref Texture documentation for introduction.
+
 Common usage is to fully configure all texture parameters and then set the
 data. Example configuration:
 @code
@@ -76,11 +78,6 @@ for(std::size_t i = 0; i != 16; ++i) {
     texture.setSubImage(0, Vector3i::zAxis(i), image);
 }
 @endcode
-
-@attention Note that default configuration (if @ref setMinificationFilter() is
-    not called with another value) is to use mipmaps, so be sure to either call
-    @ref setMinificationFilter(), explicitly specify all mip levels with
-    @ref setStorage() and @ref setImage() or call @ref generateMipmap().
 
 In shader, the texture is used via `sampler1DArray`/`sampler2DArray`,
 `sampler1DArrayShadow`/`sampler1DArrayShadow`, `isampler1DArray`/`isampler2DArray`
@@ -106,6 +103,20 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_1D_ARRAY} or @def_gl{TEXTURE_2D_ARRAY}
          */
         explicit TextureArray(): AbstractTexture(Implementation::textureArrayTarget<dimensions>()) {}
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setBaseLevel() */
+        TextureArray<dimensions>& setBaseLevel(Int level) {
+            AbstractTexture::setBaseLevel(level);
+            return *this;
+        }
+        #endif
+
+        /** @copydoc Texture::setMaxLevel() */
+        TextureArray<dimensions>& setMaxLevel(Int level) {
+            AbstractTexture::setMaxLevel(level);
+            return *this;
+        }
 
         /** @copydoc Texture::setMinificationFilter() */
         TextureArray<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {

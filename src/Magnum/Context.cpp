@@ -214,6 +214,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ANGLE,framebuffer_multisample),
         _extension(GL,ANGLE,depth_texture),
         _extension(GL,APPLE,framebuffer_multisample),
+        _extension(GL,APPLE,texture_max_level),
         _extension(GL,ARM,rgba8),
         _extension(GL,EXT,texture_type_2_10_10_10_REV),
         _extension(GL,EXT,discard_framebuffer),

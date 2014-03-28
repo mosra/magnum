@@ -242,6 +242,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();
 
+        #ifndef MAGNUM_TARGET_GLES2
+        void setBaseLevel(Int level);
+        #endif
+        void setMaxLevel(Int level);
         void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
         void setMagnificationFilter(Sampler::Filter filter);
         void setBorderColor(const Color4& color);

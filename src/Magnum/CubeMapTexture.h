@@ -98,6 +98,20 @@ class CubeMapTexture: public AbstractTexture {
          */
         explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setBaseLevel() */
+        CubeMapTexture& setBaseLevel(Int level) {
+            AbstractTexture::setBaseLevel(level);
+            return *this;
+        }
+        #endif
+
+        /** @copydoc Texture::setMaxLevel() */
+        CubeMapTexture& setMaxLevel(Int level) {
+            AbstractTexture::setMaxLevel(level);
+            return *this;
+        }
+
         /** @copydoc Texture::setMinificationFilter() */
         CubeMapTexture& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);

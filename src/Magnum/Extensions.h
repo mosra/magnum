@@ -212,6 +212,9 @@ namespace GL {
         _extension(GL,APPLE,framebuffer_multisample, GLES200, GLES300) // #78
         #endif
         _extension(GL,APPLE,texture_format_BGRA8888, GLES200,   None) // #79
+        #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,APPLE,texture_max_level,      GLES200,    None) // #80
+        #endif
     } namespace ARM {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82

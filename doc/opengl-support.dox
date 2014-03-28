@@ -245,6 +245,7 @@ supported.
 @es_extension{ANGLE,framebuffer_multisample} | done
 @es_extension{ANGLE,depth_texture}           | done
 @es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
+@es_extension{APPLE,texture_max_level}       | done
 @es_extension{ARM,rgba8}                     | done
 @es_extension{EXT,texture_type_2_10_10_10_REV} | done
 @es_extension{EXT,discard_framebuffer}       | done
