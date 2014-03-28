@@ -579,9 +579,6 @@ typedef BasicColor4<UnsignedByte> Color4ub;
 
 enum class ColorFormat: GLenum;
 enum class ColorType: GLenum;
-/** @todo Remove this when dropping backward compatibility */
-typedef ColorFormat ImageFormat;
-typedef ColorType ColorType;
 
 class Context;
 
