@@ -50,7 +50,10 @@ class TextureGLTest: public AbstractOpenGLTester {
         #endif
         void sampling2DArray();
 
-        #ifdef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingBorderInteger1DArray();
+        void samplingBorderInteger2DArray();
+        #else
         void samplingBorder2DArray();
         #endif
 
@@ -103,7 +106,10 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::sampling2DArray,
 
-        #ifdef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::samplingBorderInteger1DArray,
+        &TextureGLTest::samplingBorderInteger2DArray,
+        #else
         &TextureGLTest::samplingBorder2DArray,
         #endif
 
@@ -189,6 +195,20 @@ void TextureGLTest::sampling1DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+void TextureGLTest::samplingBorderInteger1DArray() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    Texture1DArray a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    Texture1DArray b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
 #endif
 
 void TextureGLTest::sampling2DArray() {
@@ -211,7 +231,21 @@ void TextureGLTest::sampling2DArray() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::samplingBorderInteger2DArray() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    Texture2DArray a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    Texture2DArray b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingBorder2DArray() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
         CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));

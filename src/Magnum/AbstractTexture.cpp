@@ -162,6 +162,16 @@ void AbstractTexture::setBorderColor(const Color4& color) {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::setBorderColor(const Vector4ui& color) {
+    (this->*Context::current()->state().texture->parameterIuivImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
+}
+
+void AbstractTexture::setBorderColor(const Vector4i& color) {
+    (this->*Context::current()->state().texture->parameterIivImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
+}
+#endif
+
 void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
@@ -606,6 +616,26 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLf
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat* values) {
     glTextureParameterfvEXT(_id, _target, parameter, values);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLuint* values) {
+    bindInternal();
+    glTexParameterIuiv(_target, parameter, values);
+}
+
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLuint* values) {
+    glTextureParameterIuivEXT(_id, _target, parameter, values);
+}
+
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLint* values) {
+    bindInternal();
+    glTexParameterIiv(_target, parameter, values);
+}
+
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLint* values) {
+    glTextureParameterIivEXT(_id, _target, parameter, values);
 }
 #endif
 

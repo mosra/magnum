@@ -40,26 +40,38 @@ class CubeMapTextureArrayGLTest: public AbstractOpenGLTester {
         explicit CubeMapTextureArrayGLTest();
 
         void construct();
+
         void sampling();
+        void samplingBorderInteger();
+
         void storage();
+
         void image();
         void imageBuffer();
         void subImage();
         void subImageBuffer();
+
         void generateMipmap();
+
         void invalidateImage();
         void invalidateSubImage();
 };
 
 CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
     addTests({&CubeMapTextureArrayGLTest::construct,
+
               &CubeMapTextureArrayGLTest::sampling,
+              &CubeMapTextureArrayGLTest::samplingBorderInteger,
+
               &CubeMapTextureArrayGLTest::storage,
+
               &CubeMapTextureArrayGLTest::image,
               &CubeMapTextureArrayGLTest::imageBuffer,
               &CubeMapTextureArrayGLTest::subImage,
               &CubeMapTextureArrayGLTest::subImageBuffer,
+
               &CubeMapTextureArrayGLTest::generateMipmap,
+
               &CubeMapTextureArrayGLTest::invalidateImage,
               &CubeMapTextureArrayGLTest::invalidateSubImage});
 }
@@ -90,6 +102,20 @@ void CubeMapTextureArrayGLTest::sampling() {
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureArrayGLTest::samplingBorderInteger() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    CubeMapTextureArray b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void CubeMapTextureArrayGLTest::storage() {

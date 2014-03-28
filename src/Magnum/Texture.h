@@ -261,6 +261,34 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set border color for integer texture
+         * @return Reference to self (for method chaining)
+         *
+         * Border color for integer textures when wrapping is set to
+         * @ref Sampler::Wrapping::ClampToBorder. If @extension{EXT,direct_state_access}
+         * is not available, the texture is bound to some texture unit before
+         * the operation. Initial value is `{0, 0, 0, 0}`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         * @requires_gl Border is available only for float textures in OpenGL
+         *      ES.
+         */
+        Texture<dimensions>& setBorderColor(const Vector4ui& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+
+        /** @overload */
+        Texture<dimensions>& setBorderColor(const Vector4i& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set max anisotropy
          * @return Reference to self (for method chaining)

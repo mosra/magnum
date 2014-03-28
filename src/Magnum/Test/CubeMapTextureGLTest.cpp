@@ -43,34 +43,52 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         explicit CubeMapTextureGLTest();
 
         void construct();
+
         void sampling();
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingBorderInteger();
+        #endif
+
         void storage();
+
         void image();
         #ifndef MAGNUM_TARGET_GLES2
         void imageBuffer();
         #endif
+
         void subImage();
         #ifndef MAGNUM_TARGET_GLES2
         void subImageBuffer();
         #endif
+
         void generateMipmap();
+
         void invalidateImage();
         void invalidateSubImage();
 };
 
 CubeMapTextureGLTest::CubeMapTextureGLTest() {
     addTests({&CubeMapTextureGLTest::construct,
+
               &CubeMapTextureGLTest::sampling,
+              #ifndef MAGNUM_TARGET_GLES
+              &CubeMapTextureGLTest::samplingBorderInteger,
+              #endif
+
               &CubeMapTextureGLTest::storage,
+
               &CubeMapTextureGLTest::image,
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::imageBuffer,
               #endif
+
               &CubeMapTextureGLTest::subImage,
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::subImageBuffer,
               #endif
+
               &CubeMapTextureGLTest::generateMipmap,
+
               &CubeMapTextureGLTest::invalidateImage,
               &CubeMapTextureGLTest::invalidateSubImage});
 }
@@ -96,6 +114,22 @@ void CubeMapTextureGLTest::sampling() {
 
    MAGNUM_VERIFY_NO_ERROR();
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void CubeMapTextureGLTest::samplingBorderInteger() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    CubeMapTexture a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    CubeMapTexture b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
 
 void CubeMapTextureGLTest::storage() {
     CubeMapTexture texture;

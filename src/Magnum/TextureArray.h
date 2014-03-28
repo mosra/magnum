@@ -131,6 +131,20 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setBorderColor(const Vector4ui&) */
+        TextureArray<dimensions>& setBorderColor(const Vector4ui& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+
+        /** @copydoc Texture::setBorderColor(const Vector4i&) */
+        TextureArray<dimensions>& setBorderColor(const Vector4i& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+        #endif
+
         /** @copydoc Texture::setMaxAnisotropy() */
         TextureArray<dimensions>& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);

@@ -41,6 +41,8 @@ struct TextureState {
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
     void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);
     void(AbstractTexture::*parameterfvImplementation)(GLenum, const GLfloat*);
+    void(AbstractTexture::*parameterIuivImplementation)(GLenum, const GLuint*);
+    void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
     void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
     void(AbstractTexture::*mipmapImplementation)();

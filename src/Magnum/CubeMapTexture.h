@@ -116,11 +116,25 @@ class CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor() */
+        /** @copydoc Texture::setBorderColor(const Color4&) */
         CubeMapTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setBorderColor(const Vector4ui&) */
+        CubeMapTexture& setBorderColor(const Vector4ui& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+
+        /** @copydoc Texture::setBorderColor(const Vector4i&) */
+        CubeMapTexture& setBorderColor(const Vector4i& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+        #endif
 
         /** @copydoc Texture::setMaxAnisotropy() */
         CubeMapTexture& setMaxAnisotropy(Float anisotropy) {

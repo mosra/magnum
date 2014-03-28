@@ -41,12 +41,14 @@ class TextureGLTest: public AbstractOpenGLTester {
         explicit TextureGLTest();
 
         void construct();
+
         void sampling();
+        void samplingBorderInteger();
+
         void storage();
 
         void image();
         void imageBuffer();
-
         void subImage();
         void subImageBuffer();
 
@@ -56,7 +58,10 @@ class TextureGLTest: public AbstractOpenGLTester {
 
 TextureGLTest::TextureGLTest() {
     addTests({&TextureGLTest::construct,
+
               &TextureGLTest::sampling,
+              &TextureGLTest::samplingBorderInteger,
+
               &TextureGLTest::storage,
 
               &TextureGLTest::image,
@@ -93,6 +98,20 @@ void TextureGLTest::sampling() {
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingBorderInteger() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    RectangleTexture a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    RectangleTexture b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
 
     MAGNUM_VERIFY_NO_ERROR();
 }

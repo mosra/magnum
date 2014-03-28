@@ -71,7 +71,7 @@ following:
 @extension{EXT,texture_shared_exponent}      | done
 @extension{EXT,framebuffer_sRGB}             | |
 @extension{EXT,draw_buffers2}                | |
-@extension{EXT,texture_integer}              | missing integer color specification functions
+@extension{EXT,texture_integer}              | done (GL 3.0 subset)
 @extension{EXT,transform_feedback}           | |
 @extension{NV,half_float}                    | done (GL 3.0 subset)
 @extension{NV,depth_buffer_float}            | |

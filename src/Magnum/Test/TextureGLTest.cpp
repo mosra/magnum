@@ -54,7 +54,10 @@ class TextureGLTest: public AbstractOpenGLTester {
         void sampling2D();
         void sampling3D();
 
-        #ifdef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingBorderInteger2D();
+        void samplingBorderInteger3D();
+        #else
         void samplingBorder2D();
         void samplingBorder3D();
         #endif
@@ -126,7 +129,10 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::sampling2D,
         &TextureGLTest::sampling3D,
 
-        #ifdef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::samplingBorderInteger2D,
+        &TextureGLTest::samplingBorderInteger3D,
+        #else
         &TextureGLTest::samplingBorder2D,
         &TextureGLTest::samplingBorder3D,
         #endif
@@ -251,7 +257,21 @@ void TextureGLTest::sampling2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::samplingBorderInteger2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    Texture2D a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    Texture2D b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingBorder2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
         CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));
@@ -284,7 +304,21 @@ void TextureGLTest::sampling3D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::samplingBorderInteger3D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    Texture3D a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    Texture3D b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingBorder3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())

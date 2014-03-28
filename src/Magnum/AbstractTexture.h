@@ -245,6 +245,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
         void setMagnificationFilter(Sampler::Filter filter);
         void setBorderColor(const Color4& color);
+        void setBorderColor(const Vector4i& color);
+        void setBorderColor(const Vector4ui& color);
         void setMaxAnisotropy(Float anisotropy);
         void invalidateImage(Int level);
         void generateMipmap();
@@ -264,18 +266,18 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
-        #endif
-
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLfloat value);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
-        #endif
-
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLfloat* values);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLint* values);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLint* values);
         #endif
 
         void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
