@@ -131,8 +131,7 @@ set(Magnum_HEADERS
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         DebugMarker.h
-        ImageFormat.h
-        Swizzle.h)
+        ImageFormat.h)
 endif()
 
 # Desktop-only headers and libraries
