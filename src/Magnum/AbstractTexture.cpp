@@ -137,6 +137,8 @@ void AbstractTexture::bindImplementationDefault(GLint textureUnit) {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::bindImplementationMulti(GLint textureUnit) {
+    /* Bind the texture to the unit, update state tracker */
+    Context::current()->state().texture->bindings[textureUnit] = _id;
     glBindTextures(textureUnit, 1, &_id);
 }
 
