@@ -157,6 +157,12 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static Int maxIntegerSamples();
         #endif
 
+        /** @brief Copying is not allowed */
+        AbstractTexture(const AbstractTexture&) = delete;
+
+        /** @brief Move constructor */
+        AbstractTexture(AbstractTexture&& other) noexcept;
+
         /**
          * @brief Destructor
          *
@@ -164,12 +170,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @see @fn_gl{DeleteTextures}
          */
         ~AbstractTexture();
-
-        /** @brief Copying is not allowed */
-        AbstractTexture(const AbstractTexture&) = delete;
-
-        /** @brief Move constructor */
-        AbstractTexture(AbstractTexture&& other) noexcept;
 
         /** @brief Copying is not allowed */
         AbstractTexture& operator=(const AbstractTexture&) = delete;

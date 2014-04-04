@@ -100,7 +100,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object.
-         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_1D_ARRAY} or @def_gl{TEXTURE_2D_ARRAY}
+         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_1D_ARRAY} or
+         *      @def_gl{TEXTURE_2D_ARRAY}
          */
         explicit TextureArray(): AbstractTexture(Implementation::textureArrayTarget<dimensions>()) {}
 
