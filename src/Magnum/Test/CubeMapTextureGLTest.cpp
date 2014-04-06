@@ -114,6 +114,15 @@ void CubeMapTextureGLTest::construct() {
 
 void CubeMapTextureGLTest::bind() {
     CubeMapTexture texture;
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setBaseLevel(0);
+        CORRADE_VERIFY(false);
+    }
+    #endif
+
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();

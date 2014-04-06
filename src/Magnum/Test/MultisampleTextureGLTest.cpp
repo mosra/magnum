@@ -120,6 +120,13 @@ void MultisampleTextureGLTest::bind2D() {
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
     MultisampleTexture2D texture;
+
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        CORRADE_VERIFY(false);
+        CORRADE_SKIP("...but we don't have any function to do that yet.");
+    }
+
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -138,6 +145,13 @@ void MultisampleTextureGLTest::bind2DArray() {
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
     MultisampleTexture2DArray texture;
+
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        CORRADE_VERIFY(false);
+        CORRADE_SKIP("...but we don't have any function to do that yet.");
+    }
+
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
