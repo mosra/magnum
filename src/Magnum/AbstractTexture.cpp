@@ -91,6 +91,42 @@ Int AbstractTexture::maxIntegerSamples() {
 }
 #endif
 
+void AbstractTexture::unbind(const Int textureUnit) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    /* If given texture unit is already unbound, nothing to do */
+    if(textureState->bindings[textureUnit].second == 0) return;
+
+    /* Unbind the texture, reset state tracker */
+    Context::current()->state().texture->unbindImplementation(textureUnit);
+    textureState->bindings[textureUnit] = {};
+}
+
+void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    /* Activate given texture unit if not already active, update state tracker */
+    if(textureState->currentTextureUnit != textureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = textureUnit));
+
+    CORRADE_INTERNAL_ASSERT(textureState->bindings[textureUnit].first != 0);
+    glBindTexture(textureState->bindings[textureUnit].first, 0);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::unbindImplementationMulti(const GLint textureUnit) {
+    constexpr static const GLuint zero = 0;
+    glBindTextures(textureUnit, 1, &zero);
+}
+
+void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    CORRADE_INTERNAL_ASSERT(textureState->bindings[textureUnit].first != 0);
+    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, textureState->bindings[textureUnit].first, 0);
+}
+#endif
+
 AbstractTexture::AbstractTexture(GLenum target): _target(target) {
     glGenTextures(1, &_id);
 }

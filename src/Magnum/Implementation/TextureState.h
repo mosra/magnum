@@ -37,6 +37,7 @@ struct TextureState {
     explicit TextureState(Context& context, std::vector<std::string>& extensions);
     ~TextureState();
 
+    void(*unbindImplementation)(GLint);
     void(AbstractTexture::*bindImplementation)(GLint);
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
     void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);

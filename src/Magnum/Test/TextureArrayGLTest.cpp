@@ -208,6 +208,10 @@ void TextureArrayGLTest::bind1D() {
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 #endif
 
@@ -219,6 +223,10 @@ void TextureArrayGLTest::bind2D() {
 
     Texture2DArray texture;
     texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

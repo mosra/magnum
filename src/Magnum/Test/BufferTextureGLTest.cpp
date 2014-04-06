@@ -70,6 +70,10 @@ void BufferTextureGLTest::bind() {
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void BufferTextureGLTest::setBuffer() {

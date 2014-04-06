@@ -257,12 +257,20 @@ void TextureGLTest::bind1D() {
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 #endif
 
 void TextureGLTest::bind2D() {
     Texture2D texture;
     texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -275,6 +283,10 @@ void TextureGLTest::bind3D() {
 
     Texture3D texture;
     texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

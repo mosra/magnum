@@ -45,13 +45,20 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
         extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+
+        unbindImplementation = &AbstractTexture::unbindImplementationMulti;
         bindImplementation = &AbstractTexture::bindImplementationMulti;
+
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension name added below */
+
+        unbindImplementation = &AbstractTexture::unbindImplementationDSA;
         bindImplementation = &AbstractTexture::bindImplementationDSA;
+
     } else
     #endif
     {
+        unbindImplementation = &AbstractTexture::unbindImplementationDefault;
         bindImplementation = &AbstractTexture::bindImplementationDefault;
     }
 
