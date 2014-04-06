@@ -80,7 +80,7 @@ struct TextureState {
         bufferOffsetAlignment;
     #endif
 
-    std::vector<GLuint> bindings;
+    std::vector<std::pair<GLenum, GLuint>> bindings;
 };
 
 }}

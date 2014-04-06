@@ -100,8 +100,8 @@ AbstractTexture::~AbstractTexture() {
     if(!_id) return;
 
     /* Remove all bindings */
-    for(GLuint& binding: Context::current()->state().texture->bindings)
-        if(binding == _id) binding = 0;
+    for(auto& binding: Context::current()->state().texture->bindings)
+        if(binding.second == _id) binding = {};
 
     glDeleteTextures(1, &_id);
 }
@@ -119,31 +119,30 @@ void AbstractTexture::bind(Int textureUnit) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
     /* If already bound in given texture unit, nothing to do */
-    if(textureState->bindings[textureUnit] == _id) return;
+    if(textureState->bindings[textureUnit].second == _id) return;
 
+    /* Update state tracker, bind the texture to the unit */
+    textureState->bindings[textureUnit] = {_target, _id};
     (this->*Context::current()->state().texture->bindImplementation)(textureUnit);
 }
 
 void AbstractTexture::bindImplementationDefault(GLint textureUnit) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
-    /* Activate given texture unit, if not already active */
+    /* Activate given texture unit if not already active, update state tracker */
     if(textureState->currentTextureUnit != textureUnit)
         glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = textureUnit));
 
-    /* Bind the texture to the unit */
-    glBindTexture(_target, (textureState->bindings[textureUnit] = _id));
+    glBindTexture(_target, _id);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::bindImplementationMulti(GLint textureUnit) {
-    /* Bind the texture to the unit, update state tracker */
-    Context::current()->state().texture->bindings[textureUnit] = _id;
     glBindTextures(textureUnit, 1, &_id);
 }
 
 void AbstractTexture::bindImplementationDSA(GLint textureUnit) {
-    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, _target, (Context::current()->state().texture->bindings[textureUnit] = _id));
+    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, _target, _id);
 }
 #endif
 
@@ -220,18 +219,19 @@ void AbstractTexture::bindInternal() {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
     /* If the texture is already bound in current unit, nothing to do */
-    if(textureState->bindings[textureState->currentTextureUnit] == _id)
+    if(textureState->bindings[textureState->currentTextureUnit].second == _id)
         return;
 
-    /* Set internal unit as active if not already */
+    /* Set internal unit as active if not already, update state tracker */
     CORRADE_INTERNAL_ASSERT(textureState->maxTextureUnits > 1);
     const GLint internalTextureUnit = textureState->maxTextureUnits-1;
     if(textureState->currentTextureUnit != internalTextureUnit)
         glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = internalTextureUnit));
 
-    /* Bind the texture to internal unit, if not already */
-    if(textureState->bindings[internalTextureUnit] != _id)
-        glBindTexture(_target, (textureState->bindings[internalTextureUnit] = _id));
+    /* Bind the texture to internal unit if not already, update state tracker */
+    if(textureState->bindings[internalTextureUnit].second == _id) return;
+    textureState->bindings[internalTextureUnit] = {_target, _id};
+    glBindTexture(_target, _id);
 }
 
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
