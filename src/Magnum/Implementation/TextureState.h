@@ -38,6 +38,7 @@ struct TextureState {
     ~TextureState();
 
     void(*unbindImplementation)(GLint);
+    void(*bindMultiImplementation)(GLint, std::initializer_list<AbstractTexture*>);
     void(AbstractTexture::*bindImplementation)(GLint);
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
     void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);

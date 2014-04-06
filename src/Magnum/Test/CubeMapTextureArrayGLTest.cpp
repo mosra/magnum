@@ -101,6 +101,10 @@ void CubeMapTextureArrayGLTest::bind() {
     AbstractTexture::unbind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void CubeMapTextureArrayGLTest::sampling() {

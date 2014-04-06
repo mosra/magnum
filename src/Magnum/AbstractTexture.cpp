@@ -127,6 +127,36 @@ void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
 }
 #endif
 
+void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+    /* State tracker is updated in the implementations */
+    Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, textures);
+}
+
+void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+    Int unit = firstTextureUnit;
+    for(AbstractTexture* const texture: textures) {
+        if(texture) texture->bind(unit);
+        else unbind(unit);
+        ++unit;
+    }
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    /* Create array of IDs and also update bindings in state tracker */
+    Containers::Array<GLuint> ids{textures.size()};
+    Int i{};
+    for(const AbstractTexture* const texture: textures) {
+        textureState->bindings[firstTextureUnit + i].second = ids[i] = texture ? texture->id() : 0;
+        ++i;
+    }
+
+    glBindTextures(firstTextureUnit, ids.size(), ids);
+}
+#endif
+
 AbstractTexture::AbstractTexture(GLenum target): _target(target) {
     glGenTextures(1, &_id);
 }

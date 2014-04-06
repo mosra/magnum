@@ -172,6 +172,19 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          */
         static void unbind(Int textureUnit);
 
+        /**
+         * @brief Bind textures to given range of texture units
+         *
+         * Binds first texture in the list to @p firstTextureUnit, second to
+         * `firstTextureUnit + 1` etc. If any texture is `nullptr`, given
+         * texture unit is unbound. If @extension{ARB,multi_bind} (part of
+         * OpenGL 4.4) is not available, the feature is emulated with sequence
+         * of @ref bind(Int) / @ref unbind() calls.
+         * @see @fn_gl{BindTextures}, eventually @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         */
+        static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+
         /** @brief Copying is not allowed */
         AbstractTexture(const AbstractTexture&) = delete;
 
@@ -230,7 +243,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref unbind(), @ref Shader::maxCombinedTextureImageUnits(),
+         * @see @ref bind(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref unbind(), @ref Shader::maxCombinedTextureImageUnits(),
          *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture}, @fn_gl{BindTextures}
          *      or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
@@ -273,6 +287,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL unbindImplementationMulti(GLint textureUnit);
         static void MAGNUM_LOCAL unbindImplementationDSA(GLint textureUnit);
+        #endif
+
+        static void MAGNUM_LOCAL bindImplementationFallback(GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
         #endif
 
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);

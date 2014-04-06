@@ -127,6 +127,10 @@ void MultisampleTextureGLTest::bind2D() {
     AbstractTexture::unbind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void MultisampleTextureGLTest::bind2DArray() {
@@ -139,6 +143,10 @@ void MultisampleTextureGLTest::bind2DArray() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
 
     MAGNUM_VERIFY_NO_ERROR();
 }

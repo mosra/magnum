@@ -47,18 +47,21 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         extensions.push_back(Extensions::GL::ARB::multi_bind::string());
 
         unbindImplementation = &AbstractTexture::unbindImplementationMulti;
+        bindMultiImplementation = &AbstractTexture::bindImplementationMulti;
         bindImplementation = &AbstractTexture::bindImplementationMulti;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension name added below */
 
         unbindImplementation = &AbstractTexture::unbindImplementationDSA;
+        bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
         bindImplementation = &AbstractTexture::bindImplementationDSA;
 
     } else
     #endif
     {
         unbindImplementation = &AbstractTexture::unbindImplementationDefault;
+        bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
         bindImplementation = &AbstractTexture::bindImplementationDefault;
     }
 
