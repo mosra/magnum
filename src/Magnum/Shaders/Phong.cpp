@@ -130,4 +130,9 @@ Phong& Phong::setSpecularTexture(Texture2D& texture) {
     return *this;
 }
 
+Phong& Phong::setTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular) {
+    AbstractTexture::bind(AmbientTextureLayer, {ambient, diffuse, specular});
+    return *this;
+}
+
 }}
