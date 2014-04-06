@@ -37,6 +37,9 @@ class MultisampleTextureGLTest: public AbstractOpenGLTester {
         void construct2D();
         void construct2DArray();
 
+        void bind2D();
+        void bind2DArray();
+
         void storage2D();
         void storage2DArray();
 
@@ -60,6 +63,9 @@ class MultisampleTextureGLTest: public AbstractOpenGLTester {
 MultisampleTextureGLTest::MultisampleTextureGLTest() {
     addTests({&MultisampleTextureGLTest::construct2D,
               &MultisampleTextureGLTest::construct2DArray,
+
+              &MultisampleTextureGLTest::bind2D,
+              &MultisampleTextureGLTest::bind2DArray,
 
               &MultisampleTextureGLTest::storage2D,
               &MultisampleTextureGLTest::storage2DArray,
@@ -105,6 +111,26 @@ void MultisampleTextureGLTest::construct2DArray() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void MultisampleTextureGLTest::bind2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+
+    MultisampleTexture2D texture;
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void MultisampleTextureGLTest::bind2DArray() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+
+    MultisampleTexture2DArray texture;
+    texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

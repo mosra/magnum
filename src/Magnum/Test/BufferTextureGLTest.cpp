@@ -36,12 +36,14 @@ class BufferTextureGLTest: public AbstractOpenGLTester {
         explicit BufferTextureGLTest();
 
         void construct();
+        void bind();
         void setBuffer();
         void setBufferOffset();
 };
 
 BufferTextureGLTest::BufferTextureGLTest() {
     addTests({&BufferTextureGLTest::construct,
+              &BufferTextureGLTest::bind,
               &BufferTextureGLTest::setBuffer,
               &BufferTextureGLTest::setBufferOffset});
 }
@@ -56,6 +58,16 @@ void BufferTextureGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferTextureGLTest::bind() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

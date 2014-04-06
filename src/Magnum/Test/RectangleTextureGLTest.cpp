@@ -41,6 +41,7 @@ class RectangleTextureGLTest: public AbstractOpenGLTester {
         explicit RectangleTextureGLTest();
 
         void construct();
+        void bind();
 
         void sampling();
         void samplingBorderInteger();
@@ -58,6 +59,7 @@ class RectangleTextureGLTest: public AbstractOpenGLTester {
 
 RectangleTextureGLTest::RectangleTextureGLTest() {
     addTests({&RectangleTextureGLTest::construct,
+              &RectangleTextureGLTest::bind,
 
               &RectangleTextureGLTest::sampling,
               &RectangleTextureGLTest::samplingBorderInteger,
@@ -84,6 +86,16 @@ void RectangleTextureGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RectangleTextureGLTest::bind() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

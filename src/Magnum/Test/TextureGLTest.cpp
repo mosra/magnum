@@ -49,6 +49,12 @@ class TextureGLTest: public AbstractOpenGLTester {
         void construct3D();
 
         #ifndef MAGNUM_TARGET_GLES
+        void bind1D();
+        #endif
+        void bind2D();
+        void bind3D();
+
+        #ifndef MAGNUM_TARGET_GLES
         void sampling1D();
         #endif
         void sampling2D();
@@ -127,6 +133,12 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::construct2D,
         &TextureGLTest::construct3D,
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::bind1D,
+        #endif
+        &TextureGLTest::bind2D,
+        &TextureGLTest::bind3D,
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::sampling1D,
@@ -235,6 +247,34 @@ void TextureGLTest::construct3D() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::bind1D() {
+    Texture1D texture;
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+void TextureGLTest::bind2D() {
+    Texture2D texture;
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::bind3D() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
+    #endif
+
+    Texture3D texture;
+    texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

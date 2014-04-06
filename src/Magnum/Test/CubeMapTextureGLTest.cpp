@@ -43,6 +43,7 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         explicit CubeMapTextureGLTest();
 
         void construct();
+        void bind();
 
         void sampling();
         #ifdef MAGNUM_TARGET_GLES2
@@ -72,6 +73,7 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
 
 CubeMapTextureGLTest::CubeMapTextureGLTest() {
     addTests({&CubeMapTextureGLTest::construct,
+              &CubeMapTextureGLTest::bind,
 
               &CubeMapTextureGLTest::sampling,
               #ifdef MAGNUM_TARGET_GLES2
@@ -106,6 +108,13 @@ void CubeMapTextureGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureGLTest::bind() {
+    CubeMapTexture texture;
+    texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

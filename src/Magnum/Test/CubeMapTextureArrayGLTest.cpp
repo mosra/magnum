@@ -40,6 +40,7 @@ class CubeMapTextureArrayGLTest: public AbstractOpenGLTester {
         explicit CubeMapTextureArrayGLTest();
 
         void construct();
+        void bind();
 
         void sampling();
         void samplingBorderInteger();
@@ -59,6 +60,7 @@ class CubeMapTextureArrayGLTest: public AbstractOpenGLTester {
 
 CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
     addTests({&CubeMapTextureArrayGLTest::construct,
+              &CubeMapTextureArrayGLTest::bind,
 
               &CubeMapTextureArrayGLTest::sampling,
               &CubeMapTextureArrayGLTest::samplingBorderInteger,
@@ -86,6 +88,13 @@ void CubeMapTextureArrayGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureArrayGLTest::bind() {
+    CubeMapTextureArray texture;
+    texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

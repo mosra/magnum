@@ -46,6 +46,11 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
         void construct2D();
 
         #ifndef MAGNUM_TARGET_GLES
+        void bind1D();
+        #endif
+        void bind2D();
+
+        #ifndef MAGNUM_TARGET_GLES
         void sampling1D();
         #endif
         void sampling2D();
@@ -104,6 +109,11 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::construct1D,
         #endif
         &TextureArrayGLTest::construct2D,
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::bind1D,
+        #endif
+        &TextureArrayGLTest::bind2D,
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::sampling1D,
@@ -185,6 +195,30 @@ void TextureArrayGLTest::construct2D() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureArrayGLTest::bind1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+void TextureArrayGLTest::bind2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2DArray texture;
+    texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
