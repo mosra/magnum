@@ -77,12 +77,10 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          */
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
 
-        #ifndef MAGNUM_TARGET_GLES
         /** @copydoc Texture::imageSize() */
         typename DimensionTraits<dimensions, Int>::VectorType imageSize(Int level) {
             return DataHelper<dimensions>::imageSize(*this, _target, level);
         }
-        #endif
 
         /** @copydoc Texture::invalidateImage() */
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }

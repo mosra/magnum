@@ -89,13 +89,11 @@ class CubeMapTextureArray: public AbstractTexture {
          */
         explicit CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
 
-        #ifndef MAGNUM_TARGET_GLES2
         /** @copydoc Texture::setBaseLevel() */
         CubeMapTextureArray& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
             return *this;
         }
-        #endif
 
         /** @copydoc Texture::setMaxLevel() */
         CubeMapTextureArray& setMaxLevel(Int level) {
@@ -127,7 +125,6 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /** @copydoc Texture::setBorderColor(const Vector4ui&) */
         CubeMapTextureArray& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -139,7 +136,6 @@ class CubeMapTextureArray: public AbstractTexture {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
-        #endif
 
         /** @copydoc Texture::setMaxAnisotropy() */
         CubeMapTextureArray& setMaxAnisotropy(Float anisotropy) {
@@ -168,14 +164,12 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Read given mip level of texture to image
          * @param level             Mip level
          * @param image             %Image where to put the data
          *
          * See @ref Texture::image(Int, Image&) for more information.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         void image(Int level, Image3D& image) {
             AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_ARRAY, level, image);
@@ -189,12 +183,10 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         void image(Int level, BufferImage3D& image, BufferUsage usage) {
             AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_ARRAY, level, image, usage);
         }
-        #endif
 
         /**
          * @brief Set image data

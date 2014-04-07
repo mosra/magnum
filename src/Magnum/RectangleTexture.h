@@ -103,7 +103,6 @@ class RectangleTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief %Image size
          *
@@ -113,10 +112,8 @@ class RectangleTexture: public AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH} and @def_gl{TEXTURE_HEIGHT}
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         Vector2i imageSize() { return DataHelper<2>::imageSize(*this, _target, 0); }
-        #endif
 
         /**
          * @brief Set wrapping
@@ -300,8 +297,8 @@ class RectangleTexture: public AbstractTexture {
         /**
          * @brief Invalidate texture image
          *
-         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * (part of OpenGL 4.3) is not available, this function does nothing.
+         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL 4.3)
+         * is not available, this function does nothing.
          * @see @ref invalidateSubImage(), @fn_gl{InvalidateTexImage}
          */
         void invalidateImage() { AbstractTexture::invalidateImage(0); }
@@ -311,8 +308,8 @@ class RectangleTexture: public AbstractTexture {
          * @param offset            Offset into the texture
          * @param size              Size of invalidated data
          *
-         * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
-         * (part of OpenGL 4.3) is not available, this function does nothing.
+         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL 4.3)
+         * is not available, this function does nothing.
          * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
         void invalidateSubImage(const Vector2i& offset, const Vector2i& size) {
