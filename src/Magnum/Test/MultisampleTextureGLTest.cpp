@@ -43,16 +43,6 @@ class MultisampleTextureGLTest: public AbstractOpenGLTester {
         void storage2D();
         void storage2DArray();
 
-        void image2D();
-        void image2DBuffer();
-        void image2DArray();
-        void image2DArrayBuffer();
-
-        void subImage2D();
-        void subImage2DBuffer();
-        void subImage2DArray();
-        void subImage2DArrayBuffer();
-
         void invalidateImage2D();
         void invalidateImage2DArray();
 
@@ -69,16 +59,6 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
 
               &MultisampleTextureGLTest::storage2D,
               &MultisampleTextureGLTest::storage2DArray,
-
-              &MultisampleTextureGLTest::image2D,
-              &MultisampleTextureGLTest::image2DBuffer,
-              &MultisampleTextureGLTest::image2DArray,
-              &MultisampleTextureGLTest::image2DArrayBuffer,
-
-              &MultisampleTextureGLTest::subImage2D,
-              &MultisampleTextureGLTest::subImage2DBuffer,
-              &MultisampleTextureGLTest::subImage2DArray,
-              &MultisampleTextureGLTest::subImage2DArrayBuffer,
 
               &MultisampleTextureGLTest::invalidateImage2D,
               &MultisampleTextureGLTest::invalidateImage2DArray,
@@ -173,62 +153,6 @@ void MultisampleTextureGLTest::storage2D() {
 }
 
 void MultisampleTextureGLTest::storage2DArray() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::image2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::image2DBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::image2DArray() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::image2DArrayBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2DBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2DArray() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2DArrayBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
