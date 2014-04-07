@@ -79,6 +79,7 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::NV::draw_buffers, None);
     _setRequiredVersion(GL::NV::fbo_color_attachments, None); // ??
     _setRequiredVersion(GL::NV::read_buffer, None);
+    _setRequiredVersion(GL::NV::framebuffer_blit, None);
     _setRequiredVersion(GL::NV::framebuffer_multisample, None);
     _setRequiredVersion(GL::OES::texture_3D, None);
     _setRequiredVersion(GL::OES::vertex_array_object, None);
