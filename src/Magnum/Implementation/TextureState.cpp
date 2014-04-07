@@ -179,6 +179,25 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* Storage implementation for multisample textures. The fallback doesn't
+       have DSA alternative, so it must be handled specially. */
+    if(context.isExtensionSupported<Extensions::GL::ARB::texture_storage_multisample>()) {
+        extensions.push_back(Extensions::GL::ARB::texture_storage_multisample::string());
+
+        if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
+            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
+        } else {
+            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
+            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
+        }
+    } else {
+        storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationFallback;
+        storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationFallback;
+    }
+    #endif
+
     /* Anisotropic filter implementation */
     if(context.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
         extensions.push_back(Extensions::GL::EXT::texture_filter_anisotropic::string());

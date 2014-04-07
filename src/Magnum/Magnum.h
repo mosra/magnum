@@ -594,6 +594,7 @@ class Mesh;
 class MeshView;
 
 #ifndef MAGNUM_TARGET_GLES
+/* MultisampleTextureSampleLocations enum used only in the function */
 template<UnsignedInt> class MultisampleTexture;
 typedef MultisampleTexture<2> MultisampleTexture2D;
 typedef MultisampleTexture<3> MultisampleTexture2DArray;

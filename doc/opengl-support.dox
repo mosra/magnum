@@ -100,7 +100,7 @@ following:
 @extension{ARB,provoking_vertex}             | done
 @extension{ARB,seamless_cube_map}            | done
 @extension{ARB,sync}                         | |
-@extension{ARB,texture_multisample}          | |
+@extension{ARB,texture_multisample}          | missing sample location queries and sample mask
 @extension{ARB,vertex_array_bgra}            | done
 
 @subsection opengl-support-33 OpenGL 3.3
@@ -187,7 +187,7 @@ following:
 @extension{ARB,stencil_texturing}            | |
 @extension{ARB,texture_buffer_range}         | done
 @extension{ARB,texture_query_levels}         | done (shading language only)
-@extension{ARB,texture_storage_multisample}  | |
+@extension{ARB,texture_storage_multisample}  | done
 @extension{ARB,texture_view}                 | |
 @extension{ARB,vertex_attrib_binding}        | |
 

@@ -45,6 +45,16 @@ namespace Implementation {
 }
 
 /**
+@brief Multisample texture sample locations
+
+@see @ref MultisampleTexture::setStorage()
+*/
+enum class MultisampleTextureSampleLocations: GLboolean {
+    NotFixed = GL_FALSE,
+    Fixed = GL_TRUE
+};
+
+/**
 @brief Mulitsample texture
 
 Template class for 2D mulitsample texture and 2D multisample texture array. See
@@ -90,6 +100,46 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          */
         typename DimensionTraits<dimensions, Int>::VectorType imageSize() {
             return DataHelper<dimensions>::imageSize(*this, _target, 0);
+        }
+
+        /**
+         * @brief Set storage
+         * @param samples           Sample count
+         * @param internalFormat    Internal format
+         * @param size              %Texture size
+         * @param sampleLocations   Whether to use fixed sample locations
+         * @return Reference to self (for method chaining)
+         *
+         * After calling this function the texture is immutable and calling
+         * @ref setStorage() again is not allowed.
+         *
+         * If @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some texture unit before the operation. If
+         * @extension{ARB,texture_storage_multisample} (part of OpenGL 4.3) is
+         * not available, the feature is emulated using plain
+         * @extension{ARB,texture_storage} functionality (which unfortunately
+         * doesn't have any DSA alternative, so the texture must be bound
+         * to some texture unit before).
+         * @see @ref maxColorSamples(), @ref maxDepthSamples(),
+         *      @ref maxIntegerSamples(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexStorage2DMultisample}/@fn_gl{TexStorage3DMultisample}
+         *      or @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access}/
+         *      @fn_gl_extension{TextureStorage3DMultisample,EXT,direct_state_access}
+         *      eventually @fn_gl{TexImage2DMultisample}/@fn_gl{TexImage3DMultisample}
+         * @todoc Remove the workaround when it stops breaking Doxygen layout so badly
+         */
+        /* The default parameter value was chosen based on discussion in
+           ARB_texture_multisample specs (fixed locations is treated as the
+           special case) */
+        MultisampleTexture<dimensions>& setStorage(Int samples, TextureFormat internalFormat, const typename DimensionTraits<dimensions, Int>::VectorType& size, MultisampleTextureSampleLocations sampleLocations =
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            MultisampleTextureSampleLocations::NotFixed
+            #else
+            NotFixed
+            #endif
+        ) {
+            DataHelper<dimensions>::setStorageMultisample(*this, _target, samples, internalFormat, size, GLboolean(sampleLocations));
+            return *this;
         }
 
         /** @copydoc RectangleTexture::invalidateImage() */

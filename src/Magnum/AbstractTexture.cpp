@@ -886,6 +886,36 @@ void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, Te
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::storageMultisampleImplementationFallback(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexImage2DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDefault(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexStorage2DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDSA(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    glTextureStorage2DMultisampleEXT(_id, target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationFallback(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexImage3DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDefault(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexStorage3DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDSA(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    glTextureStorage3DMultisampleEXT(_id, target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::getImageImplementationDefault(const GLenum target, const GLint level, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
     bindInternal();
     glGetTexImage(target, level, GLenum(format), GLenum(type), data);
@@ -1091,6 +1121,16 @@ void AbstractTexture::DataHelper<2>::setStorage(AbstractTexture& texture, const 
 void AbstractTexture::DataHelper<3>::setStorage(AbstractTexture& texture, const GLenum target, const GLsizei levels, const TextureFormat internalFormat, const Vector3i& size) {
     (texture.*Context::current()->state().texture->storage3DImplementation)(target, levels, internalFormat, size);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::DataHelper<2>::setStorageMultisample(AbstractTexture& texture, const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    (texture.*Context::current()->state().texture->storage2DMultisampleImplementation)(target, samples, internalFormat, size, fixedSampleLocations);
+}
+
+void AbstractTexture::DataHelper<3>::setStorageMultisample(AbstractTexture& texture, const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    (texture.*Context::current()->state().texture->storage3DMultisampleImplementation)(target, samples, internalFormat, size, fixedSampleLocations);
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLenum target, const GLint level, const TextureFormat internalFormat, const ImageReference1D& image) {
