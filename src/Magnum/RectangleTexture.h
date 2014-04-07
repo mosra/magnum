@@ -166,7 +166,7 @@ class RectangleTexture: public AbstractTexture {
         /**
          * @brief Set storage
          * @param internalFormat    Internal format
-         * @param size              Size
+         * @param size              %Texture size
          * @return Reference to self (for method chaining)
          *
          * Specifies entire structure of a texture at once, removing the need

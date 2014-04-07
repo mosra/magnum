@@ -178,7 +178,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * is bound to some texture unit before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH}.
+         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
+         *      @def_gl{TEXTURE_DEPTH}
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         typename DimensionTraits<dimensions, Int>::VectorType imageSize(Int level) {
@@ -382,7 +383,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      eventually @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
+         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
         Texture<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::setStorage(*this, _target, levels, internalFormat, size);
