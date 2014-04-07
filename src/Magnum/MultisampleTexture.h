@@ -77,17 +77,27 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          */
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
 
-        /** @copydoc Texture::imageSize() */
-        typename DimensionTraits<dimensions, Int>::VectorType imageSize(Int level) {
-            return DataHelper<dimensions>::imageSize(*this, _target, level);
+        /**
+         * @brief %Image size
+         *
+         * The result is not cached in any way. If
+         * @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some texture unit before the operation.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
+         *      @def_gl{TEXTURE_DEPTH}
+         */
+        typename DimensionTraits<dimensions, Int>::VectorType imageSize() {
+            return DataHelper<dimensions>::imageSize(*this, _target, 0);
         }
 
-        /** @copydoc Texture::invalidateImage() */
-        void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
+        /** @copydoc RectangleTexture::invalidateImage() */
+        void invalidateImage() { AbstractTexture::invalidateImage(0); }
 
-        /** @copydoc Texture::invalidateSubImage() */
-        void invalidateSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
-            DataHelper<dimensions>::invalidateSubImage(*this, level, offset, size);
+        /** @copydoc RectangleTexture::invalidateSubImage() */
+        void invalidateSubImage(const typename DimensionTraits<dimensions, Int>::VectorType& offset, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
+            DataHelper<dimensions>::invalidateSubImage(*this, 0, offset, size);
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
