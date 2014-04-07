@@ -115,7 +115,7 @@ void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::unbindImplementationMulti(const GLint textureUnit) {
-    constexpr static const GLuint zero = 0;
+    constexpr static GLuint zero = 0;
     glBindTextures(textureUnit, 1, &zero);
 }
 
