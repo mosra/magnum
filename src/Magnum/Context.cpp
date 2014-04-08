@@ -415,8 +415,8 @@ Context::Context() {
 
     /* Check for presence of future and vendor extensions */
     const std::vector<std::string> extensions = extensionStrings();
-    for(const std::string& extension: extensions) {
-        const auto found = futureExtensions.find(extension);
+    for(auto it = extensions.begin(); it != extensions.end(); ++it) {
+        const auto found = futureExtensions.find(*it);
         if(found != futureExtensions.end()) {
             _supportedExtensions.push_back(found->second);
             extensionStatus.set(found->second._index);

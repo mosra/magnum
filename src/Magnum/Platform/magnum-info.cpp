@@ -152,11 +152,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     Debug() << "Context flags:";
     #ifndef MAGNUM_TARGET_GLES
-    for(const auto flag: {Context::Flag::Debug, Context::Flag::RobustAccess})
+    auto flags = {Context::Flag::Debug, Context::Flag::RobustAccess};
     #else
-    for(const auto flag: {Context::Flag::Debug})
+    auto flags = {Context::Flag::Debug};
     #endif
-        if(c->flags() & flag) Debug() << "   " << flag;
+    for(auto it = flags.begin(); it != flags.end(); ++it)
+        if(c->flags() & *it) Debug() << "   " << *it;
 
     Debug() << "Supported GLSL versions:";
     const std::vector<std::string> shadingLanguageVersions = c->shadingLanguageVersionStrings();

@@ -134,8 +134,8 @@ void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<Abs
 
 void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
     Int unit = firstTextureUnit;
-    for(AbstractTexture* const texture: textures) {
-        if(texture) texture->bind(unit);
+    for(auto it = textures.begin(); it != textures.end(); ++it) {
+        if(*it) (*it)->bind(unit);
         else unbind(unit);
         ++unit;
     }
@@ -148,8 +148,8 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, std:
     /* Create array of IDs and also update bindings in state tracker */
     Containers::Array<GLuint> ids{textures.size()};
     Int i{};
-    for(const AbstractTexture* const texture: textures) {
-        textureState->bindings[firstTextureUnit + i].second = ids[i] = texture ? texture->id() : 0;
+    for(auto it = textures.begin(); it != textures.end(); ++it) {
+        textureState->bindings[firstTextureUnit + i].second = ids[i] = *it ? (*it)->id() : 0;
         ++i;
     }
 

@@ -275,11 +275,13 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
     bool allSuccess = true;
 
     /* Invoke (possibly parallel) linking on all shaders */
-    for(AbstractShaderProgram& shader: shaders) glLinkProgram(shader._id);
+    for(auto it = shaders.begin(); it != shaders.end(); ++it) glLinkProgram(it->get()._id);
 
     /* After linking phase, check status of all shaders */
     Int i = 1;
-    for(AbstractShaderProgram& shader: shaders) {
+    for(auto it = shaders.begin(); it != shaders.end(); ++it) {
+        AbstractShaderProgram& shader = *it;
+
         GLint success, logLength;
         glGetProgramiv(shader._id, GL_LINK_STATUS, &success);
         glGetProgramiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);

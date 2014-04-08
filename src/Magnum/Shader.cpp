@@ -634,7 +634,8 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
     /* Allocate large enough array for source pointers and sizes (to avoid
        reallocating it for each of them) */
     std::size_t maxSourceCount = 0;
-    for(Shader& shader: shaders) {
+    for(auto it = shaders.begin(); it != shaders.end(); ++it) {
+        Shader& shader = *it;
         CORRADE_ASSERT(shader._sources.size() > 1, "Shader::compile(): no files added", false);
         maxSourceCount = std::max(shader._sources.size(), maxSourceCount);
     }
@@ -642,7 +643,8 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
     Containers::Array<GLint> sizes(maxSourceCount);
 
     /* Upload sources of all shaders */
-    for(Shader& shader: shaders) {
+    for(auto it = shaders.begin(); it != shaders.end(); ++it) {
+        Shader& shader = *it;
         for(std::size_t i = 0; i != shader._sources.size(); ++i) {
             pointers[i] = static_cast<const GLchar*>(shader._sources[i].data());
             sizes[i] = shader._sources[i].size();
@@ -652,11 +654,13 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
     }
 
     /* Invoke (possibly parallel) compilation on all shaders */
-    for(Shader& shader: shaders) glCompileShader(shader._id);
+    for(auto it = shaders.begin(); it != shaders.end(); ++it) glCompileShader(it->get()._id);
 
     /* After compilation phase, check status of all shaders */
     Int i = 1;
-    for(Shader& shader: shaders) {
+    for(auto it = shaders.begin(); it != shaders.end(); ++it) {
+        Shader& shader = *it;
+
         GLint success, logLength;
         glGetShaderiv(shader._id, GL_COMPILE_STATUS, &success);
         glGetShaderiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
