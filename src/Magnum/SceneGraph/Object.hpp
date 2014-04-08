@@ -53,13 +53,13 @@ template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::se
 
 #ifdef CORRADE_GCC47_COMPATIBILITY
 template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::setClean(std::initializer_list<AbstractObject<dimensions, T>*> objects) {
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #endif
     /* GCC 4.5 doesn't like {} here */
     return setClean(std::vector<AbstractObject<dimensions, T>*>(objects));
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic pop
     #endif
 }
@@ -84,13 +84,13 @@ template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::tr
 
 #ifdef CORRADE_GCC47_COMPATIBILITY
 template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::transformationMatrices(std::initializer_list<AbstractObject<dimensions, T>*> objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #endif
     /* GCC 4.5 doesn't like {} here */
     return transformationMatrices(std::vector<AbstractObject<dimensions, T>*>(objects), initialTransformationMatrix);
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic pop
     #endif
 }
@@ -256,13 +256,13 @@ template<class Transformation> auto Object<Transformation>::transformationMatric
 
 #ifdef CORRADE_GCC47_COMPATIBILITY
 template<class Transformation> auto Object<Transformation>::transformationMatrices(std::initializer_list<Object<Transformation>*> objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #endif
     /* GCC 4.5 doesn't like {} here */
     return transformationMatrices(std::vector<Object<Transformation>*>(objects), initialTransformationMatrix);
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic pop
     #endif
 }
@@ -400,13 +400,13 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 
 #ifdef CORRADE_GCC47_COMPATIBILITY
 template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::initializer_list<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #endif
     /* GCC 4.5 doesn't like {} here */
     return transformations(std::vector<Object<Transformation>*>(objects), initialTransformation);
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic pop
     #endif
 }
@@ -530,13 +530,13 @@ template<class Transformation> void Object<Transformation>::setClean(const std::
 
 #ifdef CORRADE_GCC47_COMPATIBILITY
 template<class Transformation> void Object<Transformation>::setClean(std::initializer_list<Object<Transformation>*> objects) {
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     #endif
     /* GCC 4.5 doesn't like {} here */
     setClean(std::vector<Object<Transformation>*>(objects));
-    #ifdef __GNUC__
+    #if defined(__GNUC__) && !defined(CORRADE_GCC45_COMPATIBILITY)
     #pragma GCC diagnostic pop
     #endif
 }
