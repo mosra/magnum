@@ -36,6 +36,10 @@
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/MeshTools/visibility.h"
 
+#ifdef CORRADE_GCC45_COMPATIBILITY
+#include "Magnum/Buffer.h"
+#endif
+
 namespace Magnum { namespace MeshTools {
 
 /**
