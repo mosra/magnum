@@ -13,7 +13,7 @@ options=('staticlibs')
 
 build() {
     mkdir -p "$startdir/build"
-    cd "$startdir/build/"
+    cd "$startdir/build"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \

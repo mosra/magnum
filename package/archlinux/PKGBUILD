@@ -13,7 +13,7 @@ provides=('magnum-git')
 
 build() {
     mkdir -p "$startdir/build"
-    cd "$startdir/build/"
+    cd "$startdir/build"
 
     # Disable optimization (saves A LOT of compilation time)
     newcxxflags=$(echo $CXXFLAGS | sed s/-O.//g | sed s/-D_FORTIFY_SOURCE=.//g)
