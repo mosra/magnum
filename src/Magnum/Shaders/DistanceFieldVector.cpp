@@ -60,7 +60,9 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
         .addSource(rs.get(vertexShaderName<dimensions>()));
     vert.addSource(rs.get("DistanceFieldVector.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({frag, vert}));
+    /* GCC 4.5: the same issue */
+    std::initializer_list<std::reference_wrapper<Shader>> ss{frag, vert};
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile(ss));
 
     AbstractShaderProgram::attachShader(frag);
     AbstractShaderProgram::attachShader(vert);

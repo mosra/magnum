@@ -65,7 +65,9 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("Flat.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.5: the same issue */
+    std::initializer_list<std::reference_wrapper<Shader>> ss{frag, vert};
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile(ss));
 
     attachShader(vert);
     attachShader(frag);
