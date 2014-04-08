@@ -25,6 +25,7 @@
 
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
+    Compile.cpp
     CompressIndices.cpp
     FullScreenTriangle.cpp
     Tipsify.cpp)
@@ -37,6 +38,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
 
 set(MagnumMeshTools_HEADERS
     CombineIndexedArrays.h
+    Compile.h
     CompressIndices.h
     Duplicate.h
     FlipNormals.h
@@ -64,6 +66,7 @@ endif()
 add_library(MagnumMeshTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMeshToolsObjects>
     ${MagnumMeshTools_GracefulAssert_SRCS})
+set_target_properties(MagnumMeshTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(MagnumMeshTools PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
@@ -81,7 +84,9 @@ if(BUILD_TESTS)
     add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumMeshToolsTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumMeshTools_EXPORTS")
+    set_target_properties(MagnumMeshToolsTestLib PROPERTIES
+        COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumMeshTools_EXPORTS"
+        DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumMeshToolsTestLib Magnum)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

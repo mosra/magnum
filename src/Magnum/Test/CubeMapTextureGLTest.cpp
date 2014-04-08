@@ -43,34 +43,60 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         explicit CubeMapTextureGLTest();
 
         void construct();
+        void bind();
+
         void sampling();
+        #ifdef MAGNUM_TARGET_GLES2
+        void samplingMaxLevel();
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingBorderInteger();
+        #endif
+
         void storage();
+
         void image();
         #ifndef MAGNUM_TARGET_GLES2
         void imageBuffer();
         #endif
+
         void subImage();
         #ifndef MAGNUM_TARGET_GLES2
         void subImageBuffer();
         #endif
+
         void generateMipmap();
+
         void invalidateImage();
         void invalidateSubImage();
 };
 
 CubeMapTextureGLTest::CubeMapTextureGLTest() {
     addTests({&CubeMapTextureGLTest::construct,
+              &CubeMapTextureGLTest::bind,
+
               &CubeMapTextureGLTest::sampling,
+              #ifdef MAGNUM_TARGET_GLES2
+              &CubeMapTextureGLTest::samplingMaxLevel,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &CubeMapTextureGLTest::samplingBorderInteger,
+              #endif
+
               &CubeMapTextureGLTest::storage,
+
               &CubeMapTextureGLTest::image,
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::imageBuffer,
               #endif
+
               &CubeMapTextureGLTest::subImage,
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::subImageBuffer,
               #endif
+
               &CubeMapTextureGLTest::generateMipmap,
+
               &CubeMapTextureGLTest::invalidateImage,
               &CubeMapTextureGLTest::invalidateSubImage});
 }
@@ -86,16 +112,72 @@ void CubeMapTextureGLTest::construct() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+void CubeMapTextureGLTest::bind() {
+    CubeMapTexture texture;
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setBaseLevel(0);
+        CORRADE_VERIFY(false);
+    }
+    #endif
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
 void CubeMapTextureGLTest::sampling() {
     CubeMapTexture texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           #ifndef MAGNUM_TARGET_GLES2
+           .setBaseLevel(1)
+           .setMaxLevel(750)
+           #endif
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 
    MAGNUM_VERIFY_NO_ERROR();
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+void CubeMapTextureGLTest::samplingMaxLevel() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
+        CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void CubeMapTextureGLTest::samplingBorderInteger() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    CubeMapTexture a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    CubeMapTexture b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
 
 void CubeMapTextureGLTest::storage() {
     CubeMapTexture texture;

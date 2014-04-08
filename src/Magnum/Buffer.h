@@ -166,6 +166,23 @@ for(std::size_t i: {7, 27, 56, 128}) {
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 
+@section Buffer-webgl-restrictions WebGL and NaCl restrictions
+
+Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" and @ref CORRADE_TARGET_NACL "NaCl"
+need to be bound only to one unique target, i.e., @ref Buffer bound to
+@ref Buffer::Target::Array cannot be later rebound to
+@ref Buffer::Target::ElementArray. However, %Magnum by default uses any
+sufficient target when binding the buffer internally (e.g. for setting data).
+To avoid GL errors, set target hint to desired target, either in constructor or
+using @ref Buffer::setTargetHint():
+@code
+Buffer vertices{Buffer::Target::Array};
+Buffer indices{Buffer::Target::ElementArray};
+@endcode
+
+To ease up the development, @ref Mesh checks proper target hint when adding
+vertex and index buffers in both WebGL and NaCl.
+
 @section Buffer-performance-optimization Performance optimizations
 
 The engine tracks currently bound buffers to avoid unnecessary calls to
@@ -661,17 +678,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          */
         Buffer& setData(Containers::ArrayReference<const void> data, BufferUsage usage);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief setData(Containers::ArrayReference<const void>, BufferUsage)
-         * @deprecated Use @ref Magnum::Buffer::setData(Containers::ArrayReference<const void>, BufferUsage) "setData(Containers::ArrayReference<const void>, BufferUsage)"
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use setData(Containers::ArrayReference, BufferUsage) instead") Buffer& setData(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
-            return setData({data, std::size_t(size)}, usage);
-        }
-        #endif
-
         /** @overload */
         template<class T> Buffer& setData(const std::vector<T>& data, BufferUsage usage) {
             setData({data.data(), data.size()}, usage);
@@ -697,17 +703,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      or @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access}
          */
         Buffer& setSubData(GLintptr offset, Containers::ArrayReference<const void> data);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief setSubData(GLintptr, Containers::ArrayReference<const void>)
-         * @deprecated Use @ref Magnum::Buffer::setSubData(GLintptr, Containers::ArrayReference<const void>) "setSubData(GLintptr, Containers::ArrayReference<const void>)"
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use setSubData(GLintptr, Containers::ArrayReference) instead") Buffer& setSubData(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-            return setSubData(offset, {data, std::size_t(size)});
-        }
-        #endif
 
         /** @overload */
         template<class T> Buffer& setSubData(GLintptr offset, const std::vector<T>& data) {

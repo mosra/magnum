@@ -126,7 +126,8 @@ class MAGNUM_EXPORT MeshView {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief draw(AbstractShaderProgram&)
-         * @deprecated Use
+         * @deprecated Use @ref Magnum::MeshView::draw(AbstractShaderProgram&) "draw(AbstractShaderProgram&)"
+         *      instead.
          */
         CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw();
         #endif

@@ -55,10 +55,14 @@ struct TextureState {
     explicit TextureState(Context& context, std::vector<std::string>& extensions);
     ~TextureState();
 
+    void(*unbindImplementation)(GLint);
+    void(*bindMultiImplementation)(GLint, std::initializer_list<AbstractTexture*>);
     void(AbstractTexture::*bindImplementation)(GLint);
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
     void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);
     void(AbstractTexture::*parameterfvImplementation)(GLenum, const GLfloat*);
+    void(AbstractTexture::*parameterIuivImplementation)(GLenum, const GLuint*);
+    void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
     void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
     void(AbstractTexture::*mipmapImplementation)();
@@ -68,6 +72,8 @@ struct TextureState {
     void(AbstractTexture::*storage2DImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&);
     void(AbstractTexture::*storage3DImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&);
     #ifndef MAGNUM_TARGET_GLES
+    void(AbstractTexture::*storage2DMultisampleImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&, GLboolean);
+    void(AbstractTexture::*storage3DMultisampleImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&, GLboolean);
     void(AbstractTexture::*getImageImplementation)(GLenum, GLint, ColorFormat, ColorType, std::size_t, GLvoid*);
     void(AbstractTexture::*image1DImplementation)(GLenum, GLint, TextureFormat, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
     #endif
@@ -86,9 +92,9 @@ struct TextureState {
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 
-    GLint maxLayers;
+    GLint maxTextureUnits;
     GLfloat maxMaxAnisotropy;
-    GLint currentLayer;
+    GLint currentTextureUnit;
     #ifndef MAGNUM_TARGET_GLES
     GLint maxColorSamples,
         maxDepthSamples,
@@ -96,7 +102,7 @@ struct TextureState {
         bufferOffsetAlignment;
     #endif
 
-    std::vector<GLuint> bindings;
+    std::vector<std::pair<GLenum, GLuint>> bindings;
 };
 
 }}

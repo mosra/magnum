@@ -48,7 +48,6 @@ namespace Magnum {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Int AbstractTexture::maxLayers() { return Shader::maxCombinedTextureImageUnits(); }
-Int AbstractTexture::maxSupportedLayerCount() { return Shader::maxCombinedTextureImageUnits(); }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -92,6 +91,72 @@ Int AbstractTexture::maxIntegerSamples() {
 }
 #endif
 
+void AbstractTexture::unbind(const Int textureUnit) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    /* If given texture unit is already unbound, nothing to do */
+    if(textureState->bindings[textureUnit].second == 0) return;
+
+    /* Unbind the texture, reset state tracker */
+    Context::current()->state().texture->unbindImplementation(textureUnit);
+    textureState->bindings[textureUnit] = {};
+}
+
+void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    /* Activate given texture unit if not already active, update state tracker */
+    if(textureState->currentTextureUnit != textureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = textureUnit));
+
+    CORRADE_INTERNAL_ASSERT(textureState->bindings[textureUnit].first != 0);
+    glBindTexture(textureState->bindings[textureUnit].first, 0);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::unbindImplementationMulti(const GLint textureUnit) {
+    constexpr static GLuint zero = 0;
+    glBindTextures(textureUnit, 1, &zero);
+}
+
+void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    CORRADE_INTERNAL_ASSERT(textureState->bindings[textureUnit].first != 0);
+    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, textureState->bindings[textureUnit].first, 0);
+}
+#endif
+
+void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+    /* State tracker is updated in the implementations */
+    Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, textures);
+}
+
+void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+    Int unit = firstTextureUnit;
+    for(AbstractTexture* const texture: textures) {
+        if(texture) texture->bind(unit);
+        else unbind(unit);
+        ++unit;
+    }
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+    Implementation::TextureState* const textureState = Context::current()->state().texture;
+
+    /* Create array of IDs and also update bindings in state tracker */
+    Containers::Array<GLuint> ids{textures.size()};
+    Int i{};
+    for(const AbstractTexture* const texture: textures) {
+        textureState->bindings[firstTextureUnit + i].second = ids[i] = texture ? texture->id() : 0;
+        ++i;
+    }
+
+    glBindTextures(firstTextureUnit, ids.size(), ids);
+}
+#endif
+
 AbstractTexture::AbstractTexture(GLenum target): _target(target) {
     glGenTextures(1, &_id);
 }
@@ -101,9 +166,9 @@ AbstractTexture::~AbstractTexture() {
     if(!_id) return;
 
     /* Remove all bindings */
-    std::vector<GLuint>& bindings = Context::current()->state().texture->bindings;
+    std::vector<std::pair<GLenum, GLuint>>& bindings = Context::current()->state().texture->bindings;
     for(auto it = bindings.begin(); it != bindings.end(); ++it)
-        if(*it == _id) *it = 0;
+        if(it->second == _id) *it = {};
 
     glDeleteTextures(1, &_id);
 }
@@ -117,31 +182,52 @@ AbstractTexture& AbstractTexture::setLabel(const std::string& label) {
     return *this;
 }
 
-void AbstractTexture::bind(Int layer) {
+void AbstractTexture::bind(Int textureUnit) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
-    /* If already bound in given layer, nothing to do */
-    if(textureState->bindings[layer] == _id) return;
+    /* If already bound in given texture unit, nothing to do */
+    if(textureState->bindings[textureUnit].second == _id) return;
 
-    (this->*Context::current()->state().texture->bindImplementation)(layer);
+    /* Update state tracker, bind the texture to the unit */
+    textureState->bindings[textureUnit] = {_target, _id};
+    (this->*Context::current()->state().texture->bindImplementation)(textureUnit);
 }
 
-void AbstractTexture::bindImplementationDefault(GLint layer) {
+void AbstractTexture::bindImplementationDefault(GLint textureUnit) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
-    /* Change to given layer, if not already there */
-    if(textureState->currentLayer != layer)
-        glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = layer));
+    /* Activate given texture unit if not already active, update state tracker */
+    if(textureState->currentTextureUnit != textureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = textureUnit));
 
-    /* Bind the texture to the layer */
-    glBindTexture(_target, (textureState->bindings[layer] = _id));
+    glBindTexture(_target, _id);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::bindImplementationDSA(GLint layer) {
-    glBindMultiTextureEXT(GL_TEXTURE0 + layer, _target, (Context::current()->state().texture->bindings[layer] = _id));
+void AbstractTexture::bindImplementationMulti(GLint textureUnit) {
+    glBindTextures(textureUnit, 1, &_id);
+}
+
+void AbstractTexture::bindImplementationDSA(GLint textureUnit) {
+    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, _target, _id);
 }
 #endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::setBaseLevel(Int level) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_BASE_LEVEL, level);
+}
+#endif
+
+void AbstractTexture::setMaxLevel(Int level) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_TEXTURE_MAX_LEVEL
+        #else
+        GL_TEXTURE_MAX_LEVEL_APPLE
+        #endif
+    , level);
+}
 
 void AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MIN_FILTER, GLint(filter)|GLint(mipmap));
@@ -158,6 +244,16 @@ void AbstractTexture::setBorderColor(const Color4& color) {
     (this->*Context::current()->state().texture->parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR_NV, color.data());
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::setBorderColor(const Vector4ui& color) {
+    (this->*Context::current()->state().texture->parameterIuivImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
+}
+
+void AbstractTexture::setBorderColor(const Vector4i& color) {
+    (this->*Context::current()->state().texture->parameterIivImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
+}
+#endif
 
 void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
@@ -183,21 +279,26 @@ void AbstractTexture::mipmapImplementationDSA() {
 #endif
 
 void AbstractTexture::bindInternal() {
+    /* Using glBindTextures() here is meaningless, because the non-DSA
+       functions need to have the texture bound in *currently active* unit,
+       so we would need to call glActiveTexture() afterwards anyway. */
+
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
-    /* If the texture is already bound in current layer, nothing to do */
-    if(textureState->bindings[textureState->currentLayer] == _id)
+    /* If the texture is already bound in current unit, nothing to do */
+    if(textureState->bindings[textureState->currentTextureUnit].second == _id)
         return;
 
-    /* Set internal layer as active if not already */
-    CORRADE_INTERNAL_ASSERT(textureState->maxLayers > 1);
-    const GLint internalLayer = textureState->maxLayers-1;
-    if(textureState->currentLayer != internalLayer)
-        glActiveTexture(GL_TEXTURE0 + (textureState->currentLayer = internalLayer));
+    /* Set internal unit as active if not already, update state tracker */
+    CORRADE_INTERNAL_ASSERT(textureState->maxTextureUnits > 1);
+    const GLint internalTextureUnit = textureState->maxTextureUnits-1;
+    if(textureState->currentTextureUnit != internalTextureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = internalTextureUnit));
 
-    /* Bind the texture to internal layer, if not already */
-    if(textureState->bindings[internalLayer] != _id)
-        glBindTexture(_target, (textureState->bindings[internalLayer] = _id));
+    /* Bind the texture to internal unit if not already, update state tracker */
+    if(textureState->bindings[internalTextureUnit].second == _id) return;
+    textureState->bindings[internalTextureUnit] = {_target, _id};
+    glBindTexture(_target, _id);
 }
 
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
@@ -602,6 +703,26 @@ void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLuint* values) {
+    bindInternal();
+    glTexParameterIuiv(_target, parameter, values);
+}
+
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLuint* values) {
+    glTextureParameterIuivEXT(_id, _target, parameter, values);
+}
+
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLint* values) {
+    bindInternal();
+    glTexParameterIiv(_target, parameter, values);
+}
+
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLint* values) {
+    glTextureParameterIivEXT(_id, _target, parameter, values);
+}
+#endif
+
 void AbstractTexture::setMaxAnisotropyImplementationNoOp(GLfloat) {}
 
 void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
@@ -765,6 +886,36 @@ void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     glTextureStorage3DEXT(_id, target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::storageMultisampleImplementationFallback(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexImage2DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDefault(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexStorage2DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDSA(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    glTextureStorage2DMultisampleEXT(_id, target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationFallback(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexImage3DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDefault(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexStorage3DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+}
+
+void AbstractTexture::storageMultisampleImplementationDSA(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    glTextureStorage3DMultisampleEXT(_id, target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
 }
 #endif
 
@@ -974,6 +1125,16 @@ void AbstractTexture::DataHelper<2>::setStorage(AbstractTexture& texture, const 
 void AbstractTexture::DataHelper<3>::setStorage(AbstractTexture& texture, const GLenum target, const GLsizei levels, const TextureFormat internalFormat, const Vector3i& size) {
     (texture.*Context::current()->state().texture->storage3DImplementation)(target, levels, internalFormat, size);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::DataHelper<2>::setStorageMultisample(AbstractTexture& texture, const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
+    (texture.*Context::current()->state().texture->storage2DMultisampleImplementation)(target, samples, internalFormat, size, fixedSampleLocations);
+}
+
+void AbstractTexture::DataHelper<3>::setStorageMultisample(AbstractTexture& texture, const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    (texture.*Context::current()->state().texture->storage3DMultisampleImplementation)(target, samples, internalFormat, size, fixedSampleLocations);
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLenum target, const GLint level, const TextureFormat internalFormat, const ImageReference1D& image) {

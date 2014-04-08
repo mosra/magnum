@@ -130,9 +130,7 @@ set(Magnum_HEADERS
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
-        DebugMarker.h
-        ImageFormat.h
-        Swizzle.h)
+        DebugMarker.h)
 endif()
 
 # Desktop-only headers and libraries
@@ -162,6 +160,7 @@ add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_SRCS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
+set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
 
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
@@ -237,7 +236,9 @@ if(BUILD_TESTS)
     # Libraries with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>)
-    set_target_properties(MagnumMathTestLib PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    set_target_properties(MagnumMathTestLib PROPERTIES
+        COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT"
+        DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
 
     # On Windows we need to install first and then run the tests to avoid "DLL

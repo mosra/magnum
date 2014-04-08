@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::ShapeGroup, typedef Magnum::Shapes::ShapeGroup2D, Magnum::Shapes::ShapeGroup3D
+ * @brief Class @ref Magnum::Shapes::ShapeGroup, typedef @ref Magnum::Shapes::ShapeGroup2D, @ref Magnum::Shapes::ShapeGroup3D
  */
 
 #include <vector>
@@ -40,8 +40,8 @@ namespace Magnum { namespace Shapes {
 /**
 @brief Group of shapes
 
-See Shape for more information. See @ref shapes for brief introduction.
-@see @ref scenegraph, ShapeGroup2D, ShapeGroup3D
+See @ref Shape for more information. See @ref shapes for brief introduction.
+@see @ref scenegraph, @ref ShapeGroup2D, @ref ShapeGroup3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::FeatureGroup<dimensions, AbstractShape<dimensions>, Float> {
     friend class AbstractShape<dimensions>;
@@ -66,8 +66,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
          * If some body in the group changes its transformation, it sets dirty
          * status also on the group to indicate that the body and maybe also
          * group state needs to be cleaned before computing collisions.
-         *
-         * @see setClean()
+         * @see @ref setClean()
          */
         void setDirty() { dirty = true; }
 
@@ -83,7 +82,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
          * @brief First collision of given shape with other shapes in the group
          *
          * Returns first shape colliding with given one. If there aren't any
-         * collisions, returns `nullptr`. Calls setClean() before the
+         * collisions, returns `nullptr`. Calls @ref setClean() before the
          * operation.
          */
         AbstractShape<dimensions>* firstCollision(const AbstractShape<dimensions>& shape);
@@ -93,18 +92,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
 };
 
 /**
-@brief Group of two-dimensional shaped objects
+@brief Group of two-dimensional shapes
 
-See Shape for more information.
-@see ShapeGroup3D
+See @ref Shape for more information.
+@see @ref ShapeGroup3D
 */
 typedef ShapeGroup<2> ShapeGroup2D;
 
 /**
-@brief Group of three-dimensional shaped objects
+@brief Group of three-dimensional shapes
 
-See Shape for more information.
-@see ShapeGroup2D
+See @ref Shape for more information.
+@see @ref ShapeGroup2D
 */
 typedef ShapeGroup<3> ShapeGroup3D;
 

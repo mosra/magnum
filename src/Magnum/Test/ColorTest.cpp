@@ -304,7 +304,7 @@ void ColorTest::hsvAlpha() {
 
 void ColorTest::swizzleType() {
     constexpr Color3 origColor3;
-    constexpr BasicColor4<UnsignedByte> origColor4;
+    constexpr Color4ub origColor4;
 
     #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr
@@ -320,7 +320,7 @@ void ColorTest::swizzleType() {
     const
     #endif
     auto b = Math::swizzle<'y', 'z', 'a'>(origColor4);
-    CORRADE_VERIFY((std::is_same<decltype(b), const BasicColor3<UnsignedByte>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(b), const Color3ub>::value));
 
     #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr
@@ -336,7 +336,7 @@ void ColorTest::swizzleType() {
     const
     #endif
     auto d = Math::swizzle<'y', 'a', 'y', 'x'>(origColor4);
-    CORRADE_VERIFY((std::is_same<decltype(d), const BasicColor4<UnsignedByte>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(d), const Color4ub>::value));
 }
 
 void ColorTest::debug() {

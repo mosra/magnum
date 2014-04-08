@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Point, typedef Magnum::Shapes::Point2D, Magnum::Shapes::Point3D
+ * @brief Class @ref Magnum::Shapes::Point, typedef @ref Magnum::Shapes::Point2D, @ref Magnum::Shapes::Point3D
  */
 
 #include "Magnum/DimensionTraits.h"
@@ -39,7 +39,7 @@ namespace Magnum { namespace Shapes {
 @brief %Point
 
 See @ref shapes for brief introduction.
-@see Point2D, Point3D
+@see @ref Point2D, @ref Point3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Point {
     public:

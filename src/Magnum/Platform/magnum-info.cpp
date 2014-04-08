@@ -61,8 +61,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Utility::Arguments args;
     args.addBooleanOption("all-extensions")
         .setHelp("all-extensions", "show extensions also for fully supported versions")
-        .addBooleanOption("no-limits")
-        .setHelp("no-limits", "don't display limits and implementation-defined values")
+        .addBooleanOption("limits")
+        .setHelp("limits", "display also limits and implementation-defined values")
         .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
 
     /**
@@ -72,11 +72,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef CORRADE_TARGET_NACL
     args.parse(arguments.argc, arguments.argv);
     #endif
-
-    /* Create context after parsing arguments, so the help can be displayed
-       without creating context */
-    createContext();
-    Context* c = Context::current();
 
     /* Pass debug output as messages to JavaScript */
     #ifdef CORRADE_TARGET_NACL
@@ -142,11 +137,26 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef MAGNUM_TARGET_DESKTOP_GLES
     Debug() << "    MAGNUM_TARGET_DESKTOP_GLES";
     #endif
+    #ifdef MAGNUM_TARGET_WEBGL
+    Debug() << "    MAGNUM_TARGET_WEBGL";
+    #endif
     Debug() << "";
 
+    /* Create context here, so the context creation info is displayed at proper
+       place */
+    createContext();
+    Context* c = Context::current();
     Debug() << "Vendor:" << c->vendorString();
     Debug() << "Renderer:" << c->rendererString();
     Debug() << "OpenGL version:" << c->version() << '(' + c->versionString() + ')';
+
+    Debug() << "Context flags:";
+    #ifndef MAGNUM_TARGET_GLES
+    for(const auto flag: {Context::Flag::Debug, Context::Flag::RobustAccess})
+    #else
+    for(const auto flag: {Context::Flag::Debug})
+    #endif
+        if(c->flags() & flag) Debug() << "   " << flag;
 
     Debug() << "Supported GLSL versions:";
     const std::vector<std::string> shadingLanguageVersions = c->shadingLanguageVersionStrings();
@@ -204,7 +214,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         Debug() << "";
     }
 
-    if(args.isSet("no-limits")) return;
+    if(!args.isSet("limits")) return;
 
     /* Limits and implementation-defined values */
     #define _h(val) Debug() << "\n " << Extensions::GL::val::string() + std::string(":");

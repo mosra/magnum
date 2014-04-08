@@ -62,8 +62,7 @@ OpenGL function                        | Matching API
 @fn_gl{BindRenderbuffer}               | not needed, handhled internally in @ref Renderbuffer
 @fn_gl{BindSampler}                    | |
 @fn_gl{BindSamplers}                   | |
-@fn_gl{BindTexture}, \n @fn_gl_extension{BindMultiTexture,EXT,direct_state_access} | @ref AbstractTexture::bind()
-@fn_gl{BindTextures}                   | |
+@fn_gl{BindTexture}, \n @fn_gl{BindTextures}, \n @fn_gl_extension{BindMultiTexture,EXT,direct_state_access} | @ref AbstractTexture::bind()
 @fn_gl{BindTransformFeedback}          | |
 @fn_gl{BindVertexArray}                | not needed, handhled internally in @ref Mesh
 @fn_gl{BindVertexBuffer}               | |

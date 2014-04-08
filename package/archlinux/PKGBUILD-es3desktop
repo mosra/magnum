@@ -26,6 +26,7 @@ build() {
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
+        -DWITH_OBJIMPORTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
@@ -38,7 +39,7 @@ build() {
 
 check() {
     cd "$startdir/build-es3desktop"
-    ctest --output-on-failure
+    ctest --output-on-failure -j5
 }
 
 package() {

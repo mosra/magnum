@@ -148,7 +148,7 @@ Mesh& Mesh::setLabel(const std::string& label) {
 }
 
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
-    #if defined(CORRADE_TARGET_NACL) || defined(CORRADE_TARGET_EMSCRIPTEN)
+    #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
     CORRADE_ASSERT(buffer.targetHint() == Buffer::Target::ElementArray,
         "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
@@ -270,7 +270,7 @@ void Mesh::destroyImplementationVAO() {
 }
 
 void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
-    #if defined(CORRADE_TARGET_NACL) || defined(CORRADE_TARGET_EMSCRIPTEN)
+    #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
     CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::Target::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
     #endif
@@ -279,7 +279,7 @@ void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
 }
 
 void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
-    #if defined(CORRADE_TARGET_NACL) || defined(CORRADE_TARGET_EMSCRIPTEN)
+    #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
     CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::Target::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
     #endif

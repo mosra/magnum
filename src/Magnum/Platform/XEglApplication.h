@@ -41,21 +41,28 @@ Application using pure X11 and EGL. Supports keyboard and mouse handling.
 
 This application library is available on both desktop OpenGL and
 @ref MAGNUM_TARGET_GLES "OpenGL ES" on Linux. It depends on **X11** and **EGL**
-libraries and is built if `WITH_XEGLAPPLICATION` is enabled in CMake. To use
-it, you need to copy `FindEGL.cmake` from `modules/` directory in %Magnum
-source to `modules/` dir in your project (so CMake is able to find EGL),
-request `%XEglApplication` component in CMake, add `${MAGNUM_XEGLAPPLICATION_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_XEGLAPPLICATION_LIBRARIES}`.  If no other
+libraries and is built if `WITH_XEGLAPPLICATION` is enabled in CMake.
+
+## Bootstrap application
+
+The usage is very similar to @ref Sdl2Application, for which fully contained
+base application along with CMake setup is available, see its documentation for
+more information.
+
+## General usage
+
+For CMake you need to copy `FindEGL.cmake` from `modules/` directory in %Magnum
+source to `modules/` dir in your project (so it is able to find EGL), request
+`%XEglApplication` component, add `${MAGNUM_XEGLAPPLICATION_INCLUDE_DIRS}` to
+include path and link to `${MAGNUM_XEGLAPPLICATION_LIBRARIES}`.  If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
 @ref building and @ref cmake for more information.
 
-@section XEglApplication-usage Usage
-
-You need to implement at least @ref drawEvent() to be able to draw on the
-screen.  The subclass can be then used directly in `main()` -- see convenience
-macro @ref MAGNUM_XEGLAPPLICATION_MAIN(). See @ref platform for more
-information.
+In C++ code you need to implement at least @ref drawEvent() to be able to draw
+on the screen.  The subclass can be then used directly in `main()` -- see
+convenience macro @ref MAGNUM_XEGLAPPLICATION_MAIN(). See @ref platform for
+more information.
 @code
 class MyApplication: public Platform::XEglApplication {
     // implement required methods...
@@ -89,9 +96,10 @@ class XEglApplication: public AbstractXApplication {
 @brief Entry point for X/EGL-based applications
 @param className Class name
 
-Can be used with @ref Magnum::Platform::XEglApplication "Platform::XEglApplication"
-subclasses as equivalent to the following code to achieve better portability,
-see @ref portability-applications for more information.
+See @ref Magnum::Platform::XEglApplication "Platform::XEglApplication" for
+usage information. This macro abstracts out platform-specific entry point code
+and is equivalent to the following, see @ref portability-applications for more
+information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});

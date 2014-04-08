@@ -1,0 +1,29 @@
+o ShortFloat
+v 0.5 1.0
+
+o LongFloat
+v 0.5 1 2
+vn 0.5 1.0 2.3 7.4
+
+o LongOptionalFloat
+v 0.5 1 2 0.0 3.5
+
+o InvalidIndices
+v 1 2 3
+p 4/1/1/1
+
+o WrongPointIndices
+v 1 2 3
+p 5 5
+
+o WrongLineIndices
+v 1 2 3
+l 6
+
+o WrongTriangleIndices
+v 1 2 3
+f 7 7
+
+o PolygonIndices
+v 1 2 3
+f 8 8 8 8

@@ -13,7 +13,7 @@ provides=('magnum-git')
 
 build() {
     mkdir -p "$startdir/build"
-    cd "$startdir/build/"
+    cd "$startdir/build"
 
     # Disable optimization (saves A LOT of compilation time)
     newcxxflags=$(echo $CXXFLAGS | sed s/-O.//g | sed s/-D_FORTIFY_SOURCE=.//g)
@@ -29,6 +29,7 @@ build() {
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_OBJIMPORTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
@@ -43,7 +44,7 @@ build() {
 
 check() {
     cd "$startdir/build"
-    ctest --output-on-failure
+    ctest --output-on-failure -j5
 }
 
 package() {

@@ -1,0 +1,13 @@
+o ShortNormalIndices
+v 1 2 3
+vn 1 2 3
+p 1//1
+p 1
+p 1//1
+
+o ShortTextureIndices
+v 1 2 3
+vt 1 2
+p 2/2
+p 2
+p 2/2

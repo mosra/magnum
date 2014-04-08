@@ -44,6 +44,13 @@ Shader createCompatibilityShader(const Version version, const Shader::Type type)
         shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n");
     #endif
 
+    /* My Android emulator (running on NVidia) doesn't define GL_ES
+       preprocessor macro, thus *all* the stock shaders fail to compile */
+    /** @todo remove this when Android emulator is sane */
+    #ifdef CORRADE_TARGET_ANDROID
+    shader.addSource("#ifndef GL_ES\n#define GL_ES 1\n#endif\n");
+    #endif
+
     shader.addSource(Utility::Resource("MagnumShaders").get("compatibility.glsl"));
     return shader;
 }

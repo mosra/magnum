@@ -1,0 +1,17 @@
+# Positions
+v 0.5 2 3
+v 0 1.5 1
+
+# Texture coordinates
+vt 1 0.5
+vt 0.5 1
+
+# Normals
+vn 1 0.5 3.5
+vn 0.5 1 0.5
+
+# Lines
+l 1/1/1 2/1/2
+l 1/2/2 2/2/1
+l 2/1/2 1/1/1
+l 2/2/2 1/2/2

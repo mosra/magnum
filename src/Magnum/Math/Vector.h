@@ -408,7 +408,8 @@ template<std::size_t size, class T> class Vector {
          * @brief Multiply vector component-wise
          *
          * @see operator*(T) const, operator*=(const Vector<size, T>&),
-         *      operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
+         *      operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&),
+         *      @ref product()
          */
         Vector<size, T> operator*(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) *= other;

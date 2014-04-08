@@ -74,7 +74,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
             /**
-             * Layer for color texture. Used only if @ref Flag::Textured is set.
+             * Color texture binding unit. Used only if @ref Flag::Textured is
+             * set.
              * @deprecated use @ref Magnum::Shaders::Flat::setTexture() "setTexture()" instead.
              */
             TextureLayer = 0

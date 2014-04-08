@@ -37,7 +37,7 @@
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
 #include <sstream>
 #endif
 
@@ -556,7 +556,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GL440: _sources.push_back("#version 440\n"); return;
         #else
         case Version::GLES200: _sources.push_back("#version 100\n"); return;
-        case Version::GLES300: _sources.push_back("#version 300\n"); return;
+        case Version::GLES300: _sources.push_back("#version 300 es\n"); return;
         #endif
 
         /* The user is responsible for (not) adding #version directive */
@@ -594,7 +594,8 @@ std::vector<std::string> Shader::sources() const { return _sources; }
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(__MINGW32__)
+        /** @todo Remove when newlib has this fixed (also the include above) */
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
         std::ostringstream converter;
         converter << (_sources.size()+1)/2;
         #endif
@@ -603,7 +604,7 @@ Shader& Shader::addSource(std::string source) {
            Source 0 is the #version string added in constructor. */
         _sources.push_back("#line 1 " +
             /* This shouldn't be ambiguous. But is. */
-            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(__MINGW32__)
+            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
             #ifndef CORRADE_GCC44_COMPATIBILITY
             std::to_string((_sources.size()+1)/2) +
             #else
@@ -627,57 +628,75 @@ Shader& Shader::addFile(const std::string& filename) {
     return *this;
 }
 
-bool Shader::compile() {
-    CORRADE_ASSERT(_sources.size() > 1, "Shader::compile(): no files added", false);
+bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shaders) {
+    bool allSuccess = true;
 
-    /* Array of source string pointers and their lengths */
-    /** @todo Use `Containers::ArrayTuple` to avoid one allocation if it ever
-        gets to be implemented (we need properly aligned memory too) */
-    Containers::Array<const GLchar*> pointers(_sources.size());
-    Containers::Array<GLint> sizes(_sources.size());
-    for(std::size_t i = 0; i != _sources.size(); ++i) {
-        pointers[i] = static_cast<const GLchar*>(_sources[i].data());
-        sizes[i] = _sources[i].size();
+    /* Allocate large enough array for source pointers and sizes (to avoid
+       reallocating it for each of them) */
+    std::size_t maxSourceCount = 0;
+    for(Shader& shader: shaders) {
+        CORRADE_ASSERT(shader._sources.size() > 1, "Shader::compile(): no files added", false);
+        maxSourceCount = std::max(shader._sources.size(), maxSourceCount);
+    }
+    Containers::Array<const GLchar*> pointers(maxSourceCount);
+    Containers::Array<GLint> sizes(maxSourceCount);
+
+    /* Upload sources of all shaders */
+    for(Shader& shader: shaders) {
+        for(std::size_t i = 0; i != shader._sources.size(); ++i) {
+            pointers[i] = static_cast<const GLchar*>(shader._sources[i].data());
+            sizes[i] = shader._sources[i].size();
+        }
+
+        glShaderSource(shader._id, shader._sources.size(), pointers, sizes);
     }
 
-    /* Create shader and set its source */
-    glShaderSource(_id, _sources.size(), pointers, sizes);
+    /* Invoke (possibly parallel) compilation on all shaders */
+    for(Shader& shader: shaders) glCompileShader(shader._id);
 
-    /* Compile shader */
-    glCompileShader(_id);
+    /* After compilation phase, check status of all shaders */
+    Int i = 1;
+    for(Shader& shader: shaders) {
+        GLint success, logLength;
+        glGetShaderiv(shader._id, GL_COMPILE_STATUS, &success);
+        glGetShaderiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
 
-    /* Check compilation status */
-    GLint success, logLength;
-    glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
-    glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &logLength);
+        /* Error or warning message. The string is returned null-terminated,
+           scrap the \0 at the end afterwards */
+        std::string message(logLength, '\0');
+        if(message.size() > 1)
+            glGetShaderInfoLog(shader._id, message.size(), nullptr, &message[0]);
+        message.resize(std::max(logLength, 1)-1);
 
-    /* Error or warning message. The string is returned null-terminated, scrap
-       the \0 at the end afterwards */
-    std::string message(logLength, '\0');
-    if(message.size() > 1)
-        glGetShaderInfoLog(_id, message.size(), nullptr, &message[0]);
-    message.resize(std::max(logLength, 1)-1);
+        /* Show error log */
+        if(!success) {
+            Error out;
+            out.setFlag(Debug::NewLineAtTheEnd, false);
+            out.setFlag(Debug::SpaceAfterEachValue, false);
+            out << "Shader::compile(): compilation of " << shaderName(shader._type)
+                << " shader";
+            if(shaders.size() != 1) out << ' ' << std::to_string(i);
+            out << " failed with the following message:\n"
+                << message;
 
-    /* Show error log */
-    if(!success) {
-        Error out;
-        out.setFlag(Debug::NewLineAtTheEnd, false);
-        out.setFlag(Debug::SpaceAfterEachValue, false);
-        out << "Shader: " << shaderName(_type)
-            << " shader failed to compile with the following message:\n"
-            << message;
+        /* Or just warnings, if any */
+        } else if(!message.empty()) {
+            Warning out;
+            out.setFlag(Debug::NewLineAtTheEnd, false);
+            out.setFlag(Debug::SpaceAfterEachValue, false);
+            out << "Shader::compile(): compilation of " << shaderName(shader._type)
+                << " shader";
+            if(shaders.size() != 1) out << ' ' << std::to_string(i);
+            out << " succeeded with the following message:\n"
+                << message;
+        }
 
-    /* Or just message, if any */
-    } else if(!message.empty()) {
-        Error out;
-        out.setFlag(Debug::NewLineAtTheEnd, false);
-        out.setFlag(Debug::SpaceAfterEachValue, false);
-        out << "Shader: " << shaderName(_type)
-            << " shader was successfully compiled with the following message:\n"
-            << message;
+        /* Success of all depends on each of them */
+        allSuccess = allSuccess && success;
+        ++i;
     }
 
-    return success;
+    return allSuccess;
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -32,7 +32,7 @@ set(TgaImageConverter_HEADERS
 add_library(TgaImageConverterObjects OBJECT ${TgaImageConverter_SRCS})
 set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
-add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR}
+add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_INSTALL_DIR}
     TgaImageConverter.conf
     $<TARGET_OBJECTS:TgaImageConverterObjects>
     pluginRegistration.cpp)

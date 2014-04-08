@@ -99,22 +99,27 @@ fi
 
 if [ ${gl} = "desktop" ] ; then
     desktop_flag=ON
+    es_flag=OFF
     windowless_flag=ON
 elif [ ${gl} = "es2" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=ON"
     desktop_flag=OFF
+    es_flag=ON
     windowless_flag=OFF
 elif [ ${gl} = "es2desktop" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=ON -DTARGET_DESKTOP_GLES=ON"
     desktop_flag=OFF
+    es_flag=OFF
     windowless_flag=ON
 elif [ ${gl} = "es3" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=OFF"
     desktop_flag=OFF
+    es_flag=ON
     windowless_flag=OFF
 elif [ ${gl} = "es3desktop" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=OFF -DTARGET_DESKTOP_GLES=ON"
     desktop_flag=OFF
+    es_flag=OFF
     windowless_flag=ON
 fi
 
@@ -137,8 +142,10 @@ cmake .. \
     -DWITH_GLUTAPPLICATION=ON \
     -DWITH_GLXAPPLICATION=ON \
     -DWITH_SDL2APPLICATION=ON \
+    -DWITH_XEGLAPPLICATION=${es_flag} \
     -DWITH_MAGNUMFONT=ON \
     -DWITH_MAGNUMFONTCONVERTER=${desktop_flag} \
+    -DWITH_OBJIMPORTER=ON \
     -DWITH_TGAIMAGECONVERTER=ON \
     -DWITH_TGAIMPORTER=ON \
     -DWITH_WAVAUDIOIMPORTER=ON \
@@ -148,8 +155,8 @@ cmake .. \
     -G Ninja
 
 ninja
-ctest --output-on-failure -E GLTest || true
-ninja install
+ctest --output-on-failure -E GLTest -j5 || true
+ninja install/strip
 ]]>
     </command>
     </hudson.tasks.Shell>

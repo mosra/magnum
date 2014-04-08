@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Composition, enum Magnum::Shapes::CompositionOperation
+ * @brief Class @ref Magnum::Shapes::Composition, typedef @ref Magnum::Shapes::Composition2D, @ref Magnum::Shapes::Composition3D, enum @ref Magnum::Shapes::CompositionOperation
  */
 
 #include <type_traits>
@@ -101,7 +101,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         /**
          * @brief Default constructor
          *
-         * Creates empty hierarchy.
+         * Creates empty composition.
          */
         explicit Composition() {}
 
@@ -193,10 +193,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         Containers::Array<Node> _nodes;
 };
 
-/** @brief Two-dimensional shape hierarchy */
+/** @brief Two-dimensional shape composition */
 typedef Composition<2> Composition2D;
 
-/** @brief Three-dimensional shape hierarchy */
+/** @brief Three-dimensional shape composition */
 typedef Composition<3> Composition3D;
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -205,7 +205,7 @@ template<UnsignedInt dimensions> Debug operator<<(Debug debug, typename Composit
 #endif
 
 /** @relates Composition
-@brief Collision of shape with Composition
+@brief Collision of shape with @ref Composition
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T> inline bool operator%(const T& a, const Composition<dimensions>& b) {

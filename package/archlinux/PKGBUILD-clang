@@ -33,6 +33,7 @@ build() {
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_OBJIMPORTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
@@ -46,7 +47,7 @@ build() {
 
 check() {
     cd "$startdir/build-clang"
-    ctest --output-on-failure
+    ctest --output-on-failure -j5
 }
 
 package() {

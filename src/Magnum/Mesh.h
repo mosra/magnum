@@ -291,6 +291,11 @@ respective shader, bind required textures (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call @ref Mesh::draw().
 
+@section Mesh-webgl-restrictions WebGL restrictions
+
+@ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
+layout, see @ref addVertexBuffer() for details.
+
 @section Mesh-performance-optimization Performance optimizations
 
 If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
@@ -553,6 +558,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
          *
+         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the data must be
+         *      properly aligned (e.g. all float data must start at addresses
+         *      divisible by four). Also the maximum stride of attribute data
+         *      must be at most 255 bytes. This is not required anywhere else,
+         *      but doing so may have performance benefits.
+         *
          * @see @ref maxVertexAttributes(), @ref setPrimitive(),
          *      @ref setVertexCount(), @fn_gl{BindVertexArray},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
@@ -635,7 +646,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief draw(AbstractShaderProgram&)
-         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) instead.
+         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) "draw(AbstractShaderProgram&)"
+         *      instead.
          */
         void draw() {
             #ifndef MAGNUM_TARGET_GLES2
@@ -682,28 +694,28 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
         /* Computing stride of interleaved vertex attributes */
-        template<UnsignedInt location, class T, class ...U> inline static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+        template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             return attribute.vectorSize()*AbstractShaderProgram::Attribute<location, T>::VectorCount + strideOfInterleaved(attributes...);
         }
-        template<class ...T> inline static GLsizei strideOfInterleaved(GLintptr gap, const T&... attributes) {
+        template<class ...T> static GLsizei strideOfInterleaved(GLintptr gap, const T&... attributes) {
             return gap + strideOfInterleaved(attributes...);
         }
-        inline static GLsizei strideOfInterleaved() { return 0; }
+        static GLsizei strideOfInterleaved() { return 0; }
 
         /* Adding interleaved vertex attributes */
-        template<UnsignedInt location, class T, class ...U> inline void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+        template<UnsignedInt location, class T, class ...U> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
             addVertexAttribute(buffer, attribute, offset, stride);
 
             /* Add size of this attribute to offset for next attribute */
             addVertexBufferInternal(buffer, offset+attribute.vectorSize()*AbstractShaderProgram::Attribute<location, T>::VectorCount, stride, attributes...);
         }
-        template<class ...T> inline void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLintptr gap, const T&... attributes) {
+        template<class ...T> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */
             addVertexBufferInternal(buffer, offset+gap, stride, attributes...);
         }
-        inline void addVertexBufferInternal(Buffer&, GLsizei, GLintptr) {}
+        void addVertexBufferInternal(Buffer&, GLsizei, GLintptr) {}
 
-        template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, Float>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
                 attributePointerInternal(Attribute{
                     &buffer,
@@ -717,7 +729,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::Type>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             attributePointerInternal(IntegerAttribute{
                 &buffer,
                 location,
@@ -729,7 +741,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        template<UnsignedInt location, class T> inline void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::Type, Double>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
             for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
                 attributePointerInternal(LongAttribute{
                     &buffer,

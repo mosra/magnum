@@ -69,7 +69,7 @@ assuming you have at least basic knowledge of CMake.
 On Unix-based OSs, the library (for example with support for GLUT applications)
 can be built and installed using these four commands:
 
-    mkdir -p build && cd build
+    mkdir build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_GLUTAPPLICATION=ON
@@ -102,8 +102,7 @@ The most straightforward way to build and install the library is again via the
 command-line. The bonus point is that you don't even need to wait for Visual
 Studio to load:
 
-    mkdir build
-    cd build
+    mkdir build && cd build
     cmake -DCMAKE_INSTALL_PREFIX="C:/Sys" ..
     cmake --build .
     cmake --build . --target install
@@ -134,6 +133,14 @@ them statically, enable `BUILD_STATIC` to build the libraries as static. If you
 plan to use them with shared libraries later, enable also position-independent
 code with `BUILD_STATIC_PIC`. If you want to build with another compiler (e.g.
 Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
+
+Libraries and static plugins built in `Debug` configuration (e.g. with
+`CMAKE_BUILD_TYPE` set to `Debug`) have `-d` suffix to make it possible to have
+both debug and release libraries installed alongside each other. *Dynamic*
+plugins in `Debug` configuration are installed to `magnum-d` subdirectory
+instead of `magnum`. Headers and other files are the same for both. The library
+and plugin distinction is handled semi-automatically when using %Magnum in
+depending projects, see @ref cmake for more information.
 
 %Magnum by default does not install `FindMagnum.cmake`, as you should bundle
 the module with your code instead of depending on it being in system location.
@@ -186,6 +193,7 @@ None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
 platform best:
 
+-   `WITH_ANDROIDAPPLICATION` - @ref Platform::AndroidApplication "AndroidApplication"
 -   `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
 -   `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
 -   `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
@@ -216,6 +224,7 @@ default.
 -   `WITH_MAGNUMFONTCONVERTER` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
     plugin. Available only if `WITH_TEXT` is enabled. Enables also building of
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
+-   `WITH_OBJIMPORTER` -- @ref Trade::ObjImporter "ObjImporter" plugin.
 -   `WITH_TGAIMPORTER` -- @ref Trade::TgaImporter "TgaImporter" plugin.
 -   `WITH_TGAIMAGECONVERTER` -- @ref Trade::TgaImageConverter "TgaImageConverter"
     plugin.
@@ -317,8 +326,9 @@ contents in `toolchains/` subdirectory.
 @subsection building-cross-win Crosscompiling for Windows using MinGW
 
 @note This guide is tailored mainly for crosscompiling from ArchLinux. For
-this system there is also prepared `mingw32-magnum` development package in
-root, named `PKGBUILD-mingw32`.
+    this system there is also prepared `mingw32-magnum` development package in
+    `package/archlinux`, named `PKGBUILD-mingw32`. See
+    @ref building-packages-arch "above" for more information.
 
 You will need MinGW32 versions of the compiler and all dependent libraries
 (Corrade), i.e. these ArchLinux packages:
@@ -327,19 +337,18 @@ You will need MinGW32 versions of the compiler and all dependent libraries
 - `mingw32-runtime`
 - `mingw32-corrade`
 
-Then create build directory and run cmake and make. You may need to modify the
-`basic-mingw32.cmake` file and `CMAKE_INSTALL_PREFIX` to suit your distribution
-filesystem hierarchy.
+Then create build directory and run cmake and build command in it. You may need
+to modify the `basic-mingw32.cmake` file and `CMAKE_INSTALL_PREFIX` to suit
+your distribution filesystem hierarchy.
 
-    mkdir build-win
-    cd build-win
+    mkdir build-win && cd build-win
     cmake .. \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
         -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32
-    make
+    cmake --build .
 
-Then you can install the package using `make install` to make it available for
-depending projects.
+Then you can install the package using `cmake --build . --target install` to
+make it available for depending projects.
 
 @subsection building-cross-nacl Crosscompiling for Google Chrome Native Client
 
@@ -354,14 +363,13 @@ adapt `NACL_PREFIX` variable in `generic/NaCl-*-x86-32.cmake` and
 to find the compiler. NaCl currently supports only OpenGL ES 2, thus
 `TARGET_GLES` and `TARGET_GLES2` is always enabled.
 
-Then create build directories for x86-32 and x86-64 and run cmake and make in
-them. The toolchains need access to the platform file, so be sure to properly
-set **absolute** path to `modules/` directory containing `Platform/NaCl.cmake`.
-Also adapt `CMAKE_INSTALL_PREFIX` to the same value as in `NACL_PREFIX` in
-toolchain file.
+Then create build directories for x86-32 and x86-64 and run cmake and build
+command in them. The toolchains need access to the platform file, so be sure to
+properly set **absolute** path to `modules/` directory containing
+`Platform/NaCl.cmake`. Also adapt `CMAKE_INSTALL_PREFIX` to the same value as
+in `NACL_PREFIX` in toolchain file.
 
-    mkdir -p build-nacl-x86-32
-    cd build-nacl-x86-32
+    mkdir build-nacl-x86-32 && cd build-nacl-x86-32
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
@@ -369,23 +377,24 @@ toolchain file.
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON \
         -DLIB_SUFFIX=/32
-    make
+    cmake --build .
 
-    mkdir -p build-nacl-x86-64
-    cd build-nacl-x86-64
+    mkdir build-nacl-x86-64 && cd build-nacl-x86-64
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON
-    make
+    cmake --build .
 
-Then you can install both versions using `make install` to make them available
-for depending projects. The headers are shared by both versions.
+Then you can install both versions using `cmake --build . --target install` to
+make them available for depending projects. The headers are shared by both
+versions.
 
-For ArchLinux there are also prepared package files in root, named
-`PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`.
+For ArchLinux there are also prepared package files in `package/archlinux`,
+named `PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`, see
+@ref building-packages-arch "above" for more information.
 
 @subsection building-cross-emscripten Crosscompiling for Emscripten
 
@@ -397,34 +406,81 @@ to path where Emscripten is installed. Default is `/usr/emscripten`. Emscripten
 supports dynamic libraries only to simplify porting and they are generally
 slower, thus `BUILD_STATIC` is implicitly enabled.
 
-Then create build directory and run cmake and make in it. The toolchain needs
-access to its platform file, so be sure to properly set **absolute** path to
-`modules/` directory containing `Platform/Emscripten.cmake`. Also set
-`CMAKE_INSTALL_PREFIX` to value which is contained in `CMAKE_FIND_ROOT_PATH` in
-toolchain file.
+Then create build directory and run cmake and build command in it. The
+toolchain needs access to its platform file, so be sure to properly set
+**absolute** path to `modules/` directory containing `Platform/Emscripten.cmake`.
+Also set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
 
-    mkdir -p build-emscripten
-    cd build-emscripten
+    mkdir build-emscripten && cd build-emscripten
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
         -DWITH_SDL2APPLICATION=ON
-    make
+    cmake --build .
 
-Then you can install the library using `make install` to make it available for
-depending projects.
+Then you can install the library using `cmake --build . --target install` to
+make it available for depending projects.
 
 If you have Node.js installed, you can also build and run unit tests using
 `ctest`. See `BUILD_TESTS` above.
+
+For ArchLinux there is also prepared package file in `package/archlinux`,
+named `PKGBUILD-emscripten`, see @ref building-packages-arch "above" for more
+information.
+
+@subsection building-cross-android Crosscompiling for Android ARM and x86
+
+You will need [Android NDK](https://developer.android.com/tools/sdk/ndk/index.html)
+installed and configured.
+
+Don't forget to adapt `ANDROID_NDK_ROOT` in `generic/Android-*.cmake` to path
+where NDK is installed. Default is `/opt/android-ndk`. Adapt also
+`ANDROID_SYSROOT` to your preferred API level. You might also need to update
+`ANDROID_TOOLCHAIN_PREFIX` and `ANDROID_TOOLCHAIN_ROOT` to fit your system.
+
+Then create build directory and run cmake and build command in it. The
+toolchain needs access to its platform file, so be sure to properly set **absolute**
+path to `modules/` directory containing `Platform/Android.cmake`. Also set
+`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT`.
+
+Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
+depending shared libraries using JNI would be too inconvenient. Decision
+between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
+`TARGET_GLES2` to `ON` or `OFF`).
+
+    mkdir build-android-arm && cd build-android-arm
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
+        -DTARGET_GLES=ON -DTARGET_GLES2=ON
+    cmake --build .
+
+    mkdir build-android-x86 && cd build-android-x86
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-x86/usr \
+        -DTARGET_GLES=ON -DTARGET_GLES2=ON
+    cmake --build .
+
+Then you can install the library using `cmake --build . --target install` to
+make it available for depending projects.
+
+For ArchLinux there are also prepared package files in `package/archlinux`,
+named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
+@ref building-packages-arch "above" for more information.
 
 @section building-ci-jenkins Jenkins Continuous Integration
 
 In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
 containing job configuration, one for build and non-GL tests and the other for
-GL tests only. Setup your Jenkins server, enable the **Git** and
-**Text-finder** plugin and download the CLI application from here:
+GL tests only. Setup your Jenkins server, enable the **Git** and **Text-finder**
+plugin and download the CLI application from here:
 
     http://your-jenkins-server/cli
 

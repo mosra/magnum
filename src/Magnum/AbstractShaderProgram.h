@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::AbstractShaderProgram
  */
 
+#include <functional>
 #include <string>
 #include <Corrade/Containers/EnumSet.h>
 
@@ -63,27 +64,21 @@ enum: UnsignedInt {
     NormalOutput = 1
 };
 @endcode
--   **Uniform locations** for setting uniform data (see below) (private
-    variables), for example:
-@code
-Int TransformationUniform = 0,
-    ProjectionUniform = 1,
-    DiffuseTextureUniform = 2,
-    SpecularTextureUniform = 3;
-@endcode
--   **Constructor**, which attaches particular shaders, links the program and
-    gets uniform locations, for example:
+-   **Constructor**, which loads, compiles and attaches particular shaders and
+    links the program together, for example:
 @code
 MyShader() {
-    // Load shaders, compile them and attach them to the program
+    // Load shader sources
     Shader vert(Version::GL430, Shader::Type::Vertex);
-    vert.attachFile("PhongShader.vert");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
     Shader frag(Version::GL430, Shader::Type::Fragment);
-    frag.attachFile("PhongShader.vert");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    vert.addFile("PhongShader.vert");
+    frag.addFile("PhongShader.vert");
+
+    // Invoke parallel compilation for best performance
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    // Attach the shaders
+    attachShader(vert);
     attachShader(frag);
 
     // Link the program together
@@ -94,24 +89,29 @@ MyShader() {
     protected @ref setUniform() functions. For usability purposes you can
     implement also method chaining. Example:
 @code
-MyShader& setTransformation(const Matrix4& matrix) {
-    setUniform(TransformationUniform, matrix);
+MyShader& setProjectionMatrix(const Matrix4& matrix) {
+    setUniform(0, matrix);
     return *this;
 }
-MyShader& setProjection(const Matrix4& matrix) {
-    setUniform(ProjectionUniform, matrix);
+MyShader& setTransformationMatrix(const Matrix4& matrix) {
+    setUniform(1, matrix);
+    return *this;
+}
+MyShader& setNormalMatrix(const Matrix3x3& matrix) {
+    setUniform(2, matrix);
     return *this;
 }
 @endcode
--   **Texture setting functions** in which you bind the textures to particular
-    layers using @ref AbstractTexture::bind() and equivalent, for example:
+-   <strong>%Texture setting functions</strong> in which you bind the textures
+    to particular texture units using @ref Texture::bind() "*Texture::bind()"
+    and equivalents, for example:
 @code
 MyShader& setDiffuseTexture(Texture2D& texture) {
-    texture->bind(0);
+    texture.bind(0);
     return *this;
 }
 MyShader& setSpecularTexture(Texture2D& texture) {
-    texture->bind(1);
+    texture.bind(1);
     return *this;
 }
 @endcode
@@ -141,7 +141,7 @@ If you don't have the required extension, declare the attributes without
 `layout()` qualifier and use functions @ref bindAttributeLocation() and
 @ref bindFragmentDataLocation() / @ref bindFragmentDataLocationIndexed() between
 attaching the shaders and linking the program. Note that additional syntax
-changes may be needed for GLSL 1.20 and GLSL ES 1.0.
+changes may be needed for GLSL 1.20 and GLSL ES.
 @code
 in vec4 position;
 in vec3 normal;
@@ -191,21 +191,24 @@ code, e.g.:
 @code
 // GLSL 4.30, or
 #extension GL_ARB_explicit_uniform_location: enable
-layout(location = 0) uniform mat4 transformation;
-layout(location = 1) uniform mat4 projection;
+layout(location = 0) uniform mat4 projectionMatrix;
+layout(location = 1) uniform mat4 transformationMatrix;
+layout(location = 2) uniform mat3 normalMatrix;
 @endcode
 
 If you don't have the required extension, declare the uniforms without the
-`layout()` qualifier and get uniform location using @ref uniformLocation()
-*after* linking stage. Note that additional syntax changes may be needed for
-GLSL 1.20 and GLSL ES 1.0.
+`layout()` qualifier, get uniform location using @ref uniformLocation() *after*
+linking stage and then use the queried location in uniform setting functions.
+Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES.
 @code
-uniform mat4 transformation;
-uniform mat4 projection;
+uniform mat4 projectionMatrix;
+uniform mat4 transformationMatrix;
+uniform mat3 normalMatrix;
 @endcode
 @code
-Int transformationUniform = uniformLocation("transformation");
-Int projectionUniform = uniformLocation("projection");
+Int projectionMatrixUniform = uniformLocation("projectionMatrix");
+Int transformationMatrixUniform = uniformLocation("transformationMatrix");
+Int normalMatrixUniform = uniformLocation("normalMatrix");
 @endcode
 
 @see @ref maxUniformLocations()
@@ -216,10 +219,10 @@ Int projectionUniform = uniformLocation("projection");
     @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()"
     instead.
 
-@subsection AbstractShaderProgram-texture-layer Binding texture layer uniforms
+@subsection AbstractShaderProgram-texture-units Specifying texture binding units
 
-The preferred workflow is to specify texture layers directly in the shader
-code, e.g.:
+The preferred workflow is to specify texture binding unit directly in the
+shader code, e.g.:
 @code
 // GLSL 4.20, or
 #extension GL_ARB_shading_language_420pack: enable
@@ -227,25 +230,24 @@ layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
 
-If you don't have the required extension (or if you want to change the layer
-later), declare the uniforms without the `layout()` qualifier and set the
-texture layer uniform using @ref setUniform(Int, const T&) "setUniform(Int, Int)".
-Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES
-1.0.
+If you don't have the required extension, declare the uniforms without the
+`layout()` qualifier and set the texture binding unit using
+@ref setUniform(Int, const T&) "setUniform(Int, Int)". Note that additional
+syntax changes may be needed for GLSL 1.20 and GLSL ES 1.0.
 @code
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 @endcode
 @code
-setUniform(DiffuseTextureUniform, 0);
-setUniform(SpecularTextureUniform, 1);
+setUniform(uniformLocation("diffuseTexture"), 0);
+setUniform(uniformLocation("specularTexture"), 1);
 @endcode
 
 @see @ref Shader::maxTextureImageUnits()
 @requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
-    texture layer binding instead of using
+    texture binding unit instead of using
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
-@requires_gl Explicit texture layer binding is not supported in OpenGL ES. Use
+@requires_gl Explicit texture binding unit is not supported in OpenGL ES. Use
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
 
@@ -320,8 +322,6 @@ comes in handy.
 @see @ref portability-shaders
 
 @todo Use Containers::ArrayReference for setting uniform arrays?
-@todo Compiling and linking more than one shader in parallel, then checking
-    status, should be faster -- https://twitter.com/g_truc/status/352778836657700866
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
@@ -342,15 +342,6 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @def_gl{MAX_VERTEX_ATTRIBS}
          */
         static Int maxVertexAttributes();
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copydoc maxVertexAttributes()
-         * @deprecated Use @ref Magnum::AbstractShaderProgram::maxVertexAttributes() "maxVertexAttributes()"
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use maxVertexAttributes() instead") Int maxSupportedVertexAttributeCount() { return maxVertexAttributes(); }
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -562,6 +553,21 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
     protected:
+        /**
+         * @brief Link the shader
+         *
+         * Returns `false` if linking of any shader failed, `true` if
+         * everything succeeded. Linker message (if any) is printed to error
+         * output. All attached shaders must be compiled with
+         * @ref Shader::compile() before linking. The operation is batched in a
+         * way that allows the driver to link multiple shaders simultaenously
+         * (i.e. in multiple threads).
+         * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
+         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
+         *      @fn_gl{GetProgramInfoLog}
+         */
+        static bool link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders);
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Allow retrieving program binary
@@ -655,14 +661,12 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Link the shader
          *
-         * Returns `false` if linking failed, `true` otherwise. Compiler
-         * message (if any) is printed to error output. All attached shaders
-         * must be compiled with @ref Shader::compile() before linking.
-         * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
-         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
-         *      @fn_gl{GetProgramInfoLog}
+         * Links single shader. If possible, prefer to link multiple shaders
+         * at once using @ref link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>>)
+         * for improved performance, see its documentation for more
+         * information.
          */
-        bool link();
+        bool link() { return link({*this}); }
 
         /**
          * @brief Get uniform location
@@ -963,9 +967,17 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * @brief Type
          *
          * Type used in shader code.
-         * @see @ref DataType
+         * @see @ref ScalarType, @ref DataType
          */
-        typedef typename Implementation::Attribute<T>::Type Type;
+        typedef T Type;
+
+        /**
+         * @brief Scalar type
+         *
+         * The underlying scalar type of the attribute.
+         * @see @ref Type, @ref DataType
+         */
+        typedef typename Implementation::Attribute<T>::ScalarType ScalarType;
 
         /**
          * @brief Component count
@@ -1257,7 +1269,7 @@ template<class> struct Attribute;
 
 /* Base for float attributes */
 struct FloatAttribute {
-    typedef Float Type;
+    typedef Float ScalarType;
 
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
@@ -1300,7 +1312,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, FloatAttribute::DataType value);
 #ifndef MAGNUM_TARGET_GLES2
 /* Base for int attributes */
 struct IntAttribute {
-    typedef Int Type;
+    typedef Int ScalarType;
 
     enum class DataType: GLenum {
         UnsignedByte = GL_UNSIGNED_BYTE,
@@ -1327,7 +1339,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
 
 /* Base for unsigned int attributes */
 struct UnsignedIntAttribute {
-    typedef UnsignedInt Type;
+    typedef UnsignedInt ScalarType;
 
     typedef IntAttribute::DataType DataType;
     #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
@@ -1349,7 +1361,7 @@ struct UnsignedIntAttribute {
 #ifndef MAGNUM_TARGET_GLES
 /* Base for double attributes */
 struct DoubleAttribute {
-    typedef Double Type;
+    typedef Double ScalarType;
 
     enum class DataType: GLenum {
         Double = GL_DOUBLE
@@ -1372,7 +1384,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
 
 /* Floating-point four-component vector is absolutely special case */
 template<> struct Attribute<Math::Vector<4, Float>> {
-    typedef Float Type;
+    typedef Float ScalarType;
 
     enum class Components: GLint {
         One = 1,

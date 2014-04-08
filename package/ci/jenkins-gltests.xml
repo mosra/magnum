@@ -82,7 +82,7 @@ cd build-${compiler}-${libraries}-${compatibility}-${gl}
 
 ninja
 
-ctest --output-on-failure -R GLTest || true
+ctest --output-on-failure -R GLTest -j5 || true
 ]]>
     </command>
     </hudson.tasks.Shell>

@@ -12,7 +12,7 @@ options=('!buildflags' '!strip' 'staticlibs')
 
 build() {
     mkdir -p "$startdir/build-win"
-    cd "$startdir/build-win/"
+    cd "$startdir/build-win"
 
     unset LDFLAGS
 
@@ -20,9 +20,11 @@ build() {
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32 \
+        -DWITH_AUDIO=ON \
         -DWITH_GLUTAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_OBJIMPORTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \

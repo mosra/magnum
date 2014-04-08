@@ -87,6 +87,7 @@ cmake .. \
   `#-DWITH_SDL2APPLICATION=ON` \
     -DWITH_MAGNUMFONT=ON \
     -DWITH_MAGNUMFONTCONVERTER=ON \
+    -DWITH_OBJIMPORTER=ON \
     -DWITH_TGAIMAGECONVERTER=ON \
     -DWITH_TGAIMPORTER=ON \
     -DWITH_WAVAUDIOIMPORTER=ON \
@@ -96,7 +97,7 @@ cmake .. \
     -G Ninja
 
 ninja
-ninja install
+ninja install/strip
 ]]>
     </command>
     </hudson.tasks.Shell>

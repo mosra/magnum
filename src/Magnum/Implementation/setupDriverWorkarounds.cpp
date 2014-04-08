@@ -35,8 +35,8 @@ void Context::setupDriverWorkarounds() {
 
     #ifndef MAGNUM_TARGET_GLES
     /* This extension causes crash in GLSL compiler on AMD linux drivers 13.251 */
-    const std::string renderer = rendererString();
-    if(renderer.find("Advanced Micro Devices") != std::string::npos)
+    const std::string vendor = vendorString();
+    if(vendor.find("ATI Technologies Inc.") != std::string::npos)
         _setRequiredVersion(GL::ARB::explicit_uniform_location, None);
     #endif
 
@@ -79,6 +79,7 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::NV::draw_buffers, None);
     _setRequiredVersion(GL::NV::fbo_color_attachments, None); // ??
     _setRequiredVersion(GL::NV::read_buffer, None);
+    _setRequiredVersion(GL::NV::framebuffer_blit, None);
     _setRequiredVersion(GL::NV::framebuffer_multisample, None);
     _setRequiredVersion(GL::OES::texture_3D, None);
     _setRequiredVersion(GL::OES::vertex_array_object, None);

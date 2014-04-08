@@ -182,6 +182,7 @@ namespace GL {
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352
         _extension(GL,EXT,direct_state_access,          GL210,  None) // #353
         _extension(GL,EXT,texture_snorm,                GL300, GL310) // #365
+        _extension(GL,EXT,shader_integer_mix,           GL300,  None) // #437
         _extension(GL,EXT,debug_label,                  GL210,  None) // #439
         _extension(GL,EXT,debug_marker,                 GL210,  None) // #440
     } namespace GREMEDY {
@@ -211,6 +212,9 @@ namespace GL {
         _extension(GL,APPLE,framebuffer_multisample, GLES200, GLES300) // #78
         #endif
         _extension(GL,APPLE,texture_format_BGRA8888, GLES200,   None) // #79
+        #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,APPLE,texture_max_level,      GLES200,    None) // #80
+        #endif
     } namespace ARM {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82
@@ -245,6 +249,9 @@ namespace GL {
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
         #endif
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,shader_integer_mix,       GLES300,    None) // #161
+        #endif
     } namespace KHR {
         _extension(GL,KHR,debug,                    GLES200,    None) // #118
     } namespace NV {

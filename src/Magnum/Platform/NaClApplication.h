@@ -52,6 +52,10 @@ namespace pp {
     class Fullscreen;
 }
 
+#ifndef CORRADE_TARGET_NACL
+#error This header is available only on Google Chrome Native Client
+#endif
+
 namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
@@ -60,19 +64,68 @@ namespace Magnum { namespace Platform {
 Application running in [Google Chrome Native Client](https://developers.google.com/native-client/).
 Supports keyboard and mouse handling.
 
-This application library is available only in @ref CORRADE_TARGET_NACL "Native Client".
-It is built if `WITH_NACLAPPLICATION` is enabled in CMake. To use it, you need
-to request `%NaClApplication` component in CMake, add
+This application library is available only in
+@ref CORRADE_TARGET_NACL "Google Chrome Native Client", see respective sections
+in @ref building-corrade-cross-nacl "Corrade's" and @ref building-cross-nacl "Magnum's"
+building documentation. It is built if `WITH_NACLAPPLICATION` is enabled in
+CMake.
+
+## Bootstrap application
+
+Fully contained base application using @ref GlutApplication for desktop build
+and @ref NaClApplication for Native Client build along with full HTML markup
+and CMake setup is available in `base-nacl` branch of
+[Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
+download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-nacl.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-nacl.zip) file.
+After extracting the downloaded archive, you can do the desktop build in the
+same way as with @ref GlutApplication. For the Native Client build you also
+need to put the contents of toolchains repository from https://github.com/mosra/toolchains
+in `toolchains/` subdirectory. Don't forget to adapt `NACL_PREFIX` variable in
+`toolchains/generic/NaCl-newlib-x86-32.cmake` and
+`toolchains/generic/NaCl-newlib-x86-64.cmake` to path where your SDK is
+installed. Default is `/usr/nacl`. You may need to adapt also
+`NACL_TOOLCHAIN_PATH` so CMake is able to find the compiler.
+
+Then create build directories for x86-32 and x86-64 and run `cmake` and
+build/install commands in them. The toolchains need access to the platform
+file, so be sure to properly set **absolute** path to `toolchains/modules/`
+directory containing `Platform/NaCl.cmake`. Set `CMAKE_INSTALL_PREFIX` to
+location of your webserver to have the files installed in proper location (e.g.
+`/srv/http/nacl`).
+
+    mkdir build-nacl-x86-32 && cd build-nacl-x86-32
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
+        -DCMAKE_INSTALL_PREFIX=/srv/http/nacl
+    cmake --build .
+    cmake --build . --target install
+
+    mkdir build-nacl-x86-64 && cd build-nacl-x86-64
+    cmake .. \
+        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
+        -DCMAKE_INSTALL_PREFIX=/srv/http/nacl
+    cmake --build .
+    cmake --build . --target install
+
+You can then open `MyApplication` through your webserver in Chrome (e.g.
+`http://localhost/nacl/MyApplication.html`).
+
+## General usage
+
+For CMake you need to copy `FindOpenGLES2.cmake` from `modules/` directory in
+%Magnum source to `modules/` dir in your project (so it is able to find OpenGL
+ES). Request `%NaClApplication` component, add
 `${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
 @ref building and @ref cmake for more information.
 
-@section NaClApplication-usage Usage
-
-You need to implement at least @ref drawEvent() to be able to draw on the
-screen. The subclass must be then registered to NaCl API using
+In C++ code you need to implement at least @ref drawEvent() to be able to draw
+on the screen. The subclass must be then registered to NaCl API using
 @ref MAGNUM_NACLAPPLICATION_MAIN() macro. See @ref platform for more
 information.
 @code
@@ -86,13 +139,14 @@ If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 
-@section NaClApplication-html HTML markup and NMF file
+### HTML markup and NMF file
 
-You need to provide HTML markup for your application. Template one is below,
-you can modify it to your liking. The markup references two files,
-`NaClApplication.js` and `WebApplication.css`, both are in `Platform/`
-directory in the source tree and are also installed into `share/magnum/` inside
-your NaCl toolchain. Change `&lt;application&gt;` to name of your executable.
+You need to provide HTML markup for your application. Template one is below or
+in the bootstrap application, you can modify it to your liking. The markup
+references two files, `NaClApplication.js` and `WebApplication.css`, both are
+in `Platform/` directory in the source tree and are also installed into
+`share/magnum/` inside your NaCl toolchain. Change `&lt;application&gt;` to
+name of your executable.
 @code
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -135,9 +189,9 @@ If you target @ref CORRADE_TARGET_NACL_GLIBC "glibc", you need to specify also
 all additional dependencies. See [Native Client](https://developers.google.com/native-client/)
 documentation for more information.
 
-@section NaClApplication-console Redirecting output to Chrome's JavaScript console
+## Redirecting output to Chrome's JavaScript console
 
-The application redirects @ref Corrade::Utility::Debug "Debug",
+The application by default redirects @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
 output to JavaScript console. See also @ref Corrade::Utility::NaClConsoleStreamBuffer
 for more information.
@@ -347,7 +401,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 @brief %Configuration
 
 Double-buffered RGBA canvas with depth and stencil buffers.
-@see @ref NaClApplication(), @ref createContext()
+@see @ref NaClApplication(), @ref createContext(), @ref tryCreateContext()
 */
 class NaClApplication::Configuration {
     public:
@@ -428,33 +482,6 @@ class NaClApplication::InputEvent {
             Ctrl = PP_INPUTEVENT_MODIFIER_CONTROLKEY,   /**< Ctrl */
             Alt = PP_INPUTEVENT_MODIFIER_ALTKEY,        /**< Alt */
             Meta = PP_INPUTEVENT_MODIFIER_METAKEY,      /**< Meta */
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * @copybrief Button::Left
-             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Left "Button::Left"
-             *      instead.
-             */
-            LeftButton = PP_INPUTEVENT_MODIFIER_LEFTBUTTONDOWN,
-
-            /**
-             * @copybrief Button::Middle
-             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Middle "Button::Middle"
-             *      instead.
-             */
-            MiddleButton = PP_INPUTEVENT_MODIFIER_MIDDLEBUTTONDOWN,
-
-            /**
-             * @copybrief Button::Right
-             * @deprecated Use @ref Magnum::Platform::NaClApplication::InputEvent::buttons() "buttons()"
-             *      and @ref Magnum::Platform::NaClApplication::InputEvent::Button::Right "Button::Right"
-             *      instead.
-             */
-            RightButton = PP_INPUTEVENT_MODIFIER_RIGHTBUTTONDOWN,
-            #endif
-
             CapsLock = PP_INPUTEVENT_MODIFIER_CAPSLOCKKEY,  /**< Caps lock */
             NumLock = PP_INPUTEVENT_MODIFIER_NUMLOCKKEY     /**< Num lock */
         };
@@ -718,7 +745,9 @@ namespace Implementation {
 @brief Entry point for NaCl application
 @param application  Application class name
 
-See @ref Magnum::Platform::NaClApplication "Platform::NaClApplication" and
+See @ref Magnum::Platform::NaClApplication "Platform::NaClApplication" for
+usage information. This macro abstracts out platform-specific entry point code
+(the classic `main()` function cannot be used in NaCl). See
 @ref portability-applications for more information. When no other application
 header is included this macro is also aliased to `MAGNUM_APPLICATION_MAIN()`.
 */

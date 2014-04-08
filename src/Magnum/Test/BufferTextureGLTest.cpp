@@ -36,12 +36,14 @@ class BufferTextureGLTest: public AbstractOpenGLTester {
         explicit BufferTextureGLTest();
 
         void construct();
+        void bind();
         void setBuffer();
         void setBufferOffset();
 };
 
 BufferTextureGLTest::BufferTextureGLTest() {
     addTests({&BufferTextureGLTest::construct,
+              &BufferTextureGLTest::bind,
               &BufferTextureGLTest::setBuffer,
               &BufferTextureGLTest::setBufferOffset});
 }
@@ -56,6 +58,37 @@ void BufferTextureGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferTextureGLTest::bind() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it");
+        Buffer buffer;
+        constexpr UnsignedByte data[] = {
+            0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+            0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+        };
+        buffer.setData(data, BufferUsage::StaticDraw);
+        texture.setBuffer(BufferTextureFormat::R8UI, buffer);
+        CORRADE_VERIFY(false);
+    }
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
 
     MAGNUM_VERIFY_NO_ERROR();
 }

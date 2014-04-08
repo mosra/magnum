@@ -71,7 +71,7 @@ following:
 @extension{EXT,texture_shared_exponent}      | done
 @extension{EXT,framebuffer_sRGB}             | |
 @extension{EXT,draw_buffers2}                | |
-@extension{EXT,texture_integer}              | missing integer color specification functions
+@extension{EXT,texture_integer}              | done (GL 3.0 subset)
 @extension{EXT,transform_feedback}           | |
 @extension{NV,half_float}                    | done (GL 3.0 subset)
 @extension{NV,depth_buffer_float}            | |
@@ -100,7 +100,7 @@ following:
 @extension{ARB,provoking_vertex}             | done
 @extension{ARB,seamless_cube_map}            | done
 @extension{ARB,sync}                         | |
-@extension{ARB,texture_multisample}          | |
+@extension{ARB,texture_multisample}          | missing sample location queries and sample mask
 @extension{ARB,vertex_array_bgra}            | done
 
 @subsection opengl-support-33 OpenGL 3.3
@@ -187,7 +187,7 @@ following:
 @extension{ARB,stencil_texturing}            | |
 @extension{ARB,texture_buffer_range}         | done
 @extension{ARB,texture_query_levels}         | done (shading language only)
-@extension{ARB,texture_storage_multisample}  | |
+@extension{ARB,texture_storage_multisample}  | done
 @extension{ARB,texture_view}                 | |
 @extension{ARB,vertex_attrib_binding}        | |
 
@@ -201,7 +201,7 @@ following:
 @extension{ARB,buffer_storage}               | |
 @extension{ARB,clear_texture}                | |
 @extension{ARB,enhanced_layouts}             | done (shading language only)
-@extension{ARB,multi_bind}                   | |
+@extension{ARB,multi_bind}                   | only texture binding
 @extension{ARB,query_buffer_object}          | |
 @extension{ARB,texture_mirror_clamp_to_edge} | done
 @extension{ARB,texture_stencil8}             | done
@@ -222,6 +222,7 @@ following:
 @extension{EXT,texture_filter_anisotropic} (also in ES) | done
 @extension{EXT,texture_mirror_clamp}         | only GL 4.4 subset
 @extension{EXT,direct_state_access}          | done for implemented functionality
+@extension{EXT,shader_integer_mix} (also in ES) | done (shading language only)
 @extension2{EXT,debug_label} (also in ES)    | missing pipeline, transform feedback and sampler label
 @extension2{EXT,debug_marker} (also in ES)   | missing marker groups
 @extension{GREMEDY,string_marker}            | done
@@ -244,6 +245,7 @@ supported.
 @es_extension{ANGLE,framebuffer_multisample} | done
 @es_extension{ANGLE,depth_texture}           | done
 @es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
+@es_extension{APPLE,texture_max_level}       | done
 @es_extension{ARM,rgba8}                     | done
 @es_extension{EXT,texture_type_2_10_10_10_REV} | done
 @es_extension{EXT,discard_framebuffer}       | done
@@ -324,7 +326,8 @@ add any performance gains, is not supported in %Magnum. See also
     with serious performance drops. Multisampling is far superior solution.
 -   Fixed precision data types (`GL_FIXED` in OpenGL ES) are not supported, as
     they occupy the same memory as floats and they aren't faster than floats on
-    current hardware anymore.
+    current hardware anymore. They are also not available in WebGL or desktop
+    GL.
 -   Shader compiler is assumed to be present (`GL_SHADER_COMPILER` returning
     true), as all desktop GL implementations and also ES3 are required to
     support it.

@@ -46,6 +46,7 @@ if(MAGNUM_BUILD_DEPRECATED)
 endif()
 
 add_library(MagnumText ${SHARED_OR_STATIC} ${MagnumText_SRCS})
+set_target_properties(MagnumText PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(MagnumText PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")

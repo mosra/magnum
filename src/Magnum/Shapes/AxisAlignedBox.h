@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::AxisAlignedBox, typedef Magnum::Shapes::AxisAlignedBox2D, Magnum::Shapes.:AxisAlignedBox3D
+ * @brief Class @ref Magnum::Shapes::AxisAlignedBox, typedef @ref Magnum::Shapes::AxisAlignedBox2D, @ref Magnum::Shapes.:AxisAlignedBox3D
  */
 
 #include "Magnum/DimensionTraits.h"
@@ -40,7 +40,7 @@ namespace Magnum { namespace Shapes {
 @brief Axis-aligned box
 
 See @ref shapes for brief introduction.
-@see AxisAlignedBox2D, AxisAlignedBox3D
+@see @ref AxisAlignedBox2D, @ref AxisAlignedBox3D
 @todo Assert for rotation
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AxisAlignedBox {

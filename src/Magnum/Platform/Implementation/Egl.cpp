@@ -1,5 +1,3 @@
-#ifndef Magnum_Swizzle_h
-#define Magnum_Swizzle_h
 /*
     This file is part of Magnum.
 
@@ -25,32 +23,32 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @file
- * @brief Function @ref Magnum::swizzle()
- * @deprecated Use @ref Math/Swizzle.h instead.
- */
-#endif
+#include "Egl.h"
 
-#include "Magnum/Math/Swizzle.h"
-#include "Magnum/Color.h"
+namespace Magnum { namespace Platform { namespace Implementation {
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-namespace Magnum {
+const char* eglErrorString(const EGLint error) {
+    switch(error) {
+        #define _error(name) case name: return #name;
+        _error(EGL_SUCCESS)
+        _error(EGL_NOT_INITIALIZED)
+        _error(EGL_BAD_ACCESS)
+        _error(EGL_BAD_ALLOC)
+        _error(EGL_BAD_ATTRIBUTE)
+        _error(EGL_BAD_CONTEXT)
+        _error(EGL_BAD_CONFIG)
+        _error(EGL_BAD_CURRENT_SURFACE)
+        _error(EGL_BAD_DISPLAY)
+        _error(EGL_BAD_SURFACE)
+        _error(EGL_BAD_MATCH)
+        _error(EGL_BAD_PARAMETER)
+        _error(EGL_BAD_NATIVE_PIXMAP)
+        _error(EGL_BAD_NATIVE_WINDOW)
+        _error(EGL_CONTEXT_LOST)
+        #undef _error
+    }
 
-/**
-@copybrief Math::swizzle()
-@deprecated Use @ref Magnum::Math::swizzle() "Math::swizzle()" instead.
-*/
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<char ...components, class T> constexpr CORRADE_DEPRECATED("use Math::swizzle() instead") typename Math::Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector);
-#else
-using Math::swizzle;
-#endif
-
+    return "EGL_(invalid)";
 }
-#else
-#error this header is available only on deprecated build
-#endif
 
-#endif
+}}}

@@ -123,6 +123,7 @@ template<> Int AbstractQuery::result<Int>() {
     return result;
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
@@ -150,6 +151,7 @@ template<> Long AbstractQuery::result<Long>() {
     #endif
     return result;
 }
+#endif
 #endif
 
 void AbstractQuery::begin(GLenum target) {

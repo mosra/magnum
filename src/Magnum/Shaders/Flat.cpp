@@ -57,16 +57,17 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     Version version = Context::current()->supportedVersion(vs);
 
     Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(rs.get("Flat.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShader(vert);
     attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES

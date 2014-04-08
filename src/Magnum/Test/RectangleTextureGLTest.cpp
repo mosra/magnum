@@ -36,17 +36,20 @@
 
 namespace Magnum { namespace Test {
 
-class TextureGLTest: public AbstractOpenGLTester {
+class RectangleTextureGLTest: public AbstractOpenGLTester {
     public:
-        explicit TextureGLTest();
+        explicit RectangleTextureGLTest();
 
         void construct();
+        void bind();
+
         void sampling();
+        void samplingBorderInteger();
+
         void storage();
 
         void image();
         void imageBuffer();
-
         void subImage();
         void subImageBuffer();
 
@@ -54,22 +57,26 @@ class TextureGLTest: public AbstractOpenGLTester {
         void invalidateSubImage();
 };
 
-TextureGLTest::TextureGLTest() {
-    addTests({&TextureGLTest::construct,
-              &TextureGLTest::sampling,
-              &TextureGLTest::storage,
+RectangleTextureGLTest::RectangleTextureGLTest() {
+    addTests({&RectangleTextureGLTest::construct,
+              &RectangleTextureGLTest::bind,
 
-              &TextureGLTest::image,
-              &TextureGLTest::imageBuffer,
+              &RectangleTextureGLTest::sampling,
+              &RectangleTextureGLTest::samplingBorderInteger,
 
-              &TextureGLTest::subImage,
-              &TextureGLTest::subImageBuffer,
+              &RectangleTextureGLTest::storage,
 
-              &TextureGLTest::invalidateImage,
-              &TextureGLTest::invalidateSubImage});
+              &RectangleTextureGLTest::image,
+              &RectangleTextureGLTest::imageBuffer,
+
+              &RectangleTextureGLTest::subImage,
+              &RectangleTextureGLTest::subImageBuffer,
+
+              &RectangleTextureGLTest::invalidateImage,
+              &RectangleTextureGLTest::invalidateSubImage});
 }
 
-void TextureGLTest::construct() {
+void RectangleTextureGLTest::construct() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -83,7 +90,34 @@ void TextureGLTest::construct() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-void TextureGLTest::sampling() {
+void RectangleTextureGLTest::bind() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setWrapping(Sampler::Wrapping::ClampToEdge);
+        CORRADE_VERIFY(false);
+    }
+    #endif
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RectangleTextureGLTest::sampling() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -97,7 +131,21 @@ void TextureGLTest::sampling() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-void TextureGLTest::storage() {
+void RectangleTextureGLTest::samplingBorderInteger() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    RectangleTexture a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    RectangleTexture b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RectangleTextureGLTest::storage() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -111,7 +159,7 @@ void TextureGLTest::storage() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-void TextureGLTest::image() {
+void RectangleTextureGLTest::image() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -135,7 +183,7 @@ void TextureGLTest::image() {
        std::vector<UnsignedByte>(data, data + 16), TestSuite::Compare::Container);
 }
 
-void TextureGLTest::imageBuffer() {
+void RectangleTextureGLTest::imageBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -160,7 +208,7 @@ void TextureGLTest::imageBuffer() {
         std::vector<UnsignedByte>(data, data+16), TestSuite::Compare::Container);
 }
 
-void TextureGLTest::subImage() {
+void RectangleTextureGLTest::subImage() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -191,7 +239,7 @@ void TextureGLTest::subImage() {
     }), TestSuite::Compare::Container);
 }
 
-void TextureGLTest::subImageBuffer() {
+void RectangleTextureGLTest::subImageBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -223,7 +271,7 @@ void TextureGLTest::subImageBuffer() {
     }), TestSuite::Compare::Container);
 }
 
-void TextureGLTest::invalidateImage() {
+void RectangleTextureGLTest::invalidateImage() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -234,7 +282,7 @@ void TextureGLTest::invalidateImage() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-void TextureGLTest::invalidateSubImage() {
+void RectangleTextureGLTest::invalidateSubImage() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
@@ -247,4 +295,4 @@ void TextureGLTest::invalidateSubImage() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::TextureGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::RectangleTextureGLTest)

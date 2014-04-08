@@ -26,6 +26,8 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/MultisampleTexture.h"
+#include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -37,18 +39,11 @@ class MultisampleTextureGLTest: public AbstractOpenGLTester {
         void construct2D();
         void construct2DArray();
 
+        void bind2D();
+        void bind2DArray();
+
         void storage2D();
         void storage2DArray();
-
-        void image2D();
-        void image2DBuffer();
-        void image2DArray();
-        void image2DArrayBuffer();
-
-        void subImage2D();
-        void subImage2DBuffer();
-        void subImage2DArray();
-        void subImage2DArrayBuffer();
 
         void invalidateImage2D();
         void invalidateImage2DArray();
@@ -61,18 +56,11 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
     addTests({&MultisampleTextureGLTest::construct2D,
               &MultisampleTextureGLTest::construct2DArray,
 
+              &MultisampleTextureGLTest::bind2D,
+              &MultisampleTextureGLTest::bind2DArray,
+
               &MultisampleTextureGLTest::storage2D,
               &MultisampleTextureGLTest::storage2DArray,
-
-              &MultisampleTextureGLTest::image2D,
-              &MultisampleTextureGLTest::image2DBuffer,
-              &MultisampleTextureGLTest::image2DArray,
-              &MultisampleTextureGLTest::image2DArrayBuffer,
-
-              &MultisampleTextureGLTest::subImage2D,
-              &MultisampleTextureGLTest::subImage2DBuffer,
-              &MultisampleTextureGLTest::subImage2DArray,
-              &MultisampleTextureGLTest::subImage2DArrayBuffer,
 
               &MultisampleTextureGLTest::invalidateImage2D,
               &MultisampleTextureGLTest::invalidateImage2DArray,
@@ -109,102 +97,126 @@ void MultisampleTextureGLTest::construct2DArray() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+void MultisampleTextureGLTest::bind2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+
+    MultisampleTexture2D texture;
+
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
+        CORRADE_VERIFY(false);
+    }
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void MultisampleTextureGLTest::bind2DArray() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+
+    MultisampleTexture2DArray texture;
+
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
+        CORRADE_VERIFY(false);
+    }
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
 void MultisampleTextureGLTest::storage2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
-    CORRADE_SKIP("Not implemented yet.");
+    MultisampleTexture2D texture;
+    texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(texture.imageSize(), Vector2i(16, 16));
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void MultisampleTextureGLTest::storage2DArray() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
-    CORRADE_SKIP("Not implemented yet.");
-}
+    MultisampleTexture2DArray texture;
+    texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
 
-void MultisampleTextureGLTest::image2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_SKIP("Not implemented yet.");
-}
+    CORRADE_COMPARE(texture.imageSize(), Vector3i(16, 16, 5));
 
-void MultisampleTextureGLTest::image2DBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::image2DArray() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::image2DArrayBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2DBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2DArray() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
-}
-
-void MultisampleTextureGLTest::subImage2DArrayBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
-
-    CORRADE_SKIP("Not implemented yet.");
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void MultisampleTextureGLTest::invalidateImage2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
-    CORRADE_SKIP("Multisample storage is not implemented yet.");
+    MultisampleTexture2D texture;
+    texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
+    texture.invalidateImage();
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void MultisampleTextureGLTest::invalidateImage2DArray() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
-    CORRADE_SKIP("Multisample storage is not implemented yet.");
+    MultisampleTexture2DArray texture;
+    texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
+    texture.invalidateImage();
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void MultisampleTextureGLTest::invalidateSubImage2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
-    CORRADE_SKIP("Multisample storage is not implemented yet.");
+    MultisampleTexture2D texture;
+    texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
+    texture.invalidateSubImage({3, 4}, {5, 6});
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void MultisampleTextureGLTest::invalidateSubImage2DArray() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
-    CORRADE_SKIP("Multisample storage is not implemented yet.");
+    MultisampleTexture2DArray texture;
+    texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
+    texture.invalidateSubImage({3, 4, 1}, {5, 6, 3});
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 }}

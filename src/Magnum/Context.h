@@ -107,7 +107,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref flags()
+         * @see @ref Flags, @ref flags(), @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
         enum class Flag: GLint {
             /**
@@ -123,13 +123,21 @@ class MAGNUM_EXPORT Context {
 
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Context with robust buffer access
+             * Context with robust access
              * @requires_extension %Extension @extension{ARB,robustness}
              * @requires_es_extension %Extension @es_extension{EXT,robustness}
              * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
              */
+            RobustAccess = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * @copybrief Context::Flag::RobustAccess
+             * @deprecated Use @ref Magnum::Context::Flag::RobustAccess "Context::Flag::RobustAccess" instead.
+             */
             Robustness = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB
+            #endif
             #endif
         };
 
@@ -236,6 +244,19 @@ class MAGNUM_EXPORT Context {
          *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
         std::vector<std::string> shadingLanguageVersionStrings() const;
+
+        /**
+         * @brief Extension strings
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenGL calls. Note that this function returns list of all extensions
+         * reported by the driver (even those not supported by %Magnum), see
+         * @ref supportedExtensions(), @ref Extension::extensions() or
+         * @ref isExtensionSupported() for alternatives.
+         * @see @fn_gl{Get} with @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString}
+         *      with @def_gl{EXTENSIONS}
+         */
+        std::vector<std::string> extensionStrings() const;
 
         /** @brief Context flags */
         Flags flags() const { return _flags; }
@@ -385,6 +406,9 @@ class MAGNUM_EXPORT Context {
 
         Implementation::State* _state;
 };
+
+/** @debugoperator{Magnum::Context} */
+MAGNUM_EXPORT Debug operator<<(Debug debug, Context::Flag value);
 
 /** @hideinitializer
 @brief Assert that given OpenGL version is supported

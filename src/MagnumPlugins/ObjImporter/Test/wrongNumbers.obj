@@ -1,0 +1,22 @@
+o WrongFloat
+v 1 bleh 2
+p 1
+
+o WrongInteger
+v 1 0 2
+p bleh
+
+o PositionIndexOutOfRange
+v 1 0 2
+# Should be 3
+p 1
+
+o TextureIndexOutOfRange
+v 1 0 2
+vt 0 1
+# Should be 4/1
+p 4/2
+
+o ZeroIndex
+v 1 0 2
+p 0

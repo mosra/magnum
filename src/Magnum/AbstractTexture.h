@@ -49,20 +49,31 @@ Encapsulates one OpenGL texture object. See @ref Texture, @ref CubeMapTexture
 and @ref CubeMapTextureArray documentation for more information and usage
 examples.
 
+@section AbstractTexture-webgl-restrictions WebGL restrictions
+
+@ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on type of data
+submitted to @ref Texture::setSubImage() "*Texture::setSubImage()", see its
+documentation for details.
+
 @section AbstractTexture-performance-optimization Performance optimizations and security
 
-The engine tracks currently bound textures in all available layers to avoid
-unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. %Texture
-configuration functions use dedicated highest available texture layer to not
-affect active bindings in user layers. %Texture limits and
+The engine tracks currently bound textures in all available texture units to
+avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
+%Texture configuration functions use dedicated highest available texture unit
+to not affect active bindings in user units. %Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
 repeated queries don't result in repeated @fn_gl{Get} calls.
 
-If extension @extension{EXT,direct_state_access} is available, @ref bind() uses
-DSA function to avoid unnecessary calls to @fn_gl{ActiveTexture}. Also all
-texture configuration and data updating functions use DSA functions to avoid
-unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
-respective function documentation for more information.
+If extension @extension{ARB,multi_bind} is available, @ref bind() uses
+@fn_gl{BindTextures} to avoid unnecessary calls to @fn_gl{ActiveTexture}.
+Otherwise, if extension @extension{EXT,direct_state_access} is available,
+@ref bind() uses @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+function.
+
+In addition, if extension @extension{EXT,direct_state_access} is available,
+also all texture configuration and data updating functions use DSA functions
+to avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
+See respective function documentation for more information.
 
 If extension @extension{ARB,robustness} is available, image reading operations
 (such as @ref Texture::image()) are protected from buffer overflow. However, if
@@ -72,7 +83,7 @@ there isn't any function combining both features.
 
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
-dedicated layers, not occupied by other textures. First configure the texture
+dedicated units, not occupied by other textures. First configure the texture
 and *then* set the data, so OpenGL can optimize them to match the settings. To
 avoid redundant consistency checks and memory reallocations when updating
 texture data, set texture storage at once using @ref Texture::setStorage() "setStorage()"
@@ -85,7 +96,7 @@ OpenGL ES 3.0 or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
 available, the feature is emulated with sequence of @ref Texture::setImage() "setImage()"
 calls.
 
-You can use functions @ref Texture::invalidateImage() and
+You can use functions @ref Texture::invalidateImage() "invalidateImage()" and
 @ref Texture::invalidateSubImage() "invalidateSubImage()" if you don't need
 texture data anymore to avoid unnecessary memory operations performed by OpenGL
 in order to preserve the data. If running on OpenGL ES or extension
@@ -103,6 +114,10 @@ functions do nothing.
 @todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
 @todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
 @todo Query for immutable levels (@extension{ARB,ES3_compatibility})
+@bug If using @extension{ARB,multi_bind} and the texture is bound right after
+    construction, the @fn_gl{BindTextures} call will fail with
+    Renderer::Error::InvalidOperation, because the texture doesn't yet have
+    associated target
 */
 class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend struct Implementation::TextureState;
@@ -115,15 +130,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      instead.
          */
         static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxLayers();
-        #endif
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief Shader::maxCombinedTextureImageUnits()
-         * @deprecated Use @ref Magnum::Shader::maxCombinedTextureImageUnits() "Shader::maxCombinedTextureImageUnits()"
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxSupportedLayerCount();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -162,18 +168,46 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         /**
-         * @brief Destructor
+         * @brief Unbind any texture from given texture unit
          *
-         * Deletes associated OpenGL texture.
-         * @see @fn_gl{DeleteTextures}
+         * If @extension{ARB,multi_bind} (part of OpenGL 4.4) or
+         * @extension{EXT,direct_state_access} is not available, the texture
+         * unit is made active before binding the texture.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bind(), @ref Shader::maxCombinedTextureImageUnits(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture}, @fn_gl{BindTextures}
+         *      or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
-        ~AbstractTexture();
+        static void unbind(Int textureUnit);
+
+        /**
+         * @brief Bind textures to given range of texture units
+         *
+         * Binds first texture in the list to @p firstTextureUnit, second to
+         * `firstTextureUnit + 1` etc. If any texture is `nullptr`, given
+         * texture unit is unbound. If @extension{ARB,multi_bind} (part of
+         * OpenGL 4.4) is not available, the feature is emulated with sequence
+         * of @ref bind(Int) / @ref unbind() calls.
+         * @see @fn_gl{BindTextures}, eventually @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         */
+        static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
 
         /** @brief Copying is not allowed */
         AbstractTexture(const AbstractTexture&) = delete;
 
         /** @brief Move constructor */
         AbstractTexture(AbstractTexture&& other) noexcept;
+
+        /**
+         * @brief Destructor
+         *
+         * Deletes associated OpenGL texture.
+         * @see @fn_gl{DeleteTextures}
+         */
+        ~AbstractTexture();
 
         /** @brief Copying is not allowed */
         AbstractTexture& operator=(const AbstractTexture&) = delete;
@@ -211,19 +245,20 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief Bind texture for rendering
+         * @brief Bind texture to given texture unit
          *
-         * Sets current texture as active in given layer. Note that only one
-         * texture can be bound to given layer. If @extension{EXT,direct_state_access}
-         * is not available, the layer is made active before binding the
-         * texture.
+         * If @extension{ARB,multi_bind} (part of OpenGL 4.4) or
+         * @extension{EXT,direct_state_access} is not available, the texture
+         * unit is made active before binding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref maxLayers(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
-         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         * @see @ref bind(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref unbind(), @ref Shader::maxCombinedTextureImageUnits(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture}, @fn_gl{BindTextures}
+         *      or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
-        void bind(Int layer);
+        void bind(Int textureUnit);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -234,12 +269,18 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         explicit AbstractTexture(GLenum target);
 
-        /* Unlike bind() this also sets the binding layer as active */
+        /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();
 
+        #ifndef MAGNUM_TARGET_GLES2
+        void setBaseLevel(Int level);
+        #endif
+        void setMaxLevel(Int level);
         void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
         void setMagnificationFilter(Sampler::Filter filter);
         void setBorderColor(const Color4& color);
+        void setBorderColor(const Vector4i& color);
+        void setBorderColor(const Vector4ui& color);
         void setMaxAnisotropy(Float anisotropy);
         void invalidateImage(Int level);
         void generateMipmap();
@@ -252,24 +293,36 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         GLenum _target;
 
     private:
-        void MAGNUM_LOCAL bindImplementationDefault(GLint layer);
+        static void MAGNUM_LOCAL unbindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL bindImplementationDSA(GLint layer);
+        static void MAGNUM_LOCAL unbindImplementationMulti(GLint textureUnit);
+        static void MAGNUM_LOCAL unbindImplementationDSA(GLint textureUnit);
+        #endif
+
+        static void MAGNUM_LOCAL bindImplementationFallback(GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+        #endif
+
+        void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL bindImplementationMulti(GLint textureUnit);
+        void MAGNUM_LOCAL bindImplementationDSA(GLint textureUnit);
         #endif
 
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
-        #endif
-
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLfloat value);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
-        #endif
-
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLfloat* values);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLint* values);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLint* values);
         #endif
 
         void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
@@ -301,6 +354,16 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+
+        void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -399,6 +462,8 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 
     static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
 
+    static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedSampleLocations);
+
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference2D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage2D& image);
@@ -433,6 +498,8 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     static void setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping);
 
     static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+
+    static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedSampleLocations);
 
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference3D& image);
     #ifndef MAGNUM_TARGET_GLES2

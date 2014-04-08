@@ -674,82 +674,94 @@ enum class TextureFormat: GLenum {
 
     #ifndef MAGNUM_TARGET_GLES
     /**
-     * Compressed red channel, normalized unsigned.
+     * Compressed red channel, normalized unsigned. **Not available on
+     * multisample textures.**
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
      * @requires_gl Generic texture compression is not available in OpenGL ES.
      */
     CompressedRed = GL_COMPRESSED_RED,
 
     /**
-     * Compressed red and green channel, normalized unsigned.
+     * Compressed red and green channel, normalized unsigned. **Not available
+     * on multisample textures.**
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
      * @requires_gl Generic texture compression is not available in OpenGL ES.
      */
     CompressedRG = GL_COMPRESSED_RG,
 
     /**
-     * Compressed RGB, normalized unsigned.
+     * Compressed RGB, normalized unsigned. **Not available on multisample
+     * textures.**
      * @requires_gl Generic texture compression is not available in OpenGL ES.
      */
     CompressedRGB = GL_COMPRESSED_RGB,
 
     /**
-     * Compressed RGBA, normalized unsigned.
+     * Compressed RGBA, normalized unsigned. **Not available on multisample
+     * textures.**
      * @requires_gl Generic texture compression is not available in OpenGL ES.
      */
     CompressedRGBA = GL_COMPRESSED_RGBA,
 
     /**
-     * RTGC compressed red channel, normalized unsigned.
+     * RTGC compressed red channel, normalized unsigned. **Not available on
+     * multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedRedRtgc1 = GL_COMPRESSED_RED_RGTC1,
 
     /**
-     * RTGC compressed red and green channel, normalized unsigned.
+     * RTGC compressed red and green channel, normalized unsigned. **Not
+     * available on multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedRGRgtc2 = GL_COMPRESSED_RG_RGTC2,
 
     /**
-     * RTGC compressed red channel, normalized signed.
+     * RTGC compressed red channel, normalized signed. **Not available on
+     * multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedSignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
 
     /**
-     * RTGC compressed red and green channel, normalized signed.
+     * RTGC compressed red and green channel, normalized signed. **Not
+     * available on multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedSignedRGRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
     /**
-     * BPTC compressed RGB, unsigned float.
+     * BPTC compressed RGB, unsigned float. **Not available on multisample
+     * textures.**
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */
     CompressedRGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
 
     /**
-     * BPTC compressed RGB, signed float.
+     * BPTC compressed RGB, signed float. **Not available on multisample
+     * textures.**
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */
     CompressedRGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
 
     /**
-     * BPTC compressed RGBA, normalized unsigned.
+     * BPTC compressed RGBA, normalized unsigned. **Not available on
+     * multisample textures.**
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */
     CompressedRGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
 
     /**
-     * BPTC compressed sRGBA, normalized unsigned.
+     * BPTC compressed sRGBA, normalized unsigned. **Not available on
+     * multisample textures.**
      * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */

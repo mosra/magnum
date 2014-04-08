@@ -41,6 +41,8 @@ class ShapeTest: public TestSuite::Tester {
         ShapeTest();
 
         void clean();
+        void collides();
+        void collision();
         void firstCollision();
         void shapeGroup();
 };
@@ -52,6 +54,8 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
 ShapeTest::ShapeTest() {
     addTests<ShapeTest>({&ShapeTest::clean,
+              &ShapeTest::collides,
+              &ShapeTest::collision,
               &ShapeTest::firstCollision,
               &ShapeTest::shapeGroup});
 }
@@ -96,6 +100,88 @@ void ShapeTest::clean() {
     CORRADE_VERIFY(b.isDirty());
 }
 
+void ShapeTest::collides() {
+    Scene3D scene;
+    ShapeGroup3D shapes;
+    Object3D a(&scene);
+    Shape<Shapes::Sphere3D> aShape(a, {{1.0f, -2.0f, 3.0f}, 1.5f}, &shapes);
+
+    {
+        /* Collision with point inside the sphere */
+        Shape<Shapes::Point3D> aShape2(a, {{1.0f, -2.0f, 3.0f}}, &shapes);
+        shapes.setClean();
+        CORRADE_VERIFY(aShape.collides(aShape2));
+    } {
+        /* No collision with point inside the sphere, but not in the same group */
+        ShapeGroup3D shapes2;
+        Shape<Shapes::Point3D> aShape3(a, {{1.0f, -2.0f, 3.0f}}, &shapes2);
+        shapes2.setClean();
+        CORRADE_VERIFY(!aShape.collides(aShape3));
+    } {
+        CORRADE_EXPECT_FAIL("Should cross-scene collision work or not?");
+        /* No collision with point inside the sphere, but not in the same scene */
+        Scene3D scene2;
+        Object3D c(&scene2);
+        Shape<Shapes::Point3D> cShape(c, {{1.0f, -2.0f, 3.0f}}, &shapes);
+        shapes.setClean();
+        CORRADE_VERIFY(!aShape.collides(cShape));
+    } {
+        /* No collision with point outside of the sphere */
+        Object3D b(&scene);
+        Shape<Shapes::Point3D> bShape(b, {{3.0f, -2.0f, 3.0f}}, &shapes);
+        shapes.setClean();
+        CORRADE_VERIFY(!aShape.collides(bShape));
+
+        /* Move point inside the sphere -- collision */
+        b.translate(Vector3::xAxis(-1.0f));
+        shapes.setClean();
+        CORRADE_VERIFY(aShape.collides(bShape));
+    }
+}
+
+void ShapeTest::collision() {
+    Scene3D scene;
+    ShapeGroup3D shapes;
+    Object3D a(&scene);
+    Shape<Shapes::Sphere3D> aShape(a, {{1.0f, -2.0f, 3.0f}, 1.5f}, &shapes);
+
+    {
+        /* Collision with point inside the sphere */
+        Shape<Shapes::Point3D> aShape2(a, {{1.0f, -2.0f, 3.0f}}, &shapes);
+        shapes.setClean();
+        const Collision3D collision = aShape.collision(aShape2);
+        CORRADE_VERIFY(collision);
+        CORRADE_COMPARE(collision.position(), Vector3(1.0f, -2.0f, 3.0f));
+    } {
+        /* No collision with point inside the sphere, but not in the same group */
+        ShapeGroup3D shapes2;
+        Shape<Shapes::Point3D> aShape3(a, {{1.0f, -2.0f, 3.0f}}, &shapes2);
+        shapes2.setClean();
+        CORRADE_VERIFY(!aShape.collision(aShape3));
+    } {
+        CORRADE_EXPECT_FAIL("Should cross-scene collision work or not?");
+        /* No collision with point inside the sphere, but not in the same scene */
+        Scene3D scene2;
+        Object3D c(&scene2);
+        Shape<Shapes::Point3D> cShape(c, {{1.0f, -2.0f, 3.0f}}, &shapes);
+        shapes.setClean();
+        CORRADE_VERIFY(!aShape.collision(cShape));
+    } {
+        /* No collision with point outside of the sphere */
+        Object3D b(&scene);
+        Shape<Shapes::Point3D> bShape(b, {{3.0f, -2.0f, 3.0f}}, &shapes);
+        shapes.setClean();
+        CORRADE_VERIFY(!aShape.collision(bShape));
+
+        /* Move point inside the sphere -- collision */
+        b.translate(Vector3::xAxis(-1.0f));
+        shapes.setClean();
+        const Collision3D collision = aShape.collision(bShape);
+        CORRADE_VERIFY(collision);
+        CORRADE_COMPARE(collision.position(), Vector3(2.0f, -2.0f, 3.0f));
+    }
+}
+
 void ShapeTest::firstCollision() {
     Scene3D scene;
     ShapeGroup3D shapes;
@@ -105,9 +191,6 @@ void ShapeTest::firstCollision() {
 
     Object3D b(&scene);
     Shape<Shapes::Point3D> bShape(b, {{3.0f, -2.0f, 3.0f}}, &shapes);
-
-    Object3D c(&scene);
-    Shape<Shapes::Composition3D> cShape(c, &shapes);
 
     /* No collisions initially */
     CORRADE_VERIFY(!shapes.firstCollision(aShape));

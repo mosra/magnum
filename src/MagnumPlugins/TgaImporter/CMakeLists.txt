@@ -33,7 +33,7 @@ set(TgaImporter_HEADERS
 add_library(TgaImporterObjects OBJECT ${TgaImporter_SRCS})
 set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 
-add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR}
+add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
     TgaImporter.conf
     $<TARGET_OBJECTS:TgaImporterObjects>
     pluginRegistration.cpp)

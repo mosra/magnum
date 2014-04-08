@@ -77,10 +77,12 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .generateMipmap();
 @endcode
 
-@attention Note that default configuration (if @ref setMinificationFilter() is
-    not called with another value) is to use mipmaps, so be sure to either call
-    @ref setMinificationFilter(), explicitly specify all mip levels with
-    @ref setStorage() and @ref setImage() or call @ref generateMipmap().
+@attention Note that default configuration is to use mipmaps. Be sure to either
+    reduce mip level count using @ref setBaseLevel() and @ref setMaxLevel(),
+    explicitly allocate all mip levels using @ref setStorage(), call
+    @ref generateMipmap() after uploading the base level to generate the rest
+    of the mip chain or call @ref setMinificationFilter() with another value to
+    disable mipmapping.
 
 In shader, the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
 `sampler1DShadow`/`sampler2DShadow`/`sampler3DShadow`,
@@ -183,16 +185,58 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation.
+         * is bound to some texture unit before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH}.
+         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
+         *      @def_gl{TEXTURE_DEPTH}
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         typename DimensionTraits<dimensions, Int>::VectorType imageSize(Int level) {
             return DataHelper<dimensions>::imageSize(*this, _target, level);
         }
         #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set base mip level
+         * @return Reference to self (for method chaining)
+         *
+         * Taken into account when generating mipmap using @ref generateMipmap()
+         * and when considering texture completeness when using mipmap
+         * filtering. Initial value is `0`.
+         * @see @ref setMaxLevel(), @ref setMinificationFilter(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BASE_LEVEL}
+         * @requires_gles30 Base level is always `0` in OpenGL ES 2.0.
+         */
+        Texture<dimensions>& setBaseLevel(Int level) {
+            AbstractTexture::setBaseLevel(level);
+            return *this;
+        }
+        #endif
+
+        /**
+         * @brief Set max mip level
+         * @return Reference to self (for method chaining)
+         *
+         * Taken into account when generating mipmap using @ref generateMipmap()
+         * and when considering texture completeness when using mipmap
+         * filtering. Initial value is `1000`, which is clamped to count of
+         * levels specified when using @ref setStorage().
+         * @see @ref setBaseLevel(), @ref setMinificationFilter(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_MAX_LEVEL}
+         * @requires_gles30 %Extension @es_extension{APPLE,texture_max_level},
+         *      otherwise the max level is always set to largest possible value
+         *      in OpenGL ES 2.0.
+         */
+        Texture<dimensions>& setMaxLevel(Int level) {
+            AbstractTexture::setMaxLevel(level);
+            return *this;
+        }
 
         /**
          * @brief Set minification filter
@@ -204,11 +248,13 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Sets filter used when the object pixel size is smaller than the
          * texture size. If @extension{EXT,direct_state_access} is not
-         * available, the texture is bound to some layer before the operation.
-         * Initial value is (@ref Sampler::Filter::Nearest, @ref Sampler::Mipmap::Linear).
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MIN_FILTER}
+         * available, the texture is bound to some texture unit before the
+         * operation. Initial value is {@ref Sampler::Filter::Nearest,
+         * @ref Sampler::Mipmap::Linear}.
+         * @see @ref setBaseLevel(), @ref setMaxLevel(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MIN_FILTER}
          */
         Texture<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
@@ -222,8 +268,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Sets filter used when the object pixel size is larger than largest
          * texture size. If @extension{EXT,direct_state_access} is not
-         * available, the texture is bound to some layer before the operation.
-         * Initial value is @ref Sampler::Filter::Linear.
+         * available, the texture is bound to some texture unit before the
+         * operation. Initial value is @ref Sampler::Filter::Linear.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MAG_FILTER}
@@ -238,11 +284,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param wrapping          Wrapping type for all texture dimensions
          * @return Reference to self (for method chaining)
          *
-         * Sets wrapping type for coordinates out of range (0, 1) for normal
-         * textures and (0, textureSizeInGivenDirection-1) for rectangle
-         * textures. If @extension{EXT,direct_state_access} is not available,
-         * the texture is bound to some layer before the operation. Initial
-         * value is @ref Sampler::Wrapping::Repeat.
+         * Sets wrapping type for coordinates out of range (0.0f, 1.0f). If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * @ref Sampler::Wrapping::Repeat.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
@@ -259,7 +304,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
          * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation. Initial value is
+         * is bound to some texture unit before the operation. Initial value is
          * `{0.0f, 0.0f, 0.0f, 0.0f}`.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
@@ -271,6 +316,34 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set border color for integer texture
+         * @return Reference to self (for method chaining)
+         *
+         * Border color for integer textures when wrapping is set to
+         * @ref Sampler::Wrapping::ClampToBorder. If @extension{EXT,direct_state_access}
+         * is not available, the texture is bound to some texture unit before
+         * the operation. Initial value is `{0, 0, 0, 0}`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         * @requires_gl Border is available only for float textures in OpenGL
+         *      ES.
+         */
+        Texture<dimensions>& setBorderColor(const Vector4ui& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+
+        /** @overload */
+        Texture<dimensions>& setBorderColor(const Vector4i& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set max anisotropy
          * @return Reference to self (for method chaining)
@@ -280,7 +353,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @extension{EXT,texture_filter_anisotropic} (desktop or ES) is not
          * available, this function does nothing. If
          * @extension{EXT,direct_state_access} is not available, the texture is
-         * bound to some layer before the operation.
+         * bound to some texture unit before the operation.
          * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
@@ -305,19 +378,22 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * allowed.
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation. If @extension{ARB,texture_storage}
-         * (part of OpenGL 4.2), OpenGL ES 3.0 or @es_extension{EXT,texture_storage}
-         * in OpenGL ES 2.0 is not available, the feature is emulated with
-         * sequence of @ref setImage() calls.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
+         * is bound to some texture unit before the operation. If
+         * @extension{ARB,texture_storage} (part of OpenGL 4.2), OpenGL ES 3.0
+         * or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
+         * available, the feature is emulated with sequence of @ref setImage()
+         * calls.
+         * @todo allow the user to specify ColorType explicitly to avoid
+         *      issues in WebGL (see setSubImage())
+         * @see @ref setMaxLevel(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
          *      eventually @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
+         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
         Texture<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::setStorage(*this, _target, levels, internalFormat, size);
@@ -335,7 +411,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @ref imageSize().
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation. If
+         * texture is bound to some texture unit before the operation. If
          * @extension{ARB,robustness} is available, the operation is protected
          * from buffer overflow. However, if both @extension{EXT,direct_state_access}
          * and @extension{ARB,robustness} are available, the DSA version is
@@ -379,7 +455,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @ref setStorage() and @ref setSubImage() instead.
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
@@ -413,7 +489,13 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
+         *
+         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref ColorType of
+         *      data passed in @p image must match the original one specified
+         *      in @ref setImage(). It means that you might not be able to use
+         *      @ref setStorage() as it uses implicit @ref ColorType value.
+         *
          * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexSubImage1D}/
          *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D} or
@@ -444,7 +526,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation.
+         * is bound to some texture unit before the operation.
          * @see setMinificationFilter(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}

@@ -36,20 +36,45 @@
 
 namespace Magnum { namespace Implementation {
 
-TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxLayers(0), maxMaxAnisotropy(0.0f), currentLayer(0)
+TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxTextureUnits(0), maxMaxAnisotropy(0.0f), currentTextureUnit(0)
     #ifndef MAGNUM_TARGET_GLES
     , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0), bufferOffsetAlignment(0)
     #endif
 {
+    /* Bind implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+
+        unbindImplementation = &AbstractTexture::unbindImplementationMulti;
+        bindMultiImplementation = &AbstractTexture::bindImplementationMulti;
+        bindImplementation = &AbstractTexture::bindImplementationMulti;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        /* Extension name added below */
+
+        unbindImplementation = &AbstractTexture::unbindImplementationDSA;
+        bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
+        bindImplementation = &AbstractTexture::bindImplementationDSA;
+
+    } else
+    #endif
+    {
+        unbindImplementation = &AbstractTexture::unbindImplementationDefault;
+        bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
+        bindImplementation = &AbstractTexture::bindImplementationDefault;
+    }
+
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-        bindImplementation = &AbstractTexture::bindImplementationDSA;
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterIuivImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterIivImplementation = &AbstractTexture::parameterImplementationDSA;
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSA;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
         getImageImplementation = &AbstractTexture::getImageImplementationDSA;
@@ -65,11 +90,12 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     } else
     #endif
     {
-        bindImplementation = &AbstractTexture::bindImplementationDefault;
         parameteriImplementation = &AbstractTexture::parameterImplementationDefault;
         parameterfImplementation = &AbstractTexture::parameterImplementationDefault;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES
+        parameterIuivImplementation = &AbstractTexture::parameterImplementationDefault;
+        parameterIivImplementation = &AbstractTexture::parameterImplementationDefault;
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDefault;
         #endif
         mipmapImplementation = &AbstractTexture::mipmapImplementationDefault;
@@ -153,6 +179,25 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* Storage implementation for multisample textures. The fallback doesn't
+       have DSA alternative, so it must be handled specially. */
+    if(context.isExtensionSupported<Extensions::GL::ARB::texture_storage_multisample>()) {
+        extensions.push_back(Extensions::GL::ARB::texture_storage_multisample::string());
+
+        if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
+            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
+        } else {
+            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
+            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
+        }
+    } else {
+        storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationFallback;
+        storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationFallback;
+    }
+    #endif
+
     /* Anisotropic filter implementation */
     if(context.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
         extensions.push_back(Extensions::GL::EXT::texture_filter_anisotropic::string());
@@ -160,10 +205,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
     } else setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 
-    /* Resize bindings array to hold all possible layers */
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxLayers);
-    CORRADE_INTERNAL_ASSERT(maxLayers > 0);
-    bindings.resize(maxLayers);
+    /* Resize bindings array to hold all possible texture units */
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
+    bindings.resize(maxTextureUnits);
 }
 
 TextureState::~TextureState() = default;

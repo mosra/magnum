@@ -41,7 +41,7 @@ option(WITH_FIND_MODULE "Install FindMagnum.cmake module into CMake's module dir
 # Parts of the library
 option(WITH_AUDIO "Build Audio library" OFF)
 option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
-cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_OBJIMPORTER" ON)
 cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" ON "NOT WITH_DEBUGTOOLS" ON)
 cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_SHAPES" ON)
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS" ON)
@@ -49,23 +49,35 @@ cmake_dependent_option(WITH_SHAPES "Build Shapes library" ON "NOT WITH_DEBUGTOOL
 option(WITH_TEXT "Build Text library" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 
-# Application libraries
+# NaCl-specific application libraries
 if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSNACLAPPLICATION "Build WindowlessNaClApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
-else()
+
+# Android-specific application libraries
+elseif(CORRADE_TARGET_ANDROID)
+    option(WITH_ANDROIDAPPLICATION "Build AndroidApplication library" OFF)
+
+# X11, GLX and EGL-specific application libraries
+elseif(CORRADE_TARGET_UNIX AND NOT APPLE)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_DISTANCEFIELDCONVERTER" ON)
     cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
+endif()
+
+# Platform-independent (almost) application libraries
+if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_ANDROID)
     cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 
-# Utilities (currently depending on WindowlessGlxApplication)
-if(UNIX OR CORRADE_TARGET_NACL)
+# Magnum Info (currently only using GLX or NaCl)
+if((CORRADE_TARGET_UNIX AND NOT APPLE) OR CORRADE_TARGET_NACL)
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
-if(UNIX)
+
+# Utilities (currently depending on WindowlessGlxApplication)
+if(CORRADE_TARGET_UNIX AND NOT APPLE)
     cmake_dependent_option(WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT TARGET_GLES" OFF)
     cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
 endif()
@@ -73,6 +85,7 @@ endif()
 # Plugins
 cmake_dependent_option(WITH_MAGNUMFONT "Build MagnumFont plugin" OFF "WITH_TEXT" OFF)
 cmake_dependent_option(WITH_MAGNUMFONTCONVERTER "Build MagnumFontConverter plugin" OFF "NOT MAGNUM_TARGET_GLES;WITH_TEXT" OFF)
+option(WITH_OBJIMPORTER "Build ObjImporter plugin" OFF)
 cmake_dependent_option(WITH_TGAIMAGECONVERTER "Build TgaImageConverter plugin" OFF "NOT WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(WITH_TGAIMPORTER "Build TgaImporter plugin" OFF "NOT WITH_MAGNUMFONT" ON)
 cmake_dependent_option(WITH_WAVAUDIOIMPORTER "Build WavAudioImporter plugin" OFF "WITH_AUDIO" OFF)
@@ -104,9 +117,15 @@ if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
     set(TARGET_GLES2 1)
 endif()
 
+# If targeting Android, set explicit OpenGL ES support. Decision between 2.0
+# and 3.0 is up to the user
+if(CORRADE_TARGET_ANDROID)
+    set(TARGET_GLES 1)
+endif()
+
 # NaCl newlib toolchain supports only static linking, dynamic linking is
-# meaningless on Emscripten
-if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN)
+# meaningless on Emscripten and too inconvenient on Android
+if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(BUILD_STATIC ON)
 endif()
 
@@ -123,7 +142,7 @@ else()
     find_package(OpenGLES3 REQUIRED)
 endif()
 
-# Configuration variables (saved later to corradeConfigure.h)
+# Configuration variables (saved later to configure.h)
 if(TARGET_GLES)
     set(MAGNUM_TARGET_GLES 1)
     if(TARGET_GLES2)
@@ -131,6 +150,9 @@ if(TARGET_GLES)
     else()
         set(MAGNUM_TARGET_GLES3 1)
     endif()
+endif()
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(MAGNUM_TARGET_WEBGL 1)
 endif()
 if(TARGET_DESKTOP_GLES)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
@@ -156,12 +178,18 @@ endif()
 include(CorradeLibSuffix)
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
-set(MAGNUM_PLUGINS_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
-set(MAGNUM_PLUGINS_FONT_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fonts)
-set(MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fontconverters)
-set(MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/imageconverters)
-set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
-set(MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_DEBUG_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
+set(MAGNUM_PLUGINS_RELEASE_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONT_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/audioimporters)
 set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/magnum)
 set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)

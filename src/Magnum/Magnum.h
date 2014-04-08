@@ -100,7 +100,7 @@ Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
 #undef MAGNUM_TARGET_GLES
 
 /**
-@brief OpenGL ES 2.0 target.
+@brief OpenGL ES 2.0 target
 
 Defined if the engine is built for OpenGL ES 2.0. Implies also
 @ref MAGNUM_TARGET_GLES.
@@ -110,7 +110,7 @@ Defined if the engine is built for OpenGL ES 2.0. Implies also
 #undef MAGNUM_TARGET_GLES2
 
 /**
-@brief OpenGL ES 3.0 target.
+@brief OpenGL ES 3.0 target
 
 Defined if the engine is built for OpenGL ES 3.0. Implies also
 @ref MAGNUM_TARGET_GLES.
@@ -124,10 +124,24 @@ Defined if the engine is built for OpenGL ES 3.0. Implies also
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0 emulated
 within standard desktop OpenGL. Implies also @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES2, @ref building
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3, @ref building
 */
 #define MAGNUM_TARGET_DESKTOP_GLES
 #undef MAGNUM_TARGET_DESKTOP_GLES
+
+/**
+@brief WebGL target
+
+Defined if the engine is built for WebGL (using Emscripten). WebGL is nearly
+equivalent to OpenGL ES 2.0, thus in most cases you don't need to treat it
+differently, but there are some
+[specific restrictions and features](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
+which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES and
+@ref MAGNUM_TARGET_GLES2.
+@see @ref CORRADE_TARGET_EMSCRIPTEN, @ref building
+*/
+#define MAGNUM_TARGET_WEBGL
+#undef MAGNUM_TARGET_WEBGL
 #endif
 
 /** @{ @name Basic type definitions
@@ -153,11 +167,21 @@ typedef std::uint32_t UnsignedInt;
 /** @brief Signed int (32bit) */
 typedef std::int32_t Int;
 
-/** @brief Unsigned long (64bit) */
+#ifndef MAGNUM_TARGET_WEBGL
+/**
+@brief Unsigned long (64bit)
+
+@attention 64-bit integers are not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
+*/
 typedef std::uint64_t UnsignedLong;
 
-/** @brief Signed long (64bit) */
+/**
+@brief Signed long (64bit)
+
+@attention 64-bit integers are not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
+*/
 typedef std::int64_t Long;
+#endif
 
 /** @brief Float (32bit) */
 typedef float Float;
@@ -208,14 +232,6 @@ typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Matrix2x2<Float> Matrix2x2;
 #else
 typedef Math::Matrix<2, Float> Matrix2x2;
-#endif
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Matrix2x2
-@deprecated Use @ref Magnum::Matrix2x2 "Matrix2x2" instead.
-*/
-typedef Math::Matrix<2, Float> Matrix2;
 #endif
 
 /**
@@ -387,14 +403,6 @@ typedef Math::Matrix2x2<Double> Matrix2x2d;
 typedef Math::Matrix<2, Double> Matrix2x2d;
 #endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Matrix2x2d
-@deprecated Use @ref Magnum::Matrix2x2d "Matrix2x2d" instead.
-*/
-typedef CORRADE_DEPRECATED("use Matrix2x2d instead") Math::Matrix<2, Double> Matrix2d;
-#endif
-
 /**
 @brief 3x3 double matrix
 
@@ -560,9 +568,6 @@ typedef BasicColor4<UnsignedByte> Color4ub;
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class ColorFormat: GLenum;
 enum class ColorType: GLenum;
-/** @todo Remove this when dropping backward compatibility */
-typedef ColorFormat ImageFormat;
-typedef ColorType ColorType;
 #endif
 
 class Context;
@@ -596,6 +601,7 @@ class Mesh;
 class MeshView;
 
 #ifndef MAGNUM_TARGET_GLES
+/* MultisampleTextureSampleLocations enum used only in the function */
 template<UnsignedInt> class MultisampleTexture;
 typedef MultisampleTexture<2> MultisampleTexture2D;
 typedef MultisampleTexture<3> MultisampleTexture2DArray;

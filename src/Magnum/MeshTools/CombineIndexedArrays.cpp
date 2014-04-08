@@ -56,26 +56,24 @@ std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> interleaveAndCombi
 
     /* Combine them */
     std::vector<UnsignedInt> combinedIndices;
-    std::tie(combinedIndices, interleavedArrays) = combineIndexArrays(interleavedArrays, stride);
+    std::tie(combinedIndices, interleavedArrays) = MeshTools::combineIndexArrays(interleavedArrays, stride);
     return {combinedIndices, interleavedArrays};
 }
 
-}
-
-std::vector<UnsignedInt> combineIndexArrays(const std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays) {
+std::vector<UnsignedInt> combineIndexArrays(const std::reference_wrapper<std::vector<UnsignedInt>>* const begin, const std::reference_wrapper<std::vector<UnsignedInt>>* const end) {
     /* Interleave and combine the arrays */
     std::vector<UnsignedInt> combinedIndices;
     std::vector<UnsignedInt> interleavedCombinedArrays;
     std::tie(combinedIndices, interleavedCombinedArrays) = Implementation::interleaveAndCombineIndexArrays(
         /* This will bite me hard once. */
-        reinterpret_cast<const std::reference_wrapper<const std::vector<UnsignedInt>>*>(arrays.begin()),
-        reinterpret_cast<const std::reference_wrapper<const std::vector<UnsignedInt>>*>(arrays.end()));
+        reinterpret_cast<const std::reference_wrapper<const std::vector<UnsignedInt>>*>(begin),
+        reinterpret_cast<const std::reference_wrapper<const std::vector<UnsignedInt>>*>(end));
 
     /* Update the original indices */
-    const UnsignedInt stride = arrays.size();
+    const UnsignedInt stride = end - begin;
     const UnsignedInt outputSize = interleavedCombinedArrays.size()/stride;
     for(UnsignedInt offset = 0; offset != stride; ++offset) {
-        auto& array = (arrays.begin()+offset)->get();
+        auto& array = (begin+offset)->get();
         CORRADE_INTERNAL_ASSERT(array.size() >= outputSize);
         array.resize(outputSize);
         for(UnsignedInt i = 0; i != outputSize; ++i)
@@ -83,6 +81,8 @@ std::vector<UnsignedInt> combineIndexArrays(const std::initializer_list<std::ref
     }
 
     return combinedIndices;
+}
+
 }
 
 namespace {
@@ -116,6 +116,7 @@ class IndexEqual {
 }
 
 std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> combineIndexArrays(const std::vector<UnsignedInt>& interleavedArrays, const UnsignedInt stride) {
+    CORRADE_ASSERT(stride != 0, "MeshTools::combineIndexArrays(): stride can't be zero", {});
     CORRADE_ASSERT(interleavedArrays.size() % stride == 0, "MeshTools::combineIndexArrays(): array size is not divisible by stride", {});
 
     /* Hash map with index combinations, containing just indices into

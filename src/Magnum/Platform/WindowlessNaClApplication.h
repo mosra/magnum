@@ -52,17 +52,26 @@ namespace Magnum { namespace Platform {
 Application for offscreen rendering running in
 [Google Chrome Native Client](https://developers.google.com/native-client/).
 
-This application library is available only in @ref CORRADE_TARGET_NACL "Native Client".
-It is built if `WITH_WINDOWLESSNACLAPPLICATION` is enabled in CMake. To use it,
-you need to request `%WindowlessNaClApplication` component in CMake, add
+This application library is available only in @ref CORRADE_TARGET_NACL "Native Client",
+see respective sections in @ref building-corrade-cross-nacl "Corrade's" and
+@ref building-cross-nacl "Magnum's" building documentation. It is built if
+`WITH_WINDOWLESSNACLAPPLICATION` is enabled in CMake.
+
+## Bootstrap application
+
+The usage is very similar to @ref NaClApplication, for which fully contained
+base application along with CMake setup is available, see its documentation for
+more information.
+
+## General Usage
+
+In CMake you need to request `%WindowlessNaClApplication` component, add
 `${MAGNUM_WINDOWLESSNACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSNACLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
 @ref building and @ref cmake for more information.
-
-@section WindowlessNaClApplication-usage Usage
 
 Place your code into @ref exec(). The subclass must be then registered to NaCl
 API using @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() macro. See @ref platform
@@ -78,7 +87,7 @@ If no other application header is included, this class is also aliased to
 `Platform::WindowlessApplication` and the macro is aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
 
-@section WindowlessNaClApplication-html HTML markup and NMF file
+### HTML markup and NMF file
 
 You need to provide HTML markup containing `&lt;embed&gt;` pointing to `*.nmf`
 file describing the application. See @ref NaClApplication for more information.
@@ -86,9 +95,9 @@ You may want to hide the `&lt;embed&gt;` (for example using CSS
 `visibility: hidden;`), as it probably won't display anything to default
 framebuffer.
 
-@section WindowlessNaClApplication-console Redirecting output to Chrome's JavaScript console
+## Redirecting output to Chrome's JavaScript console
 
-The application redirects @ref Corrade::Utility::Debug "Debug",
+The application by default redirects @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
 output to JavaScript console. See also @ref Corrade::Utility::NaClConsoleStreamBuffer
 for more information.
@@ -128,9 +137,17 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         /** @brief Moving is not allowed */
         WindowlessNaClApplication& operator=(WindowlessNaClApplication&&) = delete;
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
         /**
          * @brief Execute application
-         * @return Value for returning from `main()`.
+         * @return Value for returning from `main()`
+         *
+         * This function is not meant to be called from user code, see
+         * @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN() for usage information.
          */
         virtual int exec() = 0;
 
@@ -194,8 +211,10 @@ namespace Implementation {
 @param application  Application class name
 
 See @ref Magnum::Platform::WindowlessNaClApplication "Platform::WindowlessNaClApplication"
-and @ref portability-applications for more information. When no other
-windowless application header is included this macro is also aliased to
+for usage information. This macro abstracts out platform-specific entry point
+code (the classic `main()` function cannot be used in NaCl). See
+@ref portability-applications for more information. When no other windowless
+application header is included this macro is also aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 /* look at that insane placement of __attribute__. WTF. */

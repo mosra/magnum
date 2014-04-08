@@ -1,0 +1,17 @@
+o SupportedPositionW
+v 1.5 2 3 1.0
+p 1
+
+o SupportedTextureW
+v 1.5 2 3
+vt 0.5 0.7 0.0
+p 2/1
+
+o UnsupportedPositionW
+v 1.5 2 3 0.8
+p 3
+
+o UnsupportedTextureW
+v 1.5 2 3
+vt 0.5 0.7 0.5
+p 4/2

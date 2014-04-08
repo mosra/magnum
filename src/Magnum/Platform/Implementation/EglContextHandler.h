@@ -31,6 +31,7 @@
 #include <EGL/egl.h>
 /* undef Xlib nonsense to avoid conflicts */
 #undef None
+#undef Complex
 
 #include <Corrade/compatibility.h>
 
@@ -71,8 +72,6 @@ class EglContextHandler: public AbstractContextHandler<AbstractXApplication::Con
         }
 
     private:
-        const char* errorString(EGLint error);
-
         EGLDisplay display;
         EGLConfig config;
         EGLSurface surface;

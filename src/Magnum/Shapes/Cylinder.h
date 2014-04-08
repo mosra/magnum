@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Cylinder, typedef Magnum::Shapes::Cylinder2D, Magnum::Shapes::Cylinder3D
+ * @brief Class @ref Magnum::Shapes::Cylinder, typedef @ref Magnum::Shapes::Cylinder2D, @ref Magnum::Shapes::Cylinder3D
  */
 
 #include "Magnum/DimensionTraits.h"

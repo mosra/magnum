@@ -83,6 +83,7 @@ endif()
 add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumSceneGraphObjects>
     ${MagnumSceneGraph_GracefulAssert_SRCS})
+set_target_properties(MagnumSceneGraph PROPERTIES DEBUG_POSTFIX "-d")
 target_link_libraries(MagnumSceneGraph Magnum)
 
 install(TARGETS MagnumSceneGraph
@@ -96,7 +97,9 @@ if(BUILD_TESTS)
     add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
-    set_target_properties(MagnumSceneGraphTestLib PROPERTIES COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumSceneGraph_EXPORTS")
+    set_target_properties(MagnumSceneGraphTestLib PROPERTIES
+        COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumSceneGraph_EXPORTS"
+        DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

@@ -41,6 +41,7 @@ if(BUILD_STATIC)
 endif()
 
 add_library(MagnumTextureTools ${SHARED_OR_STATIC} ${MagnumTextureTools_SRCS})
+set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(MagnumTextureTools PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")

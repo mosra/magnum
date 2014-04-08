@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Shapes::Sphere, typedef Magnum::Shapes::Sphere2D, Magnum::Shapes::Sphere3D
+ * @brief Class @ref Magnum::Shapes::Sphere, typedef @ref Magnum::Shapes::Sphere2D, @ref Magnum::Shapes::Sphere3D
  */
 
 #include "Magnum/DimensionTraits.h"
@@ -42,7 +42,7 @@ namespace Magnum { namespace Shapes {
 
 Unlike other elements the sphere expects uniform scaling. See @ref shapes for
 brief introduction.
-@see Sphere2D, Sphere3D
+@see @ref Sphere2D, @ref Sphere3D
 @todo Store the radius as squared value to avoid sqrt/pow? Will complicate
     collision detection with another sphere.
 */

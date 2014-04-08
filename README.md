@@ -52,6 +52,7 @@ Platforms:
     GLUT or SDL2 toolkit)
 *   **Windows** (through GLUT or SDL2 toolkit)
 *   **OS X** (through SDL2 toolkit, thanks to [Miguel Martin](https://github.com/miguelishawt))
+*   **Android** 2.3 (API Level 9) and higher
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
     both `newlib` and `glibc` toolchains are supported)
 *   **HTML5/JavaScript** (through [Emscripten](https://github.com/kripken/emscripten/wiki))

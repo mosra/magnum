@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::interleave()
+ * @brief Function @ref Magnum::MeshTools::interleave(), @ref Magnum::MeshTools::interleaveInto()
  */
 
 #include <cstring>
@@ -41,93 +41,52 @@ namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
 
-class Interleave {
-    public:
-        Interleave(): _attributeCount(0), _stride(0) {}
+/* Attribute count, skipping gaps. If the attributes are just gaps, returns
+   ~std::size_t{0}. It must be in the structure to have proper overload
+   resolution (the functions would otherwise need to be de-inlined to break
+   cyclic dependencies) */
+struct AttributeCount {
+    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&... next) const {
+        CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
 
-        template<class ...T> std::tuple<std::size_t, std::size_t, Containers::Array<char>> operator()(const T&... attributes) {
-            /* Compute buffer size and stride */
-            _attributeCount = attributeCount(attributes...);
-            Containers::Array<char> data;
-            if(_attributeCount && _attributeCount != ~std::size_t(0)) {
-                _stride = stride(attributes...);
-
-                /* Create output buffer */
-                data = Containers::Array<char>(_attributeCount*_stride);
-
-                /* Save the data */
-                write(data.begin(), attributes...);
-            }
-
-            return std::make_tuple(_attributeCount, _stride, std::move(data));
-        }
-
-        template<class ...T> void operator()(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
-            Containers::Array<char> data;
-            std::tie(std::ignore, std::ignore, data) = operator()(attributes...);
-
-            mesh.setVertexCount(_attributeCount);
-            buffer.setData(data, usage);
-        }
-
-        /* Specialization for only one attribute array */
-        template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type operator()(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
-            mesh.setVertexCount(attribute.size());
-            buffer.setData(attribute, usage);
-        }
-
-        template<class T, class ...U> static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type attributeCount(const T& first, const U&... next) {
-            CORRADE_ASSERT(sizeof...(next) == 0 || attributeCount(next...) == first.size() || attributeCount(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << attributeCount(next...), 0);
-
-            return first.size();
-        }
-
-        template<class... T> static std::size_t attributeCount(std::size_t, const T&... next) {
-            return attributeCount(next...);
-        }
-
-        template<class ...T> static std::size_t attributeCount(std::size_t) {
-            return ~std::size_t(0);
-        }
-
-        template<class T, class ...U> static typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type stride(const T&, const U&... next) {
-            return sizeof(typename T::value_type) + stride(next...);
-        }
-
-        template<class... T> static std::size_t stride(std::size_t gap, const T&... next) {
-            return gap + stride(next...);
-        }
-
-    private:
-        template<class T, class ...U> void write(char* startingOffset, const T& first, const U&... next) {
-            write(startingOffset+writeOne(startingOffset, first), next...);
-        }
-
-        /* Copy data to the buffer */
-        template<class T>  typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOne(char* startingOffset, const T& attributeList) {
-            auto it = attributeList.begin();
-            for(std::size_t i = 0; i != _attributeCount; ++i, ++it)
-                std::memcpy(startingOffset+i*_stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
-
-            return sizeof(typename T::value_type);
-        }
-
-        /* Fill gap with zeros */
-        std::size_t writeOne(char* startingOffset, std::size_t gap) {
-            for(std::size_t i = 0; i != _attributeCount; ++i)
-                std::memset(startingOffset+i*_stride, 0, gap);
-
-            return gap;
-        }
-
-        /* Terminator functions for recursive calls */
-        static std::size_t attributeCount() { return 0; }
-        static std::size_t stride() { return 0; }
-        void write(char*) {}
-
-        std::size_t _attributeCount;
-        std::size_t _stride;
+        return first.size();
+    }
+    template<class T, class... U> std::size_t operator()(std::size_t, const T& first, const U&... next) const {
+        return AttributeCount{}(first, next...);
+    }
+    constexpr std::size_t operator()(std::size_t) const { return ~std::size_t(0); }
+    constexpr std::size_t operator()() const { return 0; }
 };
+
+/* Stride, taking gaps into account. It must be in the structure, same reason
+   as above */
+struct Stride {
+    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T&, const U&... next) const {
+        return sizeof(typename T::value_type) + Stride{}(next...);
+    }
+    template<class... T> std::size_t operator()(std::size_t gap, const T&... next) const {
+        return gap + Stride{}(next...);
+    }
+    constexpr std::size_t operator()() const { return 0; }
+};
+
+/* Copy data to the buffer */
+template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOneInterleaved(std::size_t stride, char* startingOffset, const T& attributeList) {
+    auto it = attributeList.begin();
+    for(std::size_t i = 0; i != attributeList.size(); ++i, ++it)
+        std::memcpy(startingOffset + i*stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
+
+    return sizeof(typename T::value_type);
+}
+
+/* Skip gap */
+inline constexpr std::size_t writeOneInterleaved(std::size_t, char*, std::size_t gap) { return gap; }
+
+/* Write interleaved data */
+inline void writeInterleaved(std::size_t, char*) {}
+template<class T, class ...U> void writeInterleaved(std::size_t stride, char* startingOffset, const T& first, const U&... next) {
+    writeInterleaved(stride, startingOffset + writeOneInterleaved(stride, startingOffset, first), next...);
+}
 
 }
 
@@ -155,15 +114,15 @@ It's often desirable to align data for one vertex on 32bit boundaries. To
 achieve that, you can specify gaps between the attributes:
 @code
 std::vector<Vector4> positions;
-std::vector<GLushort> weights;
-std::vector<BasicColor3<GLubyte>> vertexColors;
+std::vector<UnsignedShort> weights;
+std::vector<Color3ub> vertexColors;
 std::size_t attributeCount;
 std::size_t stride;
 Containers::Array<char> data;
 std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
 @endcode
-This way vertex stride is 24 bytes, without gaps it would be 21 bytes, causing
-possible performance loss.
+All gap bytes are set zero. This way vertex stride is 24 bytes, without gaps it
+would be 21 bytes, causing possible performance loss.
 
 @attention The function expects that all arrays have the same size.
 
@@ -173,15 +132,53 @@ possible performance loss.
     will be `std::vector` or `std::array`.
 
 See also @ref interleave(Mesh&, Buffer&, BufferUsage, const T&...),
-which writes the interleaved array directly into buffer of given mesh.
+which writes the interleaved array directly into buffer of given mesh or
+@ref interleaveInto() which writes the data into existing buffer instead of
+creating new one.
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> inline typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, Containers::Array<char>>>::type interleave(const T& first, const U&... next) {
-    return Implementation::Interleave()(first, next...);
+template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, Containers::Array<char>>>::type interleave(const T& first, const U&... next) {
+    /* Compute buffer size and stride */
+    const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
+    const std::size_t stride = Implementation::Stride{}(first, next...);
+
+    /* Create output buffer only if we have some attributes */
+    if(attributeCount && attributeCount != ~std::size_t(0)) {
+        Containers::Array<char> data = Containers::Array<char>::zeroInitialized(attributeCount*stride);
+        Implementation::writeInterleaved(stride, data.begin(), first, next...);
+
+        return std::make_tuple(attributeCount, stride, std::move(data));
+
+    /* Otherwise return nullptr */
+    } else return std::make_tuple(0, stride, nullptr);
 }
 
 /**
-@brief %Interleave vertex attributes and write them to array buffer
+@brief %Interleave vertex attributes into existing buffer
+
+Unlike @ref interleave() this function interleaves the data into existing
+buffer and leaves gaps untouched instead of zero-initializing them. This
+function can thus be used for interleaving data depending on runtime
+parameters.
+
+@attention Similarly to @ref interleave(), this function expects that all
+    arrays have the same size. The passed buffer must also be large enough to
+    contain the interleaved data.
+*/
+template<class T, class ...U> std::tuple<std::size_t, std::size_t> interleaveInto(Containers::ArrayReference<char> buffer, const T& first, const U&... next) {
+    /* Verify expected buffer size */
+    const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
+    const std::size_t stride = Implementation::Stride{}(first, next...);
+    CORRADE_ASSERT(attributeCount*stride <= buffer.size(), "MeshTools::interleaveInto(): the data buffer is too small, expected" << attributeCount*stride << "but got" << buffer.size(), {});
+
+    /* Write data */
+    Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
+
+    return std::make_tuple(attributeCount, stride);
+}
+
+/**
+@brief %Interleave vertex attributes, write them to array buffer and configure the mesh
 @param mesh         Output mesh
 @param buffer       Output vertex buffer
 @param usage        Vertex buffer usage
@@ -194,18 +191,31 @@ so you don't have to call @ref Mesh::setVertexCount() on your own.
 @attention You still must call @ref Mesh::setPrimitive() and
     @ref Mesh::addVertexBuffer() on the mesh afterwards.
 
-For only one attribute array this function is convenient equivalent to the
-following, without any performance loss:
+@see @ref compressIndices(), @ref compile()
+@todo rework so Mesh & Buffer doesn't need to be included in header
+*/
+template<class ...T> void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
+    Containers::Array<char> data;
+    std::size_t attributeCount;
+    std::tie(attributeCount, std::ignore, data) = interleave(attributes...);
+
+    mesh.setVertexCount(attributeCount);
+    buffer.setData(data, usage);
+}
+
+/**
+@brief Write vertex attribute to array buffer and configure the mesh
+
+Simplified specialization of the above function for only one attribute array,
+equivalent to the following:
 @code
 buffer.setData(attribute, usage);
 mesh.setVertexCount(attribute.size());
 @endcode
-
-@see @ref MeshTools::compressIndices()
-@todo rework so Mesh & Buffer doesn't need to be included in header
 */
-template<class ...T> inline void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
-    return Implementation::Interleave()(mesh, buffer, usage, attributes...);
+template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
+    mesh.setVertexCount(attribute.size());
+    buffer.setData(attribute, usage);
 }
 
 }}

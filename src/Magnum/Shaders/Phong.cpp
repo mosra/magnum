@@ -54,18 +54,19 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+
     vert.addSource(flags ? "#define TEXTURED\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
     frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
         .addSource(rs.get("Phong.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShader(vert);
     attachShader(frag);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -126,6 +127,11 @@ Phong& Phong::setDiffuseTexture(Texture2D& texture) {
 
 Phong& Phong::setSpecularTexture(Texture2D& texture) {
     if(_flags & Flag::SpecularTexture) texture.bind(SpecularTextureLayer);
+    return *this;
+}
+
+Phong& Phong::setTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular) {
+    AbstractTexture::bind(AmbientTextureLayer, {ambient, diffuse, specular});
     return *this;
 }
 

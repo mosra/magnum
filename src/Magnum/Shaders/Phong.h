@@ -65,24 +65,24 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
             /**
-             * Layer for ambient texture. Used only if @ref Flag::AmbientTexture
-             * is set.
+             * Ambient texture binding unit. Used only if
+             * @ref Flag::AmbientTexture is set.
              * @deprecated Use @ref Magnum::Shaders::Phong::setAmbientTexture() "setAmbientTexture()"
              *      instead.
              */
             AmbientTextureLayer = 0,
 
             /**
-             * Layer for diffuse texture. Used only if @ref Flag::DiffuseTexture
-             * is set.
+             * Diffuse texture binding unit. Used only if
+             * @ref Flag::DiffuseTexture is set.
              * @deprecated Use @ref Magnum::Shaders::Phong::setDiffuseTexture() "setDiffuseTexture()"
              *      instead.
              */
             DiffuseTextureLayer = 1,
 
             /**
-             * Layer for specular texture. Used only if @ref Flag::SpecularTexture
-             * is set.
+             * Specular texture binding unit. Used only if
+             * @ref Flag::SpecularTexture is set.
              * @deprecated Use @ref Magnum::Shaders::Phong::setSpecularTexture() "setSpecularTexture()"
              *      instead.
              */
@@ -132,7 +132,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::AmbientTexture is set.
-         * @see @ref setAmbientColor()
+         * @see @ref setTextures(), @ref setAmbientColor()
          */
         Phong& setAmbientTexture(Texture2D& texture);
 
@@ -150,7 +150,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::DiffuseTexture is set.
-         * @see @ref setDiffuseColor()
+         * @see @ref setTextures(), @ref setDiffuseColor()
          */
         Phong& setDiffuseTexture(Texture2D& texture);
 
@@ -169,9 +169,21 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::SpecularTexture is set.
-         * @see @ref setSpecularColor()
+         * @see @ref setTextures(), @ref setSpecularColor()
          */
         Phong& setSpecularTexture(Texture2D& texture);
+
+        /**
+         * @brief Set textures
+         * @return Reference to self (for method chaining)
+         *
+         * A particular texture has effect only if particular texture flag from
+         * @ref Phong::Flag "Flag" is set, you can use `nullptr` for the rest.
+         * More efficient than setting each texture separately.
+         * @see @ref setAmbientTexture(), @ref setDiffuseTexture(),
+         *      @ref setSpecularTexture()
+         */
+        Phong& setTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular);
 
         /**
          * @brief Set shininess
@@ -197,6 +209,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         /**
          * @brief Set normal matrix
          * @return Reference to self (for method chaining)
+         *
+         * The matrix doesn't need to be normalized, as the renormalization
+         * must be done in the shader anyway.
          */
         Phong& setNormalMatrix(const Matrix3x3& matrix) {
             setUniform(normalMatrixUniform, matrix);

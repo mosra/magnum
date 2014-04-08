@@ -32,11 +32,32 @@ set(Platform_HEADERS
 
 install(FILES ${Platform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
+# Android application
+if(WITH_ANDROIDAPPLICATION)
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android)
+        message(FATAL_ERROR "AndroidApplication is available only when targeting Android. Set WITH_ANDROIDAPPLICATION to OFF to skip building it.")
+    endif()
+
+    include_directories(${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
+
+    add_library(MagnumAndroidApplication STATIC
+        AndroidApplication.cpp
+        Implementation/Egl.cpp
+        ${ANDROID_NATIVE_APP_GLUE_SRC})
+    set_target_properties(MagnumAndroidApplication PROPERTIES DEBUG_POSTFIX "-d")
+    install(FILES AndroidApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumAndroidApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)
     if(GLUT_FOUND)
         add_library(MagnumGlutApplication STATIC GlutApplication.cpp)
+        set_target_properties(MagnumGlutApplication PROPERTIES DEBUG_POSTFIX "-d")
         install(FILES GlutApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
         install(TARGETS MagnumGlutApplication
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -53,6 +74,7 @@ if(WITH_SDL2APPLICATION)
     if(SDL2_FOUND)
         include_directories(${SDL2_INCLUDE_DIR})
         add_library(MagnumSdl2Application STATIC Sdl2Application.cpp)
+        set_target_properties(MagnumSdl2Application PROPERTIES DEBUG_POSTFIX "-d")
         install(FILES Sdl2Application.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
         install(TARGETS MagnumSdl2Application
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -70,6 +92,7 @@ if(WITH_NACLAPPLICATION)
     endif()
 
     add_library(MagnumNaClApplication STATIC NaClApplication.cpp)
+    set_target_properties(MagnumNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
     install(FILES NaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumNaClApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -84,6 +107,7 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
     endif()
 
     add_library(MagnumWindowlessNaClApplication STATIC WindowlessNaClApplication.cpp)
+    set_target_properties(MagnumWindowlessNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
     install(FILES WindowlessNaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessNaClApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -109,6 +133,7 @@ if(WITH_GLXAPPLICATION)
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
         $<TARGET_OBJECTS:MagnumGlxContextHandler>
         GlxApplication.cpp)
+    set_target_properties(MagnumGlxApplication PROPERTIES DEBUG_POSTFIX "-d")
     install(FILES GlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -124,6 +149,7 @@ if(WITH_XEGLAPPLICATION)
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
         $<TARGET_OBJECTS:MagnumEglContextHandler>
         XEglApplication.cpp)
+    set_target_properties(MagnumXEglApplication PROPERTIES DEBUG_POSTFIX "-d")
     install(FILES XEglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumXEglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -142,7 +168,9 @@ endif()
 if(WITH_WINDOWLESSGLXAPPLICATION)
     add_library(MagnumWindowlessGlxApplication STATIC WindowlessGlxApplication.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
-    set_target_properties(MagnumWindowlessGlxApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    set_target_properties(MagnumWindowlessGlxApplication PROPERTIES
+        COMPILE_FLAGS "-Wno-old-style-cast"
+        DEBUG_POSTFIX "-d")
     install(FILES WindowlessGlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -171,7 +199,9 @@ if(NEED_EGLCONTEXT)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
-    add_library(MagnumEglContextHandler OBJECT Implementation/EglContextHandler.cpp)
+    add_library(MagnumEglContextHandler OBJECT
+        Implementation/EglContextHandler.cpp
+        Implementation/Egl.cpp)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
 endif()

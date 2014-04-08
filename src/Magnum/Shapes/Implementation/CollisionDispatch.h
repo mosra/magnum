@@ -26,6 +26,7 @@
 */
 
 #include "Magnum/Types.h"
+#include "Magnum/Shapes/Shapes.h"
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
@@ -40,7 +41,10 @@ multiply the two numbers together and switch() on the result. Because of
 multiplying two prime numbers, there is no ambiguity (the result is unique for
 each combination).
 */
+
 template<UnsignedInt dimensions> bool collides(const AbstractShape<dimensions>& a, const AbstractShape<dimensions>& b);
+
+template<UnsignedInt dimensions> Collision<dimensions> collision(const AbstractShape<dimensions>& a, const AbstractShape<dimensions>& b);
 
 }}}
 

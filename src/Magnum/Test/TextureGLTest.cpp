@@ -49,12 +49,26 @@ class TextureGLTest: public AbstractOpenGLTester {
         void construct3D();
 
         #ifndef MAGNUM_TARGET_GLES
+        void bind1D();
+        #endif
+        void bind2D();
+        void bind3D();
+
+        #ifndef MAGNUM_TARGET_GLES
         void sampling1D();
         #endif
         void sampling2D();
         void sampling3D();
 
-        #ifdef MAGNUM_TARGET_GLES
+        #ifdef MAGNUM_TARGET_GLES2
+        void samplingMaxLevel2D();
+        void samplingMaxLevel3D();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingBorderInteger2D();
+        void samplingBorderInteger3D();
+        #else
         void samplingBorder2D();
         void samplingBorder3D();
         #endif
@@ -121,12 +135,26 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::construct3D,
 
         #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::bind1D,
+        #endif
+        &TextureGLTest::bind2D,
+        &TextureGLTest::bind3D,
+
+        #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::sampling1D,
         #endif
         &TextureGLTest::sampling2D,
         &TextureGLTest::sampling3D,
 
-        #ifdef MAGNUM_TARGET_GLES
+        #ifdef MAGNUM_TARGET_GLES2
+        &TextureGLTest::samplingMaxLevel2D,
+        &TextureGLTest::samplingMaxLevel3D,
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::samplingBorderInteger2D,
+        &TextureGLTest::samplingBorderInteger3D,
+        #else
         &TextureGLTest::samplingBorder2D,
         &TextureGLTest::samplingBorder3D,
         #endif
@@ -224,10 +252,89 @@ void TextureGLTest::construct3D() {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::bind1D() {
+    Texture1D texture;
+
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setBaseLevel(0);
+        CORRADE_VERIFY(false);
+    }
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+void TextureGLTest::bind2D() {
+    Texture2D texture;
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setBaseLevel(0);
+        CORRADE_VERIFY(false);
+    }
+    #endif
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::bind3D() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
+    #endif
+
+    Texture3D texture;
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
+        texture.setBaseLevel(0);
+        CORRADE_VERIFY(false);
+    }
+    #endif
+
+    texture.bind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+#ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::sampling1D() {
     Texture1D texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           .setBaseLevel(1)
+           .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
@@ -240,6 +347,10 @@ void TextureGLTest::sampling2D() {
     Texture2D texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           #ifndef MAGNUM_TARGET_GLES2
+           .setBaseLevel(1)
+           .setMaxLevel(750)
+           #endif
            #ifndef MAGNUM_TARGET_GLES
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
@@ -251,7 +362,33 @@ void TextureGLTest::sampling2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES
+#ifdef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingMaxLevel2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
+        CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::samplingBorderInteger2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    Texture2D a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    Texture2D b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingBorder2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
         CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));
@@ -273,6 +410,10 @@ void TextureGLTest::sampling3D() {
     Texture3D texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           #ifndef MAGNUM_TARGET_GLES2
+           .setBaseLevel(1)
+           .setMaxLevel(750)
+           #endif
            #ifndef MAGNUM_TARGET_GLES
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
@@ -284,7 +425,35 @@ void TextureGLTest::sampling3D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES
+#ifdef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingMaxLevel3D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
+        CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
+
+    Texture3D texture;
+    texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::samplingBorderInteger3D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    Texture3D a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    Texture3D b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingBorder3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())

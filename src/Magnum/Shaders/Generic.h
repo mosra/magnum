@@ -82,10 +82,10 @@ template<UnsignedInt dimensions> struct Generic {
 };
 #endif
 
-/** @brief Generic 2D shader definition */
+/** @brief %Generic 2D shader definition */
 typedef Generic<2> Generic2D;
 
-/** @brief Generic 3D shader definition */
+/** @brief %Generic 3D shader definition */
 typedef Generic<3> Generic3D;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

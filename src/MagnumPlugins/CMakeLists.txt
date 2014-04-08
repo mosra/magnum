@@ -24,11 +24,11 @@
 #
 
 # Wrapper for creating given plugin type
-macro(add_plugin)
+macro(add_plugin plugin_name debug_install_dir release_install_dir metadata_file)
     if(NOT BUILD_STATIC)
-        corrade_add_plugin(${ARGN})
+        corrade_add_plugin(${plugin_name} ${debug_install_dir} ${release_install_dir} ${metadata_file} ${ARGN})
     else()
-        corrade_add_static_plugin(${ARGN})
+        corrade_add_static_plugin(${plugin_name} ${release_install_dir} ${metadata_file} ${ARGN})
     endif()
 endmacro()
 
@@ -38,6 +38,10 @@ endif()
 
 if(WITH_TEXT AND WITH_MAGNUMFONTCONVERTER AND NOT MAGNUM_TARGET_GLES)
     add_subdirectory(MagnumFontConverter)
+endif()
+
+if(WITH_OBJIMPORTER)
+    add_subdirectory(ObjImporter)
 endif()
 
 if(WITH_TGAIMAGECONVERTER)

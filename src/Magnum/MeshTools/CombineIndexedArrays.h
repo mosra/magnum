@@ -32,6 +32,7 @@
 #include <functional>
 #include <tuple>
 #include <vector>
+#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Types.h"
 #include "Magnum/MeshTools/visibility.h"
@@ -41,6 +42,10 @@
 #endif
 
 namespace Magnum { namespace MeshTools {
+
+namespace Implementation {
+    MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(const std::reference_wrapper<std::vector<UnsignedInt>>* begin, const std::reference_wrapper<std::vector<UnsignedInt>>* end);
+}
 
 /**
 @brief Combine index arrays
@@ -81,7 +86,14 @@ This function calls @ref combineIndexArrays(const std::vector<UnsignedInt>&, Uns
 internally. See also @ref combineIndexedArrays() which does the vertex data
 reordering automatically.
 */
-MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays);
+inline std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays) {
+    return Implementation::combineIndexArrays(&arrays[0], &arrays[0] + arrays.size());
+}
+
+/** @overload */
+inline std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays) {
+    return Implementation::combineIndexArrays(arrays.begin(), arrays.end());
+}
 
 /**
 @brief Combine index arrays
@@ -111,10 +123,14 @@ namespace Implementation {
 MAGNUM_MESHTOOLS_EXPORT std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> interleaveAndCombineIndexArrays(const std::reference_wrapper<const std::vector<UnsignedInt>>* begin, const std::reference_wrapper<const std::vector<UnsignedInt>>* end);
 
 template<class T> void writeCombinedArray(const UnsignedInt stride, const UnsignedInt offset, const std::vector<UnsignedInt>& interleavedCombinedIndexArrays, std::vector<T>& array) {
+    /* Can't use duplicate() here because we aren't accessing the index data sequentially */
     std::vector<T> output;
     output.reserve(interleavedCombinedIndexArrays.size()/stride);
-    for(std::size_t i = 0, max = interleavedCombinedIndexArrays.size()/stride; i != max; ++i)
-        output.push_back(array[interleavedCombinedIndexArrays[offset + i*stride]]);
+    for(std::size_t i = 0, max = interleavedCombinedIndexArrays.size()/stride; i != max; ++i) {
+        const UnsignedInt index = interleavedCombinedIndexArrays[offset + i*stride];
+        CORRADE_ASSERT(index < array.size(), "MeshTools::combineIndexedArrays(): index out of range", );
+        output.push_back(array[index]);
+    }
     std::swap(output, array);
 }
 

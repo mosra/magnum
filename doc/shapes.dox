@@ -77,9 +77,9 @@ is least efficient.
 @section shapes-composition Creating shape compositions
 
 %Shapes can be composed together using one of three available logical
-operations: AND, OR and NOT. These operations are mapped to operator&&(),
-operator||() and operator!(), so for example creating negation of logical OR
-of line segment and point is simple as this:
+operations: AND, OR and NOT. These operations are mapped to `&&`, `||` and `!`
+operators, so for example creating negation of logical OR of line segment and
+point is simple as this:
 @code
 Shapes::LineSegment3D segment;
 Shapes::Point3D point;
@@ -97,9 +97,9 @@ If there are many shapes composed together, it might hurt performance of
 collision detection, because it might be testing collision with more shapes
 than necessary. It's then good to specify simplified version of such shape,
 so the collision detection is done on the complex one if and only if collision
-was detected with the simplified shape. It is in fact logical AND using
-operator&&() - the collision is initially detected on first (simplified) shape
-and then on the other:
+was detected with the simplified shape. It is in fact logical AND using the
+`&&` operator -- the collision is initially detected on first (simplified)
+shape and then on the other:
 @code
 Shapes::Sphere3D sphere;
 Shapes::Box3D box;
@@ -111,7 +111,7 @@ Shapes::Composition3D composition = simplified && (sphere || box);
 @section shapes-collisions Detecting shape collisions
 
 %Shape pairs which have collision occurence detection implemented can be tested
-for collision using operator%(). The operator returns boolean describing
+for collision using the `%` operator. The operator returns boolean describing
 whether the collision happened or not. Example:
 @code
 Shapes::Point3D point;
@@ -123,12 +123,12 @@ bool collide = point % sphere;
 As this is useful for e.g. menu handling and simple particle systems, for
 serious physics you often need more information like contact point, separation
 normal and penetration depth. For shape pairs which have implemented this
-detailed collision detection you can use `operator/()`, which returns @ref Collision
-object. Note that unlike with `operator%()` mentioned above, this operation is
-not commutative. See @ref Collision class documentation for more information
-about the returned data. Example:
+detailed collision detection you can use the `/` operator, which returns
+@ref Collision object. Note that unlike with the `%` operator mentioned above,
+this operation is not commutative. See @ref Collision class documentation for
+more information about the returned data. Example:
 @code
-Shapes::Collision3D c = point/sphere;
+const Shapes::Collision3D c = point/sphere;
 if(c) {
     Vector3 translation = c.separationNormal()*c.separationDistance();
     // translate point by translation...
@@ -137,15 +137,37 @@ if(c) {
 
 @section shapes-scenegraph Integration with scene graph
 
-%Shape can be attached to object in the scene using Shapes::Shape feature and
-then used for collision detection. You can also use DebugTools::ShapeRenderer
-to visualize the shape for debugging purposes.
+%Shape can be attached to object in the scene using @ref Shapes::Shape feature.
+In conjunction with @ref Shapes::ShapeGroup you can use
+@ref Shapes::Shape::collides() and @ref Shapes::Shape::collision() similarly to
+the `%` and `/` operators above. Please note that the shape group caches the
+absolute transformations of all shapes and thus you need to explicitly call
+@ref Shapes::ShapeGroup::setClean() before computing the collisions if you did
+any modifications to the objects in the scene.
+
+Scenegraph-flavored equivalent to the above code:
 @code
-Object3D object;
-auto shape = Shapes::Shape<Shapes::Sphere3D>(object, {{}, 23.0f});
+Shapes::ShapeGroup3D shapes;
+Object3D& a;
+auto aShape = new Shapes::Shape<Shapes::Sphere3D>(a, {{}, 23.0f}, &shapes);
+
+Object3D& b;
+auto bShape = new Shapes::Shape<Shapes::Point3D>(b, {{1.0f, 0.2f, 3.0f}}, &shapes);
+
+// Translate point so the objects no longer collide
+shapes.setClean();
+if(aShape->collides(*bShape)) {
+    const Shapes::Collision3D c = aShape->collision(*bShape);
+    b.translate(c.separationNormal()*c.separationDistance());
+}
 @endcode
 
-See also @ref scenegraph for introduction.
+There is also @ref Shapes::ShapeGroup::firstCollision() function which returns
+arbitrary first collision for given shape in whole group (or `nullptr`, if
+there isn't any collision).
+
+You can also use @ref DebugTools::ShapeRenderer to visualize the shapes for
+debugging purposes. See also @ref scenegraph for introduction.
 
 -   Previous page: @ref scenegraph
 -   Next page: @ref debug-tools

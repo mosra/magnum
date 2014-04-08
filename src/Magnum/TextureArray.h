@@ -55,6 +55,8 @@ Template class for one- and two-dimensional texture arrays. See also
 
 @section Texture-usage Usage
 
+See @ref Texture documentation for introduction.
+
 Common usage is to fully configure all texture parameters and then set the
 data. Example configuration:
 @code
@@ -77,11 +79,6 @@ for(std::size_t i = 0; i != 16; ++i) {
 }
 @endcode
 
-@attention Note that default configuration (if @ref setMinificationFilter() is
-    not called with another value) is to use mipmaps, so be sure to either call
-    @ref setMinificationFilter(), explicitly specify all mip levels with
-    @ref setStorage() and @ref setImage() or call @ref generateMipmap().
-
 In shader, the texture is used via `sampler1DArray`/`sampler2DArray`,
 `sampler1DArrayShadow`/`sampler1DArrayShadow`, `isampler1DArray`/`isampler2DArray`
 or `usampler1DArray`/`usampler2DArray`. See @ref AbstractShaderProgram
@@ -103,9 +100,24 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object.
-         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_1D_ARRAY} or @def_gl{TEXTURE_2D_ARRAY}
+         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_1D_ARRAY} or
+         *      @def_gl{TEXTURE_2D_ARRAY}
          */
         explicit TextureArray(): AbstractTexture(Implementation::textureArrayTarget<dimensions>()) {}
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setBaseLevel() */
+        TextureArray<dimensions>& setBaseLevel(Int level) {
+            AbstractTexture::setBaseLevel(level);
+            return *this;
+        }
+        #endif
+
+        /** @copydoc Texture::setMaxLevel() */
+        TextureArray<dimensions>& setMaxLevel(Int level) {
+            AbstractTexture::setMaxLevel(level);
+            return *this;
+        }
 
         /** @copydoc Texture::setMinificationFilter() */
         TextureArray<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
@@ -130,6 +142,20 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setBorderColor(const Vector4ui&) */
+        TextureArray<dimensions>& setBorderColor(const Vector4ui& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+
+        /** @copydoc Texture::setBorderColor(const Vector4i&) */
+        TextureArray<dimensions>& setBorderColor(const Vector4i& color) {
+            AbstractTexture::setBorderColor(color);
+            return *this;
+        }
+        #endif
 
         /** @copydoc Texture::setMaxAnisotropy() */
         TextureArray<dimensions>& setMaxAnisotropy(Float anisotropy) {
@@ -158,7 +184,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * allowed.
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some layer before the operation. If
+         * is bound to some texture unit before the operation. If
          * @extension{ARB,texture_storage} (part of OpenGL 4.2) or OpenGL ES
          * 3.0 is not available, the feature is emulated with sequence of
          * @ref setImage() calls.
@@ -200,7 +226,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @ref setStorage() and @ref setSubImage() instead.
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
@@ -233,7 +259,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some layer before the operation.
+         * texture is bound to some texture unit before the operation.
          * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
          *      or @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/

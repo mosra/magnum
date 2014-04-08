@@ -145,6 +145,7 @@ template<> struct TypeTraits<Int>: Implementation::TypeTraitsIntegral<Int> {
     typedef Double FloatingPointType;
     #endif
 };
+#ifndef MAGNUM_TARGET_WEBGL
 template<> struct TypeTraits<UnsignedLong>: Implementation::TypeTraitsIntegral<UnsignedLong> {
     #ifndef MAGNUM_TARGET_GLES
     typedef long double FloatingPointType;
@@ -155,6 +156,7 @@ template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
     typedef long double FloatingPointType;
     #endif
 };
+#endif
 
 /* Floating-point scalar types */
 namespace Implementation {

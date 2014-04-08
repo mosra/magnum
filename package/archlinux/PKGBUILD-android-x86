@@ -1,0 +1,42 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=android-x86-magnum
+pkgver=dev
+pkgrel=1
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Android x86)"
+arch=('any')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('android-x86-corrade')
+makedepends=('cmake' 'ninja' 'android-ndk')
+options=('!strip' '!buildflags' 'staticlibs')
+
+build() {
+    if [ ! -d "$startdir/build-android-x86" ] ; then
+        mkdir "$startdir/build-android-x86"
+        cd "$startdir/build-android-x86"
+
+        cmake .. \
+            -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
+            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Android-x86.cmake" \
+            -DTARGET_GLES=ON \
+            -DTARGET_GLES2=ON \
+            -G Ninja
+    fi
+
+    cd "$startdir/build-android-x86"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-x86/usr \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_OBJIMPORTER=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_ANDROIDAPPLICATION=ON
+    ninja
+}
+
+package() {
+    cd "$startdir/build-android-x86"
+    DESTDIR="$pkgdir/" ninja install
+}

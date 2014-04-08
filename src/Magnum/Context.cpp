@@ -61,6 +61,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,texture_mirror_clamp),
         _extension(GL,EXT,direct_state_access),
+        _extension(GL,EXT,shader_integer_mix),
         _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
         _extension(GL,GREMEDY,string_marker)};
@@ -213,6 +214,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ANGLE,framebuffer_multisample),
         _extension(GL,ANGLE,depth_texture),
         _extension(GL,APPLE,framebuffer_multisample),
+        _extension(GL,APPLE,texture_max_level),
         _extension(GL,ARM,rgba8),
         _extension(GL,EXT,texture_type_2_10_10_10_REV),
         _extension(GL,EXT,discard_framebuffer),
@@ -283,7 +285,7 @@ Context::Context() {
        everything possible. */
     if(ogl_LoadFunctions() == ogl_LOAD_FAILED) {
         Error() << "ExtensionWrangler: cannot initialize glLoadGen";
-        std::exit(1);
+        std::exit(64);
     }
     #endif
 
@@ -313,7 +315,7 @@ Context::Context() {
         const std::string version = versionString();
         #ifndef MAGNUM_TARGET_GLES
         if(version.compare(0, 4, "2.1 ") == 0)
-        #elif defined(CORRADE_TARGET_EMSCRIPTEN)
+        #elif defined(MAGNUM_TARGET_WEBGL)
         if(version.find("WebGL 1") != std::string::npos)
         #else
         if(version.find("OpenGL ES 2.0") != std::string::npos)
@@ -327,7 +329,7 @@ Context::Context() {
             #endif
         } else {
             Error() << "Context: unsupported version string:" << version;
-            std::exit(1);
+            std::exit(65);
         }
     }
     #endif
@@ -346,17 +348,17 @@ Context::Context() {
     #ifndef MAGNUM_TARGET_GLES
     if(!isVersionSupported(Version::GL210))
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!isVersionSupported(Version::GLES200))
+    if(_version != Version::GLES200)
     #else
-    if(!isVersionSupported(Version::GLES300))
+    if(_version != Version::GLES300)
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        Error() << "Context: unsupported OpenGL version" << Int(_version);
+        Error() << "Context: unsupported OpenGL version" << Magnum::version(_version);
         #else
-        Error() << "Context: unsupported OpenGL ES version" << Int(_version);
+        Error() << "Context: unsupported OpenGL ES version" << Magnum::version(_version);
         #endif
-        std::exit(1);
+        std::exit(66);
     }
 
     /* Context flags are supported since GL 3.0 */
@@ -411,46 +413,15 @@ Context::Context() {
             #endif
     }
 
-    /* Check for presence of extensions in future versions */
-    #ifndef MAGNUM_TARGET_GLES2
-    GLint extensionCount = 0;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
-    #ifndef MAGNUM_TARGET_GLES3
-    if(extensionCount || isVersionSupported(Version::GL300))
-    #endif
-    {
-        _supportedExtensions.reserve(extensionCount);
-        for(GLint i = 0; i != extensionCount; ++i) {
-            const std::string extension(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
-            auto found = futureExtensions.find(extension);
-            if(found != futureExtensions.end()) {
-                _supportedExtensions.push_back(found->second);
-                extensionStatus.set(found->second._index);
-            }
+    /* Check for presence of future and vendor extensions */
+    const std::vector<std::string> extensions = extensionStrings();
+    for(const std::string& extension: extensions) {
+        const auto found = futureExtensions.find(extension);
+        if(found != futureExtensions.end()) {
+            _supportedExtensions.push_back(found->second);
+            extensionStatus.set(found->second._index);
         }
     }
-    #ifndef MAGNUM_TARGET_GLES3
-    else
-    #endif
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES3
-    /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-    {
-        /* Don't crash when glGetString() returns nullptr */
-        const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-        if(e) {
-            std::vector<std::string> extensions = Utility::String::split(e, ' ');
-            for(auto it = extensions.begin(); it != extensions.end(); ++it) {
-                auto found = futureExtensions.find(*it);
-                if(found != futureExtensions.end()) {
-                    _supportedExtensions.push_back(found->second);
-                    extensionStatus.set(found->second._index);
-                }
-            }
-        }
-    }
-    #endif
 
     /* Reset minimal required version to Version::None for whole array */
     for(auto it = _extensionRequiredVersion.begin(); it != _extensionRequiredVersion.end(); ++it)
@@ -504,6 +475,38 @@ std::vector<std::string> Context::shadingLanguageVersionStrings() const {
     #endif
 }
 
+std::vector<std::string> Context::extensionStrings() const {
+    std::vector<std::string> extensions;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint extensionCount = 0;
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
+    #ifndef MAGNUM_TARGET_GLES3
+    if(extensionCount || isVersionSupported(Version::GL300))
+    #endif
+    {
+        extensions.reserve(extensionCount);
+        for(GLint i = 0; i != extensionCount; ++i)
+            extensions.push_back(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
+    }
+    #ifndef MAGNUM_TARGET_GLES3
+    else
+    #endif
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES3
+    /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
+    {
+        /* Don't crash when glGetString() returns nullptr (i.e. don't trust the
+           old implementations) */
+        const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+        if(e) extensions = Utility::String::splitWithoutEmptyParts(e, ' ');
+    }
+    #endif
+
+    return extensions;
+}
+
 Version Context::supportedVersion(std::initializer_list<Version> versions) const {
     for(auto it = versions.begin(); it != versions.end(); ++it)
         if(isVersionSupported(*it)) return *it;
@@ -514,5 +517,20 @@ Version Context::supportedVersion(std::initializer_list<Version> versions) const
     return Version::GLES200;
     #endif
 }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug operator<<(Debug debug, const Context::Flag value) {
+    switch(value) {
+        #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
+        _c(Debug)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(RobustAccess)
+        #endif
+        #undef _c
+    }
+
+    return debug << "Context::Flag::(invalid)";
+}
+#endif
 
 }
