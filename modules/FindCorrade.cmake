@@ -3,7 +3,7 @@
 # Basic usage:
 #  find_package(Corrade [REQUIRED])
 # This module tries to find Corrade library and then defines:
-#  CORRADE_FOUND                    - True if Corrade library is found
+#  CORRADE_FOUND                    - True if Corrade is found
 #  CORRADE_INCLUDE_DIR              - Root include dir
 #  CORRADE_INTERCONNECT_LIBRARIES   - Interconnect library and dependent
 #   libraries
@@ -14,9 +14,14 @@
 #  CORRADE_TESTSUITE_LIBRARIES      - TestSuite library and dependent
 #   libraries
 #  CORRADE_RC_EXECUTABLE            - Resource compiler executable
+# The package is found if either debug or release version of each library is
+# found. If both debug and release libraries are found, proper version is
+# chosen based on actual build configuration of the project (i.e. Debug build
+# is linked to debug libraries, Release build to release libraries).
+#
 # Corrade configures the compiler to use C++11 standard. Additionally you can
-# use CORRADE_CXX_FLAGS to enable additional pedantic set of warnings and enable
-# hidden visibility by default.
+# use CORRADE_CXX_FLAGS to enable additional pedantic set of warnings and
+# enable hidden visibility by default.
 #
 # Features of found Corrade library are exposed in these variables:
 #  CORRADE_GCC47_COMPATIBILITY  - Defined if compiled with compatibility
@@ -83,7 +88,7 @@
 # The macro adds preprocessor directive CORRADE_STATIC_PLUGIN. Additional
 # libraries can be linked in via target_link_libraries(plugin_name ...). If
 # install_dir is set to CMAKE_CURRENT_BINARY_DIR (e.g. for testing purposes),
-# no installation is performed.
+# no installation rules are added.
 #
 #
 # Additionally these variables are defined for internal usage:
@@ -93,6 +98,9 @@
 #  CORRADE_PLUGINMANAGER_LIBRARY    - Plugin manager library (w/o
 #   dependencies)
 #  CORRADE_TESTSUITE_LIBRARY        - TestSuite library (w/o dependencies)
+#  CORRADE_*_LIBRARY_DEBUG          - Debug version of given library, if found
+#  CORRADE_*_LIBRARY_RELEASE        - Release version of given library, if
+#                                     found
 #
 
 #
@@ -121,10 +129,28 @@
 #
 
 # Libraries
-find_library(CORRADE_INTERCONNECT_LIBRARY CorradeInterconnect)
-find_library(CORRADE_UTILITY_LIBRARY CorradeUtility)
-find_library(CORRADE_PLUGINMANAGER_LIBRARY CorradePluginManager)
-find_library(CORRADE_TESTSUITE_LIBRARY CorradeTestSuite)
+foreach(_component Interconnect Utility PluginManager TestSuite)
+    string(TOUPPER ${_component} _COMPONENT)
+
+    # Try to find both debug and release version
+    find_library(CORRADE_${_COMPONENT}_LIBRARY_DEBUG Corrade${_component}-d)
+    find_library(CORRADE_${_COMPONENT}_LIBRARY_RELEASE Corrade${_component})
+
+    # Set the _LIBRARY variable based on what was found
+    if(CORRADE_${_COMPONENT}_LIBRARY_DEBUG AND CORRADE_${_COMPONENT}_LIBRARY_RELEASE)
+        set(CORRADE_${_COMPONENT}_LIBRARY
+            debug ${CORRADE_${_COMPONENT}_LIBRARY_DEBUG}
+            optimized ${CORRADE_${_COMPONENT}_LIBRARY_RELEASE})
+    elseif(CORRADE_${_COMPONENT}_LIBRARY_DEBUG)
+        set(CORRADE_${_COMPONENT}_LIBRARY ${CORRADE_${_COMPONENT}_LIBRARY_DEBUG})
+    elseif(CORRADE_${_COMPONENT}_LIBRARY_RELEASE)
+        set(CORRADE_${_COMPONENT}_LIBRARY ${CORRADE_${_COMPONENT}_LIBRARY_RELEASE})
+    endif()
+
+    mark_as_advanced(CORRADE_${_COMPONENT}_LIBRARY_DEBUG
+        CORRADE_${_COMPONENT}_LIBRARY_RELEASE
+        CORRADE_${_COMPONENT}_LIBRARY)
+endforeach()
 
 # RC executable
 find_program(CORRADE_RC_EXECUTABLE corrade-rc)
@@ -222,11 +248,7 @@ if(CORRADE_TARGET_ANDROID)
     set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARIES} log)
 endif()
 
-mark_as_advanced(CORRADE_UTILITY_LIBRARY
-    CORRADE_INTERCONNECT_LIBRARY
-    CORRADE_PLUGINMANAGER_LIBRARY
-    CORRADE_TESTSUITE_LIBRARY
-    _CORRADE_INCLUDE_DIR
+mark_as_advanced(_CORRADE_INCLUDE_DIR
     _CORRADE_MODULE_DIR)
 
 # Add Corrade dir to include path if this is deprecated build
