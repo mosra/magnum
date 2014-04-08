@@ -137,25 +137,48 @@ class RectangleTexture: public AbstractTexture {
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor() */
+        /**
+         * @brief Set border color
+         * @return Reference to self (for method chaining)
+         *
+         * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
+         * If @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some texture unit before the operation. Initial value is
+         * `{0.0f, 0.0f, 0.0f, 0.0f}`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         */
         RectangleTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setBorderColor(const Vector4ui&) */
+        /**
+         * @brief Set border color for integer texture
+         * @return Reference to self (for method chaining)
+         *
+         * Border color for integer textures when wrapping is set to
+         * @ref Sampler::Wrapping::ClampToBorder. If @extension{EXT,direct_state_access}
+         * is not available, the texture is bound to some texture unit before
+         * the operation. Initial value is `{0, 0, 0, 0}`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         */
         RectangleTexture& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor(const Vector4i&) */
+        /** @overload
+         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         */
         RectangleTexture& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
-        #endif
 
         /** @copydoc Texture::setMaxAnisotropy() */
         RectangleTexture& setMaxAnisotropy(Float anisotropy) {
@@ -190,7 +213,6 @@ class RectangleTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Read texture to image
          * @param image             %Image where to put the data
@@ -206,7 +228,6 @@ class RectangleTexture: public AbstractTexture {
          * and @extension{ARB,robustness} are available, the DSA version is
          * used, because it is better for performance and there isn't any
          * function combining both features.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH} and @def_gl{TEXTURE_HEIGHT}, then
@@ -223,12 +244,10 @@ class RectangleTexture: public AbstractTexture {
          * @param usage             %Buffer usage
          *
          * See @ref image(Image2D&) for more information.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         void image(BufferImage2D& image, BufferUsage usage) {
             AbstractTexture::image<2>(_target, 0, image, usage);
         }
-        #endif
 
         /**
          * @brief Set image data
@@ -250,7 +269,6 @@ class RectangleTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         RectangleTexture& setImage(TextureFormat internalFormat, BufferImage2D& image) {
             DataHelper<2>::setImage(*this, _target, 0, internalFormat, image);
@@ -261,7 +279,6 @@ class RectangleTexture: public AbstractTexture {
         RectangleTexture& setImage(TextureFormat internalFormat, BufferImage2D&& image) {
             return setImage(internalFormat, image);
         }
-        #endif
 
         /**
          * @brief Set image subdata
@@ -281,7 +298,6 @@ class RectangleTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         RectangleTexture& setSubImage(const Vector2i& offset, BufferImage2D& image) {
             DataHelper<2>::setSubImage(*this, _target, 0, offset, image);
@@ -292,7 +308,6 @@ class RectangleTexture: public AbstractTexture {
         RectangleTexture& setSubImage(const Vector2i& offset, BufferImage2D&& image) {
             return setSubImage(offset, image);
         }
-        #endif
 
         /**
          * @brief Invalidate texture image

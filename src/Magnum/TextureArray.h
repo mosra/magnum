@@ -137,7 +137,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor() */
+        /** @copydoc Texture::setBorderColor(const Color4&) */
         TextureArray<dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
