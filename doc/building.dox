@@ -134,11 +134,13 @@ plan to use them with shared libraries later, enable also position-independent
 code with `BUILD_STATIC_PIC`. If you want to build with another compiler (e.g.
 Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
-Libraries built in `Debug` configuration (e.g. with `CMAKE_BUILD_TYPE` set to
-`Debug`) have `-d` suffix to make it possible to have both debug and release
-libraries installed alongside each other. Headers and other files are the same
-for both. The library distinction is handled automatically when using %Magnum
-in depending projects, see @ref cmake for more information.
+Libraries and static plugins built in `Debug` configuration (e.g. with
+`CMAKE_BUILD_TYPE` set to `Debug`) have `-d` suffix to make it possible to have
+both debug and release libraries installed alongside each other. *Dynamic*
+plugins in `Debug` configuration are installed to `magnum-d` subdirectory
+instead of `magnum`. Headers and other files are the same for both. The library
+and plugin distinction is handled semi-automatically when using %Magnum in
+depending projects, see @ref cmake for more information.
 
 %Magnum by default does not install `FindMagnum.cmake`, as you should bundle
 the module with your code instead of depending on it being in system location.

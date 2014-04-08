@@ -28,7 +28,7 @@ if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(ObjImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 
-add_plugin(ObjImporter ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR}
+add_plugin(ObjImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
     ObjImporter.conf
     $<TARGET_OBJECTS:ObjImporterObjects>
     pluginRegistration.cpp)

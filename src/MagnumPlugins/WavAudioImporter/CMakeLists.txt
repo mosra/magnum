@@ -39,7 +39,7 @@ if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 endif()
 
-add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR}
+add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR}
     WavAudioImporter.conf
     $<TARGET_OBJECTS:WavAudioImporterObjects>
     pluginRegistration.cpp)

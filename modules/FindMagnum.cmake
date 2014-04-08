@@ -7,16 +7,19 @@
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
-#  MAGNUM_PLUGINS_DIR           - Base directory with plugins, defaults to
-#   `magnum/` subdirectory of dir where Magnum library was found. You can
-#   modify it (e.g. set it to `.` when deploying on Windows with plugins
-#   stored relatively to the executable), the following MAGNUM_PLUGINS_*_DIR
-#   variables depend on it.
-#  MAGNUM_PLUGINS_FONT_DIR      - Directory with font plugins
-#  MAGNUM_PLUGINS_FONTCONVERTER_DIR - Directory with font converter plugins
-#  MAGNUM_PLUGINS_IMAGECONVERTER_DIR - Directory with image converter plugins
-#  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with importer plugins
-#  MAGNUM_PLUGINS_AUDIOIMPORTER_DIR - Directory with audio importer plugins
+#  MAGNUM_PLUGINS_DIR           - Base directory with dynamic plugins, defaults
+#   to magnum/ subdirectory of dir where Magnum library was found (or magnum-d/
+#   in debug build). You can modify it (e.g. set it to `.` when deploying on
+#   Windows with plugins stored relatively to the executable), the following
+#   MAGNUM_PLUGINS_*_DIR variables depend on it.
+#  MAGNUM_PLUGINS_FONT_DIR      - Directory with dynamic font plugins
+#  MAGNUM_PLUGINS_FONTCONVERTER_DIR - Directory with dynamic font converter
+#   plugins
+#  MAGNUM_PLUGINS_IMAGECONVERTER_DIR - Directory with dynamic image converter
+#   plugins
+#  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with dynamic importer plugins
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_DIR - Directory with dynamic audio importer
+#   plugins
 # This command will try to find only the base library, not the optional
 # components. The base library depends on Corrade and OpenGL libraries (or
 # OpenGL ES libraries). Additional dependencies are specified by the
@@ -60,10 +63,15 @@
 # / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
 # The package is found if either debug or release version of each requested
-# library is found. If both debug and release libraries are found, proper
-# version is chosen based on actual build configuration of the project (i.e.
-# Debug build is linked to debug libraries, Release build to release
-# libraries).
+# library (or plugin) is found. If both debug and release libraries (or
+# plugins) are found, proper version is chosen based on actual build
+# configuration of the project (i.e. Debug build is linked to debug libraries,
+# Release build to release libraries). Note that this autodetection might fail
+# for the MAGNUM_PLUGINS_DIR variable, i.e. you might need to switch it
+# manually to magnum-d/ or magnum/ subdirectory based on whether you want
+# to dynamically load plugins with or without debug information. You can also
+# make use of CMAKE_BUILD_TYPE or CMAKE_CFG_INTDIR CMake variables for
+# compile-time decision.
 #
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
@@ -89,17 +97,17 @@
 #  MAGNUM_*_LIBRARY_DEBUG       - Debug version of given library, if found
 #  MAGNUM_*_LIBRARY_RELEASE     - Release version of given library, if found
 #  MAGNUM_LIBRARY_INSTALL_DIR   - Library installation directory
-#  MAGNUM_PLUGINS_INSTALL_DIR           - Plugin installation directory
-#  MAGNUM_PLUGINS_FONT_INSTALL_DIR      - Font plugin installation
+#  MAGNUM_PLUGINS_[DEBUG|RELEASE]_INSTALL_DIR - Plugin installation directory
+#  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_INSTALL_DIR - Font plugin installation
 #   directory
-#  MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR - Font converter plugin
+#  MAGNUM_PLUGINS_FONTCONVERTER_[DEBUG|RELEASE]_INSTALL_DIR - Font converter
+#   plugin installation directory
+#  MAGNUM_PLUGINS_IMAGECONVERTER_[DEBUG|RELEASE]_INSTALL_DIR - Image converter
+#   plugin installation directory
+#  MAGNUM_PLUGINS_IMPORTER_[DEBUG|RELEASE]_INSTALL_DIR  - Importer plugin
 #   installation directory
-#  MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR - Image converter plugin
-#   installation directory
-#  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation
-#   directory
-#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR - Audio omporter plugin
-#   installation directory
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_INSTALL_DIR - Audio importer
+#   plugin installation directory
 #  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake Find*
 #   modules
 #  MAGNUM_INCLUDE_INSTALL_DIR   - Header installation directory
@@ -138,15 +146,21 @@ find_package(Corrade REQUIRED)
 find_library(MAGNUM_LIBRARY_DEBUG Magnum-d)
 find_library(MAGNUM_LIBRARY_RELEASE Magnum)
 
-# Set the MAGNUM_LIBRARY variable based on what was found
+# Set the MAGNUM_LIBRARY variable based on what was found, use that information
+# to guess also build type of dynamic plugins
 if(MAGNUM_LIBRARY_DEBUG AND MAGNUM_LIBRARY_RELEASE)
     set(MAGNUM_LIBRARY
         debug ${MAGNUM_LIBRARY_DEBUG}
         optimized ${MAGNUM_LIBRARY_RELEASE})
     get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_DEBUG} PATH)
+    # TODO: how to handle this with MSVC and other multi-configuration tools?
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(_MAGNUM_PLUGINS_DIR_SUFFIX "-d")
+    endif()
 elseif(MAGNUM_LIBRARY_DEBUG)
     set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_DEBUG})
     get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_DEBUG} PATH)
+    set(_MAGNUM_PLUGINS_DIR_SUFFIX "-d")
 elseif(MAGNUM_LIBRARY_RELEASE)
     set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_RELEASE})
     get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_RELEASE} PATH)
@@ -259,8 +273,30 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         # break something else
         set(_tmp_prefixes ${CMAKE_FIND_LIBRARY_PREFIXES})
         set(CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "")
+
         find_library(MAGNUM_${_COMPONENT}_LIBRARY ${component}
             PATH_SUFFIXES magnum/${_MAGNUM_${_COMPONENT}_PATH_SUFFIX})
+
+        # Try to find both debug and release version. Dynamic and static debug
+        # libraries are on different places.
+        find_library(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG ${component}
+            PATH_SUFFIXES magnum-d/${_MAGNUM_${_COMPONENT}_PATH_SUFFIX})
+        find_library(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG ${component}-d
+            PATH_SUFFIXES magnum/${_MAGNUM_${_COMPONENT}_PATH_SUFFIX})
+        find_library(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE ${component}
+            PATH_SUFFIXES magnum/${_MAGNUM_${_COMPONENT}_PATH_SUFFIX})
+
+        # Set the _LIBRARY variable based on what was found
+        if(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG AND MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
+            set(MAGNUM_${_COMPONENT}_LIBRARY
+                debug ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG}
+                optimized ${MAGNUM_${_COMPONENT}_LIBRARY_RELEASE})
+        elseif(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG)
+            set(MAGNUM_${_COMPONENT}_LIBRARY ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG})
+        elseif(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
+            set(MAGNUM_${_COMPONENT}_LIBRARY ${MAGNUM_${_COMPONENT}_LIBRARY_RELEASE})
+        endif()
+
         set(CMAKE_FIND_LIBRARY_PREFIXES ${_tmp_prefixes})
 
     # Set library defaults, find the library
@@ -425,12 +461,18 @@ find_package_handle_standard_args(Magnum
 # Installation dirs
 include(CorradeLibSuffix)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
-set(MAGNUM_PLUGINS_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
-set(MAGNUM_PLUGINS_FONT_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fonts)
-set(MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/fontconverters)
-set(MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/imageconverters)
-set(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/importers)
-set(MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_DEBUG_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
+set(MAGNUM_PLUGINS_RELEASE_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONT_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/audioimporters)
 set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
@@ -440,12 +482,18 @@ mark_as_advanced(FORCE
     MAGNUM_LIBRARY
     MAGNUM_INCLUDE_DIR
     MAGNUM_LIBRARY_INSTALL_DIR
-    MAGNUM_PLUGINS_INSTALL_DIR
-    MAGNUM_PLUGINS_FONT_INSTALL_DIR
-    MAGNUM_PLUGINS_FONTCONVERTER_INSTALL_DIR
-    MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR
-    MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR
-    MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR
+    MAGNUM_PLUGINS_DEBUG_INSTALL_DIR
+    MAGNUM_PLUGINS_RELEASE_INSTALL_DIR
+    MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR
+    MAGNUM_PLUGINS_FONT_RELEASE_INSTALL_DIR
+    MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR
+    MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_INSTALL_DIR
+    MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR
+    MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_INSTALL_DIR
+    MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR
+    MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR
+    MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR
+    MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR
     MAGNUM_CMAKE_MODULE_INSTALL_DIR
     MAGNUM_INCLUDE_INSTALL_DIR
     MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
@@ -460,7 +508,7 @@ if(MAGNUM_BUILD_DEPRECATED)
 endif()
 
 # Get base plugin directory from main library location
-set(MAGNUM_PLUGINS_DIR ${_MAGNUM_LIBRARY_PATH}/magnum
+set(MAGNUM_PLUGINS_DIR ${_MAGNUM_LIBRARY_PATH}/magnum${_MAGNUM_PLUGINS_DIR_SUFFIX}
     CACHE PATH "Base directory where to look for Magnum plugins")
 
 # Plugin directories
