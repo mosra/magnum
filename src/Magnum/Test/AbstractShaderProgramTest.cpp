@@ -76,7 +76,8 @@ AbstractShaderProgramTest::AbstractShaderProgramTest() {
 
 void AbstractShaderProgramTest::attributeScalar() {
     typedef AbstractShaderProgram::Attribute<3, Float> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>::value));
     CORRADE_COMPARE(Int(Attribute::Location), 3);
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
@@ -96,7 +97,8 @@ void AbstractShaderProgramTest::attributeScalar() {
 void AbstractShaderProgramTest::attributeScalarInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Int> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
@@ -114,7 +116,8 @@ void AbstractShaderProgramTest::attributeScalarInt() {
 void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, UnsignedInt> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
@@ -132,7 +135,8 @@ void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
 void AbstractShaderProgramTest::attributeScalarDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Double> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
@@ -145,7 +149,8 @@ void AbstractShaderProgramTest::attributeScalarDouble() {
 
 void AbstractShaderProgramTest::attributeVector() {
     typedef AbstractShaderProgram::Attribute<3, Vector3> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
@@ -169,7 +174,8 @@ void AbstractShaderProgramTest::attributeVector() {
 void AbstractShaderProgramTest::attributeVectorInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Vector2i> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
@@ -189,7 +195,8 @@ void AbstractShaderProgramTest::attributeVectorInt() {
 void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef AbstractShaderProgram::Attribute<3, Vector4ui> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
@@ -209,7 +216,8 @@ void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
 void AbstractShaderProgramTest::attributeVectorDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Vector2d> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Default constructor */
@@ -228,7 +236,8 @@ void AbstractShaderProgramTest::attributeVectorDouble() {
 
 void AbstractShaderProgramTest::attributeVector4() {
     typedef AbstractShaderProgram::Attribute<3, Vector4> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* Custom type */
@@ -244,7 +253,8 @@ void AbstractShaderProgramTest::attributeVector4() {
 void AbstractShaderProgramTest::attributeVectorBGRA() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Vector4> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 1);
 
     /* BGRA */
@@ -257,7 +267,8 @@ void AbstractShaderProgramTest::attributeVectorBGRA() {
 
 void AbstractShaderProgramTest::attributeMatrixNxN() {
     typedef AbstractShaderProgram::Attribute<3, Matrix3> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 3);
 
     /* Default constructor */
@@ -270,7 +281,8 @@ void AbstractShaderProgramTest::attributeMatrixNxN() {
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgramTest::attributeMatrixMxN() {
     typedef AbstractShaderProgram::Attribute<3, Matrix3x4> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 3);
 
     /* Default constructor */
@@ -284,7 +296,8 @@ void AbstractShaderProgramTest::attributeMatrixMxN() {
 void AbstractShaderProgramTest::attributeMatrixNxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Matrix4d> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 4);
 
     /* Default constructor */
@@ -300,7 +313,8 @@ void AbstractShaderProgramTest::attributeMatrixNxNd() {
 void AbstractShaderProgramTest::attributeMatrixMxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef AbstractShaderProgram::Attribute<3, Matrix4x2d> Attribute;
-    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
+    /* GCC 4.5: no bool conversion operator */
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>::value));
     CORRADE_COMPARE(Int(Attribute::VectorCount), 4);
 
     /* Default constructor */
