@@ -154,7 +154,7 @@ cmake .. \
 
 ninja
 ctest --output-on-failure -E GLTest -j5 || true
-ninja install
+ninja install/strip
 ]]>
     </command>
     </hudson.tasks.Shell>
