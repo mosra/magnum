@@ -59,6 +59,12 @@
 # MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES and MAGNUM_APPLICATION_INCLUDE_DIRS
 # / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
+# The package is found if either debug or release version of each requested
+# library is found. If both debug and release libraries are found, proper
+# version is chosen based on actual build configuration of the project (i.e.
+# Debug build is linked to debug libraries, Release build to release
+# libraries).
+#
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
 #   included
@@ -75,13 +81,14 @@
 # plugins (i.e. instead of `MagnumPlugins/` prefix).
 #
 # Additionally these variables are defined for internal usage:
-#  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
-#   dependencies)
-#  MAGNUM_LIBRARY                       - Magnum library (w/o
-#   dependencies)
-#  MAGNUM_*_LIBRARY                     - Component libraries (w/o
-#   dependencies)
-#  MAGNUM_LIBRARY_INSTALL_DIR           - Library installation directory
+#  MAGNUM_INCLUDE_DIR           - Root include dir (w/o dependencies)
+#  MAGNUM_LIBRARY               - Magnum library (w/o dependencies)
+#  MAGNUM_LIBRARY_DEBUG         - Debug version of Magnum library, if found
+#  MAGNUM_LIBRARY_RELEASE       - Release version of Magnum library, if found
+#  MAGNUM_*_LIBRARY             - Component libraries (w/o dependencies)
+#  MAGNUM_*_LIBRARY_DEBUG       - Debug version of given library, if found
+#  MAGNUM_*_LIBRARY_RELEASE     - Release version of given library, if found
+#  MAGNUM_LIBRARY_INSTALL_DIR   - Library installation directory
 #  MAGNUM_PLUGINS_INSTALL_DIR           - Plugin installation directory
 #  MAGNUM_PLUGINS_FONT_INSTALL_DIR      - Font plugin installation
 #   directory
@@ -93,11 +100,10 @@
 #   directory
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR - Audio omporter plugin
 #   installation directory
-#  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake
-#   Find* modules
-#  MAGNUM_INCLUDE_INSTALL_DIR           - Header installation directory
-#  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR   - Plugin header installation
-#   directory
+#  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake Find*
+#   modules
+#  MAGNUM_INCLUDE_INSTALL_DIR   - Header installation directory
+#  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR - Plugin header installation directory
 #
 
 #
@@ -128,8 +134,23 @@
 # Dependencies
 find_package(Corrade REQUIRED)
 
-# Magnum library
-find_library(MAGNUM_LIBRARY Magnum)
+# Base Magnum library
+find_library(MAGNUM_LIBRARY_DEBUG Magnum-d)
+find_library(MAGNUM_LIBRARY_RELEASE Magnum)
+
+# Set the MAGNUM_LIBRARY variable based on what was found
+if(MAGNUM_LIBRARY_DEBUG AND MAGNUM_LIBRARY_RELEASE)
+    set(MAGNUM_LIBRARY
+        debug ${MAGNUM_LIBRARY_DEBUG}
+        optimized ${MAGNUM_LIBRARY_RELEASE})
+    get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_DEBUG} PATH)
+elseif(MAGNUM_LIBRARY_DEBUG)
+    set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_DEBUG})
+    get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_DEBUG} PATH)
+elseif(MAGNUM_LIBRARY_RELEASE)
+    set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_RELEASE})
+    get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_RELEASE} PATH)
+endif()
 
 # Root include dir
 find_path(MAGNUM_INCLUDE_DIR
@@ -247,7 +268,20 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/${component})
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
 
-        find_library(MAGNUM_${_COMPONENT}_LIBRARY Magnum${component})
+        # Try to find both debug and release version
+        find_library(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG Magnum${component}-d)
+        find_library(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE Magnum${component})
+
+        # Set the _LIBRARY variable based on what was found
+        if(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG AND MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
+            set(MAGNUM_${_COMPONENT}_LIBRARY
+                debug ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG}
+                optimized ${MAGNUM_${_COMPONENT}_LIBRARY_RELEASE})
+        elseif(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG)
+            set(MAGNUM_${_COMPONENT}_LIBRARY ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG})
+        elseif(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
+            set(MAGNUM_${_COMPONENT}_LIBRARY ${MAGNUM_${_COMPONENT}_LIBRARY_RELEASE})
+        endif()
     endif()
 
     # Applications
@@ -353,7 +387,11 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         set(Magnum_${component}_FOUND TRUE)
 
         # Don't expose variables w/o dependencies to end users
-        mark_as_advanced(FORCE MAGNUM_${_COMPONENT}_LIBRARY _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
+        mark_as_advanced(FORCE
+            MAGNUM_${_COMPONENT}_LIBRARY_DEBUG
+            MAGNUM_${_COMPONENT}_LIBRARY_RELEASE
+            MAGNUM_${_COMPONENT}_LIBRARY
+            _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
 
         # Global aliases for Windowless*Application and *Application components.
         # If already set, unset them to avoid ambiguity.
@@ -397,6 +435,8 @@ set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
 mark_as_advanced(FORCE
+    MAGNUM_LIBRARY_DEBUG
+    MAGNUM_LIBRARY_RELEASE
     MAGNUM_LIBRARY
     MAGNUM_INCLUDE_DIR
     MAGNUM_LIBRARY_INSTALL_DIR
@@ -420,7 +460,6 @@ if(MAGNUM_BUILD_DEPRECATED)
 endif()
 
 # Get base plugin directory from main library location
-get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY} PATH)
 set(MAGNUM_PLUGINS_DIR ${_MAGNUM_LIBRARY_PATH}/magnum
     CACHE PATH "Base directory where to look for Magnum plugins")
 

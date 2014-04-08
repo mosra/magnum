@@ -60,6 +60,7 @@ if(BUILD_STATIC)
 endif()
 
 add_library(MagnumShaders ${SHARED_OR_STATIC} ${MagnumShaders_SRCS})
+set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(MagnumShaders PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")

@@ -132,6 +132,11 @@ convenience aliases `MAGNUM_APPLICATION_LIBRARIES` /
 `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES` and `MAGNUM_APPLICATION_INCLUDE_DIRS`
 / `MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS` to simplify porting.
 
+The package is found if either debug or release version of each requested
+library is found. If both debug and release libraries are found, proper version
+is chosen based on actual build configuration of the project (i.e. `Debug`
+build is linked to debug libraries, `Release` build to release libraries).
+
 Features of found %Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including Magnum.h:
 
