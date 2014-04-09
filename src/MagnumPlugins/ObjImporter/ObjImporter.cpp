@@ -371,15 +371,16 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             }
 
         /* Ignore unsupported keywords, error out on unknown keywords */
-        } else if(![&keyword](){
-            /* Using lambda to emulate for-else construct like in Python */
+        } else {
+            bool valid = false;
             const std::initializer_list<std::string> expected{"mtllib", "usemtl", "g", "s"};
             for(auto it = expected.begin(); it != expected.end(); ++it)
-                if(keyword == *it) return true;
-            return false;
-        }()) {
-            Error() << "Trade::ObjImporter::mesh3D(): unknown keyword" << keyword;
-            return std::nullopt;
+                if(keyword == *it) valid = true;
+
+            if(!valid) {
+                Error() << "Trade::ObjImporter::mesh3D(): unknown keyword" << keyword;
+                return std::nullopt;
+            }
         }
 
     }} catch(std::exception) {
