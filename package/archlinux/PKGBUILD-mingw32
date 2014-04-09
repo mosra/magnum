@@ -34,5 +34,5 @@ build() {
 
 package() {
   cd "$startdir/build-win"
-  DESTDIR="$pkgdir/" ninja install
+  DESTDIR="$pkgdir/" ninja install/strip
 }
