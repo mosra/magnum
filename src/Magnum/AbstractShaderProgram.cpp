@@ -299,7 +299,13 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             out.setFlag(Debug::NewLineAtTheEnd, false);
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) out << " of shader " << std::to_string(i);
+            if(shaders.size() != 1) {
+                #ifndef CORRADE_GCC44_COMPATIBILITY
+                out << " of shader " << std::to_string(i);
+                #else
+                out << " of shader " << std::to_string(static_cast<long long int>(i));
+                #endif
+            }
             out << " failed with the following message:\n"
                 << message;
 
@@ -309,7 +315,13 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             out.setFlag(Debug::NewLineAtTheEnd, false);
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) out << " of shader " << std::to_string(i);
+            if(shaders.size() != 1) {
+                #ifndef CORRADE_GCC44_COMPATIBILITY
+                out << " of shader " << std::to_string(i);
+                #else
+                out << " of shader " << std::to_string(static_cast<long long int>(i));
+                #endif
+            }
             out << " succeeded with the following message:\n"
                 << message;
         }

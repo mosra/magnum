@@ -679,7 +679,13 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "Shader::compile(): compilation of " << shaderName(shader._type)
                 << " shader";
-            if(shaders.size() != 1) out << ' ' << std::to_string(i);
+            if(shaders.size() != 1) {
+                #ifndef CORRADE_GCC44_COMPATIBILITY
+                out << ' ' << std::to_string(i);
+                #else
+                out << ' ' << std::to_string(static_cast<long long int>(i));
+                #endif
+            }
             out << " failed with the following message:\n"
                 << message;
 
@@ -690,7 +696,13 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "Shader::compile(): compilation of " << shaderName(shader._type)
                 << " shader";
-            if(shaders.size() != 1) out << ' ' << std::to_string(i);
+            if(shaders.size() != 1) {
+                #ifndef CORRADE_GCC44_COMPATIBILITY
+                out << ' ' << std::to_string(i);
+                #else
+                out << ' ' << std::to_string(static_cast<long long int>(i));
+                #endif
+            }
             out << " succeeded with the following message:\n"
                 << message;
         }
