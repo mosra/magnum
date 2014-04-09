@@ -67,7 +67,8 @@ template<> bool collides(const AbstractShape<2>& a, const AbstractShape<2>& b) {
 }
 
 template<> Collision<2> collision(const AbstractShape<2>& a, const AbstractShape<2>& b) {
-    if(a.type() < b.type()) return collision(b, a);
+    /* GCC 4.4 doesn't have comparison operators for strongly typed enums */
+    if(UnsignedInt(a.type()) < UnsignedInt(b.type())) return collision(b, a);
 
     switch(UnsignedInt(a.type())*UnsignedInt(b.type())) {
         #define _c(aType, aClass, bType, bClass) \
@@ -114,7 +115,8 @@ template<> bool collides(const AbstractShape<3>& a, const AbstractShape<3>& b) {
 }
 
 template<> Collision<3> collision(const AbstractShape<3>& a, const AbstractShape<3>& b) {
-    if(a.type() < b.type()) return collision(b, a);
+    /* GCC 4.4 doesn't have comparison operators for strongly typed enums */
+    if(UnsignedInt(a.type()) < UnsignedInt(b.type())) return collision(b, a);
 
     switch(UnsignedInt(a.type())*UnsignedInt(b.type())) {
         #define _c(aType, aClass, bType, bClass) \
