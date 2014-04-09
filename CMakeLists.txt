@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.8)
 project(Magnum)
 
 # Find Corrade first so we can check on the target
@@ -101,14 +101,6 @@ option(BUILD_TESTS "Build unit tests." OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code." OFF "BUILD_TESTS" OFF)
 if(BUILD_TESTS)
     enable_testing()
-endif()
-
-if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_LESS 2.8.8)
-    set(CMAKE_NO_OBJECT_TARGET 1)
-    message(WARNING "CMake version < 2.8.8 is used, compilation with tests enabled will take a lot more time.")
-
-    cmake_policy(SET CMP0017 NEW)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Magnum_SOURCE_DIR}/modules-compatibility/")
 endif()
 
 # If targeting NaCl or Emscripten, set explicit OpenGL ES 2.0 support
