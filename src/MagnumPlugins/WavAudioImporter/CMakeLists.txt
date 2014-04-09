@@ -49,6 +49,7 @@ install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_I
 
 if(BUILD_TESTS)
     add_library(MagnumWavAudioImporterTestLib STATIC $<TARGET_OBJECTS:WavAudioImporterObjects>)
+    set_target_properties(MagnumWavAudioImporterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWavAudioImporterTestLib Magnum MagnumAudio)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

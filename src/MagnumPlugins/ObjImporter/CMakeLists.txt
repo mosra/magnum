@@ -38,6 +38,7 @@ install(FILES ObjImporter.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/Ob
 
 if(BUILD_TESTS)
     add_library(MagnumObjImporterTestLib STATIC $<TARGET_OBJECTS:ObjImporterObjects>)
+    set_target_properties(MagnumObjImporterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

@@ -43,6 +43,7 @@ install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTAL
 
 if(BUILD_TESTS)
     add_library(MagnumTgaImporterTestLib ${SHARED_OR_STATIC} $<TARGET_OBJECTS:TgaImporterObjects>)
+    set_target_properties(MagnumTgaImporterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumTgaImporterTestLib Magnum)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

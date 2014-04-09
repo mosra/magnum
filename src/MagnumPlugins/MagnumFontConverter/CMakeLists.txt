@@ -46,6 +46,7 @@ install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUD
 
 if(BUILD_GL_TESTS)
     add_library(MagnumMagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
+    set_target_properties(MagnumMagnumFontConverterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumMagnumFontConverterTestLib Magnum MagnumText MagnumTgaImageConverterTestLib)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

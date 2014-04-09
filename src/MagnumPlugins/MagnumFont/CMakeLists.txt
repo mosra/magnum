@@ -46,6 +46,7 @@ install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL
 
 if(BUILD_GL_TESTS)
     add_library(MagnumMagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
+    set_target_properties(MagnumMagnumFontTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumMagnumFontTestLib Magnum MagnumText MagnumTgaImporterTestLib)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

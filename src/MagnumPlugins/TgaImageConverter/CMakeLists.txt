@@ -42,6 +42,7 @@ install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_
 
 if(BUILD_TESTS)
     add_library(MagnumTgaImageConverterTestLib ${SHARED_OR_STATIC} $<TARGET_OBJECTS:TgaImageConverterObjects>)
+    set_target_properties(MagnumTgaImageConverterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumTgaImageConverterTestLib Magnum)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
