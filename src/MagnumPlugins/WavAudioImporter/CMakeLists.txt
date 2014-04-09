@@ -48,13 +48,13 @@ target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
 if(BUILD_TESTS)
-    add_library(WavAudioImporterTestLib STATIC $<TARGET_OBJECTS:WavAudioImporterObjects>)
-    target_link_libraries(WavAudioImporterTestLib Magnum MagnumAudio)
+    add_library(MagnumWavAudioImporterTestLib STATIC $<TARGET_OBJECTS:WavAudioImporterObjects>)
+    target_link_libraries(MagnumWavAudioImporterTestLib Magnum MagnumAudio)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS WavAudioImporterTestLib
+        install(TARGETS MagnumWavAudioImporterTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

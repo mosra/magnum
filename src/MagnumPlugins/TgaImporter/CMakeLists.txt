@@ -42,13 +42,13 @@ target_link_libraries(TgaImporter Magnum)
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
 
 if(BUILD_TESTS)
-    add_library(TgaImporterTestLib ${SHARED_OR_STATIC} $<TARGET_OBJECTS:TgaImporterObjects>)
-    target_link_libraries(TgaImporterTestLib Magnum)
+    add_library(MagnumTgaImporterTestLib ${SHARED_OR_STATIC} $<TARGET_OBJECTS:TgaImporterObjects>)
+    target_link_libraries(MagnumTgaImporterTestLib Magnum)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS TgaImporterTestLib
+        install(TARGETS MagnumTgaImporterTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
