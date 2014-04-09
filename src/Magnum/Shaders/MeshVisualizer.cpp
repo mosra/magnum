@@ -75,11 +75,12 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     }
     #endif
 
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
     #ifndef MAGNUM_TARGET_GLES
-    if(geom) Shader::compile({vert, *geom, frag});
+    if(geom) Shader::compile({std::ref(vert), std::ref(*geom), std::ref(frag)});
     else
     #endif
-        Shader::compile({vert, frag});
+        Shader::compile({std::ref(vert), std::ref(frag)});
 
     attachShader(vert);
     attachShader(frag);

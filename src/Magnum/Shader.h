@@ -548,7 +548,10 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * for improved performance, see its documentation for more
          * information.
          */
-        bool compile() { return compile({*this}); }
+        bool compile() {
+            /* GCC 4.4: explicit std::reference_wrapper constructor */
+            return compile({std::ref(*this)});
+        }
 
     private:
         Type _type;

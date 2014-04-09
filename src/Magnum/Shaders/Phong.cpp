@@ -64,7 +64,8 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
         .addSource(rs.get("Phong.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
     attachShader(vert);
     attachShader(frag);

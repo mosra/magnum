@@ -666,7 +666,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * for improved performance, see its documentation for more
          * information.
          */
-        bool link() { return link({*this}); }
+        bool link() {
+            /* GCC 4.4: explicit std::reference_wrapper constructor */
+            return link({std::ref(*this)});
+        }
 
         /**
          * @brief Get uniform location
