@@ -150,7 +150,13 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
         return std::make_tuple(attributeCount, stride, std::move(data));
 
     /* Otherwise return nullptr */
-    } else return std::make_tuple(0, stride, nullptr);
+    } else {
+        #ifndef CORRADE_GCC44_COMPATIBILITY
+        return std::make_tuple(0, stride, nullptr);
+        #else
+        return std::tuple<std::size_t, std::size_t, Containers::Array<char>>(0, stride, Containers::Array<char>());
+        #endif
+    }
 }
 
 /**
