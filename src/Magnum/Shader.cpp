@@ -662,6 +662,12 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             glGetShaderInfoLog(shader._id, message.size(), nullptr, &message[0]);
         message.resize(std::max(logLength, 1)-1);
 
+        /** @todo Remove when this is fixed everywhere (also the include above) */
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+        std::ostringstream converter;
+        converter << i;
+        #endif
+
         /* Show error log */
         if(!success) {
             Error out;
@@ -669,7 +675,13 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "Shader::compile(): compilation of " << shaderName(shader._type)
                 << " shader";
-            if(shaders.size() != 1) out << ' ' << std::to_string(i);
+            if(shaders.size() != 1) {
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+                out << ' ' << std::to_string(i);
+                #else
+                out << ' ' << converter.str();
+                #endif
+            }
             out << " failed with the following message:\n"
                 << message;
 
@@ -680,7 +692,13 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "Shader::compile(): compilation of " << shaderName(shader._type)
                 << " shader";
-            if(shaders.size() != 1) out << ' ' << std::to_string(i);
+            if(shaders.size() != 1) {
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+                out << ' ' << std::to_string(i);
+                #else
+                out << ' ' << converter.str();
+                #endif
+            }
             out << " succeeded with the following message:\n"
                 << message;
         }
