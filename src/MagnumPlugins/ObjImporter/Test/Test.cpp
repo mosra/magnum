@@ -92,7 +92,7 @@ class ObjImporterTest: public TestSuite::Tester {
 };
 
 ObjImporterTest::ObjImporterTest() {
-    addTests({&ObjImporterTest::pointMesh,
+    addTests<ObjImporterTest>({&ObjImporterTest::pointMesh,
               &ObjImporterTest::lineMesh,
               &ObjImporterTest::triangleMesh,
               &ObjImporterTest::mixedPrimitives,

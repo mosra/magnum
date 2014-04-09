@@ -38,7 +38,7 @@ class ContextTest: public TestSuite::Tester {
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::debugFlag});
+    addTests<ContextTest>({&ContextTest::debugFlag});
 }
 
 void ContextTest::debugFlag() {
