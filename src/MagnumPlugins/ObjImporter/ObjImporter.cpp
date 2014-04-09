@@ -71,7 +71,7 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
 
 template<class T> void reindex(const std::vector<UnsignedInt>& indices, std::vector<T>& data) {
     /* Check that indices are in range */
-    for(UnsignedInt i: indices) if(i >= data.size()) {
+    for(auto it = indices.begin(); it != indices.end(); ++it) if(*it >= data.size()) {
         Error() << "Trade::ObjImporter::mesh3D(): index out of range";
         throw 0;
     }
@@ -109,7 +109,8 @@ void ObjImporter::doOpenFile(const std::string& filename) {
 void ObjImporter::doOpenData(Containers::ArrayReference<const unsigned char> data) {
     /* Open file in *text* mode (to avoid \r handling) */
     _file.reset(new File);
-    _file->in.reset(new std::istringstream{{reinterpret_cast<const char*>(data.begin()), data.size()}});
+    /* GCC 4.5 needs explicit type to avoid ambiguous call */
+    _file->in.reset(new std::istringstream{std::string(reinterpret_cast<const char*>(data.begin()), data.size())});
 
     parseMeshNames();
 }
@@ -198,10 +199,13 @@ void ObjImporter::parseMeshNames() {
 
         /* Index data, just mark that we found something for first unnamed
            object */
-        } else if(thisIsFirstMeshAndItHasNoData) for(const std::string& data: {"p", "l", "f"}) {
-            if(keyword == data) {
-                thisIsFirstMeshAndItHasNoData = false;
-                break;
+        } else if(thisIsFirstMeshAndItHasNoData) {
+            const std::initializer_list<std::string> data{"p", "l", "f"};
+            for(auto it = data.begin(); it != data.end(); ++it) {
+                if(keyword == *it) {
+                    thisIsFirstMeshAndItHasNoData = false;
+                    break;
+                }
             }
         }
 
@@ -347,8 +351,8 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
 
             } else CORRADE_ASSERT_UNREACHABLE();
 
-            for(const std::string& indexTuple: indexTuples) {
-                std::vector<std::string> indices = Utility::String::split(indexTuple, '/');
+            for(auto it = indexTuples.begin(); it != indexTuples.end(); ++it) {
+                std::vector<std::string> indices = Utility::String::split(*it, '/');
                 if(indices.size() > 3) {
                     Error() << "Trade::ObjImporter::mesh3D(): invalid index data";
                     return std::nullopt;
@@ -369,8 +373,9 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
         /* Ignore unsupported keywords, error out on unknown keywords */
         } else if(![&keyword](){
             /* Using lambda to emulate for-else construct like in Python */
-            for(const std::string expected: {"mtllib", "usemtl", "g", "s"})
-                if(keyword == expected) return true;
+            const std::initializer_list<std::string> expected{"mtllib", "usemtl", "g", "s"};
+            for(auto it = expected.begin(); it != expected.end(); ++it)
+                if(keyword == *it) return true;
             return false;
         }()) {
             Error() << "Trade::ObjImporter::mesh3D(): unknown keyword" << keyword;
@@ -437,7 +442,7 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
        check range */
     } else {
         indices = std::move(positionIndices);
-        for(UnsignedInt i: indices) if(i >= positions.size()) {
+        for(auto it = indices.begin(); it != indices.end(); ++it) if(*it >= positions.size()) {
             Error() << "Trade::ObjImporter::mesh3D(): index out of range";
             return std::nullopt;
         }
