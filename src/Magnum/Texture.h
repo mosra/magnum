@@ -337,7 +337,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         * @requires_gl Border is available only for float textures in OpenGL
+         *      ES.
+         */
         Texture<dimensions>& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;

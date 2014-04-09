@@ -37,13 +37,13 @@ target_link_libraries(ObjImporter Magnum MagnumMeshTools)
 install(FILES ObjImporter.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
 
 if(BUILD_TESTS)
-    add_library(ObjImporterTestLib STATIC $<TARGET_OBJECTS:ObjImporterObjects>)
-    target_link_libraries(ObjImporterTestLib Magnum MagnumMeshTools)
+    add_library(MagnumObjImporterTestLib STATIC $<TARGET_OBJECTS:ObjImporterObjects>)
+    target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS ObjImporterTestLib
+        install(TARGETS MagnumObjImporterTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

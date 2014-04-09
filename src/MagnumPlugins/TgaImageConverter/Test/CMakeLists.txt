@@ -28,4 +28,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
-corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES TgaImageConverterTestLib TgaImporterTestLib)
+corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES MagnumTgaImageConverterTestLib MagnumTgaImporterTestLib)

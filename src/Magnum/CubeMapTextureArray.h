@@ -99,13 +99,36 @@ class CubeMapTextureArray: public AbstractTexture {
         }
         #endif
 
-        /** @copydoc Texture::setBaseLevel() */
+        /**
+         * @brief Set base mip level
+         * @return Reference to self (for method chaining)
+         *
+         * Taken into account when generating mipmap using @ref generateMipmap()
+         * and when considering texture completeness when using mipmap
+         * filtering. Initial value is `0`.
+         * @see @ref setMaxLevel(), @ref setMinificationFilter(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_BASE_LEVEL}
+         */
         CubeMapTextureArray& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
             return *this;
         }
 
-        /** @copydoc Texture::setMaxLevel() */
+        /**
+         * @brief Set max mip level
+         * @return Reference to self (for method chaining)
+         *
+         * Taken into account when generating mipmap using @ref generateMipmap()
+         * and when considering texture completeness when using mipmap
+         * filtering. Initial value is `1000`, which is clamped to count of
+         * levels specified when using @ref setStorage().
+         * @see @ref setBaseLevel(), @ref setMinificationFilter(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_MAX_LEVEL}
+         */
         CubeMapTextureArray& setMaxLevel(Int level) {
             AbstractTexture::setMaxLevel(level);
             return *this;
@@ -129,19 +152,19 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor() */
+        /** @copydoc RectangleTexture::setBorderColor(const Color4&) */
         CubeMapTextureArray& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor(const Vector4ui&) */
+        /** @copydoc RectangleTexture::setBorderColor(const Vector4ui&) */
         CubeMapTextureArray& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor(const Vector4i&) */
+        /** @copydoc RectangleTexture::setBorderColor(const Vector4i&) */
         CubeMapTextureArray& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;

@@ -36,6 +36,10 @@
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+#include <sstream>
+#endif
+
 namespace Magnum {
 
 Int AbstractShaderProgram::maxVertexAttributes() {
@@ -293,6 +297,12 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             glGetProgramInfoLog(shader._id, message.size(), nullptr, &message[0]);
         message.resize(std::max(logLength, 1)-1);
 
+        /** @todo Remove when this is fixed everywhere (also the include above) */
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+        std::ostringstream converter;
+        converter << i;
+        #endif
+
         /* Show error log */
         if(!success) {
             Error out;
@@ -300,10 +310,14 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
                 #ifndef CORRADE_GCC44_COMPATIBILITY
                 out << " of shader " << std::to_string(i);
                 #else
                 out << " of shader " << std::to_string(static_cast<long long int>(i));
+                #endif
+                #else
+                out << " of shader " << converter.str();
                 #endif
             }
             out << " failed with the following message:\n"
@@ -316,10 +330,14 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
                 #ifndef CORRADE_GCC44_COMPATIBILITY
                 out << " of shader " << std::to_string(i);
                 #else
                 out << " of shader " << std::to_string(static_cast<long long int>(i));
+                #endif
+                #else
+                out << " of shader " << converter.str();
                 #endif
             }
             out << " succeeded with the following message:\n"

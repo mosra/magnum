@@ -38,5 +38,5 @@ build() {
 
 package() {
     cd "$startdir/build-android-x86"
-    DESTDIR="$pkgdir/" ninja install
+    DESTDIR="$pkgdir/" ninja install/strip
 }

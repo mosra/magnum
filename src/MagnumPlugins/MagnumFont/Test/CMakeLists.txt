@@ -28,4 +28,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
-corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp LIBRARIES MagnumFontTestLib ${GL_TEST_LIBRARIES})
+corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp LIBRARIES MagnumMagnumFontTestLib ${GL_TEST_LIBRARIES})

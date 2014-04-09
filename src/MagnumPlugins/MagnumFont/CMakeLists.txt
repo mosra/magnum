@@ -45,13 +45,13 @@ endif()
 install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
 
 if(BUILD_GL_TESTS)
-    add_library(MagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
-    target_link_libraries(MagnumFontTestLib Magnum MagnumText TgaImporterTestLib)
+    add_library(MagnumMagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
+    target_link_libraries(MagnumMagnumFontTestLib Magnum MagnumText MagnumTgaImporterTestLib)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumFontTestLib
+        install(TARGETS MagnumMagnumFontTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

@@ -39,19 +39,19 @@ add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR}
 target_link_libraries(MagnumFontConverter Magnum MagnumText)
 
 if(WIN32)
-    target_link_libraries(MagnumFontConverter TgaImageConverter)
+    target_link_libraries(MagnumFontConverter MagnumTgaImageConverter)
 endif()
 
 install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
 
 if(BUILD_GL_TESTS)
-    add_library(MagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
-    target_link_libraries(MagnumFontConverterTestLib Magnum MagnumText TgaImageConverterTestLib)
+    add_library(MagnumMagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
+    target_link_libraries(MagnumMagnumFontConverterTestLib Magnum MagnumText MagnumTgaImageConverterTestLib)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumFontConverterTestLib
+        install(TARGETS MagnumMagnumFontConverterTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
