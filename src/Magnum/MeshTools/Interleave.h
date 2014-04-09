@@ -151,7 +151,7 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
 
     /* Otherwise return nullptr */
     } else {
-        #ifndef CORRADE_GCC44_COMPATIBILITY
+        #if !defined(CORRADE_GCC44_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
         return std::make_tuple(0, stride, nullptr);
         #else
         return std::tuple<std::size_t, std::size_t, Containers::Array<char>>(0, stride, Containers::Array<char>());
