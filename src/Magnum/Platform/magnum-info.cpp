@@ -249,6 +249,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(AbstractTexture::maxDepthSamples())
     _l(AbstractTexture::maxIntegerSamples())
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _l(AbstractTexture::maxLodBias())
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
