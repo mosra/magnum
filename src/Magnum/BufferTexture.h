@@ -154,9 +154,8 @@ enum class BufferTextureFormat: GLenum {
 /**
 @brief %Buffer texture
 
-This texture is, unlike classic textures such as @ref Texture or
-@ref CubeMapTexture, used as simple data source, without any unnecessary
-interpolation and wrapping methods.
+This texture is, unlike classic textures such as @ref Texture used as simple
+data source, without any unnecessary interpolation and wrapping methods.
 
 @section BufferTexture-usage Usage
 
@@ -195,7 +194,7 @@ functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 and respective function documentation for more information.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
-    @ref CubeMapTextureArray, @ref MultisampleTexture, @ref RectangleTexture
+    @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
 @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */

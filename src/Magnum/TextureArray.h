@@ -84,13 +84,12 @@ In shader, the texture is used via `sampler1DArray`/`sampler2DArray`,
 or `usampler1DArray`/`usampler2DArray`. See @ref AbstractShaderProgram
 documentation for more information about usage in shaders.
 
+@see @ref Texture1DArray, @ref Texture2DArray, @ref Texture,
+    @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
+    @ref BufferTexture, @ref MultisampleTexture
 @requires_gl30 %Extension @extension{EXT,texture_array}
 @requires_gles30 %Array textures are not available in OpenGL ES 2.0.
 @requires_gl 1D array textures are not available in OpenGL ES, only 2D ones.
-
-@see @ref Texture1DArray, @ref Texture2DArray, @ref Texture, @ref BufferTexture,
-    @ref CubeMapTexture, @ref CubeMapTextureArray, @ref MultisampleTexture,
-    @ref RectangleTexture
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
     public:

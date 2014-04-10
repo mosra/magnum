@@ -57,22 +57,29 @@ enum class MultisampleTextureSampleLocations: GLboolean {
 /**
 @brief Mulitsample texture
 
-Template class for 2D mulitsample texture and 2D multisample texture array. See
+Template class for 2D mulitsample texture and 2D multisample texture array.
+Used only from shaders for manual multisample resolve and other operations. See
 also @ref AbstractTexture documentation for more information.
 
-@todoc Finish when fully implemented
+@section Texture-usage Usage
+
+As multisample textures have no sampler state, the only thing you need is to
+set storage:
+@code
+MultisampleTexture2D texture;
+texture.setStorage(16, TextureFormat::RGBA8, {1024, 1024});
+@endcode
 
 In shader, the texture is used via `sampler2DMS`/`sampler2DMSArray`,
 `isampler2DMS`/`isampler2DMSArray` or `usampler2DMS`/`usampler2DMSArray`. See
 @ref AbstractShaderProgram documentation for more information about usage in
 shaders.
 
+@see @ref MultisampleTexture2D, @ref MultisampleTexture2DArray, @ref Texture,
+    @ref TextureArray, @ref CubeMapTexture, @ref CubeMapTextureArray,
+    @ref RectangleTexture, @ref BufferTexture
 @requires_gl32 %Extension @extension{ARB,texture_multisample}
 @requires_gl Multisample textures are not available in OpenGL ES.
-
-@see @ref MultisampleTexture2D, @ref MultisampleTexture2DArray, @ref Texture,
-    @ref TextureArray, @ref BufferTexture, @ref CubeMapTexture,
-    @ref CubeMapTextureArray, @ref RectangleTexture
  */
 template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTexture {
     public:

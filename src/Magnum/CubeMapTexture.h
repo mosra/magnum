@@ -76,7 +76,8 @@ which intersects one of the six sides of the cube map. See
 @ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTextureArray,
-    @ref Texture, @ref BufferTexture
+    @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
+    @ref MultisampleTexture
 */
 class CubeMapTexture: public AbstractTexture {
     public:

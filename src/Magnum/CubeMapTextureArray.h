@@ -45,6 +45,8 @@ See @ref CubeMapTexture documentation for introduction.
 
 @section CubeMapTextureArray-usage Usage
 
+See @ref Texture documentation for introduction.
+
 Common usage is to specify each layer and face separately using @ref setSubImage().
 You have to allocate the memory for all layers and faces first by calling
 @ref setStorage(). Example: array with 4 layers of cube maps, each cube map
@@ -75,7 +77,8 @@ the six sides of the cube map, fourth part is layer in the array. See
 @ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTexture,
-    @ref Texture, @ref BufferTexture
+    @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
+    @ref MultisampleTexture
 @requires_gl40 %Extension @extension{ARB,texture_cube_map_array}
 @requires_gl Cube map texture arrays are not available in OpenGL ES.
 */
@@ -93,13 +96,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set base mip level
          * @return Reference to self (for method chaining)
          *
-         * Taken into account when generating mipmap using @ref generateMipmap()
-         * and when considering texture completeness when using mipmap
-         * filtering. Initial value is `0`.
-         * @see @ref setMaxLevel(), @ref setMinificationFilter(),
-         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_BASE_LEVEL}
+         * See @ref Texture::setBaseLevel() for more information.
          */
         CubeMapTextureArray& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
@@ -110,14 +107,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @brief Set max mip level
          * @return Reference to self (for method chaining)
          *
-         * Taken into account when generating mipmap using @ref generateMipmap()
-         * and when considering texture completeness when using mipmap
-         * filtering. Initial value is `1000`, which is clamped to count of
-         * levels specified when using @ref setStorage().
-         * @see @ref setBaseLevel(), @ref setMinificationFilter(),
-         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MAX_LEVEL}
+         * See @ref Texture::setMaxLevel() for more information.
          */
         CubeMapTextureArray& setMaxLevel(Int level) {
             AbstractTexture::setMaxLevel(level);
@@ -142,19 +132,37 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
-        /** @copydoc RectangleTexture::setBorderColor(const Color4&) */
+        /**
+         * @brief Set border color
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Color4&) for more
+         * information.
+         */
         CubeMapTextureArray& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc RectangleTexture::setBorderColor(const Vector4ui&) */
+        /**
+         * @brief Set border color for integer texture
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Vector4ui&) for more
+         * information.
+         */
         CubeMapTextureArray& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc RectangleTexture::setBorderColor(const Vector4i&) */
+        /**
+         * @brief Set border color for integer texture
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Vector4i&) for more
+         * information.
+         */
         CubeMapTextureArray& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;

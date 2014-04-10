@@ -63,11 +63,10 @@ In shader, the texture is used via sampler2DRect`, `sampler2DRectShadow`,
 `isampler2DRect` or `usampler2DRect`. See @ref AbstractShaderProgram
 documentation for more information about usage in shaders.
 
+@see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
+    @ref CubeMapTextureArray, @ref BufferTexture, @ref MultisampleTexture
 @requires_gl31 %Extension @extension{ARB,texture_rectangle}
 @requires_gl Rectangle textures are not available in OpenGL ES.
-
-@see @ref Texture, @ref TextureArray, @ref BufferTexture, @ref CubeMapTexture,
-    @ref CubeMapTextureArray, @ref MultisampleTexture
  */
 class RectangleTexture: public AbstractTexture {
     public:
@@ -88,8 +87,9 @@ class RectangleTexture: public AbstractTexture {
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some texture unit before the
          * operation. Initial value is @ref Sampler::Filter::Linear.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         * @see @ref setMagnificationFilter(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MIN_FILTER}
          */
         RectangleTexture& setMinificationFilter(Sampler::Filter filter) {
@@ -109,7 +109,7 @@ class RectangleTexture: public AbstractTexture {
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref image(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH} and @def_gl{TEXTURE_HEIGHT}
          */
@@ -120,16 +120,17 @@ class RectangleTexture: public AbstractTexture {
          * @param wrapping          Wrapping type for all texture dimensions
          * @return Reference to self (for method chaining)
          *
-         * Sets wrapping type for coordinates out of (0, textureSizeInGivenDirection-1)
+         * Sets wrapping type for coordinates out of @f$ [ 0, size - 1 ] @f$
          * range. If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some texture unit before the operation. Initial
          * value is @ref Sampler::Wrapping::ClampToEdge.
          * @attention Only @ref Sampler::Wrapping::ClampToEdge and
          *      @ref Sampler::Wrapping::ClampToBorder is supported on this
          *      texture type.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
+         * @see @ref setBorderColor(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
          */
         RectangleTexture& setWrapping(const Array2D<Sampler::Wrapping>& wrapping) {
@@ -141,13 +142,8 @@ class RectangleTexture: public AbstractTexture {
          * @brief Set border color
          * @return Reference to self (for method chaining)
          *
-         * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
-         * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation. Initial value is
-         * `{0.0f, 0.0f, 0.0f, 0.0f}`.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         * See @ref Texture::setBorderColor(const Color4&) for more
+         * information.
          */
         RectangleTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
@@ -158,22 +154,20 @@ class RectangleTexture: public AbstractTexture {
          * @brief Set border color for integer texture
          * @return Reference to self (for method chaining)
          *
-         * Border color for integer textures when wrapping is set to
-         * @ref Sampler::Wrapping::ClampToBorder. If @extension{EXT,direct_state_access}
-         * is not available, the texture is bound to some texture unit before
-         * the operation. Initial value is `{0, 0, 0, 0}`.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         * See @ref Texture::setBorderColor(const Vector4ui&) for more
+         * information.
          */
         RectangleTexture& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @overload
-         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+        /**
+         * @brief Set border color for integer texture
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Vector4i&) for more
+         * information.
          */
         RectangleTexture& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);

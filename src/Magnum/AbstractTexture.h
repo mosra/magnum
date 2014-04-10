@@ -39,9 +39,10 @@ namespace Implementation { struct TextureState; }
 /**
 @brief Base for textures
 
-Encapsulates one OpenGL texture object. See @ref Texture, @ref CubeMapTexture
-and @ref CubeMapTextureArray documentation for more information and usage
-examples.
+Encapsulates one OpenGL texture object. See @ref Texture, @ref TextureArray,
+@ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
+@ref BufferTexture and @ref MultisampleTexture documentation for more
+information and usage examples.
 
 @section AbstractTexture-webgl-restrictions WebGL restrictions
 

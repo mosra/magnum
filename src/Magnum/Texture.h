@@ -90,13 +90,12 @@ In shader, the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
 See @ref AbstractShaderProgram documentation for more information about usage
 in shaders.
 
+@see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
+    @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
+    @ref BufferTexture, @ref MultisampleTexture
 @requires_gles30 %Extension @es_extension{OES,texture_3D} for 3D textures in
     OpenGL ES 2.0
 @requires_gl 1D textures are not available in OpenGL ES, only 2D and 3D ones.
-
-@see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
-    @ref BufferTexture, @ref CubeMapTexture, @ref CubeMapTextureArray,
-    @ref MultisampleTexture, @ref RectangleTexture
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
@@ -176,7 +175,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref image(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
          *      @def_gl{TEXTURE_DEPTH}
@@ -241,8 +240,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * available, the texture is bound to some texture unit before the
          * operation. Initial value is {@ref Sampler::Filter::Nearest,
          * @ref Sampler::Mipmap::Linear}.
-         * @see @ref setBaseLevel(), @ref setMaxLevel(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         * @see @ref setMagnificationFilter(), @ref setBaseLevel(),
+         *      @ref setMaxLevel(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MIN_FILTER}
          */
@@ -260,9 +260,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some texture unit before the
          * operation. Initial value is @ref Sampler::Filter::Linear.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MAG_FILTER}
+         * @see @ref setMinificationFilter(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MAG_FILTER}
          */
         Texture<dimensions>& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
@@ -274,13 +275,14 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param wrapping          Wrapping type for all texture dimensions
          * @return Reference to self (for method chaining)
          *
-         * Sets wrapping type for coordinates out of range (0.0f, 1.0f). If
-         * @extension{EXT,direct_state_access} is not available, the texture is
-         * bound to some texture unit before the operation. Initial value is
+         * Sets wrapping type for coordinates out of range @f$ [ 0.0, 1.0 ] @f$.
+         * If @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some texture unit before the operation. Initial value is
          * @ref Sampler::Wrapping::Repeat.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
+         * @see @ref setBorderColor(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
          */
         Texture<dimensions>& setWrapping(const Array<dimensions, Sampler::Wrapping>& wrapping) {
@@ -296,9 +298,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * If @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some texture unit before the operation. Initial value is
          * `{0.0f, 0.0f, 0.0f, 0.0f}`.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         * @see @ref setWrapping(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
          */
         Texture<dimensions>& setBorderColor(const Color4& color) {
