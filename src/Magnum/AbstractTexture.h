@@ -293,8 +293,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void setLodBias(Float bias);
         #endif
         void setBorderColor(const Color4& color);
+        #ifndef MAGNUM_TARGET_GLES
         void setBorderColor(const Vector4i& color);
         void setBorderColor(const Vector4ui& color);
+        #endif
         void setMaxAnisotropy(Float anisotropy);
         void invalidateImage(Int level);
         void generateMipmap();
