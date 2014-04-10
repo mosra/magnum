@@ -48,7 +48,7 @@ OpenGL function                        | Matching API
 @fn_gl{BeginQueryIndexed}, `glEndQueryIndexed()` | |
 @fn_gl{BeginTransformFeedback}, `glEndTransformFeedback()` | |
 @fn_gl{BindAttribLocation}             | @ref AbstractShaderProgram::bindAttributeLocation()
-@fn_gl{BindBuffer}                     | not needed, handhled internally in @ref Buffer and elsewhere
+@fn_gl{BindBuffer}                     | not needed, handled internally in @ref Buffer and elsewhere
 @fn_gl{BindBufferBase}                 | |
 @fn_gl{BindBufferRange}                | |
 @fn_gl{BindBuffersBase}                | |
@@ -59,12 +59,12 @@ OpenGL function                        | Matching API
 @fn_gl{BindImageTexture}               | |
 @fn_gl{BindImageTextures}              | |
 @fn_gl{BindProgramPipeline}            | |
-@fn_gl{BindRenderbuffer}               | not needed, handhled internally in @ref Renderbuffer
+@fn_gl{BindRenderbuffer}               | not needed, handled internally in @ref Renderbuffer
 @fn_gl{BindSampler}                    | |
 @fn_gl{BindSamplers}                   | |
 @fn_gl{BindTexture}, \n @fn_gl{BindTextures}, \n @fn_gl_extension{BindMultiTexture,EXT,direct_state_access} | @ref AbstractTexture::bind()
 @fn_gl{BindTransformFeedback}          | |
-@fn_gl{BindVertexArray}                | not needed, handhled internally in @ref Mesh
+@fn_gl{BindVertexArray}                | not needed, handled internally in @ref Mesh
 @fn_gl{BindVertexBuffer}               | |
 @fn_gl{BindVertexBuffers}              | |
 @fn_gl{BlendColor}                     | @ref Renderer::setBlendColor()
