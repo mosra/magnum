@@ -232,6 +232,9 @@ namespace GL {
         _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #65
         #endif
         _extension(GL,EXT,read_format_bgra,         GLES200,    None) // #66
+        #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,shader_texture_lod,       GLES200, GLES300) // #77
+        #endif
         _extension(GL,EXT,debug_label,              GLES200,    None) // #98
         _extension(GL,EXT,debug_marker,             GLES200,    None) // #99
         #ifdef MAGNUM_TARGET_GLES2

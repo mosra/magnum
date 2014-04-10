@@ -250,6 +250,7 @@ supported.
 @es_extension{EXT,texture_type_2_10_10_10_REV} | done
 @es_extension{EXT,discard_framebuffer}       | done
 @es_extension2{EXT,blend_minmax,blend_minmax} | done
+@es_extension{EXT,shader_texture_lod}        | done (shading language only)
 @es_extension{EXT,occlusion_query_boolean}   | done
 @es_extension{EXT,texture_rg}                | done
 @es_extension{EXT,texture_storage}           | done
