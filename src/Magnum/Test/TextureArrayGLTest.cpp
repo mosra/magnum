@@ -263,6 +263,9 @@ void TextureArrayGLTest::sampling1D() {
     Texture1DArray texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           .setLodBias(0.5f)
            .setBaseLevel(1)
            .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
@@ -297,6 +300,11 @@ void TextureArrayGLTest::sampling2D() {
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           #ifndef MAGNUM_TARGET_GLES
+           .setLodBias(0.5f)
+           #endif
            .setBaseLevel(1)
            .setMaxLevel(750)
            #endif

@@ -75,7 +75,8 @@ struct TextureState {
     #endif
 
     GLint maxTextureUnits;
-    GLfloat maxMaxAnisotropy;
+    GLfloat maxLodBias,
+        maxMaxAnisotropy;
     GLint currentTextureUnit;
     #ifndef MAGNUM_TARGET_GLES
     GLint maxColorSamples,

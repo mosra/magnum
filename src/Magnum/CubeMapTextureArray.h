@@ -126,6 +126,39 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
+        /**
+         * @brief Set minimum level-of-detail parameter
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMinLod() for more information.
+         */
+        CubeMapTextureArray& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /**
+         * @brief Set maximum level-of-detail parameter
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxLod() for more information.
+         */
+        CubeMapTextureArray& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+
+        /**
+         * @brief Set level-of-detail bias
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setLodBias() for more information.
+         */
+        CubeMapTextureArray& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+
         /** @copydoc Texture::setWrapping() */
         CubeMapTextureArray& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(*this, wrapping);

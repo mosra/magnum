@@ -50,6 +50,18 @@ namespace Magnum {
 Int AbstractTexture::maxLayers() { return Shader::maxCombinedTextureImageUnits(); }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+Float AbstractTexture::maxLodBias() {
+    GLfloat& value = Context::current()->state().texture->maxLodBias;
+
+    /* Get the value, if not already cached */
+    if(value == 0.0f)
+        glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS, &value);
+
+    return value;
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 Int AbstractTexture::maxColorSamples() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
@@ -235,6 +247,22 @@ void AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mip
 void AbstractTexture::setMagnificationFilter(const Sampler::Filter filter) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::setMinLod(const Float lod) {
+    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MIN_LOD, lod);
+}
+
+void AbstractTexture::setMaxLod(const Float lod) {
+    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MAX_LOD, lod);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::setLodBias(const Float bias) {
+    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_LOD_BIAS, bias);
+}
+#endif
 
 void AbstractTexture::setBorderColor(const Color4& color) {
     #ifndef MAGNUM_TARGET_GLES

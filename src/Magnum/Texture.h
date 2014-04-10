@@ -270,6 +270,70 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set minimum level-of-detail parameter
+         * @return Reference to self (for method chaining)
+         *
+         * Limits selection of highest resolution mipmap. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * `-1000.0f`.
+         * @see @ref setMaxLod(), @ref setLodBias(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MIN_LOD}
+         * @requires_gles30 %Texture LOD parameters are not available in OpenGL
+         *      ES 2.0.
+         */
+        Texture<dimensions>& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /**
+         * @brief Set maximum level-of-detail parameter
+         * @return Reference to self (for method chaining)
+         *
+         * Limits selection of lowest resolution mipmap. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * `1000.0f`.
+         * @see @ref setMinLod(), @ref setLodBias(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MAX_LOD}
+         * @requires_gles30 %Texture LOD parameters are not available in OpenGL
+         *      ES 2.0.
+         */
+        Texture<dimensions>& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set level-of-detail bias
+         * @return Reference to self (for method chaining)
+         *
+         * Fixed bias value that is added to the level-of-detail parameter. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * `0.0f`.
+         * @see @ref maxLodBias(), @ref setMinLod(), @ref setMaxLod(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_LOD_BIAS}
+         * @requires_gl %Texture LOD bias can be specified only directly in
+         *      fragment shader in OpenGL ES.
+         */
+        Texture<dimensions>& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set wrapping
          * @param wrapping          Wrapping type for all texture dimensions

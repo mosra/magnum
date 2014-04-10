@@ -125,6 +125,28 @@ class CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setMinLod() */
+        CubeMapTexture& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /** @copydoc Texture::setMaxLod() */
+        CubeMapTexture& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setLodBias() */
+        CubeMapTexture& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+        #endif
+
         /** @copydoc Texture::setWrapping() */
         CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(*this, wrapping);

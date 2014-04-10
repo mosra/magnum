@@ -130,6 +130,28 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setMinLod() */
+        TextureArray<dimensions>& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /** @copydoc Texture::setMaxLod() */
+        TextureArray<dimensions>& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setLodBias() */
+        TextureArray<dimensions>& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+        #endif
+
         /** @copydoc Texture::setWrapping() */
         TextureArray<dimensions>& setWrapping(const Array<dimensions+1, Sampler::Wrapping>& wrapping) {
             DataHelper<dimensions+1>::setWrapping(*this, wrapping);

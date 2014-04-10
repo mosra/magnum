@@ -123,6 +123,9 @@ void CubeMapTextureArrayGLTest::sampling() {
     CubeMapTextureArray texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           .setLodBias(0.5f)
            .setBaseLevel(1)
            .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
