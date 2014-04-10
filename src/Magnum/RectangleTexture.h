@@ -180,6 +180,14 @@ class RectangleTexture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setDepthStencilMode() */
+        RectangleTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set storage
          * @param internalFormat    Internal format

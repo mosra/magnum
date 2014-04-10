@@ -62,6 +62,8 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger1D();
         void samplingBorderInteger2D();
+        void samplingDepthStencilMode1D();
+        void samplingDepthStencilMode2D();
         #else
         void samplingBorder2D();
         #endif
@@ -127,6 +129,8 @@ TextureArrayGLTest::TextureArrayGLTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingBorderInteger1D,
         &TextureArrayGLTest::samplingBorderInteger2D,
+        &TextureArrayGLTest::samplingDepthStencilMode1D,
+        &TextureArrayGLTest::samplingDepthStencilMode2D,
         #else
         &TextureArrayGLTest::samplingBorder2D,
         #endif
@@ -288,6 +292,16 @@ void TextureArrayGLTest::samplingBorderInteger1D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+void TextureArrayGLTest::samplingDepthStencilMode1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
 #endif
 
 void TextureArrayGLTest::sampling2D() {
@@ -342,6 +356,16 @@ void TextureArrayGLTest::samplingBorderInteger2D() {
     Texture2DArray b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureArrayGLTest::samplingDepthStencilMode2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

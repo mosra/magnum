@@ -425,6 +425,26 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set depth/stencil texture mode
+         *
+         * Selects which component of packed depth/stencil texture is used for
+         * texturing. If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some texture unit before the operation.
+         * Initial value is @ref Sampler::DepthStencilMode::DepthComponent.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{DEPTH_STENCIL_TEXTURE_MODE}
+         * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
+         * @requires_gl Stencil texturing is not available in OpenGL ES.
+         */
+        Texture<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set storage
          * @param levels            Mip level count

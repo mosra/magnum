@@ -37,12 +37,19 @@ class SamplerTest: public TestSuite::Tester {
         void debugFilter();
         void debugMipmap();
         void debugWrapping();
+        #ifndef MAGNUM_TARGET_GLES
+        void debugDepthStencilMode();
+        #endif
 };
 
 SamplerTest::SamplerTest() {
     addTests({&SamplerTest::debugFilter,
               &SamplerTest::debugMipmap,
-              &SamplerTest::debugWrapping});
+              &SamplerTest::debugWrapping,
+              #ifndef MAGNUM_TARGET_GLES
+              &SamplerTest::debugDepthStencilMode
+              #endif
+             });
 }
 
 void SamplerTest::debugFilter() {
@@ -65,6 +72,15 @@ void SamplerTest::debugWrapping() {
     Debug(&out) << Sampler::Wrapping::ClampToEdge;
     CORRADE_COMPARE(out.str(), "Sampler::Wrapping::ClampToEdge\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void SamplerTest::debugDepthStencilMode() {
+    std::ostringstream out;
+
+    Debug(&out) << Sampler::DepthStencilMode::StencilIndex;
+    CORRADE_COMPARE(out.str(), "Sampler::DepthStencilMode::StencilIndex\n");
+}
+#endif
 
 }}
 

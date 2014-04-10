@@ -180,6 +180,14 @@ class CubeMapTexture: public AbstractTexture {
         }
 
         #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setDepthStencilMode() */
+        CubeMapTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief %Image size in given mip level
          * @param coordinate        Coordinate

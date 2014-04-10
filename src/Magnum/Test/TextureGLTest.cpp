@@ -68,6 +68,9 @@ class TextureGLTest: public AbstractOpenGLTester {
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger2D();
         void samplingBorderInteger3D();
+        void samplingDepthStencilMode1D();
+        void samplingDepthStencilMode2D();
+        void samplingDepthStencilMode3D();
         #else
         void samplingBorder2D();
         void samplingBorder3D();
@@ -154,6 +157,9 @@ TextureGLTest::TextureGLTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::samplingBorderInteger2D,
         &TextureGLTest::samplingBorderInteger3D,
+        &TextureGLTest::samplingDepthStencilMode1D,
+        &TextureGLTest::samplingDepthStencilMode2D,
+        &TextureGLTest::samplingDepthStencilMode3D,
         #else
         &TextureGLTest::samplingBorder2D,
         &TextureGLTest::samplingBorder3D,
@@ -344,6 +350,16 @@ void TextureGLTest::sampling1D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+void TextureGLTest::samplingDepthStencilMode1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
 #endif
 
 void TextureGLTest::sampling2D() {
@@ -393,6 +409,16 @@ void TextureGLTest::samplingBorderInteger2D() {
     Texture2D b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingDepthStencilMode2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -463,6 +489,16 @@ void TextureGLTest::samplingBorderInteger3D() {
     Texture3D b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingDepthStencilMode3D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture3D texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

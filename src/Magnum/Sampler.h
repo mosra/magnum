@@ -136,6 +136,23 @@ class MAGNUM_EXPORT Sampler {
             #endif
         };
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Depth/stencil texture mode
+         *
+         * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
+         * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
+         * @requires_gl Stencil texturing is not available in OpenGL ES.
+         */
+        enum class DepthStencilMode: GLenum {
+            /** Sample depth component */
+            DepthComponent = GL_DEPTH_COMPONENT,
+
+            /** Sample stencil index (as unsigned integer texture) */
+            StencilIndex = GL_STENCIL_INDEX
+        };
+        #endif
+
         /**
          * @brief Max supported max anisotropy
          *
@@ -164,6 +181,11 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Mipmap value);
 
 /** @debugoperator{Magnum::Sampler} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Wrapping value);
+
+#ifndef MAGNUM_TARGET_GLES
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::DepthStencilMode value);
+#endif
 
 }
 

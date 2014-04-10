@@ -185,6 +185,14 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setDepthStencilMode() */
+        TextureArray<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
         /** @copydoc Texture::imageSize() */
         typename DimensionTraits<dimensions+1, Int>::VectorType imageSize(Int level) {
             return DataHelper<dimensions+1>::imageSize(*this, _target, level);

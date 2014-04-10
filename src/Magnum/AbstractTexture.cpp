@@ -286,6 +286,12 @@ void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
+}
+#endif
+
 void AbstractTexture::invalidateImage(const Int level) {
     (this->*Context::current()->state().texture->invalidateImageImplementation)(level);
 }

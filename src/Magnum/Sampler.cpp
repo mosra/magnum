@@ -99,6 +99,19 @@ Debug operator<<(Debug debug, const Sampler::Wrapping value) {
 
     return debug << "Sampler::Wrapping::(invalid)";
 }
+
+#ifndef MAGNUM_TARGET_GLES
+Debug operator<<(Debug debug, const Sampler::DepthStencilMode value) {
+    switch(value) {
+        #define _c(value) case Sampler::DepthStencilMode::value: return debug << "Sampler::DepthStencilMode::" #value;
+        _c(DepthComponent)
+        _c(StencilIndex)
+        #undef _c
+    }
+
+    return debug << "Sampler::DepthStencilMode::(invalid)";
+}
+#endif
 #endif
 
 }

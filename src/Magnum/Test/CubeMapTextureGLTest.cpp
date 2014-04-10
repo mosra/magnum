@@ -51,6 +51,7 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger();
+        void samplingDepthStencilMode();
         #endif
 
         void storage();
@@ -81,6 +82,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               #endif
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureGLTest::samplingBorderInteger,
+              &CubeMapTextureGLTest::samplingDepthStencilMode,
               #endif
 
               &CubeMapTextureGLTest::storage,
@@ -179,6 +181,16 @@ void CubeMapTextureGLTest::samplingBorderInteger() {
     CubeMapTexture b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureGLTest::samplingDepthStencilMode() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
