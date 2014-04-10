@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Sampler
+ * @brief Class @ref Magnum::Sampler
  */
 
 #include "Magnum/Magnum.h"
@@ -38,14 +38,16 @@ namespace Magnum {
 /**
 @brief %Texture sampler
 
-@see Texture, CubeMapTexture, CubeMapTextureArray
+@see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
+    @ref CubeMapTextureArray, @ref RectangleTexture
 */
 class MAGNUM_EXPORT Sampler {
     public:
         /**
          * @brief %Texture filtering
          *
-         * @see setMagnificationFilter() and setMinificationFilter()
+         * @see @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()",
+         *      @ref Texture::setMagnificationFilter() "*Texture::setMagnificationFilter()"
          */
         enum class Filter: GLint {
             Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
@@ -65,7 +67,7 @@ class MAGNUM_EXPORT Sampler {
         /**
          * @brief Mip level selection
          *
-         * @see setMinificationFilter()
+         * @see @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()"
          */
         enum class Mipmap: GLint {
             Base = GL_NEAREST & ~GL_NEAREST, /**< Select base mip level */
@@ -91,7 +93,7 @@ class MAGNUM_EXPORT Sampler {
         /**
          * @brief %Texture wrapping
          *
-         * @see setWrapping()
+         * @see @ref Texture::setWrapping() "*Texture::setWrapping()"
          */
         enum class Wrapping: GLint {
             /** Repeat texture. **Unavailable on rectangle textures.** */
@@ -110,7 +112,8 @@ class MAGNUM_EXPORT Sampler {
 
             /**
              * Clamp to border color. Coordinates out of range will be clamped
-             * to border color (set with setBorderColor()).
+             * to border color (set with
+             * @ref Texture::setBorderColor() "*Texture::setBorderColor()").
              * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -139,7 +142,7 @@ class MAGNUM_EXPORT Sampler {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,texture_filter_anisotropic}
          * (desktop or ES) is not available, returns `0.0f`.
-         * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          */
         static Float maxMaxAnisotropy();
 
