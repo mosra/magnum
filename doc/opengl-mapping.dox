@@ -110,7 +110,9 @@ OpenGL function                        | Matching API
 @fn_gl{DispatchCompute}                | |
 @fn_gl{DispatchComputeIndirect}        | |
 @fn_gl{DrawArrays}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements} | @ref Mesh::draw()
-@fn_gl{DrawArraysIndirect}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawElementsIndirect}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance}, \n @fn_gl{DrawRangeElementsBaseVertex} | |
+@fn_gl{DrawArraysIndirect}, \n @fn_gl{DrawElementsIndirect}, \n @fn_gl{MultiDrawArraysIndirect}, \n @fn_gl{MultiDrawElementsIndirect} | |
+@fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | |
+@fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex} | |
 @fn_gl{DrawBuffer}, \n @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}, \n @fn_gl{DrawBuffers}, \n @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access} | @ref DefaultFramebuffer::mapForDraw(), \n @ref Framebuffer::mapForDraw()
 @fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | |
 @fn_gl{Enable}, `glDisable()`          | @ref Renderer::setFeature()
@@ -203,7 +205,8 @@ OpenGL function                        | Matching API
 @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}, @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub} | @ref Buffer::mapSub(), @ref Buffer::unmapSub()
 @fn_gl{MemoryBarrier}                  | |
 @fn_gl{MinSampleShading}               | |
-@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawArraysIndirect}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex}, \n @fn_gl{MultiDrawElementsIndirect} | |
+@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements} | |
+@fn_gl{MultiDrawElementsBaseVertex}    | |
 @fn_gl{ObjectLabel}, \n @fn_gl{ObjectPtrLabel}, \n @fn_gl_extension2{LabelObject,EXT,debug_label} | @ref AbstractShaderProgram::setLabel(), \n @ref AbstractQuery::setLabel(), \n @ref AbstractTexture::setLabel(), \n @ref Buffer::setLabel(), \n @ref Framebuffer::setLabel(), \n @ref Mesh::setLabel(), \n @ref Renderbuffer::setLabel(), \n @ref Shader::setLabel()
 @fn_gl{PatchParameter}                 | |
 @fn_gl{PauseTransformFeedback}, @fn_gl{ResumeTransformFeedback} | |
