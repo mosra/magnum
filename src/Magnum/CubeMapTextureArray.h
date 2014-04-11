@@ -33,7 +33,7 @@
 
 #include "Magnum/AbstractTexture.h"
 #include "Magnum/Array.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector3.h"
 
 #ifndef MAGNUM_TARGET_GLES
 namespace Magnum {
