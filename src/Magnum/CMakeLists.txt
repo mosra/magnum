@@ -75,18 +75,6 @@ set(Magnum_SRCS
     Trade/SceneData.cpp
     Trade/TextureData.cpp)
 
-# Desktop-only code
-if(NOT TARGET_GLES)
-    set(Magnum_SRCS ${Magnum_SRCS}
-        BufferTexture.cpp)
-endif()
-
-# Not-ES2 code
-if(NOT TARGET_GLES2)
-    set(Magnum_SRCS ${Magnum_SRCS}
-        BufferImage.cpp)
-endif()
-
 set(Magnum_HEADERS
     AbstractFramebuffer.h
     AbstractImage.h
@@ -133,21 +121,25 @@ if(BUILD_DEPRECATED)
         DebugMarker.h)
 endif()
 
-# Desktop-only headers and libraries
+# Desktop-only stuff
 if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferTexture.h
         CubeMapTextureArray.h
         MultisampleTexture.h
         RectangleTexture.h)
-    set(Magnum_SRCS ${Magnum_SRCS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferTexture.cpp
+        $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
-# Not-ES2 headers
+# Non-ES2 stuff
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h
         TextureArray.h)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferImage.cpp)
 endif()
 
 # Files shared between main library and math unit test library
