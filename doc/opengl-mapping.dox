@@ -40,7 +40,7 @@ Legend:
 
 OpenGL function                        | Matching API
 -------------------------------------- | ------------
-@fn_gl{ActiveShaderProgram}            | |
+@fn_gl{ActiveShaderProgram}            | not needed as @fn_gl{ProgramUniform} calls are used
 @fn_gl{ActiveTexture}                  | @ref AbstractTexture::bind()
 @fn_gl{AttachShader}                   | @ref AbstractShaderProgram::attachShader()
 @fn_gl{BeginConditionalRender}, `glEndConditionalRender()` | @ref SampleQuery::beginConditionalRender(), \n @ref SampleQuery::endConditionalRender()
@@ -49,24 +49,18 @@ OpenGL function                        | Matching API
 @fn_gl{BeginTransformFeedback}, `glEndTransformFeedback()` | |
 @fn_gl{BindAttribLocation}             | @ref AbstractShaderProgram::bindAttributeLocation()
 @fn_gl{BindBuffer}                     | not needed, handled internally in @ref Buffer and elsewhere
-@fn_gl{BindBufferBase}                 | |
-@fn_gl{BindBufferRange}                | |
-@fn_gl{BindBuffersBase}                | |
-@fn_gl{BindBuffersRange}               | |
+@fn_gl{BindBufferBase}, \n @fn_gl{BindBuffersBase}, \n @fn_gl{BindBufferRange}, \n @fn_gl{BindBuffersRange} | |
 @fn_gl{BindFragDataLocation}           | @ref AbstractShaderProgram::bindFragmentDataLocation()
 @fn_gl{BindFragDataLocationIndexed}    | @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
 @fn_gl{BindFramebuffer}                | @ref Framebuffer::bind()
-@fn_gl{BindImageTexture}               | |
-@fn_gl{BindImageTextures}              | |
+@fn_gl{BindImageTexture}, \n @fn_gl{BindImageTextures} | |
 @fn_gl{BindProgramPipeline}            | |
 @fn_gl{BindRenderbuffer}               | not needed, handled internally in @ref Renderbuffer
-@fn_gl{BindSampler}                    | |
-@fn_gl{BindSamplers}                   | |
+@fn_gl{BindSampler}, \n @fn_gl{BindSamplers} | |
 @fn_gl{BindTexture}, \n @fn_gl{BindTextures}, \n @fn_gl_extension{BindMultiTexture,EXT,direct_state_access} | @ref AbstractTexture::bind()
 @fn_gl{BindTransformFeedback}          | |
 @fn_gl{BindVertexArray}                | not needed, handled internally in @ref Mesh
-@fn_gl{BindVertexBuffer}               | |
-@fn_gl{BindVertexBuffers}              | |
+@fn_gl{BindVertexBuffer}, \n @fn_gl{BindVertexBuffers} | |
 @fn_gl{BlendColor}                     | @ref Renderer::setBlendColor()
 @fn_gl{BlendEquation}, \n @fn_gl{BlendEquationSeparate} | @ref Renderer::setBlendEquation()
 @fn_gl{BlendFunc}, \n @fn_gl{BlendFuncSeparate} | @ref Renderer::setBlendFunction()
@@ -123,11 +117,10 @@ OpenGL function                        | Matching API
 @fn_gl{FlushMappedBufferRange}, \n @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access} | @ref Buffer::flushMappedRange()
 @fn_gl2{FramebufferParameter,FramebufferParameteri} | |
 @fn_gl{FramebufferRenderbuffer}, \n @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access} | @ref Framebuffer::attachRenderbuffer()
-@fn_gl{FramebufferTexture}             | |
-@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access} | @ref Framebuffer::attachTexture1D()
-@fn_gl2{FramebufferTexture2D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access} | @ref Framebuffer::attachTexture2D()
-@fn_gl2{FramebufferTexture3D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access} | @ref Framebuffer::attachTexture3D()
-@fn_gl{FramebufferTextureLayer}        | |
+@fn_gl{FramebufferTexture}             | not used, the functions below are used instead for compatibility reasons
+@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}, \n `glFramebufferTexture2D()`, \n `glNamedFramebufferTexture2DEXT()` | @ref Framebuffer::attachTexture()
+@fn_gl2{FramebufferTexture3D,FramebufferTexture} | not used, @fn_gl{FramebufferTextureLayer} has more complete features
+@fn_gl{FramebufferTextureLayer}, \n @fn_gl_extension{NamedFramebufferTextureLayer,EXT,direct_state_access} | @ref Framebuffer::attachTextureLayer()
 @fn_gl{FrontFace}                      | @ref Renderer::setFrontFace()
 @fn_gl{GenBuffers}, @fn_gl{DeleteBuffers} | @ref Buffer constructor and destructor
 @fn_gl{GenFramebuffers}, @fn_gl{DeleteFramebuffers} | @ref Framebuffer constructor and destructor
