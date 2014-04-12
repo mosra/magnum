@@ -34,7 +34,19 @@
 
 namespace Magnum {
 
-namespace Implementation { struct TextureState; }
+namespace Implementation {
+    struct TextureState;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    template<char> struct TextureSwizzle;
+    template<> struct TextureSwizzle<'r'> { enum: GLint { Value = GL_RED }; };
+    template<> struct TextureSwizzle<'g'> { enum: GLint { Value = GL_GREEN }; };
+    template<> struct TextureSwizzle<'b'> { enum: GLint { Value = GL_BLUE }; };
+    template<> struct TextureSwizzle<'a'> { enum: GLint { Value = GL_ALPHA }; };
+    template<> struct TextureSwizzle<'0'> { enum: GLint { Value = GL_ZERO }; };
+    template<> struct TextureSwizzle<'1'> { enum: GLint { Value = GL_ONE }; };
+    #endif
+}
 
 /**
 @brief Base for textures
@@ -297,6 +309,17 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void setBorderColor(const Vector4ui& color);
         #endif
         void setMaxAnisotropy(Float anisotropy);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        template<char r, char g, char b, char a> void setSwizzle() {
+            setSwizzleInternal(Implementation::TextureSwizzle<r>::Value,
+                               Implementation::TextureSwizzle<g>::Value,
+                               Implementation::TextureSwizzle<b>::Value,
+                               Implementation::TextureSwizzle<a>::Value);
+        }
+        void setSwizzleInternal(GLint r, GLint g, GLint b, GLint a);
+        #endif
+
         void setCompareMode(Sampler::CompareMode mode);
         void setCompareFunction(Sampler::CompareFunction function);
         #ifndef MAGNUM_TARGET_GLES
@@ -332,6 +355,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLfloat value);
+        #ifndef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLint* values);
+        #endif
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLfloat* values);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLuint* values);
@@ -340,6 +366,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLint* values);
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
         void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLuint* values);
         void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLint* values);

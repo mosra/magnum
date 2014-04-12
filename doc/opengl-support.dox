@@ -114,7 +114,7 @@ following:
 @extension{ARB,sampler_objects}              | |
 @extension{ARB,shader_bit_encoding}          | done (shading language only)
 @extension{ARB,texture_rgb10_a2ui}           | done
-@extension{ARB,texture_swizzle}              | |
+@extension{ARB,texture_swizzle}              | done
 @extension{ARB,timer_query}                  | missing direct query
 @extension{ARB,vertex_type_2_10_10_10_rev}   | done
 

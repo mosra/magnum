@@ -286,6 +286,20 @@ void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::setSwizzleInternal(const GLint r, const GLint g, const GLint b, const GLint a) {
+    #ifndef MAGNUM_TARGET_GLES
+    const GLint rgba[] = {r, g, b, a};
+    (this->*Context::current()->state().texture->parameterivImplementation)(GL_TEXTURE_SWIZZLE_RGBA, rgba);
+    #else
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_R, r);
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_G, g);
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_B, b);
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_A, a);
+    #endif
+}
+#endif
+
 void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
     (this->*Context::current()->state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
@@ -743,6 +757,19 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLfloat v
 void AbstractTexture::parameterImplementationDSA(GLenum parameter, GLfloat value) {
     glTextureParameterfEXT(_id, _target, parameter, value);
 }
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLint* values) {
+    bindInternal();
+    glTexParameteriv(_target, parameter, values);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLint* values) {
+    glTextureParameterivEXT(_id, _target, parameter, values);
+}
+#endif
 #endif
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLfloat* values) {

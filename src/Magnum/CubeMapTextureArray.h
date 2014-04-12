@@ -219,6 +219,17 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
+         * @copybrief Texture::setSwizzle()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setSwizzle() for more information.
+         */
+        template<char r, char g, char b, char a> CubeMapTextureArray& setSwizzle() {
+            AbstractTexture::setSwizzle<r, g, b, a>();
+            return *this;
+        }
+
+        /**
          * @copybrief Texture::setCompareMode()
          * @return Reference to self (for method chaining)
          *

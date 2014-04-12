@@ -72,6 +72,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterivImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDSA;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDSA;
@@ -92,6 +93,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     {
         parameteriImplementation = &AbstractTexture::parameterImplementationDefault;
         parameterfImplementation = &AbstractTexture::parameterImplementationDefault;
+        #ifndef MAGNUM_TARGET_GLES2
+        parameterivImplementation = &AbstractTexture::parameterImplementationDefault;
+        #endif
         parameterfvImplementation = &AbstractTexture::parameterImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;

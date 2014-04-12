@@ -188,6 +188,14 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setSwizzle() */
+        template<char r, char g, char b, char a> CubeMapTexture& setSwizzle() {
+            AbstractTexture::setSwizzle<r, g, b, a>();
+            return *this;
+        }
+        #endif
+
         /**
          * @copybrief Texture::setCompareMode()
          * @return Reference to self (for method chaining)

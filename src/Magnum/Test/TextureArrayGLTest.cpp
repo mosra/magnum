@@ -55,7 +55,12 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
         #endif
         void sampling2D();
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingSwizzle1D();
+        #endif
+        void samplingSwizzle2D();
+        #else
         void samplingMaxLevel2D();
         void samplingCompare2D();
         #endif
@@ -123,7 +128,12 @@ TextureArrayGLTest::TextureArrayGLTest() {
         #endif
         &TextureArrayGLTest::sampling2D,
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::samplingSwizzle1D,
+        #endif
+        &TextureArrayGLTest::samplingSwizzle2D,
+        #else
         &TextureArrayGLTest::samplingMaxLevel2D,
         #endif
 
@@ -282,6 +292,16 @@ void TextureArrayGLTest::sampling1D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+void TextureArrayGLTest::samplingSwizzle1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
 void TextureArrayGLTest::samplingBorderInteger1D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
@@ -341,7 +361,19 @@ void TextureArrayGLTest::sampling2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void TextureArrayGLTest::samplingSwizzle2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2DArray texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureArrayGLTest::samplingMaxLevel2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));

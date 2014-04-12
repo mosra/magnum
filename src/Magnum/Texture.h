@@ -442,6 +442,35 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set component swizzle
+         * @return Reference to self (for method chaining)
+         *
+         * You can use letters `r`, `g`, `b`, `a` for addressing components or
+         * letters `0` and `1` for zero and one, similarly as in
+         * @ref Math::swizzle() function. Example usage:
+         * @code
+         * texture.setSwizzle<'b', 'g', 'r', '0'>();
+         * @endcode
+         * If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some texture unit before the operation.
+         * Initial value is `rgba`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_SWIZZLE_RGBA} (or @def_gl{TEXTURE_SWIZZLE_R},
+         *      @def_gl{TEXTURE_SWIZZLE_G}, @def_gl{TEXTURE_SWIZZLE_B} and
+         *      @def_gl{TEXTURE_SWIZZLE_A} separately in OpenGL ES)
+         * @requires_gl33 %Extension @extension{ARB,texture_swizzle}
+         * @requires_gles30 %Texture swizzle is not available in OpenGL ES 2.0.
+         */
+        template<char r, char g, char b, char a> Texture<dimensions>& setSwizzle() {
+            AbstractTexture::setSwizzle<r, g, b, a>();
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set depth texture comparison mode
          * @return Reference to self (for method chaining)

@@ -46,7 +46,9 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         void bind();
 
         void sampling();
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        void samplingSwizzle();
+        #else
         void samplingMaxLevel();
         void samplingCompare();
         #endif
@@ -78,7 +80,9 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::bind,
 
               &CubeMapTextureGLTest::sampling,
-              #ifdef MAGNUM_TARGET_GLES2
+              #ifndef MAGNUM_TARGET_GLES2
+              &CubeMapTextureGLTest::samplingSwizzle,
+              #else
               &CubeMapTextureGLTest::samplingMaxLevel,
               &CubeMapTextureGLTest::samplingCompare,
               #endif
@@ -165,7 +169,19 @@ void CubeMapTextureGLTest::sampling() {
    MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void CubeMapTextureGLTest::samplingSwizzle() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    CubeMapTexture texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void CubeMapTextureGLTest::samplingMaxLevel() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));

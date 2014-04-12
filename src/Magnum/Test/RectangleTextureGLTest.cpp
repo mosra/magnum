@@ -45,6 +45,7 @@ class RectangleTextureGLTest: public AbstractOpenGLTester {
 
         void sampling();
         void samplingBorderInteger();
+        void samplingSwizzle();
         void samplingDepthStencilMode();
 
         void storage();
@@ -64,6 +65,7 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
 
               &RectangleTextureGLTest::sampling,
               &RectangleTextureGLTest::samplingBorderInteger,
+              &RectangleTextureGLTest::samplingSwizzle,
               &RectangleTextureGLTest::samplingDepthStencilMode,
 
               &RectangleTextureGLTest::storage,
@@ -147,6 +149,18 @@ void RectangleTextureGLTest::samplingBorderInteger() {
     RectangleTexture b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RectangleTextureGLTest::samplingSwizzle() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
 
     MAGNUM_VERIFY_NO_ERROR();
 }

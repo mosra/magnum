@@ -60,7 +60,13 @@ class TextureGLTest: public AbstractOpenGLTester {
         void sampling2D();
         void sampling3D();
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingSwizzle1D();
+        #endif
+        void samplingSwizzle2D();
+        void samplingSwizzle3D();
+        #else
         void samplingMaxLevel2D();
         void samplingMaxLevel3D();
         void samplingCompare2D();
@@ -150,7 +156,13 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::sampling2D,
         &TextureGLTest::sampling3D,
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::samplingSwizzle1D,
+        #endif
+        &TextureGLTest::samplingSwizzle2D,
+        &TextureGLTest::samplingSwizzle3D,
+        #else
         &TextureGLTest::samplingMaxLevel2D,
         &TextureGLTest::samplingMaxLevel3D,
         &TextureGLTest::samplingCompare2D,
@@ -355,6 +367,16 @@ void TextureGLTest::sampling1D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+void TextureGLTest::samplingSwizzle1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
 void TextureGLTest::samplingDepthStencilMode1D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
@@ -392,7 +414,19 @@ void TextureGLTest::sampling2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingSwizzle2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2D texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingMaxLevel2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
@@ -481,7 +515,19 @@ void TextureGLTest::sampling3D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingSwizzle3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    Texture3D texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingMaxLevel3D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
         CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));

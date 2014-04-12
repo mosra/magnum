@@ -44,6 +44,7 @@ class CubeMapTextureArrayGLTest: public AbstractOpenGLTester {
 
         void sampling();
         void samplingBorderInteger();
+        void samplingSwizzle();
         void samplingDepthStencilMode();
 
         void storage();
@@ -65,6 +66,7 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
 
               &CubeMapTextureArrayGLTest::sampling,
               &CubeMapTextureArrayGLTest::samplingBorderInteger,
+              &CubeMapTextureArrayGLTest::samplingSwizzle,
               &CubeMapTextureArrayGLTest::samplingDepthStencilMode,
 
               &CubeMapTextureArrayGLTest::storage,
@@ -151,6 +153,18 @@ void CubeMapTextureArrayGLTest::samplingBorderInteger() {
     CubeMapTextureArray b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureArrayGLTest::samplingSwizzle() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
 
     MAGNUM_VERIFY_NO_ERROR();
 }

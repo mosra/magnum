@@ -42,6 +42,9 @@ struct TextureState {
     void(AbstractTexture::*bindImplementation)(GLint);
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
     void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);
+    #ifndef MAGNUM_TARGET_GLES2
+    void(AbstractTexture::*parameterivImplementation)(GLenum, const GLint*);
+    #endif
     void(AbstractTexture::*parameterfvImplementation)(GLenum, const GLfloat*);
     void(AbstractTexture::*parameterIuivImplementation)(GLenum, const GLuint*);
     void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
