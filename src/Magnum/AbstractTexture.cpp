@@ -286,6 +286,26 @@ void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
 
+void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_TEXTURE_COMPARE_MODE
+        #else
+        GL_TEXTURE_COMPARE_MODE_EXT
+        #endif
+        , GLenum(mode));
+}
+
+void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_TEXTURE_COMPARE_FUNC
+        #else
+        GL_TEXTURE_COMPARE_FUNC_EXT
+        #endif
+        , GLenum(function));
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));

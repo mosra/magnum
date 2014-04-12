@@ -297,6 +297,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void setBorderColor(const Vector4ui& color);
         #endif
         void setMaxAnisotropy(Float anisotropy);
+        void setCompareMode(Sampler::CompareMode mode);
+        void setCompareFunction(Sampler::CompareFunction function);
         #ifndef MAGNUM_TARGET_GLES
         void setDepthStencilMode(Sampler::DepthStencilMode mode);
         #endif

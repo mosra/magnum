@@ -63,6 +63,7 @@ class TextureGLTest: public AbstractOpenGLTester {
         #ifdef MAGNUM_TARGET_GLES2
         void samplingMaxLevel2D();
         void samplingMaxLevel3D();
+        void samplingCompare2D();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -152,6 +153,7 @@ TextureGLTest::TextureGLTest() {
         #ifdef MAGNUM_TARGET_GLES2
         &TextureGLTest::samplingMaxLevel2D,
         &TextureGLTest::samplingMaxLevel3D,
+        &TextureGLTest::samplingCompare2D,
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -346,7 +348,9 @@ void TextureGLTest::sampling1D() {
            .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -381,7 +385,9 @@ void TextureGLTest::sampling2D() {
            #else
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -393,6 +399,17 @@ void TextureGLTest::samplingMaxLevel2D() {
 
     Texture2D texture;
     texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingCompare2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::shadow_samplers>())
+        CORRADE_SKIP(Extensions::GL::EXT::shadow_samplers::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

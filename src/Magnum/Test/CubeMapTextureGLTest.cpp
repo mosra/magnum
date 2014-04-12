@@ -48,6 +48,7 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         void sampling();
         #ifdef MAGNUM_TARGET_GLES2
         void samplingMaxLevel();
+        void samplingCompare();
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger();
@@ -79,6 +80,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::sampling,
               #ifdef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingMaxLevel,
+              &CubeMapTextureGLTest::samplingCompare,
               #endif
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureGLTest::samplingBorderInteger,
@@ -153,7 +155,12 @@ void CubeMapTextureGLTest::sampling() {
            #endif
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+            #ifndef MAGNUM_TARGET_GLES2
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual)
+            #endif
+           ;
 
    MAGNUM_VERIFY_NO_ERROR();
 }
@@ -165,6 +172,18 @@ void CubeMapTextureGLTest::samplingMaxLevel() {
 
     CubeMapTexture texture;
     texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureGLTest::samplingCompare() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::shadow_samplers>() ||
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::shadow_samplers_cube>())
+        CORRADE_SKIP(Extensions::GL::NV::shadow_samplers_cube::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

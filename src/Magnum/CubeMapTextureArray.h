@@ -219,6 +219,28 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
+         * @copybrief Texture::setCompareMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareMode() for more information.
+         */
+        CubeMapTextureArray& setCompareMode(Sampler::CompareMode mode) {
+            AbstractTexture::setCompareMode(mode);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setCompareFunction()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareFunction() for more information.
+         */
+        CubeMapTextureArray& setCompareFunction(Sampler::CompareFunction function) {
+            AbstractTexture::setCompareFunction(function);
+            return *this;
+        }
+
+        /**
          * @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)
          *

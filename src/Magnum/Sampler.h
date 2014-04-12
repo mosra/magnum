@@ -136,6 +136,76 @@ class MAGNUM_EXPORT Sampler {
             #endif
         };
 
+        /**
+         * @brief Depth texture comparison mode
+         *
+         * @see @ref CompareFunction,
+         *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        enum class CompareMode: GLenum {
+            /** Directly output the depth value */
+            None = GL_NONE,
+
+            /** Use output from specified @ref CompareFunction */
+            CompareRefToTexture =
+                #ifndef MAGNUM_TARGET_GLES2
+                GL_COMPARE_REF_TO_TEXTURE
+                #else
+                GL_COMPARE_REF_TO_TEXTURE_EXT
+                #endif
+        };
+
+        /**
+         * @brief Depth texture comparison function
+         *
+         * Comparison operator used when comparison mode is set to
+         * @ref CompareMode::CompareRefToTexture.
+         * @see @ref Texture::setCompareFunction() "*Texture::setCompareFunction()",
+         *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        enum class CompareFunction: GLenum {
+            Never = GL_NEVER,           /**< Always `0.0` */
+            Always = GL_ALWAYS,         /**< Always `1.0` */
+
+            /**
+             * `1.0` when texture coordinate is less than depth value, `0.0`
+             * otherwise
+             */
+            Less = GL_LESS,
+
+            /**
+             * `1.0` when texture coordinate is less than or equal to depth
+             * value, `0.0` otherwise
+             */
+            LessOrEqual = GL_LEQUAL,
+
+            /**
+             * `1.0` when texture coordinate is equal to depth value, `0.0`
+             * otherwise
+             */
+            Equal = GL_EQUAL,
+
+            /**
+             * `0.0` when texture coordinate is equal to depth value, `1.0`
+             * otherwise
+             */
+            NotEqual = GL_NOTEQUAL,
+
+            /**
+             * `1.0` when texture coordinate is greater than or equal to depth
+             * value, `0.0` otherwise
+             */
+            GreaterOrEqual = GL_GEQUAL,
+
+            /**
+             * `1.0` when texture coordinate is greater than depth value, `0.0`
+             * otherwise
+             */
+            Greater = GL_GREATER
+        };
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Depth/stencil texture mode
@@ -181,6 +251,12 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Mipmap value);
 
 /** @debugoperator{Magnum::Sampler} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Wrapping value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareMode value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareFunction value);
 
 #ifndef MAGNUM_TARGET_GLES
 /** @debugoperator{Magnum::Sampler} */

@@ -57,6 +57,7 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
 
         #ifdef MAGNUM_TARGET_GLES2
         void samplingMaxLevel2D();
+        void samplingCompare2D();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -274,7 +275,9 @@ void TextureArrayGLTest::sampling1D() {
            .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -328,7 +331,12 @@ void TextureArrayGLTest::sampling2D() {
            #else
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           #ifndef MAGNUM_TARGET_GLES
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual)
+           #endif
+           ;
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -340,6 +348,18 @@ void TextureArrayGLTest::samplingMaxLevel2D() {
 
     Texture2DArray texture;
     texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureArrayGLTest::samplingCompare2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::shadow_samplers>() ||
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::shadow_samplers_array>())
+        CORRADE_SKIP(Extensions::GL::NV::shadow_samplers_array::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

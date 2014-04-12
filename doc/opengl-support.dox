@@ -252,6 +252,7 @@ supported.
 @es_extension2{EXT,blend_minmax,blend_minmax} | done
 @es_extension{EXT,shader_texture_lod}        | done (shading language only)
 @es_extension{EXT,occlusion_query_boolean}   | done
+@es_extension{EXT,shadow_samplers}           | done
 @es_extension{EXT,texture_rg}                | done
 @es_extension{EXT,texture_storage}           | done
 @es_extension{EXT,map_buffer_range}          | done
@@ -260,6 +261,8 @@ supported.
 @es_extension{NV,read_buffer}                | done
 @es_extension{NV,framebuffer_blit}           | done
 @es_extension{NV,framebuffer_multisample}    | done
+@es_extension{NV,shadow_samplers_array}      | done (shading language only)
+@es_extension{NV,shadow_samplers_cube}       | done (shading language only)
 @es_extension{OES,depth24}                   | done
 @es_extension{OES,element_index_uint}        | done
 @es_extension{OES,rgb8_rgba8}                | done (desktop-compatible subset)

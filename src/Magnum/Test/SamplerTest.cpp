@@ -37,6 +37,8 @@ class SamplerTest: public TestSuite::Tester {
         void debugFilter();
         void debugMipmap();
         void debugWrapping();
+        void debugCompareMode();
+        void debugCompareFunction();
         #ifndef MAGNUM_TARGET_GLES
         void debugDepthStencilMode();
         #endif
@@ -46,6 +48,8 @@ SamplerTest::SamplerTest() {
     addTests({&SamplerTest::debugFilter,
               &SamplerTest::debugMipmap,
               &SamplerTest::debugWrapping,
+              &SamplerTest::debugCompareMode,
+              &SamplerTest::debugCompareFunction,
               #ifndef MAGNUM_TARGET_GLES
               &SamplerTest::debugDepthStencilMode
               #endif
@@ -71,6 +75,20 @@ void SamplerTest::debugWrapping() {
 
     Debug(&out) << Sampler::Wrapping::ClampToEdge;
     CORRADE_COMPARE(out.str(), "Sampler::Wrapping::ClampToEdge\n");
+}
+
+void SamplerTest::debugCompareMode() {
+    std::ostringstream out;
+
+    Debug(&out) << Sampler::CompareMode::CompareRefToTexture;
+    CORRADE_COMPARE(out.str(), "Sampler::CompareMode::CompareRefToTexture\n");
+}
+
+void SamplerTest::debugCompareFunction() {
+    std::ostringstream out;
+
+    Debug(&out) << Sampler::CompareFunction::GreaterOrEqual;
+    CORRADE_COMPARE(out.str(), "Sampler::CompareFunction::GreaterOrEqual\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES

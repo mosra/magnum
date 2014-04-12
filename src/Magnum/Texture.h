@@ -442,6 +442,46 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        /**
+         * @brief Set depth texture comparison mode
+         * @return Reference to self (for method chaining)
+         *
+         * If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some texture unit before the operation.
+         * Initial value is @ref Sampler::CompareMode::None.
+         * @note Depth textures can be only 1D or 2D.
+         * @see @ref setCompareFunction(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_COMPARE_MODE}
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        Texture<dimensions>& setCompareMode(Sampler::CompareMode mode) {
+            AbstractTexture::setCompareMode(mode);
+            return *this;
+        }
+
+        /**
+         * @brief Set depth texture comparison function
+         * @return Reference to self (for method chaining)
+         *
+         * Comparison operator used when comparison mode is set to
+         * @ref CompareMode::CompareRefToTexture. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation.
+         * @note Depth textures can be only 1D or 2D.
+         * @todoc initial value?
+         * @see @ref setCompareMode(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_COMPARE_FUNC}
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        Texture<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
+            AbstractTexture::setCompareFunction(function);
+            return *this;
+        }
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set depth/stencil texture mode

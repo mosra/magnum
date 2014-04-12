@@ -196,6 +196,32 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        /**
+         * @copybrief Texture::setCompareMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareMode() for more information.
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         *      @es_extension{NV,shadow_samplers_array}
+         */
+        TextureArray<dimensions>& setCompareMode(Sampler::CompareMode mode) {
+            AbstractTexture::setCompareMode(mode);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setCompareFunction()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareFunction() for more information.
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         *      @es_extension{NV,shadow_samplers_array}
+         */
+        TextureArray<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
+            AbstractTexture::setCompareFunction(function);
+            return *this;
+        }
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copybrief Texture::setDepthStencilMode()

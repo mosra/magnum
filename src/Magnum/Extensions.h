@@ -242,6 +242,7 @@ namespace GL {
         #endif
         _extension(GL,EXT,separate_shader_objects,  GLES200,    None) // #101
         #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,shadow_samplers,          GLES200, GLES300) // #102
         _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
         #endif
         _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
@@ -270,6 +271,8 @@ namespace GL {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
         _extension(GL,NV,framebuffer_multisample,   GLES200, GLES300) // #143
+        _extension(GL,NV,shadow_samplers_array,     GLES200, GLES300) // #146
+        _extension(GL,NV,shadow_samplers_cube,      GLES200, GLES300) // #147
         #endif
         _extension(GL,NV,texture_border_clamp,      GLES200,    None) // #149
     } namespace OES {
