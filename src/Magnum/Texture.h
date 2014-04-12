@@ -466,7 +466,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Comparison operator used when comparison mode is set to
-         * @ref CompareMode::CompareRefToTexture. If
+         * @ref Sampler::CompareMode::CompareRefToTexture. If
          * @extension{EXT,direct_state_access} is not available, the texture is
          * bound to some texture unit before the operation.
          * @note Depth textures can be only 1D or 2D.
