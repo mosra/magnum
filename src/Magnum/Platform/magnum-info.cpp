@@ -218,9 +218,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     /* Limits and implementation-defined values */
     #define _h(val) Debug() << "\n " << Extensions::GL::val::string() + std::string(":");
     #define _l(val) Debug() << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
+    #define _lvec(val) Debug() << "   " << #val << (sizeof(#val) > 48 ? "\n" + std::string(52, ' ') : std::string(48 - sizeof(#val), ' ')) << val;
 
     Debug() << "Limits and implementation-defined values:";
-    _l(AbstractFramebuffer::maxViewportSize())
+    _lvec(AbstractFramebuffer::maxViewportSize())
     _l(AbstractFramebuffer::maxDrawBuffers())
     _l(Framebuffer::maxColorAttachments())
     #ifndef MAGNUM_TARGET_GLES2
@@ -261,11 +262,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(AbstractTexture::maxLodBias())
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    _l(Texture1D::maxSize())
+    _lvec(Texture1D::maxSize())
     #endif
-    _l(Texture2D::maxSize())
+    _lvec(Texture2D::maxSize())
     #ifndef MAGNUM_TARGET_GLES2
-    _l(Texture3D::maxSize())
+    _lvec(Texture3D::maxSize())
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -367,14 +368,14 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(c->isExtensionSupported<Extensions::GL::ARB::texture_multisample>()) {
         _h(ARB::texture_multisample)
 
-        _l(MultisampleTexture2D::maxSize())
-        _l(MultisampleTexture2DArray::maxSize())
+        _lvec(MultisampleTexture2D::maxSize())
+        _lvec(MultisampleTexture2DArray::maxSize())
     }
 
     if(c->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>()) {
         _h(ARB::texture_rectangle)
 
-        _l(RectangleTexture::maxSize())
+        _lvec(RectangleTexture::maxSize())
     }
     #endif
 
@@ -431,9 +432,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        _l(Texture1DArray::maxSize())
+        _lvec(Texture1DArray::maxSize())
         #endif
-        _l(Texture2DArray::maxSize())
+        _lvec(Texture2DArray::maxSize())
     }
     #endif
 
@@ -455,7 +456,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(c->isExtensionSupported<Extensions::GL::OES::texture_3D>()) {
         _h(OES::texture_3D)
 
-        _l(Texture3D::maxSize())
+        _lvec(Texture3D::maxSize())
     }
     #endif
 
