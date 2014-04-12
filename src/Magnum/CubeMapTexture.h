@@ -79,7 +79,7 @@ which intersects one of the six sides of the cube map. See
     @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
     @ref MultisampleTexture
 */
-class CubeMapTexture: public AbstractTexture {
+class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
     public:
         /** @brief Cube map coordinate */
         enum class Coordinate: GLenum {
@@ -90,6 +90,15 @@ class CubeMapTexture: public AbstractTexture {
             PositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,     /**< +Z cube side */
             NegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z      /**< -Z cube side */
         };
+
+        /**
+         * @brief Max supported size of one side of cube map texture
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @fn_gl{Get} with @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}
+         */
+        static Vector2i maxSize();
 
         /**
          * @brief Constructor
@@ -205,6 +214,7 @@ class CubeMapTexture: public AbstractTexture {
          * @brief Set storage
          *
          * See @ref Texture::setStorage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTexture& setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
             DataHelper<2>::setStorage(*this, _target, levels, internalFormat, size);
@@ -251,6 +261,7 @@ class CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setImage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
             DataHelper<2>::setImage(*this, GLenum(coordinate), level, internalFormat, image);

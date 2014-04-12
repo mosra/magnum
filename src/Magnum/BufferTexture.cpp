@@ -35,6 +35,18 @@
 
 namespace Magnum {
 
+Int BufferTexture::maxSize() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+        return 0;
+
+    GLint& value = Context::current()->state().texture->maxBufferSize;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &value);
+
+    return value;
+}
+
 Int BufferTexture::offsetAlignment() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
         return 0;

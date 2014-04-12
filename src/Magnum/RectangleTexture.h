@@ -68,8 +68,18 @@ documentation for more information about usage in shaders.
 @requires_gl31 %Extension @extension{ARB,texture_rectangle}
 @requires_gl Rectangle textures are not available in OpenGL ES.
  */
-class RectangleTexture: public AbstractTexture {
+class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
     public:
+        /**
+         * @brief Max supported rectangle texture size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If @extension{ARB,texture_rectangle} (part of
+         * OpenGL 3.1) is not available, returns zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_RECTANGLE_TEXTURE_SIZE}
+         */
+        static Vector2i maxSize();
+
         /**
          * @brief Constructor
          *
@@ -205,8 +215,9 @@ class RectangleTexture: public AbstractTexture {
          * @extension{ARB,texture_storage} (part of OpenGL 4.2), OpenGL ES 3.0
          * or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
          * available, the feature is emulated with @ref setImage() call.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexStorage2D}
-         *      or @fn_gl_extension{TextureStorage2D,EXT,direct_state_access},
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexStorage2D} or
+         *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access},
          *      eventually @fn_gl{TexImage2D} or
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}.
          */
@@ -263,8 +274,9 @@ class RectangleTexture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexImage2D}
-         *      or @fn_gl_extension{TextureImage2D,EXT,direct_state_access}
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexImage2D} or
+         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}
          */
         RectangleTexture& setImage(TextureFormat internalFormat, const ImageReference2D& image) {
             DataHelper<2>::setImage(*this, _target, 0, internalFormat, image);

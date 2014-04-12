@@ -81,9 +81,9 @@ following:
 
 %Extension                                   | Status
 -------------------------------------------- | ------
-@extension{ARB,texture_rectangle}            | missing limit query
+@extension{ARB,texture_rectangle}            | done
 @extension{ARB,draw_instanced}               | |
-@extension{ARB,texture_buffer_object}        | missing limit query
+@extension{ARB,texture_buffer_object}        | done
 @extension{ARB,uniform_buffer_object}        | |
 @extension{ARB,copy_buffer}                  | done
 @extension{EXT,texture_snorm}                | done

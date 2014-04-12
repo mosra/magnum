@@ -42,6 +42,10 @@ namespace Implementation {
     template<UnsignedInt> constexpr GLenum multisampleTextureTarget();
     template<> inline constexpr GLenum multisampleTextureTarget<2>() { return GL_TEXTURE_2D_MULTISAMPLE; }
     template<> inline constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
+
+    template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxMultisampleTextureSize();
+    template<> Vector2i maxMultisampleTextureSize<2>();
+    template<> Vector3i maxMultisampleTextureSize<3>();
 }
 
 /**
@@ -86,6 +90,19 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
 
         /**
+         * @brief Max supported multisample texture size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,texture_multisample} (part
+         * of OpenGL 3.2) is not available, returns zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
+         *      @def_gl{MAX_3D_TEXTURE_SIZE}
+         */
+        static typename DimensionTraits<dimensions, Int>::VectorType maxSize() {
+            return Implementation::maxMultisampleTextureSize<dimensions>();
+        }
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL texture object.
@@ -127,7 +144,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @extension{ARB,texture_storage} functionality (which unfortunately
          * doesn't have any DSA alternative, so the texture must be bound
          * to some texture unit before).
-         * @see @ref maxColorSamples(), @ref maxDepthSamples(),
+         * @see @ref maxSize(), @ref maxColorSamples(), @ref maxDepthSamples(),
          *      @ref maxIntegerSamples(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
          *      and @fn_gl{TexStorage2DMultisample}/@fn_gl{TexStorage3DMultisample}
          *      or @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access}/

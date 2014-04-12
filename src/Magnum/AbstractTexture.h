@@ -104,7 +104,6 @@ functions do nothing.
 @todo Move constructor/assignment - how to avoid creation of empty texture and
     then deleting it immediately?
 @todo ES2 - proper support for pixel unpack buffer when extension is in headers
-@todo `GL_MAX_3D_TEXTURE_SIZE`, `GL_MAX_ARRAY_TEXTURE_LAYERS`, `GL_MAX_CUBE_MAP_TEXTURE_SIZE`, `GL_MAX_RECTANGLE_TEXTURE_SIZE`, `GL_MAX_TEXTURE_SIZE`, `GL_MAX_TEXTURE_BUFFER_SIZE` enable them only where it makes sense?
 @todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
 @todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
 @todo Query for immutable levels (@extension{ARB,ES3_compatibility})

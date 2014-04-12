@@ -93,6 +93,17 @@ class CubeMapTextureArray: public AbstractTexture {
         explicit CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
 
         /**
+         * @brief Max supported size of one side of cube map texture array
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If @extension{ARB,texture_cube_map_array} (part of
+         * OpenGL 4.0) is not available, returns zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE} and
+         *      @def_gl{MAX_ARRAY_TEXTURE_LAYERS}
+         */
+        static Vector3i maxSize();
+
+        /**
          * @brief Set base mip level
          * @return Reference to self (for method chaining)
          *
@@ -230,6 +241,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * Z coordinate of @p size must be multiple of 6. See
          * @ref Texture::setStorage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTextureArray& setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
             DataHelper<3>::setStorage(*this, _target, levels, internalFormat, size);
@@ -274,6 +286,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * images are in order of (+X, -X, +Y, -Y, +Z, -Z).
          *
          * See @ref Texture::setImage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
             DataHelper<3>::setImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);

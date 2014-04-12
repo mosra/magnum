@@ -96,6 +96,17 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
 
         /**
+         * @brief Max supported texture array size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{EXT,texture_array} (part of
+         * OpenGL 3.0) is not available, returns zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
+         *      @def_gl{MAX_ARRAY_TEXTURE_LAYERS}
+         */
+        static typename DimensionTraits<dimensions+1, Int>::VectorType maxSize();
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL texture object.
@@ -217,7 +228,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @extension{ARB,texture_storage} (part of OpenGL 4.2) or OpenGL ES
          * 3.0 is not available, the feature is emulated with sequence of
          * @ref setImage() calls.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage2D}/@fn_gl{TexStorage3D} or
          *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
@@ -256,7 +267,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}

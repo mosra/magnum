@@ -35,6 +35,7 @@ set(Magnum_SRCS
     AbstractShaderProgram.cpp
     Buffer.cpp
     ColorFormat.cpp
+    CubeMapTexture.cpp
     Context.cpp
     DebugMessage.cpp
     DefaultFramebuffer.cpp
@@ -49,6 +50,7 @@ set(Magnum_SRCS
     Resource.cpp
     Sampler.cpp
     Shader.cpp
+    Texture.cpp
     Timeline.cpp
     Version.cpp
 
@@ -60,6 +62,7 @@ set(Magnum_SRCS
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp
+    Implementation/maxTextureSize.cpp
     Implementation/setupDriverWorkarounds.cpp
 
     Trade/AbstractImageConverter.cpp
@@ -130,6 +133,9 @@ if(NOT TARGET_GLES)
         RectangleTexture.h)
     set(Magnum_SRCS ${Magnum_SRCS}
         BufferTexture.cpp
+        CubeMapTextureArray.cpp
+        MultisampleTexture.cpp
+        RectangleTexture.cpp
         $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
@@ -139,7 +145,8 @@ if(NOT TARGET_GLES2)
         BufferImage.h
         TextureArray.h)
     set(Magnum_SRCS ${Magnum_SRCS}
-        BufferImage.cpp)
+        BufferImage.cpp
+        TextureArray.cpp)
 endif()
 
 # Files shared between main library and math unit test library

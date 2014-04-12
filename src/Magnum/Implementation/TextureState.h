@@ -74,6 +74,14 @@ struct TextureState {
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 
+    GLint maxSize,
+        max3DSize,
+        maxArrayLayers,
+        maxCubeMapSize;
+    #ifndef MAGNUM_TARGET_GLES
+    GLint maxRectangleSize,
+        maxBufferSize;
+    #endif
     GLint maxTextureUnits;
     GLfloat maxLodBias,
         maxMaxAnisotropy;

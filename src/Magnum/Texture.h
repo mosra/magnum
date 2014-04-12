@@ -51,6 +51,9 @@ namespace Implementation {
         return GL_TEXTURE_3D_OES;
         #endif
     }
+
+    template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxTextureSize();
+    template<> Vector3i maxTextureSize<3>();
 }
 
 /**
@@ -138,6 +141,20 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         typedef typename DataHelper<Dimensions>::Target Target;
         #endif
         #endif
+
+        /**
+         * @brief Max supported texture size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. For 3D textures in OpenGL ES 2.0, if
+         * @es_extension{OES,texture_3D} extension is not available, returns
+         * zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE},
+         *      @def_gl{MAX_3D_TEXTURE_SIZE}
+         */
+        static typename DimensionTraits<dimensions, Int>::VectorType maxSize() {
+            return Implementation::maxTextureSize<dimensions>();
+        }
 
         /**
          * @brief Constructor
@@ -466,13 +483,14 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * calls.
          * @todo allow the user to specify ColorType explicitly to avoid
          *      issues in WebGL (see setSubImage())
-         * @see @ref setMaxLevel(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         *      and @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
+         * @see @ref maxSize(), @ref setMaxLevel(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and
+         *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
-         *      eventually @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
-         *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
+         *      eventually @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D}
+         *      or @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
@@ -537,7 +555,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/

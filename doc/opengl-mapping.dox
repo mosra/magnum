@@ -299,7 +299,7 @@ OpenGL function                        | Matching API
 `GL_MAX_*_UNIFORM_BLOCKS`, \n @def_gl{MAX_COMBINED_UNIFORM_BLOCKS} | @ref Shader::maxUniformBlocks(), \n @ref Shader::maxCombinedUniformBlocks()
 `GL_MAX_*_UNIFORM_COMPONENTS`, \n @def_gl{MAX_VERTEX_UNIFORM_VECTORS}, \n @def_gl{MAX_FRAGMENT_UNIFORM_VECTORS} | @ref Shader::maxUniformComponents()
 `GL_MAX_COMBINED_*_UNIFORM_COMPONENTS` | @ref Shader::maxCombinedUniformComponents()
-@def_gl{MAX_3D_TEXTURE_SIZE}, \n @def_gl{MAX_ARRAY_TEXTURE_LAYERS}, \n @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}, \n @def_gl{MAX_RECTANGLE_TEXTURE_SIZE}, \n @def_gl{MAX_TEXTURE_SIZE} | |
+@def_gl{MAX_3D_TEXTURE_SIZE}, \n @def_gl{MAX_ARRAY_TEXTURE_LAYERS}, \n @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}, \n @def_gl{MAX_RECTANGLE_TEXTURE_SIZE}, \n @def_gl{MAX_TEXTURE_SIZE} | @ref Texture::maxSize(), \n @ref TextureArray::maxSize(), \n @ref CubeMapTexture::maxSize(), \n @ref CubeMapTextureArray::maxSize(), \n @ref RectangleTexture::maxSize(), \n @ref BufferTexture::maxSize(), \n @ref MultisampleTexture::maxSize()
 @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE} | @ref AbstractShaderProgram::maxAtomicCounterBufferSize()
 @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS} | @ref Buffer::maxAtomicCounterBindings()
 @def_gl{MAX_COLOR_ATTACHMENTS}         | @ref Framebuffer::maxColorAttachments()

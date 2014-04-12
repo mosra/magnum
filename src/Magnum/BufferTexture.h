@@ -203,6 +203,16 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
 
     public:
         /**
+         * @brief Max supported buffer texture size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If @extension{ARB,texture_buffer_object} (part of
+         * OpenGL 3.1) is not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_BUFFER_SIZE}
+         */
+        static Int maxSize();
+
+        /**
          * @brief Minimum required alignment for texture buffer offsets
          *
          * The result is cached, repeated queries don't result in repeated
@@ -229,8 +239,9 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using @ref Buffer "Buffer"'s
          * own data setting functions.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
-         *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexBuffer} or
+         *      @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
 
@@ -245,9 +256,10 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * Binds range of given buffer to this texture. The buffer itself can
          * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
          * own data setting functions.
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexBufferRange} or
+         *      @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
-         *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
