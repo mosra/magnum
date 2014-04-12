@@ -88,7 +88,7 @@ void PrimitiveQueryGLTest::query() {
 
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(9)
+        .setCount(9)
         .addVertexBuffer(vertices, 0, MyShader::Position());
 
     MAGNUM_VERIFY_NO_ERROR();

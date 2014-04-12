@@ -166,7 +166,7 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     ResourceManager::instance().set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     mesh->setPrimitive(MeshPrimitive::Lines)
-        .setIndexCount(Renderer<dimensions>::indices.size())
+        .setCount(Renderer<dimensions>::indices.size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::VertexColor<dimensions>::Position(),
             typename Shaders::VertexColor<dimensions>::Color())

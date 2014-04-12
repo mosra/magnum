@@ -65,9 +65,9 @@ std::tuple<std::size_t, Mesh::IndexType, Containers::Array<char>> MAGNUM_MESHTOO
 @param indices  Index array
 
 The same as @ref compressIndices(const std::vector<UnsignedInt>&), but this
-function writes the output to given buffer and calls @ref Mesh::setIndexCount()
-and @ref Mesh::setIndexBuffer(), thus you don't need to do anything else for
-mesh index configuration.
+function writes the output to given buffer and calls @ref Mesh::setCount() and
+@ref Mesh::setIndexBuffer(), thus you don't need to do anything else for mesh
+index configuration.
 
 @see @ref MeshTools::interleave(), @ref MeshTools::compile()
 */

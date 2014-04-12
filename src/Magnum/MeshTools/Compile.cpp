@@ -72,17 +72,17 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
             stride - normalOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
     }
 
-    /* Fill vertex buffer with interleaved data and finalize mesh
-       configuration */
+    /* Fill vertex buffer with interleaved data */
     vertexBuffer->setData(data, BufferUsage::StaticDraw);
-    mesh.setVertexCount(vertexCount);
 
     /* Fill index buffer */
     std::unique_ptr<Buffer> indexBuffer;
     if(meshData.isIndexed()) {
         indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
         MeshTools::compressIndices(mesh, *indexBuffer, usage, meshData.indices());
-    }
+
+    /* Else set proper vertex count */
+    } else mesh.setCount(vertexCount);
 
     return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
 }
@@ -139,17 +139,17 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
             stride - textureCoordsOffset - sizeof(Shaders::Generic3D::TextureCoordinates::Type));
     }
 
-    /* Fill vertex buffer with interleaved data and finalize mesh
-       configuration */
+    /* Fill vertex buffer with interleaved data */
     vertexBuffer->setData(data, BufferUsage::StaticDraw);
-    mesh.setVertexCount(vertexCount);
 
     /* Fill index buffer */
     std::unique_ptr<Buffer> indexBuffer;
     if(meshData.isIndexed()) {
         indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
         MeshTools::compressIndices(mesh, *indexBuffer, usage, meshData.indices());
-    }
+
+    /* Else set proper vertex count */
+    } mesh.setCount(vertexCount);
 
     return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
 }

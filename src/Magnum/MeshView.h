@@ -83,7 +83,7 @@ class MAGNUM_EXPORT MeshView {
          */
         MeshView& setVertexRange(Int first, Int count) {
             _firstVertex = first;
-            _vertexCount = count;
+            _count = count;
             return *this;
         }
 
@@ -135,14 +135,14 @@ class MAGNUM_EXPORT MeshView {
     private:
         Mesh* _original;
 
-        Int _firstVertex, _vertexCount, _indexCount;
+        Int _firstVertex, _count;
         GLintptr _indexOffset;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
         #endif
 };
 
-inline MeshView::MeshView(Mesh& original): _original(&original), _firstVertex(0), _vertexCount(0), _indexCount(0), _indexOffset(0)
+inline MeshView::MeshView(Mesh& original): _original(&original), _firstVertex(0), _count(0), _indexOffset(0)
     #ifndef MAGNUM_TARGET_GLES2
     , _indexStart(0), _indexEnd(0)
     #endif

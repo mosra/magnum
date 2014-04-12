@@ -82,7 +82,7 @@ void compressIndices(Mesh& mesh, Buffer& buffer, BufferUsage usage, const std::v
     Containers::Array<char> data;
     std::tie(indexCount, indexType, data) = compressIndicesInternal(indices, *minmax.second);
 
-    mesh.setIndexCount(indices.size())
+    mesh.setCount(indices.size())
         .setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
     buffer.setData(data, usage);
 }

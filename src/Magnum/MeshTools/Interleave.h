@@ -184,9 +184,10 @@ template<class T, class ...U> std::tuple<std::size_t, std::size_t> interleaveInt
 @param usage        Vertex buffer usage
 @param attributes   Attribute arrays and gaps
 
-The same as @ref interleave(const T&, const U&...), but this function writes the
-output to given array buffer and updates vertex count in the mesh accordingly,
-so you don't have to call @ref Mesh::setVertexCount() on your own.
+The same as @ref interleave(const T&, const U&...), but this function also
+writes the output to given array buffer. If given mesh is not indexed, it also
+updates vertex count in the mesh accordingly, so you don't have to call
+@ref Mesh::setCount() on your own.
 
 @attention You still must call @ref Mesh::setPrimitive() and
     @ref Mesh::addVertexBuffer() on the mesh afterwards.
@@ -199,7 +200,7 @@ template<class ...T> void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usa
     std::size_t attributeCount;
     std::tie(attributeCount, std::ignore, data) = interleave(attributes...);
 
-    mesh.setVertexCount(attributeCount);
+    if(!mesh.isIndexed()) mesh.setCount(attributeCount);
     buffer.setData(data, usage);
 }
 
@@ -210,11 +211,11 @@ Simplified specialization of the above function for only one attribute array,
 equivalent to the following:
 @code
 buffer.setData(attribute, usage);
-mesh.setVertexCount(attribute.size());
+if(!mesh.isIndexed()) mesh.setVertexCount(attribute.size());
 @endcode
 */
 template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
-    mesh.setVertexCount(attribute.size());
+    if(!mesh.isIndexed()) mesh.setCount(attribute.size());
     buffer.setData(attribute, usage);
 }
 

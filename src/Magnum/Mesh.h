@@ -122,29 +122,30 @@ namespace Implementation { struct MeshState; }
 
 @section Mesh-configuration Mesh configuration
 
-You have to specify at least primitive and vertex count using @ref setPrimitive()
-and @ref setVertexCount(). Then fill your vertex buffers with data, add them to
-the mesh and specify @ref AbstractShaderProgram::Attribute "shader attribute"
-layout inside the buffers using @ref addVertexBuffer(). You can also
-use @ref MeshTools::interleave() conveniently fill interleaved vertex buffer.
-The function itself calls @ref setVertexCount(), so you don't have to do it
-again, but you still have to specify the layout using @ref addVertexBuffer().
+You have to specify at least primitive and vertex/index count using
+@ref setPrimitive() and @ref setCount(). Then fill your vertex buffers with
+data, add them to the mesh and specify
+@ref AbstractShaderProgram::Attribute "shader attribute" layout inside the
+buffers using @ref addVertexBuffer(). You can also use
+@ref MeshTools::interleave() conveniently fill interleaved vertex buffer.
+The function itself calls @ref setCount(), so you don't have to, but you still
+have to specify the primitive using @ref setPrimitive() and the layout using
+@ref addVertexBuffer().
 
-If you have indexed mesh, you need to call @ref setIndexCount() instead of
-@ref setVertexCount(). Then fill your index buffer with data and specify its
+If you want indexed mesh, fill your index buffer with data and specify its
 layout using @ref setIndexBuffer(). You can also use @ref MeshTools::compressIndices()
 to conveniently compress the indices, fill the index buffer and configure the
-mesh instead of calling @ref setIndexCount() and @ref setIndexBuffer() manually.
+mesh. It will call @ref setCount() and @ref setIndexBuffer(), so you don't have
+to do anything else.
 
 Note that neither vertex buffers nor index buffer is managed (e.g. deleted on
 destruction) by the mesh, so you have to manage them on your own and ensure
 that they are available for whole mesh lifetime. On the other hand it allows
 you to use one buffer for more meshes (each mesh for example configured for
-different shader) or store data for more meshes in one buffer.
+different usage) or store data for more meshes in one buffer.
 
-If the mesh has non-zero index count, it is treated as indexed mesh, otherwise
-it is treated as non-indexed mesh. If both index and vertex count is zero, the
-mesh is empty and no draw commands are issued when calling @ref draw().
+If vertex/index count is zero, the mesh is empty and no draw commands are
+issued when calling @ref draw().
 
 @subsection Mesh-configuration-examples Example mesh configuration
 
@@ -169,7 +170,7 @@ vertexBuffer.setData(positions, BufferUsage::StaticDraw);
 
 // Set primitive and vertex count, add the buffer and specify its layout
 mesh.setPrimitive(MeshPrimitive::Triangles)
-    .setVertexCount(30)
+    .setCount(30)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position());
 @endcode
 
@@ -218,7 +219,7 @@ indexBuffer.setData(indices, BufferUsage::StaticDraw);
 
 // Set primitive, index count, specify the buffers
 mesh.setPrimitive(MeshPrimitive::Triangles)
-    .setIndexCount(75)
+    .setCount(75)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position())
     .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
 @endcode
@@ -395,7 +396,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @param primitive     Primitive type
          *
          * Creates mesh with no vertex buffers and zero vertex count.
-         * @see @ref setPrimitive(), @ref setVertexCount(), @fn_gl{GenVertexArrays}
+         * @see @ref setPrimitive(), @ref setCount(), @fn_gl{GenVertexArrays}
          *      (if @extension{APPLE,vertex_array_object} is available)
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
@@ -455,6 +456,13 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         Mesh& setLabel(const std::string& label);
 
         /**
+         * @brief Whether the mesh is indexed
+         *
+         * @see @ref setIndexBuffer(), @ref setCount()
+         */
+        bool isIndexed() const { return _indexBuffer; }
+
+        /**
          * @brief Index size
          *
          * @see @ref indexSize(IndexType)
@@ -469,43 +477,62 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is @ref MeshPrimitive::Triangles.
-         * @see @ref setVertexCount(), @ref addVertexBuffer()
+         * @see @ref setCount()
          */
         Mesh& setPrimitive(MeshPrimitive primitive) {
             _primitive = primitive;
             return *this;
         }
 
-        /** @brief Vertex count */
-        Int vertexCount() const { return _vertexCount; }
+        /** @brief Vertex/index count */
+        Int count() const { return _count; }
 
         /**
-         * @brief Set vertex count
-         * @return Reference to self (for method chaining)
+         * @brief Set vertex/index count
          *
-         * Default is zero.
-         * @see @ref setPrimitive(), @ref addVertexBuffer(),
-         *      @ref MeshTools::interleave()
+         * If the mesh is indexed, the value is treated as index count,
+         * otherwise the value is vertex count. Default is `0`. This value is
+         * set automatically by @ref MeshTools::interleave() and
+         * @ref MeshTools::compressIndices() functions.
+         * @see @ref isIndexed()
          */
-        Mesh& setVertexCount(Int vertexCount) {
-            _vertexCount = vertexCount;
+        Mesh& setCount(Int count) {
+            _count = count;
             return *this;
         }
 
-        /** @brief Index count */
-        Int indexCount() const { return _indexCount; }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief count()
+         * @deprecated Use @ref Magnum::Mesh::count() "count()" instead.
+         */
+        CORRADE_DEPRECATED("use count() instead") Int vertexCount() const {
+            return isIndexed() ? 0 : count();
+        }
 
         /**
-         * @brief Set index count
-         * @return Reference to self (for method chaining)
-         *
-         * Default is zero.
-         * @see @ref setIndexBuffer(), @ref MeshTools::compressIndices()
+         * @copybrief setCount()
+         * @deprecated Use @ref Magnum::Mesh::setCount() "setCount()" instead.
          */
-        Mesh& setIndexCount(Int count) {
-            _indexCount = count;
+        CORRADE_DEPRECATED("use setCount() instead") Mesh& setVertexCount(Int count) {
+            if(!isIndexed()) setCount(count);
             return *this;
         }
+
+        /**
+         * @copybrief count()
+         * @deprecated Use @ref Magnum::Mesh::count() "count()" instead.
+         */
+        CORRADE_DEPRECATED("use count() instead") Int indexCount() const {
+            return count();
+        }
+
+        /**
+         * @copybrief setCount()
+         * @deprecated Use @ref Magnum::Mesh::setCount() "setCount()" instead.
+         */
+        CORRADE_DEPRECATED("use setCount() instead") Mesh& setIndexCount(Int count) { return setCount(count); }
+        #endif
 
         /**
          * @brief Add buffer with (interleaved) vertex attributes for use with given shader
@@ -565,7 +592,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      but doing so may have performance benefits.
          *
          * @see @ref maxVertexAttributes(), @ref setPrimitive(),
-         *      @ref setVertexCount(), @fn_gl{BindVertexArray},
+         *      @ref setCount(), @fn_gl{BindVertexArray},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
@@ -594,9 +621,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @ref setIndexBuffer(Buffer&, GLintptr, IndexType), as this
          * functionality is not available there.
          * @see @ref maxElementsIndices(), @ref maxElementsVertices(),
-         *      @ref setIndexCount(), @ref MeshTools::compressIndices(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
-         *      @extension{APPLE,vertex_array_object} is available)
+         *      @ref setCount(), @ref isIndexed(),
+         *      @ref MeshTools::compressIndices(), @fn_gl{BindVertexArray},
+         *      @fn_gl{BindBuffer} (if @extension{APPLE,vertex_array_object} is
+         *      available)
          */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end);
 
@@ -607,11 +635,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @param type          Index data type
          * @return Reference to self (for method chaining)
          *
-         * Prefer to use @ref setIndexBuffer(Buffer&, GLintptr, IndexType, UnsignedInt, UnsignedInt)
-         * for better performance.
-         * @see @ref setIndexCount(), @ref MeshTools::compressIndices(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} (if
-         *      @extension{APPLE,vertex_array_object} is available)
+         * Alternative to @ref setIndexBuffer(Buffer&, GLintptr, IndexType, UnsignedInt, UnsignedInt)
+         * with unspecified index limits, see its documentation for more
+         * information. Prefer to set index limits for better performance.
          */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type) {
             return setIndexBuffer(buffer, offset, type, 0, 0);
@@ -629,15 +655,15 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
          *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
          *      @extension{APPLE,vertex_array_object} is available), @fn_gl{DrawArrays}
-         *      or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}.
+         *      or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}
          */
         void draw(AbstractShaderProgram& shader) {
             shader.use();
 
             #ifndef MAGNUM_TARGET_GLES2
-            drawInternal(0, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+            drawInternal(_count, 0, _indexOffset, _indexStart, _indexEnd);
             #else
-            drawInternal(0, _vertexCount, _indexOffset, _indexCount);
+            drawInternal(_count, 0, _indexOffset);
             #endif
         }
 
@@ -649,11 +675,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) "draw(AbstractShaderProgram&)"
          *      instead.
          */
-        void draw() {
+        CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw() {
             #ifndef MAGNUM_TARGET_GLES2
-            drawInternal(0, _vertexCount, _indexOffset, _indexCount, _indexStart, _indexEnd);
+            drawInternal(_count, 0, _indexOffset, _indexStart, _indexEnd);
             #else
-            drawInternal(0, _vertexCount, _indexOffset, _indexCount);
+            drawInternal(_count, 0, _indexOffset);
             #endif
         }
         #endif
@@ -774,9 +800,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        void drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount, Int indexStart, Int indexEnd);
+        void drawInternal(Int count, Int firstVertex, GLintptr indexOffset, Int indexStart, Int indexEnd);
         #else
-        void drawInternal(Int firstVertex, Int vertexCount, GLintptr indexOffset, Int indexCount);
+        void drawInternal(Int count, Int firstVertex, GLintptr indexOffset);
         #endif
 
         void MAGNUM_LOCAL createImplementationDefault();
@@ -805,7 +831,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
 
-        void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer& buffer);
+        void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer&);
         void MAGNUM_LOCAL bindIndexBufferImplementationVAO(Buffer& buffer);
 
         void MAGNUM_LOCAL bindImplementationDefault();
@@ -816,7 +842,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         GLuint _id;
         MeshPrimitive _primitive;
-        Int _vertexCount, _indexCount;
+        Int _count;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
         #endif

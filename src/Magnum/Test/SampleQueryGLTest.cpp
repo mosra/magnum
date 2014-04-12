@@ -112,7 +112,7 @@ void SampleQueryGLTest::querySamplesPassed() {
 
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
 
     MyShader shader;
@@ -161,7 +161,7 @@ void SampleQueryGLTest::conditionalRender() {
 
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
 
     MyShader shader;
