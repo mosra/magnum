@@ -40,8 +40,16 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/MultisampleTexture.h"
+#include "Magnum/RectangleTexture.h"
+#endif
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/Shader.h"
+#include "Magnum/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/TextureArray.h"
+#endif
 #ifndef CORRADE_TARGET_NACL
 #include "Magnum/Platform/WindowlessGlxApplication.h"
 #else
@@ -252,6 +260,13 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef MAGNUM_TARGET_GLES2
     _l(AbstractTexture::maxLodBias())
     #endif
+    #ifndef MAGNUM_TARGET_GLES
+    _l(Texture1D::maxSize())
+    #endif
+    _l(Texture2D::maxSize())
+    #ifndef MAGNUM_TARGET_GLES2
+    _l(Texture3D::maxSize())
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
@@ -337,10 +352,29 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Shader::maxTessellationEvaluationOutputComponents())
     }
 
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>()) {
+        _h(ARB::texture_buffer_object)
+
+        _l(BufferTexture::maxSize())
+    }
+
     if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>()) {
         _h(ARB::texture_buffer_range)
 
         _l(BufferTexture::offsetAlignment())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_multisample>()) {
+        _h(ARB::texture_multisample)
+
+        _l(MultisampleTexture2D::maxSize())
+        _l(MultisampleTexture2DArray::maxSize())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>()) {
+        _h(ARB::texture_rectangle)
+
+        _l(RectangleTexture::maxSize())
     }
     #endif
 
@@ -387,6 +421,20 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(AbstractShaderProgram::minTexelOffset())
         _l(AbstractShaderProgram::maxTexelOffset())
     }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(EXT::texture_array)
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        _l(Texture1DArray::maxSize())
+        #endif
+        _l(Texture2DArray::maxSize())
+    }
     #endif
 
     if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
@@ -402,6 +450,14 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(DebugMessage::maxLoggedMessages())
         _l(DebugMessage::maxMessageLength())
     }
+
+    #ifdef MAGNUM_TARGET_GLES2
+    if(c->isExtensionSupported<Extensions::GL::OES::texture_3D>()) {
+        _h(OES::texture_3D)
+
+        _l(Texture3D::maxSize())
+    }
+    #endif
 
     #undef _l
     #undef _h
