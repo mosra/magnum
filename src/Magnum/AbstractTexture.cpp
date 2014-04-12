@@ -757,21 +757,21 @@ void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLuint* values) {
+void AbstractTexture::parameterIImplementationDefault(GLenum parameter, const GLuint* values) {
     bindInternal();
     glTexParameterIuiv(_target, parameter, values);
 }
 
-void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLuint* values) {
+void AbstractTexture::parameterIImplementationDSA(GLenum parameter, const GLuint* values) {
     glTextureParameterIuivEXT(_id, _target, parameter, values);
 }
 
-void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLint* values) {
+void AbstractTexture::parameterIImplementationDefault(GLenum parameter, const GLint* values) {
     bindInternal();
     glTexParameterIiv(_target, parameter, values);
 }
 
-void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLint* values) {
+void AbstractTexture::parameterIImplementationDSA(GLenum parameter, const GLint* values) {
     glTextureParameterIivEXT(_id, _target, parameter, values);
 }
 #endif
