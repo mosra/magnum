@@ -104,7 +104,7 @@ class CubeMapTextureArray: public AbstractTexture {
         static Vector3i maxSize();
 
         /**
-         * @brief Set base mip level
+         * @copybrief Texture::setBaseLevel()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBaseLevel() for more information.
@@ -115,7 +115,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set max mip level
+         * @copybrief Texture::setMaxLevel()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLevel() for more information.
@@ -138,7 +138,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set minimum level-of-detail parameter
+         * @copybrief Texture::setMinLod()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMinLod() for more information.
@@ -149,7 +149,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set maximum level-of-detail parameter
+         * @copybrief Texture::setMaxLod()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLod() for more information.
@@ -160,7 +160,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set level-of-detail bias
+         * @copybrief Texture::setLodBias()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setLodBias() for more information.
@@ -177,7 +177,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set border color
+         * @copybrief Texture::setBorderColor(const Color4&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
@@ -189,7 +189,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set border color for integer texture
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
@@ -201,7 +201,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set border color for integer texture
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Vector4i&) for more
@@ -218,13 +218,16 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setDepthStencilMode() */
+        /**
+         * @copybrief Texture::setDepthStencilMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setDepthStencilMode() for more information.
+         */
         CubeMapTextureArray& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }
-        #endif
 
         /**
          * @brief %Image size in given mip level

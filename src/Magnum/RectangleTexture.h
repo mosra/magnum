@@ -149,7 +149,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
-         * @brief Set border color
+         * @copybrief Texture::setBorderColor(const Color4&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
@@ -161,7 +161,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
-         * @brief Set border color for integer texture
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
@@ -173,7 +173,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
-         * @brief Set border color for integer texture
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Vector4i&) for more
@@ -190,13 +190,16 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setDepthStencilMode() */
+        /**
+         * @copybrief Texture::setDepthStencilMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setDepthStencilMode() for more information.
+         */
         RectangleTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }
-        #endif
 
         /**
          * @brief Set storage

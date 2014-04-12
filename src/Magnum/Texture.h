@@ -445,11 +445,13 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set depth/stencil texture mode
+         * @return Reference to self (for method chaining)
          *
          * Selects which component of packed depth/stencil texture is used for
          * texturing. If @extension{EXT,direct_state_access} is not available,
          * the texture is bound to some texture unit before the operation.
          * Initial value is @ref Sampler::DepthStencilMode::DepthComponent.
+         * @note Depth textures can be only 1D or 2D.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{DEPTH_STENCIL_TEXTURE_MODE}

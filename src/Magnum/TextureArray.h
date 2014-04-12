@@ -90,6 +90,7 @@ documentation for more information about usage in shaders.
 @requires_gl30 %Extension @extension{EXT,texture_array}
 @requires_gles30 %Array textures are not available in OpenGL ES 2.0.
 @requires_gl 1D array textures are not available in OpenGL ES, only 2D ones.
+@todo Fix this when @es_extension{NV,texture_array} is in ES2 extension headers
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
     public:
@@ -196,7 +197,12 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setDepthStencilMode() */
+        /**
+         * @copybrief Texture::setDepthStencilMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setDepthStencilMode() for more information.
+         */
         TextureArray<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
