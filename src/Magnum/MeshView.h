@@ -72,48 +72,102 @@ class MAGNUM_EXPORT MeshView {
         MeshView& operator=(MeshView&& other) = delete;
 
         /**
-         * @brief Set vertex range
-         * @param first     First vertex
-         * @param count     Vertex count
+         * @brief Set vertex/index count
          * @return Reference to self (for method chaining)
          *
-         * Default is zero @p offset and zero @p count. If index range is
-         * non-zero, vertex range is ignored, see main class documentation for
-         * more information.
+         * Default is `0`.
          */
-        MeshView& setVertexRange(Int first, Int count) {
-            _firstVertex = first;
+        MeshView& setCount(Int count) {
             _count = count;
             return *this;
         }
 
+        /**
+         * @brief Set base vertex
+         *
+         * Sets number of vertices of which the vertex buffer will be offset
+         * when drawing. Default is `0`.
+         * @requires_gl Desktop OpenGL is required for base vertex
+         *      specification in indexed meshes.
+         */
+        MeshView& setBaseVertex(Int baseVertex) {
+            _baseVertex = baseVertex;
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Set vertex range
+         * @param first     First vertex
+         * @param count     Vertex count
+         *
+         * @deprecated Use @ref Magnum::MeshView::setCount() "setCount()" and
+         *      @ref Magnum::MeshView::setBaseVertex() "setBaseVertex()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use setCount() and setBaseVertex() instead") MeshView& setVertexRange(Int first, Int count) {
+            return setCount(count), setBaseVertex(first);
+        }
+        #endif
+
+        /**
+         * @brief Set index range
+         * @param first     First vertex
+         * @param start     Minimum array index contained in the buffer
+         * @param end       Maximum array index contained in the buffer
+         * @return Reference to self (for method chaining)
+         *
+         * The @p start and @p end parameters may help to improve memory access
+         * performance, as only a portion of vertex buffer needs to be
+         * acccessed. On OpenGL ES 2.0 this function behaves the same as
+         * @ref setIndexRange(Int), as index range functionality is not
+         * available there.
+         * @see @ref setCount()
+         */
+        MeshView& setIndexRange(Int first, UnsignedInt start, UnsignedInt end);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set index range
          * @param first     First index
          * @param count     Index count
          * @param start     Minimum array index contained in the buffer
          * @param end       Maximum array index contained in the buffer
-         * @return Reference to self (for method chaining)
          *
-         * Specifying `0` for both @p start and @p end behaves the same as
-         * @ref setIndexRange(Int, Int). On OpenGL ES 2.0 this function behaves
-         * always as @ref  setIndexRange(Int, Int), as this functionality is
-         * not available there.
+         * @deprecated Use @ref Magnum::MeshView::setCount() "setCount()" and
+         *      @ref Magnum::MeshView::setIndexRange(Int, UnsignedInt, UnsignedInt) "setIndexRange(Int, UnsignedInt, UnsignedInt)"
+         *      instead.
          */
-        MeshView& setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end);
+        CORRADE_DEPRECATED("use setCount() and setIndexRange(Int, UnsignedInt, UnsignedInt) instead") MeshView& setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end) {
+            return setCount(count), setIndexRange(first, start, end);
+        }
+        #endif
 
         /**
          * @brief Set index range
          * @param first     First index
-         * @param count     Index count
          * @return Reference to self (for method chaining)
          *
-         * Prefer to use @ref setIndexRange(Int, Int, UnsignedInt, UnsignedInt)
-         * for better performance.
+         * Prefer to use @ref setIndexRange(Int, UnsignedInt, UnsignedInt) for
+         * better performance.
+         * @see @ref setCount()
          */
-        MeshView& setIndexRange(Int first, Int count) {
-            return setIndexRange(first, count, 0, 0);
+        MeshView& setIndexRange(Int first);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Set index range
+         * @param first     First index
+         * @param count     Index count
+         *
+         * @deprecated Use @ref Magnum::MeshView::setCount() "setCount()" and
+         *      @ref Magnum::MeshView::setIndexRange(Int) "setIndexRange(Int)"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use setCount() and setIndexRange(Int) instead") MeshView& setIndexRange(Int first, Int count) {
+            return setCount(count), setIndexRange(first);
         }
+        #endif
 
         /**
          * @brief Draw the mesh
@@ -135,18 +189,31 @@ class MAGNUM_EXPORT MeshView {
     private:
         Mesh* _original;
 
-        Int _firstVertex, _count;
+        Int _count, _baseVertex;
         GLintptr _indexOffset;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
         #endif
 };
 
-inline MeshView::MeshView(Mesh& original): _original(&original), _firstVertex(0), _count(0), _indexOffset(0)
+inline MeshView::MeshView(Mesh& original): _original(&original), _count(0), _baseVertex(0), _indexOffset(0)
     #ifndef MAGNUM_TARGET_GLES2
     , _indexStart(0), _indexEnd(0)
     #endif
     {}
+
+inline MeshView& MeshView::setIndexRange(Int first, UnsignedInt start, UnsignedInt end) {
+    setIndexRange(first);
+    #ifndef MAGNUM_TARGET_GLES2
+    _indexStart = start;
+    _indexEnd = end;
+    #else
+    static_cast<void>(start);
+    static_cast<void>(end);
+    #endif
+    return *this;
+}
+
 
 }
 

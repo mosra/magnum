@@ -29,18 +29,8 @@
 
 namespace Magnum {
 
-#ifndef MAGNUM_TARGET_GLES2
-MeshView& MeshView::setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end)
-#else
-MeshView& MeshView::setIndexRange(Int first, Int count, UnsignedInt, UnsignedInt)
-#endif
-{
+MeshView& MeshView::setIndexRange(Int first) {
     _indexOffset = _original->_indexOffset + first*_original->indexSize();
-    _count = count;
-    #ifndef MAGNUM_TARGET_GLES2
-    _indexStart = start;
-    _indexEnd = end;
-    #endif
     return *this;
 }
 
@@ -48,18 +38,18 @@ void MeshView::draw(AbstractShaderProgram& shader) {
     shader.use();
 
     #ifndef MAGNUM_TARGET_GLES2
-    _original->drawInternal(_count, _firstVertex, _indexOffset, _indexStart, _indexEnd);
+    _original->drawInternal(_count, _baseVertex, _indexOffset, _indexStart, _indexEnd);
     #else
-    _original->drawInternal(_count, _firstVertex, _indexOffset);
+    _original->drawInternal(_count, _baseVertex, _indexOffset);
     #endif
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void MeshView::draw() {
     #ifndef MAGNUM_TARGET_GLES2
-    _original->drawInternal(_count, _firstVertex, _indexOffset, _indexStart, _indexEnd);
+    _original->drawInternal(_count, _baseVertex, _indexOffset, _indexStart, _indexEnd);
     #else
-    _original->drawInternal(_count, _firstVertex, _indexOffset);
+    _original->drawInternal(_count, _baseVertex, _indexOffset);
     #endif
 }
 #endif
