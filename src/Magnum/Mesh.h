@@ -287,14 +287,14 @@ mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color(
 @section Mesh-drawing Rendering meshes
 
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
-respective shader, bind required textures (see
+respective shader (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call @ref Mesh::draw().
 
 @section Mesh-webgl-restrictions WebGL restrictions
 
 @ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
-layout, see @ref addVertexBuffer() for details.
+layout, see @ref addVertexBuffer() documentation for details.
 
 @section Mesh-performance-optimization Performance optimizations
 
