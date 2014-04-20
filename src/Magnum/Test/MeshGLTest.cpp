@@ -106,6 +106,10 @@ class MeshGLTest: public AbstractOpenGLTester {
         void setIndexBuffer();
         void setIndexBufferRange();
         void setIndexBufferUnsignedInt();
+
+        #ifndef MAGNUM_TARGET_GLES
+        void setBaseVertex();
+        #endif
 };
 
 MeshGLTest::MeshGLTest() {
@@ -168,7 +172,12 @@ MeshGLTest::MeshGLTest() {
 
               &MeshGLTest::setIndexBuffer,
               &MeshGLTest::setIndexBufferRange,
-              &MeshGLTest::setIndexBufferUnsignedInt});
+              &MeshGLTest::setIndexBufferUnsignedInt,
+
+              #ifndef MAGNUM_TARGET_GLES
+              &MeshGLTest::setBaseVertex
+              #endif
+              });
 }
 
 void MeshGLTest::construct() {
@@ -397,7 +406,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
         .setCount(2);
 
     /* Skip first vertex so we test also offsets */
-    MeshView(mesh).setVertexRange(1, 1).draw(shader);
+    MeshView(mesh).setCount(1).setBaseVertex(1).draw(shader);
 }
 
 template<class T> T Checker::get(ColorFormat format, ColorType type) {
@@ -1108,7 +1117,7 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
 
 namespace {
     struct IndexChecker {
-        explicit IndexChecker(Mesh& mesh);
+        explicit IndexChecker(Mesh& mesh, Int baseVertex = 0);
         Color4ub get();
 
         Renderbuffer renderbuffer;
@@ -1138,7 +1147,7 @@ namespace {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-IndexChecker::IndexChecker(Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
+IndexChecker::IndexChecker(Mesh& mesh, Int baseVertex): framebuffer({{}, Vector2i(1)}) {
     #ifndef MAGNUM_TARGET_GLES2
     renderbuffer.setStorage(RenderbufferFormat::RGBA8, Vector2i(1));
     #else
@@ -1151,7 +1160,7 @@ IndexChecker::IndexChecker(Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
         .setCount(2);
 
     /* Skip first vertex so we test also offsets */
-    MeshView(mesh).setIndexRange(1, 1).draw(MultipleShader{});
+    MeshView(mesh).setCount(1).setBaseVertex(baseVertex).setIndexRange(1).draw(MultipleShader{});
 }
 
 Color4ub IndexChecker::get() {
@@ -1228,6 +1237,59 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void MeshGLTest::setBaseVertex() {
+    const Float indexedVertexData[] = {
+        0.0f, 0.0f, /* Offset */
+
+        /* First attribute */
+        0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+                0.0f, 0.0f,
+
+        /* Second attribute */
+        0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+                0.0f, 0.0f,
+
+        /* Third attribute */
+        Math::normalize<Float, UnsignedByte>(64),
+            Math::normalize<Float, UnsignedByte>(17),
+                Math::normalize<Float, UnsignedByte>(56),
+        Math::normalize<Float, UnsignedByte>(15),
+            Math::normalize<Float, UnsignedByte>(164),
+                Math::normalize<Float, UnsignedByte>(17),
+        Math::normalize<Float, UnsignedByte>(97),
+            Math::normalize<Float, UnsignedByte>(28),
+
+        /* Fourth attribute */
+        0.3f, 0.1f, 0.5f,
+            0.4f, 0.0f, -0.9f,
+                1.0f, -0.5f
+    };
+
+    Buffer vertices;
+    vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.addVertexBuffer(vertices, 2*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /* base vertex is 2 */
+    const auto value = IndexChecker(mesh, 2).get();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+#endif
 
 }}
 
