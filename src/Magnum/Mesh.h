@@ -318,7 +318,6 @@ drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @ref draw() for more information.
 
 @todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
-@todo How to glDrawElementsBaseVertex()/vertex offset -- in draw()?
  */
 class MAGNUM_EXPORT Mesh: public AbstractObject {
     friend class MeshView;
@@ -501,6 +500,22 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             return *this;
         }
 
+        /** @brief Base vertex */
+        Int baseVertex() const { return _baseVertex; }
+
+        /**
+         * @brief Set base vertex
+         *
+         * Sets number of vertices of which the vertex buffer will be offset
+         * when drawing.
+         * @requires_gl Desktop OpenGL is required for base vertex
+         *      specification in indexed meshes.
+         */
+        Mesh& setBaseVertex(Int baseVertex) {
+            _baseVertex = baseVertex;
+            return *this;
+        }
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief count()
@@ -655,15 +670,16 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
          *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
          *      @extension{APPLE,vertex_array_object} is available), @fn_gl{DrawArrays}
-         *      or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}
+         *      or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}/
+         *      @fn_gl{DrawElementsBaseVertex}/@fn_gl{DrawRangeElementsBaseVertex}
          */
         void draw(AbstractShaderProgram& shader) {
             shader.use();
 
             #ifndef MAGNUM_TARGET_GLES2
-            drawInternal(_count, 0, _indexOffset, _indexStart, _indexEnd);
+            drawInternal(_count, _baseVertex, _indexOffset, _indexStart, _indexEnd);
             #else
-            drawInternal(_count, 0, _indexOffset);
+            drawInternal(_count, _baseVertex, _indexOffset);
             #endif
         }
 
@@ -677,9 +693,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          */
         CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw() {
             #ifndef MAGNUM_TARGET_GLES2
-            drawInternal(_count, 0, _indexOffset, _indexStart, _indexEnd);
+            drawInternal(_count, _baseVertex, _indexOffset, _indexStart, _indexEnd);
             #else
-            drawInternal(_count, 0, _indexOffset);
+            drawInternal(_count, _baseVertex, _indexOffset);
             #endif
         }
         #endif
@@ -800,9 +816,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        void drawInternal(Int count, Int firstVertex, GLintptr indexOffset, Int indexStart, Int indexEnd);
+        void drawInternal(Int count, Int baseVertex, GLintptr indexOffset, Int indexStart, Int indexEnd);
         #else
-        void drawInternal(Int count, Int firstVertex, GLintptr indexOffset);
+        void drawInternal(Int count, Int baseVertex, GLintptr indexOffset);
         #endif
 
         void MAGNUM_LOCAL createImplementationDefault();
@@ -842,7 +858,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         GLuint _id;
         MeshPrimitive _primitive;
-        Int _count;
+        Int _count, _baseVertex;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
         #endif

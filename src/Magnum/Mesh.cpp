@@ -72,7 +72,7 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _count(0)
+Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _count(0), _baseVertex(0)
     #ifndef MAGNUM_TARGET_GLES2
     , _indexStart(0), _indexEnd(0)
     #endif
@@ -167,9 +167,9 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void Mesh::drawInternal(Int count, Int firstVertex, GLintptr indexOffset, Int indexStart, Int indexEnd)
+void Mesh::drawInternal(Int count, Int baseVertex, GLintptr indexOffset, Int indexStart, Int indexEnd)
 #else
-void Mesh::drawInternal(Int count, Int firstVertex, GLintptr indexOffset)
+void Mesh::drawInternal(Int count, Int baseVertex, GLintptr indexOffset)
 #endif
 {
     /* Nothing to draw */
@@ -178,18 +178,36 @@ void Mesh::drawInternal(Int count, Int firstVertex, GLintptr indexOffset)
     (this->*Context::current()->state().mesh->bindImplementation)();
 
     /* Non-indexed mesh */
-    if(!_indexBuffer)
-        glDrawArrays(GLenum(_primitive), firstVertex, count);
+    if(!_indexBuffer) {
+        glDrawArrays(GLenum(_primitive), baseVertex, count);
 
-    #ifndef MAGNUM_TARGET_GLES2
-    /* Indexed mesh with specified range */
-    else if(indexEnd)
-        glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
-    #endif
+    /* Indexed mesh with base vertex */
+    } else if(baseVertex) {
+        #ifndef MAGNUM_TARGET_GLES
+        /* Indexed mesh with specified range */
+        if(indexEnd) {
+            glDrawRangeElementsBaseVertex(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
 
-    /* Indexed mesh without specified range */
-    else
-        glDrawElements(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+        /* Indexed mesh without specified range */
+        } else glDrawElementsBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
+        #else
+        CORRADE_ASSERT(false, "Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+        #endif
+
+    /* Indexed mesh without base vertex */
+    } else {
+        /* Indexed mesh with specified range */
+        #ifndef MAGNUM_TARGET_GLES2
+        if(indexEnd) {
+            glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+
+        /* Indexed mesh without specified range */
+        } else
+        #endif
+        {
+            glDrawElements(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+        }
+    }
 
     (this->*Context::current()->state().mesh->unbindImplementation)();
 }
