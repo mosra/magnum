@@ -61,6 +61,8 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
+         * @todo Make it more flexible (usable with
+         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         explicit BufferImage(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage);
 
@@ -108,6 +110,8 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
          * @see @ref Buffer::setData()
+         * @todo Make it more flexible (usable with
+         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage);
 
