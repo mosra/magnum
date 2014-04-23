@@ -127,16 +127,15 @@ You have to specify at least primitive and vertex/index count using
 data, add them to the mesh and specify
 @ref AbstractShaderProgram::Attribute "shader attribute" layout inside the
 buffers using @ref addVertexBuffer(). You can also use
-@ref MeshTools::interleave() conveniently fill interleaved vertex buffer.
-The function itself calls @ref setCount(), so you don't have to, but you still
-have to specify the primitive using @ref setPrimitive() and the layout using
-@ref addVertexBuffer().
+@ref MeshTools::interleave() to conveniently interleave vertex data.
 
 If you want indexed mesh, fill your index buffer with data and specify its
 layout using @ref setIndexBuffer(). You can also use @ref MeshTools::compressIndices()
-to conveniently compress the indices, fill the index buffer and configure the
-mesh. It will call @ref setCount() and @ref setIndexBuffer(), so you don't have
-to do anything else.
+to conveniently compress the indices based on the range used.
+
+There is also @ref MeshTools::compile() function which operates directly on
+@ref Trade::MeshData2D / @ref Trade::MeshData3D and returns fully configured
+mesh and vertex/index buffers for use with stock shaders.
 
 Note that neither vertex buffers nor index buffer is managed (e.g. deleted on
 destruction) by the mesh, so you have to manage them on your own and ensure
@@ -159,19 +158,19 @@ class MyShader: public AbstractShaderProgram {
 
     // ...
 };
-Buffer vertexBuffer;
-Mesh mesh;
 
 // Fill vertex buffer with position data
 static constexpr Vector3 positions[30] = {
     // ...
 };
+Buffer vertexBuffer;
 vertexBuffer.setData(positions, BufferUsage::StaticDraw);
 
-// Set primitive and vertex count, add the buffer and specify its layout
+// Configure the mesh, add vertex buffer
+Mesh mesh;
 mesh.setPrimitive(MeshPrimitive::Triangles)
     .setCount(30)
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position());
+    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{});
 @endcode
 
 @subsubsection Mesh-configuration-examples-nonindexed-phong Interleaved vertex data
@@ -179,17 +178,16 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
 @code
 // Non-indexed primitive with positions and normals
 Trade::MeshData3D plane = Primitives::Plane::solid();
-Buffer vertexBuffer;
-Mesh mesh;
 
 // Fill vertex buffer with interleaved position and normal data
-MeshTools::interleave(mesh, buffer, BufferUsage::StaticDraw,
-    plane.positions(0), plane.normals(0));
+Buffer vertexBuffer;
+vertexBuffer.setData(MeshTools::interleave(plane.positions(0), plane.normals(0)), BufferUsage::StaticDraw);
 
-// Set primitive and specify layout of interleaved vertex buffer, vertex count
-// has been already set by MeshTools::interleave()
+// Configure the mesh, add vertex buffer
+Mesh mesh;
 mesh.setPrimitive(plane.primitive())
-    .addVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
+    .setCount(plane.positions(0).size())
+    .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{});
 @endcode
 
 @subsubsection Mesh-configuration-examples-indexed-phong Indexed mesh
@@ -202,47 +200,59 @@ class MyShader: public AbstractShaderProgram {
 
     // ...
 };
-Buffer vertexBuffer, indexBuffer;
-Mesh mesh;
 
 // Fill vertex buffer with position data
 static constexpr Vector3 positions[300] = {
     // ...
 };
+Buffer vertexBuffer;
 vertexBuffer.setData(positions, BufferUsage::StaticDraw);
 
 // Fill index buffer with index data
 static constexpr GLubyte indices[75] = {
     // ...
 };
+Buffer indexBuffer;
 indexBuffer.setData(indices, BufferUsage::StaticDraw);
 
-// Set primitive, index count, specify the buffers
+// Configure the mesh, add both vertex and index buffer
+Mesh mesh;
 mesh.setPrimitive(MeshPrimitive::Triangles)
     .setCount(75)
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position())
+    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{})
     .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
 @endcode
+
+Or using @ref MeshTools::interleave() and @ref MeshTools::compressIndices():
 
 @code
 // Indexed primitive
 Trade::MeshData3D cube = Primitives::Cube::solid();
-Buffer vertexBuffer, indexBuffer;
-Mesh mesh;
 
 // Fill vertex buffer with interleaved position and normal data
-MeshTools::interleave(mesh, vertexBuffer, BufferUsage::StaticDraw,
-    cube.positions(0), cube.normals(0));
+Buffer vertexBuffer;
+vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), BufferUsage::StaticDraw);
 
-// Fill index buffer with compressed index data
-MeshTools::compressIndices(mesh, indexBuffer, BufferUsage::StaticDraw,
-    cube.indices());
+// Compress index data
+Containers::Array<char> indexData;
+Mesh::IndexType indexType;
+UnsignedInt indexStart, indexEnd;
+std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
 
-// Set primitive and specify layout of interleaved vertex buffer. Index count
-// and index buffer has been already specified by MeshTools::compressIndices().
+// Fill index buffer
+Buffer indexBuffer;
+indexBuffer.setData(data);
+
+// Configure the mesh, add both vertex and index buffer
+Mesh mesh;
 mesh.setPrimitive(plane.primitive())
-    .addVertexBuffer(vertexBuffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
+    .setCount(cube.indices().size())
+    .addVertexBuffer(vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
+    .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
 @endcode
+
+Or, if you plan to use the mesh with stock shaders, you can just use
+@ref MeshTools::compile().
 
 @subsubsection Mesh-configuration-examples-data-options Specific formats of vertex data
 
@@ -255,34 +265,39 @@ class MyShader: public AbstractShaderProgram {
 
     // ...
 };
+
+// Initial mesh configuration
 Mesh mesh;
+mesh.setPrimitive(...)
+    .setCount(30);
 
 // Fill position buffer with positions specified as two-component XY (i.e.,
 // no Z component, which is meant to be always 0)
-Buffer positionBuffer;
 Vector2 positions[30] = {
     // ...
 };
+Buffer positionBuffer;
+positionBuffer.setData(positions, BufferUsage::StaticDraw);
 
 // Specify layout of positions buffer -- only two components, unspecified Z
 // component will be automatically set to 0
 mesh.addVertexBuffer(positionBuffer, 0,
-    MyShader::Position(MyShader::Position::Components::Two));
+    MyShader::Position{MyShader::Position::Components::Two});
 
 // Fill color buffer with colors specified as four-byte BGRA (e.g. directly
 // from TGA file)
-Buffer colorBuffer;
 GLubyte colors[4*30] = {
     // ...
 };
+Buffer colorBuffer;
 colorBuffer.setData(colors, BufferUsage::StaticDraw);
 
 // Specify layout of color buffer -- BGRA, each component unsigned byte and we
 // want to normalize them from [0, 255] to [0.0f, 1.0f]
-mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color(
+mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color{
     MyShader::Color::Components::BGRA,
     MyShader::Color::DataType::UnsignedByte,
-    MyShader::Color::DataOption::Normalized));
+    MyShader::Color::DataOption::Normalized});
 @endcode
 
 @section Mesh-drawing Rendering meshes

@@ -25,6 +25,7 @@
 
 #include "Compile.h"
 
+#include "Magnum/Buffer.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Interleave.h"
@@ -51,9 +52,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
     std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::Target::Array}};
 
     /* Interleave positions */
-    std::size_t vertexCount;
-    Containers::Array<char> data;
-    std::tie(vertexCount, std::ignore, data) = MeshTools::interleave(
+    Containers::Array<char> data = MeshTools::interleave(
         meshData.positions(0),
         stride - sizeof(Shaders::Generic2D::Position::Type));
     mesh.addVertexBuffer(*vertexBuffer, 0,
@@ -73,16 +72,23 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
     }
 
     /* Fill vertex buffer with interleaved data */
-    vertexBuffer->setData(data, BufferUsage::StaticDraw);
+    vertexBuffer->setData(data, usage);
 
-    /* Fill index buffer */
+    /* If indexed, fill index buffer and configure indexed mesh */
     std::unique_ptr<Buffer> indexBuffer;
     if(meshData.isIndexed()) {
-        indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
-        MeshTools::compressIndices(mesh, *indexBuffer, usage, meshData.indices());
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-    /* Else set proper vertex count */
-    } else mesh.setCount(vertexCount);
+        indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
+        indexBuffer->setData(data, usage);
+        mesh.setCount(meshData.indices().size())
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+
+    /* Else set vertex count */
+    } else mesh.setCount(meshData.positions(0).size());
 
     return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
 }
@@ -106,9 +112,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
     std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::Target::Array}};
 
     /* Interleave positions */
-    std::size_t vertexCount;
-    Containers::Array<char> data;
-    std::tie(vertexCount, std::ignore, data) = MeshTools::interleave(
+    Containers::Array<char> data = MeshTools::interleave(
         meshData.positions(0),
         stride - sizeof(Shaders::Generic3D::Position::Type));
     mesh.addVertexBuffer(*vertexBuffer, 0,
@@ -140,16 +144,23 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
     }
 
     /* Fill vertex buffer with interleaved data */
-    vertexBuffer->setData(data, BufferUsage::StaticDraw);
+    vertexBuffer->setData(data, usage);
 
-    /* Fill index buffer */
+    /* If indexed, fill index buffer and configure indexed mesh */
     std::unique_ptr<Buffer> indexBuffer;
     if(meshData.isIndexed()) {
-        indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
-        MeshTools::compressIndices(mesh, *indexBuffer, usage, meshData.indices());
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-    /* Else set proper vertex count */
-    } mesh.setCount(vertexCount);
+        indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
+        indexBuffer->setData(data, usage);
+        mesh.setCount(meshData.indices().size())
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+
+    /* Else set vertex count */
+    } mesh.setCount(meshData.positions(0).size());
 
     return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
 }

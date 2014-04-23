@@ -47,27 +47,29 @@ CompressIndicesTest::CompressIndicesTest() {
 }
 
 void CompressIndicesTest::compressChar() {
-    std::size_t indexCount;
-    Mesh::IndexType indexType;
     Containers::Array<char> data;
-    std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
+    Mesh::IndexType type;
+    UnsignedInt start, end;
+    std::tie(data, type, start, end) = MeshTools::compressIndices(
         std::vector<UnsignedInt>{1, 2, 3, 0, 4});
 
-    CORRADE_COMPARE(indexCount, 5);
-    CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedByte);
+    CORRADE_COMPARE(start, 0);
+    CORRADE_COMPARE(end, 4);
+    CORRADE_COMPARE(type, Mesh::IndexType::UnsignedByte);
     CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
         (std::vector<char>{ 0x01, 0x02, 0x03, 0x00, 0x04 }));
 }
 
 void CompressIndicesTest::compressShort() {
-    std::size_t indexCount;
-    Mesh::IndexType indexType;
     Containers::Array<char> data;
-    std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
+    Mesh::IndexType type;
+    UnsignedInt start, end;
+    std::tie(data, type, start, end) = MeshTools::compressIndices(
         std::vector<UnsignedInt>{1, 256, 0, 5});
 
-    CORRADE_COMPARE(indexCount, 4);
-    CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedShort);
+    CORRADE_COMPARE(start, 0);
+    CORRADE_COMPARE(end, 256);
+    CORRADE_COMPARE(type, Mesh::IndexType::UnsignedShort);
     if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
             (std::vector<char>{ 0x01, 0x00,
@@ -84,14 +86,15 @@ void CompressIndicesTest::compressShort() {
 }
 
 void CompressIndicesTest::compressInt() {
-    std::size_t indexCount;
-    Mesh::IndexType indexType;
     Containers::Array<char> data;
-    std::tie(indexCount, indexType, data) = MeshTools::compressIndices(
+    Mesh::IndexType type;
+    UnsignedInt start, end;
+    std::tie(data, type, start, end) = MeshTools::compressIndices(
         std::vector<UnsignedInt>{65536, 3, 2});
 
-    CORRADE_COMPARE(indexCount, 3);
-    CORRADE_VERIFY(indexType == Mesh::IndexType::UnsignedInt);
+    CORRADE_COMPARE(start, 2);
+    CORRADE_COMPARE(end, 65536);
+    CORRADE_COMPARE(type, Mesh::IndexType::UnsignedInt);
 
     if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),

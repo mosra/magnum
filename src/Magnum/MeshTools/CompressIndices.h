@@ -39,24 +39,34 @@ namespace Magnum { namespace MeshTools {
 /**
 @brief Compress vertex indices
 @param indices  Index array
-@return Index count, type and compressed index array
+@return Index range, type and compressed index array
 
 This function takes index array and outputs them compressed to smallest
 possible size. For example when your indices have maximum number 463, it's
 wasteful to store them in array of 32bit integers, array of 16bit integers is
-sufficient. Example usage:
+sufficient.
+
+Example usage:
 @code
-std::size_t indexCount;
+std::vector<UnsignedInt> indices;
+
+Containers::Array<char> indexData;
 Mesh::IndexType indexType;
-Containers::Array<char> data;
-std::tie(indexCount, indexType, data) = MeshTools::compressIndices(indices);
+UnsignedInt indexStart, indexEnd;
+std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(indices);
+
+Buffer indexBuffer;
+indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.setCount(indices.size())
+    .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
 @endcode
-
-See also @ref compressIndices(Mesh&, Buffer&, BufferUsage, const std::vector<UnsignedInt>&),
-which writes the compressed data directly into index buffer of given mesh.
+@todo Extract IndexType out of Mesh class
 */
-std::tuple<std::size_t, Mesh::IndexType, Containers::Array<char>> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<UnsignedInt>& indices);
+std::tuple<Containers::Array<char>, Mesh::IndexType, UnsignedInt, UnsignedInt> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<UnsignedInt>& indices);
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Compress vertex indices and write them to index buffer
 @param mesh     Output mesh
@@ -64,14 +74,17 @@ std::tuple<std::size_t, Mesh::IndexType, Containers::Array<char>> MAGNUM_MESHTOO
 @param usage    Index buffer usage
 @param indices  Index array
 
+@deprecated Use general-purpose
+    @ref Magnum::MeshTools::compressIndices(const std::vector<UnsignedInt>&) "compressIndices(const std::vector<UnsignedInt>&)"
+    instead.
+
 The same as @ref compressIndices(const std::vector<UnsignedInt>&), but this
 function writes the output to given buffer and calls @ref Mesh::setCount() and
 @ref Mesh::setIndexBuffer(), thus you don't need to do anything else for mesh
 index configuration.
-
-@see @ref MeshTools::interleave(), @ref MeshTools::compile()
 */
 void MAGNUM_MESHTOOLS_EXPORT compressIndices(Mesh& mesh, Buffer& buffer, BufferUsage usage, const std::vector<UnsignedInt>& indices);
+#endif
 
 }}
 

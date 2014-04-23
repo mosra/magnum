@@ -59,8 +59,17 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
+
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
+
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data.indices());
+        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        mesh->setCount(data.indices().size())
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+
         ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* The mesh is not indexed, set proper vertex count */
@@ -82,8 +91,17 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
+
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
+
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data.indices());
+        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        mesh->setCount(data.indices().size())
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+
         ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* The mesh is not indexed, set proper vertex count */

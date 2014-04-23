@@ -30,12 +30,16 @@
  */
 
 #include <cstring>
-#include <vector>
-#include <limits>
-#include <tuple>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Assert.h>
 
-#include "Magnum/Mesh.h"
+#include "Magnum/Magnum.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
 #include "Magnum/Buffer.h"
+#include "Magnum/Mesh.h"
+#endif
 
 namespace Magnum { namespace MeshTools {
 
@@ -94,20 +98,21 @@ template<class T, class ...U> void writeInterleaved(std::size_t stride, char* st
 @brief %Interleave vertex attributes
 
 This function takes list of attribute arrays and returns them interleaved, so
-data for each attribute are in continuous place in memory. Returned tuple
-contains attribute count, stride and data array. Deleting the data array is up
-to the user.
+data for each attribute are in continuous place in memory.
 
-Size of the data buffer can be computed from attribute count and stride, as
-shown below. Example usage:
+Example usage:
 @code
-std::vector<Vector4> positions;
+MeshPrimitive primitive;
+std::vector<Vector3> positions;
 std::vector<Vector2> textureCoordinates;
-std::size_t attributeCount;
-std::size_t stride;
-Containers::Array<char> data;
-std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, textureCoordinates);
-// ...
+
+Buffer vertexBuffer;
+vertexBuffer.setData(MeshTools::interleave(positions, textureCoordinates), BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.setPrimitive(primitive)
+    .setCount(positions.count())
+    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{}, MyShader::TextureCoordinates{});
 @endcode
 
 It's often desirable to align data for one vertex on 32bit boundaries. To
@@ -116,10 +121,8 @@ achieve that, you can specify gaps between the attributes:
 std::vector<Vector4> positions;
 std::vector<UnsignedShort> weights;
 std::vector<Color3ub> vertexColors;
-std::size_t attributeCount;
-std::size_t stride;
-Containers::Array<char> data;
-std::tie(attributeCount, stride, data) = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
+
+auto data = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
 @endcode
 All gap bytes are set zero. This way vertex stride is 24 bytes, without gaps it
 would be 21 bytes, causing possible performance loss.
@@ -131,13 +134,13 @@ would be 21 bytes, causing possible performance loss.
     for) and function `size()` returning count of elements. In most cases it
     will be `std::vector` or `std::array`.
 
-See also @ref interleave(Mesh&, Buffer&, BufferUsage, const T&...),
-which writes the interleaved array directly into buffer of given mesh or
-@ref interleaveInto() which writes the data into existing buffer instead of
-creating new one.
+@see @ref interleaveInto()
+@todo remove `std::enable_if` when deprecated overloads are removed
 */
 /* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::value, std::tuple<std::size_t, std::size_t, Containers::Array<char>>>::type interleave(const T& first, const U&... next) {
+template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::value, Containers::Array<char>>::type
+    interleave(const T& first, const U&... next)
+{
     /* Compute buffer size and stride */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
     const std::size_t stride = Implementation::Stride{}(first, next...);
@@ -147,10 +150,10 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
         Containers::Array<char> data = Containers::Array<char>::zeroInitialized(attributeCount*stride);
         Implementation::writeInterleaved(stride, data.begin(), first, next...);
 
-        return std::make_tuple(attributeCount, stride, std::move(data));
+        return data;
 
     /* Otherwise return nullptr */
-    } else return std::make_tuple(0, stride, nullptr);
+    } else return nullptr;
 }
 
 /**
@@ -165,24 +168,27 @@ parameters.
     arrays have the same size. The passed buffer must also be large enough to
     contain the interleaved data.
 */
-template<class T, class ...U> std::tuple<std::size_t, std::size_t> interleaveInto(Containers::ArrayReference<char> buffer, const T& first, const U&... next) {
+template<class T, class ...U> void interleaveInto(Containers::ArrayReference<char> buffer, const T& first, const U&... next) {
     /* Verify expected buffer size */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
     const std::size_t stride = Implementation::Stride{}(first, next...);
-    CORRADE_ASSERT(attributeCount*stride <= buffer.size(), "MeshTools::interleaveInto(): the data buffer is too small, expected" << attributeCount*stride << "but got" << buffer.size(), {});
+    CORRADE_ASSERT(attributeCount*stride <= buffer.size(), "MeshTools::interleaveInto(): the data buffer is too small, expected" << attributeCount*stride << "but got" << buffer.size(), );
 
     /* Write data */
     Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
-
-    return std::make_tuple(attributeCount, stride);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief %Interleave vertex attributes, write them to array buffer and configure the mesh
 @param mesh         Output mesh
 @param buffer       Output vertex buffer
 @param usage        Vertex buffer usage
 @param attributes   Attribute arrays and gaps
+
+@deprecated Use general-purpose
+    @ref Magnum::MeshTools::interleave(const T&...) "interleave(const T&...)"
+    instead.
 
 The same as @ref interleave(const T&, const U&...), but this function also
 writes the output to given array buffer. If given mesh is not indexed, it also
@@ -193,19 +199,18 @@ updates vertex count in the mesh accordingly, so you don't have to call
     @ref Mesh::addVertexBuffer() on the mesh afterwards.
 
 @see @ref compressIndices(), @ref compile()
-@todo rework so Mesh & Buffer doesn't need to be included in header
 */
-template<class ...T> void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
-    Containers::Array<char> data;
-    std::size_t attributeCount;
-    std::tie(attributeCount, std::ignore, data) = interleave(attributes...);
-
-    if(!mesh.isIndexed()) mesh.setCount(attributeCount);
-    buffer.setData(data, usage);
+template<class ...T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
+    if(!mesh.isIndexed()) mesh.setCount(Implementation::AttributeCount{}(attributes...));
+    buffer.setData(interleave(attributes...), usage);
 }
 
 /**
 @brief Write vertex attribute to array buffer and configure the mesh
+
+@deprecated Use general-purpose
+    @ref Magnum::MeshTools::interleave(const T&...) "interleave(const T&...)"
+    instead.
 
 Simplified specialization of the above function for only one attribute array,
 equivalent to the following:
@@ -214,10 +219,11 @@ buffer.setData(attribute, usage);
 if(!mesh.isIndexed()) mesh.setVertexCount(attribute.size());
 @endcode
 */
-template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
+template<class T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
     if(!mesh.isIndexed()) mesh.setCount(attribute.size());
     buffer.setData(attribute, usage);
 }
+#endif
 
 }}
 
