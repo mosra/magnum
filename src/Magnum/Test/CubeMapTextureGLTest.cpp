@@ -406,6 +406,16 @@ void CubeMapTextureGLTest::generateMipmap() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
         ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeZ, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
