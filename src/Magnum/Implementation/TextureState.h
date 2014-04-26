@@ -83,15 +83,19 @@ struct TextureState {
 
     GLint maxSize,
         max3DSize,
-        maxArrayLayers,
         maxCubeMapSize;
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint maxArrayLayers;
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     GLint maxRectangleSize,
         maxBufferSize;
     #endif
     GLint maxTextureUnits;
-    GLfloat maxLodBias,
-        maxMaxAnisotropy;
+    #ifndef MAGNUM_TARGET_GLES
+    GLfloat maxLodBias;
+    #endif
+    GLfloat maxMaxAnisotropy;
     GLint currentTextureUnit;
     #ifndef MAGNUM_TARGET_GLES
     GLint maxColorSamples,

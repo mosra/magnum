@@ -36,11 +36,18 @@
 
 namespace Magnum { namespace Implementation {
 
-TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{}, max3DSize{}, maxArrayLayers{}, maxCubeMapSize{},
+TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{}, max3DSize{}, maxCubeMapSize{},
+    #ifndef MAGNUM_TARGET_GLES2
+    maxArrayLayers{},
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     maxRectangleSize{}, maxBufferSize{},
     #endif
-    maxTextureUnits(0), maxLodBias(0.0f), maxMaxAnisotropy(0.0f), currentTextureUnit(0)
+    maxTextureUnits(0),
+    #ifndef MAGNUM_TARGET_GLES
+    maxLodBias{0.0f},
+    #endif
+    maxMaxAnisotropy(0.0f), currentTextureUnit(0)
     #ifndef MAGNUM_TARGET_GLES
     , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0), bufferOffsetAlignment(0)
     #endif
