@@ -68,6 +68,7 @@ void Context::setupDriverWorkarounds() {
     #ifdef MAGNUM_TARGET_GLES2
     _setRequiredVersion(GL::ANGLE::framebuffer_blit, None);
     _setRequiredVersion(GL::ANGLE::framebuffer_multisample, None);
+    _setRequiredVersion(GL::ANGLE::instanced_arrays, None);
     _setRequiredVersion(GL::APPLE::framebuffer_multisample, None);
     _setRequiredVersion(GL::EXT::discard_framebuffer, None);
     _setRequiredVersion(GL::EXT::blend_minmax, None);
@@ -76,9 +77,11 @@ void Context::setupDriverWorkarounds() {
     #endif
     _setRequiredVersion(GL::EXT::texture_storage, None);
     _setRequiredVersion(GL::EXT::map_buffer_range, None);
+    _setRequiredVersion(GL::EXT::draw_instanced, None);
     _setRequiredVersion(GL::NV::draw_buffers, None);
     _setRequiredVersion(GL::NV::fbo_color_attachments, None); // ??
     _setRequiredVersion(GL::NV::read_buffer, None);
+    _setRequiredVersion(GL::NV::draw_instanced, None);
     _setRequiredVersion(GL::NV::framebuffer_blit, None);
     _setRequiredVersion(GL::NV::framebuffer_multisample, None);
     _setRequiredVersion(GL::OES::texture_3D, None);

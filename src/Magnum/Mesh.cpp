@@ -72,11 +72,14 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _count(0), _baseVertex(0)
-    #ifndef MAGNUM_TARGET_GLES2
-    , _indexStart(0), _indexEnd(0)
+Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _count(0), _baseVertex(0), _instanceCount{1},
+    #ifndef MAGNUM_TARGET_GLES
+    _baseInstance{0},
     #endif
-    , _indexOffset(0), _indexType(IndexType::UnsignedInt), _indexBuffer(nullptr)
+    #ifndef MAGNUM_TARGET_GLES2
+    _indexStart(0), _indexEnd(0),
+    #endif
+    _indexOffset(0), _indexType(IndexType::UnsignedInt), _indexBuffer(nullptr)
 {
     (this->*Context::current()->state().mesh->createImplementation)();
 }
@@ -92,11 +95,14 @@ Mesh::~Mesh() {
     (this->*Context::current()->state().mesh->destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _count(other._count), _baseVertex{other._baseVertex}
-    #ifndef MAGNUM_TARGET_GLES2
-    , _indexStart(other._indexStart), _indexEnd(other._indexEnd)
+Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
+    #ifndef MAGNUM_TARGET_GLES
+    _baseInstance{other._baseInstance},
     #endif
-    , _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer(other._indexBuffer), _attributes(std::move(other._attributes))
+    #ifndef MAGNUM_TARGET_GLES2
+    _indexStart(other._indexStart), _indexEnd(other._indexEnd),
+    #endif
+    _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer(other._indexBuffer), _attributes(std::move(other._attributes))
     #ifndef MAGNUM_TARGET_GLES2
     , _integerAttributes(std::move(other._integerAttributes))
     #ifndef MAGNUM_TARGET_GLES
@@ -112,6 +118,10 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     std::swap(_primitive, other._primitive);
     std::swap(_count, other._count);
     std::swap(_baseVertex, other._baseVertex);
+    std::swap(_instanceCount, other._instanceCount);
+    #ifndef MAGNUM_TARGET_GLES
+    std::swap(_baseInstance, other._baseInstance);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     std::swap(_indexStart, other._indexStart);
     std::swap(_indexEnd, other._indexEnd);
@@ -167,50 +177,111 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
     return *this;
 }
 
-#ifndef MAGNUM_TARGET_GLES2
-void Mesh::drawInternal(Int count, Int baseVertex, GLintptr indexOffset, Int indexStart, Int indexEnd)
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd)
+#elif !defined(MAGNUM_TARGET_GLES2)
+void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset, Int indexStart, Int indexEnd)
 #else
-void Mesh::drawInternal(Int count, Int baseVertex, GLintptr indexOffset)
+void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset)
 #endif
 {
+
+    const Implementation::MeshState& state = *Context::current()->state().mesh;
+
     /* Nothing to draw */
-    if(!count) return;
+    if(!count || !instanceCount) return;
 
-    (this->*Context::current()->state().mesh->bindImplementation)();
+    (this->*state.bindImplementation)();
 
-    /* Non-indexed mesh */
-    if(!_indexBuffer) {
-        glDrawArrays(GLenum(_primitive), baseVertex, count);
+    /* Non-instanced mesh */
+    if(instanceCount == 1) {
+        /* Non-indexed mesh */
+        if(!_indexBuffer) {
+            glDrawArrays(GLenum(_primitive), baseVertex, count);
 
-    /* Indexed mesh with base vertex */
-    } else if(baseVertex) {
-        #ifndef MAGNUM_TARGET_GLES
-        /* Indexed mesh with specified range */
-        if(indexEnd) {
-            glDrawRangeElementsBaseVertex(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
+        /* Indexed mesh with base vertex */
+        } else if(baseVertex) {
+            #ifndef MAGNUM_TARGET_GLES
+            /* Indexed mesh with specified range */
+            if(indexEnd) {
+                glDrawRangeElementsBaseVertex(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
 
-        /* Indexed mesh without specified range */
-        } else glDrawElementsBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
-        #else
-        CORRADE_ASSERT(false, "Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
-        #endif
+            /* Indexed mesh */
+            } else glDrawElementsBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
+            #else
+            CORRADE_ASSERT(false, "Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            #endif
 
-    /* Indexed mesh without base vertex */
+        /* Indexed mesh */
+        } else {
+            #ifndef MAGNUM_TARGET_GLES2
+            /* Indexed mesh with specified range */
+            if(indexEnd) {
+                glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+
+            /* Indexed mesh */
+            } else
+            #endif
+            {
+                glDrawElements(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+            }
+        }
+
+    /* Instanced mesh */
     } else {
-        /* Indexed mesh with specified range */
-        #ifndef MAGNUM_TARGET_GLES2
-        if(indexEnd) {
-            glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+        /* Non-indexed mesh */
+        if(!_indexBuffer) {
+            #ifndef MAGNUM_TARGET_GLES
+            /* Non-indexed mesh with base instance */
+            if(baseInstance) {
+                glDrawArraysInstancedBaseInstance(GLenum(_primitive), baseVertex, count, instanceCount, baseInstance);
 
-        /* Indexed mesh without specified range */
-        } else
-        #endif
-        {
-            glDrawElements(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
+            /* Non-indexed mesh */
+            } else
+            #endif
+            {
+                #ifndef MAGNUM_TARGET_GLES2
+                glDrawArraysInstanced(GLenum(_primitive), baseVertex, count, instanceCount);
+                #else
+                (this->*state.drawArraysInstancedImplementation)(baseVertex, count, instanceCount);
+                #endif
+            }
+
+        /* Indexed mesh with base vertex */
+        } else if(baseVertex) {
+            #ifndef MAGNUM_TARGET_GLES
+            /* Indexed mesh with base vertex and base instance */
+            if(baseInstance)
+                glDrawElementsInstancedBaseVertexBaseInstance(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex, baseInstance);
+
+            /* Indexed mesh with base vertex */
+            else
+                glDrawElementsInstancedBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex);
+            #else
+            CORRADE_ASSERT(false, "Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            #endif
+
+        /* Indexed mesh */
+        } else {
+            #ifndef MAGNUM_TARGET_GLES
+            /* Indexed mesh with base instance */
+            if(baseInstance) {
+                glDrawElementsInstancedBaseInstance(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseInstance);
+
+            /* Instanced mesh */
+            } else
+            #endif
+            {
+                #ifndef MAGNUM_TARGET_GLES2
+                glDrawElementsInstanced(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+                #else
+                (this->*state.drawElementsInstancedImplementation)(count, indexOffset, instanceCount);
+                #endif
+            }
         }
     }
 
-    (this->*Context::current()->state().mesh->unbindImplementation)();
+    (this->*state.unbindImplementation)();
 }
 
 void Mesh::bindVAO(GLuint vao) {
@@ -399,6 +470,56 @@ void Mesh::unbindImplementationDefault() {
 }
 
 void Mesh::unbindImplementationVAO() {}
+
+#ifdef MAGNUM_TARGET_GLES2
+void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
+    //glDrawArraysInstancedANGLE(GLenum(_primitive), baseVertex, count, instanceCount);
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(baseVertex);
+    static_cast<void>(count);
+    static_cast<void>(instanceCount);
+}
+
+void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
+    //glDrawArraysInstancedEXT(GLenum(_primitive), baseVertex, count, instanceCount);
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(baseVertex);
+    static_cast<void>(count);
+    static_cast<void>(instanceCount);
+}
+
+void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
+    //glDrawArraysInstancedNV(GLenum(_primitive), baseVertex, count, instanceCount);
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(baseVertex);
+    static_cast<void>(count);
+    static_cast<void>(instanceCount);
+}
+
+void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
+    //glDrawElementsInstancedANGLE(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(count);
+    static_cast<void>(indexOffset);
+    static_cast<void>(instanceCount);
+}
+
+void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
+    //glDrawElementsInstancedEXT(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(count);
+    static_cast<void>(indexOffset);
+    static_cast<void>(instanceCount);
+}
+
+void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
+    //glDrawElementsInstancedNV(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+    CORRADE_INTERNAL_ASSERT(false);
+    static_cast<void>(count);
+    static_cast<void>(indexOffset);
+    static_cast<void>(instanceCount);
+}
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, MeshPrimitive value) {

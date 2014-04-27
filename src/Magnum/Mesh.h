@@ -143,8 +143,8 @@ that they are available for whole mesh lifetime. On the other hand it allows
 you to use one buffer for more meshes (each mesh for example configured for
 different usage) or store data for more meshes in one buffer.
 
-If vertex/index count is zero, the mesh is empty and no draw commands are
-issued when calling @ref draw().
+If vertex/index count or instance count is zero, the mesh is empty and no draw
+commands are issued when calling @ref draw().
 
 @subsection Mesh-configuration-examples Example mesh configuration
 
@@ -331,8 +331,6 @@ calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
 If index range is specified in @ref setIndexBuffer(), range-based version of
 drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @ref draw() for more information.
-
-@todo Redo in a way that allows glMultiDrawArrays, glDrawArraysInstanced etc.
  */
 class MAGNUM_EXPORT Mesh: public AbstractObject {
     friend class MeshView;
@@ -567,6 +565,44 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         CORRADE_DEPRECATED("use setCount() instead") Mesh& setIndexCount(Int count) { return setCount(count); }
         #endif
 
+        /** @brief Instance count */
+        Int instanceCount() const { return _instanceCount; }
+
+        /**
+         * @brief Set instance count
+         * @return Reference to self (for method chaining)
+         *
+         * If set to `1`, non-instanced draw commands are issued when calling
+         * @ref draw(). If set to `0`, no draw commands are issued altogether.
+         * Default is `1`.
+         * @requires_gl31 %Extension @extension{ARB,draw_instanced}
+         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         *      @es_extension2{EXT,draw_instanced,draw_instanced} or
+         *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
+         */
+        Mesh& setInstanceCount(Int count) {
+            _instanceCount = count;
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @brief Base instance */
+        UnsignedInt baseInstance() const { return _baseInstance; }
+
+        /**
+         * @brief Set base instance
+         * @return Reference to self (for method chaining)
+         *
+         * Default is `0`.
+         * @requires_gl42 %Extension @extension{ARB,base_instance}
+         * @requires_gl Base instance cannot be specified in OpenGL ES.
+         */
+        Mesh& setBaseInstance(UnsignedInt baseInstance) {
+            _baseInstance = baseInstance;
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Add buffer with (interleaved) vertex attributes for use with given shader
          * @return Reference to self (for method chaining)
@@ -680,23 +716,31 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @param shader    Shader to use for drawing
          *
          * Expects that the shader is compatible with this mesh and is fully
-         * set up. See also
+         * set up. If vertex/index count or instance count is `0`, no draw
+         * commands are issued. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information.
-         * @see @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
-         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
-         *      @extension{APPLE,vertex_array_object} is available), @fn_gl{DrawArrays}
-         *      or @fn_gl{DrawElements}/@fn_gl{DrawRangeElements}/
-         *      @fn_gl{DrawElementsBaseVertex}/@fn_gl{DrawRangeElementsBaseVertex}
+         * @see @ref setCount(), @ref setInstanceCount(), @fn_gl{UseProgram},
+         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
+         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
+         *      is available), @fn_gl{DrawArrays}/@fn_gl{DrawArraysInstanced}/
+         *      @fn_gl{DrawArraysInstancedBaseInstance} or @fn_gl{DrawElements}/
+         *      @fn_gl{DrawRangeElements}/@fn_gl{DrawElementsBaseVertex}/
+         *      @fn_gl{DrawRangeElementsBaseVertex}/@fn_gl{DrawElementsInstanced}/
+         *      @fn_gl{DrawElementsInstancedBaseInstance}/
+         *      @fn_gl{DrawElementsInstancedBaseVertex}/
+         *      @fn_gl{DrawElementsInstancedBaseVertexBaseInstance}
          */
         void draw(AbstractShaderProgram& shader) {
             shader.use();
 
-            #ifndef MAGNUM_TARGET_GLES2
-            drawInternal(_count, _baseVertex, _indexOffset, _indexStart, _indexEnd);
+            #ifndef MAGNUM_TARGET_GLES
+            drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
+            #elif !defined(MAGNUM_TARGET_GLES2)
+            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
             #else
-            drawInternal(_count, _baseVertex, _indexOffset);
+            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
             #endif
         }
 
@@ -709,10 +753,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      instead.
          */
         CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw() {
-            #ifndef MAGNUM_TARGET_GLES2
-            drawInternal(_count, _baseVertex, _indexOffset, _indexStart, _indexEnd);
+            #ifndef MAGNUM_TARGET_GLES
+            drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
+            #elif !defined(MAGNUM_TARGET_GLES2)
+            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
             #else
-            drawInternal(_count, _baseVertex, _indexOffset);
+            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
             #endif
         }
         #endif
@@ -832,10 +878,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
-        void drawInternal(Int count, Int baseVertex, GLintptr indexOffset, Int indexStart, Int indexEnd);
+        #ifndef MAGNUM_TARGET_GLES
+        void drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd);
+        #elif !defined(MAGNUM_TARGET_GLES2)
+        void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset, Int indexStart, Int indexEnd);
         #else
-        void drawInternal(Int count, Int baseVertex, GLintptr indexOffset);
+        void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset);
         #endif
 
         void MAGNUM_LOCAL createImplementationDefault();
@@ -873,9 +921,22 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL unbindImplementationDefault();
         void MAGNUM_LOCAL unbindImplementationVAO();
 
+        #ifdef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL drawArraysInstancedImplementationANGLE(GLint baseVertex, GLsizei count, GLsizei instanceCount);
+        void MAGNUM_LOCAL drawArraysInstancedImplementationEXT(GLint baseVertex, GLsizei count, GLsizei instanceCount);
+        void MAGNUM_LOCAL drawArraysInstancedImplementationNV(GLint baseVertex, GLsizei count, GLsizei instanceCount);
+
+        void MAGNUM_LOCAL drawElementsInstancedImplementationANGLE(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
+        void MAGNUM_LOCAL drawElementsInstancedImplementationEXT(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
+        void MAGNUM_LOCAL drawElementsInstancedImplementationNV(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
+        #endif
+
         GLuint _id;
         MeshPrimitive _primitive;
-        Int _count, _baseVertex;
+        Int _count, _baseVertex, _instanceCount;
+        #ifndef MAGNUM_TARGET_GLES
+        UnsignedInt _baseInstance;
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
         #endif

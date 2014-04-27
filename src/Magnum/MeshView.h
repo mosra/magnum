@@ -172,6 +172,42 @@ class MAGNUM_EXPORT MeshView {
         }
         #endif
 
+        /** @brief Instance count */
+        Int instanceCount() const { return _instanceCount; }
+
+        /**
+         * @brief Set instance count
+         * @return Reference to self (for method chaining)
+         *
+         * Default is `1`.
+         * @requires_gl31 %Extension @extension{ARB,draw_instanced}
+         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         *      @es_extension2{EXT,draw_instanced,draw_instanced} or
+         *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
+         */
+        MeshView& setInstanceCount(Int count) {
+            _instanceCount = count;
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @brief Base instance */
+        UnsignedInt baseInstance() const { return _baseInstance; }
+
+        /**
+         * @brief Set base instance
+         * @return Reference to self (for method chaining)
+         *
+         * Default is `0`.
+         * @requires_gl42 %Extension @extension{ARB,base_instance}
+         * @requires_gl Base instance cannot be specified in OpenGL ES.
+         */
+        MeshView& setBaseInstance(UnsignedInt baseInstance) {
+            _baseInstance = baseInstance;
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Draw the mesh
          *
@@ -192,14 +228,21 @@ class MAGNUM_EXPORT MeshView {
     private:
         Mesh* _original;
 
-        Int _count, _baseVertex;
+        Int _count, _baseVertex, _instanceCount;
+        #ifndef MAGNUM_TARGET_GLES
+        UnsignedInt _baseInstance;
+        #endif
         GLintptr _indexOffset;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _indexStart, _indexEnd;
         #endif
 };
 
-inline MeshView::MeshView(Mesh& original): _original(&original), _count(0), _baseVertex(0), _indexOffset(0)
+inline MeshView::MeshView(Mesh& original): _original(&original), _count(0), _baseVertex(0), _instanceCount{1},
+    #ifndef MAGNUM_TARGET_GLES
+    _baseInstance{0},
+    #endif
+    _indexOffset(0)
     #ifndef MAGNUM_TARGET_GLES2
     , _indexStart(0), _indexEnd(0)
     #endif
@@ -216,7 +259,6 @@ inline MeshView& MeshView::setIndexRange(Int first, UnsignedInt start, UnsignedI
     #endif
     return *this;
 }
-
 
 }
 

@@ -48,6 +48,11 @@ struct MeshState {
     void(Mesh::*bindImplementation)();
     void(Mesh::*unbindImplementation)();
 
+    #ifdef MAGNUM_TARGET_GLES2
+    void(Mesh::*drawArraysInstancedImplementation)(GLint, GLsizei, GLsizei);
+    void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
+    #endif
+
     GLuint currentVAO;
     #ifndef MAGNUM_TARGET_GLES2
     GLint maxElementsIndices, maxElementsVertices;

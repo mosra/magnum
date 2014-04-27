@@ -205,6 +205,7 @@ namespace GL {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,ANGLE,framebuffer_blit,       GLES200, GLES300) // #83
         _extension(GL,ANGLE,framebuffer_multisample, GLES200, GLES300) // #84
+        _extension(GL,ANGLE,instanced_arrays,       GLES200, GLES300) // #109
         _extension(GL,ANGLE,depth_texture,          GLES200, GLES300) // #138
         #endif
     } namespace APPLE {
@@ -253,6 +254,9 @@ namespace GL {
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
         #endif
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
+        #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,draw_instanced,           GLES200, GLES300) // #157
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,shader_integer_mix,       GLES300,    None) // #161
         #endif
@@ -269,6 +273,7 @@ namespace GL {
         _extension(GL,NV,read_stencil,              GLES200,    None) // #94
         _extension(GL,NV,read_depth_stencil,        GLES200,    None) // #94
         #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,NV,draw_instanced,            GLES200, GLES300) // #141
         _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
         _extension(GL,NV,framebuffer_multisample,   GLES200, GLES300) // #143
         _extension(GL,NV,shadow_samplers_array,     GLES200, GLES300) // #146

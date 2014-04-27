@@ -82,7 +82,7 @@ following:
 %Extension                                   | Status
 -------------------------------------------- | ------
 @extension{ARB,texture_rectangle}            | done
-@extension{ARB,draw_instanced}               | |
+@extension{ARB,draw_instanced}               | done
 @extension{ARB,texture_buffer_object}        | done
 @extension{ARB,uniform_buffer_object}        | |
 @extension{ARB,copy_buffer}                  | done
@@ -95,7 +95,7 @@ following:
 -------------------------------------------- | ------
 @extension{ARB,geometry_shader4}             | missing layered attachments
 @extension{ARB,depth_clamp}                  | done
-@extension{ARB,draw_elements_base_vertex}    | |
+@extension{ARB,draw_elements_base_vertex}    | missing `Multi*` command
 @extension{ARB,fragment_coord_conventions}   | done (shading language only)
 @extension{ARB,provoking_vertex}             | done
 @extension{ARB,seamless_cube_map}            | done
@@ -152,7 +152,7 @@ following:
 %Extension                                   | Status
 -------------------------------------------- | ------
 @extension{ARB,texture_compression_bptc}     | done
-@extension{ARB,base_instance}                | |
+@extension{ARB,base_instance}                | done
 @extension{ARB,shading_language_420pack}     | done (shading language only)
 @extension{ARB,transform_feedback_instanced} | |
 @extension{ARB,compressed_texture_pixel_storage} | |
@@ -243,6 +243,7 @@ supported.
 -------------------------------------------- | ------
 @es_extension{ANGLE,framebuffer_blit}        | done
 @es_extension{ANGLE,framebuffer_multisample} | done
+@es_extension{ANGLE,instanced_arrays}        | missing vertex attrib divisor
 @es_extension{ANGLE,depth_texture}           | done
 @es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
 @es_extension{APPLE,texture_max_level}       | done
@@ -256,9 +257,11 @@ supported.
 @es_extension{EXT,texture_rg}                | done
 @es_extension{EXT,texture_storage}           | done
 @es_extension{EXT,map_buffer_range}          | done
+@es_extension2{EXT,draw_instanced,draw_instanced} | done
 @es_extension{NV,draw_buffers}               | done
 @es_extension{NV,fbo_color_attachments}      | done
 @es_extension{NV,read_buffer}                | done
+@es_extension{NV,draw_instanced}             | done
 @es_extension{NV,framebuffer_blit}           | done
 @es_extension{NV,framebuffer_multisample}    | done
 @es_extension{NV,shadow_samplers_array}      | done (shading language only)

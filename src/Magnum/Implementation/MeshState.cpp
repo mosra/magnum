@@ -92,6 +92,32 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         unbindImplementation = &Mesh::unbindImplementationDefault;
     }
     #endif
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Instanced draw ímplementation on ES2 */
+    if(context.isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>()) {
+        extensions.push_back(Extensions::GL::ANGLE::instanced_arrays::string());
+
+        drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationANGLE;
+        drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationANGLE;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::draw_instanced>()) {
+        extensions.push_back(Extensions::GL::EXT::draw_instanced::string());
+
+        drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationEXT;
+        drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationEXT;
+
+    } else if(context.isExtensionSupported<Extensions::GL::NV::draw_instanced>()) {
+        extensions.push_back(Extensions::GL::NV::draw_instanced::string());
+
+        drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationNV;
+        drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationNV;
+
+    } else {
+        drawArraysInstancedImplementation = nullptr;
+        drawElementsInstancedImplementation = nullptr;
+    }
+    #endif
 }
 
 }}
