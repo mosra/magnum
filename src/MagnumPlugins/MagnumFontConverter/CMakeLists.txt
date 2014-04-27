@@ -39,7 +39,7 @@ add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR}
 target_link_libraries(MagnumFontConverter Magnum MagnumText)
 
 if(WIN32)
-    target_link_libraries(MagnumFontConverter MagnumTgaImageConverter)
+    target_link_libraries(MagnumFontConverter TgaImageConverter)
 endif()
 
 install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
