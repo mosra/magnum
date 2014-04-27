@@ -60,11 +60,18 @@ struct TextureState {
     void(AbstractTexture::*bindImplementation)(GLint);
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
     void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);
+    #ifndef MAGNUM_TARGET_GLES2
+    void(AbstractTexture::*parameterivImplementation)(GLenum, const GLint*);
+    #endif
     void(AbstractTexture::*parameterfvImplementation)(GLenum, const GLfloat*);
+    #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*parameterIuivImplementation)(GLenum, const GLuint*);
     void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
+    #endif
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
+    #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
+    #endif
     void(AbstractTexture::*mipmapImplementation)();
     #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*storage1DImplementation)(GLenum, GLsizei, TextureFormat, const Math::Vector<1, GLsizei>&);
@@ -92,7 +99,20 @@ struct TextureState {
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 
+    GLint maxSize,
+        max3DSize,
+        maxCubeMapSize;
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint maxArrayLayers;
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    GLint maxRectangleSize,
+        maxBufferSize;
+    #endif
     GLint maxTextureUnits;
+    #ifndef MAGNUM_TARGET_GLES2
+    GLfloat maxLodBias;
+    #endif
     GLfloat maxMaxAnisotropy;
     GLint currentTextureUnit;
     #ifndef MAGNUM_TARGET_GLES

@@ -55,13 +55,21 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
         #endif
         void sampling2D();
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingSwizzle1D();
+        #endif
+        void samplingSwizzle2D();
+        #else
         void samplingMaxLevel2D();
+        void samplingCompare2D();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger1D();
         void samplingBorderInteger2D();
+        void samplingDepthStencilMode1D();
+        void samplingDepthStencilMode2D();
         #else
         void samplingBorder2D();
         #endif
@@ -120,13 +128,20 @@ TextureArrayGLTest::TextureArrayGLTest() {
         #endif
         &TextureArrayGLTest::sampling2D,
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::samplingSwizzle1D,
+        #endif
+        &TextureArrayGLTest::samplingSwizzle2D,
+        #else
         &TextureArrayGLTest::samplingMaxLevel2D,
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingBorderInteger1D,
         &TextureArrayGLTest::samplingBorderInteger2D,
+        &TextureArrayGLTest::samplingDepthStencilMode1D,
+        &TextureArrayGLTest::samplingDepthStencilMode2D,
         #else
         &TextureArrayGLTest::samplingBorder2D,
         #endif
@@ -263,11 +278,26 @@ void TextureArrayGLTest::sampling1D() {
     Texture1DArray texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           .setLodBias(0.5f)
            .setBaseLevel(1)
            .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureArrayGLTest::samplingSwizzle1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -285,6 +315,16 @@ void TextureArrayGLTest::samplingBorderInteger1D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+void TextureArrayGLTest::samplingDepthStencilMode1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
 #endif
 
 void TextureArrayGLTest::sampling2D() {
@@ -297,6 +337,11 @@ void TextureArrayGLTest::sampling2D() {
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           #ifndef MAGNUM_TARGET_GLES
+           .setLodBias(0.5f)
+           #endif
            .setBaseLevel(1)
            .setMaxLevel(750)
            #endif
@@ -306,18 +351,47 @@ void TextureArrayGLTest::sampling2D() {
            #else
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           #ifndef MAGNUM_TARGET_GLES
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual)
+           #endif
+           ;
 
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void TextureArrayGLTest::samplingSwizzle2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2DArray texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureArrayGLTest::samplingMaxLevel2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
     texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureArrayGLTest::samplingCompare2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::shadow_samplers>() ||
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::shadow_samplers_array>())
+        CORRADE_SKIP(Extensions::GL::NV::shadow_samplers_array::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -334,6 +408,16 @@ void TextureArrayGLTest::samplingBorderInteger2D() {
     Texture2DArray b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureArrayGLTest::samplingDepthStencilMode2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

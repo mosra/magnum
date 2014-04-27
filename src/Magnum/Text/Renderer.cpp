@@ -219,7 +219,7 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
        in subclass) */
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setIndexCount(indexCount)
+        .setCount(indexCount)
         .setIndexBuffer(indexBuffer, 0, indexType, 0, vertices.size());
 
     return std::make_tuple(std::move(mesh), rectangle);
@@ -347,7 +347,7 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vert
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     _vertexBufferData = Containers::Array<UnsignedByte>(vertexCount*sizeof(Vertex));
     #endif
-    _mesh.setVertexCount(0);
+    _mesh.setCount(0);
 
     /* Render indices */
     Containers::Array<unsigned char> indexData;
@@ -359,7 +359,7 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vert
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     _indexBufferData = Containers::Array<UnsignedByte>(indexData.size());
     #endif
-    _mesh.setIndexCount(0)
+    _mesh.setCount(0)
         .setIndexBuffer(_indexBuffer, 0, indexType, 0, vertexCount);
 
     /* Prefill index buffer */
@@ -391,7 +391,7 @@ void AbstractRenderer::render(const std::string& text) {
     bufferUnmapImplementation(_vertexBuffer);
 
     /* Update index count */
-    _mesh.setIndexCount(indexCount);
+    _mesh.setCount(indexCount);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

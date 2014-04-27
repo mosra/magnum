@@ -154,9 +154,8 @@ enum class BufferTextureFormat: GLenum {
 /**
 @brief %Buffer texture
 
-This texture is, unlike classic textures such as @ref Texture or
-@ref CubeMapTexture, used as simple data source, without any unnecessary
-interpolation and wrapping methods.
+This texture is, unlike classic textures such as @ref Texture used as simple
+data source, without any unnecessary interpolation and wrapping methods.
 
 @section BufferTexture-usage Usage
 
@@ -195,7 +194,7 @@ functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 and respective function documentation for more information.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
-    @ref CubeMapTextureArray, @ref MultisampleTexture, @ref RectangleTexture
+    @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
 @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
@@ -203,6 +202,16 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
     friend struct Implementation::TextureState;
 
     public:
+        /**
+         * @brief Max supported buffer texture size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If @extension{ARB,texture_buffer_object} (part of
+         * OpenGL 3.1) is not available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_BUFFER_SIZE}
+         */
+        static Int maxSize();
+
         /**
          * @brief Minimum required alignment for texture buffer offsets
          *
@@ -240,8 +249,9 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using @ref Buffer "Buffer"'s
          * own data setting functions.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBuffer}
-         *      or @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexBuffer} or
+         *      @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
 
@@ -256,9 +266,10 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * Binds range of given buffer to this texture. The buffer itself can
          * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
          * own data setting functions.
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexBufferRange} or
+         *      @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexBufferRange}
-         *      or @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 

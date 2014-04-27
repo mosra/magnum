@@ -46,11 +46,15 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         void bind();
 
         void sampling();
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        void samplingSwizzle();
+        #else
         void samplingMaxLevel();
+        void samplingCompare();
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger();
+        void samplingDepthStencilMode();
         #endif
 
         void storage();
@@ -76,11 +80,15 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::bind,
 
               &CubeMapTextureGLTest::sampling,
-              #ifdef MAGNUM_TARGET_GLES2
+              #ifndef MAGNUM_TARGET_GLES2
+              &CubeMapTextureGLTest::samplingSwizzle,
+              #else
               &CubeMapTextureGLTest::samplingMaxLevel,
+              &CubeMapTextureGLTest::samplingCompare,
               #endif
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureGLTest::samplingBorderInteger,
+              &CubeMapTextureGLTest::samplingDepthStencilMode,
               #endif
 
               &CubeMapTextureGLTest::storage,
@@ -141,23 +149,57 @@ void CubeMapTextureGLTest::sampling() {
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           #ifndef MAGNUM_TARGET_GLES
+           .setLodBias(0.5f)
+           #endif
            .setBaseLevel(1)
            .setMaxLevel(750)
            #endif
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+            #ifndef MAGNUM_TARGET_GLES2
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual)
+            #endif
+           ;
 
    MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void CubeMapTextureGLTest::samplingSwizzle() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    CubeMapTexture texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void CubeMapTextureGLTest::samplingMaxLevel() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
     texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureGLTest::samplingCompare() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::shadow_samplers>() ||
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::shadow_samplers_cube>())
+        CORRADE_SKIP(Extensions::GL::NV::shadow_samplers_cube::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -174,6 +216,16 @@ void CubeMapTextureGLTest::samplingBorderInteger() {
     CubeMapTexture b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureGLTest::samplingDepthStencilMode() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -353,6 +405,16 @@ void CubeMapTextureGLTest::subImageBuffer() {
 void CubeMapTextureGLTest::generateMipmap() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeZ, 0, TextureFormat::RGBA8,
         ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
 
     /** @todo How to test this on ES? */

@@ -66,13 +66,13 @@ assuming you have at least basic knowledge of CMake.
 
 @subsection building-linux Via command-line (on Linux/Unix)
 
-On Unix-based OSs, the library (for example with support for GLUT applications)
+On Unix-based OSs, the library (for example with support for SDL2 applications)
 can be built and installed using these four commands:
 
     mkdir build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_GLUTAPPLICATION=ON
+        -DWITH_SDL2APPLICATION=ON
     make
     make install
 

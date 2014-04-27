@@ -59,14 +59,14 @@ CMake.
 
 ## Bootstrap application
 
-Fully contained base application using @ref GlutApplication for desktop build
+Fully contained base application using @ref Sdl2Application for desktop build
 and @ref AndroidApplication for Android build along with full Android packaging
 stuff and CMake setup is available in `base-android` branch of
 [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
 download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-android.tar.gz)
 or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-android.zip) file.
 After extracting the downloaded archive, you can do the desktop build in the
-same way as with @ref GlutApplication. For the Android build you also
+same way as with @ref Sdl2Application. For the Android build you also
 need to put the contents of toolchains repository from https://github.com/mosra/toolchains
 in `toolchains/` subdirectory. Don't forget to adapt `ANDROID_NDK_ROOT` in
 `toolchains/generic/Android-*.cmake` to path where NDK is installed. Default is

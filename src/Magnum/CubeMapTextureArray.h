@@ -33,7 +33,7 @@
 
 #include "Magnum/AbstractTexture.h"
 #include "Magnum/Array.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector3.h"
 
 #ifndef MAGNUM_TARGET_GLES
 namespace Magnum {
@@ -44,6 +44,8 @@ namespace Magnum {
 See @ref CubeMapTexture documentation for introduction.
 
 @section CubeMapTextureArray-usage Usage
+
+See @ref Texture documentation for introduction.
 
 Common usage is to specify each layer and face separately using @ref setSubImage().
 You have to allocate the memory for all layers and faces first by calling
@@ -75,7 +77,8 @@ the six sides of the cube map, fourth part is layer in the array. See
 @ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTexture,
-    @ref Texture, @ref BufferTexture
+    @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
+    @ref MultisampleTexture
 @requires_gl40 %Extension @extension{ARB,texture_cube_map_array}
 @requires_gl Cube map texture arrays are not available in OpenGL ES.
 */
@@ -100,16 +103,21 @@ class CubeMapTextureArray: public AbstractTexture {
         #endif
 
         /**
-         * @brief Set base mip level
+         * @brief Max supported size of one side of cube map texture array
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If @extension{ARB,texture_cube_map_array} (part of
+         * OpenGL 4.0) is not available, returns zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE} and
+         *      @def_gl{MAX_ARRAY_TEXTURE_LAYERS}
+         */
+        static Vector3i maxSize();
+
+        /**
+         * @copybrief Texture::setBaseLevel()
          * @return Reference to self (for method chaining)
          *
-         * Taken into account when generating mipmap using @ref generateMipmap()
-         * and when considering texture completeness when using mipmap
-         * filtering. Initial value is `0`.
-         * @see @ref setMaxLevel(), @ref setMinificationFilter(),
-         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_BASE_LEVEL}
+         * See @ref Texture::setBaseLevel() for more information.
          */
         CubeMapTextureArray& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
@@ -117,17 +125,10 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Set max mip level
+         * @copybrief Texture::setMaxLevel()
          * @return Reference to self (for method chaining)
          *
-         * Taken into account when generating mipmap using @ref generateMipmap()
-         * and when considering texture completeness when using mipmap
-         * filtering. Initial value is `1000`, which is clamped to count of
-         * levels specified when using @ref setStorage().
-         * @see @ref setBaseLevel(), @ref setMinificationFilter(),
-         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MAX_LEVEL}
+         * See @ref Texture::setMaxLevel() for more information.
          */
         CubeMapTextureArray& setMaxLevel(Int level) {
             AbstractTexture::setMaxLevel(level);
@@ -146,25 +147,76 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
+        /**
+         * @copybrief Texture::setMinLod()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMinLod() for more information.
+         */
+        CubeMapTextureArray& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setMaxLod()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxLod() for more information.
+         */
+        CubeMapTextureArray& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setLodBias()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setLodBias() for more information.
+         */
+        CubeMapTextureArray& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+
         /** @copydoc Texture::setWrapping() */
         CubeMapTextureArray& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(*this, wrapping);
             return *this;
         }
 
-        /** @copydoc RectangleTexture::setBorderColor(const Color4&) */
+        /**
+         * @copybrief Texture::setBorderColor(const Color4&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Color4&) for more
+         * information.
+         */
         CubeMapTextureArray& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc RectangleTexture::setBorderColor(const Vector4ui&) */
+        /**
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Vector4ui&) for more
+         * information.
+         */
         CubeMapTextureArray& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc RectangleTexture::setBorderColor(const Vector4i&) */
+        /**
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Vector4i&) for more
+         * information.
+         */
         CubeMapTextureArray& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
@@ -173,6 +225,50 @@ class CubeMapTextureArray: public AbstractTexture {
         /** @copydoc Texture::setMaxAnisotropy() */
         CubeMapTextureArray& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setSwizzle()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setSwizzle() for more information.
+         */
+        template<char r, char g, char b, char a> CubeMapTextureArray& setSwizzle() {
+            AbstractTexture::setSwizzle<r, g, b, a>();
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setCompareMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareMode() for more information.
+         */
+        CubeMapTextureArray& setCompareMode(Sampler::CompareMode mode) {
+            AbstractTexture::setCompareMode(mode);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setCompareFunction()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareFunction() for more information.
+         */
+        CubeMapTextureArray& setCompareFunction(Sampler::CompareFunction function) {
+            AbstractTexture::setCompareFunction(function);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setDepthStencilMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setDepthStencilMode() for more information.
+         */
+        CubeMapTextureArray& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }
 
@@ -191,6 +287,7 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * Z coordinate of @p size must be multiple of 6. See
          * @ref Texture::setStorage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTextureArray& setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
             DataHelper<3>::setStorage(*this, _target, levels, internalFormat, size);
@@ -235,6 +332,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * images are in order of (+X, -X, +Y, -Y, +Z, -Z).
          *
          * See @ref Texture::setImage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
             DataHelper<3>::setImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);

@@ -26,6 +26,7 @@
 #include "ObjectRenderer.h"
 
 #include "Magnum/Buffer.h"
+#include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/SceneGraph/AbstractCamera.h"
@@ -159,14 +160,14 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
     Mesh* mesh = new Mesh;
 
-    MeshTools::interleave(*mesh, *vertexBuffer, BufferUsage::StaticDraw, Renderer<dimensions>::positions, Renderer<dimensions>::colors);
+    vertexBuffer->setData(MeshTools::interleave(Renderer<dimensions>::positions, Renderer<dimensions>::colors), BufferUsage::StaticDraw);
     ResourceManager::instance().set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     indexBuffer->setData(Renderer<dimensions>::indices, BufferUsage::StaticDraw);
     ResourceManager::instance().set(this->indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     mesh->setPrimitive(MeshPrimitive::Lines)
-        .setIndexCount(Renderer<dimensions>::indices.size())
+        .setCount(Renderer<dimensions>::indices.size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::VertexColor<dimensions>::Position(),
             typename Shaders::VertexColor<dimensions>::Color())

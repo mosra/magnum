@@ -1,5 +1,3 @@
-#ifndef Magnum_Implementation_MeshState_h
-#define Magnum_Implementation_MeshState_h
 /*
     This file is part of Magnum.
 
@@ -25,43 +23,36 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-#include <string>
+#include "TextureArray.h"
 
-#include "Magnum/Mesh.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 
-namespace Magnum { namespace Implementation {
+#include "Implementation/maxTextureSize.h"
 
-struct MeshState {
-    explicit MeshState(Context& context, std::vector<std::string>& extensions);
+namespace Magnum {
 
-    void(Mesh::*createImplementation)();
-    void(Mesh::*destroyImplementation)();
-    void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
-    #ifndef MAGNUM_TARGET_GLES2
-    void(Mesh::*attributeIPointerImplementation)(const Mesh::IntegerAttribute&);
+namespace {
+    template<UnsignedInt> struct VectorOrScalar;
+    template<> struct VectorOrScalar<1> { typedef Int Type; };
+    template<> struct VectorOrScalar<2> { typedef Vector2i Type; };
+}
+
+template<UnsignedInt dimensions> typename DimensionTraits<dimensions+1, Int>::VectorType TextureArray<dimensions>::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
-    void(Mesh::*attributeLPointerImplementation)(const Mesh::LongAttribute&);
-    #endif
-    #endif
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*vertexAttribDivisorImplementation)(GLuint, GLuint);
-    #endif
-    void(Mesh::*bindIndexBufferImplementation)(Buffer&);
-    void(Mesh::*bindImplementation)();
-    void(Mesh::*unbindImplementation)();
-
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*drawArraysInstancedImplementation)(GLint, GLsizei, GLsizei);
-    void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        return {};
     #endif
 
-    GLuint currentVAO;
-    #ifndef MAGNUM_TARGET_GLES2
-    GLint maxElementsIndices, maxElementsVertices;
-    #endif
-};
+    return {typename VectorOrScalar<dimensions>::Type{Implementation::maxTextureSideSize()},
+            Implementation::maxTextureArrayLayers()};
+}
 
-}}
+#ifndef MAGNUM_TARGET_GLES
+template class MAGNUM_EXPORT TextureArray<1>;
+#endif
+template class MAGNUM_EXPORT TextureArray<2>;
 
+}
 #endif

@@ -340,7 +340,7 @@ Sdl2Application::Configuration::Configuration():
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _title("Magnum SDL2 Application"),
     #endif
-    _size(800, 600), _windowFlags(WindowFlag::Resizable), _sampleCount(0)
+    _size(800, 600), _windowFlags{}, _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     , _version(Version::None)
     #endif

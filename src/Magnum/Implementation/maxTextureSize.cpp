@@ -1,5 +1,3 @@
-#ifndef Magnum_Implementation_MeshState_h
-#define Magnum_Implementation_MeshState_h
 /*
     This file is part of Magnum.
 
@@ -25,43 +23,55 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-#include <string>
+#include "maxTextureSize.h"
 
-#include "Magnum/Mesh.h"
+#include "Magnum/Context.h"
+
+#include "State.h"
+#include "TextureState.h"
 
 namespace Magnum { namespace Implementation {
 
-struct MeshState {
-    explicit MeshState(Context& context, std::vector<std::string>& extensions);
+GLint maxTextureSideSize() {
+    GLint& value = Context::current()->state().texture->maxSize;
 
-    void(Mesh::*createImplementation)();
-    void(Mesh::*destroyImplementation)();
-    void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
-    #ifndef MAGNUM_TARGET_GLES2
-    void(Mesh::*attributeIPointerImplementation)(const Mesh::IntegerAttribute&);
-    #ifndef MAGNUM_TARGET_GLES
-    void(Mesh::*attributeLPointerImplementation)(const Mesh::LongAttribute&);
-    #endif
-    #endif
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*vertexAttribDivisorImplementation)(GLuint, GLuint);
-    #endif
-    void(Mesh::*bindIndexBufferImplementation)(Buffer&);
-    void(Mesh::*bindImplementation)();
-    void(Mesh::*unbindImplementation)();
+    if(value == 0)
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
 
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*drawArraysInstancedImplementation)(GLint, GLsizei, GLsizei);
-    void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
-    #endif
+    return value;
+}
 
-    GLuint currentVAO;
-    #ifndef MAGNUM_TARGET_GLES2
-    GLint maxElementsIndices, maxElementsVertices;
-    #endif
-};
+GLint max3DTextureDepth() {
+    GLint& value = Context::current()->state().texture->max3DSize;
+
+    if(value == 0)
+        #ifndef MAGNUM_TARGET_GLES2
+        glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &value);
+        #else
+        glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE_OES, &value);
+        #endif
+
+    return value;
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+GLint maxTextureArrayLayers() {
+    GLint& value = Context::current()->state().texture->maxArrayLayers;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &value);
+
+    return value;
+}
+#endif
+
+GLint maxCubeMapTextureSideSize() {
+    GLint& value = Context::current()->state().texture->maxCubeMapSize;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &value);
+
+    return value;
+}
 
 }}
-
-#endif

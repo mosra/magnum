@@ -36,7 +36,18 @@
 
 namespace Magnum { namespace Implementation {
 
-TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxTextureUnits(0), maxMaxAnisotropy(0.0f), currentTextureUnit(0)
+TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{}, max3DSize{}, maxCubeMapSize{},
+    #ifndef MAGNUM_TARGET_GLES2
+    maxArrayLayers{},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    maxRectangleSize{}, maxBufferSize{},
+    #endif
+    maxTextureUnits(0),
+    #ifndef MAGNUM_TARGET_GLES2
+    maxLodBias{0.0f},
+    #endif
+    maxMaxAnisotropy(0.0f), currentTextureUnit(0)
     #ifndef MAGNUM_TARGET_GLES
     , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0), bufferOffsetAlignment(0)
     #endif
@@ -72,9 +83,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterivImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
-        parameterIuivImplementation = &AbstractTexture::parameterImplementationDSA;
-        parameterIivImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterIuivImplementation = &AbstractTexture::parameterIImplementationDSA;
+        parameterIivImplementation = &AbstractTexture::parameterIImplementationDSA;
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSA;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
         getImageImplementation = &AbstractTexture::getImageImplementationDSA;
@@ -92,10 +104,13 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     {
         parameteriImplementation = &AbstractTexture::parameterImplementationDefault;
         parameterfImplementation = &AbstractTexture::parameterImplementationDefault;
+        #ifndef MAGNUM_TARGET_GLES2
+        parameterivImplementation = &AbstractTexture::parameterImplementationDefault;
+        #endif
         parameterfvImplementation = &AbstractTexture::parameterImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES
-        parameterIuivImplementation = &AbstractTexture::parameterImplementationDefault;
-        parameterIivImplementation = &AbstractTexture::parameterImplementationDefault;
+        parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
+        parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDefault;
         #endif
         mipmapImplementation = &AbstractTexture::mipmapImplementationDefault;

@@ -51,6 +51,9 @@ namespace Implementation {
         return GL_TEXTURE_3D_OES;
         #endif
     }
+
+    template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxTextureSize();
+    template<> Vector3i maxTextureSize<3>();
 }
 
 /**
@@ -90,13 +93,12 @@ In shader, the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
 See @ref AbstractShaderProgram documentation for more information about usage
 in shaders.
 
+@see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
+    @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
+    @ref BufferTexture, @ref MultisampleTexture
 @requires_gles30 %Extension @es_extension{OES,texture_3D} for 3D textures in
     OpenGL ES 2.0
 @requires_gl 1D textures are not available in OpenGL ES, only 2D and 3D ones.
-
-@see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
-    @ref BufferTexture, @ref CubeMapTexture, @ref CubeMapTextureArray,
-    @ref MultisampleTexture, @ref RectangleTexture
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
@@ -139,6 +141,20 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         typedef typename DataHelper<Dimensions>::Target Target;
         #endif
         #endif
+
+        /**
+         * @brief Max supported texture size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. For 3D textures in OpenGL ES 2.0, if
+         * @es_extension{OES,texture_3D} extension is not available, returns
+         * zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE},
+         *      @def_gl{MAX_3D_TEXTURE_SIZE}
+         */
+        static typename DimensionTraits<dimensions, Int>::VectorType maxSize() {
+            return Implementation::maxTextureSize<dimensions>();
+        }
 
         /**
          * @brief Constructor
@@ -186,7 +202,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref image(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
          *      @def_gl{TEXTURE_DEPTH}
@@ -251,8 +267,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * available, the texture is bound to some texture unit before the
          * operation. Initial value is {@ref Sampler::Filter::Nearest,
          * @ref Sampler::Mipmap::Linear}.
-         * @see @ref setBaseLevel(), @ref setMaxLevel(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         * @see @ref setMagnificationFilter(), @ref setBaseLevel(),
+         *      @ref setMaxLevel(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MIN_FILTER}
          */
@@ -270,27 +287,93 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * texture size. If @extension{EXT,direct_state_access} is not
          * available, the texture is bound to some texture unit before the
          * operation. Initial value is @ref Sampler::Filter::Linear.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MAG_FILTER}
+         * @see @ref setMinificationFilter(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MAG_FILTER}
          */
         Texture<dimensions>& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set minimum level-of-detail parameter
+         * @return Reference to self (for method chaining)
+         *
+         * Limits selection of highest resolution mipmap. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * `-1000.0f`.
+         * @see @ref setMaxLod(), @ref setLodBias(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MIN_LOD}
+         * @requires_gles30 %Texture LOD parameters are not available in OpenGL
+         *      ES 2.0.
+         */
+        Texture<dimensions>& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /**
+         * @brief Set maximum level-of-detail parameter
+         * @return Reference to self (for method chaining)
+         *
+         * Limits selection of lowest resolution mipmap. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * `1000.0f`.
+         * @see @ref setMinLod(), @ref setLodBias(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_MAX_LOD}
+         * @requires_gles30 %Texture LOD parameters are not available in OpenGL
+         *      ES 2.0.
+         */
+        Texture<dimensions>& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set level-of-detail bias
+         * @return Reference to self (for method chaining)
+         *
+         * Fixed bias value that is added to the level-of-detail parameter. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * `0.0f`.
+         * @see @ref maxLodBias(), @ref setMinLod(), @ref setMaxLod(),
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{TEXTURE_LOD_BIAS}
+         * @requires_gl %Texture LOD bias can be specified only directly in
+         *      fragment shader in OpenGL ES.
+         */
+        Texture<dimensions>& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set wrapping
          * @param wrapping          Wrapping type for all texture dimensions
          * @return Reference to self (for method chaining)
          *
-         * Sets wrapping type for coordinates out of range (0.0f, 1.0f). If
-         * @extension{EXT,direct_state_access} is not available, the texture is
-         * bound to some texture unit before the operation. Initial value is
+         * Sets wrapping type for coordinates out of range @f$ [ 0.0, 1.0 ] @f$.
+         * If @extension{EXT,direct_state_access} is not available, the texture
+         * is bound to some texture unit before the operation. Initial value is
          * @ref Sampler::Wrapping::Repeat.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
+         * @see @ref setBorderColor(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
          *      @def_gl{TEXTURE_WRAP_R}
          */
         Texture<dimensions>& setWrapping(const Array<dimensions, Sampler::Wrapping>& wrapping) {
@@ -306,9 +389,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * If @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some texture unit before the operation. Initial value is
          * `{0.0f, 0.0f, 0.0f, 0.0f}`.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
-         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_BORDER_COLOR}
+         * @see @ref setWrapping(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
          */
         Texture<dimensions>& setBorderColor(const Color4& color) {
@@ -368,6 +452,97 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set component swizzle
+         * @return Reference to self (for method chaining)
+         *
+         * You can use letters `r`, `g`, `b`, `a` for addressing components or
+         * letters `0` and `1` for zero and one, similarly as in
+         * @ref Math::swizzle() function. Example usage:
+         * @code
+         * texture.setSwizzle<'b', 'g', 'r', '0'>();
+         * @endcode
+         * If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some texture unit before the operation.
+         * Initial value is `rgba`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_SWIZZLE_RGBA} (or @def_gl{TEXTURE_SWIZZLE_R},
+         *      @def_gl{TEXTURE_SWIZZLE_G}, @def_gl{TEXTURE_SWIZZLE_B} and
+         *      @def_gl{TEXTURE_SWIZZLE_A} separately in OpenGL ES)
+         * @requires_gl33 %Extension @extension{ARB,texture_swizzle}
+         * @requires_gles30 %Texture swizzle is not available in OpenGL ES 2.0.
+         */
+        template<char r, char g, char b, char a> Texture<dimensions>& setSwizzle() {
+            AbstractTexture::setSwizzle<r, g, b, a>();
+            return *this;
+        }
+        #endif
+
+        /**
+         * @brief Set depth texture comparison mode
+         * @return Reference to self (for method chaining)
+         *
+         * If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some texture unit before the operation.
+         * Initial value is @ref Sampler::CompareMode::None.
+         * @note Depth textures can be only 1D or 2D.
+         * @see @ref setCompareFunction(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_COMPARE_MODE}
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        Texture<dimensions>& setCompareMode(Sampler::CompareMode mode) {
+            AbstractTexture::setCompareMode(mode);
+            return *this;
+        }
+
+        /**
+         * @brief Set depth texture comparison function
+         * @return Reference to self (for method chaining)
+         *
+         * Comparison operator used when comparison mode is set to
+         * @ref Sampler::CompareMode::CompareRefToTexture. If
+         * @extension{EXT,direct_state_access} is not available, the texture is
+         * bound to some texture unit before the operation. Initial value is
+         * @ref Sampler::CompareFunction::LessOrEqual.
+         * @note Depth textures can be only 1D or 2D.
+         * @see @ref setCompareMode(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_COMPARE_FUNC}
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        Texture<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
+            AbstractTexture::setCompareFunction(function);
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set depth/stencil texture mode
+         * @return Reference to self (for method chaining)
+         *
+         * Selects which component of packed depth/stencil texture is used for
+         * texturing. If @extension{EXT,direct_state_access} is not available,
+         * the texture is bound to some texture unit before the operation.
+         * Initial value is @ref Sampler::DepthStencilMode::DepthComponent.
+         * @note Depth textures can be only 1D or 2D.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
+         *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
+         *      with @def_gl{DEPTH_STENCIL_TEXTURE_MODE}
+         * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
+         * @requires_gl Stencil texturing is not available in OpenGL ES.
+         */
+        Texture<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Set storage
          * @param levels            Mip level count
@@ -389,13 +564,14 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * calls.
          * @todo allow the user to specify ColorType explicitly to avoid
          *      issues in WebGL (see setSubImage())
-         * @see @ref setMaxLevel(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         *      and @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
+         * @see @ref maxSize(), @ref setMaxLevel(), @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and
+         *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
          *      or @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
-         *      eventually @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
-         *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
+         *      eventually @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D}
+         *      or @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
          */
@@ -440,6 +616,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * See @ref image(Int, Image&) for more information.
          * @requires_gl %Texture image queries are not available in OpenGL ES.
+         * @todo Make it more flexible (usable with
+         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void image(Int level, BufferImage<dimensions>& image, BufferUsage usage) {
             AbstractTexture::image<dimensions>(_target, level, image, usage);
@@ -460,7 +638,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage1D}/@fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/

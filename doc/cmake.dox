@@ -120,7 +120,7 @@ in build and use it with CMake.
 
 Example usage with specifying additional components is:
 
-    find_package(Magnum REQUIRED MeshTools Primitives GlutApplication)
+    find_package(Magnum REQUIRED MeshTools Primitives Sdl2Application)
 
 For each component is then defined:
 

@@ -834,6 +834,7 @@ enum class TextureFormat: GLenum {
      * Depth and stencil component, size implementation-dependent. Not
      * supported in 3D textures, not allowed in unemulated
      * @ref Texture::setStorage() "*Texture::setStorage()" calls.
+     * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
      * @deprecated_gl Prefer to use exactly specified version of this format,
      *      e.g. @ref Magnum::TextureFormat::Depth24Stencil8 "TextureFormat::Depth24Stencil8".
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} or
@@ -847,6 +848,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * 24bit depth and 8bit stencil component. Not supported in 3D textures.
+     * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
      * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} and
      *      (@es_extension{OES,required_internalformat} or
@@ -863,6 +865,7 @@ enum class TextureFormat: GLenum {
     /**
      * 32bit float depth component and 8bit stencil component. Not supported in
      * 3D textures.
+     * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
      * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
      * @requires_gles30 Only integral depth textures are available in OpenGL ES
      *      2.0.

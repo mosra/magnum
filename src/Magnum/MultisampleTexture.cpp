@@ -1,5 +1,3 @@
-#ifndef Magnum_Implementation_MeshState_h
-#define Magnum_Implementation_MeshState_h
 /*
     This file is part of Magnum.
 
@@ -25,43 +23,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-#include <string>
+#include "MultisampleTexture.h"
 
-#include "Magnum/Mesh.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
+#include "Implementation/maxTextureSize.h"
 
 namespace Magnum { namespace Implementation {
 
-struct MeshState {
-    explicit MeshState(Context& context, std::vector<std::string>& extensions);
+template<> Vector2i MAGNUM_EXPORT maxMultisampleTextureSize<2>() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        return {};
 
-    void(Mesh::*createImplementation)();
-    void(Mesh::*destroyImplementation)();
-    void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
-    #ifndef MAGNUM_TARGET_GLES2
-    void(Mesh::*attributeIPointerImplementation)(const Mesh::IntegerAttribute&);
-    #ifndef MAGNUM_TARGET_GLES
-    void(Mesh::*attributeLPointerImplementation)(const Mesh::LongAttribute&);
-    #endif
-    #endif
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*vertexAttribDivisorImplementation)(GLuint, GLuint);
-    #endif
-    void(Mesh::*bindIndexBufferImplementation)(Buffer&);
-    void(Mesh::*bindImplementation)();
-    void(Mesh::*unbindImplementation)();
+    return Vector2i{Implementation::maxTextureSideSize()};
+}
 
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*drawArraysInstancedImplementation)(GLint, GLsizei, GLsizei);
-    void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
-    #endif
+template<> Vector3i MAGNUM_EXPORT maxMultisampleTextureSize<3>() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        return {};
 
-    GLuint currentVAO;
-    #ifndef MAGNUM_TARGET_GLES2
-    GLint maxElementsIndices, maxElementsVertices;
-    #endif
-};
+    return {Vector2i{Implementation::maxTextureSideSize()}, Implementation::max3DTextureDepth()};
+}
 
 }}
-
 #endif

@@ -60,14 +60,24 @@ class TextureGLTest: public AbstractOpenGLTester {
         void sampling2D();
         void sampling3D();
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingSwizzle1D();
+        #endif
+        void samplingSwizzle2D();
+        void samplingSwizzle3D();
+        #else
         void samplingMaxLevel2D();
         void samplingMaxLevel3D();
+        void samplingCompare2D();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger2D();
         void samplingBorderInteger3D();
+        void samplingDepthStencilMode1D();
+        void samplingDepthStencilMode2D();
+        void samplingDepthStencilMode3D();
         #else
         void samplingBorder2D();
         void samplingBorder3D();
@@ -146,14 +156,24 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::sampling2D,
         &TextureGLTest::sampling3D,
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::samplingSwizzle1D,
+        #endif
+        &TextureGLTest::samplingSwizzle2D,
+        &TextureGLTest::samplingSwizzle3D,
+        #else
         &TextureGLTest::samplingMaxLevel2D,
         &TextureGLTest::samplingMaxLevel3D,
+        &TextureGLTest::samplingCompare2D,
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::samplingBorderInteger2D,
         &TextureGLTest::samplingBorderInteger3D,
+        &TextureGLTest::samplingDepthStencilMode1D,
+        &TextureGLTest::samplingDepthStencilMode2D,
+        &TextureGLTest::samplingDepthStencilMode3D,
         #else
         &TextureGLTest::samplingBorder2D,
         &TextureGLTest::samplingBorder3D,
@@ -333,11 +353,36 @@ void TextureGLTest::sampling1D() {
     Texture1D texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           .setLodBias(0.5f)
            .setBaseLevel(1)
            .setMaxLevel(750)
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingSwizzle1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingDepthStencilMode1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -348,6 +393,11 @@ void TextureGLTest::sampling2D() {
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           #ifndef MAGNUM_TARGET_GLES
+           .setLodBias(0.5f)
+           #endif
            .setBaseLevel(1)
            .setMaxLevel(750)
            #endif
@@ -357,18 +407,43 @@ void TextureGLTest::sampling2D() {
            #else
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
-           .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+           .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingSwizzle2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2D texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingMaxLevel2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
 
     Texture2D texture;
     texture.setMaxLevel(750);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingCompare2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::shadow_samplers>())
+        CORRADE_SKIP(Extensions::GL::EXT::shadow_samplers::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setCompareMode(Sampler::CompareMode::CompareRefToTexture)
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -385,6 +460,16 @@ void TextureGLTest::samplingBorderInteger2D() {
     Texture2D b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingDepthStencilMode2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -411,6 +496,11 @@ void TextureGLTest::sampling3D() {
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
+           .setMinLod(-750.0f)
+           .setMaxLod(750.0f)
+           #ifndef MAGNUM_TARGET_GLES
+           .setLodBias(0.5f)
+           #endif
            .setBaseLevel(1)
            .setMaxLevel(750)
            #endif
@@ -425,7 +515,19 @@ void TextureGLTest::sampling3D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES2
+void TextureGLTest::samplingSwizzle3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    #endif
+
+    Texture3D texture;
+    texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#else
 void TextureGLTest::samplingMaxLevel3D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
         CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
@@ -450,6 +552,16 @@ void TextureGLTest::samplingBorderInteger3D() {
     Texture3D b;
     b.setWrapping(Sampler::Wrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingDepthStencilMode3D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+
+    Texture3D texture;
+    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

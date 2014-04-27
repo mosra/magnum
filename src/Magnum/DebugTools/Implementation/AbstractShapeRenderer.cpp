@@ -53,17 +53,27 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     /* Mesh configuration */
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
-        .setVertexCount(data.positions(0).size())
         .addVertexBuffer(*buffer, 0, Shaders::Flat2D::Position());
     ResourceManager::instance().set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
+
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
+
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data.indices());
+        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        mesh->setCount(data.indices().size())
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+
         ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
-    }
+
+    /* The mesh is not indexed, set proper vertex count */
+    } else mesh->setCount(data.positions(0).size());
 }
 
 template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
@@ -75,17 +85,27 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
     /* Mesh configuration */
     Mesh* mesh = new Mesh;
     mesh->setPrimitive(data.primitive())
-        .setVertexCount(data.positions(0).size())
         .addVertexBuffer(*vertexBuffer, 0, Shaders::Flat3D::Position());
     ResourceManager::instance().set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Index buffer, if needed, if not, resource key doesn't have to be set */
     if(data.isIndexed()) {
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
+
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
+
         Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
-        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data.indices());
+        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        mesh->setCount(data.indices().size())
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+
         ResourceManager::instance().set(indexBufferResource.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
-    }
+
+    /* The mesh is not indexed, set proper vertex count */
+    } else mesh->setCount(data.positions(0).size());
 }
 
 }

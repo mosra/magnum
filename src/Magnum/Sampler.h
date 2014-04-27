@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Sampler
+ * @brief Class @ref Magnum::Sampler
  */
 
 #include "Magnum/Magnum.h"
@@ -38,14 +38,16 @@ namespace Magnum {
 /**
 @brief %Texture sampler
 
-@see Texture, CubeMapTexture, CubeMapTextureArray
+@see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
+    @ref CubeMapTextureArray, @ref RectangleTexture
 */
 class MAGNUM_EXPORT Sampler {
     public:
         /**
          * @brief %Texture filtering
          *
-         * @see setMagnificationFilter() and setMinificationFilter()
+         * @see @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()",
+         *      @ref Texture::setMagnificationFilter() "*Texture::setMagnificationFilter()"
          */
         enum class Filter: GLint {
             Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
@@ -65,7 +67,7 @@ class MAGNUM_EXPORT Sampler {
         /**
          * @brief Mip level selection
          *
-         * @see setMinificationFilter()
+         * @see @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()"
          */
         enum class Mipmap: GLint {
             Base = GL_NEAREST & ~GL_NEAREST, /**< Select base mip level */
@@ -91,7 +93,7 @@ class MAGNUM_EXPORT Sampler {
         /**
          * @brief %Texture wrapping
          *
-         * @see setWrapping()
+         * @see @ref Texture::setWrapping() "*Texture::setWrapping()"
          */
         enum class Wrapping: GLint {
             /** Repeat texture. **Unavailable on rectangle textures.** */
@@ -110,7 +112,8 @@ class MAGNUM_EXPORT Sampler {
 
             /**
              * Clamp to border color. Coordinates out of range will be clamped
-             * to border color (set with setBorderColor()).
+             * to border color (set with
+             * @ref Texture::setBorderColor() "*Texture::setBorderColor()").
              * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -134,12 +137,99 @@ class MAGNUM_EXPORT Sampler {
         };
 
         /**
+         * @brief Depth texture comparison mode
+         *
+         * @see @ref CompareFunction,
+         *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        enum class CompareMode: GLenum {
+            /** Directly output the depth value */
+            None = GL_NONE,
+
+            /** Use output from specified @ref CompareFunction */
+            CompareRefToTexture =
+                #ifndef MAGNUM_TARGET_GLES2
+                GL_COMPARE_REF_TO_TEXTURE
+                #else
+                GL_COMPARE_REF_TO_TEXTURE_EXT
+                #endif
+        };
+
+        /**
+         * @brief Depth texture comparison function
+         *
+         * Comparison operator used when comparison mode is set to
+         * @ref CompareMode::CompareRefToTexture.
+         * @see @ref Texture::setCompareFunction() "*Texture::setCompareFunction()",
+         *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         */
+        enum class CompareFunction: GLenum {
+            Never = GL_NEVER,           /**< Always `0.0` */
+            Always = GL_ALWAYS,         /**< Always `1.0` */
+
+            /**
+             * `1.0` when texture coordinate is less than depth value, `0.0`
+             * otherwise
+             */
+            Less = GL_LESS,
+
+            /**
+             * `1.0` when texture coordinate is less than or equal to depth
+             * value, `0.0` otherwise
+             */
+            LessOrEqual = GL_LEQUAL,
+
+            /**
+             * `1.0` when texture coordinate is equal to depth value, `0.0`
+             * otherwise
+             */
+            Equal = GL_EQUAL,
+
+            /**
+             * `0.0` when texture coordinate is equal to depth value, `1.0`
+             * otherwise
+             */
+            NotEqual = GL_NOTEQUAL,
+
+            /**
+             * `1.0` when texture coordinate is greater than or equal to depth
+             * value, `0.0` otherwise
+             */
+            GreaterOrEqual = GL_GEQUAL,
+
+            /**
+             * `1.0` when texture coordinate is greater than depth value, `0.0`
+             * otherwise
+             */
+            Greater = GL_GREATER
+        };
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Depth/stencil texture mode
+         *
+         * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
+         * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
+         * @requires_gl Stencil texturing is not available in OpenGL ES.
+         */
+        enum class DepthStencilMode: GLenum {
+            /** Sample depth component */
+            DepthComponent = GL_DEPTH_COMPONENT,
+
+            /** Sample stencil index (as unsigned integer texture) */
+            StencilIndex = GL_STENCIL_INDEX
+        };
+        #endif
+
+        /**
          * @brief Max supported max anisotropy
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,texture_filter_anisotropic}
          * (desktop or ES) is not available, returns `0.0f`.
-         * @see setMaxAnisotropy(), @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          */
         static Float maxMaxAnisotropy();
 
@@ -161,6 +251,17 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Mipmap value);
 
 /** @debugoperator{Magnum::Sampler} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Wrapping value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareMode value);
+
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareFunction value);
+
+#ifndef MAGNUM_TARGET_GLES
+/** @debugoperator{Magnum::Sampler} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::DepthStencilMode value);
+#endif
 
 }
 

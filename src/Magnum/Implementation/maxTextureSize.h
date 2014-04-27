@@ -1,5 +1,5 @@
-#ifndef Magnum_Implementation_MeshState_h
-#define Magnum_Implementation_MeshState_h
+#ifndef Magnum_Implementation_maxTextureSize_h
+#define Magnum_Implementation_maxTextureSize_h
 /*
     This file is part of Magnum.
 
@@ -25,42 +25,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-#include <string>
-
-#include "Magnum/Mesh.h"
+#include "Magnum/OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 
-struct MeshState {
-    explicit MeshState(Context& context, std::vector<std::string>& extensions);
-
-    void(Mesh::*createImplementation)();
-    void(Mesh::*destroyImplementation)();
-    void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
-    #ifndef MAGNUM_TARGET_GLES2
-    void(Mesh::*attributeIPointerImplementation)(const Mesh::IntegerAttribute&);
-    #ifndef MAGNUM_TARGET_GLES
-    void(Mesh::*attributeLPointerImplementation)(const Mesh::LongAttribute&);
-    #endif
-    #endif
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*vertexAttribDivisorImplementation)(GLuint, GLuint);
-    #endif
-    void(Mesh::*bindIndexBufferImplementation)(Buffer&);
-    void(Mesh::*bindImplementation)();
-    void(Mesh::*unbindImplementation)();
-
-    #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*drawArraysInstancedImplementation)(GLint, GLsizei, GLsizei);
-    void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
-    #endif
-
-    GLuint currentVAO;
-    #ifndef MAGNUM_TARGET_GLES2
-    GLint maxElementsIndices, maxElementsVertices;
-    #endif
-};
+GLint maxTextureSideSize();
+GLint max3DTextureDepth();
+GLint maxTextureArrayLayers();
+GLint maxCubeMapTextureSideSize();
 
 }}
 

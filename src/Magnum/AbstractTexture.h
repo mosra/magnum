@@ -40,14 +40,27 @@
 
 namespace Magnum {
 
-namespace Implementation { struct TextureState; }
+namespace Implementation {
+    struct TextureState;
+
+    #ifndef MAGNUM_TARGET_GLES2
+    template<char> struct TextureSwizzle;
+    template<> struct TextureSwizzle<'r'> { enum: GLint { Value = GL_RED }; };
+    template<> struct TextureSwizzle<'g'> { enum: GLint { Value = GL_GREEN }; };
+    template<> struct TextureSwizzle<'b'> { enum: GLint { Value = GL_BLUE }; };
+    template<> struct TextureSwizzle<'a'> { enum: GLint { Value = GL_ALPHA }; };
+    template<> struct TextureSwizzle<'0'> { enum: GLint { Value = GL_ZERO }; };
+    template<> struct TextureSwizzle<'1'> { enum: GLint { Value = GL_ONE }; };
+    #endif
+}
 
 /**
 @brief Base for textures
 
-Encapsulates one OpenGL texture object. See @ref Texture, @ref CubeMapTexture
-and @ref CubeMapTextureArray documentation for more information and usage
-examples.
+Encapsulates one OpenGL texture object. See @ref Texture, @ref TextureArray,
+@ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
+@ref BufferTexture and @ref MultisampleTexture documentation for more
+information and usage examples.
 
 @section AbstractTexture-webgl-restrictions WebGL restrictions
 
@@ -109,8 +122,6 @@ functions do nothing.
 @todo Move constructor/assignment - how to avoid creation of empty texture and
     then deleting it immediately?
 @todo ES2 - proper support for pixel unpack buffer when extension is in headers
-@todo `GL_MAX_3D_TEXTURE_SIZE`, `GL_MAX_ARRAY_TEXTURE_LAYERS`, `GL_MAX_CUBE_MAP_TEXTURE_SIZE`, `GL_MAX_RECTANGLE_TEXTURE_SIZE`, `GL_MAX_TEXTURE_SIZE`, `GL_MAX_TEXTURE_BUFFER_SIZE` enable them only where it makes sense?
-@todo `GL_MAX_TEXTURE_LOD_BIAS` when `TEXTURE_LOD_BIAS` is implemented
 @todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
 @todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
 @todo Query for immutable levels (@extension{ARB,ES3_compatibility})
@@ -130,6 +141,19 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      instead.
          */
         static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxLayers();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Max level-of-detail bias
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_LOD_BIAS}
+         * @requires_gles30 %Texture LOD bias doesn't have
+         *      implementation-defined range in OpenGL ES 2.0.
+         */
+        static Float maxLodBias();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -278,10 +302,35 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void setMaxLevel(Int level);
         void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
         void setMagnificationFilter(Sampler::Filter filter);
+        #ifndef MAGNUM_TARGET_GLES2
+        void setMinLod(Float lod);
+        void setMaxLod(Float lod);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void setLodBias(Float bias);
+        #endif
         void setBorderColor(const Color4& color);
+        #ifndef MAGNUM_TARGET_GLES
         void setBorderColor(const Vector4i& color);
         void setBorderColor(const Vector4ui& color);
+        #endif
         void setMaxAnisotropy(Float anisotropy);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        template<char r, char g, char b, char a> void setSwizzle() {
+            setSwizzleInternal(Implementation::TextureSwizzle<r>::Value,
+                               Implementation::TextureSwizzle<g>::Value,
+                               Implementation::TextureSwizzle<b>::Value,
+                               Implementation::TextureSwizzle<a>::Value);
+        }
+        void setSwizzleInternal(GLint r, GLint g, GLint b, GLint a);
+        #endif
+
+        void setCompareMode(Sampler::CompareMode mode);
+        void setCompareFunction(Sampler::CompareFunction function);
+        #ifndef MAGNUM_TARGET_GLES
+        void setDepthStencilMode(Sampler::DepthStencilMode mode);
+        #endif
         void invalidateImage(Int level);
         void generateMipmap();
 
@@ -312,17 +361,21 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLfloat value);
+        #ifndef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLint* values);
+        #endif
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLfloat* values);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLuint* values);
-        void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLint* values);
+        void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLint* values);
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLuint* values);
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLint* values);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
+        void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLint* values);
         #endif
 
         void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);

@@ -35,6 +35,7 @@ set(Magnum_SRCS
     AbstractShaderProgram.cpp
     Buffer.cpp
     ColorFormat.cpp
+    CubeMapTexture.cpp
     Context.cpp
     DebugMessage.cpp
     DefaultFramebuffer.cpp
@@ -49,6 +50,7 @@ set(Magnum_SRCS
     Resource.cpp
     Sampler.cpp
     Shader.cpp
+    Texture.cpp
     Timeline.cpp
     Version.cpp
 
@@ -60,6 +62,7 @@ set(Magnum_SRCS
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp
+    Implementation/maxTextureSize.cpp
     Implementation/setupDriverWorkarounds.cpp
 
     Trade/AbstractImageConverter.cpp
@@ -74,18 +77,6 @@ set(Magnum_SRCS
     Trade/PhongMaterialData.cpp
     Trade/SceneData.cpp
     Trade/TextureData.cpp)
-
-# Desktop-only code
-if(NOT TARGET_GLES)
-    set(Magnum_SRCS ${Magnum_SRCS}
-        BufferTexture.cpp)
-endif()
-
-# Not-ES2 code
-if(NOT TARGET_GLES2)
-    set(Magnum_SRCS ${Magnum_SRCS}
-        BufferImage.cpp)
-endif()
 
 set(Magnum_HEADERS
     AbstractFramebuffer.h
@@ -133,21 +124,29 @@ if(BUILD_DEPRECATED)
         DebugMarker.h)
 endif()
 
-# Desktop-only headers and libraries
+# Desktop-only stuff
 if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferTexture.h
         CubeMapTextureArray.h
         MultisampleTexture.h
         RectangleTexture.h)
-    set(Magnum_SRCS ${Magnum_SRCS} $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferTexture.cpp
+        CubeMapTextureArray.cpp
+        MultisampleTexture.cpp
+        RectangleTexture.cpp
+        $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
 endif()
 
-# Not-ES2 headers
+# Non-ES2 stuff
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h
         TextureArray.h)
+    set(Magnum_SRCS ${Magnum_SRCS}
+        BufferImage.cpp
+        TextureArray.cpp)
 endif()
 
 # Files shared between main library and math unit test library

@@ -84,17 +84,28 @@ In shader, the texture is used via `sampler1DArray`/`sampler2DArray`,
 or `usampler1DArray`/`usampler2DArray`. See @ref AbstractShaderProgram
 documentation for more information about usage in shaders.
 
+@see @ref Texture1DArray, @ref Texture2DArray, @ref Texture,
+    @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
+    @ref BufferTexture, @ref MultisampleTexture
 @requires_gl30 %Extension @extension{EXT,texture_array}
 @requires_gles30 %Array textures are not available in OpenGL ES 2.0.
 @requires_gl 1D array textures are not available in OpenGL ES, only 2D ones.
-
-@see @ref Texture1DArray, @ref Texture2DArray, @ref Texture, @ref BufferTexture,
-    @ref CubeMapTexture, @ref CubeMapTextureArray, @ref MultisampleTexture,
-    @ref RectangleTexture
+@todo Fix this when @es_extension{NV,texture_array} is in ES2 extension headers
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
     public:
         static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
+
+        /**
+         * @brief Max supported texture array size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{EXT,texture_array} (part of
+         * OpenGL 3.0) is not available, returns zero vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
+         *      @def_gl{MAX_ARRAY_TEXTURE_LAYERS}
+         */
+        static typename DimensionTraits<dimensions+1, Int>::VectorType maxSize();
 
         /**
          * @brief Constructor
@@ -131,6 +142,28 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setMinLod() */
+        TextureArray<dimensions>& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /** @copydoc Texture::setMaxLod() */
+        TextureArray<dimensions>& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setLodBias() */
+        TextureArray<dimensions>& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+        #endif
+
         /** @copydoc Texture::setWrapping() */
         TextureArray<dimensions>& setWrapping(const Array<dimensions+1, Sampler::Wrapping>& wrapping) {
             DataHelper<dimensions+1>::setWrapping(*this, wrapping);
@@ -163,6 +196,53 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setSwizzle() */
+        template<char r, char g, char b, char a> TextureArray<dimensions>& setSwizzle() {
+            AbstractTexture::setSwizzle<r, g, b, a>();
+            return *this;
+        }
+        #endif
+
+        /**
+         * @copybrief Texture::setCompareMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareMode() for more information.
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         *      @es_extension{NV,shadow_samplers_array}
+         */
+        TextureArray<dimensions>& setCompareMode(Sampler::CompareMode mode) {
+            AbstractTexture::setCompareMode(mode);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setCompareFunction()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareFunction() for more information.
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         *      @es_extension{NV,shadow_samplers_array}
+         */
+        TextureArray<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
+            AbstractTexture::setCompareFunction(function);
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copybrief Texture::setDepthStencilMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setDepthStencilMode() for more information.
+         */
+        TextureArray<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
+            return *this;
+        }
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         /** @copydoc Texture::imageSize() */
         typename DimensionTraits<dimensions+1, Int>::VectorType imageSize(Int level) {
@@ -188,7 +268,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @extension{ARB,texture_storage} (part of OpenGL 4.2) or OpenGL ES
          * 3.0 is not available, the feature is emulated with sequence of
          * @ref setImage() calls.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage2D}/@fn_gl{TexStorage3D} or
          *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
@@ -227,7 +307,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}

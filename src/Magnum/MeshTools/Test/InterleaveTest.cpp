@@ -87,16 +87,11 @@ void InterleaveTest::strideGaps() {
 }
 
 void InterleaveTest::write() {
-    std::size_t attributeCount;
-    std::size_t stride;
-    Containers::Array<char> data;
-    std::tie(attributeCount, stride, data) = MeshTools::interleave(
+    const Containers::Array<char> data = MeshTools::interleave(
         std::vector<Byte>{0, 1, 2},
         std::vector<Int>{3, 4, 5},
         std::vector<Short>{6, 7, 8});
 
-    CORRADE_COMPARE(attributeCount, std::size_t(3));
-    CORRADE_COMPARE(stride, std::size_t(7));
     if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()), (std::vector<char>{
             0x00, 0x03, 0x00, 0x00, 0x00, 0x06, 0x00,
@@ -113,16 +108,10 @@ void InterleaveTest::write() {
 }
 
 void InterleaveTest::writeGaps() {
-    std::size_t attributeCount;
-    std::size_t stride;
-    Containers::Array<char> data;
-    std::tie(attributeCount, stride, data) = MeshTools::interleave(
+    const Containers::Array<char> data = MeshTools::interleave(
         std::vector<Byte>{0, 1, 2}, 3,
         std::vector<Int>{3, 4, 5},
         std::vector<Short>{6, 7, 8}, 2);
-
-    CORRADE_COMPARE(attributeCount, std::size_t(3));
-    CORRADE_COMPARE(stride, std::size_t(12));
 
     if(!Utility::Endianness::isBigEndian()) {
         /*  byte, _____________gap, int___________________, short_____, _______gap */
@@ -142,8 +131,6 @@ void InterleaveTest::writeGaps() {
 }
 
 void InterleaveTest::interleaveInto() {
-    std::size_t attributeCount;
-    std::size_t stride;
     auto data = Containers::Array<char>::from(
         0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77,
         0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77,
@@ -151,11 +138,7 @@ void InterleaveTest::interleaveInto() {
         0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77, 0x11, 0x33, 0x55, 0x77
     );
 
-    std::tie(attributeCount, stride) = MeshTools::interleaveInto(data,
-        2, std::vector<Int>{4, 5, 6, 7}, 1, std::vector<Short>{0, 1, 2, 3}, 3);
-
-    CORRADE_COMPARE(attributeCount, std::size_t{4});
-    CORRADE_COMPARE(stride, std::size_t{12});
+    MeshTools::interleaveInto(data, 2, std::vector<Int>{4, 5, 6, 7}, 1, std::vector<Short>{0, 1, 2, 3}, 3);
 
     if(!Utility::Endianness::isBigEndian()) {
         /*  _______gap, int___________________, _gap, short_____, _____________gap */

@@ -212,6 +212,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
         _extension(GL,ANGLE,framebuffer_multisample),
+        _extension(GL,ANGLE,instanced_arrays),
         _extension(GL,ANGLE,depth_texture),
         _extension(GL,APPLE,framebuffer_multisample),
         _extension(GL,APPLE,texture_max_level),
@@ -219,15 +220,23 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_type_2_10_10_10_REV),
         _extension(GL,EXT,discard_framebuffer),
         _extension(GL,EXT,blend_minmax),
+        _extension(GL,EXT,shader_texture_lod),
         _extension(GL,EXT,occlusion_query_boolean),
+        _extension(GL,EXT,shadow_samplers),
         _extension(GL,EXT,texture_rg),
         _extension(GL,EXT,texture_storage),
         _extension(GL,EXT,map_buffer_range),
+        _extension(GL,EXT,instanced_arrays),
+        _extension(GL,EXT,draw_instanced),
         _extension(GL,NV,draw_buffers),
         _extension(GL,NV,fbo_color_attachments),
         _extension(GL,NV,read_buffer),
+        _extension(GL,NV,draw_instanced),
         _extension(GL,NV,framebuffer_blit),
         _extension(GL,NV,framebuffer_multisample),
+        _extension(GL,NV,instanced_arrays),
+        _extension(GL,NV,shadow_samplers_array),
+        _extension(GL,NV,shadow_samplers_cube),
         _extension(GL,OES,depth24),
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,rgb8_rgba8),
@@ -312,13 +321,15 @@ Context::Context() {
             "Context: cannot retrieve OpenGL version:" << versionNumberError, );
         #endif
 
+        /* Allow ES2 context on driver that reports ES3 as supported */
         const std::string version = versionString();
         #ifndef MAGNUM_TARGET_GLES
         if(version.compare(0, 4, "2.1 ") == 0)
         #elif defined(MAGNUM_TARGET_WEBGL)
         if(version.find("WebGL 1") != std::string::npos)
         #else
-        if(version.find("OpenGL ES 2.0") != std::string::npos)
+        if(version.find("OpenGL ES 2.0") != std::string::npos ||
+           version.find("OpenGL ES 3.") != std::string::npos)
         #endif
         {
             _majorVersion = 2;
@@ -350,7 +361,7 @@ Context::Context() {
     #elif defined(MAGNUM_TARGET_GLES2)
     if(_version != Version::GLES200)
     #else
-    if(_version != Version::GLES300)
+    if(!isVersionSupported(Version::GLES300))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES

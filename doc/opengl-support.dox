@@ -81,9 +81,9 @@ following:
 
 %Extension                                   | Status
 -------------------------------------------- | ------
-@extension{ARB,texture_rectangle}            | missing limit query
-@extension{ARB,draw_instanced}               | |
-@extension{ARB,texture_buffer_object}        | missing limit query
+@extension{ARB,texture_rectangle}            | done
+@extension{ARB,draw_instanced}               | done
+@extension{ARB,texture_buffer_object}        | done
 @extension{ARB,uniform_buffer_object}        | |
 @extension{ARB,copy_buffer}                  | done
 @extension{EXT,texture_snorm}                | done
@@ -95,7 +95,7 @@ following:
 -------------------------------------------- | ------
 @extension{ARB,geometry_shader4}             | missing layered attachments
 @extension{ARB,depth_clamp}                  | done
-@extension{ARB,draw_elements_base_vertex}    | |
+@extension{ARB,draw_elements_base_vertex}    | missing `Multi*` command
 @extension{ARB,fragment_coord_conventions}   | done (shading language only)
 @extension{ARB,provoking_vertex}             | done
 @extension{ARB,seamless_cube_map}            | done
@@ -107,14 +107,14 @@ following:
 
 %Extension                                   | Status
 -------------------------------------------- | ------
-@extension{ARB,instanced_arrays}             | |
+@extension{ARB,instanced_arrays}             | done
 @extension{ARB,blend_func_extended}          | missing limit query
 @extension{ARB,explicit_attrib_location}     | done (shading language only)
 @extension{ARB,occlusion_query2}             | done
 @extension{ARB,sampler_objects}              | |
 @extension{ARB,shader_bit_encoding}          | done (shading language only)
 @extension{ARB,texture_rgb10_a2ui}           | done
-@extension{ARB,texture_swizzle}              | |
+@extension{ARB,texture_swizzle}              | done
 @extension{ARB,timer_query}                  | missing direct query
 @extension{ARB,vertex_type_2_10_10_10_rev}   | done
 
@@ -152,7 +152,7 @@ following:
 %Extension                                   | Status
 -------------------------------------------- | ------
 @extension{ARB,texture_compression_bptc}     | done
-@extension{ARB,base_instance}                | |
+@extension{ARB,base_instance}                | done
 @extension{ARB,shading_language_420pack}     | done (shading language only)
 @extension{ARB,transform_feedback_instanced} | |
 @extension{ARB,compressed_texture_pixel_storage} | |
@@ -184,7 +184,7 @@ following:
 @extension{ARB,robust_buffer_access_behavior} | done (nothing to do)
 @extension{ARB,shader_image_size}            | done (shading language only)
 @extension{ARB,shader_storage_buffer_object} | only limit queries
-@extension{ARB,stencil_texturing}            | |
+@extension{ARB,stencil_texturing}            | done
 @extension{ARB,texture_buffer_range}         | done
 @extension{ARB,texture_query_levels}         | done (shading language only)
 @extension{ARB,texture_storage_multisample}  | done
@@ -243,6 +243,7 @@ supported.
 -------------------------------------------- | ------
 @es_extension{ANGLE,framebuffer_blit}        | done
 @es_extension{ANGLE,framebuffer_multisample} | done
+@es_extension{ANGLE,instanced_arrays}        | done
 @es_extension{ANGLE,depth_texture}           | done
 @es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
 @es_extension{APPLE,texture_max_level}       | done
@@ -250,15 +251,23 @@ supported.
 @es_extension{EXT,texture_type_2_10_10_10_REV} | done
 @es_extension{EXT,discard_framebuffer}       | done
 @es_extension2{EXT,blend_minmax,blend_minmax} | done
+@es_extension{EXT,shader_texture_lod}        | done (shading language only)
 @es_extension{EXT,occlusion_query_boolean}   | done
+@es_extension{EXT,shadow_samplers}           | done
 @es_extension{EXT,texture_rg}                | done
 @es_extension{EXT,texture_storage}           | done
 @es_extension{EXT,map_buffer_range}          | done
+@es_extension{EXT,instanced_arrays}          | done
+@es_extension2{EXT,draw_instanced,draw_instanced} | done
 @es_extension{NV,draw_buffers}               | done
 @es_extension{NV,fbo_color_attachments}      | done
 @es_extension{NV,read_buffer}                | done
+@es_extension{NV,draw_instanced}             | done
 @es_extension{NV,framebuffer_blit}           | done
 @es_extension{NV,framebuffer_multisample}    | done
+@es_extension{NV,instanced_arrays}           | done
+@es_extension{NV,shadow_samplers_array}      | done (shading language only)
+@es_extension{NV,shadow_samplers_cube}       | done (shading language only)
 @es_extension{OES,depth24}                   | done
 @es_extension{OES,element_index_uint}        | done
 @es_extension{OES,rgb8_rgba8}                | done (desktop-compatible subset)

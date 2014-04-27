@@ -44,7 +44,7 @@ namespace Magnum { namespace DebugTools {
 @brief %Profiler
 
 Measures time passed during specified sections of each frame. It's meant to be
-used in rendering and event loops (e.g. Platform::GlutApplication::drawEvent()),
+used in rendering and event loops (e.g. Platform::Sdl2Application::drawEvent()),
 but it's possible to use it standalone elsewhere. Example usage:
 @code
 DebugTools::Profiler p;

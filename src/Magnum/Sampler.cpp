@@ -99,6 +99,47 @@ Debug operator<<(Debug debug, const Sampler::Wrapping value) {
 
     return debug << "Sampler::Wrapping::(invalid)";
 }
+
+Debug operator<<(Debug debug, const Sampler::CompareMode value) {
+    switch(value) {
+        #define _c(value) case Sampler::CompareMode::value: return debug << "Sampler::CompareMode::" #value;
+        _c(None)
+        _c(CompareRefToTexture)
+        #undef _c
+    }
+
+    return debug << "Sampler::CompareFunction::(invalid)";
+}
+
+Debug operator<<(Debug debug, const Sampler::CompareFunction value) {
+    switch(value) {
+        #define _c(value) case Sampler::CompareFunction::value: return debug << "Sampler::CompareFunction::" #value;
+        _c(Never)
+        _c(Always)
+        _c(Less)
+        _c(LessOrEqual)
+        _c(Equal)
+        _c(NotEqual)
+        _c(GreaterOrEqual)
+        _c(Greater)
+        #undef _c
+    }
+
+    return debug << "Sampler::CompareFunction::(invalid)";
+}
+
+#ifndef MAGNUM_TARGET_GLES
+Debug operator<<(Debug debug, const Sampler::DepthStencilMode value) {
+    switch(value) {
+        #define _c(value) case Sampler::DepthStencilMode::value: return debug << "Sampler::DepthStencilMode::" #value;
+        _c(DepthComponent)
+        _c(StencilIndex)
+        #undef _c
+    }
+
+    return debug << "Sampler::DepthStencilMode::(invalid)";
+}
+#endif
 #endif
 
 }

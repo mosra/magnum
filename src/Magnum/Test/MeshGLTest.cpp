@@ -106,6 +106,26 @@ class MeshGLTest: public AbstractOpenGLTester {
         void setIndexBuffer();
         void setIndexBufferRange();
         void setIndexBufferUnsignedInt();
+
+        #ifndef MAGNUM_TARGET_GLES
+        void setBaseVertex();
+        #endif
+        void setInstanceCount();
+        void setInstanceCountIndexed();
+        #ifndef MAGNUM_TARGET_GLES
+        void setInstanceCountBaseInstance();
+        void setInstanceCountBaseInstanceIndexed();
+        void setInstanceCountBaseVertex();
+        void setInstanceCountBaseVertexBaseInstance();
+        #endif
+
+        void addVertexBufferInstancedFloat();
+        #ifndef MAGNUM_TARGET_GLES2
+        void addVertexBufferInstancedInteger();
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void addVertexBufferInstancedDouble();
+        #endif
 };
 
 MeshGLTest::MeshGLTest() {
@@ -168,7 +188,28 @@ MeshGLTest::MeshGLTest() {
 
               &MeshGLTest::setIndexBuffer,
               &MeshGLTest::setIndexBufferRange,
-              &MeshGLTest::setIndexBufferUnsignedInt});
+              &MeshGLTest::setIndexBufferUnsignedInt,
+
+              #ifndef MAGNUM_TARGET_GLES
+              &MeshGLTest::setBaseVertex,
+              #endif
+              &MeshGLTest::setInstanceCount,
+              &MeshGLTest::setInstanceCountIndexed,
+              #ifndef MAGNUM_TARGET_GLES
+              &MeshGLTest::setInstanceCountBaseInstance,
+              &MeshGLTest::setInstanceCountBaseInstanceIndexed,
+              &MeshGLTest::setInstanceCountBaseVertex,
+              &MeshGLTest::setInstanceCountBaseVertexBaseInstance,
+              #endif
+
+              &MeshGLTest::addVertexBufferInstancedFloat,
+              #ifndef MAGNUM_TARGET_GLES2
+              &MeshGLTest::addVertexBufferInstancedInteger,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &MeshGLTest::addVertexBufferInstancedDouble
+              #endif
+              });
 }
 
 void MeshGLTest::construct() {
@@ -323,8 +364,8 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
                    "void main() { gl_FragColor = " + conversion + "; }\n");
     #else
     frag.addSource("in mediump " + type + " valueInterpolated;\n"
-                   "out mediump vec4 output;\n"
-                   "void main() { output = " + conversion + "; }\n");
+                   "out mediump vec4 result;\n"
+                   "void main() { result = " + conversion + "; }\n");
     #endif
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
@@ -397,11 +438,18 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
-    mesh.setVertexCount(2)
-        .setPrimitive(MeshPrimitive::Points);
+    mesh.setPrimitive(MeshPrimitive::Points)
+        .setCount(2);
 
     /* Skip first vertex so we test also offsets */
-    MeshView(mesh).setVertexRange(1, 1).draw(shader);
+    MeshView(mesh)
+        .setCount(1)
+        .setBaseVertex(1)
+        .setInstanceCount(mesh.instanceCount())
+        #ifndef MAGNUM_TARGET_GLES
+        .setBaseInstance(mesh.baseInstance())
+        #endif
+        .draw(shader);
 }
 
 template<class T> T Checker::get(ColorFormat format, ColorType type) {
@@ -1122,7 +1170,7 @@ namespace {
     const Float indexedVertexData[] = {
         0.0f, /* Offset */
 
-        /* First attribute */
+        /* First vertex */
         Math::normalize<Float, UnsignedByte>(64),
             Math::normalize<Float, UnsignedByte>(17),
                 Math::normalize<Float, UnsignedByte>(56),
@@ -1132,7 +1180,36 @@ namespace {
         Math::normalize<Float, UnsignedByte>(97),
             Math::normalize<Float, UnsignedByte>(28),
 
-        /* Second attribute */
+        /* Second vertex */
+        0.3f, 0.1f, 0.5f,
+            0.4f, 0.0f, -0.9f,
+                1.0f, -0.5f
+    };
+
+    const Float indexedVertexDataBaseVertex[] = {
+        0.0f, 0.0f, /* Offset */
+
+        /* First vertex */
+        0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+                0.0f, 0.0f,
+
+        /* Second vertex */
+        0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+                0.0f, 0.0f,
+
+        /* Third vertex */
+        Math::normalize<Float, UnsignedByte>(64),
+            Math::normalize<Float, UnsignedByte>(17),
+                Math::normalize<Float, UnsignedByte>(56),
+        Math::normalize<Float, UnsignedByte>(15),
+            Math::normalize<Float, UnsignedByte>(164),
+                Math::normalize<Float, UnsignedByte>(17),
+        Math::normalize<Float, UnsignedByte>(97),
+            Math::normalize<Float, UnsignedByte>(28),
+
+        /* Fourth vertex */
         0.3f, 0.1f, 0.5f,
             0.4f, 0.0f, -0.9f,
                 1.0f, -0.5f
@@ -1151,11 +1228,19 @@ IndexChecker::IndexChecker(Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
-    mesh.setIndexCount(2)
-        .setPrimitive(MeshPrimitive::Points);
+    mesh.setPrimitive(MeshPrimitive::Points)
+        .setCount(2);
 
     /* Skip first vertex so we test also offsets */
-    MeshView(mesh).setIndexRange(1, 1).draw(MultipleShader{});
+    MeshView(mesh)
+        .setCount(1)
+        .setBaseVertex(mesh.baseVertex())
+        .setInstanceCount(mesh.instanceCount())
+        #ifndef MAGNUM_TARGET_GLES
+        .setBaseInstance(mesh.baseInstance())
+        #endif
+        .setIndexRange(1)
+        .draw(MultipleShader{});
 }
 
 Color4ub IndexChecker::get() {
@@ -1232,6 +1317,361 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void MeshGLTest::setBaseVertex() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+
+    Buffer vertices;
+    vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setBaseVertex(2)
+        .addVertexBuffer(vertices, 2*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = IndexChecker(mesh).get();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+#endif
+
+void MeshGLTest::setInstanceCount() {
+    /* Verbatim copy of addVertexBufferFloat() with added extension check and
+       setInstanceCount() call. It would just render three times the same
+       value. I'm too lazy to invent proper test case, so I'll just check that
+       it didn't generate any error and rendered something */
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_instanced>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_instanced>())
+        CORRADE_SKIP("Required extension is not available.");
+    #endif
+
+    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+
+    const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBuffer(buffer, 4, Attribute());
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 96);
+}
+
+void MeshGLTest::setInstanceCountIndexed() {
+    /* Verbatim copy of setIndexBuffer() with added extension check and
+       setInstanceCount() call. It would just render three times the same
+       value. I'm too lazy to invent proper test case, so I'll just check that
+       it didn't generate any error and rendered something */
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_instanced>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_instanced>())
+        CORRADE_SKIP("Required extension is not available.");
+    #endif
+
+    Buffer vertices;
+    vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = IndexChecker(mesh).get();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void MeshGLTest::setInstanceCountBaseInstance() {
+    /* Verbatim copy of setInstanceCount() with additional extension check and
+       setBaseInstance() call. It would just render three times the same
+       value. I'm too lazy to invent proper test case, so I'll just check that
+       it didn't generate any error and rendered something */
+
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::base_instance>())
+        CORRADE_SKIP(Extensions::GL::ARB::base_instance::string() + std::string(" is not available."));
+
+    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+
+    const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .setBaseInstance(72)
+        .addVertexBuffer(buffer, 4, Attribute());
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 96);
+}
+
+void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
+    /* Verbatim copy of setInstanceCountIndexed() with additional extension
+       check and setBaseInstance() call. It would just render three times the
+       same value. I'm too lazy to invent proper test case, so I'll just check
+       that it didn't generate any error and rendered something */
+
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::base_instance>())
+        CORRADE_SKIP(Extensions::GL::ARB::base_instance::string() + std::string(" is not available."));
+
+    Buffer vertices;
+    vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .setBaseInstance(72)
+        .addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = IndexChecker(mesh).get();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+
+void MeshGLTest::setInstanceCountBaseVertex() {
+    /* Verbatim copy of setBaseVertex() with additional extension check and
+       setInstanceCount() call. It would just render three times the same
+       value. I'm too lazy to invent proper test case, so I'll just check
+       that it didn't generate any error and rendered something */
+
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+
+    Buffer vertices;
+    vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setBaseVertex(2)
+        .setInstanceCount(3)
+        .addVertexBuffer(vertices, 2*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = IndexChecker(mesh).get();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+
+void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
+    /* Verbatim copy of setInstanceCountBaseVertex() with added extension check
+       and setBaseInstance() call. It would just render three times the same
+       value. I'm too lazy to invent proper test case, so I'll just check
+       that it didn't generate any error and rendered something */
+
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::base_instance>())
+        CORRADE_SKIP(Extensions::GL::ARB::base_instance::string() + std::string(" is not available."));
+
+    Buffer vertices;
+    vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setBaseVertex(2)
+        .setInstanceCount(3)
+        .setBaseInstance(72)
+        .addVertexBuffer(vertices, 2*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = IndexChecker(mesh).get();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+#endif
+
+void MeshGLTest::addVertexBufferInstancedFloat() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::instanced_arrays>())
+        CORRADE_SKIP("Required instancing extension is not available.");
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_instanced>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_instanced>())
+        CORRADE_SKIP("Required drawing extension is not available.");
+    #endif
+
+    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+
+    const Float data[] = {
+        0.0f,   /* Offset */
+                /* Base vertex is ignored for instanced arrays */
+        -0.7f,  /* First instance */
+        0.3f,   /* Second instance */
+        Math::normalize<Float, UnsignedByte>(96) /* Third instance */
+    };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBufferInstanced(buffer, 1, 4, Attribute{});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 96);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::addVertexBufferInstancedInteger() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+        CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
+    #endif
+
+    typedef AbstractShaderProgram::Attribute<0, UnsignedInt> Attribute;
+
+    constexpr UnsignedInt data[] = {
+        0,      /* Offset */
+                /* Base vertex is ignored for instanced arrays */
+        157,    /* First instance */
+        25,     /* Second instance */
+        35681   /* Third instance */
+    };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBufferInstanced(buffer, 1, 4, Attribute{});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh)
+        .get<UnsignedInt>(ColorFormat::RedInteger, ColorType::UnsignedInt);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 35681);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void MeshGLTest::addVertexBufferInstancedDouble() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
+        CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
+
+    typedef AbstractShaderProgram::Attribute<0, Double> Attribute;
+
+    const Double data[] = {
+        0.0,    /* Offset */
+                /* Base vertex is ignored for instanced arrays */
+        -0.7,   /* First instance */
+        0.3,    /* Second instance */
+        Math::normalize<Double, UnsignedShort>(45828) /* Third instance */
+    };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBufferInstanced(buffer, 1, 8, Attribute{});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(DoubleShader("double", "float", "vec4(value, 0.0, 0.0, 0.0)"),
+        RenderbufferFormat::R16, mesh).get<UnsignedShort>(ColorFormat::Red, ColorType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 45828);
+}
+#endif
 
 }}
 

@@ -76,9 +76,10 @@ which intersects one of the six sides of the cube map. See
 @ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTextureArray,
-    @ref Texture, @ref BufferTexture
+    @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
+    @ref MultisampleTexture
 */
-class CubeMapTexture: public AbstractTexture {
+class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
     public:
         /** @brief Cube map coordinate */
         enum class Coordinate: GLenum {
@@ -89,6 +90,15 @@ class CubeMapTexture: public AbstractTexture {
             PositiveZ = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,     /**< +Z cube side */
             NegativeZ = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z      /**< -Z cube side */
         };
+
+        /**
+         * @brief Max supported size of one side of cube map texture
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @fn_gl{Get} with @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}
+         */
+        static Vector2i maxSize();
 
         /**
          * @brief Constructor
@@ -134,6 +144,28 @@ class CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setMinLod() */
+        CubeMapTexture& setMinLod(Float lod) {
+            AbstractTexture::setMinLod(lod);
+            return *this;
+        }
+
+        /** @copydoc Texture::setMaxLod() */
+        CubeMapTexture& setMaxLod(Float lod) {
+            AbstractTexture::setMaxLod(lod);
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setLodBias() */
+        CubeMapTexture& setLodBias(Float bias) {
+            AbstractTexture::setLodBias(bias);
+            return *this;
+        }
+        #endif
+
         /** @copydoc Texture::setWrapping() */
         CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(*this, wrapping);
@@ -166,6 +198,48 @@ class CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc Texture::setSwizzle() */
+        template<char r, char g, char b, char a> CubeMapTexture& setSwizzle() {
+            AbstractTexture::setSwizzle<r, g, b, a>();
+            return *this;
+        }
+        #endif
+
+        /**
+         * @copybrief Texture::setCompareMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareMode() for more information.
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         *      @es_extension{NV,shadow_samplers_cube}
+         */
+        CubeMapTexture& setCompareMode(Sampler::CompareMode mode) {
+            AbstractTexture::setCompareMode(mode);
+            return *this;
+        }
+
+        /**
+         * @copybrief Texture::setCompareFunction()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompareFunction() for more information.
+         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         *      @es_extension{NV,shadow_samplers_cube}
+         */
+        CubeMapTexture& setCompareFunction(Sampler::CompareFunction function) {
+            AbstractTexture::setCompareFunction(function);
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @copydoc Texture::setDepthStencilMode() */
+        CubeMapTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+            AbstractTexture::setDepthStencilMode(mode);
+            return *this;
+        }
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief %Image size in given mip level
@@ -184,6 +258,7 @@ class CubeMapTexture: public AbstractTexture {
          * @brief Set storage
          *
          * See @ref Texture::setStorage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTexture& setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
             DataHelper<2>::setStorage(*this, _target, levels, internalFormat, size);
@@ -230,6 +305,7 @@ class CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setImage() for more information.
+         * @see @ref maxSize()
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
             DataHelper<2>::setImage(*this, GLenum(coordinate), level, internalFormat, image);

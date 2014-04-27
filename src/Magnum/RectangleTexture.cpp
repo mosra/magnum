@@ -23,39 +23,28 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "MeshView.h"
+#include "RectangleTexture.h"
 
-#include "Magnum/Mesh.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
+#include "Implementation/State.h"
+#include "Implementation/TextureState.h"
 
 namespace Magnum {
 
-MeshView& MeshView::setIndexRange(Int first) {
-    _indexOffset = _original->_indexOffset + first*_original->indexSize();
-    return *this;
+Vector2i RectangleTexture::maxSize() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        return {};
+
+    GLint& value = Context::current()->state().texture->maxRectangleSize;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &value);
+
+    return Vector2i{value};
 }
 
-void MeshView::draw(AbstractShaderProgram& shader) {
-    shader.use();
-
-    #ifndef MAGNUM_TARGET_GLES
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-    #else
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-    #endif
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void MeshView::draw() {
-    #ifndef MAGNUM_TARGET_GLES
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-    #else
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-    #endif
 }
 #endif
-
-}

@@ -41,50 +41,53 @@ template<> constexpr Mesh::IndexType indexType<UnsignedByte>() { return Mesh::In
 template<> constexpr Mesh::IndexType indexType<UnsignedShort>() { return Mesh::IndexType::UnsignedShort; }
 template<> constexpr Mesh::IndexType indexType<UnsignedInt>() { return Mesh::IndexType::UnsignedInt; }
 
-template<class T> inline std::tuple<std::size_t, Mesh::IndexType, Containers::Array<char>> compress(const std::vector<UnsignedInt>& indices) {
+template<class T> inline std::pair<Containers::Array<char>, Mesh::IndexType> compress(const std::vector<UnsignedInt>& indices) {
     Containers::Array<char> buffer(indices.size()*sizeof(T));
     for(std::size_t i = 0; i != indices.size(); ++i) {
         T index = static_cast<T>(indices[i]);
         std::memcpy(buffer.begin()+i*sizeof(T), &index, sizeof(T));
     }
 
-    return std::make_tuple(indices.size(), indexType<T>(), std::move(buffer));
+    return {std::move(buffer), indexType<T>()};
 }
 
-std::tuple<std::size_t, Mesh::IndexType, Containers::Array<char>> compressIndicesInternal(const std::vector<UnsignedInt>& indices, UnsignedInt max) {
-    switch(Math::log(256, max)) {
+}
+
+std::tuple<Containers::Array<char>, Mesh::IndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
+    /** @todo Performance hint when range can be represented by smaller value? */
+    auto minmax = std::minmax_element(indices.begin(), indices.end());
+    std::pair<Containers::Array<char>, Mesh::IndexType> typeData;
+    switch(Math::log(256, *minmax.second)) {
         case 0:
-            return compress<UnsignedByte>(indices);
+            typeData = compress<UnsignedByte>(indices);
+            break;
         case 1:
-            return compress<UnsignedShort>(indices);
+            typeData = compress<UnsignedShort>(indices);
+            break;
         case 2:
         case 3:
-            return compress<UnsignedInt>(indices);
+            typeData = compress<UnsignedInt>(indices);
+            break;
 
         default:
-            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << max << "elements.", {});
+            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << *minmax.second << "elements.", {});
     }
+
+    return std::make_tuple(std::move(typeData.first), typeData.second, *minmax.first, *minmax.second);
 }
 
-}
-
-std::tuple<std::size_t, Mesh::IndexType, Containers::Array<char>> compressIndices(const std::vector<UnsignedInt>& indices) {
-    return compressIndicesInternal(indices, *std::max_element(indices.begin(), indices.end()));
-}
-
+#ifdef MAGNUM_BUILD_DEPRECATED
 void compressIndices(Mesh& mesh, Buffer& buffer, BufferUsage usage, const std::vector<UnsignedInt>& indices) {
-    auto minmax = std::minmax_element(indices.begin(), indices.end());
-
-    /** @todo Performance hint when range can be represented by smaller value? */
-
-    std::size_t indexCount;
-    Mesh::IndexType indexType;
     Containers::Array<char> data;
-    std::tie(indexCount, indexType, data) = compressIndicesInternal(indices, *minmax.second);
+    Mesh::IndexType type;
+    UnsignedInt start, end;
+    std::tie(data, type, start, end) = compressIndices(indices);
 
-    mesh.setIndexCount(indices.size())
-        .setIndexBuffer(buffer, 0, indexType, *minmax.first, *minmax.second);
     buffer.setData(data, usage);
+
+    mesh.setCount(indices.size())
+        .setIndexBuffer(buffer, 0, type, start, end);
 }
+#endif
 
 }}

@@ -72,14 +72,14 @@ CMake.
 
 ## Bootstrap application
 
-Fully contained base application using @ref GlutApplication for desktop build
+Fully contained base application using @ref Sdl2Application for desktop build
 and @ref NaClApplication for Native Client build along with full HTML markup
 and CMake setup is available in `base-nacl` branch of
 [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
 download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-nacl.tar.gz)
 or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-nacl.zip) file.
 After extracting the downloaded archive, you can do the desktop build in the
-same way as with @ref GlutApplication. For the Native Client build you also
+same way as with @ref Sdl2Application. For the Native Client build you also
 need to put the contents of toolchains repository from https://github.com/mosra/toolchains
 in `toolchains/` subdirectory. Don't forget to adapt `NACL_PREFIX` variable in
 `toolchains/generic/NaCl-newlib-x86-32.cmake` and

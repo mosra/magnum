@@ -319,6 +319,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * See @ref read(const Vector2i&, const Vector2i&, Image2D&) for more
          * information.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
+         * @todo Make it more flexible (usable with
+         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage);
         #endif

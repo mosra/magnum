@@ -45,7 +45,7 @@ surface.
 
 When you are using only the default framebuffer, the usage is simple. You
 must ensure that it is properly resized when application surface is resized,
-i.e. you must pass the new size in your @ref Platform::GlutApplication::viewportEvent() "viewportEvent()"
+i.e. you must pass the new size in your @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
 implementation, for example:
 @code
 void viewportEvent(const Vector2i& size) {
@@ -56,7 +56,7 @@ void viewportEvent(const Vector2i& size) {
 @endcode
 
 Next thing you probably want is to clear all used buffers before performing
-any drawing in your @ref Platform::GlutApplication::drawEvent() "drawEvent()"
+any drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation, for example:
 @code
 void drawEvent() {

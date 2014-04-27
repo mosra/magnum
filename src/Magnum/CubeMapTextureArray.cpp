@@ -23,39 +23,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "MeshView.h"
+#include "CubeMapTextureArray.h"
 
-#include "Magnum/Mesh.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+
+#include "Implementation/maxTextureSize.h"
 
 namespace Magnum {
 
-MeshView& MeshView::setIndexRange(Int first) {
-    _indexOffset = _original->_indexOffset + first*_original->indexSize();
-    return *this;
+Vector3i CubeMapTextureArray::maxSize() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        return {};
+
+    return Vector3i{Vector2i{Implementation::maxCubeMapTextureSideSize()},
+                             Implementation::maxTextureArrayLayers()};
 }
 
-void MeshView::draw(AbstractShaderProgram& shader) {
-    shader.use();
-
-    #ifndef MAGNUM_TARGET_GLES
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-    #else
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-    #endif
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void MeshView::draw() {
-    #ifndef MAGNUM_TARGET_GLES
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-    #else
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-    #endif
 }
 #endif
-
-}

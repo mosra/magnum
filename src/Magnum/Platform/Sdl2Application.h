@@ -538,7 +538,7 @@ class Sdl2Application::Configuration {
          * @brief Set window flags
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref WindowFlag::Resizable.
+         * Default are none.
          */
         Configuration& setWindowFlags(WindowFlags flags) {
             _windowFlags = flags;

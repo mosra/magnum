@@ -50,6 +50,18 @@ namespace Magnum {
 Int AbstractTexture::maxLayers() { return Shader::maxCombinedTextureImageUnits(); }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+Float AbstractTexture::maxLodBias() {
+    GLfloat& value = Context::current()->state().texture->maxLodBias;
+
+    /* Get the value, if not already cached */
+    if(value == 0.0f)
+        glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS, &value);
+
+    return value;
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 Int AbstractTexture::maxColorSamples() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
@@ -237,6 +249,22 @@ void AbstractTexture::setMagnificationFilter(const Sampler::Filter filter) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::setMinLod(const Float lod) {
+    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MIN_LOD, lod);
+}
+
+void AbstractTexture::setMaxLod(const Float lod) {
+    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MAX_LOD, lod);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::setLodBias(const Float bias) {
+    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_LOD_BIAS, bias);
+}
+#endif
+
 void AbstractTexture::setBorderColor(const Color4& color) {
     #ifndef MAGNUM_TARGET_GLES
     (this->*Context::current()->state().texture->parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
@@ -258,6 +286,46 @@ void AbstractTexture::setBorderColor(const Vector4i& color) {
 void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::setSwizzleInternal(const GLint r, const GLint g, const GLint b, const GLint a) {
+    #ifndef MAGNUM_TARGET_GLES
+    const GLint rgba[] = {r, g, b, a};
+    (this->*Context::current()->state().texture->parameterivImplementation)(GL_TEXTURE_SWIZZLE_RGBA, rgba);
+    #else
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_R, r);
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_G, g);
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_B, b);
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_A, a);
+    #endif
+}
+#endif
+
+void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_TEXTURE_COMPARE_MODE
+        #else
+        GL_TEXTURE_COMPARE_MODE_EXT
+        #endif
+        , GLenum(mode));
+}
+
+void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_TEXTURE_COMPARE_FUNC
+        #else
+        GL_TEXTURE_COMPARE_FUNC_EXT
+        #endif
+        , GLenum(function));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
+}
+#endif
 
 void AbstractTexture::invalidateImage(const Int level) {
     (this->*Context::current()->state().texture->invalidateImageImplementation)(level);
@@ -692,6 +760,19 @@ void AbstractTexture::parameterImplementationDSA(GLenum parameter, GLfloat value
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLint* values) {
+    bindInternal();
+    glTexParameteriv(_target, parameter, values);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLint* values) {
+    glTextureParameterivEXT(_id, _target, parameter, values);
+}
+#endif
+#endif
+
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLfloat* values) {
     bindInternal();
     glTexParameterfv(_target, parameter, values);
@@ -704,21 +785,21 @@ void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLfloat
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLuint* values) {
+void AbstractTexture::parameterIImplementationDefault(GLenum parameter, const GLuint* values) {
     bindInternal();
     glTexParameterIuiv(_target, parameter, values);
 }
 
-void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLuint* values) {
+void AbstractTexture::parameterIImplementationDSA(GLenum parameter, const GLuint* values) {
     glTextureParameterIuivEXT(_id, _target, parameter, values);
 }
 
-void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLint* values) {
+void AbstractTexture::parameterIImplementationDefault(GLenum parameter, const GLint* values) {
     bindInternal();
     glTexParameterIiv(_target, parameter, values);
 }
 
-void AbstractTexture::parameterImplementationDSA(GLenum parameter, const GLint* values) {
+void AbstractTexture::parameterIImplementationDSA(GLenum parameter, const GLint* values) {
     glTextureParameterIivEXT(_id, _target, parameter, values);
 }
 #endif

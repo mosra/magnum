@@ -40,7 +40,7 @@ Legend:
 
 OpenGL function                        | Matching API
 -------------------------------------- | ------------
-@fn_gl{ActiveShaderProgram}            | |
+@fn_gl{ActiveShaderProgram}            | not needed as @fn_gl{ProgramUniform} calls are used
 @fn_gl{ActiveTexture}                  | @ref AbstractTexture::bind()
 @fn_gl{AttachShader}                   | @ref AbstractShaderProgram::attachShader()
 @fn_gl{BeginConditionalRender}, `glEndConditionalRender()` | @ref SampleQuery::beginConditionalRender(), \n @ref SampleQuery::endConditionalRender()
@@ -48,25 +48,19 @@ OpenGL function                        | Matching API
 @fn_gl{BeginQueryIndexed}, `glEndQueryIndexed()` | |
 @fn_gl{BeginTransformFeedback}, `glEndTransformFeedback()` | |
 @fn_gl{BindAttribLocation}             | @ref AbstractShaderProgram::bindAttributeLocation()
-@fn_gl{BindBuffer}                     | not needed, handhled internally in @ref Buffer and elsewhere
-@fn_gl{BindBufferBase}                 | |
-@fn_gl{BindBufferRange}                | |
-@fn_gl{BindBuffersBase}                | |
-@fn_gl{BindBuffersRange}               | |
+@fn_gl{BindBuffer}                     | not needed, handled internally in @ref Buffer and elsewhere
+@fn_gl{BindBufferBase}, \n @fn_gl{BindBuffersBase}, \n @fn_gl{BindBufferRange}, \n @fn_gl{BindBuffersRange} | |
 @fn_gl{BindFragDataLocation}           | @ref AbstractShaderProgram::bindFragmentDataLocation()
 @fn_gl{BindFragDataLocationIndexed}    | @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
 @fn_gl{BindFramebuffer}                | @ref Framebuffer::bind()
-@fn_gl{BindImageTexture}               | |
-@fn_gl{BindImageTextures}              | |
+@fn_gl{BindImageTexture}, \n @fn_gl{BindImageTextures} | |
 @fn_gl{BindProgramPipeline}            | |
-@fn_gl{BindRenderbuffer}               | not needed, handhled internally in @ref Renderbuffer
-@fn_gl{BindSampler}                    | |
-@fn_gl{BindSamplers}                   | |
+@fn_gl{BindRenderbuffer}               | not needed, handled internally in @ref Renderbuffer
+@fn_gl{BindSampler}, \n @fn_gl{BindSamplers} | |
 @fn_gl{BindTexture}, \n @fn_gl{BindTextures}, \n @fn_gl_extension{BindMultiTexture,EXT,direct_state_access} | @ref AbstractTexture::bind()
 @fn_gl{BindTransformFeedback}          | |
-@fn_gl{BindVertexArray}                | not needed, handhled internally in @ref Mesh
-@fn_gl{BindVertexBuffer}               | |
-@fn_gl{BindVertexBuffers}              | |
+@fn_gl{BindVertexArray}                | not needed, handled internally in @ref Mesh
+@fn_gl{BindVertexBuffer}, \n @fn_gl{BindVertexBuffers} | |
 @fn_gl{BlendColor}                     | @ref Renderer::setBlendColor()
 @fn_gl{BlendEquation}, \n @fn_gl{BlendEquationSeparate} | @ref Renderer::setBlendEquation()
 @fn_gl{BlendFunc}, \n @fn_gl{BlendFuncSeparate} | @ref Renderer::setBlendFunction()
@@ -109,8 +103,8 @@ OpenGL function                        | Matching API
 @fn_gl{DetachShader}                   | |
 @fn_gl{DispatchCompute}                | |
 @fn_gl{DispatchComputeIndirect}        | |
-@fn_gl{DrawArrays}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements} | @ref Mesh::draw()
-@fn_gl{DrawArraysIndirect}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawElementsIndirect}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance}, \n @fn_gl{DrawRangeElementsBaseVertex} | |
+@fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref Mesh::draw(), \n @ref MeshView::draw()
+@fn_gl{DrawArraysIndirect}, \n @fn_gl{DrawElementsIndirect}, \n @fn_gl{MultiDrawArraysIndirect}, \n @fn_gl{MultiDrawElementsIndirect} | |
 @fn_gl{DrawBuffer}, \n @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}, \n @fn_gl{DrawBuffers}, \n @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access} | @ref DefaultFramebuffer::mapForDraw(), \n @ref Framebuffer::mapForDraw()
 @fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | |
 @fn_gl{Enable}, `glDisable()`          | @ref Renderer::setFeature()
@@ -121,11 +115,10 @@ OpenGL function                        | Matching API
 @fn_gl{FlushMappedBufferRange}, \n @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access} | @ref Buffer::flushMappedRange()
 @fn_gl2{FramebufferParameter,FramebufferParameteri} | |
 @fn_gl{FramebufferRenderbuffer}, \n @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access} | @ref Framebuffer::attachRenderbuffer()
-@fn_gl{FramebufferTexture}             | |
-@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access} | @ref Framebuffer::attachTexture1D()
-@fn_gl2{FramebufferTexture2D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access} | @ref Framebuffer::attachTexture2D()
-@fn_gl2{FramebufferTexture3D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture3D,EXT,direct_state_access} | @ref Framebuffer::attachTexture3D()
-@fn_gl{FramebufferTextureLayer}        | |
+@fn_gl{FramebufferTexture}             | not used, the functions below are used instead for compatibility reasons
+@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}, \n `glFramebufferTexture2D()`, \n `glNamedFramebufferTexture2DEXT()` | @ref Framebuffer::attachTexture()
+@fn_gl2{FramebufferTexture3D,FramebufferTexture} | not used, @fn_gl{FramebufferTextureLayer} has more complete features
+@fn_gl{FramebufferTextureLayer}, \n @fn_gl_extension{NamedFramebufferTextureLayer,EXT,direct_state_access} | @ref Framebuffer::attachTextureLayer()
 @fn_gl{FrontFace}                      | @ref Renderer::setFrontFace()
 @fn_gl{GenBuffers}, @fn_gl{DeleteBuffers} | @ref Buffer constructor and destructor
 @fn_gl{GenFramebuffers}, @fn_gl{DeleteFramebuffers} | @ref Framebuffer constructor and destructor
@@ -178,8 +171,8 @@ OpenGL function                        | Matching API
 @fn_gl{GetSubroutineIndex}             | |
 @fn_gl{GetSubroutineUniformLocation}   | |
 @fn_gl{GetSync}                        | |
-@fn_gl{GetTexImage}, \n @fn_gl_extension{GetTextureImage,EXT,direct_state_access}, \n @fn_gl_extension{GetnTexImage,ARB,robustness} | @ref Texture::image(), \n @ref CubeMapTexture::image(), \n @ref CubeMapTextureArray::image()
-@fn_gl{GetTexLevelParameter}, \n @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access} | @ref Texture::imageSize(), \n @ref CubeMapTexture::imageSize(), \n @ref CubeMapTextureArray::imageSize()
+@fn_gl{GetTexImage}, \n @fn_gl_extension{GetTextureImage,EXT,direct_state_access}, \n @fn_gl_extension{GetnTexImage,ARB,robustness} | @ref Texture::image(), \n @ref TextureArray::image(), \n @ref CubeMapTexture::image(), \n @ref CubeMapTextureArray::image(), \n @ref RectangleTexture::image()
+@fn_gl{GetTexLevelParameter}, \n @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access} | @ref Texture::imageSize(), \n @ref TextureArray::imageSize(), \n @ref CubeMapTexture::imageSize(), \n @ref CubeMapTextureArray::imageSize(), \n @ref RectangleTexture::imageSize()
 @fn_gl{GetTexParameter}                | |
 @fn_gl{GetTransformFeedbackVarying}    | |
 @fn_gl{GetUniform}                     | not queryable, @ref AbstractShaderProgram::setUniform() setter only
@@ -192,8 +185,8 @@ OpenGL function                        | Matching API
 @fn_gl{InvalidateBufferSubData}        | @ref Buffer::invalidateSubData()
 @fn_gl{InvalidateFramebuffer}, \n @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
 @fn_gl{InvalidateSubFramebuffer}, \n @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
-@fn_gl{InvalidateTexImage}             | @ref Texture::invalidateImage(), \n @ref TextureArray::invalidateImage(), \n @ref CubeMapTexture::invalidateImage(), \n @ref CubeMapTextureArray::invalidateImage(), \n @ref MultisampleTexture::invalidateImage(), \n @ref RectangleTexture::invalidateImage()
-@fn_gl{InvalidateTexSubImage}          | @ref Texture::invalidateSubImage(), \n @ref TextureArray::invalidateSubImage(), \n @ref CubeMapTexture::invalidateSubImage(), \n @ref CubeMapTextureArray::invalidateSubImage(), \n @ref MultisampleTexture::invalidateSubImage(), \n @ref RectangleTexture::invalidateSubImage()
+@fn_gl{InvalidateTexImage}             | @ref Texture::invalidateImage(), \n @ref TextureArray::invalidateImage(), \n @ref CubeMapTexture::invalidateImage(), \n @ref CubeMapTextureArray::invalidateImage(), \n @ref RectangleTexture::invalidateImage(), \n @ref MultisampleTexture::invalidateImage()
+@fn_gl{InvalidateTexSubImage}          | @ref Texture::invalidateSubImage(), \n @ref TextureArray::invalidateSubImage(), \n @ref CubeMapTexture::invalidateSubImage(), \n @ref CubeMapTextureArray::invalidateSubImage(), \n @ref RectangleTexture::invalidateSubImage(), \n @ref MultisampleTexture::invalidateSubImage()
 @fn_gl{IsBuffer}, \n @fn_gl{IsFramebuffer}, \n @fn_gl{IsProgram}, \n @fn_gl{IsProgramPipeline}, \n @fn_gl{IsQuery}, \n @fn_gl{IsRenderbuffer}, \n @fn_gl{IsSampler}, \n @fn_gl{IsShader}, \n @fn_gl{IsSync}, \n @fn_gl{IsTexture}, \n @fn_gl{IsTransformFeedback}, \n @fn_gl{IsVertexArray} | not needed, objects are strongly typed
 @fn_gl{IsEnabled}                      | not queryable, @ref Renderer::setFeature() setter only
 @fn_gl{LineWidth}                      | @ref Renderer::setLineWidth()
@@ -203,7 +196,8 @@ OpenGL function                        | Matching API
 @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}, @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub} | @ref Buffer::mapSub(), @ref Buffer::unmapSub()
 @fn_gl{MemoryBarrier}                  | |
 @fn_gl{MinSampleShading}               | |
-@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawArraysIndirect}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex}, \n @fn_gl{MultiDrawElementsIndirect} | |
+@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements} | |
+@fn_gl{MultiDrawElementsBaseVertex}    | |
 @fn_gl{ObjectLabel}, \n @fn_gl{ObjectPtrLabel}, \n @fn_gl_extension2{LabelObject,EXT,debug_label} | @ref AbstractShaderProgram::setLabel(), \n @ref AbstractQuery::setLabel(), \n @ref AbstractTexture::setLabel(), \n @ref Buffer::setLabel(), \n @ref Framebuffer::setLabel(), \n @ref Mesh::setLabel(), \n @ref Renderbuffer::setLabel(), \n @ref Shader::setLabel()
 @fn_gl{PatchParameter}                 | |
 @fn_gl{PauseTransformFeedback}, @fn_gl{ResumeTransformFeedback} | |
@@ -236,12 +230,12 @@ OpenGL function                        | Matching API
 @fn_gl{StencilMask}, \n @fn_gl{StencilMaskSeparate} | @ref Renderer::setStencilMask()
 @fn_gl{StencilOp}, \n @fn_gl{StencilOpSeparate} | @ref Renderer::setStencilOperation()
 @fn_gl{TexBuffer}, \n @fn_gl_extension{TextureBuffer,EXT,direct_state_access}, \n @fn_gl{TexBufferRange}, \n @fn_gl_extension{TextureBufferRange,EXT,direct_state_access} | @ref BufferTexture::setBuffer()
-@fn_gl{TexImage1D}, \n @fn_gl_extension{TextureImage1D,EXT,direct_state_access} \n @fn_gl{TexImage2D}, \n @fn_gl_extension{TextureImage2D,EXT,direct_state_access}, \n @fn_gl{TexImage3D}, \n @fn_gl_extension{TextureImage3D,EXT,direct_state_access} | @ref Texture::setImage(), \n @ref CubeMapTexture::setImage(), \n @ref CubeMapTextureArray::setImage()
-@fn_gl{TexImage2DMultisample}, \n @fn_gl{TexImage3DMultisample} | |
-@fn_gl{TexParameter}, \n @fn_gl_extension{TextureParameter,EXT,direct_state_access} | @ref Texture::setMinificationFilter(), \n @ref TextureArray::setMinificationFilter(), \n @ref CubeMapTexture::setMinificationFilter(), \n @ref CubeMapTextureArray::setMinificationFilter(), \n @ref RectangleTexture::setMinificationFilter(), \n @ref Texture::setMagnificationFilter(), \n @ref TextureArray::setMagnificationFilter(), \n @ref CubeMapTexture::setMagnificationFilter(), \n @ref CubeMapTextureArray::setMagnificationFilter(), \n @ref RectangleTexture::setMagnificationFilter(), \n @ref Texture::setBorderColor(), \n @ref TextureArray::setBorderColor(), \n @ref CubeMapTexture::setBorderColor(), \n @ref CubeMapTextureArray::setBorderColor(), \n @ref RectangleTexture::setBorderColor(), \n @ref Texture::setMaxAnisotropy(), \n @ref TextureArray::setMaxAnisotropy(), \n @ref CubeMapTexture::setMaxAnisotropy(), \n @ref CubeMapTextureArray::setMaxAnisotropy(), \n @ref RectangleTexture::setMaxAnisotropy(), \n @ref Texture::setWrapping(), \n @ref TextureArray::setWrapping(), \n @ref CubeMapTexture::setWrapping(), \n @ref CubeMapTextureArray::setWrapping(), \n @ref RectangleTexture::setWrapping()
-@fn_gl{TexStorage1D}, \n @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}, \n @fn_gl{TexStorage2D}, \n @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}, \n @fn_gl{TexStorage3D}, \n @fn_gl_extension{TextureStorage3D,EXT,direct_state_access} | @ref Texture::setStorage(), \n @ref CubeMapTexture::setStorage(), \n @ref CubeMapTextureArray::setStorage()
-@fn_gl{TexStorage2DMultisample}, \n @fn_gl{TexStorage3DMultisample} | |
-@fn_gl{TexSubImage1D}, \n @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}, \n @fn_gl{TexSubImage2D}, \n @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}, \n @fn_gl{TexSubImage3D}, \n @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access} | @ref Texture::setSubImage(), \n @ref CubeMapTexture::setSubImage(), \n @ref CubeMapTextureArray::setSubImage()
+@fn_gl{TexImage1D}, \n @fn_gl_extension{TextureImage1D,EXT,direct_state_access} \n @fn_gl{TexImage2D}, \n @fn_gl_extension{TextureImage2D,EXT,direct_state_access}, \n @fn_gl{TexImage3D}, \n @fn_gl_extension{TextureImage3D,EXT,direct_state_access} | @ref Texture::setImage(), \n @ref TextureArray::setImage(), \n @ref CubeMapTexture::setImage(), \n @ref CubeMapTextureArray::setImage(), \n @ref RectangleTexture::setImage()
+@fn_gl{TexImage2DMultisample}, \n @fn_gl{TexImage3DMultisample} | @ref MultisampleTexture::setStorage()
+@fn_gl{TexParameter}, \n @fn_gl_extension{TextureParameter,EXT,direct_state_access} | @ref Texture::setBaseLevel() "*Texture::setBaseLevel()", \n @ref Texture::setMaxLevel() "*Texture::setMaxLevel()", \n @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()", \n @ref Texture::setMagnificationFilter() "*Texture::setMagnificationFilter()", \n @ref Texture::setMinLod() "*Texture::setMinLod()", \n @ref Texture::setMaxLod() "*Texture::setMaxLod()", \n @ref Texture::setLodBias() "*Texture::setLodBias()", \n @ref Texture::setWrapping() "*Texture::setWrapping()", \n @ref Texture::setBorderColor() "*Texture::setBorderColor()", \n @ref Texture::setMaxAnisotropy() "*Texture::setMaxAnisotropy()", \n @ref Texture::setSwizzle() "*Texture::setSwizzle()", \n @ref Texture::setCompareMode() "*Texture::setCompareMode()", \n @ref Texture::setCompareFunction() "*Texture::setCompareFunction()", \n @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
+@fn_gl{TexStorage1D}, \n @fn_gl_extension{TextureStorage1D,EXT,direct_state_access}, \n @fn_gl{TexStorage2D}, \n @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}, \n @fn_gl{TexStorage3D}, \n @fn_gl_extension{TextureStorage3D,EXT,direct_state_access} | @ref Texture::setStorage(), \n @ref TextureArray::setStorage(), \n @ref CubeMapTexture::setStorage(), \n @ref CubeMapTextureArray::setStorage(), \n @ref RectangleTexture::setStorage()
+@fn_gl{TexStorage2DMultisample}, \n @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access}, \n @fn_gl{TexStorage3DMultisample}, \n @fn_gl_extension{TextureStorage3DMultisample,EXT,direct_state_access} | @ref MultisampleTexture::setStorage()
+@fn_gl{TexSubImage1D}, \n @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access}, \n @fn_gl{TexSubImage2D}, \n @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}, \n @fn_gl{TexSubImage3D}, \n @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access} | @ref Texture::setSubImage(), \n @ref TextureArray::setSubImage(), \n @ref CubeMapTexture::setSubImage(), \n @ref CubeMapTextureArray::setSubImage(), \n @ref RectangleTexture::setSubImage()
 @fn_gl{TextureView}                    | |
 @fn_gl{TransformFeedbackVaryings}      | |
 @fn_gl{Uniform}, \n @fn_gl{ProgramUniform}, \n @fn_gl_extension{ProgramUniform,EXT,direct_state_access} | @ref AbstractShaderProgram::setUniform()
@@ -253,7 +247,7 @@ OpenGL function                        | Matching API
 @fn_gl{ValidateProgramPipeline}        | |
 @fn_gl{VertexAttrib}                   | not supported (@ref opengl-unsupported "details")
 @fn_gl{VertexAttribBinding}            | |
-@fn_gl{VertexAttribDivisor}            | |
+@fn_gl{VertexAttribDivisor}, \n @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access} | @ref Mesh::addVertexBufferInstanced()
 @fn_gl{VertexAttribFormat}             | |
 @fn_gl{VertexAttribPointer}, \n @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access} | @ref Mesh::addVertexBuffer()
 @fn_gl{VertexBindingDivisor}           | |
@@ -303,7 +297,7 @@ OpenGL function                        | Matching API
 `GL_MAX_*_UNIFORM_BLOCKS`, \n @def_gl{MAX_COMBINED_UNIFORM_BLOCKS} | @ref Shader::maxUniformBlocks(), \n @ref Shader::maxCombinedUniformBlocks()
 `GL_MAX_*_UNIFORM_COMPONENTS`, \n @def_gl{MAX_VERTEX_UNIFORM_VECTORS}, \n @def_gl{MAX_FRAGMENT_UNIFORM_VECTORS} | @ref Shader::maxUniformComponents()
 `GL_MAX_COMBINED_*_UNIFORM_COMPONENTS` | @ref Shader::maxCombinedUniformComponents()
-@def_gl{MAX_3D_TEXTURE_SIZE}, \n @def_gl{MAX_ARRAY_TEXTURE_LAYERS}, \n @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}, \n @def_gl{MAX_RECTANGLE_TEXTURE_SIZE}, \n @def_gl{MAX_TEXTURE_SIZE} | |
+@def_gl{MAX_3D_TEXTURE_SIZE}, \n @def_gl{MAX_ARRAY_TEXTURE_LAYERS}, \n @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}, \n @def_gl{MAX_RECTANGLE_TEXTURE_SIZE}, \n @def_gl{MAX_TEXTURE_SIZE} | @ref Texture::maxSize(), \n @ref TextureArray::maxSize(), \n @ref CubeMapTexture::maxSize(), \n @ref CubeMapTextureArray::maxSize(), \n @ref RectangleTexture::maxSize(), \n @ref BufferTexture::maxSize(), \n @ref MultisampleTexture::maxSize()
 @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE} | @ref AbstractShaderProgram::maxAtomicCounterBufferSize()
 @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS} | @ref Buffer::maxAtomicCounterBindings()
 @def_gl{MAX_COLOR_ATTACHMENTS}         | @ref Framebuffer::maxColorAttachments()
@@ -337,7 +331,7 @@ OpenGL function                        | Matching API
 @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS} | @ref Buffer::maxShaderStorageBindings()
 @def_gl{MAX_TEXTURE_BUFFER_SIZE}       | |
 @def_gl_extension{MAX_TEXTURE_MAX_ANISOTROPY,EXT,texture_filter_anisotropic} | @ref Sampler::maxMaxAnisotropy()
-@def_gl{MAX_TEXTURE_LOD_BIAS}          | |
+@def_gl{MAX_TEXTURE_LOD_BIAS}          | @ref AbstractTexture::maxLodBias()
 @def_gl{MAX_UNIFORM_BLOCK_SIZE}        | @ref AbstractShaderProgram::maxUniformBlockSize()
 @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}   | @ref Buffer::maxUniformBindings()
 @def_gl{MAX_UNIFORM_LOCATIONS}         | @ref AbstractShaderProgram::maxUniformLocations()
