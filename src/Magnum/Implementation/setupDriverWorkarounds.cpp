@@ -77,6 +77,7 @@ void Context::setupDriverWorkarounds() {
     #endif
     _setRequiredVersion(GL::EXT::texture_storage, None);
     _setRequiredVersion(GL::EXT::map_buffer_range, None);
+    _setRequiredVersion(GL::EXT::instanced_arrays, None);
     _setRequiredVersion(GL::EXT::draw_instanced, None);
     _setRequiredVersion(GL::NV::draw_buffers, None);
     _setRequiredVersion(GL::NV::fbo_color_attachments, None); // ??
@@ -84,6 +85,7 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::NV::draw_instanced, None);
     _setRequiredVersion(GL::NV::framebuffer_blit, None);
     _setRequiredVersion(GL::NV::framebuffer_multisample, None);
+    _setRequiredVersion(GL::NV::instanced_arrays, None);
     _setRequiredVersion(GL::OES::texture_3D, None);
     _setRequiredVersion(GL::OES::vertex_array_object, None);
     #endif

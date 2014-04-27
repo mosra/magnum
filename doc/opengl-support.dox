@@ -107,7 +107,7 @@ following:
 
 %Extension                                   | Status
 -------------------------------------------- | ------
-@extension{ARB,instanced_arrays}             | |
+@extension{ARB,instanced_arrays}             | done
 @extension{ARB,blend_func_extended}          | missing limit query
 @extension{ARB,explicit_attrib_location}     | done (shading language only)
 @extension{ARB,occlusion_query2}             | done
@@ -243,7 +243,7 @@ supported.
 -------------------------------------------- | ------
 @es_extension{ANGLE,framebuffer_blit}        | done
 @es_extension{ANGLE,framebuffer_multisample} | done
-@es_extension{ANGLE,instanced_arrays}        | missing vertex attrib divisor
+@es_extension{ANGLE,instanced_arrays}        | done
 @es_extension{ANGLE,depth_texture}           | done
 @es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
 @es_extension{APPLE,texture_max_level}       | done
@@ -257,6 +257,7 @@ supported.
 @es_extension{EXT,texture_rg}                | done
 @es_extension{EXT,texture_storage}           | done
 @es_extension{EXT,map_buffer_range}          | done
+@es_extension{EXT,instanced_arrays}          | done
 @es_extension2{EXT,draw_instanced,draw_instanced} | done
 @es_extension{NV,draw_buffers}               | done
 @es_extension{NV,fbo_color_attachments}      | done
@@ -264,6 +265,7 @@ supported.
 @es_extension{NV,draw_instanced}             | done
 @es_extension{NV,framebuffer_blit}           | done
 @es_extension{NV,framebuffer_multisample}    | done
+@es_extension{NV,instanced_arrays}           | done
 @es_extension{NV,shadow_samplers_array}      | done (shading language only)
 @es_extension{NV,shadow_samplers_cube}       | done (shading language only)
 @es_extension{OES,depth24}                   | done

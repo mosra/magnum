@@ -117,6 +117,24 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         drawArraysInstancedImplementation = nullptr;
         drawElementsInstancedImplementation = nullptr;
     }
+
+    /* Instanced arrays implementation on ES2 */
+    if(context.isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>()) {
+        /* Extension added above */
+
+        vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationANGLE;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::instanced_arrays>()) {
+        extensions.push_back(Extensions::GL::EXT::instanced_arrays::string());
+
+        vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationEXT;
+
+    } else if(context.isExtensionSupported<Extensions::GL::NV::instanced_arrays>()) {
+        extensions.push_back(Extensions::GL::NV::instanced_arrays::string());
+
+        vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationNV;
+
+    } else vertexAttribDivisorImplementation = nullptr;
     #endif
 }
 

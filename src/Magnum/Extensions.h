@@ -255,6 +255,7 @@ namespace GL {
         #endif
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
         #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,instanced_arrays,         GLES200, GLES300) // #156
         _extension(GL,EXT,draw_instanced,           GLES200, GLES300) // #157
         #endif
         #ifndef MAGNUM_TARGET_GLES2
@@ -276,6 +277,7 @@ namespace GL {
         _extension(GL,NV,draw_instanced,            GLES200, GLES300) // #141
         _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
         _extension(GL,NV,framebuffer_multisample,   GLES200, GLES300) // #143
+        _extension(GL,NV,instanced_arrays,          GLES200, GLES300) // #145
         _extension(GL,NV,shadow_samplers_array,     GLES200, GLES300) // #146
         _extension(GL,NV,shadow_samplers_cube,      GLES200, GLES300) // #147
         #endif

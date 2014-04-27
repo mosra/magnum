@@ -44,6 +44,9 @@ struct MeshState {
     void(Mesh::*attributeLPointerImplementation)(const Mesh::LongAttribute&);
     #endif
     #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    void(Mesh::*vertexAttribDivisorImplementation)(GLuint, GLuint);
+    #endif
     void(Mesh::*bindIndexBufferImplementation)(Buffer&);
     void(Mesh::*bindImplementation)();
     void(Mesh::*unbindImplementation)();

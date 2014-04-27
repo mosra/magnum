@@ -669,7 +669,34 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      if @extension{APPLE,vertex_array_object} is available
          */
         template<class ...T> inline Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
-            addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), attributes...);
+            addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), 0, attributes...);
+            return *this;
+        }
+
+        /**
+         * @brief Add instanced vertex buffer
+         * @return Reference to self (for method chaining)
+         *
+         * Similar to the above function, the @p divisor parameter specifies
+         * number of instances that will pass until new data are fetched from
+         * the buffer. Setting it to `0` is equivalent to calling
+         * @ref addVertexBuffer().
+         * @see @ref maxVertexAttributes(), @ref setPrimitive(),
+         *      @ref setCount(), @ref setInstanceCount(), @ref setBaseInstance(),
+         *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
+         *      @fn_gl{VertexAttribDivisor} or
+         *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
+         *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access},
+         *      @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access}
+         *      if @extension{APPLE,vertex_array_object} is available
+         * @requires_gl33 %Extension @extension{ARB,instanced_arrays}
+         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         *      @es_extension{EXT,instanced_arrays} or
+         *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         */
+        template<class ...T> inline Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
+            addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), divisor, attributes...);
             return *this;
         }
 
@@ -773,6 +800,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             bool normalized;
             GLintptr offset;
             GLsizei stride;
+            GLuint divisor;
         };
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -783,6 +811,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             GLenum type;
             GLintptr offset;
             GLsizei stride;
+            GLuint divisor;
         };
 
         #ifndef MAGNUM_TARGET_GLES
@@ -793,6 +822,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             GLenum type;
             GLintptr offset;
             GLsizei stride;
+            GLuint divisor;
         };
         #endif
         #endif
@@ -808,19 +838,19 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         static GLsizei strideOfInterleaved() { return 0; }
 
         /* Adding interleaved vertex attributes */
-        template<UnsignedInt location, class T, class ...U> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
-            addVertexAttribute(buffer, attribute, offset, stride);
+        template<UnsignedInt location, class T, class ...U> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLuint divisor, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+            addVertexAttribute(buffer, attribute, offset, stride, divisor);
 
             /* Add size of this attribute to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+attribute.vectorSize()*AbstractShaderProgram::Attribute<location, T>::VectorCount, stride, attributes...);
+            addVertexBufferInternal(buffer, offset+attribute.vectorSize()*AbstractShaderProgram::Attribute<location, T>::VectorCount, stride, divisor, attributes...);
         }
-        template<class ...T> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLintptr gap, const T&... attributes) {
+        template<class ...T> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLuint divisor, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+gap, stride, attributes...);
+            addVertexBufferInternal(buffer, offset+gap, stride, divisor, attributes...);
         }
-        void addVertexBufferInternal(Buffer&, GLsizei, GLintptr) {}
+        void addVertexBufferInternal(Buffer&, GLsizei, GLuint, GLintptr) {}
 
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
                 attributePointerInternal(Attribute{
                     &buffer,
@@ -829,24 +859,26 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
                     GLenum(attribute.dataType()),
                     bool(attribute.dataOptions() & AbstractShaderProgram::Attribute<location, T>::DataOption::Normalized),
                     GLintptr(offset+i*attribute.vectorSize()),
-                    stride
+                    stride,
+                    divisor
                 });
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             attributePointerInternal(IntegerAttribute{
                 &buffer,
                 location,
                 GLint(attribute.components()),
                 GLenum(attribute.dataType()),
                 offset,
-                stride
+                stride,
+                divisor
             });
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride) {
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
                 attributePointerInternal(LongAttribute{
                     &buffer,
@@ -854,7 +886,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
                     GLintptr(offset+i*attribute.vectorSize()),
-                    stride
+                    stride,
+                    divisor
                 });
         }
         #endif
@@ -900,6 +933,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL attributePointerImplementationVAO(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDSA(const LongAttribute& attribute);
         void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL vertexAttribDivisorImplementationANGLE(GLuint index, GLuint divisor);
+        void MAGNUM_LOCAL vertexAttribDivisorImplementationEXT(GLuint index, GLuint divisor);
+        void MAGNUM_LOCAL vertexAttribDivisorImplementationNV(GLuint index, GLuint divisor);
         #endif
 
         void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer&);

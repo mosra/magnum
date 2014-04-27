@@ -118,6 +118,14 @@ class MeshGLTest: public AbstractOpenGLTester {
         void setInstanceCountBaseVertex();
         void setInstanceCountBaseVertexBaseInstance();
         #endif
+
+        void addVertexBufferInstancedFloat();
+        #ifndef MAGNUM_TARGET_GLES2
+        void addVertexBufferInstancedInteger();
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void addVertexBufferInstancedDouble();
+        #endif
 };
 
 MeshGLTest::MeshGLTest() {
@@ -191,7 +199,15 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setInstanceCountBaseInstance,
               &MeshGLTest::setInstanceCountBaseInstanceIndexed,
               &MeshGLTest::setInstanceCountBaseVertex,
-              &MeshGLTest::setInstanceCountBaseVertexBaseInstance
+              &MeshGLTest::setInstanceCountBaseVertexBaseInstance,
+              #endif
+
+              &MeshGLTest::addVertexBufferInstancedFloat,
+              #ifndef MAGNUM_TARGET_GLES2
+              &MeshGLTest::addVertexBufferInstancedInteger,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &MeshGLTest::addVertexBufferInstancedDouble
               #endif
               });
 }
@@ -1535,6 +1551,121 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
+}
+#endif
+
+void MeshGLTest::addVertexBufferInstancedFloat() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::instanced_arrays>())
+        CORRADE_SKIP("Required instancing extension is not available.");
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_instanced>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_instanced>())
+        CORRADE_SKIP("Required drawing extension is not available.");
+    #endif
+
+    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+
+    const Float data[] = {
+        0.0f,   /* Offset */
+                /* Base vertex is ignored for instanced arrays */
+        -0.7f,  /* First instance */
+        0.3f,   /* Second instance */
+        Math::normalize<Float, UnsignedByte>(96) /* Third instance */
+    };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBufferInstanced(buffer, 1, 4, Attribute{});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 96);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::addVertexBufferInstancedInteger() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+        CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
+    #endif
+
+    typedef AbstractShaderProgram::Attribute<0, UnsignedInt> Attribute;
+
+    constexpr UnsignedInt data[] = {
+        0,      /* Offset */
+                /* Base vertex is ignored for instanced arrays */
+        157,    /* First instance */
+        25,     /* Second instance */
+        35681   /* Third instance */
+    };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBufferInstanced(buffer, 1, 4, Attribute{});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh)
+        .get<UnsignedInt>(ColorFormat::RedInteger, ColorType::UnsignedInt);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 35681);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void MeshGLTest::addVertexBufferInstancedDouble() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
+        CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
+
+    typedef AbstractShaderProgram::Attribute<0, Double> Attribute;
+
+    const Double data[] = {
+        0.0,    /* Offset */
+                /* Base vertex is ignored for instanced arrays */
+        -0.7,   /* First instance */
+        0.3,    /* Second instance */
+        Math::normalize<Double, UnsignedShort>(45828) /* Third instance */
+    };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setInstanceCount(3)
+        .addVertexBufferInstanced(buffer, 1, 8, Attribute{});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = Checker(DoubleShader("double", "float", "vec4(value, 0.0, 0.0, 0.0)"),
+        RenderbufferFormat::R16, mesh).get<UnsignedShort>(ColorFormat::Red, ColorType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 45828);
 }
 #endif
 
