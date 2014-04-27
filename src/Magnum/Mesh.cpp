@@ -92,7 +92,7 @@ Mesh::~Mesh() {
     (this->*Context::current()->state().mesh->destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _count(other._count)
+Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _count(other._count), _baseVertex{other._baseVertex}
     #ifndef MAGNUM_TARGET_GLES2
     , _indexStart(other._indexStart), _indexEnd(other._indexEnd)
     #endif
@@ -111,6 +111,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     std::swap(_id, other._id);
     std::swap(_primitive, other._primitive);
     std::swap(_count, other._count);
+    std::swap(_baseVertex, other._baseVertex);
     #ifndef MAGNUM_TARGET_GLES2
     std::swap(_indexStart, other._indexStart);
     std::swap(_indexEnd, other._indexEnd);
