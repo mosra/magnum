@@ -44,7 +44,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     maxRectangleSize{}, maxBufferSize{},
     #endif
     maxTextureUnits(0),
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     maxLodBias{0.0f},
     #endif
     maxMaxAnisotropy(0.0f), currentTextureUnit(0)

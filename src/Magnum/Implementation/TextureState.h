@@ -92,7 +92,7 @@ struct TextureState {
         maxBufferSize;
     #endif
     GLint maxTextureUnits;
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     GLfloat maxLodBias;
     #endif
     GLfloat maxMaxAnisotropy;
