@@ -53,7 +53,7 @@ namespace Implementation {
     }
 
     template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxTextureSize();
-    template<> Vector3i maxTextureSize<3>();
+    template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>();
 }
 
 /**
