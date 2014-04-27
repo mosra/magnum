@@ -862,22 +862,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         static void MAGNUM_LOCAL bindVAO(GLuint vao);
 
-        void attributePointerInternal(const Attribute& attribute);
-        #ifndef MAGNUM_TARGET_GLES2
-        void attributePointerInternal(const IntegerAttribute& attribute);
-        #ifndef MAGNUM_TARGET_GLES
-        void attributePointerInternal(const LongAttribute& attribute);
-        #endif
-        #endif
-
-        void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
-        #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_LOCAL vertexAttribPointer(const IntegerAttribute& attribute);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
-        #endif
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES
         void drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd);
         #elif !defined(MAGNUM_TARGET_GLES2)
@@ -892,24 +876,30 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL destroyImplementationDefault();
         void MAGNUM_LOCAL destroyImplementationVAO();
 
+        void attributePointerInternal(const Attribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const Attribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const Attribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL attributePointerImplementationDSA(const Attribute& attribute);
         #endif
+        void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
 
         #ifndef MAGNUM_TARGET_GLES2
+        void attributePointerInternal(const IntegerAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const IntegerAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const IntegerAttribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL attributePointerImplementationDSA(const IntegerAttribute& attribute);
         #endif
+        void MAGNUM_LOCAL vertexAttribPointer(const IntegerAttribute& attribute);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
+        void attributePointerInternal(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDSA(const LongAttribute& attribute);
-        #endif
+        void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
         #endif
 
         void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer&);

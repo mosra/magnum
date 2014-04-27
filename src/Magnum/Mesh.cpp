@@ -297,44 +297,6 @@ void Mesh::bindVAO(GLuint vao) {
     }
 }
 
-void Mesh::attributePointerInternal(const Attribute& attribute) {
-    (this->*Context::current()->state().mesh->attributePointerImplementation)(attribute);
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-void Mesh::attributePointerInternal(const IntegerAttribute& attribute) {
-    (this->*Context::current()->state().mesh->attributeIPointerImplementation)(attribute);
-}
-
-#ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerInternal(const LongAttribute& attribute) {
-    (this->*Context::current()->state().mesh->attributeLPointerImplementation)(attribute);
-}
-#endif
-#endif
-
-void Mesh::vertexAttribPointer(const Attribute& attribute) {
-    glEnableVertexAttribArray(attribute.location);
-    attribute.buffer->bind(Buffer::Target::Array);
-    glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
-}
-
-#ifndef MAGNUM_TARGET_GLES2
-void Mesh::vertexAttribPointer(const IntegerAttribute& attribute) {
-    glEnableVertexAttribArray(attribute.location);
-    attribute.buffer->bind(Buffer::Target::Array);
-    glVertexAttribIPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
-}
-
-#ifndef MAGNUM_TARGET_GLES
-void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
-    glEnableVertexAttribArray(attribute.location);
-    attribute.buffer->bind(Buffer::Target::Array);
-    glVertexAttribLPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
-}
-#endif
-#endif
-
 void Mesh::createImplementationDefault() { _id = 0; }
 
 void Mesh::createImplementationVAO() {
@@ -357,6 +319,10 @@ void Mesh::destroyImplementationVAO() {
     //glDeleteVertexArraysOES(1, &_id);
     CORRADE_INTERNAL_ASSERT(false);
     #endif
+}
+
+void Mesh::attributePointerInternal(const Attribute& attribute) {
+    (this->*Context::current()->state().mesh->attributePointerImplementation)(attribute);
 }
 
 void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
@@ -385,7 +351,17 @@ void Mesh::attributePointerImplementationDSA(const Attribute& attribute) {
 }
 #endif
 
+void Mesh::vertexAttribPointer(const Attribute& attribute) {
+    glEnableVertexAttribArray(attribute.location);
+    attribute.buffer->bind(Buffer::Target::Array);
+    glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+}
+
 #ifndef MAGNUM_TARGET_GLES2
+void Mesh::attributePointerInternal(const IntegerAttribute& attribute) {
+    (this->*Context::current()->state().mesh->attributeIPointerImplementation)(attribute);
+}
+
 void Mesh::attributePointerImplementationDefault(const IntegerAttribute& attribute) {
     _integerAttributes.push_back(attribute);
 }
@@ -402,7 +378,18 @@ void Mesh::attributePointerImplementationDSA(const IntegerAttribute& attribute) 
 }
 #endif
 
+void Mesh::vertexAttribPointer(const IntegerAttribute& attribute) {
+    glEnableVertexAttribArray(attribute.location);
+    attribute.buffer->bind(Buffer::Target::Array);
+    glVertexAttribIPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
+void Mesh::attributePointerInternal(const LongAttribute& attribute) {
+    (this->*Context::current()->state().mesh->attributeLPointerImplementation)(attribute);
+}
+
 void Mesh::attributePointerImplementationDefault(const LongAttribute& attribute) {
     _longAttributes.push_back(attribute);
 }
@@ -416,7 +403,12 @@ void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
 }
-#endif
+
+void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
+    glEnableVertexAttribArray(attribute.location);
+    attribute.buffer->bind(Buffer::Target::Array);
+    glVertexAttribLPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+}
 #endif
 
 void Mesh::bindIndexBufferImplementationDefault(Buffer&) {}
