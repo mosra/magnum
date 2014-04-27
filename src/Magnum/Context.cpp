@@ -316,13 +316,15 @@ Context::Context() {
             "Context: cannot retrieve OpenGL version:" << versionNumberError, );
         #endif
 
+        /* Allow ES2 context on driver that reports ES3 as supported */
         const std::string version = versionString();
         #ifndef MAGNUM_TARGET_GLES
         if(version.compare(0, 4, "2.1 ") == 0)
         #elif defined(MAGNUM_TARGET_WEBGL)
         if(version.find("WebGL 1") != std::string::npos)
         #else
-        if(version.find("OpenGL ES 2.0") != std::string::npos)
+        if(version.find("OpenGL ES 2.0") != std::string::npos ||
+           version.find("OpenGL ES 3.") != std::string::npos)
         #endif
         {
             _majorVersion = 2;
@@ -354,7 +356,7 @@ Context::Context() {
     #elif defined(MAGNUM_TARGET_GLES2)
     if(_version != Version::GLES200)
     #else
-    if(_version != Version::GLES300)
+    if(!isVersionSupported(Version::GLES300))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
