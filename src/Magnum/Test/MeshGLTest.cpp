@@ -1276,6 +1276,9 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::setBaseVertex() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+
     Buffer vertices;
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 

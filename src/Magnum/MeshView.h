@@ -88,6 +88,8 @@ class MAGNUM_EXPORT MeshView {
          *
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Default is `0`.
+         * @requires_gl32 %Extension @extension{ARB,draw_elements_base_vertex}
+         *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
          *      OpenGL ES.
          */
