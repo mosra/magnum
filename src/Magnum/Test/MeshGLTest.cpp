@@ -328,8 +328,8 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
                    "void main() { gl_FragColor = " + conversion + "; }\n");
     #else
     frag.addSource("in mediump " + type + " valueInterpolated;\n"
-                   "out mediump vec4 output;\n"
-                   "void main() { output = " + conversion + "; }\n");
+                   "out mediump vec4 result;\n"
+                   "void main() { result = " + conversion + "; }\n");
     #endif
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
     attachShader(frag);
