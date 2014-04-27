@@ -44,8 +44,8 @@ namespace Implementation {
     template<> inline constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
 
     template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxMultisampleTextureSize();
-    template<> Vector2i maxMultisampleTextureSize<2>();
-    template<> Vector3i maxMultisampleTextureSize<3>();
+    template<> MAGNUM_EXPORT Vector2i maxMultisampleTextureSize<2>();
+    template<> MAGNUM_EXPORT Vector3i maxMultisampleTextureSize<3>();
 }
 
 /**
