@@ -33,10 +33,11 @@ namespace Magnum {
 
 Get latest version from GitHub and install it. Read full guide on
 @ref building "how to download, build and install Magnum" on platform of your
-choice. For our first project we will use GLUT toolkit, don't forget to enable
-it for building using `WITH_GLUTAPPLICATION` CMake parameter. On newer systems,
-Mac OS X and Windows you might want to use SDL2 toolkit instead, it is enabled
-using `WITH_SDL2APPLICATION` CMake parameter.
+choice. For our first project we will use SDL2 toolkit, don't forget to enable
+it for building using `WITH_SDL2APPLICATION` CMake parameter. On older Linux
+distributions which don't have SDL2 in the repositories you might want to use
+GLUT toolkit instead, it is enabled using `WITH_GLUTAPPLICATION` CMake
+parameter.
 
 @section getting-started-bootstrap Download bootstrap project
 
@@ -54,8 +55,8 @@ extract it somewhere. Do it rather than cloning the full repository, as it's
 better to init your own repository from scratch to avoid having the history
 polluted.
 
-If you want to use SDL2 instead of GLUT, download the `base-sdl2` branch
-[archive](https://github.com/mosra/magnum-bootstrap/archive/base-sdl2.zip).
+If you want to use GLUT instead of SDL2, download the `base-glut` branch
+[archive](https://github.com/mosra/magnum-bootstrap/archive/base-glut.zip).
 The code will be slightly different from what is presented below, but the
 changes are only minor (two modified lines and one additional file) and the
 main principles are the same.
@@ -67,6 +68,7 @@ CMake build system, see @ref cmake for more information.
 
     modules/FindCorrade.cmake
     modules/FindMagnum.cmake
+    modules/FindSDL2.cmake
     src/MyApplication.cpp
     src/CMakeLists.txt
     CMakeLists.txt
@@ -86,8 +88,8 @@ add_subdirectory(src)
 @endcode
 
 Directory `modules/` contains CMake modules for finding the needed
-dependencies. Unlike modules for finding e.g. GLUT and OpenGL, which are part
-of standard CMake installation, these aren't part of it and thus must be
+dependencies. Unlike modules for finding e.g. OpenGL, which are part of
+standard CMake installation, these aren't part of it and thus must be
 distributed with the project. These files are just verbatim copied from %Magnum
 repository.
 
@@ -95,7 +97,7 @@ Directory `src/` contains the actual project. To keep things simple, the
 project consists of just one source file with the most minimal code possible:
 @code
 #include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 
 using namespace Magnum;
 
@@ -127,7 +129,7 @@ default (dark gray) color and then does buffer swap to actually display it on
 the screen. `CMakeLists.txt` finds %Magnum, sets up compiler flags, creates the
 executable and links it to all needed libraries:
 @code
-find_package(Magnum REQUIRED GlutApplication)
+find_package(Magnum REQUIRED Sdl2Application)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
@@ -169,8 +171,8 @@ where to create build directory, allows you to specify initial CMake parameters
 everything is ready to be built.
 
 If CMake isn't able to find the dependencies on Windows, you might want to look
-at @ref building-windows. If CMake complains about `GlutApplication` missing,
-you forgot to enable `WITH_GLUTAPPLICATION` when building %Magnum,
+at @ref building-windows. If CMake complains about `Sdl2Application` missing,
+you forgot to enable `WITH_SDL2APPLICATION` when building %Magnum,
 @ref getting-started-download "go back and fix it".
 
 @image html getting-started.png

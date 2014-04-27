@@ -45,12 +45,12 @@ to subclass the chosen `*Application` class and implement required methods.
 @section platform-windowed Windowed applications
 
 Windowed applications provide a window and keyboard and mouse handling. The
-most basic toolkit (and toolkit packaged for most systems) is GLUT, which is
-implemented in @ref Platform::GlutApplication. As said above, the usage is
-similar for all toolkits, you must provide one-argument constructor and
-implement at least @ref GlutApplication::drawEvent() "drawEvent()" function.
-The class can be then used directly in `main()`, but for convenience and
-portability it's better to use @ref MAGNUM_GLUTAPPLICATION_MAIN() macro.
+de-facto standard and most widely used toolkit is SDL2, which is implemented in
+@ref Platform::Sdl2Application. As said above, the usage is similar for all
+toolkits, you must provide one-argument constructor and implement at least
+@ref Sdl2Application::drawEvent() "drawEvent()" function. The class can be then
+used directly in `main()`, but for convenience and portability it's better to
+use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
 
 To simplify the porting, the library provides `Platform::Application` typedef
 and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
@@ -69,7 +69,7 @@ blue color is shown in the following code listing.
 #include <Magnum/Color.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Renderer.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 
 using namespace Magnum;
 
@@ -103,7 +103,7 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 By default the application doesn't respond to window size changes in any way,
 as the window has fixed size in most cases. To respond to size change for
 example by resizing the default framebuffer, you need to reimplement
-@ref GlutApplication::viewportEvent() "viewportEvent()" function and pass the
+@ref Sdl2Application::viewportEvent() "viewportEvent()" function and pass the
 new size to the framebuffer:
 @code
 class MyApplication: public Platform::Application {
@@ -177,19 +177,21 @@ MAGNUM_WINDOWLESSAPPLICATION_MAIN(MyApplication)
 @section platform-compilation Compilation with CMake
 
 Barebone compilation consists just of finding %Magnum library with required
-`*Application` component, adding %Magnum's `${MAGNUM_INCLUDE_DIRS}` and application-specific `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path, compilation of the
-executable and linking `${MAGNUM_LIBRARIES}` and `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`
-to it.
+`*Application` component, adding %Magnum's `${MAGNUM_INCLUDE_DIRS}` and
+application-specific `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path,
+compilation of the executable and linking `${MAGNUM_LIBRARIES}` and
+`${MAGNUM_SDL2APPLICATION_LIBRARIES}` to it.
 
 Again, to simplify porting, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_WAPPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`, `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
+and `${MAGNUM_WAPPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`,
+`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
 only if only one application (windowless application) component is requested to
 avoid ambiguity. Changing the build script to use different toolkit is then
 matter of replacing only the requested `*Application` component (and one
 <tt>#</tt>`include` line in the actual code, as said above).
 
 @code
-find_package(Magnum REQUIRED GlutApplication)
+find_package(Magnum REQUIRED Sdl2Application)
 
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
@@ -203,7 +205,7 @@ target_link_libraries(myapplication
 
 By default the application is created with some reasonable defaults (e.g.
 window size 800x600 pixels). If you want something else, you can pass
-@ref GlutApplication::Configuration "Configuration" instance to application
+@ref Sdl2Application::Configuration "Configuration" instance to application
 constructor. Using method chaining it can be done conveniently like this:
 @code
 MyApplication::MyApplication(int& argc, char** argv):
@@ -217,8 +219,8 @@ MyApplication::MyApplication(int& argc, char** argv):
 
 However, sometimes you would need to configure the application based on some
 configuration file or system introspection. In that case you can pass `nullptr`
-instead of @ref GlutApplication::Configuration "Configuration" instance and
-then specify it later with @ref GlutApplication::createContext() "createContext()":
+instead of @ref Sdl2Application::Configuration "Configuration" instance and
+then specify it later with @ref Sdl2Application::createContext() "createContext()":
 @code
 MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
     // ...
@@ -231,9 +233,9 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc
 }
 @endcode
 
-If the context creation in constructor or @ref GlutApplication::createContext() "createContext()"
+If the context creation in constructor or @ref Sdl2Application::createContext() "createContext()"
 fails, the application exits. However, it is also possible to negotiate the
-context using @ref GlutApplication::tryCreateContext() "tryCreateContext()".
+context using @ref Sdl2Application::tryCreateContext() "tryCreateContext()".
 The only difference is that this function returns `false` instead of exiting.
 You can for example try enabling MSAA and if the context creation fails, fall
 back to no-AA rendering:

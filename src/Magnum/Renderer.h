@@ -145,7 +145,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Multisampling. Enabled by default. Note that the actual presence
              * of this feature in default framebuffer depends on context
-             * configuration, see for example Platform::GlutApplication::Configuration::setSampleCount().
+             * configuration, see for example @ref Platform::Sdl2Application::Configuration::setSampleCount().
              * @requires_gl Always enabled in OpenGL ES.
              */
             Multisampling = GL_MULTISAMPLE,

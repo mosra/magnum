@@ -76,10 +76,10 @@ to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
-        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, const Configuration&) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
-        /** @copydoc Sdl2Application::GlutApplication(const Arguments&, std::nullptr_t) */
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
         explicit GlxApplication(const Arguments& arguments, std::nullptr_t);
 
     protected:

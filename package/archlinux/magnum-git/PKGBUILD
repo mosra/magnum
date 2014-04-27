@@ -6,7 +6,7 @@ pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Git version)"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
-depends=('corrade-git' 'openal' 'freeglut')
+depends=('corrade-git' 'openal' 'sdl2')
 makedepends=('cmake' 'git')
 provides=('magnum')
 conflicts=('magnum')
@@ -40,7 +40,7 @@ build() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_AUDIO=ON \
-        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_SDL2APPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \

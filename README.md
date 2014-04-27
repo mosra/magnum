@@ -49,8 +49,8 @@ Graphics APIs:
 Platforms:
 
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
-    GLUT or SDL2 toolkit)
-*   **Windows** (through GLUT or SDL2 toolkit)
+    SDL2 or GLUT toolkit)
+*   **Windows** (through SDL2 or GLUT toolkit)
 *   **OS X** (through SDL2 toolkit, thanks to [Miguel Martin](https://github.com/miguelishawt))
 *   **Android** 2.3 (API Level 9) and higher
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
@@ -97,13 +97,13 @@ Note that full feature set is available only on GCC 4.8.1 and Clang 3.1.
 Compilation, installation
 -------------------------
 
-The library (for example with support for GLUT applications) can be built and
+The library (for example with support for SDL2 applications) can be built and
 installed using these four commands:
 
     mkdir -p build && cd build
     cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_GLUTAPPLICATION=ON
+        -DWITH_SDL2APPLICATION=ON
     make
     make install
 

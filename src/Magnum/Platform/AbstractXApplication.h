@@ -220,19 +220,19 @@ class AbstractXApplication::Configuration {
             return *this;
         }
 
-        /** @copydoc GlutApplication::Configuration::size() */
+        /** @copydoc Sdl2Application::Configuration::size() */
         Vector2i size() const { return _size; }
 
-        /** @copydoc GlutApplication::Configuration::setSize() */
+        /** @copydoc Sdl2Application::Configuration::setSize() */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
             return *this;
         }
 
-        /** @copydoc GlutApplication::Configuration::version() */
+        /** @copydoc Sdl2Application::Configuration::version() */
         Version version() const { return _version; }
 
-        /** @copydoc GlutApplication::Configuration::setVersion() */
+        /** @copydoc Sdl2Application::Configuration::setVersion() */
         Configuration& setVersion(Version version) {
             _version = version;
             return *this;
