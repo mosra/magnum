@@ -215,8 +215,8 @@ template<class ...T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") v
 Simplified specialization of the above function for only one attribute array,
 equivalent to the following:
 @code
+if(!mesh.isIndexed()) mesh.setCount(attribute.size());
 buffer.setData(attribute, usage);
-if(!mesh.isIndexed()) mesh.setVertexCount(attribute.size());
 @endcode
 */
 template<class T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {

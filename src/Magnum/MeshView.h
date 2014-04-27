@@ -84,11 +84,12 @@ class MAGNUM_EXPORT MeshView {
 
         /**
          * @brief Set base vertex
+         * @return Reference to self (for method chaining)
          *
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Default is `0`.
-         * @requires_gl Desktop OpenGL is required for base vertex
-         *      specification in indexed meshes.
+         * @requires_gl Base vertex cannot be specified for indexed meshes in
+         *      OpenGL ES.
          */
         MeshView& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;

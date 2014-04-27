@@ -503,11 +503,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @brief Set vertex/index count
+         * @return Reference to self (for method chaining)
          *
          * If the mesh is indexed, the value is treated as index count,
-         * otherwise the value is vertex count. Default is `0`. This value is
-         * set automatically by @ref MeshTools::interleave() and
-         * @ref MeshTools::compressIndices() functions.
+         * otherwise the value is vertex count. If set to `0`, no draw commands
+         * are issued when calling @ref draw(). Default is `0`.
          * @see @ref isIndexed()
          */
         Mesh& setCount(Int count) {
@@ -520,11 +520,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @brief Set base vertex
+         * @return Reference to self (for method chaining)
          *
          * Sets number of vertices of which the vertex buffer will be offset
-         * when drawing.
-         * @requires_gl Desktop OpenGL is required for base vertex
-         *      specification in indexed meshes.
+         * when drawing. Default is `0`.
+         * @requires_gl Base vertex cannot be specified for indexed meshes in
+         *      OpenGL ES.
          */
         Mesh& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;
@@ -651,8 +652,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @ref setIndexBuffer(Buffer&, GLintptr, IndexType), as this
          * functionality is not available there.
          * @see @ref maxElementsIndices(), @ref maxElementsVertices(),
-         *      @ref setCount(), @ref isIndexed(),
-         *      @ref MeshTools::compressIndices(), @fn_gl{BindVertexArray},
+         *      @ref setCount(), @ref isIndexed(), @fn_gl{BindVertexArray},
          *      @fn_gl{BindBuffer} (if @extension{APPLE,vertex_array_object} is
          *      available)
          */
