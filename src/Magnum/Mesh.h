@@ -489,7 +489,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is @ref MeshPrimitive::Triangles.
-         * @see @ref setCount()
          */
         Mesh& setPrimitive(MeshPrimitive primitive) {
             _primitive = primitive;
@@ -506,7 +505,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * If the mesh is indexed, the value is treated as index count,
          * otherwise the value is vertex count. If set to `0`, no draw commands
          * are issued when calling @ref draw(). Default is `0`.
-         * @see @ref isIndexed()
+         * @see @ref isIndexed(), @ref setBaseVertex(), @ref setInstanceCount()
          */
         Mesh& setCount(Int count) {
             _count = count;
@@ -522,6 +521,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Default is `0`.
+         * @see @ref setCount(), @ref setBaseInstance()
          * @requires_gl32 %Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
@@ -575,6 +575,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * If set to `1`, non-instanced draw commands are issued when calling
          * @ref draw(). If set to `0`, no draw commands are issued altogether.
          * Default is `1`.
+         * @see @ref setBaseInstance(), @ref setCount(),
+         *      @ref addVertexBufferInstanced()
          * @requires_gl31 %Extension @extension{ARB,draw_instanced}
          * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
@@ -594,6 +596,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is `0`.
+         * @see @ref setInstanceCount(), @ref setBaseVertex()
          * @requires_gl42 %Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES.
          */
@@ -660,8 +663,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      must be at most 255 bytes. This is not required anywhere else,
          *      but doing so may have performance benefits.
          *
-         * @see @ref maxVertexAttributes(), @ref setPrimitive(),
-         *      @ref setCount(), @fn_gl{BindVertexArray},
+         * @see @ref addVertexBufferInstanced(), @ref maxVertexAttributes(),
+         *      @ref setPrimitive(), @ref setCount(), @fn_gl{BindVertexArray},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
