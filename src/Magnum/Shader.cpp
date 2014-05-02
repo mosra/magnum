@@ -677,9 +677,9 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
                 << " shader";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
-                out << ' ' << std::to_string(i);
+                out << " " << std::to_string(i);
                 #else
-                out << ' ' << converter.str();
+                out << " " << converter.str();
                 #endif
             }
             out << " failed with the following message:\n"
@@ -694,9 +694,9 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
                 << " shader";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
-                out << ' ' << std::to_string(i);
+                out << " " << std::to_string(i);
                 #else
-                out << ' ' << converter.str();
+                out << " " << converter.str();
                 #endif
             }
             out << " succeeded with the following message:\n"
