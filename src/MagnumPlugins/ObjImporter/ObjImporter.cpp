@@ -32,11 +32,11 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/String.h>
 
+#include "Magnum/Mesh.h"
+#include "Magnum/MeshTools/CombineIndexedArrays.h"
+#include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/MeshData3D.h"
-#include <Magnum/Mesh.h>
-#include <Magnum/MeshTools/CombineIndexedArrays.h>
-#include <Magnum/MeshTools/Duplicate.h>
 
 namespace Magnum { namespace Trade {
 
