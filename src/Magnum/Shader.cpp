@@ -688,12 +688,12 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
                 #ifndef CORRADE_GCC44_COMPATIBILITY
-                out << ' ' << std::to_string(i);
+                out << " " << std::to_string(i);
                 #else
-                out << ' ' << std::to_string(static_cast<long long int>(i));
+                out << " " << std::to_string(static_cast<long long int>(i));
                 #endif
                 #else
-                out << ' ' << converter.str();
+                out << " " << converter.str();
                 #endif
             }
             out << " failed with the following message:\n"
@@ -709,12 +709,12 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
                 #ifndef CORRADE_GCC44_COMPATIBILITY
-                out << ' ' << std::to_string(i);
+                out << " " << std::to_string(i);
                 #else
-                out << ' ' << std::to_string(static_cast<long long int>(i));
+                out << " " << std::to_string(static_cast<long long int>(i));
                 #endif
                 #else
-                out << ' ' << converter.str();
+                out << " " << converter.str();
                 #endif
             }
             out << " succeeded with the following message:\n"

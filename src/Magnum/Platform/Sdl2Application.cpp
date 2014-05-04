@@ -189,7 +189,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         if(!(window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|flags)))
+            SDL_WINDOW_OPENGL|windowFlags)))
         {
             Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
             return false;
