@@ -38,6 +38,10 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/MeshData3D.h"
 
+#ifdef CORRADE_TARGET_NACL_NEWLIB
+#include <sstream>
+#endif
+
 namespace Magnum { namespace Trade {
 
 struct ObjImporter::File {
@@ -61,10 +65,28 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
     }
 
     Math::Vector<size, Float> output;
-    for(std::size_t i = 0; i != size; ++i)
-        output[i] = std::stof(data[i]);
 
-    if(data.size() == size+1) *extra = std::stof(data.back());
+    #ifdef CORRADE_TARGET_NACL_NEWLIB
+    std::istringstream in;
+    #endif
+
+    for(std::size_t i = 0; i != size; ++i) {
+        #ifndef CORRADE_TARGET_NACL_NEWLIB
+        output[i] = std::stof(data[i]);
+        #else
+        in.str(data[i]);
+        in >> output[i];
+        #endif
+    }
+
+    if(data.size() == size+1) {
+        #ifndef CORRADE_TARGET_NACL_NEWLIB
+        *extra = std::stof(data.back());
+        #else
+        in.str(data.back());
+        in >> *extra;
+        #endif
+    }
 
     return output;
 }
@@ -355,15 +377,36 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
                 }
 
                 /* Position indices */
+                #ifndef CORRADE_TARGET_NACL_NEWLIB
                 positionIndices.push_back(std::stoul(indices[0]) - positionIndexOffset);
+                #else
+                std::istringstream in(indices[0]);
+                UnsignedInt index;
+                in >> index;
+                positionIndices.push_back(index - positionIndexOffset);
+                #endif
 
                 /* Texture coordinates */
-                if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty()))
+                if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty())) {
+                    #ifndef CORRADE_TARGET_NACL_NEWLIB
                     textureCoordinateIndices.push_back(std::stoul(indices[1]) - textureCoordinateIndexOffset);
+                    #else
+                    in.str(indices[1]);
+                    in >> index;
+                    textureCoordinateIndices.push_back(index - textureCoordinateIndexOffset);
+                    #endif
+                }
 
                 /* Normal indices */
-                if(indices.size() == 3)
+                if(indices.size() == 3) {
+                    #ifndef CORRADE_TARGET_NACL_NEWLIB
                     normalIndices.push_back(std::stoul(indices[2]) - normalIndexOffset);
+                    #else
+                    in.str(indices[2]);
+                    in >> index;
+                    normalIndices.push_back(index - normalIndexOffset);
+                    #endif
+                }
             }
 
         /* Ignore unsupported keywords, error out on unknown keywords */
