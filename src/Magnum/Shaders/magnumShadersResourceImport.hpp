@@ -29,9 +29,9 @@
 
 #ifdef MAGNUM_BUILD_STATIC
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Shaders/resourceImport.h"
+#include "Magnum/Shaders/resourceImport.hpp"
 #else
-#error use Magnum/Shaders/resourceImport.h instead
+#error use Magnum/Shaders/resourceImport.hpp instead
 #endif
 #else
 #error this header is available only in static build
