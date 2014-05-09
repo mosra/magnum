@@ -271,7 +271,7 @@ supported.
 @es_extension{OES,depth24}                   | done
 @es_extension{OES,element_index_uint}        | done
 @es_extension{OES,rgb8_rgba8}                | done (desktop-compatible subset)
-@es_extension{OES,texture_3D}                | missing limit query
+@es_extension{OES,texture_3D}                | done
 @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
 @es_extension{OES,texture_float_linear}      | done
 @es_extension2{OES,texture_half_float,OES_texture_float} | done
