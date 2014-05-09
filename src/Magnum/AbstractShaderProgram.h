@@ -560,7 +560,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * everything succeeded. Linker message (if any) is printed to error
          * output. All attached shaders must be compiled with
          * @ref Shader::compile() before linking. The operation is batched in a
-         * way that allows the driver to link multiple shaders simultaenously
+         * way that allows the driver to link multiple shaders simultaneously
          * (i.e. in multiple threads).
          * @see @fn_gl{LinkProgram}, @fn_gl{GetProgram} with
          *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},

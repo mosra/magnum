@@ -433,12 +433,12 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         #endif
 
         /**
-         * @brief Compile multiple shaders simultaenously
+         * @brief Compile multiple shaders simultaneously
          *
          * Returns `false` if compilation of any shader failed, `true` if
          * everything succeeded. Compiler messages (if any) are printed to
          * error output. The operation is batched in a way that allows the
-         * driver to perform multiple compilations simultaenously (i.e. in
+         * driver to perform multiple compilations simultaneously (i.e. in
          * multiple threads).
          * @see @fn_gl{ShaderSource}, @fn_gl{CompileShader}, @fn_gl{GetShader}
          *      with @def_gl{COMPILE_STATUS} and @def_gl{INFO_LOG_LENGTH},
