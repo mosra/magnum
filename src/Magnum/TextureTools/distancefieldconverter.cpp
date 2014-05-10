@@ -52,7 +52,7 @@ class DistanceFieldConverter: public Platform::WindowlessApplication {
         Utility::Arguments args;
 };
 
-DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): WindowlessGlxApplication(arguments, nullptr) {
+DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "TgaImporter").setHelp("image importer plugin")
