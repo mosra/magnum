@@ -28,6 +28,8 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#include "State.h"
+
 namespace Magnum { namespace Implementation {
 
 MeshState::MeshState(Context& context, std::vector<std::string>& extensions): currentVAO(0)
@@ -136,6 +138,10 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
 
     } else vertexAttribDivisorImplementation = nullptr;
     #endif
+}
+
+void MeshState::reset() {
+    currentVAO = State::DisengagedBinding;
 }
 
 }}

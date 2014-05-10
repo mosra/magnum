@@ -138,6 +138,38 @@ class MAGNUM_EXPORT Context {
         };
 
         /**
+         * @brief State to reset
+         *
+         * @see @ref States, @ref resetState()
+         */
+        enum class State: UnsignedInt {
+            /** Reset tracked buffer-related bindings and state */
+            Buffers = 1 << 0,
+
+            /** Reset tracked framebuffer-related bindings and state */
+            Framebuffers = 1 << 1,
+
+            /** Reset tracked mesh-related bindings */
+            Meshes = 1 << 2,
+
+            /** Reset tracked renderer-related state */
+            Renderer = 1 << 3,
+
+            /** Reset tracked shader-related bindings */
+            Shaders = 1 << 4,
+
+            /** Reset tracked texture-related bindings and state */
+            Textures = 1 << 5
+        };
+
+        /**
+         * @brief States to reset
+         *
+         * @see @ref resetState()
+         */
+        typedef Containers::EnumSet<State, UnsignedInt> States;
+
+        /**
          * @brief Context flags
          *
          * @see @ref flags()
@@ -381,6 +413,17 @@ class MAGNUM_EXPORT Context {
         bool isExtensionDisabled(const Extension& extension) const {
             return isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index] && !isVersionSupported(_extensionRequiredVersion[extension._index]);
         }
+
+        /**
+         * @brief Reset internal state tracker
+         * @param states    Tracked states to reset. Default is all state.
+         *
+         * The engine internally tracks object bindings and other state to
+         * avoid redundant OpenGL calls. In some cases (e.g. when non-Magnum
+         * code makes GL calls) the internal tracker no longer reflects actual
+         * state and needs to be reset to avoid strange issues.
+         */
+        void resetState(States states = ~States{});
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         Implementation::State& state() { return *_state; }

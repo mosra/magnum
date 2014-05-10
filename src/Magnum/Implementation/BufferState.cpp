@@ -30,6 +30,8 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#include "State.h"
+
 namespace Magnum { namespace Implementation {
 
 const Buffer::Target BufferState::targetForIndex[] = {
@@ -134,6 +136,10 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     static_cast<void>(context);
     static_cast<void>(extensions);
     #endif
+}
+
+void BufferState::reset() {
+    std::fill_n(bindings, TargetCount, State::DisengagedBinding);
 }
 
 }}

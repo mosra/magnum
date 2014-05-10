@@ -196,7 +196,9 @@ Int AbstractShaderProgram::maxTexelOffset() {
 }
 #endif
 
-AbstractShaderProgram::AbstractShaderProgram(): _id(glCreateProgram()) {}
+AbstractShaderProgram::AbstractShaderProgram(): _id(glCreateProgram()) {
+    CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
+}
 
 AbstractShaderProgram::AbstractShaderProgram(AbstractShaderProgram&& other) noexcept: _id(other._id) {
     other._id = 0;

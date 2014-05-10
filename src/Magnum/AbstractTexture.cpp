@@ -171,6 +171,7 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, std:
 
 AbstractTexture::AbstractTexture(GLenum target): _target(target) {
     glGenTextures(1, &_id);
+    CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 AbstractTexture::~AbstractTexture() {

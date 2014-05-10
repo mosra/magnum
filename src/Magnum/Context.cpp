@@ -45,6 +45,11 @@
 #include "Magnum/Renderer.h"
 
 #include "Implementation/State.h"
+#include "Implementation/BufferState.h"
+#include "Implementation/FramebufferState.h"
+#include "Implementation/MeshState.h"
+#include "Implementation/ShaderProgramState.h"
+#include "Implementation/TextureState.h"
 
 namespace Magnum {
 
@@ -524,6 +529,25 @@ Version Context::supportedVersion(std::initializer_list<Version> versions) const
     #else
     return Version::GLES200;
     #endif
+}
+
+void Context::resetState(const States states) {
+    if(states & State::Buffers)
+        _state->buffer->reset();
+    if(states & State::Framebuffers)
+        _state->framebuffer->reset();
+    if(states & State::Meshes)
+        _state->mesh->reset();
+
+    /* Nothing to reset for renderer yet */
+
+    if(states & State::Shaders) {
+        /* Nothing to reset for shaders */
+        _state->shaderProgram->reset();
+    }
+
+    if(states & State::Textures)
+        _state->texture->reset();
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

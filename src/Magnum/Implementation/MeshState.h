@@ -35,6 +35,8 @@ namespace Magnum { namespace Implementation {
 struct MeshState {
     explicit MeshState(Context& context, std::vector<std::string>& extensions);
 
+    void reset();
+
     void(Mesh::*createImplementation)();
     void(Mesh::*destroyImplementation)();
     void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);

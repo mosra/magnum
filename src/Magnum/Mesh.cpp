@@ -307,6 +307,7 @@ void Mesh::createImplementationVAO() {
     //glGenVertexArraysOES(1, &_id);
     CORRADE_INTERNAL_ASSERT(false);
     #endif
+    CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 void Mesh::destroyImplementationDefault() {}

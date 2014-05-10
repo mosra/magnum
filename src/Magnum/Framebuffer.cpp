@@ -82,6 +82,7 @@ Framebuffer::Framebuffer(const Range2Di& viewport) {
     _viewport = viewport;
 
     glGenFramebuffers(1, &_id);
+    CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 Framebuffer::~Framebuffer() {

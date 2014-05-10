@@ -35,6 +35,8 @@ namespace Magnum { namespace Implementation {
 struct FramebufferState {
     explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
 
+    void reset();
+
     GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
     void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
     void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);

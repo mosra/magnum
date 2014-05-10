@@ -34,6 +34,8 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#include "State.h"
+
 namespace Magnum { namespace Implementation {
 
 TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{}, max3DSize{}, maxCubeMapSize{},
@@ -227,5 +229,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 }
 
 TextureState::~TextureState() = default;
+
+void TextureState::reset() {
+    std::fill_n(bindings.begin(), bindings.size(), std::pair<GLenum, GLuint>{{}, State::DisengagedBinding});
+}
 
 }}
