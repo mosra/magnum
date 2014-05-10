@@ -29,8 +29,6 @@
  * @brief Class @ref Magnum::Platform::WindowlessGlxApplication
  */
 
-#include <utility>
-
 #include "Magnum/OpenGL.h"
 #include <GL/glx.h>
 #include <X11/Xlib.h>

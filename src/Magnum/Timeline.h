@@ -78,7 +78,7 @@ void MyApplication::drawEvent() {
     timeline.nextFrame();
 }
 @endcode
-@todo FPS should be governed by Application (imagine more than one simultaenous
+@todo FPS should be governed by Application (imagine more than one simultaneous
     timeline and the harm it could do, also vsync etc. can't be handled in
     platform-independent way here)
 */

@@ -1,0 +1,59 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=mingw-w64-magnum
+pkgver=dev
+pkgrel=1
+pkgdesc="C++11 and OpenGL 2D/3D graphics engine (mingw-w64)"
+arch=('any')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('mingw-w64-crt' 'mingw-w64-corrade' 'mingw-w64-freeglut' 'mingw-w64-sdl2' 'mingw-w64-openal')
+makedepends=('mingw-w64-gcc' 'cmake' 'ninja' 'corrade')
+options=('!buildflags' '!strip' 'staticlibs')
+
+build() {
+    mkdir -p "$startdir/build-mingw-w64-32"
+    cd "$startdir/build-mingw-w64-32"
+
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw-w64-32.cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32 \
+        -DWITH_AUDIO=ON \
+        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_OBJIMPORTER=ON \
+        -DWITH_SDL2APPLICATION=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -G Ninja
+    ninja
+
+    mkdir -p "$startdir/build-mingw-w64-64"
+    cd "$startdir/build-mingw-w64-64"
+
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw-w64-64.cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/x86_64-w64-mingw32 \
+        -DWITH_AUDIO=ON \
+        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_OBJIMPORTER=ON \
+        -DWITH_SDL2APPLICATION=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -G Ninja
+    ninja
+}
+
+package() {
+  cd "$startdir/build-mingw-w64-32"
+  DESTDIR="$pkgdir/" ninja install/strip
+
+  cd "$startdir/build-mingw-w64-64"
+  DESTDIR="$pkgdir/" ninja install/strip
+}
