@@ -50,10 +50,15 @@
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/TextureArray.h"
 #endif
-#ifndef CORRADE_TARGET_NACL
-#include "Magnum/Platform/WindowlessGlxApplication.h"
-#else
+
+#ifdef CORRADE_TARGET_NACL
 #include "Magnum/Platform/WindowlessNaClApplication.h"
+#elif defined(CORRADE_TARGET_UNIX)
+#include "Magnum/Platform/WindowlessGlxApplication.h"
+#elif defined(CORRADE_TARGET_WINDOWS)
+#include "Magnum/Platform/WindowlessWglApplication.h"
+#else
+#error No windowless application available on this platform
 #endif
 
 namespace Magnum {

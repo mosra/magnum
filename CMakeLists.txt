@@ -75,8 +75,8 @@ if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_ANDROID)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 
-# Magnum Info (currently only using GLX or NaCl)
-if((CORRADE_TARGET_UNIX AND NOT APPLE) OR CORRADE_TARGET_NACL)
+# Magnum Info (currently only using GLX or WGL or on NaCl)
+if((CORRADE_TARGET_UNIX AND NOT APPLE) OR CORRADE_TARGET_NACL OR CORRADE_TARGET_WINDOWS)
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
 
