@@ -80,8 +80,8 @@ if((CORRADE_TARGET_UNIX AND NOT APPLE) OR CORRADE_TARGET_NACL OR CORRADE_TARGET_
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
 
-# Utilities (currently depending on WindowlessGlxApplication)
-if(CORRADE_TARGET_UNIX AND NOT APPLE)
+# Utilities (currently only using GLX or WGL)
+if((CORRADE_TARGET_UNIX AND NOT APPLE) OR CORRADE_TARGET_WINDOWS)
     cmake_dependent_option(WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT TARGET_GLES" OFF)
     cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
 endif()

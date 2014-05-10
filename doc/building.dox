@@ -204,7 +204,7 @@ platform best:
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 
 There are also a few command-line utilities. They are currently available only
-on Linux and are disabled by default:
+on Linux and Windows, also disabled by default:
 
 -   `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
     the engine and OpenGL capabilities.

@@ -49,17 +49,21 @@ endif()
 target_link_libraries(MagnumTextureTools Magnum)
 
 if(WITH_DISTANCEFIELDCONVERTER)
-    if(NOT UNIX OR TARGET_GLES)
-        message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
-    endif()
-
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/distancefieldconverterConfigure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/distancefieldconverterConfigure.h)
 
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
-    target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+
+    if(UNIX AND NOT TARGET_GLES)
+        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+    elseif(WIN32)
+        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessWglApplication Magnum)
+    else()
+        message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
+    endif()
+
     install(TARGETS magnum-distancefieldconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 endif()
 
