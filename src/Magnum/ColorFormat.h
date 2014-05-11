@@ -491,10 +491,10 @@ enum class ColorType: GLenum {
     #endif
 };
 
-/** @debugoperator{ColorFormat} */
+/** @debugoperatorenum{Magnum::ColorFormat} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, ColorFormat value);
 
-/** @debugoperator{ColorFormat} */
+/** @debugoperatorenum{Magnum::ColorType} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, ColorType value);
 
 }

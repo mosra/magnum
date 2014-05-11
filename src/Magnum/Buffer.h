@@ -291,7 +291,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
 
             /**
-             * Source for texel fetches. See BufferTexture.
+             * Source for texel fetches. See @ref BufferTexture.
              * @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
              * @requires_gl Texture buffers are not available in OpenGL ES.
              */
@@ -926,7 +926,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 
-/** @debugoperator{Magnum::Buffer} */
+/** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
 
 inline Buffer::Buffer(Buffer&& other) noexcept: _id(other._id), _targetHint(other._targetHint) {

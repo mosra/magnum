@@ -301,7 +301,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * or particular shader stage is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @ref maxCombinedImageUniforms(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_IMAGE_UNIFORMS},
          *      @def_gl{MAX_TESS_CONTROL_IMAGE_UNIFORMS},
@@ -318,7 +318,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @ref maxImageUniforms(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_IMAGE_UNIFORMS}
          */
@@ -330,7 +330,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
          * or particular shader stage is not available, returns `0`.
-         * @requires_gl Shader storage is not available in OpenGL ES.
+         * @requires_gl %Shader storage is not available in OpenGL ES.
          * @see @ref maxCombinedShaderStorageBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_SHADER_STORAGE_BLOCKS},
          *      @def_gl{MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS},
@@ -347,7 +347,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
          * is not available, returns `0`.
-         * @requires_gl Shader storage is not available in OpenGL ES.
+         * @requires_gl %Shader storage is not available in OpenGL ES.
          * @see @ref maxShaderStorageBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_STORAGE_BLOCKS}
          */
@@ -508,10 +508,10 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          */
         Shader& setLabel(const std::string& label);
 
-        /** @brief Shader type */
+        /** @brief %Shader type */
         Type type() const { return _type; }
 
-        /** @brief Shader sources */
+        /** @brief %Shader sources */
         std::vector<std::string> sources() const;
 
         /**
@@ -553,7 +553,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         std::vector<std::string> _sources;
 };
 
-/** @debugoperator{Magnum::Shader} */
+/** @debugoperatorclassenum{Magnum::Shader,Magnum::Shader::Type} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Shader::Type value);
 
 inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._id), _sources(std::move(other._sources)) {

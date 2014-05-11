@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for Magnum namespace
+ * @brief Forward declarations for @ref Magnum namespace
  */
 
 #include <Corrade/Utility/Utility.h>

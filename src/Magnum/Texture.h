@@ -699,7 +699,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some texture unit before the operation.
-         * @see setMinificationFilter(), @fn_gl{ActiveTexture},
+         * @see @ref setMinificationFilter(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,framebuffer_object}

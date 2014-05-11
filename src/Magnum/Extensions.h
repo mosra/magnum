@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Namespace Magnum::Extensions
+ * @brief Namespace @ref Magnum::Extensions
  */
 
 #include "Magnum/Version.h"
@@ -37,16 +37,21 @@ namespace Magnum {
 @brief Compile-time information about OpenGL extensions
 
 Each extension is `struct` named hierarchically by prefix, vendor and
-extension name, for example `GL::APPLE::vertex_array_object`. Each struct has
-the same public methods as Extension class (requiredVersion(), coreVersion()
-and string(), but these structs are better suited for compile-time decisions
-rather than %Extension instances. See Context::isExtensionSupported() for
-example usage.
+extension name taken from list at @ref opengl-support, for example
+`GL::ARB::texture_storage`. Note that desktop extensions are available only on
+desktop build, OpenGL ES 2.0 extensions which are part of ES 3.0 are available
+only on @ref MAGNUM_TARGET_GLES2 "OpenGL ES 2.0 build" and vendor OpenGL ES
+extensions are available only on @ref MAGNUM_TARGET_GLES "OpenGL ES builds".
+
+Each struct has the same public methods as Extension class (requiredVersion(),
+coreVersion() and string(), but these structs are better suited for
+compile-time decisions rather than %Extension instances. See
+@ref Context::isExtensionSupported() for example usage.
 
 This namespace is built by default. To use it, you need to add `${MAGNUM_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building and
 @ref cmake for more information.
-@see MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+@see @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
 @todo Manual indices for extensions, this has gaps
 */
 namespace Extensions {

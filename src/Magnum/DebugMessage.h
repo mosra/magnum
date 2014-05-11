@@ -317,13 +317,13 @@ class MAGNUM_EXPORT DebugMessage {
         static MAGNUM_LOCAL void callbackImplementationKhr(Callback callback, const void* userParam);
 };
 
-/** @debugoperator{Magnum::DebugMessage} */
+/** @debugoperatorclassenum{Magnum::DebugMessage,Magnum::DebugMessage::Source} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, DebugMessage::Source value);
 
-/** @debugoperator{Magnum::DebugMessage} */
+/** @debugoperatorclassenum{Magnum::DebugMessage,Magnum::DebugMessage::Type} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, DebugMessage::Type value);
 
-/** @debugoperator{Magnum::DebugMessage} */
+/** @debugoperatorclassenum{Magnum::DebugMessage,Magnum::DebugMessage::Severity} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, DebugMessage::Severity value);
 
 }

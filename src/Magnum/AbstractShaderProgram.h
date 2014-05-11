@@ -385,7 +385,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_UNITS}
          */
         static Int maxImageUnits();
@@ -396,7 +396,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_SAMPLES}
          */
         static Int maxImageSamples();
@@ -408,7 +408,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither @extension{ARB,shader_image_load_store}
          * nor @extension{ARB,shader_storage_buffer_object} extension is
          * available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES}
          */
         static Int maxCombinedShaderOutputResources();
@@ -419,7 +419,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
          * is not available, returns `0`.
-         * @requires_gl Shader storage is not available in OpenGL ES.
+         * @requires_gl %Shader storage is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE}
          */
         static Long maxShaderStorageBlockSize();
@@ -458,7 +458,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
          * available, returns `0`.
-         * @requires_gles30 Texture lookup with offset is not available in
+         * @requires_gles30 %Texture lookup with offset is not available in
          *      OpenGL ES 2.0.
          * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
          */
@@ -470,7 +470,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
          * available, returns `0`.
-         * @requires_gles30 Texture lookup with offset is not available in
+         * @requires_gles30 %Texture lookup with offset is not available in
          *      OpenGL ES 2.0.
          * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
          */
@@ -609,7 +609,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Bind attribute to given location
          * @param location      Location
-         * @param name          Attribute name
+         * @param name          %Attribute name
          *
          * Binds attribute to location which is used later for binding vertex
          * buffers.
@@ -1163,10 +1163,10 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
 };
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+/** @debugoperatorclassenum{Magnum::AbstractShaderProgram::Attribute,Magnum::AbstractShaderProgram::Attribute::Components} */
 template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::Components);
 
-/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+/** @debugoperatorclassenum{Magnum::AbstractShaderProgram::Attribute,Magnum::AbstractShaderProgram::Attribute::DataType} */
 template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::DataType);
 #endif
 

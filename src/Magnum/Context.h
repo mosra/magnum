@@ -41,8 +41,6 @@
 
 namespace Magnum {
 
-/** @todoc Resolve conflict with Audio/Context.h (Doxygen doesn't list this file) */
-
 namespace Implementation {
     struct State;
 }
@@ -85,7 +83,7 @@ class MAGNUM_EXPORT Extension {
 };
 
 /**
-@brief Magnum context
+@brief %Magnum context
 
 Provides access to version and extension information. Instance available
 through @ref Context::current() is automatically created during construction of
@@ -94,14 +92,9 @@ instance is available during whole lifetime of *Application object. See
 @ref platform documentation for more information about engine setup.
 */
 class MAGNUM_EXPORT Context {
-    Context(const Context&) = delete;
-    Context(Context&&) = delete;
-    Context& operator=(const Context&) = delete;
-    Context& operator=(Context&&) = delete;
-
     public:
         /**
-         * @brief Context flag
+         * @brief %Context flag
          *
          * @see @ref Flags, @ref flags(), @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
@@ -170,7 +163,7 @@ class MAGNUM_EXPORT Context {
         typedef Containers::EnumSet<State, UnsignedInt> States;
 
         /**
-         * @brief Context flags
+         * @brief %Context flags
          *
          * @see @ref flags()
          */
@@ -187,7 +180,19 @@ class MAGNUM_EXPORT Context {
          */
         explicit Context();
 
+        /** @brief Copying is not allowed */
+        Context(const Context&) = delete;
+
+        /** @brief Moving is not allowed */
+        Context(Context&&) = delete;
+
         ~Context();
+
+        /** @brief Copying is not allowed */
+        Context& operator=(const Context&) = delete;
+
+        /** @brief Moving is not allowed */
+        Context& operator=(Context&&) = delete;
 
         /** @brief Current context */
         static Context* current() { return _current; }
@@ -274,7 +279,7 @@ class MAGNUM_EXPORT Context {
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
         /**
-         * @brief Extension strings
+         * @brief %Extension strings
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. Note that this function returns list of all extensions
@@ -286,7 +291,7 @@ class MAGNUM_EXPORT Context {
          */
         std::vector<std::string> extensionStrings() const;
 
-        /** @brief Context flags */
+        /** @brief %Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -446,7 +451,7 @@ class MAGNUM_EXPORT Context {
         Implementation::State* _state;
 };
 
-/** @debugoperator{Magnum::Context} */
+/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
 MAGNUM_EXPORT Debug operator<<(Debug debug, Context::Flag value);
 
 /** @hideinitializer

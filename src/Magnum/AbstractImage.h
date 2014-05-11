@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::AbstractImage
+ * @brief Class @ref Magnum::AbstractImage
  */
 
 #include <cstddef>
@@ -39,12 +39,12 @@ namespace Magnum {
 /**
 @brief Non-templated base for one-, two- or three-dimensional images
 
-See Image, ImageReference, BufferImage, Trade::ImageData documentation for
-more information.
+See @ref Image, @ref ImageReference, @ref BufferImage, @ref Trade::ImageData
+documentation for more information.
 @todo Where to put glClampColor() and glPixelStore() encapsulation? It is
-needed in AbstractFramebuffer::read(), Texture::setImage() etc (i.e. all
-functions operating with images). It also possibly needs to be "stackable" to
-easily revert the state back.
+    needed in AbstractFramebuffer::read(), Texture::setImage() etc (i.e. all
+    functions operating with images). It also possibly needs to be "stackable"
+    to easily revert the state back.
 */
 class MAGNUM_EXPORT AbstractImage {
     public:
@@ -53,7 +53,7 @@ class MAGNUM_EXPORT AbstractImage {
          * @param format            Format of the pixel
          * @param type              Data type of the pixel
          *
-         * @see pixelSize() const
+         * @see @ref pixelSize()
          */
         static std::size_t pixelSize(ColorFormat format, ColorType type);
 
@@ -66,7 +66,8 @@ class MAGNUM_EXPORT AbstractImage {
         /**
          * @brief Pixel size (in bytes)
          *
-         * Convenience member alternative for pixelSize(Format, Type).
+         * Convenience member alternative for
+         * @ref pixelSize(ColorFormat, ColorType).
          */
         std::size_t pixelSize() const { return pixelSize(_format, _type); }
 

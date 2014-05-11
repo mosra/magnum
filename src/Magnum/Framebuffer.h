@@ -480,7 +480,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Attach texture to given buffer
          * @param attachment        %Buffer attachment
-         * @param texture           Texture
+         * @param texture           %Texture
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
@@ -498,7 +498,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Attach texture to given buffer
          * @param attachment        %Buffer attachment
-         * @param texture           Texture
+         * @param texture           %Texture
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
@@ -528,7 +528,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Attach cube map texture to given buffer
          * @param attachment        %Buffer attachment
-         * @param texture           Cube map texture
+         * @param texture           %Texture
          * @param coordinate        Cube map coordinate
          * @param level             Mip level
          * @return Reference to self (for method chaining)
@@ -545,7 +545,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Attach texture layer to given buffer
          * @param attachment        %Buffer attachment
-         * @param texture           Texture
+         * @param texture           %Texture
          * @param level             Mip level
          * @param layer             Layer
          * @return Reference to self (for method chaining)
@@ -647,7 +647,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 };
 
-/** @debugoperator{DefaultFramebuffer} */
+/** @debugoperatorclassenum{Magnum::Framebuffer,Magnum::Framebuffer::Status} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
 
 inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {

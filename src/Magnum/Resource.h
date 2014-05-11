@@ -68,7 +68,7 @@ enum class ResourceState: UnsignedByte {
     Final
 };
 
-/** @debugoperator{Magnum::Resource} */
+/** @debugoperatorenum{Magnum::ResourceState} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value);
 
 /**
@@ -149,13 +149,14 @@ class Resource {
         /** @brief Move assignment */
         Resource<T, U>& operator=(Resource<T, U>&& other);
 
-        /** @brief Resource key */
+        /** @brief %Resource key */
         ResourceKey key() const { return _key; }
 
         /**
          * @brief %Resource state
          *
-         * @see @ref operator bool(), @ref ResourceManager::state()
+         * @see operator bool(), @ref ResourceManager::state()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         ResourceState state() {
             acquire();
@@ -166,9 +167,9 @@ class Resource {
          * @brief Whether the resource is available
          *
          * Returns `false` when resource is not loaded and no fallback is
-         * available (i.e. state() is either @ref ResourceState::NotLoaded,
-         * @ref ResourceState::Loading or @ref ResourceState::NotFound), `true`
-         * otherwise.
+         * available (i.e. @ref state() is either
+         * @ref ResourceState::NotLoaded, @ref ResourceState::Loading or
+         * @ref ResourceState::NotFound), `true` otherwise.
          */
         operator bool() {
             acquire();
@@ -201,10 +202,10 @@ class Resource {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @overload
-         * @deprecated Use the explicit @ref Magnum::Resource::operator*() "operator*()" or
-         *      @ref Magnum::Resource::operator->() "operator->()" instead.
+         * @deprecated Use the explicit operator*() or operator->() instead.
          *      Implicit conversion is no longer allowed if it might throw an
          *      assertion.
+         * @todoc Explicit reference when Doxygen can handle operators
          */
         CORRADE_DEPRECATED("use operator*() or operator->() instead") operator U&() { return **this; }
         #endif
