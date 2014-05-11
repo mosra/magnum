@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::SceneData
+ * @brief Class @ref Magnum::Trade::SceneData
  */
 
 #include <string>

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::MeshData3D
+ * @brief Class @ref Magnum::Trade::MeshData3D
  */
 
 #include <vector>
@@ -41,7 +41,7 @@ namespace Magnum { namespace Trade {
 
 Provides access to mesh data and additional information, such as primitive
 type.
-@see MeshData2D
+@see @ref MeshData2D
 */
 class MAGNUM_EXPORT MeshData3D {
     public:
@@ -81,7 +81,7 @@ class MAGNUM_EXPORT MeshData3D {
         /**
          * @brief Indices
          *
-         * @see isIndexed()
+         * @see @ref isIndexed()
          */
         std::vector<UnsignedInt>& indices();
         const std::vector<UnsignedInt>& indices() const; /**< @overload */
@@ -97,7 +97,7 @@ class MAGNUM_EXPORT MeshData3D {
          * @brief Positions
          * @param id    Position array ID
          *
-         * @see positionArrayCount()
+         * @see @ref positionArrayCount()
          */
         std::vector<Vector3>& positions(UnsignedInt id);
         const std::vector<Vector3>& positions(UnsignedInt id) const; /**< @overload */
@@ -112,7 +112,7 @@ class MAGNUM_EXPORT MeshData3D {
          * @brief Normals
          * @param id    Normal array ID
          *
-         * @see normalArrayCount()
+         * @see @ref normalArrayCount()
          */
         std::vector<Vector3>& normals(UnsignedInt id);
         const std::vector<Vector3>& normals(UnsignedInt id) const; /**< @overload */
@@ -125,9 +125,9 @@ class MAGNUM_EXPORT MeshData3D {
 
         /**
          * @brief 2D texture coordinates
-         * @param id    Texture coordinate array ID
+         * @param id    %Texture coordinate array ID
          *
-         * @see textureCoords2DArrayCount()
+         * @see @ref textureCoords2DArrayCount()
          */
         std::vector<Vector2>& textureCoords2D(UnsignedInt id);
         const std::vector<Vector2>& textureCoords2D(UnsignedInt id) const; /**< @overload */

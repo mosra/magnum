@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TextureData
+ * @brief Class @ref Magnum::Trade::TextureData
  */
 
 #include "Magnum/Array.h"
@@ -41,9 +41,9 @@ namespace Magnum { namespace Trade {
 class TextureData {
     public:
         /**
-         * @brief Texture type
+         * @brief %Texture type
          *
-         * @see type()
+         * @see @ref type()
          */
         enum class Type: UnsignedByte {
             Texture1D,  /**< One-dimensional texture */
@@ -54,12 +54,12 @@ class TextureData {
 
         /**
          * @brief Constructor
-         * @param type                  Texture type
+         * @param type                  %Texture type
          * @param minificationFilter    Minification filter
          * @param magnificationFilter   Magnification filter
          * @param mipmapFilter          Mipmap filter
          * @param wrapping              Wrapping
-         * @param image                 Texture image ID
+         * @param image                 %Texture image ID
          */
         TextureData(Type type, Sampler::Filter minificationFilter, Sampler::Filter magnificationFilter, Sampler::Mipmap mipmapFilter, Array3D<Sampler::Wrapping> wrapping, UnsignedInt image): _type(type), _minificationFilter(minificationFilter), _magnificationFilter(magnificationFilter), _mipmapFilter(mipmapFilter), _wrapping(wrapping), _image(image) {}
 
@@ -75,7 +75,7 @@ class TextureData {
         /** @brief Move assignment */
         TextureData& operator=(TextureData&&) = default;
 
-        /** @brief Texture type */
+        /** @brief %Texture type */
         Type type() const { return _type; }
 
         /** @brief Minification filter */
@@ -91,7 +91,7 @@ class TextureData {
         Array3D<Sampler::Wrapping> wrapping() const { return _wrapping; }
 
         /**
-         * @brief Image ID
+         * @brief %Image ID
          *
          * ID of 1D, 2D or 3D image based on texture type. If type is
          * @ref Type::Cube the function returns first of six consecutive
@@ -109,7 +109,7 @@ class TextureData {
         UnsignedInt _image;
 };
 
-/** @debugoperator{Magnum::Trade::TextureData} */
+/** @debugoperatorclassenum{Magnum::Trade::TextureData,Magnum::Trade::TextureData::Type} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, TextureData::Type value);
 
 }}

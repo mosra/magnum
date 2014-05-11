@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::CameraData
+ * @brief Class @ref Magnum::Trade::CameraData
  */
 
 #include <string>

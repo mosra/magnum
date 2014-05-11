@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::PhongMaterialData
+ * @brief Class @ref Magnum::Trade::PhongMaterialData
  */
 
 #include "Magnum/Magnum.h"

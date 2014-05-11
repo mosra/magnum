@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::AbstractImageConverter
+ * @brief Class @ref Magnum::Trade::AbstractImageConverter
  */
 
 #include <Corrade/PluginManager/AbstractPlugin.h>
@@ -46,9 +46,9 @@ classes in @ref Trade namespace for available image converter plugins.
 
 @section AbstractImageConverter-subclassing Subclassing
 
-Plugin implements function doFeatures() and one or more of doExportToImage(),
-doExportToData() or doExportToFile() functions based on what features are
-supported.
+Plugin implements function @ref doFeatures() and one or more of
+@ref doExportToImage(), @ref doExportToData() or @ref doExportToFile()
+functions based on what features are supported.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
@@ -63,20 +63,20 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         /**
          * @brief Features supported by this converter
          *
-         * @see Features, features()
+         * @see @ref Features, @ref features()
          */
         enum class Feature: UnsignedByte {
-            /** Conversion to image with different format with exportToImage() */
+            /** Conversion to image with different format with @ref exportToImage() */
             ConvertImage = 1 << 0,
 
-            /** Exporting to raw data with exportToData() */
+            /** Exporting to raw data with @ref exportToData() */
             ConvertData = 1 << 1
         };
 
         /**
          * @brief Features supported by this converter
          *
-         * @see features()
+         * @see @ref features()
          */
         typedef Containers::EnumSet<Feature, UnsignedByte> Features;
 
@@ -111,7 +111,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * @brief Export image to file
          *
          * Returns `true` on success, `false` otherwise.
-         * @see features(), exportToImage(), exportToData()
+         * @see @ref features(), @ref exportToImage(), @ref exportToData()
          */
         bool exportToFile(const ImageReference2D& image, const std::string& filename) const;
 
@@ -120,17 +120,17 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
     #else
     protected:
     #endif
-        /** @brief Implementation of features() */
+        /** @brief Implementation of @ref features() */
         virtual Features doFeatures() const = 0;
 
-        /** @brief Implementation of exportToImage() */
+        /** @brief Implementation of @ref exportToImage() */
         virtual Image2D* doExportToImage(const ImageReference2D& image) const;
 
-        /** @brief Implementation of exportToData() */
+        /** @brief Implementation of @ref exportToData() */
         virtual Containers::Array<unsigned char> doExportToData(const ImageReference2D& image) const;
 
         /**
-         * @brief Implementation of exportToFile()
+         * @brief Implementation of @ref exportToFile()
          *
          * If @ref Feature::ConvertData is supported, default implementation
          * calls @ref doExportToData() and saves the result to given file.

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::MeshObjectData3D
+ * @brief Class @ref Magnum::Trade::MeshObjectData3D
  */
 
 #include "Magnum/Trade/ObjectData3D.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace Trade {
 @brief Three-dimensional mesh object data
 
 Provides access to material information for given mesh instance.
-@see MeshObjectData2D
+@see @ref MeshObjectData2D
 */
 class MAGNUM_EXPORT MeshObjectData3D: public ObjectData3D {
     public:

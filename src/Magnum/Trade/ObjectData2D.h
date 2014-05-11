@@ -57,7 +57,7 @@ enum class ObjectInstanceType2D: UnsignedByte {
 @brief Two-dimensional object data
 
 Provides access to object transformation and hierarchy.
-@see MeshObjectData2D, ObjectData3D
+@see @ref MeshObjectData2D, @ref ObjectData3D
 */
 class MAGNUM_EXPORT ObjectData2D {
     public:
@@ -101,14 +101,14 @@ class MAGNUM_EXPORT ObjectData2D {
         /**
          * @brief Instance type
          *
-         * @see instance()
+         * @see @ref instance()
          */
         ObjectInstanceType2D instanceType() const { return _instanceType; }
 
         /**
          * @brief Instance ID
          * @return ID of given camera / light / mesh etc., specified by
-         *      instanceType()
+         *      @ref instanceType()
          */
         Int instance() const { return _instance; }
 
@@ -119,7 +119,7 @@ class MAGNUM_EXPORT ObjectData2D {
         Int _instance;
 };
 
-/** @debugoperator{Magnum::Trade::ObjectData2D} */
+/** @debugoperatorenum{Magnum::Trade::ObjectInstanceType2D} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectInstanceType2D value);
 
 }}

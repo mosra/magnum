@@ -27,6 +27,7 @@
 
 namespace Magnum { namespace Trade {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, const TextureData::Type value) {
     switch(value) {
         #define _c(value) case TextureData::Type::value: return debug << "Trade::TextureData::Type::" #value;
@@ -39,5 +40,6 @@ Debug operator<<(Debug debug, const TextureData::Type value) {
 
     return debug << "Trade::TextureData::Type::(unknown)";
 }
+#endif
 
 }}
