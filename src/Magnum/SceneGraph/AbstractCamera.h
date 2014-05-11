@@ -136,7 +136,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
     protected:
         /**
          * @brief Constructor
-         * @param object        Object holding the camera
+         * @param object        %Object holding the camera
          */
         explicit AbstractCamera(AbstractObject<dimensions, T>& object);
 

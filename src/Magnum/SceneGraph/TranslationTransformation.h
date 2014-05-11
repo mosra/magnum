@@ -62,7 +62,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         /** @brief Underlying transformation type */
         typedef typename DimensionTraits<dimensions, TranslationType>::VectorType DataType;
 
-        /** @brief Object transformation */
+        /** @brief %Object transformation */
         typename DimensionTraits<dimensions, TranslationType>::VectorType transformation() const { return _transformation; }
 
         /**
