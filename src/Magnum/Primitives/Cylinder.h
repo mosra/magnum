@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::Cylinder
+ * @brief Class @ref Magnum::Primitives::Cylinder
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -45,16 +45,20 @@ namespace Magnum { namespace Primitives {
 class MAGNUM_PRIMITIVES_EXPORT Cylinder {
     public:
         /**
-         * @brief %Flags
+         * @brief %Flag
          *
-         * @see Flags, Cylinder()
+         * @see @ref Flags, @ref solid(), @ref wireframe()
          */
         enum class Flag {
             GenerateTextureCoords = 1,  /**< @brief Generate texture coordinates */
             CapEnds                     /**< @brief Cap ends */
         };
 
-        /** @brief %Flags */
+        /**
+         * @brief %Flags
+         *
+         * @see @ref solid(), @ref wireframe()
+         */
         typedef Containers::EnumSet<Flag, int> Flags;
 
         /**

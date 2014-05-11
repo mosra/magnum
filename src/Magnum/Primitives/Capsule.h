@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::Capsule
+ * @brief Class @ref Magnum::Primitives::Capsule2D, @ref Magnum::Primitives::Capsule3D
  */
 
 #include "Magnum/Primitives/visibility.h"

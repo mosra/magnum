@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::Icosphere
+ * @brief Class @ref Magnum::Primitives::Icosphere
  */
 
 #include "Magnum/Primitives/visibility.h"

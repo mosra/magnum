@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::Plane
+ * @brief Class @ref Magnum::Primitives::Plane
  */
 
 #include "Magnum/Trade/Trade.h"

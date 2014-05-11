@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::Line2D, Magnum::Primitives::Line3D
+ * @brief Class @ref Magnum::Primitives::Line2D, @ref Magnum::Primitives::Line3D
  */
 
 #include "Magnum/Primitives/visibility.h"
