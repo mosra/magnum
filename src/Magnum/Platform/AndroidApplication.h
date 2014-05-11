@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::AndroidApplication
+ * @brief Class @ref Magnum::Platform::AndroidApplication, macro @ref MAGNUM_ANDROIDAPPLICATION_MAIN()
  */
 
 #include <memory>

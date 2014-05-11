@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessNaClApplication
+ * @brief Class @ref Magnum::Platform::WindowlessNaClApplication, macro @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN()
  */
 
 #include <string>
@@ -204,7 +204,7 @@ namespace Implementation {
 
 /** @hideinitializer
 @brief Entry point for windowless NaCl application
-@param application  Application class name
+@param className Class name
 
 See @ref Magnum::Platform::WindowlessNaClApplication "Platform::WindowlessNaClApplication"
 for usage information. This macro abstracts out platform-specific entry point
@@ -214,11 +214,11 @@ application header is included this macro is also aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 /* look at that insane placement of __attribute__. WTF. */
-#define MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN(application)                  \
+#define MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN(className)                    \
     namespace pp {                                                          \
         Module __attribute__ ((visibility ("default"))) * CreateModule();   \
         Module __attribute__ ((visibility ("default"))) * CreateModule() {  \
-            return new Magnum::Platform::Implementation::WindowlessNaClModule<application>(); \
+            return new Magnum::Platform::Implementation::WindowlessNaClModule<className>(); \
         }                                                                   \
     }
 

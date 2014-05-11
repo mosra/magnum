@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessWglApplication
+ * @brief Class @ref Magnum::Platform::WindowlessWglApplication, macro @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN()
  */
 
 #include "Magnum/OpenGL.h"

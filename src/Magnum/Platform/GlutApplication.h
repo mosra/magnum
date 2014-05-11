@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::GlutApplication
+ * @brief Class @ref Magnum::Platform::GlutApplication, macro @ref MAGNUM_GLUTAPPLICATION_MAIN()
  */
 
 #include <string>
@@ -58,10 +58,10 @@ enabled in CMake.
 ## Bootstrap application
 
 Fully contained base application using @ref GlutApplication along with
-CMake setup is available in `base` branch of
+CMake setup is available in `base-glut` branch of
 [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
-download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base.tar.gz)
-or [zip](https://github.com/mosra/magnum-bootstrap/archive/base.zip) file.
+download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-glut.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-glut.zip) file.
 After extracting the downloaded archive you can build and run the application
 with these four commands:
 
@@ -197,7 +197,7 @@ class GlutApplication {
         /**
          * @brief Mouse cursor
          *
-         * @see setMouseCursor()
+         * @see @ref setMouseCursor()
          */
         enum class MouseCursor: int {
             Default = GLUT_CURSOR_INHERIT,  /**< Default cursor provided by parent window */
@@ -281,16 +281,16 @@ Double-buffered RGBA window with depth and stencil buffers.
 class GlutApplication::Configuration {
     public:
         /**
-         * @brief Context flag
+         * @brief %Context flag
          *
-         * @see @ref Flags @ref setFlags()
+         * @see @ref Flags, @ref setFlags()
          */
         enum class Flag: int {
             Debug = GLUT_DEBUG  /**< Create debug context */
         };
 
         /**
-         * @brief Context flags
+         * @brief %Context flags
          *
          * @see @ref setFlags()
          */
@@ -331,7 +331,7 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        /** @brief Context flags */
+        /** @brief %Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -345,7 +345,7 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        /** @brief Context version */
+        /** @brief %Context version */
         Version version() const { return _version; }
 
         /**
