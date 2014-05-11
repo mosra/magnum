@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::DebugTools::ResourceManager
+ * @brief Class @ref Magnum::DebugTools::ResourceManager
  */
 
 #ifndef MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::DebugTools::ShapeRenderer, Magnum::DebugTools::ShapeRendererOptions, typedef Magnum::DebugTools::ShapeRenderer2D, Magnum::DebugTools::ShapeRenderer3D
+ * @brief Class @ref Magnum::DebugTools::ShapeRenderer, @ref Magnum::DebugTools::ShapeRendererOptions, typedef @ref Magnum::DebugTools::ShapeRenderer2D, @ref Magnum::DebugTools::ShapeRenderer3D
  */
 
 #include "Magnum/Color.h"
@@ -56,7 +56,7 @@ class ShapeRendererOptions {
         /**
          * @brief Shape rendering mode
          *
-         * @see setRenderMode()
+         * @see @ref setRenderMode()
          */
         enum class RenderMode: UnsignedByte {
             Wireframe,      /**< Wireframe rendering */
@@ -138,7 +138,9 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @todo Different drawing style for inverted shapes? (marking the "inside" somehow)
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions, Float> {
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>&, const Shapes::Implementation::AbstractShape<dimensions>&);
+    #endif
 
     public:
         /**
@@ -157,11 +159,9 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
 
         ~ShapeRenderer();
 
-    protected:
-        /** @todoc Remove Float when Doxygen properly treats this as override */
+    private:
         void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 
-    private:
         Resource<ShapeRendererOptions> options;
         std::vector<Implementation::AbstractShapeRenderer<dimensions>*> renderers;
 };

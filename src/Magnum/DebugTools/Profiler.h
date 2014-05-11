@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::DebugTools::Profiler
+ * @brief Class @ref Magnum::DebugTools::Profiler
  */
 
 #include <chrono>
@@ -43,7 +43,7 @@ namespace Magnum { namespace DebugTools {
 @brief %Profiler
 
 Measures time passed during specified sections of each frame. It's meant to be
-used in rendering and event loops (e.g. Platform::Sdl2Application::drawEvent()),
+used in rendering and event loops (e.g. @ref Platform::Sdl2Application::drawEvent()),
 but it's possible to use it standalone elsewhere. Example usage:
 @code
 DebugTools::Profiler p;
@@ -94,7 +94,7 @@ p.printStatistics();
 @endcode
 
 It's possible to start profiler only for certain parts of the code and then
-stop it again using stop(), if you are not interested in profiling the rest.
+stop it again using @ref stop(), if you are not interested in profiling the rest.
 
 @todo Some unit testing
 @todo More time intervals
@@ -104,14 +104,14 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
         /**
          * @brief Section ID
          *
-         * @see otherSection, addSection(), start(Section)
+         * @see @ref otherSection, @ref addSection(), @ref start(Section)
          */
         typedef UnsignedInt Section;
 
         /**
          * @brief Default section
          *
-         * @see start()
+         * @see @ref start()
          */
         static const Section otherSection = 0;
 
@@ -130,15 +130,15 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          * @brief Add named section
          *
          * @attention This function cannot be called if profiling is enabled.
-         * @see otherSection, start(Section), stop()
+         * @see @ref otherSection, @ref start(Section), @ref stop()
          */
         Section addSection(const std::string& name);
 
         /**
          * @brief Whether profiling is enabled
          *
-         * If the profiling is not enabled, calls to start() and stop() have
-         * no effect.
+         * If the profiling is not enabled, calls to @ref start() and
+         * @ref stop() have no effect.
          */
         bool isEnabled() { return enabled; }
 
@@ -146,14 +146,14 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          * @brief Enable profiling
          *
          * Clears already mesaured data.
-         * @see disable(), isEnabled()
+         * @see @ref disable(), @ref isEnabled()
          */
         void enable();
 
         /**
          * @brief Disable profiling
          *
-         * @see enable(), isEnabled()
+         * @see @ref enable(), @ref isEnabled()
          */
         void disable();
 
@@ -162,14 +162,14 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          *
          * If profiling is already running, current time is saved for previous
          * section.
-         * @see @ref otherSection, start(Section)
+         * @see @ref otherSection, @ref start(Section)
          */
         void start(Section section);
 
         /**
          * @brief Start profiling of "other" section
          *
-         * Same as calling `start(Profiler::otherSection)`.
+         * Same as calling `start(DebugTools::Profiler::otherSection)`.
          * @note Does nothing if profiling is disabled.
          */
         void start() { start(otherSection); }
