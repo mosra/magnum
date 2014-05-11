@@ -65,7 +65,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         typedef typename Generic<dimensions>::Position Position;
 
         /**
-         * @brief Texture coordinates
+         * @brief %Texture coordinates
          *
          * Used only if @ref Flag::Textured is set.
          */
@@ -84,7 +84,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
-         * @brief Shader flag
+         * @brief %Flag
          *
          * @see @ref Flags, @ref flags()
          */
@@ -93,7 +93,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         };
 
         /**
-         * @brief Shader flags
+         * @brief %Flags
          *
          * @see @ref flags()
          */
@@ -105,11 +105,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
 
         /**
          * @brief Constructor
-         * @param flags     Shader flags
+         * @param flags     %Flags
          */
         explicit Flat(Flags flags = Flags());
 
-        /** @brief Shader flags */
+        /** @brief %Flags */
         Flags flags() const { return _flags; }
 
         /**
