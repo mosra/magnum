@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Audio::Source
+ * @brief Class @ref Magnum::Audio::Source
  */
 
 #include <functional>
@@ -338,7 +338,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         };
 
         /**
-         * @brief Source type
+         * @brief %Source type
          *
          * @see @ref setBuffer(), @fn_al{GetSourcei} with @def_al{SOURCE_TYPE}
          */
@@ -346,7 +346,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Attach buffer
-         * @param buffer        Buffer to attach or `nullptr`
+         * @param buffer        %Buffer to attach or `nullptr`
          * @return Reference to self (for method chaining)
          *
          * If an buffer is attached, changes source type to @ref Type::Static,
@@ -586,7 +586,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         ALuint _id;
 };
 
-/** @debugoperator{Magnum::Audio::Source} */
+/** @debugoperatorclassenum{Magnum::Audio::Source,Magnum::Audio::Source::State} */
 Debug MAGNUM_AUDIO_EXPORT operator<<(Debug debug, Source::State value);
 
 inline Source::Source(Source&& other): _id(other._id) {

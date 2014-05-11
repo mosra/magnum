@@ -25,8 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file Audio/AbstractImporter.h
- * @brief Class Magnum::Audio::AbstractImporter
+/** @file
+ * @brief Class @ref Magnum::Audio::AbstractImporter
  */
 
 #include <Corrade/PluginManager/AbstractPlugin.h>
@@ -45,16 +45,17 @@ importer plugins.
 
 @section Audio-AbstractImporter-subclassing Subclassing
 
-Plugin implements function doFeatures(), doIsOpened(), one of or both
-doOpenData() and doOpenFile() functions, function doClose() and data access
-functions doFormat(), doFrequency() and doData().
+Plugin implements function @ref doFeatures(), @ref doIsOpened(), one of or both
+@ref doOpenData() and @ref doOpenFile() functions, function @ref doClose() and
+data access functions @ref doFormat(), @ref doFrequency() and @ref doData().
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions doOpenData() and doOpenFile() are called after the previous file
-    was closed, function doClose() is called only if there is any file opened.
--   Function doOpenData() is called only if @ref Feature::OpenData is
+-   Functions @ref doOpenData() and @ref doOpenFile() are called after the
+    previous file was closed, function @ref doClose() is called only if there
+    is any file opened.
+-   Function @ref doOpenData() is called only if @ref Feature::OpenData is
     supported.
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
@@ -66,17 +67,17 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
         /**
          * @brief Features supported by this importer
          *
-         * @see Features, features()
+         * @see @ref Features, @ref features()
          */
         enum class Feature: UnsignedByte {
-            /** Opening files from raw data using openData() */
+            /** Opening files from raw data using @ref openData() */
             OpenData = 1 << 0
         };
 
         /**
          * @brief Features supported by this importer
          *
-         * @see features()
+         * @see @ref features()
          */
         typedef Containers::EnumSet<Feature, UnsignedByte> Features;
 
@@ -98,7 +99,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref Feature::OpenData is supported. Returns
          * `true` on success, `false` otherwise.
-         * @see features(), openFile()
+         * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayReference<const unsigned char> data);
 
@@ -107,7 +108,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Returns `true` on success, `false` otherwise.
-         * @see features(), openData()
+         * @see @ref features(), @ref openData()
          */
         bool openFile(const std::string& filename);
 
@@ -132,33 +133,33 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
     #else
     protected:
     #endif
-        /** @brief Implementation for features() */
+        /** @brief Implementation for @ref features() */
         virtual Features doFeatures() const = 0;
 
-        /** @brief Implementation for isOpened() */
+        /** @brief Implementation for @ref isOpened() */
         virtual bool doIsOpened() const = 0;
 
-        /** @brief Implementation for openData() */
+        /** @brief Implementation for @ref openData() */
         virtual void doOpenData(Containers::ArrayReference<const unsigned char> data);
 
         /**
-         * @brief Implementation for openFile()
+         * @brief Implementation for @ref openFile()
          *
          * If @ref Feature::OpenData is supported, default implementation opens
          * the file and calls @ref doOpenData() with its contents.
          */
         virtual void doOpenFile(const std::string& filename);
 
-        /** @brief Implementation for close() */
+        /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
 
-        /** @brief Implementation for format() */
+        /** @brief Implementation for @ref format() */
         virtual Buffer::Format doFormat() const = 0;
 
-        /** @brief Implementation for frequency() */
+        /** @brief Implementation for @ref frequency() */
         virtual UnsignedInt doFrequency() const = 0;
 
-        /** @brief Implementation for data() */
+        /** @brief Implementation for @ref data() */
         virtual Containers::Array<unsigned char> doData() = 0;
 };
 

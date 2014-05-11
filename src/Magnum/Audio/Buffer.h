@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Audio::Buffer
+ * @brief Class @ref Magnum::Audio::Buffer
  */
 
 #include <utility>
@@ -104,7 +104,7 @@ class Buffer {
         ALuint _id;
 };
 
-/** @debugoperator{Magnum::Audio::Buffer} */
+/** @debugoperatorclassenum{Magnum::Audio::Buffer,Magnum::Audio::Buffer::Format} */
 Debug MAGNUM_AUDIO_EXPORT operator<<(Debug debug, Buffer::Format value);
 
 inline Buffer::Buffer(Buffer&& other): _id(other._id) {

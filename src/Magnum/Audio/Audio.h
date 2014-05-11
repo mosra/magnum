@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for Magnum::Audio namespace
+ * @brief Forward declarations for @ref Magnum::Audio namespace
  */
 
 namespace Magnum { namespace Audio {
