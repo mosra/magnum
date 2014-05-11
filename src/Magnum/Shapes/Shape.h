@@ -73,7 +73,7 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
         /**
          * @brief Constructor
          * @param object    Object holding this feature
-         * @param shape     Shape
+         * @param shape     %Shape
          * @param group     Group this shape belongs to
          */
         explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {
