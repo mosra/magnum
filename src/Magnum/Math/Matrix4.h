@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Matrix4
+ * @brief Class @ref Magnum::Math::Matrix4
  */
 
 #include "Magnum/Math/Matrix.h"
@@ -45,8 +45,8 @@ namespace Magnum { namespace Math {
 
 Represents 3D transformation. See @ref matrix-vector and @ref transformations
 for brief introduction.
-@see Magnum::Matrix4, Magnum::Matrix4d, DualQuaternion,
-    SceneGraph::MatrixTransformation3D
+@see @ref Magnum::Matrix4, @ref Magnum::Matrix4d, @ref DualQuaternion,
+    @ref SceneGraph::MatrixTransformation3D
 @configurationvalueref{Magnum::Math::Matrix4}
  */
 template<class T> class Matrix4: public Matrix<4, T> {
@@ -55,9 +55,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation
          * @param vector    Translation vector
          *
-         * @see translation(), DualQuaternion::translation(),
-         *      Matrix3::translation(const Vector2&), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis()
+         * @see @ref translation(), @ref DualQuaternion::translation(),
+         *      @ref Matrix3::translation(const Vector2<T>&),
+         *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
+         *      @ref Vector3::zAxis()
          */
         constexpr static Matrix4<T> translation(const Vector3<T>& vector) {
             return {{      T(1),       T(0),       T(0), T(0)},
@@ -70,8 +71,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D scaling
          * @param vector    Scaling vector
          *
-         * @see rotationScaling() const, Matrix3::scaling(const Vector2&),
-         *      Vector3::xScale(), Vector3::yScale(), Vector3::zScale()
+         * @see @ref rotationScaling(),
+         *      @ref Matrix3::scaling(const Vector2<T>&),
+         *      @ref Vector3::xScale(), @ref Vector3::yScale(),
+         *      @ref Vector3::zScale()
          */
         constexpr static Matrix4<T> scaling(const Vector3<T>& vector) {
             return {{vector.x(),       T(0),       T(0), T(0)},
@@ -86,10 +89,13 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param normalizedAxis    Normalized rotation axis
          *
          * Expects that the rotation axis is normalized. If possible, use
-         * faster alternatives like rotationX(), rotationY() and rotationZ().
-         * @see rotation() const, Quaternion::rotation(), DualQuaternion::rotation(),
-         *      Matrix3::rotation(Rad), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis(), Vector::isNormalized()
+         * faster alternatives like @ref rotationX(), @ref rotationY() and
+         * @ref rotationZ().
+         * @see rotation() const, @ref Quaternion::rotation(),
+         *      @ref DualQuaternion::rotation(), @ref Matrix3::rotation(Rad),
+         *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
+         *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
@@ -97,9 +103,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation around X axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
-         * @see rotation(Rad, const Vector3&), rotationY(), rotationZ(),
-         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
+         * Faster than calling `%Matrix4::rotation(angle, %Vector3::xAxis())`.
+         * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationY(),
+         *      @ref rotationZ(), rotation() const,
+         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotationX(Rad<T> angle);
 
@@ -107,9 +115,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation around Y axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
-         * @see rotation(Rad, const Vector3&), rotationX(), rotationZ(),
-         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
+         * Faster than calling `%Matrix4::rotation(angle, %Vector3::yAxis())`.
+         * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
+         *      @ref rotationZ(), rotation() const,
+         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotationY(Rad<T> angle);
 
@@ -117,9 +127,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation matrix around Z axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
-         * @see rotation(Rad, const Vector3&), rotationX(), rotationY(),
-         *      rotation() const, Quaternion::rotation(), Matrix3::rotation(Rad)
+         * Faster than calling `%Matrix4::rotation(angle, %Vector3::zAxis())`.
+         * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
+         *      @ref rotationY(), rotation() const,
+         *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotationZ(Rad<T> angle);
 
@@ -128,7 +140,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param normal    Normal of the plane through which to reflect
          *
          * Expects that the normal is normalized.
-         * @see Matrix3::reflection(), Vector::isNormalized()
+         * @see @ref Matrix3::reflection(), @ref Vector::isNormalized()
          */
         static Matrix4<T> reflection(const Vector3<T>& normal);
 
@@ -138,7 +150,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param near      Near clipping plane
          * @param far       Far clipping plane
          *
-         * @see perspectiveProjection(), Matrix3::projection()
+         * @see @ref perspectiveProjection(), @ref Matrix3::projection()
          */
         static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
 
@@ -148,7 +160,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param near      Near clipping plane
          * @param far       Far clipping plane
          *
-         * @see orthographicProjection(), Matrix3::projection()
+         * @see @ref orthographicProjection(), @ref Matrix3::projection()
          */
         static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
@@ -159,7 +171,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param near          Near clipping plane
          * @param far           Far clipping plane
          *
-         * @see orthographicProjection(), Matrix3::projection()
+         * @see @ref orthographicProjection(), @ref Matrix3::projection()
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
             const T xyScale = 2*std::tan(T(fov)/2)*near;
@@ -173,7 +185,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @param translation       Translation part (first three elements of
          *      fourth column)
          *
-         * @see rotationScaling() const, translation() const
+         * @see @ref rotationScaling(), translation() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         constexpr static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
             return {{rotationScaling[0], T(0)},
@@ -189,8 +202,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Default constructor
          *
          * Creates identity matrix. You can also explicitly call this
-         * constructor with `Matrix4 m(Matrix4::Identity);`. Optional parameter
-         * @p value allows you to specify value on diagonal.
+         * constructor with `%Matrix4 m(Matrix4::Identity);`. Optional
+         * parameter @p value allows you to specify value on diagonal.
          */
         constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(Matrix<4, T>::Identity, value) {}
 
@@ -211,7 +224,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Rigid transformation consists only of rotation and translation (i.e.
          * no scaling or projection).
-         * @see isOrthogonal()
+         * @see @ref isOrthogonal()
          */
         bool isRigidTransformation() const {
             return rotationScaling().isOrthogonal() && row(3) == Vector4<T>(T(0), T(0), T(0), T(1));
@@ -221,9 +234,11 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation and scaling part of the matrix
          *
          * Upper-left 3x3 part of the matrix.
-         * @see from(const Matrix<3, T>&, const Vector3&), rotation() const,
-         *      rotationNormalized(), @ref uniformScaling(),
-         *      rotation(T, const Vector3&), Matrix3::rotationScaling() const
+         * @see @ref from(const Matrix<3, T>&, const Vector3<T>&),
+         *      rotation() const, @ref rotationNormalized(),
+         *      @ref uniformScaling(), @ref rotation(Rad, const Vector3<T>&),
+         *      Matrix3::rotationScaling() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         constexpr Matrix<3, T> rotationScaling() const {
@@ -240,6 +255,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see rotation() const, @ref uniformScaling(),
          *      @ref Matrix3::rotationNormalized()
          * @todo assert also orthogonality or this is good enough?
+         * @todoc Explicit reference when Doxygen can handle const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         Matrix<3, T> rotationNormalized() const {
@@ -255,9 +271,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Normalized upper-left 3x3 part of the matrix. Expects uniform
          * scaling.
-         * @see rotationNormalized(), rotationScaling() const,
-         *      @ref uniformScaling(), rotation(T, const Vector3&),
+         * @see @ref rotationNormalized(), @ref rotationScaling(),
+         *      @ref uniformScaling(), @ref rotation(Rad, const Vector3<T>&),
          *      Matrix3::rotation() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         Matrix<3, T> rotation() const;
@@ -269,9 +286,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Expects that the scaling is the same in all axes. Faster alternative
          * to @ref uniformScaling(), because it doesn't compute the square
          * root.
-         * @see @ref rotationScaling(), @ref rotation(),
+         * @see @ref rotationScaling(), rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector3<T>&),
          *      @ref Matrix3::uniformScaling()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         T uniformScalingSquared() const;
 
@@ -281,9 +299,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Length of vectors in upper-left 3x3 part of the matrix. Expects that
          * the scaling is the same in all axes. Use faster alternative
          * @ref uniformScalingSquared() where possible.
-         * @see @ref rotationScaling(), @ref rotation(),
+         * @see @ref rotationScaling(), rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector3<T>&),
          *      @ref Matrix3::uniformScaling()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
@@ -291,7 +310,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Right-pointing 3D vector
          *
          * First three elements of first column.
-         * @see up(), backward(), Vector3::xAxis(), Matrix3::right()
+         * @see @ref up(), @ref backward(), @ref Vector3::xAxis(),
+         *      @ref Matrix3::right()
          */
         Vector3<T>& right() { return (*this)[0].xyz(); }
         constexpr Vector3<T> right() const { return (*this)[0].xyz(); } /**< @overload */
@@ -300,7 +320,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Up-pointing 3D vector
          *
          * First three elements of second column.
-         * @see right(), backward(), Vector3::yAxis(), Matrix3::up()
+         * @see @ref right(), @ref backward(), @ref Vector3::yAxis(),
+         *      @ref Matrix3::up()
          */
         Vector3<T>& up() { return (*this)[1].xyz(); }
         constexpr Vector3<T> up() const { return (*this)[1].xyz(); } /**< @overload */
@@ -309,7 +330,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Backward-pointing 3D vector
          *
          * First three elements of third column.
-         * @see right(), up(), Vector3::yAxis()
+         * @see @ref right(), @ref up(), @ref Vector3::yAxis()
          */
         Vector3<T>& backward() { return (*this)[2].xyz(); }
         constexpr Vector3<T> backward() const { return (*this)[2].xyz(); } /**< @overload */
@@ -318,8 +339,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation part of the matrix
          *
          * First three elements of fourth column.
-         * @see from(const Matrix<3, T>&, const Vector3&),
-         *      translation(const Vector3&), Matrix3::translation()
+         * @see @ref from(const Matrix<3, T>&, const Vector3<T>&),
+         *      @ref translation(const Vector3<T>&),
+         *      @ref Matrix3::translation()
          */
         Vector3<T>& translation() { return (*this)[3].xyz(); }
         constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */
@@ -328,20 +350,22 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Inverted rigid transformation matrix
          *
          * Expects that the matrix represents rigid transformation.
-         * Significantly faster than the general algorithm in inverted().
-         * @see isRigidTransformation(), invertedOrthogonal(),
-         *      rotationScaling() const, translation() const
+         * Significantly faster than the general algorithm in @ref inverted().
+         * @see @ref isRigidTransformation(), @ref invertedOrthogonal(),
+         *      @ref rotationScaling(), translation() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         Matrix4<T> invertedRigid() const;
 
         /**
          * @brief Transform 3D vector with the matrix
          *
-         * Unlike in transformVector(), translation is not involved in the
+         * Unlike in @ref transformVector(), translation is not involved in the
          * transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 0 \end{pmatrix}
          * @f]
-         * @see Quaternion::transformVector(), Matrix3::transformVector()
+         * @see @ref Quaternion::transformVector(),
+         *      @ref Matrix3::transformVector()
          * @todo extract 3x3 matrix and multiply directly? (benchmark that)
          */
         Vector3<T> transformVector(const Vector3<T>& vector) const {
@@ -351,11 +375,12 @@ template<class T> class Matrix4: public Matrix<4, T> {
         /**
          * @brief Transform 3D point with the matrix
          *
-         * Unlike in transformVector(), translation is also involved in the
-         * transformation. @f[
+         * Unlike in @ref transformVector(), translation is also involved in
+         * the transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 1 \end{pmatrix}
          * @f]
-         * @see DualQuaternion::transformPoint(), Matrix3::transformPoint()
+         * @see @ref DualQuaternion::transformPoint(),
+         *      @ref Matrix3::transformPoint()
          */
         Vector3<T> transformPoint(const Vector3<T>& vector) const {
             return ((*this)*Vector4<T>(vector, T(1))).xyz();

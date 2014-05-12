@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::DualComplex
+ * @brief Class @ref Magnum::Math::DualComplex
  */
 
 #include "Magnum/Math/Complex.h"
@@ -41,7 +41,8 @@ namespace Magnum { namespace Math {
 
 Represents 2D rotation and translation. See @ref transformations for brief
 introduction.
-@see Magnum::DualComplex, Magnum::DualComplexd, Dual, Complex, Matrix3
+@see @ref Magnum::DualComplex, @ref Magnum::DualComplexd, @ref Dual,
+    @ref Complex, @ref Matrix3
 @todo Can this be done similarly as in dual quaternions? It sort of works, but
     the math beneath is weird.
 */
@@ -56,8 +57,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c = (cos \theta + i sin \theta) + \epsilon (0 + i0)
          * @f]
-         * @see angle(), Complex::rotation(), Matrix3::rotation(),
-         *      DualQuaternion::rotation()
+         * @see @ref Complex::rotation(), @ref Matrix3::rotation(),
+         *      @ref DualQuaternion::rotation()
          */
         static DualComplex<T> rotation(Rad<T> angle) {
             return {Complex<T>::rotation(angle), {{}, {}}};
@@ -70,8 +71,11 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c = (0 + i1) + \epsilon (v_x + iv_y)
          * @f]
-         * @see translation() const, Matrix3::translation(const Vector2&),
-         *      DualQuaternion::translation(), Vector2::xAxis(), Vector2::yAxis()
+         * @see translation() const,
+         *      @ref Matrix3::translation(const Vector2<T>&),
+         *      @ref DualQuaternion::translation(), @ref Vector2::xAxis(),
+         *      @ref Vector2::yAxis()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static DualComplex<T> translation(const Vector2<T>& vector) {
             return {{}, {vector.x(), vector.y()}};
@@ -81,8 +85,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @brief Create dual complex number from rotation matrix
          *
          * Expects that the matrix represents rigid transformation.
-         * @see toMatrix(), Complex::fromMatrix(),
-         *      Matrix3::isRigidTransformation()
+         * @see @ref toMatrix(), @ref Complex::fromMatrix(),
+         *      @ref Matrix3::isRigidTransformation()
          */
         static DualComplex<T> fromMatrix(const Matrix3<T>& matrix) {
             CORRADE_ASSERT(matrix.isRigidTransformation(),
@@ -136,7 +140,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * Dual complex number is normalized if its real part has unit length: @f[
          *      |c_0|^2 = |c_0| = 1
          * @f]
-         * @see Complex::dot(), normalized()
+         * @see @ref Complex::dot(), @ref normalized()
          * @todoc Improve the equation as in Complex::isNormalized()
          */
         bool isNormalized() const {
@@ -146,7 +150,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Rotation part of dual complex number
          *
-         * @see Complex::angle()
+         * @see @ref Complex::angle()
          */
         constexpr Complex<T> rotation() const {
             return Dual<Complex<T>>::real();
@@ -158,7 +162,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \boldsymbol a = (c_\epsilon c_0^*)
          * @f]
-         * @see translation(const Vector2&)
+         * @see @ref translation(const Vector2<T>&)
          */
         Vector2<T> translation() const {
             return Vector2<T>(Dual<Complex<T>>::dual());
@@ -167,7 +171,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Convert dual complex number to transformation matrix
          *
-         * @see fromMatrix(), Complex::toMatrix()
+         * @see @ref fromMatrix(), @ref Complex::toMatrix()
          */
         Matrix3<T> toMatrix() const {
             return Matrix3<T>::from(Dual<Complex<T>>::real().toMatrix(), translation());
@@ -191,7 +195,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c^* = c^*_0 + c^*_\epsilon
          * @f]
-         * @see dualConjugated(), conjugated(), Complex::conjugated()
+         * @see @ref dualConjugated(), @ref conjugated(),
+         *      @ref Complex::conjugated()
          */
         DualComplex<T> complexConjugated() const {
             return {Dual<Complex<T>>::real().conjugated(), Dual<Complex<T>>::dual().conjugated()};
@@ -203,7 +208,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \overline{\hat c} = c_0 - \epsilon c_\epsilon
          * @f]
-         * @see complexConjugated(), conjugated(), Dual::conjugated()
+         * @see @ref complexConjugated(), @ref conjugated(),
+         *      @ref Dual::conjugated()
          */
         DualComplex<T> dualConjugated() const {
             return Dual<Complex<T>>::conjugated();
@@ -215,8 +221,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * Both complex and dual conjugation. @f[
          *      \overline{\hat c^*} = c^*_0 - \epsilon c^*_\epsilon = c^*_0 + \epsilon(-a_\epsilon + ib_\epsilon)
          * @f]
-         * @see complexConjugated(), dualConjugated(), Complex::conjugated(),
-         *      Dual::conjugated()
+         * @see @ref complexConjugated(), @ref dualConjugated(),
+         *      @ref Complex::conjugated(), @ref Dual::conjugated()
          */
         DualComplex<T> conjugated() const {
             return {Dual<Complex<T>>::real().conjugated(), {-Dual<Complex<T>>::dual().real(), Dual<Complex<T>>::dual().imaginary()}};
@@ -254,7 +260,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      c' = \frac{c_0}{|c_0|}
          * @f]
-         * @see isNormalized()
+         * @see @ref isNormalized()
          * @todo can this be done similarly to dual quaternions?
          */
         DualComplex<T> normalized() const {
@@ -280,7 +286,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * Expects that the complex number is normalized. @f[
          *      \hat c^{-1} = c_0^{-1} - \epsilon c_\epsilon = c_0^* - \epsilon c_\epsilon
          * @f]
-         * @see isNormalized(), inverted()
+         * @see @ref isNormalized(), @ref inverted()
          * @todo can this be done similarly to dual quaternions?
          */
         DualComplex<T> invertedNormalized() const {
@@ -294,8 +300,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * complex number. @f[
          *      v' = \hat c v = \hat c ((0 + i) + \epsilon(v_x + iv_y))
          * @f]
-         * @see DualComplex(const Vector2&), dual(), Matrix3::transformPoint(),
-         *      Complex::transformVector(), DualQuaternion::transformPoint()
+         * @see @ref DualComplex(const Vector2<T>&), @ref dual(),
+         *      @ref Matrix3::transformPoint(), @ref Complex::transformVector(),
+         *      @ref DualQuaternion::transformPoint()
          */
         Vector2<T> transformPoint(const Vector2<T>& vector) const {
             return Vector2<T>(((*this)*DualComplex<T>(vector)).dual());

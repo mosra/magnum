@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Geometry::Distance
+ * @brief Class @ref Magnum::Math::Geometry::Distance
  */
 
 #include "Magnum/Math/Functions.h"
@@ -50,7 +50,7 @@ class Distance {
          *      d = \frac{|(\boldsymbol b - \boldsymbol a)_\bot \cdot (\boldsymbol a - \boldsymbol p)|} {|\boldsymbol b - \boldsymbol a|}
          * @f]
          * Source: http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
-         * @see linePointSquared(const Vector2&, const Vector2&, const Vector2&)
+         * @see @ref linePointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
          */
         template<class T> static T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
             const Vector2<T> bMinusA = b - a;
@@ -63,7 +63,8 @@ class Distance {
          * @param b         Second point of the line
          * @param point     Point
          *
-         * More efficient than linePoint(const Vector2&, const Vector2&, const Vector2&)
+         * More efficient than
+         * @ref linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
          * for comparing distance with other values, because it doesn't
          * compute the square root.
          */
@@ -84,7 +85,7 @@ class Distance {
          *      {|\boldsymbol b - \boldsymbol a|}
          * @f]
          * Source: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-         * @see linePointSquared(const Vector3&, const Vector3&, const Vector3&)
+         * @see @ref linePointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
          */
         template<class T> static T linePoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
             return std::sqrt(linePointSquared(a, b, point));
@@ -93,7 +94,7 @@ class Distance {
         /**
          * @brief %Distance of line and point in 3D, squared
          *
-         * More efficient than linePoint(const Vector3&, const Vector3&, const Vector3&)
+         * More efficient than @ref linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
          * for comparing distance with other values, because it doesn't
          * compute the square root.
          */
@@ -121,19 +122,19 @@ class Distance {
          * @f]
          * The last alternative is when the following equation applies. The
          * point then lies between **a** and **b** and the distance is
-         * computed the same way as in linePoint(). @f[
+         * computed the same way as in @ref linePoint(). @f[
          *      |\boldsymbol b - \boldsymbol a|^2 > |\boldsymbol p - \boldsymbol a|^2 + |\boldsymbol p - \boldsymbol b|^2
          * @f]
          *
-         * @see lineSegmentPointSquared()
+         * @see @ref lineSegmentPointSquared()
          */
         template<class T> static T lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point);
 
         /**
          * @brief %Distance of point from line segment in 2D, squared
          *
-         * More efficient than lineSegmentPoint() for comparing distance with
-         * other values, because it doesn't compute the square root.
+         * More efficient than @ref lineSegmentPoint() for comparing distance
+         * with other values, because it doesn't compute the square root.
          */
         template<class T> static T lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point);
 
@@ -144,9 +145,9 @@ class Distance {
          * @param point     Point
          *
          * Similar to 2D implementation
-         * lineSegmentPoint(const Vector2&, const Vector2&, const Vector2&).
+         * @ref lineSegmentPoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&).
          *
-         * @see lineSegmentPointSquared(const Vector3&, const Vector3&, const Vector3&)
+         * @see @ref lineSegmentPointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
          */
         template<class T> static T lineSegmentPoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
             return std::sqrt(lineSegmentPointSquared(a, b, point));
@@ -155,8 +156,10 @@ class Distance {
         /**
          * @brief %Distance of point from line segment in 3D, squared
          *
-         * More efficient than lineSegmentPoint(const Vector3&, const Vector3&, const Vector3&) for comparing distance with
-         * other values, because it doesn't compute the square root.
+         * More efficient than
+         * @ref lineSegmentPoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+         * for comparing distance with other values, because it doesn't compute
+         * the square root.
          */
         template<class T> static T lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point);
 };

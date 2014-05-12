@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::RectangularMatrix
+ * @brief Class @ref Magnum::Math::RectangularMatrix, typedef @ref Magnum::Math::Matrix2x3, @ref Magnum::Math::Matrix3x2, @ref Magnum::Math::Matrix2x4, @ref Magnum::Math::Matrix4x2, @ref Magnum::Math::Matrix3x4, @ref Magnum::Math::Matrix4x3
  */
 
 #include "Magnum/Math/Vector.h"
@@ -43,8 +43,8 @@ namespace Implementation {
 @tparam rows    Row count
 @tparam T       Underlying data type
 
-See @ref matrix-vector for brief introduction. See also Matrix (square) and
-Vector.
+See @ref matrix-vector for brief introduction. See also @ref Matrix (square)
+and @ref Vector.
 
 The data are stored in column-major order, to reflect that, all indices in
 math formulas are in reverse order (i.e. @f$ \boldsymbol A_{ji} @f$ instead
@@ -65,13 +65,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Size of matrix diagonal
          *
-         * @see fromDiagonal(), diagonal()
+         * @see @ref fromDiagonal(), @ref diagonal()
          */
         const static std::size_t DiagonalSize = (cols < rows ? cols : rows);
 
         /**
          * @brief %Matrix from array
-         * @return Reference to the data as if it was Matrix, thus doesn't
+         * @return Reference to the data as if it was matrix, thus doesn't
          *      perform any copying.
          *
          * @attention Use with caution, the function doesn't check whether the
@@ -90,7 +90,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Rolls the vector into matrix, i.e. first `rows` elements of the
          * vector will make first column of resulting matrix.
-         * @see toVector()
+         * @see @ref toVector()
          */
         static RectangularMatrix<cols, rows, T> fromVector(const Vector<cols*rows, T>& vector) {
             return *reinterpret_cast<const RectangularMatrix<cols, rows, T>*>(vector.data());
@@ -99,7 +99,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Construct diagonal matrix
          *
-         * @see diagonal()
+         * @see @ref diagonal()
          */
         constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
             return RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), diagonal);
@@ -164,7 +164,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @return One-dimensional array of `cols*rows` length in column-major
          *      order.
          *
-         * @see operator[]
+         * @see operator[]()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         T* data() { return _data[0].data(); }
         constexpr const T* data() const { return _data[0].data(); } /**< @overload */
@@ -172,13 +173,15 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief %Matrix column
          *
-         * Particular elements can be accessed using Vector::operator[], e.g.:
+         * Particular elements can be accessed using Vector::operator[](),
+         * e.g.:
          * @code
          * RectangularMatrix<4, 3, Float> m;
          * Float a = m[2][1];
          * @endcode
          *
-         * @see row(), data()
+         * @see @ref row(), @ref data()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         Vector<rows, T>& operator[](std::size_t col) { return _data[col]; }
         constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /**< @overload */
@@ -186,9 +189,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief %Matrix row
          *
-         * Consider using transposed() when accessing rows frequently, as this
-         * is slower than accessing columns due to the way the matrix is stored.
+         * Consider using @ref transposed() when accessing rows frequently, as
+         * this is slower than accessing columns due to the way the matrix is
+         * stored.
          * @see operator[]()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         Vector<cols, T> row(std::size_t row) const;
 
@@ -203,8 +208,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Non-equality operator
          *
-         * @see Vector::operator<(), Vector::operator<=(), Vector::operator>=(),
-         *      Vector::operator>()
+         * @see Vector::operator<(), Vector::operator<=(),
+         *      Vector::operator>=(), Vector::operator>()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         bool operator!=(const RectangularMatrix<cols, rows, T>& other) const {
             return !operator==(other);
@@ -237,6 +243,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @brief Add matrix
          *
          * @see operator+=()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         RectangularMatrix<cols, rows, T> operator+(const RectangularMatrix<cols, rows, T>& other) const {
             return RectangularMatrix<cols, rows, T>(*this)+=other;
@@ -259,7 +266,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Subtract matrix
          *
-         * @see operator-=()
+         * @see @ref operator-=()
          */
         RectangularMatrix<cols, rows, T> operator-(const RectangularMatrix<cols, rows, T>& other) const {
             return RectangularMatrix<cols, rows, T>(*this)-=other;
@@ -283,6 +290,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @brief Multiply matrix with number
          *
          * @see operator*=(T), operator*(T, const RectangularMatrix<cols, rows, T>&)
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         RectangularMatrix<cols, rows, T> operator*(T number) const {
             return RectangularMatrix<cols, rows, T>(*this) *= number;
@@ -307,6 +315,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see operator/=(T),
          *      operator/(T, const RectangularMatrix<cols, rows, T>&)
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         RectangularMatrix<cols, rows, T> operator/(T number) const {
             return RectangularMatrix<cols, rows, T>(*this) /= number;
@@ -336,14 +345,14 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Transposed matrix
          *
-         * @see row()
+         * @see @ref row()
          */
         RectangularMatrix<rows, cols, T> transposed() const;
 
         /**
          * @brief Values on diagonal
          *
-         * @see fromDiagonal()
+         * @see @ref fromDiagonal()
          */
         constexpr Vector<DiagonalSize, T> diagonal() const;
 
@@ -354,7 +363,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * of the matrix will make first `rows` elements of resulting vector.
          * Useful for performing vector operations with the matrix (e.g.
          * summing the elements etc.).
-         * @see fromVector()
+         * @see @ref fromVector()
          */
         Vector<rows*cols, T> toVector() const {
             return *reinterpret_cast<const Vector<rows*cols, T>*>(data());
@@ -379,7 +388,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief Matrix with 2 columns and 3 rows
+@brief %Matrix with 2 columns and 3 rows
 
 Convenience alternative to <tt>%RectangularMatrix<2, 3, T></tt>. See
 @ref RectangularMatrix for more information.
@@ -390,7 +399,7 @@ Convenience alternative to <tt>%RectangularMatrix<2, 3, T></tt>. See
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
 
 /**
-@brief Matrix with 3 columns and 2 rows
+@brief %Matrix with 3 columns and 2 rows
 
 Convenience alternative to <tt>%RectangularMatrix<3, 2, T></tt>. See
 @ref RectangularMatrix for more information.
@@ -401,7 +410,7 @@ Convenience alternative to <tt>%RectangularMatrix<3, 2, T></tt>. See
 template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 
 /**
-@brief Matrix with 2 columns and 4 rows
+@brief %Matrix with 2 columns and 4 rows
 
 Convenience alternative to <tt>%RectangularMatrix<2, 4, T></tt>. See
 @ref RectangularMatrix for more information.
@@ -412,7 +421,7 @@ Convenience alternative to <tt>%RectangularMatrix<2, 4, T></tt>. See
 template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
 
 /**
-@brief Matrix with 4 columns and 2 rows
+@brief %Matrix with 4 columns and 2 rows
 
 Convenience alternative to <tt>%RectangularMatrix<4, 2, T></tt>. See
 @ref RectangularMatrix for more information.
@@ -423,7 +432,7 @@ Convenience alternative to <tt>%RectangularMatrix<4, 2, T></tt>. See
 template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 
 /**
-@brief Matrix with 3 columns and 4 rows
+@brief %Matrix with 3 columns and 4 rows
 
 Convenience alternative to <tt>%RectangularMatrix<3, 4, T></tt>. See
 @ref RectangularMatrix for more information.
@@ -434,7 +443,7 @@ Convenience alternative to <tt>%RectangularMatrix<3, 4, T></tt>. See
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
 
 /**
-@brief Matrix with 4 columns and 3 rows
+@brief %Matrix with 4 columns and 3 rows
 
 Convenience alternative to <tt>%RectangularMatrix<4, 3, T></tt>. See
 @ref RectangularMatrix for more information.
@@ -449,6 +458,7 @@ template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
 @brief Multiply number with matrix
 
 Same as RectangularMatrix::operator*(T) const.
+@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> operator*(
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -468,6 +478,7 @@ The computation is done column-wise. @f[
     \boldsymbol B_j = \frac a {\boldsymbol A_j}
 @f]
 @see RectangularMatrix::operator/(T) const
+@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> operator/(
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -492,6 +503,7 @@ Internally the same as multiplying one-column matrix with one-row matrix. @f[
     (\boldsymbol {aA})_{ji} = \boldsymbol a_i \boldsymbol A_j
 @f]
 @see RectangularMatrix::operator*(const RectangularMatrix<size, cols, T>&) const
+@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t size, std::size_t cols, class T> inline RectangularMatrix<cols, size, T> operator*(const Vector<size, T>& vector, const RectangularMatrix<cols, 1, T>& matrix) {
     return RectangularMatrix<1, size, T>(vector)*matrix;

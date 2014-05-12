@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::Algorithms::svd()
+ * @brief Function @ref Magnum::Math::Algorithms::svd()
  */
 
 #include <tuple>

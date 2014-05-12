@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Constants
+ * @brief Class @ref Magnum::Math::Constants
  */
 
 #include "Magnum/Types.h"
@@ -36,7 +36,7 @@ namespace Magnum { namespace Math {
 /**
 @brief Numeric constants
 
-@see Magnum::Constants, Magnum::Constantsd
+@see @ref Magnum::Constants, @ref Magnum::Constantsd
 */
 template<class T> struct Constants {
     Constants() = delete;
@@ -46,7 +46,7 @@ template<class T> struct Constants {
     /**
      * @brief Pi
      *
-     * @see Deg, Rad
+     * @see @ref Deg, @ref Rad
      */
     static constexpr T pi();
 

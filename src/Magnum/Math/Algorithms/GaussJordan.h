@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::Algorithms::gaussJordanInPlaceTransposed(), Magnum::Math::Algorithms::gaussJordanInPlace()
+ * @brief Function @ref Magnum::Math::Algorithms::gaussJordanInPlaceTransposed(), @ref Magnum::Math::Algorithms::gaussJordanInPlace()
  */
 
 #include "Magnum/Math/RectangularMatrix.h"
@@ -42,7 +42,8 @@ namespace Magnum { namespace Math { namespace Algorithms {
 
 As Gauss-Jordan elimination works on rows and matrices in OpenGL are
 column-major, it is more efficient to operate on transposed matrices and treat
-columns as rows. See also gaussJordanInPlace() which works with non-transposed matrices.
+columns as rows. See also @ref gaussJordanInPlace() which works with
+non-transposed matrices.
 
 The function eliminates matrix @p a and solves @p t in place. For efficiency
 reasons, only pure Gaussian elimination is done on @p a and the final
@@ -94,8 +95,8 @@ template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTra
 /**
 @brief In-place Gauss-Jordan elimination
 
-Transposes the matrices, calls gaussJordanInPlaceTransposed() on them and then
-transposes them back.
+Transposes the matrices, calls @ref gaussJordanInPlaceTransposed() on them and
+then transposes them back.
 */
 template<std::size_t size, std::size_t cols, class T> bool gaussJordanInPlace(RectangularMatrix<size, size, T>& a, RectangularMatrix<cols, size, T>& t) {
     a = a.transposed();

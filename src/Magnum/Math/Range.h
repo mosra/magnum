@@ -62,7 +62,7 @@ template<UnsignedInt dimensions, class T> class Range {
         /**
          * Create range from minimal coordinates and size
          * @param min   Minimal coordinates
-         * @param size  Range size
+         * @param size  %Range size
          */
         static Range<dimensions, T> fromSize(const VectorType& min, const VectorType& size) {
             return {min, min+size};
@@ -122,7 +122,7 @@ template<UnsignedInt dimensions, class T> class Range {
         constexpr const VectorType max() const { return _max; } /**< @overload */
 
         /**
-         * @brief Range size
+         * @brief %Range size
          *
          * @see @ref min(), @ref max(), @ref Range2D::sizeX(),
          *      @ref Range2D::sizeY(), @ref Range3D::sizeX(),
@@ -131,7 +131,7 @@ template<UnsignedInt dimensions, class T> class Range {
         VectorType size() const { return _max - _min; }
 
         /**
-         * @brief Range center
+         * @brief %Range center
          *
          * @see @ref Range2D::centerX(), @ref Range2D::centerY(),
          *      @ref Range3D::centerX(), @ref Range3D::centerY(),

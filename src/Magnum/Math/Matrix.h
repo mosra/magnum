@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Matrix
+ * @brief Class @ref Magnum::Math::Matrix, typedef @ref Magnum::Math::Matrix2x2, @ref Magnum::Math::Matrix3x3, @ref Magnum::Math::Matrix4x4
  */
 
 #include "Magnum/Math/RectangularMatrix.h"
@@ -57,7 +57,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Zero-filled matrix constructor
          *
-         * Use this constructor by calling `Matrix m(Matrix::Zero);`.
+         * Use this constructor by calling `%Matrix m(Matrix::Zero);`.
          */
         constexpr explicit Matrix(ZeroType) {}
 
@@ -68,7 +68,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @brief Default constructor
          *
          * You can also explicitly call this constructor with
-         * `Matrix m(Matrix::Identity);`. Optional parameter @p value allows
+         * `%Matrix m(Matrix::Identity);`. Optional parameter @p value allows
          * you to specify value on diagonal.
          */
         constexpr /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)): RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(),
@@ -113,8 +113,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * The matrix is orthogonal if its transpose is equal to its inverse: @f[
          *      Q^T = Q^{-1}
          * @f]
-         * @see transposed(), inverted(), Matrix3::isRigidTransformation(),
-         *      Matrix4::isRigidTransformation()
+         * @see @ref transposed(), @ref inverted(),
+         *      @ref Matrix3::isRigidTransformation(),
+         *      @ref Matrix4::isRigidTransformation()
          */
         bool isOrthogonal() const;
 
@@ -149,19 +150,22 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Computed using Cramer's rule: @f[
          *      A^{-1} = \frac{1}{\det(A)} Adj(A)
          * @f]
-         * See invertedOrthogonal(), Matrix3::invertedRigid() and Matrix4::invertedRigid()
-         * which are faster alternatives for particular matrix types.
+         * See @ref invertedOrthogonal(), @ref Matrix3::invertedRigid() and
+         * @ref Matrix4::invertedRigid() which are faster alternatives for
+         * particular matrix types.
          */
         Matrix<size, T> inverted() const;
 
         /**
          * @brief Inverted orthogonal matrix
          *
-         * Equivalent to transposed(), expects that the matrix is orthogonal. @f[
+         * Equivalent to @ref transposed(), expects that the matrix is
+         * orthogonal. @f[
          *      A^{-1} = A^T
          * @f]
-         * @see inverted(), isOrthogonal(), Matrix3::invertedRigid(),
-         *      Matrix4::invertedRigid()
+         * @see @ref inverted(), @ref isOrthogonal(),
+         *      @ref Matrix3::invertedRigid(),
+         *      @ref Matrix4::invertedRigid()
          */
         Matrix<size, T> invertedOrthogonal() const {
             CORRADE_ASSERT(isOrthogonal(),

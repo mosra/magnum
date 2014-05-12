@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::BoolVector
+ * @brief Class @ref Magnum::Math::BoolVector
  */
 
 #include <Corrade/configure.h>
@@ -59,8 +59,8 @@ namespace Implementation {
 
 Result of component-wise comparison from Vector. The boolean values are stored
 as bits in array of unsigned bytes, unused bits have undefined value which
-doesn't affect comparison or all() / none() / any() functions. See also
-@ref matrix-vector for brief introduction.
+doesn't affect comparison or @ref all() / @ref none() / @ref any() functions.
+See also @ref matrix-vector for brief introduction.
 */
 template<std::size_t size> class BoolVector {
     static_assert(size != 0, "BoolVector cannot have zero elements");
@@ -106,7 +106,8 @@ template<std::size_t size> class BoolVector {
          * @brief Raw data
          * @return %Array of DataSize length
          *
-         * @see operator[](), set()
+         * @todoc Make reference explicit when Doxygen can link to operator[]
+         * @see operator[](), @ref set()
          */
         UnsignedByte* data() { return _data; }
         constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
@@ -158,6 +159,7 @@ template<std::size_t size> class BoolVector {
          * @brief Bitwise AND
          *
          * @see operator&=()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         BoolVector<size> operator&(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) &= other;
@@ -179,6 +181,7 @@ template<std::size_t size> class BoolVector {
          * @brief Bitwise OR
          *
          * @see operator|=()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         BoolVector<size> operator|(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) |= other;
@@ -200,6 +203,7 @@ template<std::size_t size> class BoolVector {
          * @brief Bitwise XOR
          *
          * @see operator^=()
+         * @todoc Make explicit reference when Doxygen can handle operators
          */
         BoolVector<size> operator^(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) ^= other;

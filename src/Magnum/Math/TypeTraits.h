@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::TypeTraits
+ * @brief Class @ref Magnum::Math::TypeTraits
  */
 
 #include <cmath>
@@ -99,8 +99,8 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     /**
      * @brief Fuzzy compare
      *
-     * Uses fuzzy compare for floating-point types (using epsilon() value),
-     * pure equality comparison everywhere else.
+     * Uses fuzzy compare for floating-point types (using @ref epsilon()
+     * value), pure equality comparison everywhere else.
      */
     static bool equals(T a, T b);
     #endif

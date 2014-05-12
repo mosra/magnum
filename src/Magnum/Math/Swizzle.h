@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::swizzle()
+ * @brief Function @ref Magnum::Math::swizzle()
  */
 
 #include "Magnum/Math/Vector.h"

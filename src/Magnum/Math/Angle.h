@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Deg, Magnum::Math::Rad and related operators.
+ * @brief Class @ref Magnum::Math::Deg, @ref Magnum::Math::Rad and related operators.
  */
 
 #include <Corrade/configure.h>
@@ -119,7 +119,7 @@ std::sin(Float(Rad<Float>(b));  // required explicit conversion hints to user
                                 // (i.e., conversion to radians)
 @endcode
 
-@see Magnum::Deg, Magnum::Degd
+@see @ref Magnum::Deg, @ref Magnum::Degd
 */
 template<class T> class Deg: public Unit<Deg, T> {
     public:
@@ -157,7 +157,8 @@ Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see Magnum::operator""_deg(), operator""_degf(), operator""_rad()
-@note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
+@todoc Make references explicit when Doxygen can link to operator""
+@note Not available on GCC < 4.7. Use @ref Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
@@ -172,7 +173,8 @@ Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
 Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
-@note Not available on GCC < 4.7. Use Deg::Deg(T) instead.
+@todoc Make references explicit when Doxygen can link to operator""
+@note Not available on GCC < 4.7. Use @ref Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
@@ -181,8 +183,8 @@ constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(va
 /**
 @brief Angle in radians
 
-See Deg for more information.
-@see Magnum::Rad, Magnum::Radd
+See @ref Deg for more information.
+@see @ref Magnum::Rad, @ref Magnum::Radd
 */
 template<class T> class Rad: public Unit<Rad, T> {
     public:
@@ -216,7 +218,8 @@ template<class T> class Rad: public Unit<Rad, T> {
 
 See operator""_rad() for more information.
 @see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
-@note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
+@todoc Make references explicit when Doxygen can link to operator""
+@note Not available on GCC < 4.7. Use @ref Rad::Rad(T) instead.
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
 #endif
@@ -226,7 +229,8 @@ constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(v
 
 See operator""_degf() for more information.
 @see Magnum::operator""_radf(), operator""_rad(), operator""_degf()
-@note Not available on GCC < 4.7. Use Rad::Rad(T) instead.
+@todoc Make references explicit when Doxygen can link to operator""
+@note Not available on GCC < 4.7. Use @ref Rad::Rad(T) instead.
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 #endif
