@@ -137,7 +137,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Computed recursively using Laplace's formula: @f[
          *      \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
          * @f] @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
-         * ij(). The formula is expanded down to 2x2 matrix, where the
+         * @ref ij(). The formula is expanded down to 2x2 matrix, where the
          * determinant is computed directly: @f[
          *      \det(A) = a_{0, 0} a_{1, 1} - a_{1, 0} a_{0, 1}
          * @f]

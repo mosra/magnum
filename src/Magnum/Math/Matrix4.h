@@ -350,9 +350,14 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Inverted rigid transformation matrix
          *
          * Expects that the matrix represents rigid transformation.
-         * Significantly faster than the general algorithm in @ref inverted().
+         * Significantly faster than the general algorithm in @ref inverted(). @f[
+         *      A^{-1} = \begin{pmatrix} (A^{3,3})^T & (A^{3,3})^T \begin{pmatrix} a_{3,0} \\ a_{3,1} \\ a_{3,2} \\ \end{pmatrix} \\ \begin{array}{ccc} 0 & 0 & 0 \end{array} & 1 \end{pmatrix}
+         * @f]
+         * @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
+         * @ref ij()
          * @see @ref isRigidTransformation(), @ref invertedOrthogonal(),
-         *      @ref rotationScaling(), translation() const
+         *      @ref rotationScaling(), translation() const,
+         *      @ref Matrix3::invertedRigid()
          * @todoc Explicit reference when Doxygen can handle const
          */
         Matrix4<T> invertedRigid() const;
