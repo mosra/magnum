@@ -99,6 +99,9 @@ void CubeMapTextureArrayGLTest::construct() {
 }
 
 void CubeMapTextureArrayGLTest::bind() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+
     CubeMapTextureArray texture;
 
     #ifndef MAGNUM_TARGET_GLES
