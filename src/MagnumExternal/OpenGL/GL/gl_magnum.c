@@ -90,6 +90,7 @@ int ogl_ext_ATI_texture_mirror_once = ogl_LOAD_FAILED;
 int ogl_ext_EXT_texture_filter_anisotropic = ogl_LOAD_FAILED;
 int ogl_ext_EXT_texture_mirror_clamp = ogl_LOAD_FAILED;
 int ogl_ext_EXT_direct_state_access = ogl_LOAD_FAILED;
+int ogl_ext_EXT_texture_sRGB_decode = ogl_LOAD_FAILED;
 int ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
 int ogl_ext_EXT_debug_marker = ogl_LOAD_FAILED;
 int ogl_ext_GREMEDY_string_marker = ogl_LOAD_FAILED;
@@ -2632,7 +2633,7 @@ typedef struct ogl_StrToExtMap_s
   PFN_LOADFUNCPOINTERS LoadExtension;
 } ogl_StrToExtMap;
 
-static ogl_StrToExtMap ExtensionMap[10] = {
+static ogl_StrToExtMap ExtensionMap[11] = {
   {"GL_AMD_vertex_shader_layer", &ogl_ext_AMD_vertex_shader_layer, NULL},
   {"GL_AMD_shader_trinary_minmax", &ogl_ext_AMD_shader_trinary_minmax, NULL},
   {"GL_ARB_robustness", &ogl_ext_ARB_robustness, Load_ARB_robustness},
@@ -2640,12 +2641,13 @@ static ogl_StrToExtMap ExtensionMap[10] = {
   {"GL_EXT_texture_filter_anisotropic", &ogl_ext_EXT_texture_filter_anisotropic, NULL},
   {"GL_EXT_texture_mirror_clamp", &ogl_ext_EXT_texture_mirror_clamp, NULL},
   {"GL_EXT_direct_state_access", &ogl_ext_EXT_direct_state_access, Load_EXT_direct_state_access},
+  {"GL_EXT_texture_sRGB_decode", &ogl_ext_EXT_texture_sRGB_decode, NULL},
   {"GL_EXT_debug_label", &ogl_ext_EXT_debug_label, Load_EXT_debug_label},
   {"GL_EXT_debug_marker", &ogl_ext_EXT_debug_marker, Load_EXT_debug_marker},
   {"GL_GREMEDY_string_marker", &ogl_ext_GREMEDY_string_marker, Load_GREMEDY_string_marker},
 };
 
-static int g_extensionMapSize = 10;
+static int g_extensionMapSize = 11;
 
 static void ClearExtensionVars()
 {
@@ -2656,6 +2658,7 @@ static void ClearExtensionVars()
   ogl_ext_EXT_texture_filter_anisotropic = ogl_LOAD_FAILED;
   ogl_ext_EXT_texture_mirror_clamp = ogl_LOAD_FAILED;
   ogl_ext_EXT_direct_state_access = ogl_LOAD_FAILED;
+  ogl_ext_EXT_texture_sRGB_decode = ogl_LOAD_FAILED;
   ogl_ext_EXT_debug_label = ogl_LOAD_FAILED;
   ogl_ext_EXT_debug_marker = ogl_LOAD_FAILED;
   ogl_ext_GREMEDY_string_marker = ogl_LOAD_FAILED;

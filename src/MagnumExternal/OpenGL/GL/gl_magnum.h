@@ -170,6 +170,7 @@ extern int ogl_ext_ATI_texture_mirror_once;
 extern int ogl_ext_EXT_texture_filter_anisotropic;
 extern int ogl_ext_EXT_texture_mirror_clamp;
 extern int ogl_ext_EXT_direct_state_access;
+extern int ogl_ext_EXT_texture_sRGB_decode;
 extern int ogl_ext_EXT_debug_label;
 extern int ogl_ext_EXT_debug_marker;
 extern int ogl_ext_GREMEDY_string_marker;
@@ -196,6 +197,10 @@ extern int ogl_ext_GREMEDY_string_marker;
 #define GL_PROGRAM_MATRIX_EXT 0x8E2D
 #define GL_PROGRAM_MATRIX_STACK_DEPTH_EXT 0x8E2F
 #define GL_TRANSPOSE_PROGRAM_MATRIX_EXT 0x8E2E
+
+#define GL_DECODE_EXT 0x8A49
+#define GL_SKIP_DECODE_EXT 0x8A4A
+#define GL_TEXTURE_SRGB_DECODE_EXT 0x8A48
 
 #define GL_BUFFER_OBJECT_EXT 0x9151
 #define GL_PROGRAM_OBJECT_EXT 0x8B40
@@ -2080,6 +2085,7 @@ extern GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayVertexBindingD
 extern GLLOADGEN_EXPORT void (CODEGEN_FUNCPTR *_ptrc_glVertexArrayVertexOffsetEXT)(GLuint, GLuint, GLint, GLenum, GLsizei, GLintptr);
 #define glVertexArrayVertexOffsetEXT _ptrc_glVertexArrayVertexOffsetEXT
 #endif /*GL_EXT_direct_state_access*/
+
 
 #ifndef GL_EXT_debug_label
 #define GL_EXT_debug_label 1
