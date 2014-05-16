@@ -196,6 +196,12 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        /** @copydoc Texture::setSRGBDecode() */
+        TextureArray<dimensions>& setSRGBDecode(bool decode) {
+            AbstractTexture::setSRGBDecode(decode);
+            return *this;
+        }
+
         #ifndef MAGNUM_TARGET_GLES2
         /** @copydoc Texture::setSwizzle() */
         template<char r, char g, char b, char a> TextureArray<dimensions>& setSwizzle() {

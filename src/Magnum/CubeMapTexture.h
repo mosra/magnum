@@ -188,6 +188,12 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
+        /** @copydoc Texture::setSRGBDecode() */
+        CubeMapTexture& setSRGBDecode(bool decode) {
+            AbstractTexture::setSRGBDecode(decode);
+            return *this;
+        }
+
         #ifndef MAGNUM_TARGET_GLES2
         /** @copydoc Texture::setSwizzle() */
         template<char r, char g, char b, char a> CubeMapTexture& setSwizzle() {

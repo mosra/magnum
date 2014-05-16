@@ -46,6 +46,7 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         void bind();
 
         void sampling();
+        void samplingSRGBDecode();
         #ifndef MAGNUM_TARGET_GLES2
         void samplingSwizzle();
         #else
@@ -80,6 +81,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::bind,
 
               &CubeMapTextureGLTest::sampling,
+              &CubeMapTextureGLTest::samplingSRGBDecode,
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingSwizzle,
               #else
@@ -167,6 +169,20 @@ void CubeMapTextureGLTest::sampling() {
            ;
 
    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureGLTest::samplingSRGBDecode() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::sRGB>())
+        CORRADE_SKIP(Extensions::GL::EXT::sRGB::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setSRGBDecode(false);
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_GLES2

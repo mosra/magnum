@@ -309,6 +309,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void setBorderColor(const Vector4ui& color);
         #endif
         void setMaxAnisotropy(Float anisotropy);
+        void setSRGBDecode(bool decode);
 
         #ifndef MAGNUM_TARGET_GLES2
         template<char r, char g, char b, char a> void setSwizzle() {

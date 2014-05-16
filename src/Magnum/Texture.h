@@ -442,6 +442,26 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        /**
+         * @brief Set sRGB decoding
+         * @return Reference to self (for method chaining)
+         *
+         * Disables or reenables decoding of sRGB values. Initial value is
+         * `true`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_SRGB_DECODE_EXT}
+         * @requires_extension %Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_es_extension OpenGL ES 3.0 or extension
+         *      @es_extension{EXT,sRGB} and
+         *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         */
+        Texture<dimensions>& setSRGBDecode(bool decode) {
+            AbstractTexture::setSRGBDecode(decode);
+            return *this;
+        }
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set component swizzle

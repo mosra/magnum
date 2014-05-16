@@ -44,6 +44,7 @@ class RectangleTextureGLTest: public AbstractOpenGLTester {
         void bind();
 
         void sampling();
+        void samplingSRGBDecode();
         void samplingBorderInteger();
         void samplingSwizzle();
         void samplingDepthStencilMode();
@@ -64,6 +65,7 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::bind,
 
               &RectangleTextureGLTest::sampling,
+              &RectangleTextureGLTest::samplingSRGBDecode,
               &RectangleTextureGLTest::samplingBorderInteger,
               &RectangleTextureGLTest::samplingSwizzle,
               &RectangleTextureGLTest::samplingDepthStencilMode,
@@ -133,6 +135,18 @@ void RectangleTextureGLTest::sampling() {
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
            .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RectangleTextureGLTest::samplingSRGBDecode() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.setSRGBDecode(false);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

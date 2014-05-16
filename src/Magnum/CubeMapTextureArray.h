@@ -218,6 +218,12 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
+        /** @copydoc RectangleTexture::setSRGBDecode() */
+        CubeMapTextureArray& setSRGBDecode(bool decode) {
+            AbstractTexture::setSRGBDecode(decode);
+            return *this;
+        }
+
         /**
          * @copybrief Texture::setSwizzle()
          * @return Reference to self (for method chaining)
