@@ -33,15 +33,15 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Line2D::wireframe() {
-    return Trade::MeshData2D(MeshPrimitive::Lines, std::vector<UnsignedInt>{}, {{
+    return Trade::MeshData2D(MeshPrimitive::Lines, {}, {{
         {0.0f, 0.0f}, {1.0f, 0.0f}
-    }}, std::vector<std::vector<Vector2>>{});
+    }}, {});
 }
 
 Trade::MeshData3D Line3D::wireframe() {
-    return Trade::MeshData3D(MeshPrimitive::Lines, std::vector<UnsignedInt>{}, {{
+    return Trade::MeshData3D(MeshPrimitive::Lines, {}, {{
         {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
-    }}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{});
+    }}, {}, {});
 }
 
 }}

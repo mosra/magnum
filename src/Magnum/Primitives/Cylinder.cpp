@@ -34,7 +34,7 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const Flags flags) {
-    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Primitives::Cylinder::solid(): cylinder must have at least one ring and three segments", Trade::MeshData3D(MeshPrimitive::Triangles, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{}));
+    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Primitives::Cylinder::solid(): cylinder must have at least one ring and three segments", Trade::MeshData3D(MeshPrimitive::Triangles, {}, {}, {}, {}));
 
     Implementation::Spheroid cylinder(segments, flags & Flag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate);
 
@@ -65,7 +65,7 @@ Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt seg
 }
 
 Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength) {
-    CORRADE_ASSERT(rings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Cylinder::wireframe(): improper parameters", Trade::MeshData3D(MeshPrimitive::Lines, std::vector<UnsignedInt>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector3>>{}, std::vector<std::vector<Vector2>>{}));
+    CORRADE_ASSERT(rings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Cylinder::wireframe(): improper parameters", Trade::MeshData3D(MeshPrimitive::Lines, {}, {}, {}, {}));
 
     Implementation::WireframeSpheroid cylinder(segments/4);
 

@@ -51,7 +51,7 @@ void GenerateFlatNormalsTest::wrongIndexCount() {
     std::vector<Vector3> normals;
     std::tie(indices, normals) = MeshTools::generateFlatNormals({
         0, 1
-    }, std::vector<Vector3>{});
+    }, {});
 
     CORRADE_COMPARE(indices.size(), 0);
     CORRADE_COMPARE(normals.size(), 0);
