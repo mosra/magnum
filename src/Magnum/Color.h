@@ -336,7 +336,9 @@ typedef BasicColor3<Float> Color3;
 /** @brief Three-component (RGB) unsigned byte color */
 typedef BasicColor3<UnsignedByte> Color3ub;
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, BasicColor3)
+#endif
 
 /**
 @brief Four-component (RGBA) color
@@ -507,7 +509,9 @@ typedef BasicColor4<Float> Color4;
 /** @brief Four-component (RGBA) unsigned byte color */
 typedef BasicColor4<UnsignedByte> Color4ub;
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, BasicColor4)
+#endif
 
 /** @debugoperator{Magnum::BasicColor3} */
 template<class T> inline Debug operator<<(Debug debug, const BasicColor3<T>& value) {
