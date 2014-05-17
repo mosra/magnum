@@ -106,8 +106,7 @@ template<std::size_t size> class BoolVector {
          * @brief Raw data
          * @return %Array of DataSize length
          *
-         * @see operator[](), @ref set()
-         * @todoc Make reference explicit when Doxygen can link to operator[]
+         * @see @ref operator[](), @ref set()
          */
         UnsignedByte* data() { return _data; }
         constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
@@ -158,8 +157,7 @@ template<std::size_t size> class BoolVector {
         /**
          * @brief Bitwise AND
          *
-         * @see operator&=()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator&=()
          */
         BoolVector<size> operator&(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) &= other;
@@ -180,8 +178,7 @@ template<std::size_t size> class BoolVector {
         /**
          * @brief Bitwise OR
          *
-         * @see operator|=()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator|=()
          */
         BoolVector<size> operator|(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) |= other;
@@ -202,8 +199,7 @@ template<std::size_t size> class BoolVector {
         /**
          * @brief Bitwise XOR
          *
-         * @see operator^=()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator^=()
          */
         BoolVector<size> operator^(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) ^= other;

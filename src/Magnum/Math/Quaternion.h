@@ -230,8 +230,7 @@ template<class T> class Quaternion {
         /**
          * @brief Add quaternion
          *
-         * @see operator+=()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator+=()
          */
         Quaternion<T> operator+(const Quaternion<T>& other) const {
             return Quaternion<T>(*this) += other;
@@ -284,8 +283,7 @@ template<class T> class Quaternion {
         /**
          * @brief Multiply with scalar
          *
-         * @see operator*=(T)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator*=(T)
          */
         Quaternion<T> operator*(T scalar) const {
             return Quaternion<T>(*this) *= scalar;
@@ -307,8 +305,7 @@ template<class T> class Quaternion {
         /**
          * @brief Divide with scalar
          *
-         * @see operator/=(T)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator/=(T)
          */
         Quaternion<T> operator/(T scalar) const {
             return Quaternion<T>(*this) /= scalar;
@@ -434,8 +431,7 @@ template<class T> class Quaternion {
 /** @relates Quaternion
 @brief Multiply scalar with quaternion
 
-Same as Quaternion::operator*(T) const.
-@todoc Make explicit reference when Doxygen can handle operators
+Same as @ref Quaternion::operator*(T) const.
 */
 template<class T> inline Quaternion<T> operator*(T scalar, const Quaternion<T>& quaternion) {
     return quaternion*scalar;
@@ -447,8 +443,7 @@ template<class T> inline Quaternion<T> operator*(T scalar, const Quaternion<T>& 
 @f[
     \frac a q = [\frac a {\boldsymbol q_V}, \frac a {q_S}]
 @f]
-@see Quaternion::operator/()
-@todoc Make explicit reference when Doxygen can handle operators
+@see @ref Quaternion::operator/()
 */
 template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& quaternion) {
     return {scalar/quaternion.vector(), scalar/quaternion.scalar()};

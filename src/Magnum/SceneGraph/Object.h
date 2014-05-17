@@ -288,7 +288,6 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @copybrief transformations()
          * @deprecated Use @ref Magnum::SceneGraph::Object::transformations() "transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)" instead.
-         * @todoc fix this when Doxygen is sane (see related function in AbstractObject)
          */
         CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(const std::vector<Object<Transformation>*>& objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
 
@@ -322,7 +321,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief setClean(std::vector<std::reference_wrapper<Object<Transformation>>>)
-         * @deprecated Use @ref Magnum::SceneGraph::Object::setClean(std::vector<std::reference_wrapper<Object<Transformation>>> "setClean(std::vector<std::reference_wrapper<Object<Transformation>>>" instead.
+         * @deprecated Use @ref Magnum::SceneGraph::Object::setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) "setClean(std::vector<std::reference_wrapper<Object<Transformation>>>)" instead.
          */
         CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") static void setClean(const std::vector<Object<Transformation>*>& objects);
 

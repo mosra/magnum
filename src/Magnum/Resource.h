@@ -156,7 +156,7 @@ class Resource {
          * @brief %Resource state
          *
          * @see operator bool(), @ref ResourceManager::state()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @todoc Explicit reference when Doxygen can handle conversion operators
          */
         ResourceState state() {
             acquire();
@@ -202,10 +202,10 @@ class Resource {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @overload
-         * @deprecated Use the explicit operator*() or operator->() instead.
-         *      Implicit conversion is no longer allowed if it might throw an
-         *      assertion.
-         * @todoc Explicit reference when Doxygen can handle operators
+         * @deprecated Use the explicit @ref operator*() or operator->()
+         *      instead. Implicit conversion is no longer allowed if it might
+         *      throw an assertion.
+         * @todoc Explicit reference when Doxygen can handle operator->()
          */
         CORRADE_DEPRECATED("use operator*() or operator->() instead") operator U&() { return **this; }
         #endif

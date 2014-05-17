@@ -190,8 +190,7 @@ template<std::size_t size, class T> class Vector {
          * @brief Raw data
          * @return One-dimensional array of `size` length.
          *
-         * @see operator[]()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator[]()
          */
         T* data() { return _data; }
         constexpr const T* data() const { return _data; } /**< @overload */
@@ -280,8 +279,7 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Add vector
          *
-         * @see operator+=(), @ref sum()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator+=(), @ref sum()
          */
         Vector<size, T> operator+(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) += other;
@@ -316,9 +314,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = b \boldsymbol a_i
          * @f]
-         * @see operator*=(const Vector<size, T>&),
-         *      operator*=(Vector<size, Integral>&, FloatingPoint)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator*=(const Vector<size, T>&),
+         *      @ref operator*=(Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T>& operator*=(T number) {
             for(std::size_t i = 0; i != size; ++i)
@@ -330,10 +327,9 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Multiply vector with number
          *
-         * @see operator*(const Vector<size, T>&) const,
-         *      operator*=(T), operator*(T, const Vector<size, T>&),
-         *      operator*(const Vector<size, Integral>&, FloatingPoint)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator*(const Vector<size, T>&) const,
+         *      @ref operator*=(T), operator*(T, const Vector<size, T>&),
+         *      @ref operator*(const Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T> operator*(T number) const {
             return Vector<size, T>(*this) *= number;
@@ -345,9 +341,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = \frac{\boldsymbol a_i} b
          * @f]
-         * @see operator/=(const Vector<size, T>&),
-         *      operator/=(Vector<size, Integral>&, FloatingPoint)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator/=(const Vector<size, T>&),
+         *      @ref operator/=(Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T>& operator/=(T number) {
             for(std::size_t i = 0; i != size; ++i)
@@ -359,10 +354,9 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Divide vector with number
          *
-         * @see operator/(const Vector<size, T>&) const,
-         *      operator/=(T), operator/(T, const Vector<size, T>&),
-         *      operator/(const Vector<size, Integral>&, FloatingPoint)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator/(const Vector<size, T>&) const,
+         *      @ref operator/=(T), operator/(T, const Vector<size, T>&),
+         *      @ref operator/(const Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T> operator/(T number) const {
             return Vector<size, T>(*this) /= number;
@@ -374,9 +368,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = \boldsymbol a_i \boldsymbol b_i
          * @f]
-         * @see operator*=(T),
-         *      operator*=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator*=(T),
+         *      @ref operator*=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
         Vector<size, T>& operator*=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
@@ -388,10 +381,9 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Multiply vector component-wise
          *
-         * @see operator*(T) const, operator*=(const Vector<size, T>&),
-         *      operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&),
+         * @see @ref operator*(T) const, @ref operator*=(const Vector<size, T>&),
+         *      @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&),
          *      @ref product()
-         * @todoc Make explicit reference when Doxygen can handle operators
          */
         Vector<size, T> operator*(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) *= other;
@@ -403,9 +395,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = \frac{\boldsymbol a_i}{\boldsymbol b_i}
          * @f]
-         * @see operator/=(T),
-         *      operator/=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator/=(T),
+         *      @ref operator/=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
         Vector<size, T>& operator/=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
@@ -417,9 +408,8 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Divide vector component-wise
          *
-         * @see operator/(T) const, operator/=(const Vector<size, T>&),
-         *      operator/(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator/(T) const, @ref operator/=(const Vector<size, T>&),
+         *      @ref operator/(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
         Vector<size, T> operator/(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) /= other;
@@ -503,23 +493,22 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
-         * @see dot()
+         * @see dot() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 
         /**
          * @brief Sum of values in the vector
          *
-         * @see operator+()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator+()
          */
         T sum() const;
 
         /**
          * @brief Product of values in the vector
          *
-         * @see operator*(const Vector<size, T>&) const
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator*(const Vector<size, T>&) const
          */
         T product() const;
 
@@ -550,8 +539,7 @@ template<std::size_t size, class T> class Vector {
 /** @relates Vector
 @brief Multiply number with vector
 
-Same as Vector::operator*(T) const.
-@todoc Make explicit reference when Doxygen can handle operators
+Same as @ref Vector::operator*(T) const.
 */
 template<std::size_t size, class T> inline Vector<size, T> operator*(
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -570,8 +558,7 @@ template<std::size_t size, class T> inline Vector<size, T> operator*(
 @f[
     \boldsymbol c_i = \frac b {\boldsymbol a_i}
 @f]
-@see Vector::operator/(T) const
-@todoc Make explicit reference when Doxygen can handle operators
+@see @ref Vector::operator/(T) const
 */
 template<std::size_t size, class T> inline Vector<size, T> operator/(
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -860,9 +847,8 @@ operator>>(const Vector<size, Integral>& vector,
 /** @relates Vector
 @brief Multiply integral vector with floating-point number and assign
 
-Similar to Vector::operator*=(T), except that the multiplication is done in
-floating-point. The computation is done in-place.
-@todoc Make explicit reference when Doxygen can handle operators
+Similar to @ref Vector::operator*=(T), except that the multiplication is done
+in floating-point. The computation is done in-place.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -880,9 +866,8 @@ operator*=(Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Multiply integral vector with floating-point number
 
-Similar to Vector::operator*(T) const, except that the multiplication is done
-in floating-point.
-@todoc Make explicit reference when Doxygen can handle operators
+Similar to @ref Vector::operator*(T) const, except that the multiplication is
+done in floating-point.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -898,8 +883,7 @@ operator*(const Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Multiply floating-point number with integral vector
 
-Same as operator*(const Vector<size, Integral>&, FloatingPoint).
-@todoc Make explicit reference when Doxygen can handle operators
+Same as @ref operator*(const Vector<size, Integral>&, FloatingPoint).
 */
 template<std::size_t size, class FloatingPoint, class Integral> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -914,9 +898,8 @@ operator*(FloatingPoint number, const Vector<size, Integral>& vector) {
 /** @relates Vector
 @brief Divide integral vector with floating-point number and assign
 
-Similar to Vector::operator/=(T), except that the division is done in
+Similar to @ref Vector::operator/=(T), except that the division is done in
 floating-point. The computation is done in-place.
-@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -934,9 +917,8 @@ operator/=(Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Divide integral vector with floating-point number
 
-Similar to Vector::operator/(T) const, except that the division is done in
+Similar to @ref Vector::operator/(T) const, except that the division is done in
 floating-point.
-@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -952,9 +934,8 @@ operator/(const Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Multiply integral vector with floating-point vector component-wise and assign
 
-Similar to Vector::operator*=(const Vector<size, T>&), except that the
+Similar to @ref Vector::operator*=(const Vector<size, T>&), except that the
 multiplication is done in floating-point. The computation is done in-place.
-@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -972,11 +953,10 @@ operator*=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
 /** @relates Vector
 @brief Multiply integral vector with floating-point vector component-wise
 
-Similar to Vector::operator*(const Vector<size, T>&) const, except that
+Similar to @ref Vector::operator*(const Vector<size, T>&) const, except that
 the multiplication is done in floating-point. The result is always integral
 vector, convert both arguments to the same floating-point type to have
 floating-point result.
-@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -992,8 +972,7 @@ operator*(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
 /** @relates Vector
 @brief Multiply floating-point vector with integral vector component-wise
 
-Same as operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&).
-@todoc Make explicit reference when Doxygen can handle operators
+Same as @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&).
 */
 template<std::size_t size, class FloatingPoint, class Integral> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1008,9 +987,8 @@ operator*(const Vector<size, FloatingPoint>& a, const Vector<size, Integral>& b)
 /** @relates Vector
 @brief Divide integral vector with floating-point vector component-wise and assign
 
-Similar to Vector::operator/=(const Vector<size, T>&), except that the division
-is done in floating-point. The computation is done in-place.
-@todoc Make explicit reference when Doxygen can handle operators
+Similar to @ref Vector::operator/=(const Vector<size, T>&), except that the
+division is done in floating-point. The computation is done in-place.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1028,11 +1006,10 @@ operator/=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
 /** @relates Vector
 @brief Divide integral vector with floating-point vector component-wise
 
-Similar to Vector::operator/(const Vector<size, T>&) const, except that
+Similar to @ref Vector::operator/(const Vector<size, T>&) const, except that
 the division is done in floating-point. The result is always integral vector,
 convert both arguments to the same floating-point type to have floating-point
 result.
-@todoc Make explicit reference when Doxygen can handle operators
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT

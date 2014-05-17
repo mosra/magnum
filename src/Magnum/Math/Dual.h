@@ -95,8 +95,7 @@ template<class T> class Dual {
         /**
          * @brief Add dual number
          *
-         * @see operator+=()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator+=()
          */
         Dual<T> operator+(const Dual<T>& other) const {
             return Dual<T>(*this)+=other;
@@ -129,8 +128,7 @@ template<class T> class Dual {
         /**
          * @brief Subtract dual number
          *
-         * @see operator-=()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator-=()
          */
         Dual<T> operator-(const Dual<T>& other) const {
             return Dual<T>(*this)-=other;

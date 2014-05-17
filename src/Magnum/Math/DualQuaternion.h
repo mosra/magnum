@@ -106,7 +106,6 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Creates unit dual quaternion. @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol 0, 0]
          * @f]
-         * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr /*implicit*/ DualQuaternion();
@@ -130,7 +129,6 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]
          * @f]
          * @see @ref transformPointNormalized()
-         * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit DualQuaternion(const Vector3<T>& vector);

@@ -137,7 +137,7 @@ template<class T> class Complex {
          *      c = v_x + iv_y
          * @f]
          * @see operator Vector2(), @ref transformVector()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @todoc Explicit reference when Doxygen can handle conversion operators
          */
         constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
 
@@ -226,8 +226,7 @@ template<class T> class Complex {
         /**
          * @brief Add complex number
          *
-         * @see operator+=()
-         * @todoc Explicit reference when Doxygen can handle operators
+         * @see @ref operator+=(const Complex<T>&)
          */
         Complex<T> operator+(const Complex<T>& other) const {
             return Complex<T>(*this) += other;
@@ -260,8 +259,7 @@ template<class T> class Complex {
         /**
          * @brief Subtract complex number
          *
-         * @see operator-=()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator-=(const Complex<T>&)
          */
         Complex<T> operator-(const Complex<T>& other) const {
             return Complex<T>(*this) -= other;
@@ -283,8 +281,7 @@ template<class T> class Complex {
         /**
          * @brief Multiply with scalar
          *
-         * @see operator*=(T)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator*=(T)
          */
         Complex<T> operator*(T scalar) const {
             return Complex<T>(*this) *= scalar;
@@ -306,8 +303,7 @@ template<class T> class Complex {
         /**
          * @brief Divide with scalar
          *
-         * @see operator/=(T)
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @see @ref operator/=(T)
          */
         Complex<T> operator/(T scalar) const {
             return Complex<T>(*this) /= scalar;
@@ -413,7 +409,7 @@ template<class T> class Complex {
          * @f]
          * @see @ref Complex(const Vector2<T>&), operator Vector2(),
          *      @ref Matrix3::transformVector()
-         * @todoc Make explicit reference when Doxygen can handle operators
+         * @todoc Explicit reference when Doxygen can handle conversion operators
          */
         Vector2<T> transformVector(const Vector2<T>& vector) const {
             return Vector2<T>((*this)*Complex<T>(vector));
@@ -426,8 +422,7 @@ template<class T> class Complex {
 /** @relates Complex
 @brief Multiply scalar with complex
 
-Same as Complex::operator*(T) const.
-@todoc Make explicit reference when Doxygen can handle operators
+Same as @ref Complex::operator*(T) const.
 */
 template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& complex) {
     return complex*scalar;
@@ -439,8 +434,7 @@ template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& comple
 @f[
     \frac t c = \frac t a + i \frac t b
 @f]
-@see Complex::operator/()
-@todoc Make explicit reference when Doxygen can handle operators
+@see @ref Complex::operator/()
 */
 template<class T> inline Complex<T> operator/(T scalar, const Complex<T>& complex) {
     return {scalar/complex.real(), scalar/complex.imaginary()};

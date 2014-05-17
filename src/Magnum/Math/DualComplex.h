@@ -100,7 +100,6 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * Creates unit dual complex number. @f[
          *      \hat c = (0 + i1) + \epsilon (0 + i0)
          * @f]
-         * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr /*implicit*/ DualComplex();
@@ -123,7 +122,6 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * To be used in transformations later. @f[
          *      \hat c = (0 + i1) + \epsilon(v_x + iv_y)
          * @f]
-         * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit DualComplex(const Vector2<T>& vector);

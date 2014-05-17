@@ -164,13 +164,7 @@ class Distance {
         template<class T> static T lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point);
 };
 
-/** @todoc Remove workaround when Doxygen is sane */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> static
-#else
-template<class T>
-#endif
-T Distance::lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
+template<class T> T Distance::lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
     const Vector2<T> pointMinusA = point - a;
     const Vector2<T> pointMinusB = point - b;
     const Vector2<T> bMinusA = b - a;
@@ -190,13 +184,7 @@ T Distance::lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vec
     return std::abs(Vector2<T>::cross(bMinusA, -pointMinusA))/std::sqrt(bDistanceA);
 }
 
-/** @todoc Remove workaround when Doxygen is sane */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> static
-#else
-template<class T>
-#endif
-T Distance::lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
+template<class T> T Distance::lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
     const Vector2<T> pointMinusA = point - a;
     const Vector2<T> pointMinusB = point - b;
     const Vector2<T> bMinusA = b - a;
@@ -216,13 +204,7 @@ T Distance::lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, co
     return Math::pow<2>(Vector2<T>::cross(bMinusA, -pointMinusA))/bDistanceA;
 }
 
-/** @todoc Remove workaround when Doxygen is sane */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> static
-#else
-template<class T>
-#endif
-T Distance::lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
+template<class T> T Distance::lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
     const Vector3<T> pointMinusA = point - a;
     const Vector3<T> pointMinusB = point - b;
     const T pointDistanceA = pointMinusA.dot();
