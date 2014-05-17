@@ -191,6 +191,18 @@ requirements.
 All classes and functions using those commands are cross-referenced in page
 @ref opengl-required-extensions.
 
+@subsection coding-style-documentation-ordering Section ordering
+
+In detailed documentation the text should be always first, the blocks are then
+ordered by their importance. Various @c \@note, @c \@attention and @c \@warning
+blocks to highlight some information are always first, then @c \@see block with
+links to related stuff, where related %Magnum functions are first and links to
+related GL API last, then various support information such as
+@c \@requires_glXX, @c \@requires_es_extension etc. (first desktop GL, then ES,
+then WebGL), after that @c \@deprecated_gl and @c \@deprecated information and
+@c \@todo, @c \@todoc and @c \@bug always last, as they are the least important
+and in most cases only for internal use.
+
 @section coding-style-unit-tests Unit tests
 
 All unit tests use Corrade's @ref Corrade::TestSuite "TestSuite".

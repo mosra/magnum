@@ -350,8 +350,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
          * not available, returns `0`.
-         * @requires_gl Atomic counters are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
          */
         static Int maxAtomicCounterBufferSize();
 
@@ -361,8 +361,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,compute_shader} is not
          * available, returns `0`.
-         * @requires_gl Compute shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_SHARED_MEMORY_SIZE}
+         * @requires_gl Compute shaders are not available in OpenGL ES.
          */
         static Int maxComputeSharedMemorySize();
 
@@ -372,8 +372,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,compute_shader} is not
          * available, returns `0`.
-         * @requires_gl Compute shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS}
+         * @requires_gl Compute shaders are not available in OpenGL ES.
          */
         static Int maxComputeWorkGroupInvocations();
 
@@ -385,8 +385,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_UNITS}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxImageUnits();
 
@@ -396,8 +396,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_SAMPLES}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxImageSamples();
 
@@ -408,8 +408,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither @extension{ARB,shader_image_load_store}
          * nor @extension{ARB,shader_storage_buffer_object} extension is
          * available, returns `0`.
-         * @requires_gl %Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxCombinedShaderOutputResources();
 
@@ -419,8 +419,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
          * is not available, returns `0`.
-         * @requires_gl %Shader storage is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE}
+         * @requires_gl %Shader storage is not available in OpenGL ES.
          */
         static Long maxShaderStorageBlockSize();
         #endif
@@ -432,8 +432,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
          * is not available, returns `0`.
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BLOCK_SIZE}
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          */
         static Int maxUniformBlockSize();
         #endif
@@ -445,8 +445,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,explicit_uniform_location}
          * is not available, returns `0`.
-         * @requires_gl Explicit uniform location is not supported in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_LOCATIONS}
+         * @requires_gl Explicit uniform location is not supported in OpenGL ES.
          */
         static Int maxUniformLocations();
         #endif
@@ -458,9 +458,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
          * available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
          * @requires_gles30 %Texture lookup with offset is not available in
          *      OpenGL ES 2.0.
-         * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
          */
         static Int minTexelOffset();
 
@@ -470,9 +470,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
          * available, returns `0`.
+         * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
          * @requires_gles30 %Texture lookup with offset is not available in
          *      OpenGL ES 2.0.
-         * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
          */
         static Int maxTexelOffset();
         #endif
@@ -613,11 +613,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Binds attribute to location which is used later for binding vertex
          * buffers.
+         * @see @fn_gl{BindAttribLocation}
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @see @fn_gl{BindAttribLocation}
          */
         void bindAttributeLocation(UnsignedInt location, const std::string& name);
 
@@ -631,11 +631,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * Binds fragment data to location which is used later for framebuffer
          * operations. See also @ref Renderer::BlendFunction for more
          * information about using color input index.
+         * @see @fn_gl{BindFragDataLocationIndexed}
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @see @fn_gl{BindFragDataLocationIndexed}
          * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES.
@@ -672,11 +672,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Get uniform location
          * @param name          Uniform name
          *
+         * @see @fn_gl{GetUniformLocation}
          * @deprecated_gl Preferred usage is to specify uniform location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-uniform-location "class documentation"
          *      for more information.
-         * @see @fn_gl{GetUniformLocation}
          */
         Int uniformLocation(const std::string& name);
 

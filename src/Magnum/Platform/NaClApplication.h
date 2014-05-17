@@ -466,8 +466,8 @@ class NaClApplication::InputEvent {
         /**
          * @brief %Modifier
          *
-         * @todo AltGr + PP_INPUTEVENT_MODIFIER_ISKEYPAD, PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT
          * @see @ref Modifiers, @ref modifiers()
+         * @todo AltGr + PP_INPUTEVENT_MODIFIER_ISKEYPAD, PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT
          */
         enum class Modifier: std::uint32_t {
             Shift = PP_INPUTEVENT_MODIFIER_SHIFTKEY,    /**< Shift */
@@ -558,8 +558,8 @@ class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
         /**
          * @brief Key
          *
-         * @todo Slash, percent, equal to be compatible with *XApplication
          * @see @ref key()
+         * @todo Slash, percent, equal to be compatible with *XApplication
          */
         enum class Key: std::uint32_t {
             Enter = 0x0D,               /**< Enter */

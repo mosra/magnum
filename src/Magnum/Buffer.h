@@ -328,11 +328,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Memory mapping access
          *
-         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
-         *      instead, as it has more complete set of features.
          * @see @ref map(MapAccess), @ref mapSub()
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} or
          *      @es_extension{CHROMIUM,map_sub}
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead, as it has more complete set of features.
          */
         enum class MapAccess: GLenum {
             #ifndef MAGNUM_TARGET_GLES
@@ -610,11 +610,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Bind buffer
          * @param target    %Target
          *
+         * @see @fn_gl{BindBuffer}
          * @todo Allow binding to Target::ElementArray only if VAO is bound
          *      to avoid potential issues?
-         * @bug Binding to ElementArray if any VAO is active will corrupt the mesh
          * @todo Don't allow user to bind buffers?
-         * @see @fn_gl{BindBuffer}
+         * @bug Binding to ElementArray if any VAO is active will corrupt the mesh
          */
         void bind(Target target) { bind(target, _id); }
 
@@ -746,14 +746,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * If @extension{EXT,direct_state_access} is not available and the
          * buffer is not already bound somewhere, it is bound to hinted target
          * before the operation.
-         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
-         *      instead, as it has more complete set of features.
          * @see @ref minMapAlignment(), @ref unmap(), @ref setTargetHint(),
          *      @fn_gl{BindBuffer} and @fn_gl{MapBuffer} or
          *      @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access}
          * @requires_es_extension %Extension @es_extension{OES,mapbuffer} in
          *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      in OpenGL ES 3.0 instead.
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead, as it has more complete set of features.
          */
         void* map(MapAccess access);
 
@@ -767,14 +767,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * If the buffer is not already bound somewhere, it is bound to hinted
          * target before the operation.
-         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
-         *      instead, as it has more complete set of features.
          * @see @ref unmapSub(), @ref setTargetHint(),
          *      @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
          *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
          *      instead.
          * @requires_es_extension %Extension @es_extension{CHROMIUM,map_sub}
+         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      instead, as it has more complete set of features.
          */
         void* mapSub(GLintptr offset, GLsizeiptr length, MapAccess access);
         #endif

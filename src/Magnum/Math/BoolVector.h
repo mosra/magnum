@@ -106,8 +106,8 @@ template<std::size_t size> class BoolVector {
          * @brief Raw data
          * @return %Array of DataSize length
          *
-         * @todoc Make reference explicit when Doxygen can link to operator[]
          * @see operator[](), @ref set()
+         * @todoc Make reference explicit when Doxygen can link to operator[]
          */
         UnsignedByte* data() { return _data; }
         constexpr const UnsignedByte* data() const { return _data; } /**< @overload */

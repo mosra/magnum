@@ -86,9 +86,9 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Debug output
+             * @see @ref DebugMessage, @ref Feature::DebugOutputSynchronous
              * @requires_gl43 %Extension @extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension{KHR,debug}
-             * @see @ref DebugMessage, @ref Feature::DebugOutputSynchronous
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutput = GL_DEBUG_OUTPUT,
@@ -97,11 +97,11 @@ class MAGNUM_EXPORT Renderer {
             #endif
 
             /**
-             * Synchronous debug output. Has effect only if @ref Feature::DebugOutput
-             * is enabled.
+             * Synchronous debug output. Has effect only if
+             * @ref Feature::DebugOutput is enabled.
+             * @see @ref DebugMessage
              * @requires_gl43 %Extension @extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension{KHR,debug}
-             * @see @ref DebugMessage
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutputSynchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS,
