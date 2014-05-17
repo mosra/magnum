@@ -53,7 +53,7 @@ namespace Implementation {
 Template class for one- and two-dimensional texture arrays. See also
 @ref AbstractTexture documentation for more information.
 
-@section Texture-usage Usage
+@section TextureArray-usage Usage
 
 See @ref Texture documentation for introduction.
 
