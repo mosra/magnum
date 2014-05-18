@@ -88,6 +88,7 @@ class MeshGLTest: public AbstractOpenGLTester {
         void addVertexBufferFloatWithHalfFloat();
         #ifndef MAGNUM_TARGET_GLES
         void addVertexBufferFloatWithDouble();
+        void addVertexBufferVector3WithUnsignedInt10f11f11fRev();
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         void addVertexBufferVector4WithUnsignedInt2101010Rev();
@@ -177,6 +178,7 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::addVertexBufferFloatWithHalfFloat,
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::addVertexBufferFloatWithDouble,
+              &MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev,
               #endif
               #ifndef MAGNUM_TARGET_GLES2
               &MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev,
@@ -922,6 +924,25 @@ void MeshGLTest::addVertexBufferFloatWithDouble() {
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 186);
+}
+
+void MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_type_10f_11f_11f_rev>())
+        CORRADE_SKIP(Extensions::GL::ARB::vertex_type_10f_11f_11f_rev::string() + std::string(" is not available."));
+    #endif
+
+    typedef AbstractShaderProgram::Attribute<0, Vector3> Attribute;
+
+    Buffer buffer;
+    buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedInt10f11f11fRev));
+
+    MAGNUM_VERIFY_NO_ERROR();
+    /* Won't test the actual values */
 }
 #endif
 

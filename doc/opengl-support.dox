@@ -205,7 +205,7 @@ following:
 @extension{ARB,query_buffer_object}          | |
 @extension{ARB,texture_mirror_clamp_to_edge} | done
 @extension{ARB,texture_stencil8}             | done
-@extension{ARB,vertex_type_10f_11f_11f_rev}  | |
+@extension{ARB,vertex_type_10f_11f_11f_rev}  | done
 
 @subsection opengl-support-extensions OpenGL extensions
 

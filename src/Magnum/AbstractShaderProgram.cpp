@@ -1219,6 +1219,31 @@ UnsignedInt DoubleAttribute::size(GLint components, DataType dataType) {
 }
 #endif
 
+UnsignedInt Attribute<Math::Vector<3, Float>>::size(GLint components, DataType dataType) {
+    switch(dataType) {
+        case DataType::UnsignedByte:
+        case DataType::Byte:
+            return components;
+        case DataType::UnsignedShort:
+        case DataType::Short:
+        case DataType::HalfFloat:
+            return 2*components;
+        case DataType::UnsignedInt:
+        case DataType::Int:
+        case DataType::Float:
+            return 4*components;
+        #ifndef MAGNUM_TARGET_GLES
+        case DataType::Double:
+            return 8*components;
+        case DataType::UnsignedInt10f11f11fRev:
+            CORRADE_INTERNAL_ASSERT(components == 3);
+            return 4;
+        #endif
+    }
+
+    CORRADE_ASSERT_UNREACHABLE();
+}
+
 UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType dataType) {
     #ifndef MAGNUM_TARGET_GLES
     if(components == GL_BGRA) components = 4;
@@ -1394,6 +1419,27 @@ Debug operator<<(Debug debug, DoubleAttribute::DataType value) {
     return debug << "AbstractShaderProgram::Attribute::DataType::(invalid)";
 }
 #endif
+
+Debug operator<<(Debug debug, Attribute<Math::Vector<3, Float>>::DataType value) {
+    switch(value) {
+        #define _c(value) case Attribute<Math::Vector<3, Float>>::DataType::value: return debug << "AbstractShaderProgram::Attribute::DataType::" #value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(HalfFloat)
+        _c(Float)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        _c(UnsignedInt10f11f11fRev)
+        #endif
+        #undef _c
+    }
+
+    return debug << "AbstractShaderProgram::Attribute::DataType::(invalid)";
+}
 
 Debug operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value) {
     switch(value) {

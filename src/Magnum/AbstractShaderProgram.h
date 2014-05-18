@@ -1063,6 +1063,15 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
              * @requires_gl Only floats are available in OpenGL ES.
              */
             Double = GL_DOUBLE,
+
+            /**
+             * Unsigned 10.11.11 packed float. Only for three-component float
+             * vector attribute type.
+             * @requires_gl44 %Extension @extension{ARB,vertex_type_10f_11f_11f_rev}
+             * @requires_gl Packed float attributes are not available in OpenGL
+             *      ES.
+             */
+            UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
             #endif
 
             /* GL_FIXED not supported */
@@ -1328,6 +1337,41 @@ struct DoubleAttribute {
 
 Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
 #endif
+
+/* Floating-point three-component vector has additional data type compared to
+   classic floats */
+template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
+    typedef Float ScalarType;
+
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        Byte = GL_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        Short = GL_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        Int = GL_INT,
+        #ifndef MAGNUM_TARGET_GLES2
+        HalfFloat = GL_HALF_FLOAT,
+        #else
+        HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
+        Float = GL_FLOAT
+
+        #ifndef MAGNUM_TARGET_GLES
+        ,
+        Double = GL_DOUBLE,
+        UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV
+        #endif
+    };
+    constexpr static DataType DefaultDataType = DataType::Float;
+
+    typedef FloatAttribute::DataOption DataOption;
+    typedef FloatAttribute::DataOptions DataOptions;
+
+    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
+};
+
+Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<3, Float>>::DataType value);
 
 /* Floating-point four-component vector is absolutely special case */
 template<> struct Attribute<Math::Vector<4, Float>> {
