@@ -432,11 +432,12 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
     /* Skip first vertex so we test also offsets */
     MeshView(mesh)
         .setCount(1)
-        .setBaseVertex(1)
+        .setBaseVertex(mesh.baseVertex())
         .setInstanceCount(mesh.instanceCount())
         #ifndef MAGNUM_TARGET_GLES
         .setBaseInstance(mesh.baseInstance())
         #endif
+        .setIndexRange(1)
         .draw(shader);
 }
 
@@ -461,7 +462,8 @@ void MeshGLTest::addVertexBufferUnsignedInt() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -485,7 +487,8 @@ void MeshGLTest::addVertexBufferInt() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -505,7 +508,8 @@ void MeshGLTest::addVertexBufferFloat() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -533,7 +537,8 @@ void MeshGLTest::addVertexBufferDouble() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 8, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 8, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -559,7 +564,8 @@ void MeshGLTest::addVertexBufferVectorNui() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3*4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3*4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -583,7 +589,8 @@ void MeshGLTest::addVertexBufferVectorNi() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 2*4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 2*4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -603,7 +610,8 @@ void MeshGLTest::addVertexBufferVectorN() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3*4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3*4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -634,7 +642,8 @@ void MeshGLTest::addVertexBufferVectorNd() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4*8, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4*8, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -658,7 +667,8 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3*3*4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3*3*4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -686,7 +696,8 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3*3*8, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3*3*8, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -712,7 +723,8 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3*4*4, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3*4*4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -741,7 +753,8 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3*4*8, Attribute());
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3*4*8, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -768,7 +781,8 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -792,7 +806,8 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -816,7 +831,8 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -840,7 +856,8 @@ void MeshGLTest::addVertexBufferIntWithShort() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -867,10 +884,10 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
     buffer.setData({nullptr, 6}, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::HalfFloat));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::HalfFloat));
 
     MAGNUM_VERIFY_NO_ERROR();
-
     /* Won't test the actual values */
 }
 
@@ -883,7 +900,8 @@ void MeshGLTest::addVertexBufferFloatWithDouble() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 8, Attribute(Attribute::DataType::Double));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 8, Attribute(Attribute::DataType::Double));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -908,7 +926,8 @@ void MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev() {
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedInt2101010Rev));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedInt2101010Rev));
 
     MAGNUM_VERIFY_NO_ERROR();
     /* Won't test the actual values */
@@ -926,7 +945,8 @@ void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::Int2101010Rev));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::Int2101010Rev));
 
     MAGNUM_VERIFY_NO_ERROR();
     /* Won't test the actual values */
@@ -944,7 +964,8 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3*4, Attribute(Attribute::Components::Three));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3*4, Attribute(Attribute::Components::Three));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -968,7 +989,8 @@ void MeshGLTest::addVertexBufferNormalized() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 3, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 3, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -998,7 +1020,8 @@ void MeshGLTest::addVertexBufferBGRA() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4, Attribute(Attribute::Components::BGRA, Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4, Attribute(Attribute::Components::BGRA, Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1077,7 +1100,8 @@ void MeshGLTest::addVertexBufferMultiple() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 1*4, MultipleShader::Position(),
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 1*4, MultipleShader::Position(),
         MultipleShader::Normal(), MultipleShader::TextureCoordinates());
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1117,7 +1141,8 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.addVertexBuffer(buffer, 4*4,
+    mesh.setBaseVertex(1)
+        .addVertexBuffer(buffer, 4*4,
         MultipleShader::Position(), 1*4,
         MultipleShader::Normal(), 1*4,
         MultipleShader::TextureCoordinates(), 2*4);
@@ -1137,14 +1162,6 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
 }
 
 namespace {
-    struct IndexChecker {
-        explicit IndexChecker(Mesh& mesh);
-        Color4ub get();
-
-        Renderbuffer renderbuffer;
-        Framebuffer framebuffer;
-    };
-
     const Float indexedVertexData[] = {
         0.0f, /* Offset */
 
@@ -1196,38 +1213,6 @@ namespace {
     constexpr Color4ub indexedResult(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-IndexChecker::IndexChecker(Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
-    #ifndef MAGNUM_TARGET_GLES2
-    renderbuffer.setStorage(RenderbufferFormat::RGBA8, Vector2i(1));
-    #else
-    renderbuffer.setStorage(RenderbufferFormat::RGBA4, Vector2i(1));
-    #endif
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
-
-    framebuffer.bind(FramebufferTarget::ReadDraw);
-    mesh.setPrimitive(MeshPrimitive::Points)
-        .setCount(2);
-
-    /* Skip first vertex so we test also offsets */
-    MeshView(mesh)
-        .setCount(1)
-        .setBaseVertex(mesh.baseVertex())
-        .setInstanceCount(mesh.instanceCount())
-        #ifndef MAGNUM_TARGET_GLES
-        .setBaseInstance(mesh.baseInstance())
-        #endif
-        .setIndexRange(1)
-        .draw(MultipleShader{});
-}
-
-Color4ub IndexChecker::get() {
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    framebuffer.read({}, Vector2i(1), image);
-    return image.data<Color4ub>()[0];
-}
-#endif
-
 void MeshGLTest::setIndexBuffer() {
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
@@ -1243,7 +1228,13 @@ void MeshGLTest::setIndexBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{},
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1264,7 +1255,13 @@ void MeshGLTest::setIndexBufferRange() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{},
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1290,7 +1287,13 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{},
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1316,7 +1319,8 @@ void MeshGLTest::setBaseVertex() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1344,7 +1348,8 @@ void MeshGLTest::setInstanceCount() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setInstanceCount(3)
+    mesh.setBaseVertex(1)
+        .setInstanceCount(3)
         .addVertexBuffer(buffer, 4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1390,7 +1395,13 @@ void MeshGLTest::setInstanceCountIndexed() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{},
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1457,7 +1468,8 @@ void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1490,7 +1502,8 @@ void MeshGLTest::setInstanceCountBaseVertex() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1526,7 +1539,8 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = IndexChecker(mesh).get();
+    const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
+        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
