@@ -56,6 +56,7 @@ void Context::setupDriverWorkarounds() {
     #ifndef CORRADE_TARGET_NACL
     _setRequiredVersion(GL::CHROMIUM::map_sub, None);
     #endif
+    _setRequiredVersion(GL::EXT::multi_draw_arrays, None);
     _setRequiredVersion(GL::EXT::debug_label, None);
     _setRequiredVersion(GL::EXT::debug_marker, None);
     _setRequiredVersion(GL::EXT::disjoint_timer_query, None);

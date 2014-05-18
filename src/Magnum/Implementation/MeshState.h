@@ -58,6 +58,10 @@ struct MeshState {
     void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
     #endif
 
+    #ifdef MAGNUM_TARGET_GLES
+    void(*multiDrawImplementation)(std::initializer_list<std::reference_wrapper<MeshView>>);
+    #endif
+
     GLuint currentVAO;
     #ifndef MAGNUM_TARGET_GLES2
     GLint maxElementsIndices, maxElementsVertices;

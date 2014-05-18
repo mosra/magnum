@@ -25,9 +25,114 @@
 
 #include "MeshView.h"
 
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Assert.h>
+
+#include "Magnum/Context.h"
 #include "Magnum/Mesh.h"
 
+#include "Implementation/State.h"
+#include "Implementation/MeshState.h"
+
 namespace Magnum {
+
+void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+    /* Why std::initializer_list doesn't have empty()? */
+    if(!meshes.size()) return;
+
+    shader.use();
+
+    #ifndef CORRADE_NO_ASSERT
+    const Mesh* original = meshes.begin()->get()._original;
+    for(MeshView& mesh: meshes)
+        CORRADE_ASSERT(mesh._original == original, "MeshView::draw(): all meshes must be views of the same original mesh", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    multiDrawImplementationDefault(meshes);
+    #else
+    Context::current()->state().mesh->multiDrawImplementation(meshes);
+    #endif
+}
+
+void MeshView::multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+    CORRADE_INTERNAL_ASSERT(meshes.size());
+
+    const Implementation::MeshState& state = *Context::current()->state().mesh;
+
+    Mesh& original = *meshes.begin()->get()._original;
+    Containers::Array<GLsizei> count{meshes.size()};
+    Containers::Array<GLvoid*> indices{meshes.size()};
+    Containers::Array<GLint> baseVertex{meshes.size()};
+
+    /* Gather the parameters */
+    #ifndef MAGNUM_TARGET_GLES
+    bool hasBaseVertex = false;
+    #endif
+    std::size_t i = 0;
+    for(MeshView& mesh: meshes) {
+        CORRADE_ASSERT(mesh._instanceCount == 1, "MeshView::draw(): cannot draw multiple instanced meshes", );
+
+        count[i] = mesh._count;
+        indices[i] = reinterpret_cast<GLvoid*>(mesh._indexOffset);
+        baseVertex[i] = mesh._baseVertex;
+
+        if(mesh._baseVertex) {
+            #ifndef MAGNUM_TARGET_GLES
+            hasBaseVertex = true;
+            #else
+            CORRADE_ASSERT(!original._indexBuffer, "MeshView::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            #endif
+        }
+
+        ++i;
+    }
+
+    (original.*state.bindImplementation)();
+
+    /* Non-indexed meshes */
+    if(!original._indexBuffer) {
+        #ifndef MAGNUM_TARGET_GLES
+        glMultiDrawArrays(GLenum(original._primitive), baseVertex, count, meshes.size());
+        #else
+        //glMultiDrawArraysEXT(GLenum(original._primitive), baseVertex, count, meshes.size());
+        CORRADE_INTERNAL_ASSERT(false);
+        #endif
+
+    /* Indexed meshes */
+    } else {
+        /* Indexed meshes with base vertex */
+        #ifndef MAGNUM_TARGET_GLES
+        if(hasBaseVertex) {
+            glMultiDrawElementsBaseVertex(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size(), baseVertex);
+
+        /* Indexed meshes */
+        } else
+        #endif
+        {
+            #ifndef MAGNUM_TARGET_GLES
+            glMultiDrawElements(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
+            #else
+            //glMultiDrawElements(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
+            CORRADE_INTERNAL_ASSERT(false);
+            #endif
+        }
+    }
+
+    (original.*state.unbindImplementation)();
+}
+
+#ifdef MAGNUM_TARGET_GLES
+void MeshView::multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+    for(MeshView& mesh: meshes) {
+        #ifndef MAGNUM_TARGET_GLES2
+        mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+        #else
+        mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
+        #endif
+    }
+}
+#endif
 
 MeshView& MeshView::setIndexRange(Int first) {
     _indexOffset = _original->_indexOffset + first*_original->indexSize();

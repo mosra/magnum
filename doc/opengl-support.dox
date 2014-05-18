@@ -95,7 +95,7 @@ following:
 -------------------------------------------- | ------
 @extension{ARB,geometry_shader4}             | missing layered attachments
 @extension{ARB,depth_clamp}                  | done
-@extension{ARB,draw_elements_base_vertex}    | missing `Multi*` command
+@extension{ARB,draw_elements_base_vertex}    | done
 @extension{ARB,fragment_coord_conventions}   | done (shading language only)
 @extension{ARB,provoking_vertex}             | done
 @extension{ARB,seamless_cube_map}            | done
@@ -299,6 +299,7 @@ Only extensions not already listed in above tables are included here.
 @es_extension{CHROMIUM,map_sub}              | only buffer mapping
 @es_extension{EXT,texture_format_BGRA8888}   | done
 @es_extension{EXT,read_format_bgra}          | done
+@es_extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done
 @es_extension{EXT,disjoint_timer_query}      | only time elapsed query
 @es_extension{EXT,separate_shader_objects}   | only direct uniform binding
 @es_extension{EXT,sRGB}                      | done

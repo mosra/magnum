@@ -29,11 +29,16 @@
  * @brief Class @ref Magnum::MeshView
  */
 
+#include <functional>
+#include <initializer_list>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 #include "Magnum/visibility.h"
 
 namespace Magnum {
+
+namespace Implementation { struct MeshState; }
 
 /**
 @brief %Mesh view
@@ -52,7 +57,31 @@ You must ensure that the original mesh remains available for whole view
 lifetime.
 */
 class MAGNUM_EXPORT MeshView {
+    friend struct Implementation::MeshState;
+
     public:
+        /**
+         * @brief Draw multiple meshes at once
+         *
+         * In OpenGL ES, if @es_extension2{EXT,multi_draw_arrays,multi_draw_arrays}
+         * is not present, the functionality is emulated using sequence of
+         * @ref draw(AbstractShaderProgram&) calls.
+         * @attention All meshes must be views of the same original mesh and
+         *      must not be instanced.
+         * @see @ref draw(AbstractShaderProgram&), @fn_gl{UseProgram},
+         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
+         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
+         *      is available), @fn_gl{MultiDrawArrays} or
+         *      @fn_gl{MultiDrawElements}/@fn_gl{MultiDrawElementsBaseVertex}
+         */
+        static void draw(AbstractShaderProgram& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes);
+
+        /** @overload */
+        static void draw(AbstractShaderProgram&& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+            draw(shader, meshes);
+        }
+
         /**
          * @brief Constructor
          * @param original  Original, already configured mesh
@@ -212,6 +241,7 @@ class MAGNUM_EXPORT MeshView {
          * @brief Draw the mesh
          *
          * See @ref Mesh::draw() for more information.
+         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>)
          */
         void draw(AbstractShaderProgram& shader);
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
@@ -226,6 +256,9 @@ class MAGNUM_EXPORT MeshView {
         #endif
 
     private:
+        static MAGNUM_LOCAL void multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
+        static MAGNUM_LOCAL void multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
+
         Mesh* _original;
 
         Int _count, _baseVertex, _instanceCount;

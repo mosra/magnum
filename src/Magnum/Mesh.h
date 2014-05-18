@@ -750,11 +750,14 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * commands are issued. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information.
-         * @see @ref setCount(), @ref setInstanceCount(), @fn_gl{UseProgram},
-         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{DrawArrays}/@fn_gl{DrawArraysInstanced}/
+         * @see @ref setCount(), @ref setInstanceCount(),
+         *      @ref MeshView::draw(AbstractShaderProgram&),
+         *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
+         *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
+         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
+         *      @extension{APPLE,vertex_array_object} is available),
+         *      @fn_gl{DrawArrays}/@fn_gl{DrawArraysInstanced}/
          *      @fn_gl{DrawArraysInstancedBaseInstance} or @fn_gl{DrawElements}/
          *      @fn_gl{DrawRangeElements}/@fn_gl{DrawElementsBaseVertex}/
          *      @fn_gl{DrawRangeElementsBaseVertex}/@fn_gl{DrawElementsInstanced}/

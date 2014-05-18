@@ -27,6 +27,7 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/MeshView.h"
 
 #include "State.h"
 
@@ -93,6 +94,15 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         bindImplementation = &Mesh::bindImplementationDefault;
         unbindImplementation = &Mesh::unbindImplementationDefault;
     }
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    /* Multi draw implementation on ES */
+    if(context.isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>()) {
+        extensions.push_back(Extensions::GL::EXT::multi_draw_arrays::string());
+
+        multiDrawImplementation = &MeshView::multiDrawImplementationDefault;
+    } else multiDrawImplementation = &MeshView::multiDrawImplementationFallback;
     #endif
 
     #ifdef MAGNUM_TARGET_GLES2

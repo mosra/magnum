@@ -126,6 +126,12 @@ class MeshGLTest: public AbstractOpenGLTester {
         #ifndef MAGNUM_TARGET_GLES
         void addVertexBufferInstancedDouble();
         #endif
+
+        void multiDraw();
+        void multiDrawIndexed();
+        #ifndef MAGNUM_TARGET_GLES
+        void multiDrawBaseVertex();
+        #endif
 };
 
 MeshGLTest::MeshGLTest() {
@@ -207,7 +213,13 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::addVertexBufferInstancedInteger,
               #endif
               #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::addVertexBufferInstancedDouble
+              &MeshGLTest::addVertexBufferInstancedDouble,
+              #endif
+
+              &MeshGLTest::multiDraw,
+              &MeshGLTest::multiDrawIndexed,
+              #ifndef MAGNUM_TARGET_GLES
+              &MeshGLTest::multiDrawBaseVertex
               #endif
               });
 }
@@ -1659,6 +1671,131 @@ void MeshGLTest::addVertexBufferInstancedDouble() {
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 45828);
+}
+#endif
+
+namespace {
+    struct MultiChecker {
+        MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh);
+
+        template<class T> T get(ColorFormat format, ColorType type);
+
+        Renderbuffer renderbuffer;
+        Framebuffer framebuffer;
+    };
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
+    renderbuffer.setStorage(
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        Vector2i(1));
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
+
+    framebuffer.bind(FramebufferTarget::ReadDraw);
+    mesh.setPrimitive(MeshPrimitive::Points)
+        .setCount(2);
+
+    /* Skip first vertex so we test also offsets */
+    MeshView a(mesh);
+    a.setCount(1)
+     .setBaseVertex(mesh.baseVertex());
+
+    MeshView b(mesh);
+    b.setCount(1);
+    if(mesh.isIndexed()) {
+        b.setBaseVertex(mesh.baseVertex())
+         .setIndexRange(1);
+    } else b.setBaseVertex(1);
+
+    MeshView::draw(shader, {a, b});
+}
+
+template<class T> T MultiChecker::get(ColorFormat format, ColorType type) {
+    Image2D image(format, type);
+    framebuffer.read({}, Vector2i(1), image);
+    return image.data<T>()[0];
+}
+#endif
+
+void MeshGLTest::multiDraw() {
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
+        Debug() << Extensions::GL::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
+    #endif
+
+    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+
+    const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.addVertexBuffer(buffer, 4, Attribute());
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = MultiChecker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 96);
+}
+
+void MeshGLTest::multiDrawIndexed() {
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
+        Debug() << Extensions::GL::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
+    #endif
+
+    Buffer vertices;
+    vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = MultiChecker(MultipleShader{}, mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void MeshGLTest::multiDrawBaseVertex() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+
+    Buffer vertices;
+    vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices(Buffer::Target::ElementArray);
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setBaseVertex(2)
+        .addVertexBuffer(vertices, 2*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const auto value = MultiChecker(MultipleShader{}, mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
 }
 #endif
 
