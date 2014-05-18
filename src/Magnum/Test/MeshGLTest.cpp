@@ -1003,12 +1003,7 @@ void MeshGLTest::addVertexBufferBGRA() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(FloatShader("vec4", "valueInterpolated"),
-        #ifndef MAGNUM_TARGET_GLES2
-        RenderbufferFormat::RGBA8,
-        #else
-        RenderbufferFormat::RGBA4,
-        #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        RenderbufferFormat::RGBA8, mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color4ub(156, 24, 96, 225));
@@ -1420,18 +1415,15 @@ void MeshGLTest::setInstanceCountBaseInstance() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setInstanceCount(3)
+    mesh.setBaseVertex(1)
+        .setInstanceCount(3)
         .setBaseInstance(72)
         .addVertexBuffer(buffer, 4, Attribute());
 
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
-        #ifndef MAGNUM_TARGET_GLES2
         RenderbufferFormat::RGBA8,
-        #else
-        RenderbufferFormat::RGBA4,
-        #endif
         mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
