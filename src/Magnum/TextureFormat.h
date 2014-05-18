@@ -704,15 +704,15 @@ enum class TextureFormat: GLenum {
     CompressedRGBA = GL_COMPRESSED_RGBA,
 
     /**
-     * RTGC compressed red channel, normalized unsigned. **Not available on
+     * RGTC compressed red channel, normalized unsigned. **Not available on
      * multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
-    CompressedRedRtgc1 = GL_COMPRESSED_RED_RGTC1,
+    CompressedRedRgtc1 = GL_COMPRESSED_RED_RGTC1,
 
     /**
-     * RTGC compressed red and green channel, normalized unsigned. **Not
+     * RGTC compressed red and green channel, normalized unsigned. **Not
      * available on multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
@@ -720,7 +720,7 @@ enum class TextureFormat: GLenum {
     CompressedRGRgtc2 = GL_COMPRESSED_RG_RGTC2,
 
     /**
-     * RTGC compressed red channel, normalized signed. **Not available on
+     * RGTC compressed red channel, normalized signed. **Not available on
      * multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
@@ -728,7 +728,7 @@ enum class TextureFormat: GLenum {
     CompressedSignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
 
     /**
-     * RTGC compressed red and green channel, normalized signed. **Not
+     * RGTC compressed red and green channel, normalized signed. **Not
      * available on multisample textures.**
      * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.

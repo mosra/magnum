@@ -391,7 +391,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRed:
-        case TextureFormat::CompressedRedRtgc1:
+        case TextureFormat::CompressedRedRgtc1:
         case TextureFormat::CompressedSignedRedRgtc1:
         #endif
             return ColorFormat::Red;
@@ -594,7 +594,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRG:
         case TextureFormat::CompressedRGB:
         case TextureFormat::CompressedRGBA:
-        case TextureFormat::CompressedRedRtgc1:
+        case TextureFormat::CompressedRedRgtc1:
         case TextureFormat::CompressedRGRgtc2:
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:

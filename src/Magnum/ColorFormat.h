@@ -372,8 +372,8 @@ enum class ColorType: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * BGR, unsigned short, red and blue 5bit, green 6bit.
-     * @requires_gl Only @ref Magnum::ColorType::RGB565 "ColorType::RGB565" is
-     *      available in OpenGL ES.
+     * @requires_gl Only @ref Magnum::ColorType::UnsignedShort565 "ColorType::UnsignedShort565"
+     *      is available in OpenGL ES.
      */
     UnsignedShort565Rev = GL_UNSIGNED_SHORT_5_6_5_REV,
     #endif
