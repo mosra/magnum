@@ -326,10 +326,13 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
        rectangle matrices */
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
+    Shader frag(Version::GL210, Shader::Type::Fragment);
     #elif defined(MAGNUM_TARGET_GLES2)
     Shader vert(Version::GLES200, Shader::Type::Vertex);
+    Shader frag(Version::GLES200, Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
+    Shader frag(Version::GLES300, Shader::Type::Fragment);
     #endif
 
     vert.addSource(
@@ -344,16 +347,6 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
         "    valueInterpolated = value;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "}\n");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    #ifndef MAGNUM_TARGET_GLES
-    Shader frag(Version::GL210, Shader::Type::Fragment);
-    #elif defined(MAGNUM_TARGET_GLES2)
-    Shader frag(Version::GLES200, Shader::Type::Fragment);
-    #else
-    Shader frag(Version::GLES300, Shader::Type::Fragment);
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES3
     frag.addSource("varying mediump " + type + " valueInterpolated;\n"
@@ -363,7 +356,9 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
                    "out mediump vec4 result;\n"
                    "void main() { result = " + conversion + "; }\n");
     #endif
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    attachShader(vert);
     attachShader(frag);
 
     bindAttributeLocation(0, "value");
@@ -375,27 +370,24 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
 IntegerShader::IntegerShader(const std::string& type) {
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL300, Shader::Type::Vertex);
+    Shader frag(Version::GL300, Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
+    Shader frag(Version::GLES300, Shader::Type::Fragment);
     #endif
+
     vert.addSource("in mediump " + type + " value;\n"
                    "flat out mediump " + type + " valueInterpolated;\n"
                    "void main() {\n"
                    "    valueInterpolated = value;\n"
                    "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
                    "}\n");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    #ifndef MAGNUM_TARGET_GLES
-    Shader frag(Version::GL300, Shader::Type::Fragment);
-    #else
-    Shader frag(Version::GLES300, Shader::Type::Fragment);
-    #endif
     frag.addSource("flat in mediump " + type + " valueInterpolated;\n"
                    "out mediump " + type + " result;\n"
                    "void main() { result = valueInterpolated; }\n");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    attachShader(vert);
     attachShader(frag);
 
     bindAttributeLocation(0, "value");
@@ -407,20 +399,20 @@ IntegerShader::IntegerShader(const std::string& type) {
 #ifndef MAGNUM_TARGET_GLES
 DoubleShader::DoubleShader(const std::string& type, const std::string& outputType, const std::string& conversion) {
     Shader vert(Version::GL410, Shader::Type::Vertex);
+    Shader frag(Version::GL410, Shader::Type::Fragment);
+
     vert.addSource("in " + type + " value;\n"
                    "out " + outputType + " valueInterpolated;\n"
                    "void main() {\n"
                    "    valueInterpolated = " + conversion + ";\n"
                    "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
                    "}\n");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    Shader frag(Version::GL410, Shader::Type::Fragment);
     frag.addSource("in " + outputType + " valueInterpolated;\n"
                    "out " + outputType + " result;\n"
                    "void main() { result = valueInterpolated; }\n");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    attachShader(vert);
     attachShader(frag);
 
     bindAttributeLocation(0, "value");
@@ -1037,8 +1029,10 @@ namespace {
 MultipleShader::MultipleShader() {
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
+    Shader frag(Version::GL210, Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES200, Shader::Type::Vertex);
+    Shader frag(Version::GLES200, Shader::Type::Fragment);
     #endif
 
     vert.addSource("attribute mediump vec4 position;\n"
@@ -1049,18 +1043,11 @@ MultipleShader::MultipleShader() {
                    "    valueInterpolated = position + vec4(normal, 0.0) + vec4(textureCoordinates, 0.0, 0.0);\n"
                    "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
                    "}\n");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    #ifndef MAGNUM_TARGET_GLES
-    Shader frag(Version::GL210, Shader::Type::Fragment);
-    #else
-    Shader frag(Version::GLES200, Shader::Type::Fragment);
-    #endif
-
     frag.addSource("varying mediump vec4 valueInterpolated;\n"
                    "void main() { gl_FragColor = valueInterpolated; }\n");
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    attachShader(vert);
     attachShader(frag);
 
     bindAttributeLocation(Position::Location, "position");
