@@ -43,9 +43,9 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
     shader.use();
 
     #ifndef CORRADE_NO_ASSERT
-    const Mesh* original = meshes.begin()->get()._original;
+    const Mesh* original = &meshes.begin()->get()._original.get();
     for(MeshView& mesh: meshes)
-        CORRADE_ASSERT(mesh._original == original, "MeshView::draw(): all meshes must be views of the same original mesh", );
+        CORRADE_ASSERT(&mesh._original.get() == original, "MeshView::draw(): all meshes must be views of the same original mesh", );
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -60,7 +60,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
 
     const Implementation::MeshState& state = *Context::current()->state().mesh;
 
-    Mesh& original = *meshes.begin()->get()._original;
+    Mesh& original = meshes.begin()->get()._original;
     Containers::Array<GLsizei> count{meshes.size()};
     Containers::Array<GLvoid*> indices{meshes.size()};
     Containers::Array<GLint> baseVertex{meshes.size()};
@@ -126,16 +126,16 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
 void MeshView::multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
     for(MeshView& mesh: meshes) {
         #ifndef MAGNUM_TARGET_GLES2
-        mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+        mesh._original.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
         #else
-        mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
+        mesh._original.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
         #endif
     }
 }
 #endif
 
 MeshView& MeshView::setIndexRange(Int first) {
-    _indexOffset = _original->_indexOffset + first*_original->indexSize();
+    _indexOffset = _original.get()._indexOffset + first*_original.get().indexSize();
     return *this;
 }
 
@@ -143,22 +143,22 @@ void MeshView::draw(AbstractShaderProgram& shader) {
     shader.use();
 
     #ifndef MAGNUM_TARGET_GLES
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
+    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
     #elif !defined(MAGNUM_TARGET_GLES2)
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
+    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
     #else
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
+    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
     #endif
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void MeshView::draw() {
     #ifndef MAGNUM_TARGET_GLES
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
+    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
     #elif !defined(MAGNUM_TARGET_GLES2)
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
+    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
     #else
-    _original->drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
+    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
     #endif
 }
 #endif

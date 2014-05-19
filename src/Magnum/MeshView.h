@@ -259,7 +259,7 @@ class MAGNUM_EXPORT MeshView {
         static MAGNUM_LOCAL void multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
         static MAGNUM_LOCAL void multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
 
-        Mesh* _original;
+        std::reference_wrapper<Mesh> _original;
 
         Int _count, _baseVertex, _instanceCount;
         #ifndef MAGNUM_TARGET_GLES
@@ -271,7 +271,7 @@ class MAGNUM_EXPORT MeshView {
         #endif
 };
 
-inline MeshView::MeshView(Mesh& original): _original(&original), _count(0), _baseVertex(0), _instanceCount{1},
+inline MeshView::MeshView(Mesh& original): _original(original), _count(0), _baseVertex(0), _instanceCount{1},
     #ifndef MAGNUM_TARGET_GLES
     _baseInstance{0},
     #endif
