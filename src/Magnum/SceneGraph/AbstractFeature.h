@@ -288,7 +288,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          * transformation.
          *
          * Default implementation does nothing.
-         * @see @ref scenegraph-caching, clean()
+         * @see @ref scenegraph-caching, @ref clean()
          */
         virtual void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix);
 
@@ -328,7 +328,7 @@ typedef AbstractFeature<2, Float> AbstractFeature2D;
 Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See
 @ref AbstractFeature for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
-@see AbstractFeature2D
+@see @ref AbstractFeature3D, @ref AbstractBasicFeature2D
 */
 template<class T> using AbstractBasicFeature3D = AbstractFeature<3, T>;
 #endif
