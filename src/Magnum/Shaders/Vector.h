@@ -54,7 +54,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          */
-        Vector& setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
+        Vector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
             AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
             return *this;
         }

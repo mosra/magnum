@@ -175,8 +175,8 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     ResourceManager::instance().set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
-    shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->size())));
+template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
+    shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*MatrixTypeFor<dimensions, Float>::scaling(VectorTypeFor<dimensions, Float>{options->size()}));
     mesh->draw(*shader);
 }
 

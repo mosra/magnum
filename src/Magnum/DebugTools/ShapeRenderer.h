@@ -160,7 +160,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
         ~ShapeRenderer();
 
     private:
-        void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
+        void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 
         Resource<ShapeRendererOptions> options;
         std::vector<Implementation::AbstractShapeRenderer<dimensions>*> renderers;

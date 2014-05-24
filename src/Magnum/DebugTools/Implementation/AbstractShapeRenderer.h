@@ -50,7 +50,7 @@ template<UnsignedInt dimensions> class AbstractShapeRenderer {
         AbstractShapeRenderer(ResourceKey mesh, ResourceKey vertexBuffer, ResourceKey indexBuffer);
         virtual ~AbstractShapeRenderer();
 
-        virtual void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) = 0;
+        virtual void draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) = 0;
 
     protected:
         /* Call only if the mesh resource isn't already present */

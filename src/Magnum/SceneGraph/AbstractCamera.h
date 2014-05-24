@@ -48,7 +48,7 @@ enum class AspectRatioPolicy: UnsignedByte {
 };
 
 namespace Implementation {
-    template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
+    template<UnsignedInt dimensions, class T> MatrixTypeFor<dimensions, T> aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport);
 }
 
 /**
@@ -90,7 +90,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
          * Camera matrix describes world position relative to the camera and is
          * applied as first.
          */
-        typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
+        MatrixTypeFor<dimensions, T> cameraMatrix() {
             AbstractFeature<dimensions, T>::object().setClean();
             return _cameraMatrix;
         }
@@ -102,7 +102,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
          * as last.
          * @see @ref projectionSize()
          */
-        typename DimensionTraits<dimensions, T>::MatrixType projectionMatrix() const { return _projectionMatrix; }
+        MatrixTypeFor<dimensions, T> projectionMatrix() const { return _projectionMatrix; }
 
         /**
          * @brief Size of (near) XY plane in current projection
@@ -143,7 +143,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
         ~AbstractCamera();
 
         /** Recalculates camera matrix */
-        void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix) override {
+        void cleanInverted(const MatrixTypeFor<dimensions, T>& invertedAbsoluteTransformationMatrix) override {
             _cameraMatrix = invertedAbsoluteTransformationMatrix;
         }
 
@@ -152,13 +152,13 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
             _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
         }
 
-        typename DimensionTraits<dimensions, T>::MatrixType rawProjectionMatrix;
+        MatrixTypeFor<dimensions, T> rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
         #endif
 
     private:
-        typename DimensionTraits<dimensions, T>::MatrixType _projectionMatrix;
-        typename DimensionTraits<dimensions, T>::MatrixType _cameraMatrix;
+        MatrixTypeFor<dimensions, T> _projectionMatrix;
+        MatrixTypeFor<dimensions, T> _cameraMatrix;
 
         Vector2i _viewport;
 };

@@ -49,10 +49,10 @@ template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {
         constexpr /*implicit*/ LineSegment() {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ LineSegment(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b): Line<dimensions>(a, b) {}
+        constexpr /*implicit*/ LineSegment(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b): Line<dimensions>(a, b) {}
 
         /** @brief Transformed shape */
-        LineSegment<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+        LineSegment<dimensions> transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
             return Line<dimensions>::transformed(matrix);
         }
 

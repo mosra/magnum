@@ -165,7 +165,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          * Projection matrix can be retrieved from
          * @ref SceneGraph::AbstractCamera::projectionMatrix() "AbstractCamera::projectionMatrix()".
          */
-        virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>& camera) = 0;
+        virtual void draw(const MatrixTypeFor<dimensions, T>& transformationMatrix, AbstractCamera<dimensions, T>& camera) = 0;
 };
 
 /**

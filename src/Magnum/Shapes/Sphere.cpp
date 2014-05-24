@@ -37,7 +37,7 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> Sphere<dimensions> Sphere<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Sphere<dimensions> Sphere<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return Sphere<dimensions>(matrix.transformPoint(_position), matrix.uniformScaling()*_radius);
 }
 
@@ -50,7 +50,7 @@ template<UnsignedInt dimensions> bool InvertedSphere<dimensions>::operator%(cons
 }
 
 template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::operator/(const Point<dimensions>& other) const {
-    const typename DimensionTraits<dimensions, Float>::VectorType separating = _position - other.position();
+    const VectorTypeFor<dimensions, Float> separating = _position - other.position();
     const Float dot = separating.dot();
 
     /* No collision occured */
@@ -61,9 +61,9 @@ template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::opera
 
     /* Separating normal. If can't decide on direction, just move up. */
     /** @todo How to handle this in a configurable way? */
-    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal =
+    const VectorTypeFor<dimensions, Float> separatingNormal =
         Math::TypeTraits<Float>::equals(dot, 0.0f) ?
-        DimensionTraits<dimensions, Float>::VectorType::yAxis() :
+        VectorTypeFor<dimensions, Float>::yAxis() :
         separating/distance;
 
     /* Collision position is on the point */
@@ -71,7 +71,7 @@ template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::opera
 }
 
 template<UnsignedInt dimensions> Collision<dimensions> InvertedSphere<dimensions>::operator/(const Point<dimensions>& other) const {
-    const typename DimensionTraits<dimensions, Float>::VectorType separating = other.position() - position();
+    const VectorTypeFor<dimensions, Float> separating = other.position() - position();
     const Float dot = separating.dot();
 
     /* No collision occured */
@@ -81,7 +81,7 @@ template<UnsignedInt dimensions> Collision<dimensions> InvertedSphere<dimensions
     const Float distance = Math::sqrt(dot);
 
     /* Separating normal */
-    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal = separating/distance;
+    const VectorTypeFor<dimensions, Float> separatingNormal = separating/distance;
 
     /* Collision position is on the point */
     return Collision<dimensions>(other.position(), separatingNormal, distance - radius());
@@ -105,7 +105,7 @@ template<UnsignedInt dimensions> bool InvertedSphere<dimensions>::operator%(cons
 
 template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::operator/(const Sphere<dimensions>& other) const {
     const Float minDistance = _radius + other._radius;
-    const typename DimensionTraits<dimensions, Float>::VectorType separating = _position - other._position;
+    const VectorTypeFor<dimensions, Float> separating = _position - other._position;
     const Float dot = separating.dot();
 
     /* No collision occured */
@@ -116,9 +116,9 @@ template<UnsignedInt dimensions> Collision<dimensions> Sphere<dimensions>::opera
 
     /* Separating normal. If can't decide on direction, just move up. */
     /** @todo How to handle this in a configurable way? */
-    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal =
+    const VectorTypeFor<dimensions, Float> separatingNormal =
         Math::TypeTraits<Float>::equals(dot, 0.0f) ?
-        DimensionTraits<dimensions, Float>::VectorType::yAxis() :
+        VectorTypeFor<dimensions, Float>::yAxis() :
         separating/distance;
 
     /* Contact position is on the surface of `other`, minDistace > distance */
@@ -129,7 +129,7 @@ template<UnsignedInt dimensions> Collision<dimensions> InvertedSphere<dimensions
     const Float maxDistance = radius() - other.radius();
     /** @todo How to handle inseparable shapes or shapes which can't be separated by movement only (i.e. two half-spaces)? */
     CORRADE_INTERNAL_ASSERT(maxDistance > 0.0f);
-    const typename DimensionTraits<dimensions, Float>::VectorType separating = other.position() - position();
+    const VectorTypeFor<dimensions, Float> separating = other.position() - position();
     const Float dot = separating.dot();
 
     /* No collision occured */
@@ -139,7 +139,7 @@ template<UnsignedInt dimensions> Collision<dimensions> InvertedSphere<dimensions
     const Float distance = Math::sqrt(dot);
 
     /* Separating normal */
-    const typename DimensionTraits<dimensions, Float>::VectorType separatingNormal = separating/distance;
+    const VectorTypeFor<dimensions, Float> separatingNormal = separating/distance;
 
     /* Contact position is on the surface of `other`, distance > maxDistance */
     return Collision<dimensions>(other.position() + separatingNormal*other.radius(), separatingNormal, distance - maxDistance);

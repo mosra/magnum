@@ -106,7 +106,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
     public:
         /** @brief Matrix type */
-        typedef typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType MatrixType;
+        typedef MatrixTypeFor<Transformation::Dimensions, typename Transformation::Type> MatrixType;
 
         /**
          * @brief Constructor

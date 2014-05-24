@@ -34,8 +34,8 @@
 
 namespace Magnum { namespace Implementation {
 
-template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxTextureSize() {
-    return typename DimensionTraits<dimensions, Int>::VectorType{Implementation::maxTextureSideSize()};
+template<UnsignedInt dimensions> VectorTypeFor<dimensions, Int> maxTextureSize() {
+    return VectorTypeFor<dimensions, Int>{Implementation::maxTextureSideSize()};
 }
 
 #ifndef MAGNUM_TARGET_GLES

@@ -60,16 +60,16 @@ template<UnsignedInt dimensions, class T, class TranslationType>
 class TranslationTransformation: public AbstractTranslation<dimensions, T, TranslationType> {
     public:
         /** @brief Underlying transformation type */
-        typedef typename DimensionTraits<dimensions, TranslationType>::VectorType DataType;
+        typedef VectorTypeFor<dimensions, TranslationType> DataType;
 
         /** @brief %Object transformation */
-        typename DimensionTraits<dimensions, TranslationType>::VectorType transformation() const { return _transformation; }
+        VectorTypeFor<dimensions, TranslationType> transformation() const { return _transformation; }
 
         /**
          * @brief Set transformation
          * @return Reference to self (for method chaining)
          */
-        Object<TranslationTransformation<dimensions, T, TranslationType>>& setTransformation(const typename DimensionTraits<dimensions, TranslationType>::VectorType& transformation) {
+        Object<TranslationTransformation<dimensions, T, TranslationType>>& setTransformation(const VectorTypeFor<dimensions, TranslationType>& transformation) {
             /* Setting transformation is forbidden for the scene */
             /** @todo Assert for this? */
             /** @todo Do this in some common code so we don't need to include Object? */
@@ -94,7 +94,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
          * Equivalent to @ref translate(), provided only for compatibility with
          * other implementations.
          */
-        Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const typename DimensionTraits<dimensions, TranslationType>::VectorType& transformation, TransformationType = TransformationType::Global) {
+        Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const VectorTypeFor<dimensions, TranslationType>& transformation, TransformationType = TransformationType::Global) {
             return translate(transformation);
         }
 
@@ -107,7 +107,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
          *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
          *      @ref Math::Vector3::zAxis()
          */
-        Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType = TransformationType::Global) {
+        Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType = TransformationType::Global) {
             _transformation += vector;
             return static_cast<Object<TranslationTransformation<dimensions, T, TranslationType>>&>(*this);
         }
@@ -119,11 +119,11 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
     private:
         void doResetTransformation() override final { resetTransformation(); }
 
-        void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType) override final {
+        void doTranslate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType) override final {
             translate(vector);
         }
 
-        typename DimensionTraits<dimensions, TranslationType>::VectorType _transformation;
+        VectorTypeFor<dimensions, TranslationType> _transformation;
 };
 
 /**
@@ -171,21 +171,21 @@ typedef BasicTranslationTransformation3D<Float> TranslationTransformation3D;
 namespace Implementation {
 
 template<UnsignedInt dimensions, class T, class TranslationType> struct Transformation<TranslationTransformation<dimensions, T, TranslationType>> {
-    static typename DimensionTraits<dimensions, TranslationType>::VectorType fromMatrix(const typename DimensionTraits<dimensions, T>::MatrixType& matrix) {
+    static VectorTypeFor<dimensions, TranslationType> fromMatrix(const MatrixTypeFor<dimensions, T>& matrix) {
         CORRADE_ASSERT((matrix.rotationScaling() == Math::Matrix<dimensions, T>()),
            "SceneGraph::TranslationTransformation: the matrix doesn't represent pure translation", {});
-        return typename DimensionTraits<dimensions, TranslationType>::VectorType(matrix.translation());
+        return VectorTypeFor<dimensions, TranslationType>{matrix.translation()};
     }
 
-    constexpr static typename DimensionTraits<dimensions, T>::MatrixType toMatrix(const typename DimensionTraits<dimensions, TranslationType>::VectorType& transformation) {
-        return DimensionTraits<dimensions, T>::MatrixType::translation(typename DimensionTraits<dimensions, T>::VectorType(transformation));
+    constexpr static MatrixTypeFor<dimensions, T> toMatrix(const VectorTypeFor<dimensions, TranslationType>& transformation) {
+        return MatrixTypeFor<dimensions, T>::translation(VectorTypeFor<dimensions, T>{transformation});
     }
 
-    static typename DimensionTraits<dimensions, TranslationType>::VectorType compose(const typename DimensionTraits<dimensions, TranslationType>::VectorType& parent, const typename DimensionTraits<dimensions, TranslationType>::VectorType& child) {
+    static VectorTypeFor<dimensions, TranslationType> compose(const VectorTypeFor<dimensions, TranslationType>& parent, const VectorTypeFor<dimensions, TranslationType>& child) {
         return parent+child;
     }
 
-    static typename DimensionTraits<dimensions, TranslationType>::VectorType inverted(const typename DimensionTraits<dimensions, TranslationType>::VectorType& transformation) {
+    static VectorTypeFor<dimensions, TranslationType> inverted(const VectorTypeFor<dimensions, TranslationType>& transformation) {
         return -transformation;
     }
 };

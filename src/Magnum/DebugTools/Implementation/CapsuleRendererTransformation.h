@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> std::array<typename DimensionTraits<dimensions, Float>::MatrixType, 3> capsuleRendererTransformation(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b, Float radius);
+template<UnsignedInt dimensions> std::array<MatrixTypeFor<dimensions, Float>, 3> capsuleRendererTransformation(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b, Float radius);
 
 template<> std::array<Matrix3, 3> capsuleRendererTransformation<2>(const Vector2& a, const Vector2& b, const Float radius) {
     /* Vector from capsule center to top hemisphere center */

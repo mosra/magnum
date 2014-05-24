@@ -54,7 +54,7 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        explicit ImageData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
@@ -85,10 +85,10 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         #endif
 
         /** @brief %Image size */
-        typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
+        VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
-        std::size_t dataSize(const typename DimensionTraits<Dimensions, Int>::VectorType& size) const {
+        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
             return AbstractImage::dataSize<dimensions>(size);
         }
 

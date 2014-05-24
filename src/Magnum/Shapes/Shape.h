@@ -108,7 +108,7 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
 
     protected:
         /** Applies transformation to associated shape. */
-        void clean(const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) override;
+        void clean(const MatrixTypeFor<T::Dimensions, Float>& absoluteTransformationMatrix) override;
 
     private:
         const Implementation::AbstractShape<T::Dimensions>& abstractTransformedShape() const override {
@@ -129,7 +129,7 @@ template<class T> inline const T& Shape<T>::transformedShape() {
     return _transformedShape.shape;
 }
 
-template<class T> void Shape<T>::clean(const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) {
+template<class T> void Shape<T>::clean(const MatrixTypeFor<T::Dimensions, Float>& absoluteTransformationMatrix) {
     Implementation::ShapeHelper<T>::transform(*this, absoluteTransformationMatrix);
 }
 
@@ -139,7 +139,7 @@ namespace Implementation {
             shape._shape.shape = s;
         }
 
-        static void transform(Shapes::Shape<T>& shape, const typename DimensionTraits<T::Dimensions, Float>::MatrixType& absoluteTransformationMatrix) {
+        static void transform(Shapes::Shape<T>& shape, const MatrixTypeFor<T::Dimensions, Float>& absoluteTransformationMatrix) {
             shape._transformedShape.shape = shape._shape.shape.transformed(absoluteTransformationMatrix);
         }
     };
@@ -148,7 +148,7 @@ namespace Implementation {
         static void set(Shapes::Shape<Composition<dimensions>>& shape, const Composition<dimensions>& composition);
         static void set(Shapes::Shape<Composition<dimensions>>& shape, Composition<dimensions>&& composition);
 
-        static void transform(Shapes::Shape<Composition<dimensions>>& shape, const typename DimensionTraits<dimensions, Float>::MatrixType& absoluteTransformationMatrix);
+        static void transform(Shapes::Shape<Composition<dimensions>>& shape, const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix);
     };
 }
 

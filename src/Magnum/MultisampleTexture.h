@@ -43,7 +43,7 @@ namespace Implementation {
     template<> inline constexpr GLenum multisampleTextureTarget<2>() { return GL_TEXTURE_2D_MULTISAMPLE; }
     template<> inline constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
 
-    template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxMultisampleTextureSize();
+    template<UnsignedInt dimensions> VectorTypeFor<dimensions, Int> maxMultisampleTextureSize();
     template<> MAGNUM_EXPORT Vector2i maxMultisampleTextureSize<2>();
     template<> MAGNUM_EXPORT Vector3i maxMultisampleTextureSize<3>();
 }
@@ -98,7 +98,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
          *      @def_gl{MAX_3D_TEXTURE_SIZE}
          */
-        static typename DimensionTraits<dimensions, Int>::VectorType maxSize() {
+        static VectorTypeFor<dimensions, Int> maxSize() {
             return Implementation::maxMultisampleTextureSize<dimensions>();
         }
 
@@ -122,7 +122,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
          *      @def_gl{TEXTURE_DEPTH}
          */
-        typename DimensionTraits<dimensions, Int>::VectorType imageSize() {
+        VectorTypeFor<dimensions, Int> imageSize() {
             return DataHelper<dimensions>::imageSize(*this, _target, 0);
         }
 
@@ -155,7 +155,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         /* The default parameter value was chosen based on discussion in
            ARB_texture_multisample specs (fixed locations is treated as the
            special case) */
-        MultisampleTexture<dimensions>& setStorage(Int samples, TextureFormat internalFormat, const typename DimensionTraits<dimensions, Int>::VectorType& size, MultisampleTextureSampleLocations sampleLocations =
+        MultisampleTexture<dimensions>& setStorage(Int samples, TextureFormat internalFormat, const VectorTypeFor<dimensions, Int>& size, MultisampleTextureSampleLocations sampleLocations =
             #ifndef DOXYGEN_GENERATING_OUTPUT
             MultisampleTextureSampleLocations::NotFixed
             #else
@@ -170,7 +170,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         void invalidateImage() { AbstractTexture::invalidateImage(0); }
 
         /** @copydoc RectangleTexture::invalidateSubImage() */
-        void invalidateSubImage(const typename DimensionTraits<dimensions, Int>::VectorType& offset, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
+        void invalidateSubImage(const VectorTypeFor<dimensions, Int>& offset, const VectorTypeFor<dimensions, Int>& size) {
             DataHelper<dimensions>::invalidateSubImage(*this, 0, offset, size);
         }
 

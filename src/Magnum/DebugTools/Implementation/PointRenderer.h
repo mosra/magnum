@@ -36,7 +36,7 @@ template<UnsignedInt dimensions> class PointRenderer: public AbstractShapeRender
         explicit PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>& point);
         PointRenderer(Shapes::Implementation::AbstractShape<dimensions>&&) = delete;
 
-        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
+        void draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) override;
 
     private:
         const Shapes::Point<dimensions>& point;

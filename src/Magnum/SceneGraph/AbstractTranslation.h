@@ -65,7 +65,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
          *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
          *      @ref Math::Vector3::zAxis()
          */
-        AbstractTranslation<dimensions, T, TranslationType>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type = TransformationType::Global) {
+        AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type = TransformationType::Global) {
             doTranslate(vector, type);
             return *this;
         }
@@ -79,7 +79,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
     private:
     #endif
         /** @brief Polymorphic implementation for @ref translate() */
-        virtual void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type) = 0;
+        virtual void doTranslate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) = 0;
 };
 
 /**

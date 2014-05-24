@@ -54,7 +54,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit Image(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        explicit Image(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -95,7 +95,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         #endif
 
         /** @brief %Image size */
-        typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
+        VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**
          * @brief Size of data required to store image of given size
@@ -104,7 +104,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * account.
          * @see @ref pixelSize()
          */
-        std::size_t dataSize(const typename DimensionTraits<Dimensions, Int>::VectorType& size) const {
+        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
             return AbstractImage::dataSize<dimensions>(size);
         }
 
@@ -133,7 +133,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * data are not copied, but they are deleted on destruction.
          * @see @ref release()
          */
-        void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data);
+        void setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data);
 
         /**
          * @brief Release data storage

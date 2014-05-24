@@ -55,23 +55,23 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Point {
         constexpr /*implicit*/ Point() {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Point(const typename DimensionTraits<dimensions, Float>::VectorType& position): _position(position) {}
+        constexpr /*implicit*/ Point(const VectorTypeFor<dimensions, Float>& position): _position(position) {}
 
         /** @brief Transformed shape */
-        Point<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
+        Point<dimensions> transformed(const MatrixTypeFor<dimensions, Float>& matrix) const;
 
         /** @brief Position */
-        constexpr typename DimensionTraits<dimensions, Float>::VectorType position() const {
+        constexpr VectorTypeFor<dimensions, Float> position() const {
             return _position;
         }
 
         /** @brief Set position */
-        void setPosition(const typename DimensionTraits<dimensions, Float>::VectorType& position) {
+        void setPosition(const VectorTypeFor<dimensions, Float>& position) {
             _position = position;
         }
 
     private:
-        typename DimensionTraits<dimensions, Float>::VectorType _position;
+        VectorTypeFor<dimensions, Float> _position;
 };
 
 /** @brief Two-dimensional point */

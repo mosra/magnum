@@ -48,7 +48,7 @@ AbstractCylinderRenderer<3>::AbstractCylinderRenderer(): AbstractShapeRenderer<3
 
 template<UnsignedInt dimensions> CylinderRenderer<dimensions>::CylinderRenderer(const Shapes::Implementation::AbstractShape<dimensions>& cylinder): cylinder(static_cast<const Shapes::Implementation::Shape<Shapes::Cylinder<dimensions>>&>(cylinder).shape) {}
 
-template<UnsignedInt dimensions> void CylinderRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
+template<UnsignedInt dimensions> void CylinderRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) {
     AbstractShapeRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
         Implementation::cylinderRendererTransformation<dimensions>(cylinder.a(), cylinder.b(), cylinder.radius()))
         .setColor(options->color());

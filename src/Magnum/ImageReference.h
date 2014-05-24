@@ -61,7 +61,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * @param size              %Image size
          * @param data              %Image data
          */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const unsigned char*>(data)) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const unsigned char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -72,13 +72,13 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * Data pointer is set to `nullptr`, call @ref setData() to fill the
          * image with data.
          */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
         /** @brief %Image size */
-        constexpr typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
+        constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
-        std::size_t dataSize(const typename DimensionTraits<Dimensions, Int>::VectorType& size) const {
+        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
             return AbstractImage::dataSize<dimensions>(size);
         }
 

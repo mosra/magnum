@@ -37,7 +37,7 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> Cylinder<dimensions> Cylinder<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Cylinder<dimensions> Cylinder<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return Cylinder<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b), matrix.uniformScaling()*_radius);
 }
 

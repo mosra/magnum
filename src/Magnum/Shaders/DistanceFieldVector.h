@@ -57,7 +57,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          */
-        DistanceFieldVector& setTransformationProjectionMatrix(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) {
+        DistanceFieldVector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
             AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
             return *this;
         }

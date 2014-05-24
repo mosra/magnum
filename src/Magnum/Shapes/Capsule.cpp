@@ -37,7 +37,7 @@ using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> Capsule<dimensions> Capsule<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Capsule<dimensions> Capsule<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return Capsule<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b), matrix.uniformScaling()*_radius);
 }
 

@@ -41,9 +41,9 @@ template<UnsignedInt dimensions, class T> AbstractFeature<dimensions, T>::~Abstr
 
 template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::markDirty() {}
 
-template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::clean(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::clean(const MatrixTypeFor<dimensions, T>&) {}
 
-template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType&) {}
+template<UnsignedInt dimensions, class T> void AbstractFeature<dimensions, T>::cleanInverted(const MatrixTypeFor<dimensions, T>&) {}
 
 }}
 

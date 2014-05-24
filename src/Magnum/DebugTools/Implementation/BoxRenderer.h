@@ -36,7 +36,7 @@ template<UnsignedInt dimensions> class BoxRenderer: public AbstractBoxRenderer<d
         explicit BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& box);
         BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>&&) = delete;
 
-        void draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) override;
+        void draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) override;
 
     private:
         const Shapes::Box<dimensions>& box;

@@ -59,28 +59,28 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
         constexpr /*implicit*/ Capsule(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Capsule(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
+        constexpr /*implicit*/ Capsule(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b, Float radius): _a(a), _b(b), _radius(radius) {}
 
         /** @brief Transformed shape */
-        Capsule<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
+        Capsule<dimensions> transformed(const MatrixTypeFor<dimensions, Float>& matrix) const;
 
         /** @brief Start point */
-        constexpr typename DimensionTraits<dimensions, Float>::VectorType a() const {
+        constexpr VectorTypeFor<dimensions, Float> a() const {
             return _a;
         }
 
         /** @brief Set start point */
-        void setA(const typename DimensionTraits<dimensions, Float>::VectorType& a) {
+        void setA(const VectorTypeFor<dimensions, Float>& a) {
             _a = a;
         }
 
         /** @brief End point */
-        constexpr typename DimensionTraits<dimensions, Float>::VectorType b() const {
+        constexpr VectorTypeFor<dimensions, Float> b() const {
             return _b;
         }
 
         /** @brief Set end point */
-        void setB(const typename DimensionTraits<dimensions, Float>::VectorType& b) {
+        void setB(const VectorTypeFor<dimensions, Float>& b) {
             _b = b;
         }
 
@@ -97,7 +97,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions, Float>::VectorType _a, _b;
+        VectorTypeFor<dimensions, Float> _a, _b;
         Float _radius;
 };
 

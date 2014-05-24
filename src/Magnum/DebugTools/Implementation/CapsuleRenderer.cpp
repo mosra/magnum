@@ -104,8 +104,8 @@ AbstractCapsuleRenderer<3>::~AbstractCapsuleRenderer() = default;
 
 template<UnsignedInt dimensions> CapsuleRenderer<dimensions>::CapsuleRenderer(const Shapes::Implementation::AbstractShape<dimensions>& capsule): capsule(static_cast<const Shapes::Implementation::Shape<Shapes::Capsule<dimensions>>&>(capsule).shape) {}
 
-template<UnsignedInt dimensions> void CapsuleRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
-    std::array<typename DimensionTraits<dimensions, Float>::MatrixType, 3> transformations = Implementation::capsuleRendererTransformation<dimensions>(capsule.a(), capsule.b(), capsule.radius());
+template<UnsignedInt dimensions> void CapsuleRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) {
+    std::array<MatrixTypeFor<dimensions, Float>, 3> transformations = Implementation::capsuleRendererTransformation<dimensions>(capsule.a(), capsule.b(), capsule.radius());
     AbstractShapeRenderer<dimensions>::wireframeShader->setColor(options->color());
 
     /* Bottom */

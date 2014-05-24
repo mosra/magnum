@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> Line<dimensions> Line<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Line<dimensions> Line<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return Line<dimensions>(matrix.transformPoint(_a),
                             matrix.transformPoint(_b));
 }

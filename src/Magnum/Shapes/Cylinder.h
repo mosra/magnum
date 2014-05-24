@@ -59,28 +59,28 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Cylinder {
         constexpr /*implicit*/ Cylinder(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Cylinder(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b, Float radius): _a(a), _b(b), _radius(radius) {}
+        constexpr /*implicit*/ Cylinder(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b, Float radius): _a(a), _b(b), _radius(radius) {}
 
         /** @brief Transformed shape */
-        Cylinder<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
+        Cylinder<dimensions> transformed(const MatrixTypeFor<dimensions, Float>& matrix) const;
 
         /** @brief First point */
-        constexpr typename DimensionTraits<dimensions, Float>::VectorType a() const {
+        constexpr VectorTypeFor<dimensions, Float> a() const {
             return _a;
         }
 
         /** @brief Set first point */
-        void setA(const typename DimensionTraits<dimensions, Float>::VectorType& a) {
+        void setA(const VectorTypeFor<dimensions, Float>& a) {
             _a = a;
         }
 
         /** @brief Second point */
-        constexpr typename DimensionTraits<dimensions, Float>::VectorType b() const {
+        constexpr VectorTypeFor<dimensions, Float> b() const {
             return _b;
         }
 
         /** @brief Set second point */
-        void setB(const typename DimensionTraits<dimensions, Float>::VectorType& b) {
+        void setB(const VectorTypeFor<dimensions, Float>& b) {
             _b = b;
         }
 
@@ -97,7 +97,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Cylinder {
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions, Float>::VectorType _a, _b;
+        VectorTypeFor<dimensions, Float> _a, _b;
         Float _radius;
 };
 

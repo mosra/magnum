@@ -64,7 +64,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        explicit BufferImage(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage);
+        explicit BufferImage(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
 
         /**
          * @brief Constructor
@@ -89,10 +89,10 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
         BufferImage<dimensions>& operator=(BufferImage<dimensions>&& other) noexcept;
 
         /** @brief %Image size */
-        typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
+        VectorTypeFor<Dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
-        std::size_t dataSize(const typename DimensionTraits<Dimensions, Int>::VectorType& size) const {
+        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
             return AbstractImage::dataSize<dimensions>(size);
         }
 
@@ -113,14 +113,14 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage);
+        void setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage)
-         * @deprecated Use @ref Magnum::BufferImage::setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage) "setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage)" instead.
+         * @copybrief setData(ColorFormat, ColorType, const VectorTypeFor<dimensions, Int>&, const void*, BufferUsage)
+         * @deprecated Use @ref Magnum::BufferImage::setData(ColorFormat, ColorType, const VectorTypeFor<dimensions, Int>&, const void*, BufferUsage) "setData(ColorFormat, ColorType, const VectorTypeFor<dimensions, Int>&, const void*, BufferUsage)" instead.
          */
-        CORRADE_DEPRECATED("use setData(ColorFormat, ColorType, VectorNi, const void*, BufferUsage) instead") void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage) {
+        CORRADE_DEPRECATED("use setData(ColorFormat, ColorType, VectorNi, const void*, BufferUsage) instead") void setData(const VectorTypeFor<dimensions, Int>& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage) {
             setData(format, type, size, data, usage);
         }
         #endif

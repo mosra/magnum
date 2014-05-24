@@ -113,7 +113,7 @@ template<UnsignedInt dimensions> void Composition<dimensions>::copyNodes(std::si
     std::copy(other._nodes.begin(), other._nodes.end(), _nodes.begin()+offset);
 }
 
-template<UnsignedInt dimensions> Composition<dimensions> Composition<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> Composition<dimensions> Composition<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     Composition<dimensions> out(*this);
     for(Implementation::AbstractShape<dimensions> * const* i = _shapes.begin(), * const* o = out._shapes.begin(); i != _shapes.end(); ++i, ++o)
         (*i)->transform(matrix, *o);

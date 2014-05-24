@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Float>::MatrixType cylinderRendererTransformation(const typename DimensionTraits<dimensions, Float>::VectorType& a, const typename DimensionTraits<dimensions, Float>::VectorType& b, Float radius);
+template<UnsignedInt dimensions> MatrixTypeFor<dimensions, Float> cylinderRendererTransformation(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b, Float radius);
 
 template<> Matrix3 cylinderRendererTransformation<2>(const Vector2& a, const Vector2& b, const Float radius) {
     /* Vector from cylinder center to top hemisphere center */

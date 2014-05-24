@@ -60,18 +60,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         constexpr /*implicit*/ Sphere(): _radius(0.0f) {}
 
         /** @brief Constructor */
-        constexpr /*implicit*/ Sphere(const typename DimensionTraits<dimensions, Float>::VectorType& position, Float radius): _position(position), _radius(radius) {}
+        constexpr /*implicit*/ Sphere(const VectorTypeFor<dimensions, Float>& position, Float radius): _position(position), _radius(radius) {}
 
         /** @brief Transformed shape */
-        Sphere<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const;
+        Sphere<dimensions> transformed(const MatrixTypeFor<dimensions, Float>& matrix) const;
 
         /** @brief Position */
-        constexpr typename DimensionTraits<dimensions, Float>::VectorType position() const {
+        constexpr VectorTypeFor<dimensions, Float> position() const {
             return _position;
         }
 
         /** @brief Set position */
-        void setPosition(const typename DimensionTraits<dimensions, Float>::VectorType& position) {
+        void setPosition(const VectorTypeFor<dimensions, Float>& position) {
             _position = position;
         }
 
@@ -100,7 +100,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         Collision<dimensions> operator/(const Sphere<dimensions>& other) const;
 
     private:
-        typename DimensionTraits<dimensions, Float>::VectorType _position;
+        VectorTypeFor<dimensions, Float> _position;
         Float _radius;
 };
 
@@ -133,12 +133,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
         constexpr /*implicit*/ InvertedSphere() = default;
 
         /** @brief Constructor */
-        constexpr /*implicit*/ InvertedSphere(const typename DimensionTraits<dimensions, Float>::VectorType& position, Float radius): Sphere<dimensions>(position, radius) {}
+        constexpr /*implicit*/ InvertedSphere(const VectorTypeFor<dimensions, Float>& position, Float radius): Sphere<dimensions>(position, radius) {}
 
         using Sphere<dimensions>::Dimensions;
 
         /** @brief Transformed shape */
-        InvertedSphere<dimensions> transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+        InvertedSphere<dimensions> transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
             return Sphere<dimensions>::transformed(matrix);
         }
 

@@ -34,10 +34,10 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& axisAlignedBox): axisAlignedBox(static_cast<const Shapes::Implementation::Shape<Shapes::AxisAlignedBox<dimensions>>&>(axisAlignedBox).shape) {}
 
-template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const typename DimensionTraits<dimensions, Float>::MatrixType& projectionMatrix) {
+template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) {
     AbstractBoxRenderer<dimensions>::wireframeShader->setTransformationProjectionMatrix(projectionMatrix*
-        DimensionTraits<dimensions, Float>::MatrixType::translation((axisAlignedBox.min()+axisAlignedBox.max())/2)*
-        DimensionTraits<dimensions, Float>::MatrixType::scaling(axisAlignedBox.max()-axisAlignedBox.min()))
+        MatrixTypeFor<dimensions, Float>::translation((axisAlignedBox.min()+axisAlignedBox.max())/2)*
+        MatrixTypeFor<dimensions, Float>::scaling(axisAlignedBox.max()-axisAlignedBox.min()))
         .setColor(options->color());
     AbstractBoxRenderer<dimensions>::wireframeMesh->draw(*AbstractBoxRenderer<dimensions>::wireframeShader);
 }

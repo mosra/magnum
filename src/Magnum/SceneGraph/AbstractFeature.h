@@ -270,7 +270,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          * Default implementation does nothing.
          * @see @ref scenegraph-caching, @ref cleanInverted()
          */
-        virtual void clean(const typename DimensionTraits<dimensions, T>::MatrixType& absoluteTransformationMatrix);
+        virtual void clean(const MatrixTypeFor<dimensions, T>& absoluteTransformationMatrix);
 
         /**
          * @brief Clean data based on inverted absolute transformation
@@ -283,7 +283,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          * Default implementation does nothing.
          * @see @ref scenegraph-caching, @ref clean()
          */
-        virtual void cleanInverted(const typename DimensionTraits<dimensions, T>::MatrixType& invertedAbsoluteTransformationMatrix);
+        virtual void cleanInverted(const MatrixTypeFor<dimensions, T>& invertedAbsoluteTransformationMatrix);
 
         /*@}*/
 

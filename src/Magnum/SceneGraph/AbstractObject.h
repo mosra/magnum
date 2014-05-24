@@ -81,7 +81,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 
     public:
         /** @brief Matrix type */
-        typedef typename DimensionTraits<dimensions, T>::MatrixType MatrixType;
+        typedef MatrixTypeFor<dimensions, T> MatrixType;
 
         /** @brief Feature object type */
         typedef AbstractFeature<dimensions, T> FeatureType;

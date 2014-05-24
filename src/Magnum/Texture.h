@@ -52,7 +52,7 @@ namespace Implementation {
         #endif
     }
 
-    template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxTextureSize();
+    template<UnsignedInt dimensions> VectorTypeFor<dimensions, Int> maxTextureSize();
     template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>();
 }
 
@@ -152,7 +152,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE},
          *      @def_gl{MAX_3D_TEXTURE_SIZE}
          */
-        static typename DimensionTraits<dimensions, Int>::VectorType maxSize() {
+        static VectorTypeFor<dimensions, Int> maxSize() {
             return Implementation::maxTextureSize<dimensions>();
         }
 
@@ -198,7 +198,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @def_gl{TEXTURE_DEPTH}
          * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
-        typename DimensionTraits<dimensions, Int>::VectorType imageSize(Int level) {
+        VectorTypeFor<dimensions, Int> imageSize(Int level) {
             return DataHelper<dimensions>::imageSize(*this, _target, level);
         }
         #endif
@@ -585,7 +585,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @todo allow the user to specify ColorType explicitly to avoid
          *      issues in WebGL (see setSubImage())
          */
-        Texture<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
+        Texture<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const VectorTypeFor<dimensions, Int>& size) {
             DataHelper<dimensions>::setStorage(*this, _target, levels, internalFormat, size);
             return *this;
         }
@@ -695,20 +695,20 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        Texture<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, const ImageReference<dimensions>& image) {
+        Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const ImageReference<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        Texture<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, BufferImage<dimensions>& image) {
+        Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, BufferImage<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
         /** @overload */
-        Texture<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, BufferImage<dimensions>&& image) {
+        Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, BufferImage<dimensions>&& image) {
             return setSubImage(level, offset, image);
         }
         #endif
@@ -749,7 +749,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * (part of OpenGL 4.3) is not available, this function does nothing.
          * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
          */
-        void invalidateSubImage(Int level, const typename DimensionTraits<dimensions, Int>::VectorType& offset, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
+        void invalidateSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const VectorTypeFor<dimensions, Int>& size) {
             DataHelper<dimensions>::invalidateSubImage(*this, level, offset, size);
         }
 

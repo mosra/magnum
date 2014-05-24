@@ -51,7 +51,7 @@ template<class T> class Camera<3, T> {
         }
 };
 
-template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport) {
+template<UnsignedInt dimensions, class T> MatrixTypeFor<dimensions, T> aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport) {
     /* Don't divide by zero / don't preserve anything */
     if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
         return {};
@@ -97,7 +97,7 @@ template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::dr
     objects.reserve(group.size());
     for(std::size_t i = 0; i != group.size(); ++i)
         objects.push_back(group[i].object());
-    std::vector<typename DimensionTraits<dimensions, T>::MatrixType> transformations =
+    std::vector<MatrixTypeFor<dimensions, T>> transformations =
         scene->transformationMatrices(objects, _cameraMatrix);
 
     /* Perform the drawing */

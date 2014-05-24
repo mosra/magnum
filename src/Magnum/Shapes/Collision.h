@@ -67,7 +67,7 @@ template<UnsignedInt dimensions> class Collision {
          * If separation distance is positive, the separation normal is
          * expected to be normalized.
          */
-        explicit Collision(typename DimensionTraits<dimensions, Float>::VectorType position, typename DimensionTraits<dimensions, Float>::VectorType separationNormal, Float separationDistance) noexcept: _position(position), _separationNormal(separationNormal), _separationDistance(separationDistance) {
+        explicit Collision(const VectorTypeFor<dimensions, Float>& position, const VectorTypeFor<dimensions, Float>& separationNormal, Float separationDistance) noexcept: _position(position), _separationNormal(separationNormal), _separationDistance(separationDistance) {
             CORRADE_ASSERT(_separationDistance < Math::TypeTraits<Float>::epsilon() || separationNormal.isNormalized(), "Shapes::Collision::Collision: separation normal is not normalized", );
         }
 
@@ -81,7 +81,7 @@ template<UnsignedInt dimensions> class Collision {
         operator bool() const { return _separationDistance > 0.0f; }
 
         /** @brief %Collision position */
-        typename DimensionTraits<dimensions, Float>::VectorType position() const {
+        VectorTypeFor<dimensions, Float> position() const {
             return _position;
         }
 
@@ -90,7 +90,7 @@ template<UnsignedInt dimensions> class Collision {
          *
          * @see @ref separationDistance(), @ref flipped()
          */
-        typename DimensionTraits<dimensions, Float>::VectorType separationNormal() const {
+        VectorTypeFor<dimensions, Float> separationNormal() const {
             return _separationNormal;
         }
 
@@ -117,8 +117,8 @@ template<UnsignedInt dimensions> class Collision {
         }
 
     private:
-        typename DimensionTraits<dimensions, Float>::VectorType _position;
-        typename DimensionTraits<dimensions, Float>::VectorType _separationNormal;
+        VectorTypeFor<dimensions, Float> _position;
+        VectorTypeFor<dimensions, Float> _separationNormal;
         Float _separationDistance;
 };
 

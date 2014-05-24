@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Shapes {
 
-template<UnsignedInt dimensions> AxisAlignedBox<dimensions> AxisAlignedBox<dimensions>::transformed(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix) const {
+template<UnsignedInt dimensions> AxisAlignedBox<dimensions> AxisAlignedBox<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return AxisAlignedBox<dimensions>(matrix.transformPoint(_min),
                                       matrix.transformPoint(_max));
 }

@@ -83,7 +83,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setTransformationProjectionMatrix(typename DimensionTraits<dimensions, Float>::MatrixType());
+    setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{});
     #endif
 }
 

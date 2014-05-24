@@ -39,7 +39,7 @@ namespace {
     template<> struct VectorOrScalar<2> { typedef Vector2i Type; };
 }
 
-template<UnsignedInt dimensions> typename DimensionTraits<dimensions+1, Int>::VectorType TextureArray<dimensions>::maxSize() {
+template<UnsignedInt dimensions> VectorTypeFor<dimensions+1, Int> TextureArray<dimensions>::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         return {};

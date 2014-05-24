@@ -105,7 +105,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
          *      @def_gl{MAX_ARRAY_TEXTURE_LAYERS}
          */
-        static typename DimensionTraits<dimensions+1, Int>::VectorType maxSize();
+        static VectorTypeFor<dimensions+1, Int> maxSize();
 
         /**
          * @brief Constructor
@@ -251,7 +251,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /** @copydoc Texture::imageSize() */
-        typename DimensionTraits<dimensions+1, Int>::VectorType imageSize(Int level) {
+        VectorTypeFor<dimensions+1, Int> imageSize(Int level) {
             return DataHelper<dimensions+1>::imageSize(*this, _target, level);
         }
         #endif
@@ -282,7 +282,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
          */
-        TextureArray<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<dimensions+1, Int>::VectorType& size) {
+        TextureArray<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const VectorTypeFor<dimensions+1, Int>& size) {
             DataHelper<dimensions+1>::setStorage(*this, _target, levels, internalFormat, size);
             return *this;
         }
@@ -351,20 +351,20 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      or @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
-        TextureArray<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions+1, Int>::VectorType& offset, const ImageReference<dimensions+1>& image) {
+        TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageReference<dimensions+1>& image) {
             DataHelper<dimensions+1>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
-        TextureArray<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions+1, Int>::VectorType& offset, BufferImage<dimensions+1>& image) {
+        TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, BufferImage<dimensions+1>& image) {
             DataHelper<dimensions+1>::setSubImage(*this, _target, level, offset, image);
             return *this;
         }
 
         /** @overload */
-        TextureArray<dimensions>& setSubImage(Int level, const typename DimensionTraits<dimensions+1, Int>::VectorType& offset, BufferImage<dimensions+1>&& image) {
+        TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, BufferImage<dimensions+1>&& image) {
             return setSubImage(level, offset, image);
         }
         #endif
@@ -379,7 +379,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
         /** @copydoc Texture::invalidateSubImage() */
-        void invalidateSubImage(Int level, const typename DimensionTraits<dimensions+1, Int>::VectorType& offset, const typename DimensionTraits<dimensions+1, Int>::VectorType& size) {
+        void invalidateSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const VectorTypeFor<dimensions+1, Int>& size) {
             DataHelper<dimensions+1>::invalidateSubImage(*this, level, offset, size);
         }
 

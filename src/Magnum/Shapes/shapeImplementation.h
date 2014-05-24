@@ -158,7 +158,7 @@ template<UnsignedInt dimensions> struct MAGNUM_SHAPES_EXPORT AbstractShape {
 
     virtual typename ShapeDimensionTraits<dimensions>::Type MAGNUM_SHAPES_LOCAL type() const = 0;
     virtual AbstractShape<dimensions> MAGNUM_SHAPES_LOCAL * clone() const = 0;
-    virtual void MAGNUM_SHAPES_LOCAL transform(const typename DimensionTraits<dimensions, Float>::MatrixType& matrix, AbstractShape<dimensions>* result) const = 0;
+    virtual void MAGNUM_SHAPES_LOCAL transform(const MatrixTypeFor<dimensions, Float>& matrix, AbstractShape<dimensions>* result) const = 0;
 };
 
 template<class T> struct Shape: AbstractShape<T::Dimensions> {
@@ -176,7 +176,7 @@ template<class T> struct Shape: AbstractShape<T::Dimensions> {
         return new Shape<T>(shape);
     }
 
-    void transform(const typename DimensionTraits<T::Dimensions, Float>::MatrixType& matrix, AbstractShape<T::Dimensions>* result) const override {
+    void transform(const MatrixTypeFor<T::Dimensions, Float>& matrix, AbstractShape<T::Dimensions>* result) const override {
         CORRADE_INTERNAL_ASSERT(result->type() == type());
         static_cast<Shape<T>*>(result)->shape = shape.transformed(matrix);
     }

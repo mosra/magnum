@@ -37,7 +37,7 @@ template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::set(
     shape._transformedShape.shape = shape._shape.shape = std::move(composition);
 }
 
-template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::transform(Shapes::Shape<Composition<dimensions>>& shape, const typename DimensionTraits<dimensions, Float>::MatrixType& absoluteTransformationMatrix) {
+template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::transform(Shapes::Shape<Composition<dimensions>>& shape, const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) {
     CORRADE_INTERNAL_ASSERT(shape._shape.shape.size() == shape._transformedShape.shape.size());
     for(std::size_t i = 0; i != shape.shape().size(); ++i)
         shape._shape.shape._shapes[i]->transform(absoluteTransformationMatrix, shape._transformedShape.shape._shapes[i]);

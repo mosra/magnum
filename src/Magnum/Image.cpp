@@ -27,7 +27,7 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data) {
+template<UnsignedInt dimensions> void Image<dimensions>::setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
     delete[] _data;
     _format = format;
     _type = type;
