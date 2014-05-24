@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::LightData
+ * @brief Class @ref Magnum::Trade::LightData
  */
 
 #include <string>

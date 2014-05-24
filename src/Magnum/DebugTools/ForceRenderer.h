@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::DebugTools::ForceRenderer, Magnum::DebugTools::ForceRendererOptions, typedef Magnum::DebugTools::ForceRenderer2D, Magnum::DebugTools::ForceRenderer3D
+ * @brief Class @ref Magnum::DebugTools::ForceRenderer, @ref Magnum::DebugTools::ForceRendererOptions, typedef @ref Magnum::DebugTools::ForceRenderer2D, @ref Magnum::DebugTools::ForceRenderer3D
  */
 
 #include "Magnum/Color.h"
@@ -122,10 +122,9 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
         /** @overload */
         ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const typename DimensionTraits<dimensions, Float>::VectorType&, typename DimensionTraits<dimensions, Float>::VectorType&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
 
-    protected:
+    private:
         void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 
-    private:
         const typename DimensionTraits<dimensions, Float>::VectorType forcePosition;
         const typename DimensionTraits<dimensions, Float>::VectorType& force;
 

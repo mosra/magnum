@@ -95,7 +95,7 @@ following:
 -------------------------------------------- | ------
 @extension{ARB,geometry_shader4}             | missing layered attachments
 @extension{ARB,depth_clamp}                  | done
-@extension{ARB,draw_elements_base_vertex}    | missing `Multi*` command
+@extension{ARB,draw_elements_base_vertex}    | done
 @extension{ARB,fragment_coord_conventions}   | done (shading language only)
 @extension{ARB,provoking_vertex}             | done
 @extension{ARB,seamless_cube_map}            | done
@@ -205,7 +205,7 @@ following:
 @extension{ARB,query_buffer_object}          | |
 @extension{ARB,texture_mirror_clamp_to_edge} | done
 @extension{ARB,texture_stencil8}             | done
-@extension{ARB,vertex_type_10f_11f_11f_rev}  | |
+@extension{ARB,vertex_type_10f_11f_11f_rev}  | done
 
 @subsection opengl-support-extensions OpenGL extensions
 
@@ -222,6 +222,7 @@ following:
 @extension{EXT,texture_filter_anisotropic} (also in ES) | done
 @extension{EXT,texture_mirror_clamp}         | only GL 4.4 subset
 @extension{EXT,direct_state_access}          | done for implemented functionality
+@extension{EXT,texture_sRGB_decode} (also in ES) | done
 @extension{EXT,shader_integer_mix} (also in ES) | done (shading language only)
 @extension2{EXT,debug_label} (also in ES)    | missing pipeline, transform feedback and sampler label
 @extension2{EXT,debug_marker} (also in ES)   | missing marker groups
@@ -298,6 +299,7 @@ Only extensions not already listed in above tables are included here.
 @es_extension{CHROMIUM,map_sub}              | only buffer mapping
 @es_extension{EXT,texture_format_BGRA8888}   | done
 @es_extension{EXT,read_format_bgra}          | done
+@es_extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done
 @es_extension{EXT,disjoint_timer_query}      | only time elapsed query
 @es_extension{EXT,separate_shader_objects}   | only direct uniform binding
 @es_extension{EXT,sRGB}                      | done

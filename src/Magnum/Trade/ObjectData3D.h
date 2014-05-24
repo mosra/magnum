@@ -59,7 +59,7 @@ enum class ObjectInstanceType3D: UnsignedByte {
 @brief Three-dimensional object data
 
 Provides access to object transformation and hierarchy.
-@see MeshObjectData3D, ObjectData2D
+@see @ref MeshObjectData3D, @ref ObjectData2D
 */
 class MAGNUM_EXPORT ObjectData3D {
     public:
@@ -103,14 +103,14 @@ class MAGNUM_EXPORT ObjectData3D {
         /**
          * @brief Instance type
          *
-         * @see instance()
+         * @see @ref instance()
          */
         ObjectInstanceType3D instanceType() const { return _instanceType; }
 
         /**
          * @brief Instance ID
          * @return ID of given camera / light / mesh etc., specified by
-         *      instanceType()
+         *      @ref instanceType()
          */
         Int instance() const { return _instance; }
 
@@ -121,7 +121,7 @@ class MAGNUM_EXPORT ObjectData3D {
         Int _instance;
 };
 
-/** @debugoperator{Magnum::Trade::ObjectData3D} */
+/** @debugoperatorenum{Magnum::Trade::ObjectInstanceType3D} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectInstanceType3D value);
 
 }}

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Vector
+ * @brief Class @ref Magnum::Math::Vector
  */
 
 #include <cmath>
@@ -92,7 +92,9 @@ template<std::size_t size, class T> class Vector {
          * antiparallel. @f[
          *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
          * @f]
-         * @see dot() const, operator-(), Vector2::perpendicular()
+         * @see dot() const, @ref operator-(),
+         *      @ref Vector2::perpendicular()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             return (a*b).sum();
@@ -104,7 +106,8 @@ template<std::size_t size, class T> class Vector {
          * Expects that both vectors are normalized. @f[
          *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
          * @f]
-         * @see isNormalized(), Quaternion::angle(), Complex::angle()
+         * @see @ref isNormalized(), @ref Quaternion::angle(),
+         *      @ref Complex::angle()
          */
         static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB);
 
@@ -202,7 +205,7 @@ template<std::size_t size, class T> class Vector {
          * @brief Raw data
          * @return One-dimensional array of `size` length.
          *
-         * @see operator[]()
+         * @see @ref operator[]()
          */
         T* data() {
             #ifndef CORRADE_MSVC2013_COMPATIBILITY
@@ -224,7 +227,7 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Value at given position
          *
-         * @see data()
+         * @see @ref data()
          */
         T& operator[](std::size_t pos) { return _data[pos]; }
         constexpr T operator[](std::size_t pos) const { return _data[pos]; } /**< @overload */
@@ -260,7 +263,7 @@ template<std::size_t size, class T> class Vector {
          * @f[
          *      |\boldsymbol a \cdot \boldsymbol a - 0| < \epsilon^2 \cong \epsilon
          * @f]
-         * @see dot(), normalized()
+         * @see @ref dot(), @ref normalized()
          */
         bool isZero() const {
             return Implementation::isZeroSquared(dot());
@@ -272,7 +275,7 @@ template<std::size_t size, class T> class Vector {
          * The vector is normalized if it has unit length: @f[
          *      |\boldsymbol a \cdot \boldsymbol a - 1| < 2 \epsilon + \epsilon^2 \cong 2 \epsilon
          * @f]
-         * @see dot(), normalized()
+         * @see @ref dot(), @ref normalized()
          */
         bool isNormalized() const {
             return Implementation::isNormalizedSquared(dot());
@@ -284,7 +287,7 @@ template<std::size_t size, class T> class Vector {
          * @f[
          *      \boldsymbol b_i = -\boldsymbol a_i
          * @f]
-         * @see Vector2::perpendicular()
+         * @see @ref Vector2::perpendicular()
          */
         Vector<size, T> operator-() const;
 
@@ -305,7 +308,7 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Add vector
          *
-         * @see operator+=(), sum()
+         * @see @ref operator+=(), @ref sum()
          */
         Vector<size, T> operator+(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) += other;
@@ -328,7 +331,7 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Subtract vector
          *
-         * @see operator-=()
+         * @see @ref operator-=()
          */
         Vector<size, T> operator-(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) -= other;
@@ -340,8 +343,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = b \boldsymbol a_i
          * @f]
-         * @see operator*=(const Vector<size, T>&),
-         *      operator*=(Vector<size, Integral>&, FloatingPoint)
+         * @see @ref operator*=(const Vector<size, T>&),
+         *      @ref operator*=(Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T>& operator*=(T number) {
             for(std::size_t i = 0; i != size; ++i)
@@ -353,9 +356,9 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Multiply vector with number
          *
-         * @see operator*(const Vector<size, T>&) const,
-         *      operator*=(T), operator*(T, const Vector<size, T>&),
-         *      operator*(const Vector<size, Integral>&, FloatingPoint)
+         * @see @ref operator*(const Vector<size, T>&) const,
+         *      @ref operator*=(T), operator*(T, const Vector<size, T>&),
+         *      @ref operator*(const Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T> operator*(T number) const {
             return Vector<size, T>(*this) *= number;
@@ -367,8 +370,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = \frac{\boldsymbol a_i} b
          * @f]
-         * @see operator/=(const Vector<size, T>&),
-         *      operator/=(Vector<size, Integral>&, FloatingPoint)
+         * @see @ref operator/=(const Vector<size, T>&),
+         *      @ref operator/=(Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T>& operator/=(T number) {
             for(std::size_t i = 0; i != size; ++i)
@@ -380,9 +383,9 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Divide vector with number
          *
-         * @see operator/(const Vector<size, T>&) const,
-         *      operator/=(T), operator/(T, const Vector<size, T>&),
-         *      operator/(const Vector<size, Integral>&, FloatingPoint)
+         * @see @ref operator/(const Vector<size, T>&) const,
+         *      @ref operator/=(T), operator/(T, const Vector<size, T>&),
+         *      @ref operator/(const Vector<size, Integral>&, FloatingPoint)
          */
         Vector<size, T> operator/(T number) const {
             return Vector<size, T>(*this) /= number;
@@ -394,8 +397,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = \boldsymbol a_i \boldsymbol b_i
          * @f]
-         * @see operator*=(T),
-         *      operator*=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
+         * @see @ref operator*=(T),
+         *      @ref operator*=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
         Vector<size, T>& operator*=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
@@ -407,8 +410,8 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Multiply vector component-wise
          *
-         * @see operator*(T) const, operator*=(const Vector<size, T>&),
-         *      operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&),
+         * @see @ref operator*(T) const, @ref operator*=(const Vector<size, T>&),
+         *      @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&),
          *      @ref product()
          */
         Vector<size, T> operator*(const Vector<size, T>& other) const {
@@ -421,8 +424,8 @@ template<std::size_t size, class T> class Vector {
          * The computation is done in-place. @f[
          *      \boldsymbol a_i = \frac{\boldsymbol a_i}{\boldsymbol b_i}
          * @f]
-         * @see operator/=(T),
-         *      operator/=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
+         * @see @ref operator/=(T),
+         *      @ref operator/=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
         Vector<size, T>& operator/=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
@@ -434,8 +437,8 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Divide vector component-wise
          *
-         * @see operator/(T) const, operator/=(const Vector<size, T>&),
-         *      operator/(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
+         * @see @ref operator/(T) const, @ref operator/=(const Vector<size, T>&),
+         *      @ref operator/(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
         Vector<size, T> operator/(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) /= other;
@@ -444,22 +447,24 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Dot product of the vector
          *
-         * Should be used instead of length() for comparing vector length with
-         * other values, because it doesn't compute the square root. @f[
+         * Should be used instead of @ref length() for comparing vector length
+         * with other values, because it doesn't compute the square root. @f[
          *      \boldsymbol a \cdot \boldsymbol a = \sum_{i=0}^{n-1} \boldsymbol a_i^2
          * @f]
-         * @see dot(const Vector<size, T>&, const Vector<size, T>&), isNormalized()
+         * @see @ref dot(const Vector<size, T>&, const Vector<size, T>&),
+         *      @ref isNormalized()
          */
         T dot() const { return dot(*this, *this); }
 
         /**
          * @brief %Vector length
          *
-         * See also dot() const which is faster for comparing length with other
-         * values. @f[
+         * See also @ref dot() const which is faster for comparing length with
+         * other values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
-         * @see lengthInverted(), Math::sqrt(), normalized(), resized()
+         * @see @ref lengthInverted(), @ref Math::sqrt(), @ref normalized(),
+         *      @ref resized()
          * @todo something like std::hypot() for possibly better precision?
          */
         T length() const { return std::sqrt(dot()); }
@@ -470,14 +475,15 @@ template<std::size_t size, class T> class Vector {
          * @f[
          *      \frac{1}{|\boldsymbol a|} = \frac{1}{\sqrt{\boldsymbol a \cdot \boldsymbol a}}
          * @f]
-         * @see length(), Math::sqrtInverted(), normalized(), resized()
+         * @see @ref length(), @ref Math::sqrtInverted(), @ref normalized(),
+         *      @ref resized()
          */
         T lengthInverted() const { return T(1)/length(); }
 
         /**
          * @brief Normalized vector (of unit length)
          *
-         * @see isNormalized(), lengthInverted(), resized()
+         * @see @ref isNormalized(), @ref lengthInverted(), @ref resized()
          */
         Vector<size, T> normalized() const { return *this*lengthInverted(); }
 
@@ -485,12 +491,12 @@ template<std::size_t size, class T> class Vector {
          * @brief Resized vector
          *
          * Convenience equivalent to the following code. Due to operation order
-         * this function is faster than the obvious way of sizing normalized()
-         * vector.
+         * this function is faster than the obvious way of sizing
+         * @ref normalized() vector.
          * @code
          * vec*(vec.lengthInverted()*length) // the brackets are important
          * @endcode
-         * @see normalized()
+         * @see @ref normalized()
          */
         Vector<size, T> resized(T length) const {
             return *this*(lengthInverted()*length);
@@ -502,7 +508,7 @@ template<std::size_t size, class T> class Vector {
          * Returns vector projected onto @p line. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
-         * @see dot(), projectedOntoNormalized()
+         * @see @ref dot(), @ref projectedOntoNormalized()
          */
         Vector<size, T> projected(const Vector<size, T>& line) const {
             return line*dot(*this, line)/line.dot();
@@ -511,26 +517,27 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief %Vector projected onto normalized line
          *
-         * Slightly faster alternative to projected(), expects @p line to be
-         * normalized. @f[
+         * Slightly faster alternative to @ref projected(), expects @p line to
+         * be normalized. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
-         * @see dot()
+         * @see dot() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 
         /**
          * @brief Sum of values in the vector
          *
-         * @see operator+()
+         * @see @ref operator+()
          */
         T sum() const;
 
         /**
          * @brief Product of values in the vector
          *
-         * @see operator*(const Vector<size, T>&) const
+         * @see @ref operator*(const Vector<size, T>&) const
          */
         T product() const;
 
@@ -575,7 +582,7 @@ template<std::size_t size, class T> class Vector {
 /** @relates Vector
 @brief Multiply number with vector
 
-Same as Vector::operator*(T) const.
+Same as @ref Vector::operator*(T) const.
 */
 template<std::size_t size, class T> inline Vector<size, T> operator*(
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -594,7 +601,7 @@ template<std::size_t size, class T> inline Vector<size, T> operator*(
 @f[
     \boldsymbol c_i = \frac b {\boldsymbol a_i}
 @f]
-@see Vector::operator/(T) const
+@see @ref Vector::operator/(T) const
 */
 template<std::size_t size, class T> inline Vector<size, T> operator/(
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -883,8 +890,8 @@ operator>>(const Vector<size, Integral>& vector,
 /** @relates Vector
 @brief Multiply integral vector with floating-point number and assign
 
-Similar to Vector::operator*=(T), except that the multiplication is done in
-floating-point. The computation is done in-place.
+Similar to @ref Vector::operator*=(T), except that the multiplication is done
+in floating-point. The computation is done in-place.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -902,8 +909,8 @@ operator*=(Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Multiply integral vector with floating-point number
 
-Similar to Vector::operator*(T) const, except that the multiplication is done
-in floating-point.
+Similar to @ref Vector::operator*(T) const, except that the multiplication is
+done in floating-point.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -919,7 +926,7 @@ operator*(const Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Multiply floating-point number with integral vector
 
-Same as operator*(const Vector<size, Integral>&, FloatingPoint).
+Same as @ref operator*(const Vector<size, Integral>&, FloatingPoint).
 */
 template<std::size_t size, class FloatingPoint, class Integral> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -934,7 +941,7 @@ operator*(FloatingPoint number, const Vector<size, Integral>& vector) {
 /** @relates Vector
 @brief Divide integral vector with floating-point number and assign
 
-Similar to Vector::operator/=(T), except that the division is done in
+Similar to @ref Vector::operator/=(T), except that the division is done in
 floating-point. The computation is done in-place.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
@@ -953,7 +960,7 @@ operator/=(Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Divide integral vector with floating-point number
 
-Similar to Vector::operator/(T) const, except that the division is done in
+Similar to @ref Vector::operator/(T) const, except that the division is done in
 floating-point.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
@@ -970,7 +977,7 @@ operator/(const Vector<size, Integral>& vector, FloatingPoint number) {
 /** @relates Vector
 @brief Multiply integral vector with floating-point vector component-wise and assign
 
-Similar to Vector::operator*=(const Vector<size, T>&), except that the
+Similar to @ref Vector::operator*=(const Vector<size, T>&), except that the
 multiplication is done in floating-point. The computation is done in-place.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
@@ -989,10 +996,10 @@ operator*=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
 /** @relates Vector
 @brief Multiply integral vector with floating-point vector component-wise
 
-Similar to Vector::operator*(const Vector<size, T>&) const, except that the
-multiplication is done in floating-point. The result is always integral vector,
-convert both arguments to the same floating-point type to have floating-point
-result.
+Similar to @ref Vector::operator*(const Vector<size, T>&) const, except that
+the multiplication is done in floating-point. The result is always integral
+vector, convert both arguments to the same floating-point type to have
+floating-point result.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1008,7 +1015,7 @@ operator*(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
 /** @relates Vector
 @brief Multiply floating-point vector with integral vector component-wise
 
-Same as operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&).
+Same as @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&).
 */
 template<std::size_t size, class FloatingPoint, class Integral> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1023,8 +1030,8 @@ operator*(const Vector<size, FloatingPoint>& a, const Vector<size, Integral>& b)
 /** @relates Vector
 @brief Divide integral vector with floating-point vector component-wise and assign
 
-Similar to Vector::operator/=(const Vector<size, T>&), except that the division
-is done in floating-point. The computation is done in-place.
+Similar to @ref Vector::operator/=(const Vector<size, T>&), except that the
+division is done in floating-point. The computation is done in-place.
 */
 template<std::size_t size, class Integral, class FloatingPoint> inline
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1042,8 +1049,8 @@ operator/=(Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b) {
 /** @relates Vector
 @brief Divide integral vector with floating-point vector component-wise
 
-Similar to Vector::operator/(const Vector<size, T>&) const, except that the
-division is done in floating-point. The result is always integral vector,
+Similar to @ref Vector::operator/(const Vector<size, T>&) const, except that
+the division is done in floating-point. The result is always integral vector,
 convert both arguments to the same floating-point type to have floating-point
 result.
 */

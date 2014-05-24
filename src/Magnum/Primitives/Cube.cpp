@@ -99,7 +99,7 @@ Trade::MeshData3D Cube::solid() {
         {-1.0f,  0.0f,  0.0f},
         {-1.0f,  0.0f,  0.0f}, /* -X */
         {-1.0f,  0.0f,  0.0f}
-    }}, std::vector<std::vector<Vector2>>{});
+    }}, {});
 }
 
 Trade::MeshData3D Cube::wireframe() {

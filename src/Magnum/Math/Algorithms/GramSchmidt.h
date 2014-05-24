@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::Math::Algorithms::gramSchmidtOrthogonalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthogonalize(), Magnum::Math::Algorithms::gramSchmidtOrthonormalizeInPlace(), Magnum::Math::Algorithms::gramSchmidtOrthonormalize()
+ * @brief Function @ref Magnum::Math::Algorithms::gramSchmidtOrthogonalizeInPlace(), @ref Magnum::Math::Algorithms::gramSchmidtOrthogonalize(), @ref Magnum::Math::Algorithms::gramSchmidtOrthonormalizeInPlace(), @ref Magnum::Math::Algorithms::gramSchmidtOrthonormalize()
  */
 
 #include "Magnum/Math/RectangularMatrix.h"
@@ -48,8 +48,8 @@ template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthogonal
 /**
 @brief Gram-Schmidt matrix orthogonalization
 
-Unlike gramSchmidtOrthogonalizeInPlace() returns the modified matrix instead
-of performing the orthogonalization in-place.
+Unlike @ref gramSchmidtOrthogonalizeInPlace() returns the modified matrix
+instead of performing the orthogonalization in-place.
 */
 template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, rows, T> gramSchmidtOrthogonalize(RectangularMatrix<cols, rows, T> matrix) {
     gramSchmidtOrthogonalizeInPlace(matrix);
@@ -72,8 +72,8 @@ template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthonorma
 /**
 @brief Gram-Schmidt matrix orthonormalization
 
-Unlike gramSchmidtOrthonormalizeInPlace() returns the modified matrix instead
-of performing the orthonormalization in-place.
+Unlike @ref gramSchmidtOrthonormalizeInPlace() returns the modified matrix
+instead of performing the orthonormalization in-place.
 */
 template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, rows, T> gramSchmidtOrthonormalize(RectangularMatrix<cols, rows, T> matrix) {
     gramSchmidtOrthonormalizeInPlace(matrix);

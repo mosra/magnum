@@ -25,8 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file Audio/Context.h
- * @brief Class Magnum::Audio::Context
+/** @file
+ * @brief Class @ref Magnum::Audio::Context
  */
 
 #include <string>
@@ -66,14 +66,14 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief Vendor string
          *
-         * @see rendererString(), @fn_al{GetString} with @def_al{VENDOR}
+         * @see @ref rendererString(), @fn_al{GetString} with @def_al{VENDOR}
          */
         std::string vendorString() const { return alGetString(AL_VENDOR); }
 
         /**
          * @brief %Renderer string
          *
-         * @see vendorString(), @fn_al{GetString} with @def_al{RENDERER}
+         * @see @ref vendorString(), @fn_al{GetString} with @def_al{RENDERER}
          */
         std::string rendererString() const { return alGetString(AL_RENDERER); }
 

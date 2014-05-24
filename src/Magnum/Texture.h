@@ -452,6 +452,26 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        /**
+         * @brief Set sRGB decoding
+         * @return Reference to self (for method chaining)
+         *
+         * Disables or reenables decoding of sRGB values. Initial value is
+         * `true`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_SRGB_DECODE_EXT}
+         * @requires_extension %Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_es_extension OpenGL ES 3.0 or extension
+         *      @es_extension{EXT,sRGB} and
+         *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         */
+        Texture<dimensions>& setSRGBDecode(bool decode) {
+            AbstractTexture::setSRGBDecode(decode);
+            return *this;
+        }
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set component swizzle
@@ -562,8 +582,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
          * available, the feature is emulated with sequence of @ref setImage()
          * calls.
-         * @todo allow the user to specify ColorType explicitly to avoid
-         *      issues in WebGL (see setSubImage())
          * @see @ref maxSize(), @ref setMaxLevel(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
@@ -574,6 +592,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      or @fn_gl_extension{TextureImage1D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
+         * @todo allow the user to specify ColorType explicitly to avoid
+         *      issues in WebGL (see setSubImage())
          */
         Texture<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::setStorage(*this, _target, levels, internalFormat, size);
@@ -597,12 +617,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * and @extension{ARB,robustness} are available, the DSA version is
          * used, because it is better for performance and there isn't any
          * function combining both features.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH},
          *      then @fn_gl{GetTexImage}, @fn_gl_extension{GetTextureImage,EXT,direct_state_access}
          *      or @fn_gl_extension{GetnTexImage,ARB,robustness}
+         * @requires_gl %Texture image queries are not available in OpenGL ES.
          */
         void image(Int level, Image<dimensions>& image) {
             AbstractTexture::image<dimensions>(_target, level, image);
@@ -709,7 +729,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the texture
          * is bound to some texture unit before the operation.
-         * @see setMinificationFilter(), @fn_gl{ActiveTexture},
+         * @see @ref setMinificationFilter(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
          * @requires_gl30 %Extension @extension{ARB,framebuffer_object}

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::TextureTools::atlas()
+ * @brief Function @ref Magnum::TextureTools::atlas()
  */
 
 #include <vector>

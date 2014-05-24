@@ -40,7 +40,7 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
         {0.0f, 1.0f}
     });
 
-    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, std::vector<UnsignedInt>{}, {std::vector<Vector3>{
+    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, {}, {std::vector<Vector3>{
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {-1.0f, -1.0f, 0.0f},

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::Square
+ * @brief Class @ref Magnum::Primitives::Square
  */
 
 #include "Magnum/Primitives/visibility.h"

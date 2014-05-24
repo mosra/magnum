@@ -50,7 +50,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         /** @brief Underlying transformation type */
         typedef Math::Matrix4<T> DataType;
 
-        /** @brief Object transformation */
+        /** @brief %Object transformation */
         Math::Matrix4<T> transformation() const { return _transformation; }
 
         /**
@@ -131,7 +131,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling @ref transform() with @ref Math::Matrix4::rotationX().
+         * Same as calling @ref transform() with
+         * @ref Math::Matrix4::rotationX().
          * @see @ref normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation3D<T>>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -144,7 +145,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling @ref transform() with @ref Math::Matrix4::rotationY().
+         * Same as calling @ref transform() with
+         * @ref Math::Matrix4::rotationY().
          * @see @ref normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation3D<T>>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -157,7 +159,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling @ref transform() with @ref Math::Matrix4::rotationZ().
+         * Same as calling @ref transform() with
+         * @ref Math::Matrix4::rotationZ().
          * @see @ref normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation3D<T>>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -171,7 +174,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling @ref transform() with @ref Math::Matrix4::reflection().
+         * Same as calling @ref transform() with
+         * @ref Math::Matrix4::reflection().
          */
         Object<BasicRigidMatrixTransformation3D<T>>& reflect(const Math::Vector3<T>& normal, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::Matrix4<T>::reflection(normal), type);

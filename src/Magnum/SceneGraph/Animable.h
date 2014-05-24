@@ -56,7 +56,7 @@ enum class AnimationState: UnsignedByte {
     Running
 };
 
-/** @debugoperator{Magnum::SceneGraph::Animable} */
+/** @debugoperatorenum{Magnum::SceneGraph::AnimationState} */
 Debug MAGNUM_SCENEGRAPH_EXPORT operator<<(Debug debug, AnimationState value);
 
 /**
@@ -68,9 +68,9 @@ Adds animation feature to object. Each %Animable is part of some
 @section Animable-usage Usage
 
 First thing is to add @ref Animable feature to some object and implement
-animationStep(). You can do it conveniently using multiple inheritance (see
-@ref scenegraph-features for introduction). Override @ref animationStep() to
-implement your animation, the function provides both absolute animation
+@ref animationStep(). You can do it conveniently using multiple inheritance
+(see @ref scenegraph-features for introduction). Override @ref animationStep()
+to implement your animation, the function provides both absolute animation
 time and time delta. Example:
 @code
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
@@ -92,8 +92,8 @@ class AnimableObject: public Object3D, SceneGraph::Animable3D {
 Then add the object to your scene and some animation group. You can also use
 @ref AnimableGroup::add() and @ref AnimableGroup::remove() instead of passing
 the group in the constructor. The animation is initially in stopped state and
-without repeat, see @ref setState(), @ref setRepeated() and @ref setRepeatCount()
-for more information.
+without repeat, see @ref setState(), @ref setRepeated() and
+@ref setRepeatCount() for more information.
 @code
 Scene3D scene;
 SceneGraph::AnimableGroup3D animables;

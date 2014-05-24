@@ -82,16 +82,16 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
             /**
              * Draw event.
              *
-             * When enabled, drawEvent() is propagated to this screen.
+             * When enabled, @ref drawEvent() is propagated to this screen.
              */
             Draw = 1 << 0,
 
             /**
              * Input events.
              *
-             * When enabled, keyPressEvent(), keyReleaseEvent(), mousePressEvent(),
-             * mouseReleaseEvent() and mouseMoveEvent() are propagated to this
-             * screen.
+             * When enabled, @ref keyPressEvent(), @ref keyReleaseEvent(),
+             * @ref mousePressEvent(), @ref mouseReleaseEvent() and
+             * @ref mouseMoveEvent() are propagated to this screen.
              */
             Input = 1 << 1
         };

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::GlxApplication
+ * @brief Class @ref Magnum::Platform::GlxApplication, macro @ref MAGNUM_GLXAPPLICATION_MAIN()
  */
 
 #include "Magnum/Platform/AbstractXApplication.h"
@@ -76,7 +76,18 @@ to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
+        /**
+         * @brief Default constructor
+         * @param arguments     Application arguments
+         * @param configuration %Configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref AbstractXApplication::Configuration "Configuration" for
+         * more information. The program exits if the context cannot be
+         * created, see below for an alternative.
+         * @todoc make this copydoc from Sdl2Application when Doxygen is able
+         *      to find Configuration subclass
+         */
         explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */

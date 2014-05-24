@@ -44,10 +44,10 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Red component, normalized unsigned, size implementation-dependent.
-     * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::R8".
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
      * @requires_gl Use exactly specified format in OpenGL ES instead.
+     * @deprecated_gl Prefer to use the exactly specified version of this
+     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::R8".
      */
     Red = GL_RED,
     #endif
@@ -68,10 +68,10 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red and green component, normalized unsigned, size
      * implementation-dependent.
-     * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::RG8".
      * @requires_gl30 %Extension @extension{ARB,texture_rg}
      * @requires_gl Use exactly specified format in OpenGL ES instead.
+     * @deprecated_gl Prefer to use the exactly specified version of this
+     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::RG8".
      */
     RG = GL_RG,
     #endif
@@ -91,9 +91,9 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * RGBA, normalized unsigned, size implementation-dependent.
+     * @requires_gl Use exactly specified format in OpenGL ES 2.0 instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::RGBA8".
-     * @requires_gl Use exactly specified format in OpenGL ES 2.0 instead.
      */
     RGBA = GL_RGBA,
     #endif
@@ -387,9 +387,9 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Depth component, size implementation-dependent.
      * @todo is this allowed in core?
+     * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::DepthComponent16".
-     * @requires_gl Use exactly specified format in OpenGL ES instead.
      */
     DepthComponent = GL_DEPTH_COMPONENT,
     #endif
@@ -430,9 +430,9 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Stencil index, size implementation-dependent.
+     * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::StencilIndex8".
-     * @requires_gl Use exactly specified format in OpenGL ES instead.
      */
     StencilIndex = GL_STENCIL_INDEX,
     #endif
@@ -469,9 +469,9 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Depth and stencil component, size implementation-dependent.
+     * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::Depth24Stencil8".
-     * @requires_gl Use exactly specified format in OpenGL ES instead.
      */
     DepthStencil = GL_DEPTH_STENCIL,
     #endif

@@ -114,6 +114,7 @@ Buffer::Buffer(Buffer::Target targetHint): _targetHint(targetHint)
     #endif
 {
     glGenBuffers(1, &_id);
+    CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 Buffer::~Buffer() {

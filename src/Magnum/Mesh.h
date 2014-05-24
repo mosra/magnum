@@ -743,18 +743,21 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @brief Draw the mesh
-         * @param shader    Shader to use for drawing
+         * @param shader    %Shader to use for drawing
          *
          * Expects that the shader is compatible with this mesh and is fully
          * set up. If vertex/index count or instance count is `0`, no draw
          * commands are issued. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information.
-         * @see @ref setCount(), @ref setInstanceCount(), @fn_gl{UseProgram},
-         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{DrawArrays}/@fn_gl{DrawArraysInstanced}/
+         * @see @ref setCount(), @ref setInstanceCount(),
+         *      @ref MeshView::draw(AbstractShaderProgram&),
+         *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
+         *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
+         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
+         *      @extension{APPLE,vertex_array_object} is available),
+         *      @fn_gl{DrawArrays}/@fn_gl{DrawArraysInstanced}/
          *      @fn_gl{DrawArraysInstancedBaseInstance} or @fn_gl{DrawElements}/
          *      @fn_gl{DrawRangeElements}/@fn_gl{DrawElementsBaseVertex}/
          *      @fn_gl{DrawRangeElementsBaseVertex}/@fn_gl{DrawElementsInstanced}/
@@ -985,17 +988,17 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 };
 
-/** @debugoperator{Magnum::Mesh} */
+/** @debugoperatorenum{Magnum::MeshPrimitive} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, MeshPrimitive value);
 
-/** @debugoperator{Magnum::Mesh} */
+/** @debugoperatorclassenum{Magnum::Mesh,Magnum::Mesh::IndexType} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
 
 }
 
 namespace Corrade { namespace Utility {
 
-/** @configurationvalue{Magnum::Mesh} */
+/** @configurationvalue{Magnum::MeshPrimitive} */
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
     ConfigurationValue() = delete;
 
@@ -1014,7 +1017,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
     static Magnum::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 
-/** @configurationvalue{Magnum::Mesh} */
+/** @configurationvalue{Magnum::Mesh::IndexType} */
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::Mesh::IndexType> {
     ConfigurationValue() = delete;
 

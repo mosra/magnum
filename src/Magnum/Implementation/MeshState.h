@@ -35,6 +35,8 @@ namespace Magnum { namespace Implementation {
 struct MeshState {
     explicit MeshState(Context& context, std::vector<std::string>& extensions);
 
+    void reset();
+
     void(Mesh::*createImplementation)();
     void(Mesh::*destroyImplementation)();
     void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
@@ -54,6 +56,10 @@ struct MeshState {
     #ifdef MAGNUM_TARGET_GLES2
     void(Mesh::*drawArraysInstancedImplementation)(GLint, GLsizei, GLsizei);
     void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    void(*multiDrawImplementation)(std::initializer_list<std::reference_wrapper<MeshView>>);
     #endif
 
     GLuint currentVAO;

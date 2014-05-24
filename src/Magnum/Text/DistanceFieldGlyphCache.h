@@ -40,7 +40,7 @@ Unlike original @ref GlyphCache converts each binary image to distance field.
 It is not possible to use non-binary colors with this cache, internal texture
 format is red channel only.
 
-@section GlyphCache-usage Usage
+@section DistanceFieldGlyphCache-usage Usage
 
 Usage is similar to @ref GlyphCache, additionally you need to specify size of
 resulting distance field texture.

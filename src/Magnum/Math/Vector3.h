@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Vector3
+ * @brief Class @ref Magnum::Math::Vector3
  */
 
 #include "Magnum/Math/Vector2.h"
@@ -39,7 +39,8 @@ namespace Magnum { namespace Math {
 @tparam T   Data type
 
 See @ref matrix-vector for brief introduction.
-@see Magnum::Vector3, Magnum::Vector3i, Magnum::Vector3ui, Magnum::Vector3d
+@see @ref Magnum::Vector3, @ref Magnum::Vector3i, @ref Magnum::Vector3ui,
+    @ref Magnum::Vector3d
 @configurationvalueref{Magnum::Math::Vector3}
 */
 template<class T> class Vector3: public Vector<3, T> {
@@ -107,7 +108,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *      \boldsymbol a \times \boldsymbol b =
          *      \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_y - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
          * @f]
-         * @see Vector2::cross()
+         * @see @ref Vector2::cross()
          */
         static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
@@ -203,7 +204,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief XY part of the vector
          * @return First two components of the vector
          *
-         * @see swizzle()
+         * @see @ref swizzle()
          */
         Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
         constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */

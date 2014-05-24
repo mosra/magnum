@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::transformVectorsInPlace(), Magnum::MeshTools::transformVectors(), Magnum::MeshTools::transformPointsInPlace(), Magnum::MeshTools::transformPoints()
+ * @brief Function @ref Magnum::MeshTools::transformVectorsInPlace(), @ref Magnum::MeshTools::transformVectors(), @ref Magnum::MeshTools::transformPointsInPlace(), @ref Magnum::MeshTools::transformPoints()
  */
 
 #include "Magnum/Math/DualQuaternion.h"
@@ -43,7 +43,7 @@ with compatible vector type as @p vectors. Expects that @ref Math::Quaternion "Q
 is normalized, no further requirements are for other transformation
 representations.
 
-Unlike in transformPointsInPlace(), the transformation does not involve
+Unlike in @ref transformPointsInPlace(), the transformation does not involve
 translation.
 
 Example usage:
@@ -53,8 +53,9 @@ auto transformation = Quaternion::rotation(35.0_degf, Vector3::yAxis());
 MeshTools::transformVectorsInPlace(rotation, vectors);
 @endcode
 
-@see transformVectors(), Matrix3::transformVector(), Matrix4::transformVector(),
-    Complex::transformVectorNormalized(), Quaternion::transformVectorNormalized()
+@see @ref transformVectors(), @ref Matrix3::transformVector(),
+    @ref Matrix4::transformVector(), @ref Complex::transformVector(),
+    @ref Quaternion::transformVectorNormalized()
 @todo GPU transform feedback implementation (otherwise this is only bad joke)
 */
 template<class T, class U> void transformVectorsInPlace(const Math::Quaternion<T>& normalizedQuaternion, U& vectors) {
@@ -84,7 +85,7 @@ template<class T, class U> void transformVectorsInPlace(const Math::Matrix4<T>& 
 @brief Transform vectors using given transformation
 
 Returns transformed vectors instead of modifying them in-place. See
-transformVectorsInPlace() for more information.
+@ref transformVectorsInPlace() for more information.
 */
 template<class T, class U> U transformVectors(const T& transformation, U vectors) {
     U result(std::move(vectors));
@@ -101,7 +102,7 @@ with compatible vector type as @p vectors. Expects that
 @ref Math::DualQuaternion "DualQuaternion" is normalized, no further
 requirements are for other transformation representations.
 
-Unlike in transformVectorsInPlace(), the transformation also involves
+Unlike in @ref transformVectorsInPlace(), the transformation also involves
 translation.
 
 Example usage:
@@ -112,8 +113,9 @@ auto transformation = DualQuaternion::rotation(35.0_degf, Vector3::yAxis())*
 MeshTools::transformPointsInPlace(rotation, points);
 @endcode
 
-@see transformPoints(), Matrix3::transformPoint(), Matrix4::transformPoint(),
-    DualQuaternion::transformPointNormalized()
+@see @ref transformPoints(), @ref Matrix3::transformPoint(),
+    @ref Matrix4::transformPoint(),
+    @ref DualQuaternion::transformPointNormalized()
 */
 template<class T, class U> void transformPointsInPlace(const Math::DualQuaternion<T>& normalizedDualQuaternion, U& points) {
     for(auto it = points.begin(); it != points.end(); ++it)
@@ -142,7 +144,7 @@ template<class T, class U> void transformPointsInPlace(const Math::Matrix4<T>& m
 @brief Transform points using given transformation
 
 Returns transformed points instead of modifying them in-place. See
-transformPointsInPlace() for more information.
+@ref transformPointsInPlace() for more information.
 */
 template<class T, class U> U transformPoints(const T& transformation, U vectors) {
     U result(std::move(vectors));

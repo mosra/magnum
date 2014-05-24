@@ -42,6 +42,8 @@ namespace Magnum { namespace Implementation {
 struct ShaderProgramState {
     explicit ShaderProgramState(Context& context, std::vector<std::string>& extensions);
 
+    void reset();
+
     void(AbstractShaderProgram::*uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
     void(AbstractShaderProgram::*uniform2fvImplementation)(GLint, GLsizei, const Math::Vector<2, GLfloat>*);
     void(AbstractShaderProgram::*uniform3fvImplementation)(GLint, GLsizei, const Math::Vector<3, GLfloat>*);

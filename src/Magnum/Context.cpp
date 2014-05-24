@@ -45,6 +45,11 @@
 #include "Magnum/Renderer.h"
 
 #include "Implementation/State.h"
+#include "Implementation/BufferState.h"
+#include "Implementation/FramebufferState.h"
+#include "Implementation/MeshState.h"
+#include "Implementation/ShaderProgramState.h"
+#include "Implementation/TextureState.h"
 
 namespace Magnum {
 
@@ -61,6 +66,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,texture_mirror_clamp),
         _extension(GL,EXT,direct_state_access),
+        _extension(GL,EXT,texture_sRGB_decode),
         _extension(GL,EXT,shader_integer_mix),
         _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
@@ -191,9 +197,11 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,texture_format_BGRA8888),
         _extension(GL,EXT,read_format_bgra),
+        _extension(GL,EXT,multi_draw_arrays),
         _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
         _extension(GL,EXT,disjoint_timer_query),
+        _extension(GL,EXT,texture_sRGB_decode),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,sRGB),
         _extension(GL,EXT,multisampled_render_to_texture),
@@ -527,6 +535,25 @@ Version Context::supportedVersion(std::initializer_list<Version> versions) const
     #else
     return Version::GLES200;
     #endif
+}
+
+void Context::resetState(const States states) {
+    if(states & State::Buffers)
+        _state->buffer->reset();
+    if(states & State::Framebuffers)
+        _state->framebuffer->reset();
+    if(states & State::Meshes)
+        _state->mesh->reset();
+
+    /* Nothing to reset for renderer yet */
+
+    if(states & State::Shaders) {
+        /* Nothing to reset for shaders */
+        _state->shaderProgram->reset();
+    }
+
+    if(states & State::Textures)
+        _state->texture->reset();
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

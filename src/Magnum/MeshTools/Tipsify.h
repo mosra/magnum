@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::tipsify()
+ * @brief Function @ref Magnum::MeshTools::tipsify()
  */
 
 #include <vector>

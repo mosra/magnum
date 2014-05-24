@@ -171,6 +171,7 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, std:
 
 AbstractTexture::AbstractTexture(GLenum target): _target(target) {
     glGenTextures(1, &_id);
+    CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 AbstractTexture::~AbstractTexture() {
@@ -287,6 +288,11 @@ void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
 
+void AbstractTexture::setSRGBDecode(bool decode) {
+    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SRGB_DECODE_EXT,
+        decode ? GL_DECODE_EXT : GL_SKIP_DECODE_EXT);
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::setSwizzleInternal(const GLint r, const GLint g, const GLint b, const GLint a) {
     #ifndef MAGNUM_TARGET_GLES
@@ -386,7 +392,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRed:
-        case TextureFormat::CompressedRedRtgc1:
+        case TextureFormat::CompressedRedRgtc1:
         case TextureFormat::CompressedSignedRedRgtc1:
         #endif
             return ColorFormat::Red;
@@ -589,7 +595,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRG:
         case TextureFormat::CompressedRGB:
         case TextureFormat::CompressedRGBA:
-        case TextureFormat::CompressedRedRtgc1:
+        case TextureFormat::CompressedRedRgtc1:
         case TextureFormat::CompressedRGRgtc2:
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:

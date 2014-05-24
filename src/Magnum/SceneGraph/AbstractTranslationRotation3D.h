@@ -36,7 +36,10 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base transformation for three-dimensional scenes supporting translation and rotation
 
-@see @ref AbstractTranslationRotation3D @ref scenegraph, @ref AbstractBasicTranslationRotation2D
+@see @ref AbstractTranslationRotation3D @ref scenegraph,
+    @ref AbstractBasicTranslationRotation2D,
+    @ref BasicRigidMatrixTransformation3D,
+    @ref BasicDualQuaternionTransformation
 @todo Use AbstractBasicTransformation3D<T> when support for GCC 4.6 is dropped
 */
 template<class T> class AbstractBasicTranslationRotation3D: public AbstractTranslation<3, T> {
@@ -66,7 +69,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, Vector3::xAxis())`, see subclasses for more
+         * `rotate(angle, %Vector3::xAxis())`, see subclasses for more
          * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -81,7 +84,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, Vector3::yAxis())`, see subclasses for more
+         * `rotate(angle, %Vector3::yAxis())`, see subclasses for more
          * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -96,7 +99,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, Vector3::zAxis())`, see subclasses for more
+         * `rotate(angle, %Vector3::zAxis())`, see subclasses for more
          * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {

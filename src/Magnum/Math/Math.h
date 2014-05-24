@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for Magnum::Math namespace
+ * @brief Forward declarations for @ref Magnum::Math namespace
  */
 
 #include <cstddef>

@@ -36,7 +36,9 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base transformation for two-dimensional scenes supporting translation, rotation and scaling
 
-@see @ref AbstractTranslationRotationScaling2D, @ref scenegraph, @ref AbstractBasicTranslationRotationScaling2D
+@see @ref AbstractTranslationRotationScaling2D, @ref scenegraph,
+    @ref AbstractBasicTranslationRotationScaling2D,
+    @ref BasicMatrixTransformation2D
 */
 template<class T> class AbstractBasicTranslationRotationScaling2D: public AbstractBasicTranslationRotation2D<T> {
     public:

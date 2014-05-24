@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Vector2
+ * @brief Class @ref Magnum::Math::Vector2
  */
 
 #include "Magnum/Math/Vector.h"
@@ -38,7 +38,8 @@ namespace Magnum { namespace Math {
 @tparam T   Data type
 
 See @ref matrix-vector for brief introduction.
-@see Magnum::Vector2, Magnum::Vector2i, Magnum::Vector2ui, Magnum::Vector2d
+@see @ref Magnum::Vector2, @ref Magnum::Vector2i, @ref Magnum::Vector2ui,
+    @ref Magnum::Vector2d
 @configurationvalueref{Magnum::Math::Vector2}
 */
 template<class T> class Vector2: public Vector<2, T> {
@@ -50,15 +51,15 @@ template<class T> class Vector2: public Vector<2, T> {
          * @code
          * Matrix3::translation(Vector2::xAxis(5.0f)); // same as Matrix3::translation({5.0f, 0.0f});
          * @endcode
-         * @see yAxis(), xScale(), Matrix3::right()
+         * @see @ref yAxis(), @ref xScale(), @ref Matrix3::right()
          */
         constexpr static Vector2<T> xAxis(T length = T(1)) { return {length, T(0)}; }
 
         /**
          * @brief %Vector in direction of Y axis (up)
          *
-         * See xAxis() for more information.
-         * @see yScale(), Matrix3::up()
+         * See @ref xAxis() for more information.
+         * @see @ref yScale(), @ref Matrix3::up()
          */
         constexpr static Vector2<T> yAxis(T length = T(1)) { return {T(0), length}; }
 
@@ -69,15 +70,15 @@ template<class T> class Vector2: public Vector<2, T> {
          * @code
          * Matrix3::scaling(Vector2::xScale(-2.0f)); // same as Matrix3::scaling({-2.0f, 1.0f});
          * @endcode
-         * @see yScale(), xAxis()
+         * @see @ref yScale(), @ref xAxis()
          */
         constexpr static Vector2<T> xScale(T scale) { return {scale, T(1)}; }
 
         /**
          * @brief Scaling vector in direction of Y axis (height)
          *
-         * See xScale() for more information.
-         * @see yAxis()
+         * See @ref xScale() for more information.
+         * @see @ref yAxis()
          */
         constexpr static Vector2<T> yScale(T scale) { return {T(1), scale}; }
 
@@ -85,12 +86,13 @@ template<class T> class Vector2: public Vector<2, T> {
          * @brief 2D cross product
          *
          * 2D version of cross product, also called perp-dot product,
-         * equivalent to calling Vector3::cross() with Z coordinate set to `0`
-         * and extracting only Z coordinate from the result (X and Y
+         * equivalent to calling @ref Vector3::cross() with Z coordinate set to
+         * `0` and extracting only Z coordinate from the result (X and Y
          * coordinates are always zero). @f[
          *      \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
          * @f]
-         * @see perpendicular(), dot(const Vector&, const Vector&)
+         * @see @ref perpendicular(),
+         *      @ref dot(const Vector<size, T>&, const Vector<size, T>&)
          */
         static T cross(const Vector2<T>& a, const Vector2<T>& b) {
             return Vector<2, T>::dot(a.perpendicular(), b);
@@ -135,7 +137,9 @@ template<class T> class Vector2: public Vector<2, T> {
          * Returns vector rotated 90° counterclockwise. @f[
          *      \boldsymbol v_\bot = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
          * @f]
-         * @see cross(), dot(const Vector&, const Vector&), operator-() const
+         * @see @ref cross(),
+         *      @ref dot(const Vector<size, T>&, const Vector<size, T>&),
+         *      @ref operator-() const
          */
         Vector2<T> perpendicular() const { return {-y(), x()}; }
 

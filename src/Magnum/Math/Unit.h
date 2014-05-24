@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Unit
+ * @brief Class @ref Magnum::Math::Unit
  */
 
 #include "Magnum/Math/TypeTraits.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace Math {
 @brief Base class for units
 @tparam T Underlying data type
 
-@see Deg, Rad
+@see @ref Deg, @ref Rad
 */
 template<template<class> class Derived, class T> class Unit {
     template<template<class> class, class> friend class Unit;

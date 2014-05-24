@@ -55,7 +55,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         typedef Generic3D::Normal Normal;       /**< @brief Normal direction */
 
         /**
-         * @brief Texture coordinates
+         * @brief %Texture coordinates
          *
          * Used only if one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
          * or @ref Flag::SpecularTexture is set.
@@ -91,7 +91,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         #endif
 
         /**
-         * @brief Shader flag
+         * @brief %Flag
          *
          * @see @ref Flags, @ref flags()
          */
@@ -102,7 +102,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         };
 
         /**
-         * @brief Shader flags
+         * @brief %Flags
          *
          * @see @ref flags()
          */
@@ -110,11 +110,11 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
 
         /**
          * @brief Constructor
-         * @param flags     Shader flags
+         * @param flags     %Flags
          */
         explicit Phong(Flags flags = Flags());
 
-        /** @brief Shader flags */
+        /** @brief %Flags */
         Flags flags() const { return _flags; }
 
         /**

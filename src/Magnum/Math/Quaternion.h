@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Quaternion
+ * @brief Class @ref Magnum::Math::Quaternion
  */
 
 #include <cmath>
@@ -44,11 +44,12 @@ namespace Magnum { namespace Math {
 @tparam T   Underlying data type
 
 Represents 3D rotation. See @ref transformations for brief introduction.
-@see Magnum::Quaternion, Magnum::Quaterniond, DualQuaternion, Matrix4
+@see @ref Magnum::Quaternion, @ref Magnum::Quaterniond, @ref DualQuaternion,
+    @ref Matrix4
 */
 template<class T> class Quaternion {
     public:
-        typedef T Type;                         /**< @brief Underlying data type */
+        typedef T Type; /**< @brief Underlying data type */
 
         /**
          * @brief Dot product
@@ -57,6 +58,7 @@ template<class T> class Quaternion {
          *      p \cdot q = \boldsymbol p_V \cdot \boldsymbol q_V + p_S q_S
          * @f]
          * @see dot() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
             /** @todo Use four-component SIMD implementation when available */
@@ -69,7 +71,8 @@ template<class T> class Quaternion {
          * Expects that both quaternions are normalized. @f[
          *      \theta = acos \left( \frac{p \cdot q}{|p| |q|} \right) = acos(p \cdot q)
          * @f]
-         * @see isNormalized(), Complex::angle(), Vector::angle()
+         * @see @ref isNormalized(), @ref Complex::angle(),
+         *      @ref Vector::angle()
          */
         static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB);
 
@@ -82,7 +85,7 @@ template<class T> class Quaternion {
          * Expects that both quaternions are normalized. @f[
          *      q_{LERP} = \frac{(1 - t) q_A + t q_B}{|(1 - t) q_A + t q_B|}
          * @f]
-         * @see isNormalized(), slerp(), Math::lerp()
+         * @see @ref isNormalized(), @ref slerp(), @ref Math::lerp()
          */
         static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t);
 
@@ -97,7 +100,7 @@ template<class T> class Quaternion {
          *      ~~~~~~~~~~
          *      \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right) = acos(q_A \cdot q_B)
          * @f]
-         * @see isNormalized(), lerp()
+         * @see @ref isNormalized(), @ref lerp()
          */
         static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t);
 
@@ -109,9 +112,10 @@ template<class T> class Quaternion {
          * Expects that the rotation axis is normalized. @f[
          *      q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2]
          * @f]
-         * @see angle(), axis(), DualQuaternion::rotation(),
-         *      Matrix4::rotation(), Complex::rotation(), Vector3::xAxis(),
-         *      Vector3::yAxis(), Vector3::zAxis(), Vector::isNormalized()
+         * @see @ref angle(), @ref axis(), @ref DualQuaternion::rotation(),
+         *      @ref Matrix4::rotation(), @ref Complex::rotation(),
+         *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
+         *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
          */
         static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
@@ -119,7 +123,8 @@ template<class T> class Quaternion {
          * @brief Create quaternion from rotation matrix
          *
          * Expects that the matrix is orthogonal (i.e. pure rotation).
-         * @see toMatrix(), DualComplex::fromMatrix(), Matrix::isOrthogonal()
+         * @see @ref toMatrix(), @ref DualComplex::fromMatrix(),
+         *      @ref Matrix::isOrthogonal()
          */
         static Quaternion<T> fromMatrix(const Matrix<3, T>& matrix);
 
@@ -147,7 +152,7 @@ template<class T> class Quaternion {
          * To be used in transformations later. @f[
          *      q = [\boldsymbol v, 0]
          * @f]
-         * @see transformVector(), transformVectorNormalized()
+         * @see @ref transformVector(), @ref transformVectorNormalized()
          */
         constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
 
@@ -164,10 +169,10 @@ template<class T> class Quaternion {
         /**
          * @brief Whether the quaternion is normalized
          *
-         * Quaternion is normalized if it has unit length: @f[
+         * %Quaternion is normalized if it has unit length: @f[
          *      |q \cdot q - 1| < 2 \epsilon + \epsilon^2 \cong 2 \epsilon
          * @f]
-         * @see dot(), normalized()
+         * @see @ref dot(), @ref normalized()
          */
         bool isNormalized() const {
             return Implementation::isNormalizedSquared(dot());
@@ -185,7 +190,7 @@ template<class T> class Quaternion {
          * Expects that the quaternion is normalized. @f[
          *      \theta = 2 \cdot acos q_S
          * @f]
-         * @see isNormalized(), axis(), rotation()
+         * @see @ref isNormalized(), @ref axis(), @ref rotation()
          */
         Rad<T> angle() const;
 
@@ -197,15 +202,15 @@ template<class T> class Quaternion {
          * default-constructed quaternion. @f[
          *      \boldsymbol a = \frac{\boldsymbol q_V}{\sqrt{1 - q_S^2}}
          * @f]
-         * @see isNormalized(), angle(), rotation()
+         * @see @ref isNormalized(), @ref angle(), @ref rotation()
          */
         Vector3<T> axis() const;
 
         /**
          * @brief Convert quaternion to rotation matrix
          *
-         * @see fromMatrix(), DualQuaternion::toMatrix(),
-         *      Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
+         * @see @ref fromMatrix(), @ref DualQuaternion::toMatrix(),
+         *      @ref Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
          */
         Matrix<3, T> toMatrix() const;
 
@@ -225,7 +230,7 @@ template<class T> class Quaternion {
         /**
          * @brief Add quaternion
          *
-         * @see operator+=()
+         * @see @ref operator+=()
          */
         Quaternion<T> operator+(const Quaternion<T>& other) const {
             return Quaternion<T>(*this) += other;
@@ -256,7 +261,7 @@ template<class T> class Quaternion {
         /**
          * @brief Subtract quaternion
          *
-         * @see operator-=()
+         * @see @ref operator-=()
          */
         Quaternion<T> operator-(const Quaternion<T>& other) const {
             return Quaternion<T>(*this) -= other;
@@ -278,7 +283,7 @@ template<class T> class Quaternion {
         /**
          * @brief Multiply with scalar
          *
-         * @see operator*=(T)
+         * @see @ref operator*=(T)
          */
         Quaternion<T> operator*(T scalar) const {
             return Quaternion<T>(*this) *= scalar;
@@ -300,7 +305,7 @@ template<class T> class Quaternion {
         /**
          * @brief Divide with scalar
          *
-         * @see operator/=(T)
+         * @see @ref operator/=(T)
          */
         Quaternion<T> operator/(T scalar) const {
             return Quaternion<T>(*this) /= scalar;
@@ -319,29 +324,32 @@ template<class T> class Quaternion {
         /**
          * @brief Dot product of the quaternion
          *
-         * Should be used instead of length() for comparing quaternion length
-         * with other values, because it doesn't compute the square root. @f[
+         * Should be used instead of @ref length() for comparing quaternion
+         * length with other values, because it doesn't compute the square
+         * root. @f[
          *      q \cdot q = \boldsymbol q_V \cdot \boldsymbol q_V + q_S^2
          * @f]
-         * @see isNormalized(), dot(const Quaternion&, const Quaternion&)
+         * @see @ref isNormalized(),
+         *      @ref dot(const Quaternion<T>&, const Quaternion<T>&)
          */
         T dot() const { return dot(*this, *this); }
 
         /**
          * @brief %Quaternion length
          *
-         * See also dot() const which is faster for comparing length with other
-         * values. @f[
+         * See also dot() const which is faster for comparing length with
+         * other values. @f[
          *      |q| = \sqrt{q \cdot q}
          * @f]
-         * @see isNormalized()
+         * @see @ref isNormalized()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         T length() const { return std::sqrt(dot()); }
 
         /**
          * @brief Normalized quaternion (of unit length)
          *
-         * @see isNormalized()
+         * @see @ref isNormalized()
          */
         Quaternion<T> normalized() const { return (*this)/length(); }
 
@@ -357,7 +365,7 @@ template<class T> class Quaternion {
         /**
          * @brief Inverted quaternion
          *
-         * See invertedNormalized() which is faster for normalized
+         * See @ref invertedNormalized() which is faster for normalized
          * quaternions. @f[
          *      q^{-1} = \frac{q^*}{|q|^2} = \frac{q^*}{q \cdot q}
          * @f]
@@ -367,23 +375,25 @@ template<class T> class Quaternion {
         /**
          * @brief Inverted normalized quaternion
          *
-         * Equivalent to conjugated(). Expects that the quaternion is
+         * Equivalent to @ref conjugated(). Expects that the quaternion is
          * normalized. @f[
          *      q^{-1} = \frac{q^*}{|q|^2} = q^*
          * @f]
-         * @see isNormalized(), inverted()
+         * @see @ref isNormalized(), @ref inverted()
          */
         Quaternion<T> invertedNormalized() const;
 
         /**
          * @brief Rotate vector with quaternion
          *
-         * See transformVectorNormalized(), which is faster for normalized
+         * See @ref transformVectorNormalized(), which is faster for normalized
          * quaternions. @f[
          *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
-         * @see Quaternion(const Vector3&), vector(), Matrix4::transformVector(),
-         *      DualQuaternion::transformPoint(), Complex::transformVector()
+         * @see @ref Quaternion(const Vector3<T>&), @ref vector(),
+         *      @ref Matrix4::transformVector(),
+         *      @ref DualQuaternion::transformPoint(),
+         *      @ref Complex::transformVector()
          */
         Vector3<T> transformVector(const Vector3<T>& vector) const {
             return ((*this)*Quaternion<T>(vector)*inverted()).vector();
@@ -392,12 +402,14 @@ template<class T> class Quaternion {
         /**
          * @brief Rotate vector with normalized quaternion
          *
-         * Faster alternative to transformVector(), expects that the quaternion
-         * is normalized. @f[
+         * Faster alternative to @ref transformVector(), expects that the
+         * quaternion is normalized. @f[
          *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
          * @f]
-         * @see isNormalized(), Quaternion(const Vector3&), vector(), Matrix4::transformVector(),
-         *      DualQuaternion::transformPointNormalized(), Complex::transformVector()
+         * @see @ref isNormalized(), @ref Quaternion(const Vector3<T>&),
+         *      @ref vector(), @ref Matrix4::transformVector(),
+         *      @ref DualQuaternion::transformPointNormalized(),
+         *      @ref Complex::transformVector()
          */
         Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const;
 
@@ -419,7 +431,7 @@ template<class T> class Quaternion {
 /** @relates Quaternion
 @brief Multiply scalar with quaternion
 
-Same as Quaternion::operator*(T) const.
+Same as @ref Quaternion::operator*(T) const.
 */
 template<class T> inline Quaternion<T> operator*(T scalar, const Quaternion<T>& quaternion) {
     return quaternion*scalar;
@@ -431,7 +443,7 @@ template<class T> inline Quaternion<T> operator*(T scalar, const Quaternion<T>& 
 @f[
     \frac a q = [\frac a {\boldsymbol q_V}, \frac a {q_S}]
 @f]
-@see Quaternion::operator/()
+@see @ref Quaternion::operator/()
 */
 template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& quaternion) {
     return {scalar/quaternion.vector(), scalar/quaternion.scalar()};
@@ -446,12 +458,16 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
     return debug;
 }
 
+/** @todoc Remove the workaround when Doxygen is really able to preprocessor */
+
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
+/** @privatesection */
 extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Quaternion<Float>&);
 #ifndef MAGNUM_TARGET_GLES
 extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Quaternion<Double>&);
 #endif
+/** @endprivatesection */
 #endif
 
 namespace Implementation {
@@ -472,10 +488,7 @@ template<class T> Quaternion<T> quaternionFromMatrix(const Matrix<3, T>& m) {
     }
 
     /* Diagonal is negative */
-    std::size_t i = 0;
-    if(diagonal[1] > diagonal[0]) i = 1;
-    if(diagonal[2] > diagonal[i]) i = 2;
-
+    const std::size_t i = diagonal.max();
     const std::size_t j = (i + 1) % 3;
     const std::size_t k = (i + 2) % 3;
 

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Timeline
+ * @brief Class @ref Magnum::Timeline
  */
 
 #include <chrono>
@@ -46,17 +46,18 @@ as source for animation speed computations.
 @section Timeline-usage Basic usage
 
 Construct the timeline on initialization so the instance is available for
-whole lifetime of the application. Call start() before first draw event is
+whole lifetime of the application. Call @ref start() before first draw event is
 performed, after everything is properly initialized.
 
 @note When timeline is started, it immediately starts measuring frame time.
     Be prepared that time of first frame will be much longer than time of
-    following frames. It mainly depends on where you called start() in your
-    initialization routine, but can be also affected by driver- and
+    following frames. It mainly depends on where you called @ref start() in
+    your initialization routine, but can be also affected by driver- and
     GPU-specific lazy texture binding, shader recompilations etc.
 
-In your draw event implementation don't forget to call nextFrame() after
-buffer swap. You can use previousFrameDuration() to compute animation speed.
+In your draw event implementation don't forget to call @ref nextFrame() after
+buffer swap. You can use @ref previousFrameDuration() to compute animation
+speed.
 
 Example usage:
 @code
@@ -88,7 +89,7 @@ class MAGNUM_EXPORT Timeline {
          * @brief Constructor
          *
          * Creates stopped timeline.
-         * @see start()
+         * @see @ref start()
          */
         explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
 
@@ -100,7 +101,7 @@ class MAGNUM_EXPORT Timeline {
          * @return Reference to self (for method chaining)
          *
          * Default value is 0.
-         * @see nextFrame()
+         * @see @ref nextFrame()
          */
         Timeline& setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;
@@ -111,14 +112,14 @@ class MAGNUM_EXPORT Timeline {
          * @brief Start timeline
          *
          * Sets previous frame time and duration to `0`.
-         * @see stop(), previousFrameDuration()
+         * @see @ref stop(), @ref previousFrameDuration()
          */
         void start();
 
         /**
          * @brief Stop timeline
          *
-         * @see start(), nextFrame()
+         * @see @ref start(), @ref nextFrame()
          */
         void stop();
 
@@ -128,7 +129,7 @@ class MAGNUM_EXPORT Timeline {
          * If current frame time is smaller than minimal frame time, pauses
          * the execution for remaining time.
          * @note This function does nothing if the timeline is stopped.
-         * @see setMinimalFrameTime(), stop()
+         * @see @ref setMinimalFrameTime(), @ref stop()
          */
         void nextFrame();
 

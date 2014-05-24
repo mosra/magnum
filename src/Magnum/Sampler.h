@@ -243,23 +243,23 @@ class MAGNUM_EXPORT Sampler {
         #endif
 };
 
-/** @debugoperator{Magnum::Sampler} */
+/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Filter} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Filter value);
 
-/** @debugoperator{Magnum::Sampler} */
+/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Mipmap} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Mipmap value);
 
-/** @debugoperator{Magnum::Sampler} */
+/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Wrapping} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Wrapping value);
 
-/** @debugoperator{Magnum::Sampler} */
+/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::CompareMode} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareMode value);
 
-/** @debugoperator{Magnum::Sampler} */
+/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::CompareFunction} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareFunction value);
 
 #ifndef MAGNUM_TARGET_GLES
-/** @debugoperator{Magnum::Sampler} */
+/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::DepthStencilMode} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::DepthStencilMode value);
 #endif
 

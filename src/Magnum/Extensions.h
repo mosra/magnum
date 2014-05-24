@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Namespace Magnum::Extensions
+ * @brief Namespace @ref Magnum::Extensions
  */
 
 #include "Magnum/Version.h"
@@ -37,16 +37,21 @@ namespace Magnum {
 @brief Compile-time information about OpenGL extensions
 
 Each extension is `struct` named hierarchically by prefix, vendor and
-extension name, for example `GL::APPLE::vertex_array_object`. Each struct has
-the same public methods as Extension class (requiredVersion(), coreVersion()
-and string(), but these structs are better suited for compile-time decisions
-rather than %Extension instances. See Context::isExtensionSupported() for
-example usage.
+extension name taken from list at @ref opengl-support, for example
+`GL::ARB::texture_storage`. Note that desktop extensions are available only on
+desktop build, OpenGL ES 2.0 extensions which are part of ES 3.0 are available
+only on @ref MAGNUM_TARGET_GLES2 "OpenGL ES 2.0 build" and vendor OpenGL ES
+extensions are available only on @ref MAGNUM_TARGET_GLES "OpenGL ES builds".
+
+Each struct has the same public methods as Extension class (requiredVersion(),
+coreVersion() and string(), but these structs are better suited for
+compile-time decisions rather than %Extension instances. See
+@ref Context::isExtensionSupported() for example usage.
 
 This namespace is built by default. To use it, you need to add `${MAGNUM_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building and
 @ref cmake for more information.
-@see MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+@see @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
 @todo Manual indices for extensions, this has gaps
 */
 namespace Extensions {
@@ -182,6 +187,7 @@ namespace GL {
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352
         _extension(GL,EXT,direct_state_access,          GL210,  None) // #353
         _extension(GL,EXT,texture_snorm,                GL300, GL310) // #365
+        _extension(GL,EXT,texture_sRGB_decode,          GL210,  None) // #402
         _extension(GL,EXT,shader_integer_mix,           GL300,  None) // #437
         _extension(GL,EXT,debug_label,                  GL210,  None) // #439
         _extension(GL,EXT,debug_marker,                 GL210,  None) // #440
@@ -233,6 +239,7 @@ namespace GL {
         _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #65
         #endif
         _extension(GL,EXT,read_format_bgra,         GLES200,    None) // #66
+        _extension(GL,EXT,multi_draw_arrays,        GLES200,    None) // #67
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,shader_texture_lod,       GLES200, GLES300) // #77
         #endif
@@ -254,6 +261,7 @@ namespace GL {
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
         #endif
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
+        _extension(GL,EXT,texture_sRGB_decode,      GLES200,    None) // #152
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,instanced_arrays,         GLES200, GLES300) // #156
         _extension(GL,EXT,draw_instanced,           GLES200, GLES300) // #157

@@ -55,6 +55,11 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
         #endif
         void sampling2D();
 
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingSRGBDecode1D();
+        #endif
+        void samplingSRGBDecode2D();
+
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
         void samplingSwizzle1D();
@@ -127,6 +132,11 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::sampling1D,
         #endif
         &TextureArrayGLTest::sampling2D,
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::samplingSRGBDecode1D,
+        #endif
+        &TextureArrayGLTest::samplingSRGBDecode2D,
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -292,7 +302,21 @@ void TextureArrayGLTest::sampling1D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+void TextureArrayGLTest::samplingSRGBDecode1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.setSRGBDecode(false);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
 void TextureArrayGLTest::samplingSwizzle1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
 
@@ -303,6 +327,8 @@ void TextureArrayGLTest::samplingSwizzle1D() {
 }
 
 void TextureArrayGLTest::samplingBorderInteger1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
 
@@ -317,6 +343,8 @@ void TextureArrayGLTest::samplingBorderInteger1D() {
 }
 
 void TextureArrayGLTest::samplingDepthStencilMode1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
 
@@ -361,9 +389,25 @@ void TextureArrayGLTest::sampling2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+void TextureArrayGLTest::samplingSRGBDecode2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setSRGBDecode(false);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void TextureArrayGLTest::samplingSwizzle2D() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
     #endif
@@ -399,6 +443,8 @@ void TextureArrayGLTest::samplingCompare2D() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::samplingBorderInteger2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
 
@@ -413,6 +459,8 @@ void TextureArrayGLTest::samplingBorderInteger2D() {
 }
 
 void TextureArrayGLTest::samplingDepthStencilMode2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
 

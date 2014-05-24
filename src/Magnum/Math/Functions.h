@@ -68,7 +68,7 @@ template<UnsignedInt exponent, class T> constexpr T pow(T base) {
  * @brief Base-2 integral logarithm
  *
  * Returns integral logarithm of given number with base `2`.
- * @see log()
+ * @see @ref log()
  */
 UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
 
@@ -76,7 +76,7 @@ UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
  * @brief Integral logarithm
  *
  * Returns integral logarithm of given number with given base.
- * @see log2()
+ * @see @ref log2()
  */
 UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
 
@@ -290,7 +290,7 @@ template<std::size_t size, class T> Vector<size, T> ceil(const Vector<size, T>& 
 /**
 @brief Square root
 
-@see sqrtInverted(), Vector::length()
+@see @ref sqrtInverted(), @ref Vector::length()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sqrt(const T& a);
@@ -309,7 +309,7 @@ template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& 
 /**
 @brief Inverse square root
 
-@see sqrt(), Vector::lengthInverted()
+@see @ref sqrt(), @ref Vector::lengthInverted()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sqrtInverted(const T& a);
@@ -327,7 +327,7 @@ template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<si
 
 Values smaller than @p min are set to @p min, values larger than @p max are
 set to @p max.
-@see min(), max()
+@see @ref min(), @ref max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U> inline T clamp(const T& value, U min, U max);
@@ -352,7 +352,7 @@ template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>&
 The interpolation for vectors is done as in following, similarly for scalars: @f[
     \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
 @f]
-@see lerpInverted(), Quaternion::lerp()
+@see @ref lerpInverted(), @ref Quaternion::lerp()
 @todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
     (when SIMD is in place)
 */
@@ -376,7 +376,7 @@ template<std::size_t size, class T, class U> inline Vector<size, T> lerp(const V
 Returns interpolation phase *t*: @f[
     t = \frac{\boldsymbol v_{LERP} - \boldsymbol v_A}{\boldsymbol v_B - \boldsymbol v_A}
 @f]
-@see lerp()
+@see @ref lerp()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T lerpInverted(const T& a, const T& b, const T& lerp);

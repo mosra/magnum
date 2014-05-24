@@ -145,7 +145,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Write output to back buffer.
              *
-             * On desktop OpenGL, this is equal to @ref DrawAttachment::BackLeft.
+             * On desktop OpenGL, this is equal to
+             * @ref DrawAttachment::BackLeft.
              */
             #ifdef MAGNUM_TARGET_GLES
             Back = GL_BACK,
@@ -156,7 +157,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Write output to front buffer.
              *
-             * On desktop OpenGL, this is equal to @ref DrawAttachment::FrontLeft.
+             * On desktop OpenGL, this is equal to
+             * @ref DrawAttachment::FrontLeft.
              */
             #ifdef MAGNUM_TARGET_GLES
             Front = GL_FRONT
@@ -433,7 +435,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 /** @brief Default framebuffer instance */
 extern DefaultFramebuffer MAGNUM_EXPORT defaultFramebuffer;
 
-/** @debugoperator{DefaultFramebuffer} */
+/** @debugoperatorclassenum{Magnum::DefaultFramebuffer,Magnum::DefaultFramebuffer::Status} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, DefaultFramebuffer::Status value);
 
 }

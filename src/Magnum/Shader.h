@@ -126,8 +126,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,tessellation_shader}
          * is not available, returns `0`.
-         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_CONTROL_INPUT_COMPONENTS}
+         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
         static Int maxTessellationControlInputComponents();
 
@@ -137,8 +137,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,tessellation_shader}
          * is not available, returns `0`.
-         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_CONTROL_OUTPUT_COMPONENTS}
+         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
         static Int maxTessellationControlOutputComponents();
 
@@ -148,8 +148,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,tessellation_shader}
          * is not available, returns `0`.
-         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS}
+         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
         static Int maxTessellationControlTotalOutputComponents();
 
@@ -159,8 +159,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,tessellation_shader}
          * is not available, returns `0`.
-         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_EVALUATION_INPUT_COMPONENTS}
+         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
         static Int maxTessellationEvaluationInputComponents();
 
@@ -170,8 +170,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,tessellation_shader}
          * is not available, returns `0`.
-         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_EVALUATION_OUTPUT_COMPONENTS}
+         * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
         static Int maxTessellationEvaluationOutputComponents();
 
@@ -181,8 +181,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,geometry_shader4}
          * is not available, returns `0`.
-         * @requires_gl Geometry shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_INPUT_COMPONENTS}
+         * @requires_gl Geometry shaders are not available in OpenGL ES.
          */
         static Int maxGeometryInputComponents();
 
@@ -192,8 +192,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,geometry_shader4}
          * is not available, returns `0`.
-         * @requires_gl Geometry shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_OUTPUT_COMPONENTS}
+         * @requires_gl Geometry shaders are not available in OpenGL ES.
          */
         static Int maxGeometryOutputComponents();
 
@@ -203,8 +203,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,geometry_shader4}
          * is not available, returns `0`.
-         * @requires_gl Geometry shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS}
+         * @requires_gl Geometry shaders are not available in OpenGL ES.
          */
         static Int maxGeometryTotalOutputComponents();
         #endif
@@ -247,7 +247,6 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} or
          * particular shader stage is not available, returns `0`.
-         * @requires_gl Atomic counters are not available in OpenGL ES.
          * @see @ref maxCombinedAtomicCounterBuffers(), @ref maxAtomicCounters(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_ATOMIC_COUNTER_BUFFERS},
          *      @def_gl{MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS},
@@ -255,6 +254,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS},
          *      @def_gl{MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS} or
          *      @def_gl{MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
          */
         static Int maxAtomicCounterBuffers(Type type);
 
@@ -264,9 +264,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
          * not available, returns `0`.
-         * @requires_gl Atomic counters are not available in OpenGL ES.
          * @see @ref maxAtomicCounterBuffers(), @ref maxCombinedAtomicCounters(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_ATOMIC_COUNTER_BUFFERS}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
          */
         static Int maxCombinedAtomicCounterBuffers();
 
@@ -276,7 +276,6 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} or
          * particular shader stage is not available, returns `0`.
-         * @requires_gl Atomic counters are not available in OpenGL ES.
          * @see @ref maxCombinedAtomicCounters(), @ref maxAtomicCounterBuffers(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_ATOMIC_COUNTERS},
          *      @def_gl{MAX_TESS_CONTROL_ATOMIC_COUNTERS},
@@ -284,6 +283,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_ATOMIC_COUNTERS},
          *      @def_gl{MAX_COMPUTE_ATOMIC_COUNTERS} or
          *      @def_gl{MAX_FRAGMENT_ATOMIC_COUNTERS}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
          */
         static Int maxAtomicCounters(Type type);
 
@@ -293,9 +293,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
          * not available, returns `0`.
-         * @requires_gl Atomic counters are not available in OpenGL ES.
          * @see @ref maxAtomicCounters(), @ref maxCombinedAtomicCounterBuffers(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_ATOMIC_COUNTERS}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
          */
         static Int maxCombinedAtomicCounters();
 
@@ -305,7 +305,6 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * or particular shader stage is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
          * @see @ref maxCombinedImageUniforms(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_IMAGE_UNIFORMS},
          *      @def_gl{MAX_TESS_CONTROL_IMAGE_UNIFORMS},
@@ -313,6 +312,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_IMAGE_UNIFORMS},
          *      @def_gl{MAX_COMPUTE_IMAGE_UNIFORMS} or
          *      @def_gl{MAX_FRAGMENT_IMAGE_UNIFORMS}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxImageUniforms(Type type);
 
@@ -322,9 +322,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
          * @see @ref maxImageUniforms(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_IMAGE_UNIFORMS}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxCombinedImageUniforms();
 
@@ -334,7 +334,6 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
          * or particular shader stage is not available, returns `0`.
-         * @requires_gl Shader storage is not available in OpenGL ES.
          * @see @ref maxCombinedShaderStorageBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_SHADER_STORAGE_BLOCKS},
          *      @def_gl{MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS},
@@ -342,6 +341,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_SHADER_STORAGE_BLOCKS},
          *      @def_gl{MAX_COMPUTE_SHADER_STORAGE_BLOCKS} or
          *      @def_gl{MAX_FRAGMENT_SHADER_STORAGE_BLOCKS}
+         * @requires_gl %Shader storage is not available in OpenGL ES.
          */
         static Int maxShaderStorageBlocks(Type type);
 
@@ -351,9 +351,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
          * is not available, returns `0`.
-         * @requires_gl Shader storage is not available in OpenGL ES.
          * @see @ref maxShaderStorageBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_STORAGE_BLOCKS}
+         * @requires_gl %Shader storage is not available in OpenGL ES.
          */
         static Int maxCombinedShaderStorageBlocks();
         #endif
@@ -391,7 +391,6 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects} or
          * particular shader stage is not available, returns `0`.
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          * @see @ref maxCombinedUniformBlocks(), @ref maxUniformComponents(),
          *      @ref maxCombinedUniformComponents(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_UNIFORM_BLOCKS},
@@ -400,6 +399,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_UNIFORM_BLOCKS},
          *      @def_gl{MAX_COMPUTE_UNIFORM_BLOCKS} or
          *      @def_gl{MAX_FRAGMENT_UNIFORM_BLOCKS}
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          */
         static Int maxUniformBlocks(Type type);
 
@@ -409,10 +409,10 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects} is
          * not available, returns `0`.
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          * @see @ref maxUniformBlocks(), @ref maxUniformComponents(),
          *      @ref maxCombinedUniformComponents(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_UNIFORM_BLOCKS}
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          */
         static Int maxCombinedUniformBlocks();
         #endif
@@ -424,7 +424,6 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects}
          * or particular shader stage is not available, returns `0`.
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          * @see @ref maxUniformComponents(), @ref maxUniformBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS},
          *      @def_gl{MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS},
@@ -432,6 +431,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS},
          *      @def_gl{MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS} or
          *      @def_gl{MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS}
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          */
         static Int maxCombinedUniformComponents(Type type);
         #endif
@@ -512,10 +512,10 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          */
         Shader& setLabel(const std::string& label);
 
-        /** @brief Shader type */
+        /** @brief %Shader type */
         Type type() const { return _type; }
 
-        /** @brief Shader sources */
+        /** @brief %Shader sources */
         std::vector<std::string> sources() const;
 
         /**
@@ -560,7 +560,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         std::vector<std::string> _sources;
 };
 
-/** @debugoperator{Magnum::Shader} */
+/** @debugoperatorclassenum{Magnum::Shader,Magnum::Shader::Type} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Shader::Type value);
 
 inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._id), _sources(std::move(other._sources)) {

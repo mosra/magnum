@@ -43,7 +43,8 @@ transformation matrix, but it's possible to store translation in e.g. integral
 coordinates while having floating-point transformation matrix.
 
 @see @ref AbstractBasicTranslation2D, @ref AbstractBasicTranslation3D,
-    @ref AbstractTranslation2D, @ref AbstractTranslation3D, @ref scenegraph
+    @ref AbstractTranslation2D, @ref AbstractTranslation3D, @ref scenegraph,
+    @ref TranslationTransformation
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T, class TranslationType = T>

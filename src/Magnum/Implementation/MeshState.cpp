@@ -27,6 +27,9 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/MeshView.h"
+
+#include "State.h"
 
 namespace Magnum { namespace Implementation {
 
@@ -93,6 +96,15 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     }
     #endif
 
+    #ifdef MAGNUM_TARGET_GLES
+    /* Multi draw implementation on ES */
+    if(context.isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>()) {
+        extensions.push_back(Extensions::GL::EXT::multi_draw_arrays::string());
+
+        multiDrawImplementation = &MeshView::multiDrawImplementationDefault;
+    } else multiDrawImplementation = &MeshView::multiDrawImplementationFallback;
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES2
     /* Instanced draw ímplementation on ES2 */
     if(context.isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>()) {
@@ -136,6 +148,10 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
 
     } else vertexAttribDivisorImplementation = nullptr;
     #endif
+}
+
+void MeshState::reset() {
+    currentVAO = State::DisengagedBinding;
 }
 
 }}

@@ -32,11 +32,18 @@
 #include "Magnum/Renderer.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
-#include "Magnum/Platform/WindowlessGlxApplication.h"
 #include "Magnum/TextureTools/DistanceField.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
+
+#ifdef CORRADE_TARGET_UNIX
+#include "Magnum/Platform/WindowlessGlxApplication.h"
+#elif defined(CORRADE_TARGET_WINDOWS)
+#include "Magnum/Platform/WindowlessWglApplication.h"
+#else
+#error No windowless application available on this platform
+#endif
 
 #include "distancefieldconverterConfigure.h"
 

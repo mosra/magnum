@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Array, Magnum::Array1D, Magnum::Array2D, Magnum::Array3D
+ * @brief Class @ref Magnum::Array, @ref Magnum::Array1D, @ref Magnum::Array2D, @ref Magnum::Array3D
  */
 
 #include <type_traits>
@@ -45,10 +45,10 @@ namespace Magnum {
 @tparam dimensions  Dimension count
 @tparam T           Data type
 
-Similar to Math::Vector, but more suitable for storing enum values which don't
-need any math operations and fuzzy comparison (e.g. enum values). Unlike
-Math::Vector this class has non-explicit constructor from one value.
-@see Array1D, Array2D, Array3D
+Similar to @ref Math::Vector, but more suitable for storing enum values which
+don't need any math operations and fuzzy comparison (e.g. enum values). Unlike
+@ref Math::Vector this class has implicit constructor from one value.
+@see @ref Array1D, @ref Array2D, @ref Array3D
 */
 template<UnsignedInt dimensions, class T> class Array {
     public:

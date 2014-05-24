@@ -98,13 +98,14 @@ template<class T> class ResourceManagerData {
     template<class, class> friend class Magnum::Resource;
     friend class AbstractResourceLoader<T>;
 
-    ResourceManagerData(const ResourceManagerData<T>&) = delete;
-    ResourceManagerData(ResourceManagerData<T>&&) = delete;
-    ResourceManagerData<T>& operator=(const ResourceManagerData<T>&) = delete;
-    ResourceManagerData<T>& operator=(ResourceManagerData<T>&&) = delete;
-
     public:
+        ResourceManagerData(const ResourceManagerData<T>&) = delete;
+        ResourceManagerData(ResourceManagerData<T>&&) = delete;
+
         virtual ~ResourceManagerData();
+
+        ResourceManagerData<T>& operator=(const ResourceManagerData<T>&) = delete;
+        ResourceManagerData<T>& operator=(ResourceManagerData<T>&&) = delete;
 
         std::size_t lastChange() const { return _lastChange; }
 
@@ -198,10 +199,10 @@ MyResourceManager manager;
     contains the data for it, as long as the resource data are not accessed (or
     fallback is provided).
 @code
-MyResourceManager* manager = MyResourceManager::instance();
-Resource<Texture2D> texture(manager->get<Texture2D>("texture"));
-Resource<AbstractShaderProgram, MyShader> shader(manager->get<AbstractShaderProgram, MyShader>("shader"));
-Resource<Mesh> cube(manager->get<Mesh>("cube"));
+MyResourceManager& manager = MyResourceManager::instance();
+Resource<Texture2D> texture{manager.get<Texture2D>("texture")};
+Resource<AbstractShaderProgram, MyShader> shader{manager.get<AbstractShaderProgram, MyShader>("shader")};
+Resource<Mesh> cube{manager.get<Mesh>("cube")};
 
 // The manager doesn't have data for the cube yet, add them
 if(!cube) {
@@ -218,7 +219,7 @@ cube->draw(*shader);
 -   Destroying resource references and deleting manager instance when nothing
     references the resources anymore.
 
-@see AbstractResourceLoader
+@see @ref AbstractResourceLoader
 */
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
@@ -580,9 +581,6 @@ template<class T> void ResourceManagerData<T>::decrementReferenceCount(ResourceK
 }
 
 template<class T> struct ResourceManagerData<T>::Data {
-    Data& operator=(const Data&) = delete;
-    Data& operator=(Data&&) = delete;
-
     Data(): data(nullptr), state(ResourceDataState::Mutable), policy(ResourcePolicy::Manual), referenceCount(0) {}
 
     /* Fugly hack for GCC 4.5, because std::pair doesn't have move constructor yet */
@@ -601,6 +599,9 @@ template<class T> struct ResourceManagerData<T>::Data {
     }
 
     ~Data();
+
+    Data& operator=(const Data&) = delete;
+    Data& operator=(Data&&) = delete;
 
     T* data;
     ResourceDataState state;

@@ -45,8 +45,6 @@
 
 namespace Magnum {
 
-/** @todoc Resolve conflict with Audio/Context.h (Doxygen doesn't list this file) */
-
 namespace Implementation {
     struct State;
 }
@@ -89,7 +87,7 @@ class MAGNUM_EXPORT Extension {
 };
 
 /**
-@brief Magnum context
+@brief %Magnum context
 
 Provides access to version and extension information. Instance available
 through @ref Context::current() is automatically created during construction of
@@ -98,14 +96,9 @@ instance is available during whole lifetime of *Application object. See
 @ref platform documentation for more information about engine setup.
 */
 class MAGNUM_EXPORT Context {
-    Context(const Context&) = delete;
-    Context(Context&&) = delete;
-    Context& operator=(const Context&) = delete;
-    Context& operator=(Context&&) = delete;
-
     public:
         /**
-         * @brief Context flag
+         * @brief %Context flag
          *
          * @see @ref Flags, @ref flags(), @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
@@ -142,7 +135,39 @@ class MAGNUM_EXPORT Context {
         };
 
         /**
-         * @brief Context flags
+         * @brief State to reset
+         *
+         * @see @ref States, @ref resetState()
+         */
+        enum class State: UnsignedInt {
+            /** Reset tracked buffer-related bindings and state */
+            Buffers = 1 << 0,
+
+            /** Reset tracked framebuffer-related bindings and state */
+            Framebuffers = 1 << 1,
+
+            /** Reset tracked mesh-related bindings */
+            Meshes = 1 << 2,
+
+            /** Reset tracked renderer-related state */
+            Renderer = 1 << 3,
+
+            /** Reset tracked shader-related bindings */
+            Shaders = 1 << 4,
+
+            /** Reset tracked texture-related bindings and state */
+            Textures = 1 << 5
+        };
+
+        /**
+         * @brief States to reset
+         *
+         * @see @ref resetState()
+         */
+        typedef Containers::EnumSet<State, UnsignedInt> States;
+
+        /**
+         * @brief %Context flags
          *
          * @see @ref flags()
          */
@@ -159,7 +184,19 @@ class MAGNUM_EXPORT Context {
          */
         explicit Context();
 
+        /** @brief Copying is not allowed */
+        Context(const Context&) = delete;
+
+        /** @brief Moving is not allowed */
+        Context(Context&&) = delete;
+
         ~Context();
+
+        /** @brief Copying is not allowed */
+        Context& operator=(const Context&) = delete;
+
+        /** @brief Moving is not allowed */
+        Context& operator=(Context&&) = delete;
 
         /** @brief Current context */
         static Context* current() { return _current; }
@@ -246,7 +283,7 @@ class MAGNUM_EXPORT Context {
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
         /**
-         * @brief Extension strings
+         * @brief %Extension strings
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. Note that this function returns list of all extensions
@@ -258,7 +295,7 @@ class MAGNUM_EXPORT Context {
          */
         std::vector<std::string> extensionStrings() const;
 
-        /** @brief Context flags */
+        /** @brief %Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -295,7 +332,7 @@ class MAGNUM_EXPORT Context {
          * OpenGL version (@ref Version::GL210 for desktop OpenGL,
          * @ref Version::GLES200 for OpenGL ES).
          * @see isExtensionSupported(Version) const
-         * @todoc Explicit reference when Doxygen is sane
+         * @todoc Explicit reference when Doxygen can handle const
          */
         Version supportedVersion(std::initializer_list<Version> versions) const;
 
@@ -315,7 +352,7 @@ class MAGNUM_EXPORT Context {
          * @see isExtensionSupported(const Extension&) const,
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(),
          *      @ref isExtensionDisabled()
-         * @todoc Explicit reference when Doxygen is sane
+         * @todoc Explicit reference when Doxygen can handle const
          */
         template<class T> bool isExtensionSupported() const {
             return isExtensionSupported<T>(version());
@@ -386,6 +423,17 @@ class MAGNUM_EXPORT Context {
             return isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index] && !isVersionSupported(_extensionRequiredVersion[extension._index]);
         }
 
+        /**
+         * @brief Reset internal state tracker
+         * @param states    Tracked states to reset. Default is all state.
+         *
+         * The engine internally tracks object bindings and other state to
+         * avoid redundant OpenGL calls. In some cases (e.g. when non-Magnum
+         * code makes GL calls) the internal tracker no longer reflects actual
+         * state and needs to be reset to avoid strange issues.
+         */
+        void resetState(States states = ~States{});
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         Implementation::State& state() { return *_state; }
         #endif
@@ -407,7 +455,7 @@ class MAGNUM_EXPORT Context {
         Implementation::State* _state;
 };
 
-/** @debugoperator{Magnum::Context} */
+/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
 MAGNUM_EXPORT Debug operator<<(Debug debug, Context::Flag value);
 
 /** @hideinitializer

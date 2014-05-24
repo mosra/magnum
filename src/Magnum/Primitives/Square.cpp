@@ -40,7 +40,7 @@ Trade::MeshData2D Square::solid(const TextureCoords textureCoords) {
         {0.0f, 1.0f}
     });
 
-    return Trade::MeshData2D(MeshPrimitive::TriangleStrip, std::vector<UnsignedInt>{}, {std::vector<Vector2>{
+    return Trade::MeshData2D(MeshPrimitive::TriangleStrip, {}, {std::vector<Vector2>{
         {1.0f, -1.0f},
         {1.0f, 1.0f},
         {-1.0f, -1.0f},
@@ -49,12 +49,12 @@ Trade::MeshData2D Square::solid(const TextureCoords textureCoords) {
 }
 
 Trade::MeshData2D Square::wireframe() {
-    return Trade::MeshData2D(MeshPrimitive::LineLoop, std::vector<UnsignedInt>{}, {std::vector<Vector2>{
+    return Trade::MeshData2D(MeshPrimitive::LineLoop, {}, {std::vector<Vector2>{
         {-1.0f, -1.0f},
         {1.0f, -1.0f},
         {1.0f, 1.0f},
         {-1.0f, 1.0f}
-    }}, std::vector<std::vector<Vector2>>{});
+    }}, {});
 }
 
 }}

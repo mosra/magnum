@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for Magnum::Text namespace
+ * @brief Forward declarations for @ref Magnum::Text namespace
  */
 
 #include <Corrade/configure.h>

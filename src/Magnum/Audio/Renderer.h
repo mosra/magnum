@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Audio::Renderer
+ * @brief Class @ref Magnum::Audio::Renderer
  */
 
 #include <al.h>
@@ -45,7 +45,7 @@ class Renderer {
         /**
          * @brief Error status
          *
-         * @see error()
+         * @see @ref error()
          */
         enum class Error: ALenum {
             NoError = AL_NO_ERROR,          /**< No error occured */
@@ -116,7 +116,7 @@ class Renderer {
         /**
          * @brief Distance model
          *
-         * @see setDistanceModel()
+         * @see @ref setDistanceModel()
          */
         enum class DistanceModel: ALenum {
             /** No distance attenuation calculation */
@@ -185,7 +185,7 @@ class Renderer {
         /*@}*/
 };
 
-/** @debugoperator{Magnum::Audio::Renderer} */
+/** @debugoperatorclassenum{Magnum::Audio::Renderer,Magnum::Audio::Renderer::Error} */
 Debug MAGNUM_AUDIO_EXPORT operator<<(Debug debug, Renderer::Error value);
 
 inline void Renderer::setListenerOrientation(const Vector3& forward, const Vector3& up) {

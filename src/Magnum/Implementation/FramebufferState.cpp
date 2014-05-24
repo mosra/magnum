@@ -29,6 +29,8 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Renderbuffer.h"
 
+#include "State.h"
+
 namespace Magnum { namespace Implementation {
 
 FramebufferState::FramebufferState(Context& context, std::vector<std::string>& extensions): readBinding(0), drawBinding(0), renderbufferBinding(0), maxDrawBuffers(0), maxColorAttachments(0), maxRenderbufferSize(0), maxSamples(0)
@@ -136,6 +138,11 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDefault;
         #endif
     }
+}
+
+void FramebufferState::reset() {
+    readBinding = drawBinding = renderbufferBinding = State::DisengagedBinding;
+    viewport = {};
 }
 
 }}

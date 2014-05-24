@@ -191,6 +191,23 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
+         * @brief Set sRGB decoding
+         * @return Reference to self (for method chaining)
+         *
+         * Disables or reenables decoding of sRGB values. Initial value is
+         * `true`.
+         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexParameter} or
+         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
+         *      @def_gl{TEXTURE_SRGB_DECODE_EXT}
+         * @requires_extension %Extension @extension{EXT,texture_sRGB_decode}
+         */
+        RectangleTexture& setSRGBDecode(bool decode) {
+            AbstractTexture::setSRGBDecode(decode);
+            return *this;
+        }
+
+        /**
          * @copybrief Texture::setSwizzle()
          * @return Reference to self (for method chaining)
          *

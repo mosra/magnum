@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::TextureTools::distanceField()
+ * @brief Function @ref Magnum::TextureTools::distanceField()
  */
 
 #ifndef MAGNUM_TARGET_GLES
@@ -45,7 +45,8 @@ namespace Magnum { namespace TextureTools {
 @param rectangle    Rectangle in output texture where to render
 @param radius       Max lookup radius in input texture
 @param imageSize    Input texture size. Needed only in OpenGL ES, in desktop
-    OpenGL the information is gathered automatically using Texture::imageSize().
+    OpenGL the information is gathered automatically using
+    @ref Texture2D::imageSize().
 
 Converts binary image (stored in red channel of @p input) to signed distance
 field (stored in red channel in @p rectangle of @p output). The purpose of this

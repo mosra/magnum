@@ -50,7 +50,7 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(MeshPrimitive::TriangleFan, std::vector<UnsignedInt>{}, {std::move(positions)}, std::vector<std::vector<Vector2>>{});
+    return Trade::MeshData2D(MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {});
 }
 
 Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
@@ -68,7 +68,7 @@ Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(MeshPrimitive::LineLoop, std::vector<UnsignedInt>{}, {std::move(positions)}, std::vector<std::vector<Vector2>>{});
+    return Trade::MeshData2D(MeshPrimitive::LineLoop, {}, {std::move(positions)}, {});
 }
 
 }}

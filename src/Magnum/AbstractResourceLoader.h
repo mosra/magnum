@@ -60,7 +60,7 @@ In your @ref doLoad() implementation, after your resources are loaded, call
 @ref set() to pass them to @ref ResourceManager or call @ref setNotFound() to
 indicate that the resource was not found.
 
-You can also implement @ref name() to provide meaningful names for resource
+You can also implement @ref doName() to provide meaningful names for resource
 keys.
 
 Example implementation for synchronous mesh loader:

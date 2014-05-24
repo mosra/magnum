@@ -53,7 +53,7 @@ namespace Implementation {
 Template class for one- and two-dimensional texture arrays. See also
 @ref AbstractTexture documentation for more information.
 
-@section Texture-usage Usage
+@section TextureArray-usage Usage
 
 See @ref Texture documentation for introduction.
 
@@ -193,6 +193,12 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @copydoc Texture::setMaxAnisotropy() */
         TextureArray<dimensions>& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
+            return *this;
+        }
+
+        /** @copydoc Texture::setSRGBDecode() */
+        TextureArray<dimensions>& setSRGBDecode(bool decode) {
+            AbstractTexture::setSRGBDecode(decode);
             return *this;
         }
 

@@ -56,8 +56,8 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * @param font          Font
          * @param cache         Glyph cache
          * @param size          Font size
-         * @param text          Text to render
-         * @param alignment     Text alignment
+         * @param text          %Text to render
+         * @param alignment     %Text alignment
          *
          * Returns tuple with vertex positions, texture coordinates, indices
          * and rectangle spanning the rendered text.
@@ -80,7 +80,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
         /** @brief Index buffer */
         Buffer& indexBuffer() { return _indexBuffer; }
 
-        /** @brief Mesh */
+        /** @brief %Mesh */
         Mesh& mesh() { return _mesh; }
 
         /**
@@ -243,7 +243,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param vertexBuffer  %Buffer where to store vertices
          * @param indexBuffer   %Buffer where to store indices
          * @param usage         Usage of vertex and index buffer
-         * @param alignment     Text alignment
+         * @param alignment     %Text alignment
          *
          * Returns mesh prepared for use with @ref Shaders::AbstractVector
          * subclasses and rectangle spanning the rendered text.
@@ -255,7 +255,7 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
          * @param font          Font
          * @param cache         Glyph cache
          * @param size          Font size
-         * @param alignment     Text alignment
+         * @param alignment     %Text alignment
          */
         explicit Renderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
         Renderer(AbstractFont&, GlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */

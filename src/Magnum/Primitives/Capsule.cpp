@@ -88,7 +88,7 @@ Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt 
         {UnsignedInt(positions.size())-3, UnsignedInt(positions.size())-1,
          UnsignedInt(positions.size())-2, UnsignedInt(positions.size())-1});
 
-    return Trade::MeshData2D(MeshPrimitive::Lines, std::move(indices), {std::move(positions)}, std::vector<std::vector<Vector2>>{});
+    return Trade::MeshData2D(MeshPrimitive::Lines, std::move(indices), {std::move(positions)}, {});
 }
 
 Trade::MeshData3D Capsule3D::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords) {

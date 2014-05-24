@@ -94,10 +94,26 @@ template<class Application> class BasicScreenedApplication: public Application, 
     friend class BasicScreen<Application>;
 
     public:
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments, const Configuration&) */
+        /**
+         * @brief Default constructor
+         * @param arguments     Application arguments
+         * @param configuration %Configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Sdl2Application::Configuration "Configuration" for more
+         * information. The program exits if the context cannot be created, see
+         * below for an alternative.
+         */
         explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = Application::Configuration());
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
+        /**
+         * @brief Constructor
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the context is not created and must be created later
+         * with @ref Sdl2Application::createContext() "createContext()" or
+         * @ref Sdl2Application::tryCreateContext() "tryCreateContext()".
+         */
         #ifndef CORRADE_GCC45_COMPATIBILITY
         explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t);
         #else

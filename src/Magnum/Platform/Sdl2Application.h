@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::Sdl2Application
+ * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -68,10 +68,10 @@ on **SDL2** library (Emscripten has it built in) and is built if
 ## Bootstrap application
 
 Fully contained base application using @ref Sdl2Application along with
-CMake setup is available in `base-sdl2` branch of
+CMake setup is available in `base` branch of
 [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
-download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-sdl2.tar.gz)
-or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-sdl2.zip) file.
+download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base.zip) file.
 After extracting the downloaded archive you can build and run the application
 with these four commands:
 
@@ -433,10 +433,10 @@ class Sdl2Application::Configuration {
     public:
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
-         * @brief Context flag
+         * @brief %Context flag
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref Flags @ref setFlags()
+         * @see @ref Flags, @ref setFlags()
          * @todo re-enable when Emscripten has proper SDL2 support
          */
         enum class Flag: int {
@@ -447,7 +447,7 @@ class Sdl2Application::Configuration {
         };
 
         /**
-         * @brief Context flags
+         * @brief %Context flags
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref setFlags()
@@ -547,7 +547,7 @@ class Sdl2Application::Configuration {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
-         * @brief Context flags
+         * @brief %Context flags
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
@@ -566,7 +566,7 @@ class Sdl2Application::Configuration {
         }
 
         /**
-         * @brief Context version
+         * @brief %Context version
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */

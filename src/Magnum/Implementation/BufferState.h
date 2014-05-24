@@ -46,6 +46,8 @@ struct BufferState {
 
     explicit BufferState(Context& context, std::vector<std::string>& extensions);
 
+    void reset();
+
     #ifndef MAGNUM_TARGET_GLES2
     void(*copyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
     #endif

@@ -55,6 +55,8 @@ struct TextureState {
     explicit TextureState(Context& context, std::vector<std::string>& extensions);
     ~TextureState();
 
+    void reset();
+
     void(*unbindImplementation)(GLint);
     void(*bindMultiImplementation)(GLint, std::initializer_list<AbstractTexture*>);
     void(AbstractTexture::*bindImplementation)(GLint);

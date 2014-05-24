@@ -178,6 +178,19 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
         ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
+# Windowless WGL application
+if(WITH_WINDOWLESSWGLAPPLICATION)
+    add_library(MagnumWindowlessWglApplication STATIC WindowlessWglApplication.cpp)
+    set_target_properties(MagnumWindowlessWglApplication PROPERTIES
+        COMPILE_FLAGS "-DUNICODE"
+        DEBUG_POSTFIX "-d")
+    install(FILES WindowlessWglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessWglApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
 # Abstract X application
 if(NEED_ABSTRACTXAPPLICATION)
     add_library(MagnumAbstractXApplication OBJECT AbstractXApplication.cpp)
@@ -213,6 +226,8 @@ if(WITH_MAGNUMINFO)
         target_link_libraries(magnum-info MagnumWindowlessGlxApplication ${X11_LIBRARIES})
     elseif(CORRADE_TARGET_NACL)
         target_link_libraries(magnum-info MagnumWindowlessNaClApplication ppapi_cpp ppapi)
+    elseif(CORRADE_TARGET_WINDOWS)
+        target_link_libraries(magnum-info MagnumWindowlessWglApplication)
     else()
         message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to skip building it.")
     endif()

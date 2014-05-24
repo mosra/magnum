@@ -60,6 +60,12 @@ class TextureGLTest: public AbstractOpenGLTester {
         void sampling2D();
         void sampling3D();
 
+        #ifndef MAGNUM_TARGET_GLES
+        void samplingSRGBDecode1D();
+        #endif
+        void samplingSRGBDecode2D();
+        void samplingSRGBDecode3D();
+
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
         void samplingSwizzle1D();
@@ -155,6 +161,12 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::sampling2D,
         &TextureGLTest::sampling3D,
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::samplingSRGBDecode1D,
+        #endif
+        &TextureGLTest::samplingSRGBDecode2D,
+        &TextureGLTest::samplingSRGBDecode3D,
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -367,6 +379,16 @@ void TextureGLTest::sampling1D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+void TextureGLTest::samplingSRGBDecode1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setSRGBDecode(false);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
 void TextureGLTest::samplingSwizzle1D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
@@ -410,6 +432,20 @@ void TextureGLTest::sampling2D() {
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
            .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingSRGBDecode2D() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::sRGB>())
+        CORRADE_SKIP(Extensions::GL::EXT::sRGB::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setSRGBDecode(false);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -511,6 +547,22 @@ void TextureGLTest::sampling3D() {
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingSRGBDecode3D() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::sRGB>())
+        CORRADE_SKIP(Extensions::GL::EXT::sRGB::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+
+    Texture3D texture;
+    texture.setSRGBDecode(false);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

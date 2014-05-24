@@ -82,7 +82,7 @@ void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& 
 
 std::vector<Range2Di> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
     CORRADE_ASSERT((glyphs.size() == 1 && glyphs.at(0) == std::pair<Vector2i, Range2Di>()),
-        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", std::vector<Range2Di>{});
+        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
     #ifndef CORRADE_GCC44_COMPATIBILITY
     glyphs.reserve(glyphs.size() + sizes.size());
     #endif

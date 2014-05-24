@@ -40,7 +40,7 @@ namespace Magnum { namespace Shapes {
 
 See @ref shapes for brief introduction.
 @see @ref Line2D, @ref Line3D
-@todo collision detection of two @ref Line2D
+@todo collision detection of two Line2D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Line {
     public:

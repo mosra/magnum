@@ -65,7 +65,7 @@ Template class for 2D mulitsample texture and 2D multisample texture array.
 Used only from shaders for manual multisample resolve and other operations. See
 also @ref AbstractTexture documentation for more information.
 
-@section Texture-usage Usage
+@section MultisampleTexture-usage Usage
 
 As multisample textures have no sampler state, the only thing you need is to
 set storage:

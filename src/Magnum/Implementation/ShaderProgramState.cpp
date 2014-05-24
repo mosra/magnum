@@ -29,6 +29,8 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#include "State.h"
+
 namespace Magnum { namespace Implementation {
 
 ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string>& extensions): current(0), maxVertexAttributes(0)
@@ -183,6 +185,10 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
         #endif
     }
+}
+
+void ShaderProgramState::reset() {
+    current = State::DisengagedBinding;
 }
 
 }}

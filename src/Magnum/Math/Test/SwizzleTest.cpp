@@ -64,14 +64,14 @@ void SwizzleTest::rgba() {
 }
 
 void SwizzleTest::sizes() {
-    constexpr auto a = swizzle<'y', 'x', 'x'>(Math::Vector<2, Int>(1, 2));
-    CORRADE_COMPARE(a, (Math::Vector<3, Int>(2, 1, 1)));
+    constexpr auto a = swizzle<'y', 'x', 'x'>(Vector<2, Int>(1, 2));
+    CORRADE_COMPARE(a, (Vector<3, Int>(2, 1, 1)));
 
     constexpr auto b = swizzle<'z'>(Vector4i(1, 2, 3, 4));
-    CORRADE_COMPARE(b, (Math::Vector<1, Int>(3)));
+    CORRADE_COMPARE(b, (Vector<1, Int>(3)));
 
     constexpr auto c = swizzle<'z', 'x', 'w', 'y', 'z', 'y', 'x'>(Vector4i(1, 2, 3, 4));
-    CORRADE_COMPARE(c, (Math::Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
+    CORRADE_COMPARE(c, (Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
 }
 
 }}}

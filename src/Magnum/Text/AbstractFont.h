@@ -311,13 +311,20 @@ implements @ref doRenderGlyph(). Bounds checking on @p i is done automatically
 in the wrapping @ref renderGlyph() function.
 */
 class MAGNUM_TEXT_EXPORT AbstractLayouter {
-    AbstractLayouter(const AbstractLayouter&) = delete;
-    AbstractLayouter(AbstractLayouter&&) = delete;
-    AbstractLayouter& operator=(const AbstractLayouter&) = delete;
-    AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
-
     public:
+        /** @brief Copying is not allowed */
+        AbstractLayouter(const AbstractLayouter&) = delete;
+
+        /** @brief Moving is not allowed */
+        AbstractLayouter(AbstractLayouter&&) = delete;
+
         ~AbstractLayouter();
+
+        /** @brief Copying is not allowed */
+        AbstractLayouter& operator=(const AbstractLayouter&) = delete;
+
+        /** @brief Moving is not allowed */
+        AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
 
         /** @brief Count of glyphs in laid out text */
         UnsignedInt glyphCount() const { return _glyphCount; }

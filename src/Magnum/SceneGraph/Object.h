@@ -104,13 +104,6 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
     friend class Containers::LinkedList<Object<Transformation>>;
     friend class Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    Object(const Object<Transformation>&) = delete;
-    Object(Object<Transformation>&&) = delete;
-    Object<Transformation>& operator=(const Object<Transformation>&) = delete;
-    Object<Transformation>& operator=(Object<Transformation>&&) = delete;
-    #endif
-
     public:
         /** @brief Matrix type */
         typedef typename DimensionTraits<Transformation::Dimensions, typename Transformation::Type>::MatrixType MatrixType;
@@ -121,6 +114,12 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          */
         explicit Object(Object<Transformation>* parent = nullptr);
 
+        /** @brief Copying is not allowed */
+        Object(const Object<Transformation>&) = delete;
+
+        /** @brief Moving is not allowed */
+        Object(Object<Transformation>&&) = delete;
+
         /**
          * @brief Destructor
          *
@@ -128,6 +127,12 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * children.
          */
         ~Object();
+
+        /** @brief Copying is not allowed */
+        Object<Transformation>& operator=(const Object<Transformation>&) = delete;
+
+        /** @brief Moving is not allowed */
+        Object<Transformation>& operator=(Object<Transformation>&&) = delete;
 
         /**
          * @{ @name Scene hierarchy
@@ -253,9 +258,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)
-         * @deprecated Use @ref Magnum::SceneGraph::Object::transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) "transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)" instead.
-         * @todoc fix this when Doxygen is sane (see this function in AbstractObject)
+         * @copybrief transformationMatrices()
+         * @deprecated Use @ref Magnum::SceneGraph::Object::transformationMatrices() "transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&)" instead.
          */
         CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
 
@@ -289,9 +293,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)
-         * @deprecated Use @ref Magnum::SceneGraph::Object::transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) "transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)" instead.
-         * @todoc fix this when Doxygen is sane (see related function in AbstractObject)
+         * @copybrief transformations()
+         * @deprecated Use @ref Magnum::SceneGraph::Object::transformations() "transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&)" instead.
          */
         CORRADE_DEPRECATED("use transformations(std::vector<std::reference_wrapper<Object<Transformation>>>, const typename Transformation::DataType&) instead") std::vector<typename Transformation::DataType> transformations(const std::vector<Object<Transformation>*>& objects, const typename Transformation::DataType& initialTransformation =
             #ifndef CORRADE_MSVC2013_COMPATIBILITY
@@ -346,7 +349,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief setClean(std::vector<std::reference_wrapper<Object<Transformation>>>)
-         * @deprecated Use @ref Magnum::SceneGraph::Object::setClean(std::vector<std::reference_wrapper<Object<Transformation>>> "setClean(std::vector<std::reference_wrapper<Object<Transformation>>>" instead.
+         * @deprecated Use @ref Magnum::SceneGraph::Object::setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) "setClean(std::vector<std::reference_wrapper<Object<Transformation>>>)" instead.
          */
         CORRADE_DEPRECATED("use setClean(std::vector<std::reference_wrapper<Object<Transformation>>>) instead") static void setClean(const std::vector<Object<Transformation>*>& objects);
 

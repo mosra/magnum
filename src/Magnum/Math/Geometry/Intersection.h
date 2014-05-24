@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Geometry::Intersection
+ * @brief Class @ref Magnum::Math::Geometry::Intersection
  */
 
 #include "Magnum/Math/Vector3.h"
@@ -66,7 +66,7 @@ class Intersection {
          *      \end{array}
          * @f]
          *
-         * See also lineSegmentLine() which computes only **t**, which is
+         * See also @ref lineSegmentLine() which computes only **t**, which is
          * useful if you don't need to test that the intersection lies inside
          * line segment defined by `q` and `q + s`.
          */
@@ -89,7 +89,7 @@ class Intersection {
          *      value is in range @f$ [ 0 ; 1 ] @f$, the intersection is inside
          *      the line segment defined by `p` and `p + r`.
          *
-         * Unlike lineSegmentLineSegment() computes only **t**.
+         * Unlike @ref lineSegmentLineSegment() computes only **t**.
          */
         template<class T> static T lineSegmentLine(const Vector2<T>& p, const Vector2<T>& r, const Vector2<T>& q, const Vector2<T>& s) {
             return Vector2<T>::cross(q - p, s)/Vector2<T>::cross(r, s);

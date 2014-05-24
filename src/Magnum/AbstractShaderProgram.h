@@ -350,8 +350,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
          * not available, returns `0`.
-         * @requires_gl Atomic counters are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE}
+         * @requires_gl Atomic counters are not available in OpenGL ES.
          */
         static Int maxAtomicCounterBufferSize();
 
@@ -361,8 +361,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,compute_shader} is not
          * available, returns `0`.
-         * @requires_gl Compute shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_SHARED_MEMORY_SIZE}
+         * @requires_gl Compute shaders are not available in OpenGL ES.
          */
         static Int maxComputeSharedMemorySize();
 
@@ -372,8 +372,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,compute_shader} is not
          * available, returns `0`.
-         * @requires_gl Compute shaders are not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS}
+         * @requires_gl Compute shaders are not available in OpenGL ES.
          */
         static Int maxComputeWorkGroupInvocations();
 
@@ -385,8 +385,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_UNITS}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxImageUnits();
 
@@ -396,8 +396,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * is not available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_SAMPLES}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxImageSamples();
 
@@ -408,8 +408,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither @extension{ARB,shader_image_load_store}
          * nor @extension{ARB,shader_storage_buffer_object} extension is
          * available, returns `0`.
-         * @requires_gl Image load/store is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES}
+         * @requires_gl %Image load/store is not available in OpenGL ES.
          */
         static Int maxCombinedShaderOutputResources();
 
@@ -419,8 +419,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
          * is not available, returns `0`.
-         * @requires_gl Shader storage is not available in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE}
+         * @requires_gl %Shader storage is not available in OpenGL ES.
          */
         static Long maxShaderStorageBlockSize();
         #endif
@@ -432,8 +432,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
          * is not available, returns `0`.
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BLOCK_SIZE}
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          */
         static Int maxUniformBlockSize();
         #endif
@@ -445,8 +445,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,explicit_uniform_location}
          * is not available, returns `0`.
-         * @requires_gl Explicit uniform location is not supported in OpenGL ES.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_LOCATIONS}
+         * @requires_gl Explicit uniform location is not supported in OpenGL ES.
          */
         static Int maxUniformLocations();
         #endif
@@ -458,9 +458,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
          * available, returns `0`.
-         * @requires_gles30 Texture lookup with offset is not available in
-         *      OpenGL ES 2.0.
          * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
+         * @requires_gles30 %Texture lookup with offset is not available in
+         *      OpenGL ES 2.0.
          */
         static Int minTexelOffset();
 
@@ -470,9 +470,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
          * available, returns `0`.
-         * @requires_gles30 Texture lookup with offset is not available in
-         *      OpenGL ES 2.0.
          * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
+         * @requires_gles30 %Texture lookup with offset is not available in
+         *      OpenGL ES 2.0.
          */
         static Int maxTexelOffset();
         #endif
@@ -609,15 +609,15 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Bind attribute to given location
          * @param location      Location
-         * @param name          Attribute name
+         * @param name          %Attribute name
          *
          * Binds attribute to location which is used later for binding vertex
          * buffers.
+         * @see @fn_gl{BindAttribLocation}
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @see @fn_gl{BindAttribLocation}
          */
         void bindAttributeLocation(UnsignedInt location, const std::string& name);
 
@@ -631,11 +631,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * Binds fragment data to location which is used later for framebuffer
          * operations. See also @ref Renderer::BlendFunction for more
          * information about using color input index.
+         * @see @fn_gl{BindFragDataLocationIndexed}
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @see @fn_gl{BindFragDataLocationIndexed}
          * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES.
@@ -675,11 +675,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Get uniform location
          * @param name          Uniform name
          *
+         * @see @fn_gl{GetUniformLocation}
          * @deprecated_gl Preferred usage is to specify uniform location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-uniform-location "class documentation"
          *      for more information.
-         * @see @fn_gl{GetUniformLocation}
          */
         Int uniformLocation(const std::string& name);
 
@@ -1066,6 +1066,15 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
              * @requires_gl Only floats are available in OpenGL ES.
              */
             Double = GL_DOUBLE,
+
+            /**
+             * Unsigned 10.11.11 packed float. Only for three-component float
+             * vector attribute type.
+             * @requires_gl44 %Extension @extension{ARB,vertex_type_10f_11f_11f_rev}
+             * @requires_gl Packed float attributes are not available in OpenGL
+             *      ES.
+             */
+            UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
             #endif
 
             /* GL_FIXED not supported */
@@ -1166,10 +1175,10 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
 };
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+/** @debugoperatorclassenum{Magnum::AbstractShaderProgram::Attribute,Magnum::AbstractShaderProgram::Attribute::Components} */
 template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::Components);
 
-/** @debugoperator{Magnum::AbstractShaderProgram::Attribute} */
+/** @debugoperatorclassenum{Magnum::AbstractShaderProgram::Attribute,Magnum::AbstractShaderProgram::Attribute::DataType} */
 template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::DataType);
 #endif
 
@@ -1338,6 +1347,8 @@ struct IntAttribute {
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
+CORRADE_ENUMSET_OPERATORS(IntAttribute::DataOptions)
+
 Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
 
 /* Base for unsigned int attributes */
@@ -1353,7 +1364,7 @@ struct UnsignedIntAttribute {
     DataType DefaultDataType = DataType::UnsignedInt;
 
     typedef IntAttribute::DataOption DataOption;
-    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef IntAttribute::DataOptions DataOptions;
 
     static UnsignedInt size(GLint components, DataType dataType) {
         return IntAttribute::size(components, dataType);
@@ -1376,14 +1387,49 @@ struct DoubleAttribute {
     #endif
     DataType DefaultDataType = DataType::Double;
 
-    enum class DataOption: UnsignedByte {};
-    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef IntAttribute::DataOption DataOption;
+    typedef IntAttribute::DataOptions DataOptions;
 
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
 Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
 #endif
+
+/* Floating-point three-component vector has additional data type compared to
+   classic floats */
+template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
+    typedef Float ScalarType;
+
+    enum class DataType: GLenum {
+        UnsignedByte = GL_UNSIGNED_BYTE,
+        Byte = GL_BYTE,
+        UnsignedShort = GL_UNSIGNED_SHORT,
+        Short = GL_SHORT,
+        UnsignedInt = GL_UNSIGNED_INT,
+        Int = GL_INT,
+        #ifndef MAGNUM_TARGET_GLES2
+        HalfFloat = GL_HALF_FLOAT,
+        #else
+        HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
+        Float = GL_FLOAT
+
+        #ifndef MAGNUM_TARGET_GLES
+        ,
+        Double = GL_DOUBLE,
+        UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV
+        #endif
+    };
+    constexpr static DataType DefaultDataType = DataType::Float;
+
+    typedef FloatAttribute::DataOption DataOption;
+    typedef FloatAttribute::DataOptions DataOptions;
+
+    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
+};
+
+Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<3, Float>>::DataType value);
 
 /* Floating-point four-component vector is absolutely special case */
 template<> struct Attribute<Math::Vector<4, Float>> {
@@ -1436,18 +1482,13 @@ template<> struct Attribute<Math::Vector<4, Float>> {
     #endif
     DataType DefaultDataType = DataType::Float;
 
-    enum class DataOption: UnsignedByte {
-        Normalized = 1 << 0
-    };
-    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef FloatAttribute::DataOption DataOption;
+    typedef FloatAttribute::DataOptions DataOptions;
 
     enum: UnsignedInt { VectorCount = 1 };
 
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
-
-typedef Math::Vector<4, Float> _Vector4;
-CORRADE_ENUMSET_OPERATORS(Attribute<_Vector4>::DataOptions)
 
 Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::Components value);
 Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value);

@@ -26,6 +26,7 @@
 */
 
 #include "Magnum/Magnum.h"
+#include "Magnum/OpenGL.h"
 
 namespace Magnum { namespace Implementation {
 
@@ -43,6 +44,8 @@ struct State {
     State(Context& context);
 
     ~State();
+
+    enum: GLuint { DisengagedBinding = ~0u };
 
     BufferState* buffer;
     DebugState* debug;

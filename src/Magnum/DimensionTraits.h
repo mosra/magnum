@@ -29,7 +29,7 @@
 #include "Magnum/Types.h"
 
 /** @file
- * @brief Class Magnum::DimensionTraits
+ * @brief Class @ref Magnum::DimensionTraits
  */
 
 namespace Magnum {
@@ -42,15 +42,16 @@ template<UnsignedInt dimensions, class T> struct DimensionTraits {
     /**
      * @brief Vector type
      *
-     * Math::Vector, Math::Vector2 or Math::Vector3 based on dimension count.
+     * @ref Math::Vector, @ref Math::Vector2 or @ref Math::Vector3 based on
+     * dimension count.
      */
     typedef U VectorType;
 
     /**
      * @brief Matrix type
      *
-     * Floating-point Math::Matrix3 or Math::Matrix4 for 2D or 3D. No matrix
-     * type defined for one dimension and integral types.
+     * Floating-point @ref Math::Matrix3 or @ref Math::Matrix4 for 2D or 3D. No
+     * matrix type defined for one dimension and integral types.
      */
     typedef U MatrixType;
     #endif

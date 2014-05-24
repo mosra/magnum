@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Dual
+ * @brief Class @ref Magnum::Math::Dual
  */
 
 #include <cmath>
@@ -95,7 +95,7 @@ template<class T> class Dual {
         /**
          * @brief Add dual number
          *
-         * @see operator+=()
+         * @see @ref operator+=()
          */
         Dual<T> operator+(const Dual<T>& other) const {
             return Dual<T>(*this)+=other;
@@ -128,7 +128,7 @@ template<class T> class Dual {
         /**
          * @brief Subtract dual number
          *
-         * @see operator-=()
+         * @see @ref operator-=()
          */
         Dual<T> operator-(const Dual<T>& other) const {
             return Dual<T>(*this)-=other;
@@ -213,7 +213,7 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 @f[
     \sqrt{\hat a} = \sqrt{a_0} + \epsilon \frac{a_\epsilon}{2 \sqrt{a_0}}
 @f]
-@see Math::sqrt(const T&)
+@see @ref Math::sqrt(const T&)
 */
 template<class T> Dual<T> sqrt(const Dual<T>& dual) {
     T sqrt0 = std::sqrt(dual.real());

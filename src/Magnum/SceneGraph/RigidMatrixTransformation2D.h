@@ -51,7 +51,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         /** @brief Underlying transformation type */
         typedef Math::Matrix3<T> DataType;
 
-        /** @brief Object transformation */
+        /** @brief %Object transformation */
         Math::Matrix3<T> transformation() const { return _transformation; }
 
         /**
@@ -105,7 +105,8 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
 
         /**
          * @copydoc AbstractTranslationRotationScaling2D::translate()
-         * Same as calling @ref transform() with @ref Math::Matrix3::translation().
+         * Same as calling @ref transform() with
+         * @ref Math::Matrix3::translation().
          */
         Object<BasicRigidMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::Matrix3<T>::translation(vector), type);
@@ -117,7 +118,8 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling @ref transform() with @ref Math::Matrix3::rotation().
+         * Same as calling @ref transform() with
+         * @ref Math::Matrix3::rotation().
          * @see @ref normalizeRotation()
          */
         Object<BasicRigidMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -131,7 +133,8 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * Same as calling @ref transform() with @ref Math::Matrix3::reflection().
+         * Same as calling @ref transform() with
+         * @ref Math::Matrix3::reflection().
          */
         Object<BasicRigidMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
             return transformInternal(Math::Matrix3<T>::reflection(normal), type);

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Renderer
+ * @brief Class @ref Magnum::Renderer
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -57,10 +57,10 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Affected polygon facing for culling, stencil operations and masks
          *
-         * @see setFaceCullingMode(),
-         *      setStencilFunction(PolygonFacing, StencilFunction, Int, UnsignedInt),
-         *      setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation),
-         *      setStencilMask(PolygonFacing, UnsignedInt)
+         * @see @ref setFaceCullingMode(),
+         *      @ref setStencilFunction(PolygonFacing, StencilFunction, Int, UnsignedInt),
+         *      @ref setStencilOperation(PolygonFacing, StencilOperation, StencilOperation, StencilOperation),
+         *      @ref setStencilMask(PolygonFacing, UnsignedInt)
          */
         enum class PolygonFacing: GLenum {
             Front = GL_FRONT,                   /**< Front-facing polygons */
@@ -74,20 +74,21 @@ class MAGNUM_EXPORT Renderer {
          * @brief Features
          *
          * All features are disabled by default unless specified otherwise.
-         * @see setFeature()
+         * @see @ref setFeature()
          */
         enum class Feature: GLenum {
             /**
              * Blending
-             * @see setBlendEquation(), setBlendFunction(), setBlendColor()
+             * @see @ref setBlendEquation(), @ref setBlendFunction(),
+             *      @ref setBlendColor()
              */
             Blending = GL_BLEND,
 
             /**
              * Debug output
+             * @see @ref DebugMessage, @ref Feature::DebugOutputSynchronous
              * @requires_gl43 %Extension @extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension{KHR,debug}
-             * @see @ref DebugMessage, @ref Feature::DebugOutputSynchronous
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutput = GL_DEBUG_OUTPUT,
@@ -96,11 +97,11 @@ class MAGNUM_EXPORT Renderer {
             #endif
 
             /**
-             * Synchronous debug output. Has effect only if @ref Feature::DebugOutput
-             * is enabled.
+             * Synchronous debug output. Has effect only if
+             * @ref Feature::DebugOutput is enabled.
+             * @see @ref DebugMessage
              * @requires_gl43 %Extension @extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension{KHR,debug}
-             * @see @ref DebugMessage
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutputSynchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS,
@@ -119,7 +120,8 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Depth test
-             * @see setClearDepth(), setDepthFunction(), setDepthMask()
+             * @see @ref setClearDepth(), @ref setDepthFunction(),
+             *      @ref setDepthMask()
              */
             DepthTest = GL_DEPTH_TEST,
 
@@ -127,14 +129,14 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Back face culling
-             * @see setFrontFace()
+             * @see @ref setFrontFace()
              */
             FaceCulling = GL_CULL_FACE,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Logical operation
-             * @see setLogicOperation()
+             * @see @ref setLogicOperation()
              * @requires_gl Logical operations on framebuffer are not
              *      available in OpenGL ES.
              */
@@ -155,7 +157,7 @@ class MAGNUM_EXPORT Renderer {
              * Offset filled polygons
              * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetLine",
              *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetPoint",
-             *      setPolygonOffset()
+             *      @ref setPolygonOffset()
              */
             PolygonOffsetFill = GL_POLYGON_OFFSET_FILL,
 
@@ -164,7 +166,7 @@ class MAGNUM_EXPORT Renderer {
              * Offset lines
              * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill",
              *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetPoint",
-             *      setPolygonOffset()
+             *      @ref setPolygonOffset()
              * @requires_gl Only @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill"
              *      is available in OpenGL ES.
              */
@@ -174,7 +176,7 @@ class MAGNUM_EXPORT Renderer {
              * Offset points
              * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill",
              *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetLine",
-             *      setPolygonOffset()
+             *      @ref setPolygonOffset()
              * @requires_gl Only @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill"
              *      is available in OpenGL ES.
              */
@@ -185,7 +187,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Programmable point size. If enabled, the point size is taken
              * from vertex/geometry shader builtin `gl_PointSize`.
-             * @see setPointSize()
+             * @see @ref setPointSize()
              * @requires_gl Always enabled on OpenGL ES.
              */
             ProgramPointSize = GL_PROGRAM_POINT_SIZE,
@@ -193,14 +195,14 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Scissor test
-             * @see setScissor()
+             * @see @ref setScissor()
              */
             ScissorTest = GL_SCISSOR_TEST,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Seamless cube map texture.
-             * @see CubeMapTexture, CubeMapTextureArray
+             * @see @ref CubeMapTexture, @ref CubeMapTextureArray
              * @requires_gl32 %Extension @extension{ARB,seamless_cube_map}
              * @requires_gl Not available in OpenGL ES 2.0, always enabled in
              *      OpenGL ES 3.0.
@@ -210,8 +212,8 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Stencil test
-             * @see setClearStencil(), setStencilFunction(),
-             *      setStencilOperation(), setStencilMask()
+             * @see @ref setClearStencil(), @ref setStencilFunction(),
+             *      @ref setStencilOperation(), @ref setStencilMask()
              */
             StencilTest = GL_STENCIL_TEST
         };
@@ -226,7 +228,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Hint
          *
-         * @see setHint()
+         * @see @ref setHint()
          * @todo other hints
          */
         enum class Hint: GLenum {
@@ -245,7 +247,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Hint mode
          *
-         * @see setHint()
+         * @see @ref setHint()
          */
         enum class HintMode: GLenum {
             Fastest = GL_FASTEST,   /**< Most efficient option. */
@@ -279,7 +281,8 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is `1.0`.
          * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
-         * @requires_gl See setClearDepth(Float), which is available in OpenGL ES.
+         * @requires_gl See @ref Magnum::Renderer::setClearDepth(Float) "setClearDepth(Float)",
+         *      which is available in OpenGL ES.
          */
         static void setClearDepth(Double depth);
         #endif
@@ -287,9 +290,10 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @overload
          *
-         * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
          * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
-         * is not available, this function behaves exactly as setClearDepth(Double).
+         * is not available, this function behaves exactly as
+         * @ref setClearDepth(Double).
+         * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
          */
         static void setClearDepth(Float depth);
 
@@ -308,7 +312,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Front facing polygon winding
          *
-         * @see setFrontFace()
+         * @see @ref setFrontFace()
          */
         enum class FrontFace: GLenum {
             /** @brief Counterclockwise polygons are front facing (default). */
@@ -322,7 +326,7 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set front-facing polygon winding
          *
          * Initial value is `FrontFace::%CounterClockWise`.
-         * @see setFaceCullingMode(), @fn_gl{FrontFace}
+         * @see @ref setFaceCullingMode(), @fn_gl{FrontFace}
          */
         static void setFrontFace(FrontFace mode);
 
@@ -331,7 +335,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is @ref PolygonFacing::Back. If set to both front and
          * back, only points and lines are drawn.
-         * @see @ref Feature::FaceCulling, setFrontFace(),
+         * @see @ref Feature::FaceCulling, @ref setFrontFace(),
          *      @fn_gl{CullFace}
          */
         static void setFaceCullingMode(PolygonFacing mode);
@@ -340,7 +344,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Provoking vertex
          *
-         * @see setProvokingVertex()
+         * @see @ref setProvokingVertex()
          * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like
          *      @ref Magnum::Renderer::ProvokingVertex "ProvokingVertex::LastVertexConvention".
@@ -369,7 +373,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Polygon mode
          *
-         * @see setPolygonMode()
+         * @see @ref setPolygonMode()
          * @requires_gl OpenGL ES behaves always like @ref Magnum::Renderer::PolygonMode "PolygonMode::Fill".
          *      See @ref Magnum::Mesh::setPrimitive() "Mesh::setPrimitive()"
          *      for possible workaround.
@@ -381,13 +385,13 @@ class MAGNUM_EXPORT Renderer {
             Fill = GL_FILL,
 
             /**
-             * Boundary edges are filled. See also setLineWidth().
+             * Boundary edges are filled. See also @ref setLineWidth().
              */
             Line = GL_LINE,
 
             /**
              * Starts of boundary edges are drawn as points. See also
-             * setPointSize().
+             * @ref setPointSize().
              */
             Point = GL_POINT
         };
@@ -452,7 +456,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Stencil function
          *
-         * @see setStencilFunction(), @ref DepthFunction
+         * @see @ref setStencilFunction(), @ref DepthFunction
          */
         enum class StencilFunction: GLenum {
             Never = GL_NEVER,           /**< Never pass the test. */
@@ -468,7 +472,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Stencil operation
          *
-         * @see setStencilOperation()
+         * @see @ref setStencilOperation()
          */
         enum class StencilOperation: GLenum {
             Keep = GL_KEEP, /**< Keep the current value. */
@@ -476,7 +480,7 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Set the stencil value to reference value specified by
-             * setStencilFunction().
+             * @ref setStencilFunction().
              */
             Replace = GL_REPLACE,
 
@@ -569,7 +573,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Depth function
          *
-         * @see setDepthFunction()
+         * @see @ref setDepthFunction()
          */
         typedef StencilFunction DepthFunction;
 
@@ -600,7 +604,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * Set to `false` to disallow writing to depth buffer. Initial value
          * is `true`.
-         * @see setColorMask(), setStencilMask(), @fn_gl{DepthMask}
+         * @see @ref setColorMask(), @ref setStencilMask(), @fn_gl{DepthMask}
          */
         static void setDepthMask(GLboolean allow);
 
@@ -612,8 +616,8 @@ class MAGNUM_EXPORT Renderer {
          *
          * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the mask must be the
          *      same for both front and back polygon facing.
-         * @see setStencilMask(UnsignedInt), setColorMask(), setDepthMask(),
-         *      @fn_gl{StencilMaskSeparate}
+         * @see @ref setStencilMask(UnsignedInt), @ref setColorMask(),
+         *      @ref setDepthMask(), @fn_gl{StencilMaskSeparate}
          */
         static void setStencilMask(PolygonFacing facing, UnsignedInt allowBits);
 
@@ -638,7 +642,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Blend equation
          *
-         * @see setBlendEquation()
+         * @see @ref setBlendEquation()
          */
         enum class BlendEquation: GLenum {
             Add = GL_FUNC_ADD,                          /**< `source + destination` */
@@ -666,7 +670,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Blend function
          *
-         * @see setBlendFunction()
+         * @see @ref setBlendFunction()
          */
         enum class BlendFunction: GLenum {
             /** Zero (@f$ RGB = (0.0, 0.0, 0.0); A = 0.0 @f$) */
@@ -678,28 +682,28 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Constant color (@f$ RGB = (R_c, G_c, B_c); A = A_c @f$)
              *
-             * @see setBlendColor()
+             * @see @ref setBlendColor()
              */
             ConstantColor = GL_CONSTANT_COLOR,
 
             /**
              * One minus constant color (@f$ RGB = (1.0 - R_c, 1.0 - G_c, 1.0 - B_c); A = 1.0 - A_c @f$)
              *
-             * @see setBlendColor()
+             * @see @ref setBlendColor()
              */
             OneMinusConstantColor = GL_ONE_MINUS_CONSTANT_COLOR,
 
             /**
              * Constant alpha (@f$ RGB = (A_c, A_c, A_c); A = A_c @f$)
              *
-             * @see setBlendColor()
+             * @see @ref setBlendColor()
              */
             ConstantAlpha = GL_CONSTANT_ALPHA,
 
             /**
              * One minus constant alpha (@f$ RGB = (1.0 - A_c, 1.0 - A_c, 1.0 - A_c); A = 1.0 - A_c @f$)
              *
-             * @see setBlendColor()
+             * @see @ref setBlendColor()
              */
             OneMinusConstantAlpha = GL_ONE_MINUS_CONSTANT_ALPHA,
 
@@ -710,7 +714,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
              *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
@@ -727,7 +731,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
              *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
@@ -741,7 +745,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Saturate source alpha (@f$ RGB = (f, f, f); A = 1.0; f = min(A_s, 1.0 - A_d) @f$)
              *
-             * Can be used only in source parameter of setBlendFunction().
+             * Can be used only in source parameter of @ref setBlendFunction().
              */
             SourceAlphaSaturate = GL_SRC_ALPHA_SATURATE,
 
@@ -749,7 +753,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
              *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
@@ -766,7 +770,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
              *
-             * @see AbstractShaderProgram::bindFragmentDataLocationIndexed()
+             * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
@@ -830,7 +834,8 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set blend function separately for RGB and alpha components
          *
-         * See @ref setBlendFunction(BlendFunction, BlendFunction) for more information.
+         * See @ref setBlendFunction(BlendFunction, BlendFunction) for more
+         * information.
          * @see @ref Feature::Blending, @ref setBlendEquation(),
          *      @ref setBlendColor(), @fn_gl{BlendFuncSeparate}
          */
@@ -895,7 +900,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Flush the pipeline
          *
-         * @see finish(), @fn_gl{Flush}
+         * @see @ref finish(), @fn_gl{Flush}
          */
         static void flush() { glFlush(); }
 
@@ -903,14 +908,14 @@ class MAGNUM_EXPORT Renderer {
          * @brief Finish the pipeline
          *
          * Blocks until all commands in the pipeline are finished.
-         * @see flush(), @fn_gl{Finish}
+         * @see @ref flush(), @fn_gl{Finish}
          */
         static void finish() { glFinish(); }
 
         /**
          * @brief Error status
          *
-         * @see error()
+         * @see @ref error()
          */
         enum class Error: GLenum {
             /** No error has been recorded */
@@ -971,7 +976,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Graphics reset notification strategy
          *
-         * @see resetNotificationStrategy()
+         * @see @ref resetNotificationStrategy()
          * @requires_extension %Extension @extension{ARB,robustness}
          * @requires_es_extension %Extension @es_extension{EXT,robustness}
          */
@@ -1005,14 +1010,15 @@ class MAGNUM_EXPORT Renderer {
          * OpenGL calls. If OpenGL extension @extension{ARB,robustness} or ES
          * extension @es_extension{EXT,robustness} is not available, this
          * function always returns @ref ResetNotificationStrategy::NoResetNotification.
-         * @see graphicsResetStatus(), @fn_gl{Get} with @def_gl{RESET_NOTIFICATION_STRATEGY_ARB}
+         * @see @ref graphicsResetStatus(), @fn_gl{Get} with
+         *      @def_gl{RESET_NOTIFICATION_STRATEGY_ARB}
          */
         static ResetNotificationStrategy resetNotificationStrategy();
 
         /**
          * @brief Graphics reset status
          *
-         * @see resetNotificationStrategy(), graphicsResetStatus()
+         * @see @ref resetNotificationStrategy(), @ref graphicsResetStatus()
          * @requires_extension %Extension @extension{ARB,robustness}
          * @requires_es_extension %Extension @es_extension{EXT,robustness}
          */
@@ -1066,13 +1072,13 @@ class MAGNUM_EXPORT Renderer {
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationRobustness();
 };
 
-/** @debugoperator{Renderer} */
+/** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::Error} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::Error value);
 
-/** @debugoperator{Renderer} */
+/** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::ResetNotificationStrategy} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::ResetNotificationStrategy value);
 
-/** @debugoperator{Renderer} */
+/** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::GraphicsResetStatus} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::GraphicsResetStatus value);
 
 }

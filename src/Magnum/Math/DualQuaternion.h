@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::DualQuaternion
+ * @brief Class @ref Magnum::Math::DualQuaternion
  */
 
 #include "Magnum/Math/Dual.h"
@@ -41,7 +41,8 @@ namespace Magnum { namespace Math {
 
 Represents 3D rotation and translation. See @ref transformations for brief
 introduction.
-@see Magnum::DualQuaternion, Magnum::DualQuaterniond, Dual, Quaternion, Matrix4
+@see @ref Magnum::DualQuaternion, @ref Magnum::DualQuaterniond, @ref Dual,
+    @ref Quaternion, @ref Matrix4
 */
 template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
     public:
@@ -55,9 +56,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Expects that the rotation axis is normalized. @f[
          *      \hat q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2] + \epsilon [\boldsymbol 0, 0]
          * @f]
-         * @see rotation() const, Quaternion::rotation(), Matrix4::rotation(),
-         *      DualComplex::rotation(), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis(), Vector::isNormalized()
+         * @see rotation() const, @ref Quaternion::rotation(),
+         *      @ref Matrix4::rotation(), @ref DualComplex::rotation(),
+         *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
+         *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
@@ -72,9 +75,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\frac{\boldsymbol v}{2}, 0]
          * @f]
-         * @see translation() const, Matrix4::translation(const Vector3&),
-         *      DualComplex::translation(), Vector3::xAxis(), Vector3::yAxis(),
-         *      Vector3::zAxis()
+         * @see translation() const,
+         *      @ref Matrix4::translation(const Vector3<T>&),
+         *      @ref DualComplex::translation(), @ref Vector3::xAxis(),
+         *      @ref Vector3::yAxis(), @ref Vector3::zAxis()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static DualQuaternion<T> translation(const Vector3<T>& vector) {
             return {{}, {vector/T(2), T(0)}};
@@ -84,8 +89,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @brief Create dual quaternion from transformation matrix
          *
          * Expects that the matrix represents rigid transformation.
-         * @see toMatrix(), Quaternion::fromMatrix(),
-         *      Matrix4::isRigidTransformation()
+         * @see @ref toMatrix(), @ref Quaternion::fromMatrix(),
+         *      @ref Matrix4::isRigidTransformation()
          */
         static DualQuaternion<T> fromMatrix(const Matrix4<T>& matrix) {
             CORRADE_ASSERT(matrix.isRigidTransformation(),
@@ -101,7 +106,6 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Creates unit dual quaternion. @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol 0, 0]
          * @f]
-         * @todoc Remove workaround when Doxygen is predictable
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr /*implicit*/ DualQuaternion();
@@ -124,8 +128,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * To be used in transformations later. @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]
          * @f]
-         * @see transformPointNormalized()
-         * @todoc Remove workaround when Doxygen is predictable
+         * @see @ref transformPointNormalized()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit DualQuaternion(const Vector3<T>& vector);
@@ -142,7 +145,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Dual quaternion is normalized if it has unit length: @f[
          *      |\hat q|^2 = |\hat q| = 1 + \epsilon 0
          * @f]
-         * @see lengthSquared(), normalized()
+         * @see @ref lengthSquared(), @ref normalized()
          * @todoc Improve the equation as in Quaternion::isNormalized()
          */
         bool isNormalized() const {
@@ -156,7 +159,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Rotation part of unit dual quaternion
          *
-         * @see Quaternion::angle(), Quaternion::axis()
+         * @see @ref Quaternion::angle(), @ref Quaternion::axis()
          */
         constexpr Quaternion<T> rotation() const {
             return Dual<Quaternion<T>>::real();
@@ -168,7 +171,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \boldsymbol a = 2 (q_\epsilon q_0^*)_V
          * @f]
-         * @see translation(const Vector3&)
+         * @see @ref translation(const Vector3<T>&)
          */
         Vector3<T> translation() const {
             return (Dual<Quaternion<T>>::dual()*Dual<Quaternion<T>>::real().conjugated()).vector()*T(2);
@@ -177,7 +180,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Convert dual quaternion to transformation matrix
          *
-         * @see fromMatrix(), Quaternion::toMatrix()
+         * @see @ref fromMatrix(), @ref Quaternion::toMatrix()
          */
         Matrix4<T> toMatrix() const {
             return Matrix4<T>::from(Dual<Quaternion<T>>::real().toMatrix(), translation());
@@ -189,7 +192,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \hat q^* = q_0^* + q_\epsilon^*
          * @f]
-         * @see dualConjugated(), conjugated(), Quaternion::conjugated()
+         * @see @ref dualConjugated(), @ref conjugated(),
+         *      @ref Quaternion::conjugated()
          */
         DualQuaternion<T> quaternionConjugated() const {
             return {Dual<Quaternion<T>>::real().conjugated(), Dual<Quaternion<T>>::dual().conjugated()};
@@ -201,7 +205,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \overline{\hat q} = q_0 - \epsilon q_\epsilon
          * @f]
-         * @see quaternionConjugated(), conjugated(), Dual::conjugated()
+         * @see @ref quaternionConjugated(), @ref conjugated(),
+         *      @ref Dual::conjugated()
          */
         DualQuaternion<T> dualConjugated() const {
             return Dual<Quaternion<T>>::conjugated();
@@ -213,8 +218,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Both quaternion and dual conjugation. @f[
          *      \overline{\hat q^*} = q_0^* - \epsilon q_\epsilon^* = q_0^* + \epsilon [\boldsymbol q_{V \epsilon}, -q_{S \epsilon}]
          * @f]
-         * @see quaternionConjugated(), dualConjugated(), Quaternion::conjugated(),
-         *      Dual::conjugated()
+         * @see @ref quaternionConjugated(), @ref dualConjugated(),
+         *      @ref Quaternion::conjugated(), @ref Dual::conjugated()
          */
         DualQuaternion<T> conjugated() const {
             return {Dual<Quaternion<T>>::real().conjugated(), {Dual<Quaternion<T>>::dual().vector(), -Dual<Quaternion<T>>::dual().scalar()}};
@@ -223,8 +228,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief %Dual quaternion length squared
          *
-         * Should be used instead of length() for comparing dual quaternion
-         * length with other values, because it doesn't compute the square root. @f[
+         * Should be used instead of @ref length() for comparing dual
+         * quaternion length with other values, because it doesn't compute the
+         * square root. @f[
          *      |\hat q|^2 = \sqrt{\hat q^* \hat q}^2 = q_0 \cdot q_0 + \epsilon 2 (q_0 \cdot q_\epsilon)
          * @f]
          */
@@ -235,7 +241,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief %Dual quaternion length
          *
-         * See lengthSquared() which is faster for comparing length with other
+         * See @ref lengthSquared() which is faster for comparing length with other
          * values. @f[
          *      |\hat q| = \sqrt{\hat q^* \hat q} = |q_0| + \epsilon \frac{q_0 \cdot q_\epsilon}{|q_0|}
          * @f]
@@ -247,7 +253,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Normalized dual quaternion (of unit length)
          *
-         * @see isNormalized()
+         * @see @ref isNormalized()
          */
         DualQuaternion<T> normalized() const {
             return (*this)/length();
@@ -256,7 +262,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Inverted dual quaternion
          *
-         * See invertedNormalized() which is faster for normalized dual
+         * See @ref invertedNormalized() which is faster for normalized dual
          * quaternions. @f[
          *      \hat q^{-1} = \frac{\hat q^*}{|\hat q|^2}
          * @f]
@@ -268,11 +274,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Inverted normalized dual quaternion
          *
-         * Equivalent to quaternionConjugated(). Expects that the quaternion is
-         * normalized. @f[
+         * Equivalent to @ref quaternionConjugated(). Expects that the
+         * quaternion is normalized. @f[
          *      \hat q^{-1} = \frac{\hat q^*}{|\hat q|^2} = \hat q^*
          * @f]
-         * @see isNormalized(), inverted()
+         * @see @ref isNormalized(), @ref inverted()
          */
         DualQuaternion<T> invertedNormalized() const {
             CORRADE_ASSERT(isNormalized(),
@@ -283,12 +289,14 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Rotate and translate point with dual quaternion
          *
-         * See transformPointNormalized(), which is faster for normalized dual
-         * quaternions. @f[
+         * See @ref transformPointNormalized(), which is faster for normalized
+         * dual quaternions. @f[
          *      v' = \hat q v \overline{\hat q^{-1}} = \hat q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^{-1}}
          * @f]
-         * @see DualQuaternion(const Vector3&), dual(), Matrix4::transformPoint(),
-         *      Quaternion::transformVector(), DualComplex::transformPoint()
+         * @see @ref DualQuaternion(const Vector3<T>&), @ref dual(),
+         *      @ref Matrix4::transformPoint(),
+         *      @ref Quaternion::transformVector(),
+         *      @ref DualComplex::transformPoint()
          */
         Vector3<T> transformPoint(const Vector3<T>& vector) const {
             return ((*this)*DualQuaternion<T>(vector)*inverted().dualConjugated()).dual().vector();
@@ -297,13 +305,14 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Rotate and translate point with normalized dual quaternion
          *
-         * Faster alternative to transformPoint(), expects that the dual
+         * Faster alternative to @ref transformPoint(), expects that the dual
          * quaternion is normalized. @f[
          *      v' = \hat q v \overline{\hat q^{-1}} = \hat q v \overline{\hat q^*} = \hat q ([\boldsymbol 0, 1] + \epsilon [\boldsymbol v, 0]) \overline{\hat q^*}
          * @f]
-         * @see isNormalized(), DualQuaternion(const Vector3&), dual(),
-         *      Matrix4::transformPoint(), Quaternion::transformVectorNormalized(),
-         *      DualComplex::transformPointNormalized()
+         * @see @ref isNormalized(), @ref DualQuaternion(const Vector3<T>&),
+         *      @ref dual(), @ref Matrix4::transformPoint(),
+         *      @ref Quaternion::transformVectorNormalized(),
+         *      @ref DualComplex::transformPoint()
          */
         Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(isNormalized(),

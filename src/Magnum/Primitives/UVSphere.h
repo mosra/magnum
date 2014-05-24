@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Primitives::UVSphere
+ * @brief Class @ref Magnum::Primitives::UVSphere
  */
 
 #include "Magnum/Trade/Trade.h"

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::DebugTools::ObjectRenderer, Magnum::DebugTools::ObjectRendererOptions, typedef Magnum::DebugTools::ObjectRenderer2D, Magnum::DebugTools::ObjectRenderer3D
+ * @brief Class @ref Magnum::DebugTools::ObjectRenderer, @ref Magnum::DebugTools::ObjectRendererOptions, typedef @ref Magnum::DebugTools::ObjectRenderer2D, @ref Magnum::DebugTools::ObjectRenderer3D
  */
 
 #include "Magnum/Resource.h"
@@ -97,10 +97,9 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
          */
         explicit ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 
-    protected:
+    private:
         void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 
-    private:
         Resource<ObjectRendererOptions> options;
         Resource<AbstractShaderProgram, Shaders::VertexColor<dimensions>> shader;
         Resource<Mesh> mesh;

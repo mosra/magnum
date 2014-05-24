@@ -52,7 +52,7 @@ namespace Implementation {
     }
 }
 
-/** @brief Shape operation */
+/** @brief %Shape operation */
 enum class CompositionOperation: UnsignedByte {
     Not,    /**< Boolean NOT */
     And,    /**< Boolean AND */
@@ -60,7 +60,7 @@ enum class CompositionOperation: UnsignedByte {
 };
 
 /**
-@brief Composition of shapes
+@brief %Composition of shapes
 
 Result of logical operations on shapes. See @ref shapes for brief introduction.
 */
@@ -80,7 +80,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
             Dimensions = dimensions /**< Dimension count */
         };
 
-        /** @brief Shape type */
+        /** @brief %Shape type */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Type {
             Point,          /**< Point */
@@ -143,10 +143,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         /** @brief Type of shape at given position */
         Type type(std::size_t i) const { return _shapes[i]->type(); }
 
-        /** @brief Shape at given position */
+        /** @brief %Shape at given position */
         template<class T> const T& get(std::size_t i) const;
 
-        /** @brief Collision with another shape */
+        /** @brief %Collision with another shape */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class T> bool operator%(const T& other) const {
         #else
@@ -200,12 +200,12 @@ typedef Composition<2> Composition2D;
 typedef Composition<3> Composition3D;
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/** @debugoperator{Magnum::Shapes::Composition} */
+/** @debugoperatorclassenum{Magnum::Shapes::Composition,Magnum::Shapes::Composition::Type} */
 template<UnsignedInt dimensions> Debug operator<<(Debug debug, typename Composition<dimensions>::Type value);
 #endif
 
 /** @relates Composition
-@brief Collision of shape with @ref Composition
+@brief %Collision occurence of shape with %Composition
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T> inline bool operator%(const T& a, const Composition<dimensions>& b) {

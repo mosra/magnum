@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Complex
+ * @brief Class @ref Magnum::Math::Complex
  */
 
 #include <limits>
@@ -51,11 +51,11 @@ namespace Implementation {
 @tparam T   Data type
 
 Represents 2D rotation. See @ref transformations for brief introduction.
-@see Magnum::Complex, Magnum::Complexd, Matrix3
+@see @ref Magnum::Complex, @ref Magnum::Complexd, @ref Matrix3
 */
 template<class T> class Complex {
     public:
-        typedef T Type;                         /**< @brief Underlying data type */
+        typedef T Type; /**< @brief Underlying data type */
 
         /**
          * @brief Dot product
@@ -64,6 +64,7 @@ template<class T> class Complex {
          *      c_0 \cdot c_1 = a_0 a_1 + b_0 b_1
          * @f]
          * @see dot() const
+         * @todoc Explicit reference when Doxygen can handle const
          */
         static T dot(const Complex<T>& a, const Complex<T>& b) {
             return a._real*b._real + a._imaginary*b._imaginary;
@@ -75,7 +76,8 @@ template<class T> class Complex {
          * Expects that both complex numbers are normalized. @f[
          *      \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
          * @f]
-         * @see isNormalized(), Quaternion::angle(), Vector::angle()
+         * @see @ref isNormalized(), @ref Quaternion::angle(),
+         *      @ref Vector::angle()
          */
         static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
             CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
@@ -90,7 +92,8 @@ template<class T> class Complex {
          * @f[
          *      c = cos \theta + i sin \theta
          * @f]
-         * @see angle(), Matrix3::rotation(), Quaternion::rotation()
+         * @see @ref angle(), @ref Matrix3::rotation(),
+         *      @ref Quaternion::rotation()
          */
         static Complex<T> rotation(Rad<T> angle) {
             return {std::cos(angle.toUnderlyingType()), std::sin(angle.toUnderlyingType())};
@@ -100,7 +103,8 @@ template<class T> class Complex {
          * @brief Create complex number from rotation matrix
          *
          * Expects that the matrix is orthogonal (i.e. pure rotation).
-         * @see toMatrix(), DualComplex::fromMatrix(), Matrix::isOrthogonal()
+         * @see @ref toMatrix(), @ref DualComplex::fromMatrix(),
+         *      @ref Matrix::isOrthogonal()
          */
         static Complex<T> fromMatrix(const Matrix<2, T>& matrix) {
             CORRADE_ASSERT(matrix.isOrthogonal(),
@@ -132,7 +136,8 @@ template<class T> class Complex {
          * To be used in transformations later. @f[
          *      c = v_x + iv_y
          * @f]
-         * @see operator Vector2(), transformVector()
+         * @see operator Vector2(), @ref transformVector()
+         * @todoc Explicit reference when Doxygen can handle conversion operators
          */
         constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
 
@@ -153,7 +158,7 @@ template<class T> class Complex {
          * Complex number is normalized if it has unit length: @f[
          *      |c \cdot c - 1| < 2 \epsilon + \epsilon^2 \cong 2 \epsilon
          * @f]
-         * @see dot(), normalized()
+         * @see @ref dot(), @ref normalized()
          */
         bool isNormalized() const {
             return Implementation::isNormalizedSquared(dot());
@@ -186,7 +191,7 @@ template<class T> class Complex {
          * @f[
          *      \theta = atan2(b, a)
          * @f]
-         * @see rotation()
+         * @see @ref rotation()
          */
         Rad<T> angle() const {
             return Rad<T>(std::atan2(_imaginary, _real));
@@ -201,8 +206,8 @@ template<class T> class Complex {
          *               b &  a
          *          \end{pmatrix}
          * @f]
-         * @see fromMatrix(), DualComplex::toMatrix(),
-         *      Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
+         * @see @ref fromMatrix(), @ref DualComplex::toMatrix(),
+         *      @ref Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
          */
         Matrix<2, T> toMatrix() const {
             return {Vector<2, T>(_real, _imaginary),
@@ -225,7 +230,7 @@ template<class T> class Complex {
         /**
          * @brief Add complex number
          *
-         * @see operator+=()
+         * @see @ref operator+=(const Complex<T>&)
          */
         Complex<T> operator+(const Complex<T>& other) const {
             return Complex<T>(*this) += other;
@@ -258,7 +263,7 @@ template<class T> class Complex {
         /**
          * @brief Subtract complex number
          *
-         * @see operator-=()
+         * @see @ref operator-=(const Complex<T>&)
          */
         Complex<T> operator-(const Complex<T>& other) const {
             return Complex<T>(*this) -= other;
@@ -280,7 +285,7 @@ template<class T> class Complex {
         /**
          * @brief Multiply with scalar
          *
-         * @see operator*=(T)
+         * @see @ref operator*=(T)
          */
         Complex<T> operator*(T scalar) const {
             return Complex<T>(*this) *= scalar;
@@ -302,7 +307,7 @@ template<class T> class Complex {
         /**
          * @brief Divide with scalar
          *
-         * @see operator/=(T)
+         * @see @ref operator/=(T)
          */
         Complex<T> operator/(T scalar) const {
             return Complex<T>(*this) /= scalar;
@@ -323,11 +328,12 @@ template<class T> class Complex {
         /**
          * @brief Dot product of the complex number
          *
-         * Should be used instead of length() for comparing complex number length
-         * with other values, because it doesn't compute the square root. @f[
+         * Should be used instead of @ref length() for comparing complex number
+         * length with other values, because it doesn't compute the square
+         * root. @f[
          *      c \cdot c = a^2 + b^2
          * @f]
-         * @see dot(const Complex&, const Complex&), isNormalized()
+         * @see @ref dot(const Complex&, const Complex&), @ref isNormalized()
          */
         T dot() const {
             return dot(*this, *this);
@@ -336,11 +342,11 @@ template<class T> class Complex {
         /**
          * @brief %Complex number length
          *
-         * See also dot() const which is faster for comparing length with other
-         * values. @f[
+         * See also @ref dot() const which is faster for comparing length with
+         * other values. @f[
          *      |c| = \sqrt{c \cdot c}
          * @f]
-         * @see isNormalized()
+         * @see @ref isNormalized()
          */
         T length() const {
             /** @todo Remove when newlib has this fixed */
@@ -354,7 +360,7 @@ template<class T> class Complex {
         /**
          * @brief Normalized complex number (of unit length)
          *
-         * @see isNormalized()
+         * @see @ref isNormalized()
          */
         Complex<T> normalized() const {
             return (*this)/length();
@@ -374,7 +380,7 @@ template<class T> class Complex {
         /**
          * @brief Inverted complex number
          *
-         * See invertedNormalized() which is faster for normalized
+         * See @ref invertedNormalized() which is faster for normalized
          * complex numbers. @f[
          *      c^{-1} = \frac{c^*}{|c|^2} = \frac{c^*}{c \cdot c}
          * @f]
@@ -386,11 +392,11 @@ template<class T> class Complex {
         /**
          * @brief Inverted normalized complex number
          *
-         * Equivalent to conjugated(). Expects that the complex number is
+         * Equivalent to @ref conjugated(). Expects that the complex number is
          * normalized. @f[
          *      c^{-1} = \frac{c^*}{c \cdot c} = c^*
          * @f]
-         * @see isNormalized(), inverted()
+         * @see @ref isNormalized(), @ref inverted()
          */
         Complex<T> invertedNormalized() const {
             CORRADE_ASSERT(isNormalized(),
@@ -405,7 +411,9 @@ template<class T> class Complex {
          * @f[
          *      v' = c v = c (v_x + iv_y)
          * @f]
-         * @see Complex(const Vector2&), operator Vector2(), Matrix3::transformVector()
+         * @see @ref Complex(const Vector2<T>&), operator Vector2(),
+         *      @ref Matrix3::transformVector()
+         * @todoc Explicit reference when Doxygen can handle conversion operators
          */
         Vector2<T> transformVector(const Vector2<T>& vector) const {
             return Vector2<T>((*this)*Complex<T>(vector));
@@ -418,7 +426,7 @@ template<class T> class Complex {
 /** @relates Complex
 @brief Multiply scalar with complex
 
-Same as Complex::operator*(T) const.
+Same as @ref Complex::operator*(T) const.
 */
 template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& complex) {
     return complex*scalar;
@@ -430,7 +438,7 @@ template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& comple
 @f[
     \frac t c = \frac t a + i \frac t b
 @f]
-@see Complex::operator/()
+@see @ref Complex::operator/()
 */
 template<class T> inline Complex<T> operator/(T scalar, const Complex<T>& complex) {
     return {scalar/complex.real(), scalar/complex.imaginary()};

@@ -100,6 +100,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          *
          * Note that this function is blocking until the result is available.
          * See resultAvailable().
+         * @attention @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
+         *      result type is not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
          * @requires_gl33 %Extension @extension{ARB,timer_query} for result
          *      type @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
@@ -107,8 +109,6 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
          *      @ref Magnum::Long "Long".
-         * @attention @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
-         *      result type is not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
          */
         template<class T> T result();
 
@@ -266,9 +266,9 @@ q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
 q.endConditionalRender();
 @endcode
 
+@see @ref PrimitiveQuery, @ref TimeQuery
 @requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean} in
     OpenGL ES 2.0
-@see @ref PrimitiveQuery, @ref TimeQuery
 */
 class SampleQuery: public AbstractQuery {
     public:

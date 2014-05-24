@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function Magnum::MeshTools::flipNormals()
+ * @brief Function @ref Magnum::MeshTools::flipFaceWinding(), @ref Magnum::MeshTools::flipNormals()
  */
 
 #include <vector>
@@ -38,16 +38,21 @@ namespace Magnum { namespace MeshTools {
 
 /**
 @brief Flip face winding
+@param[in,out] indices  Index array to operate on
 
-The same as flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
+The same as @ref flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
 but flips only face winding.
+
+@attention The function requires the mesh to have triangle faces, thus index
+    count must be divisible by 3.
 */
 void MAGNUM_MESHTOOLS_EXPORT flipFaceWinding(std::vector<UnsignedInt>& indices);
 
 /**
 @brief Flip mesh normals
+@param[in,out] normals  Normal array to operate on
 
-The same as flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
+The same as @ref flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
 but flips only normals, not face winding.
 */
 void MAGNUM_MESHTOOLS_EXPORT flipNormals(std::vector<Vector3>& normals);
@@ -58,8 +63,8 @@ void MAGNUM_MESHTOOLS_EXPORT flipNormals(std::vector<Vector3>& normals);
 @param[in,out] normals  Normal array to operate on
 
 Flips normal vectors and face winding in index array for face culling to work
-properly too. See also flipNormals(std::vector<Vector3>&) and
-flipFaceWinding(), which flip normals or face winding only.
+properly too. See also @ref flipNormals(std::vector<Vector3>&) and
+@ref flipFaceWinding(), which flip normals or face winding only.
 
 @attention The function requires the mesh to have triangle faces, thus index
     count must be divisible by 3.
