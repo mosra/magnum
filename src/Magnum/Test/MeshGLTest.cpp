@@ -247,10 +247,7 @@ void MeshGLTest::construct() {
 
 void MeshGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<Mesh, const Mesh&>{}));
-    /* GCC 4.6 doesn't have std::is_assignable */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<Mesh, const Mesh&>{}));
-    #endif
 }
 
 void MeshGLTest::constructMove() {

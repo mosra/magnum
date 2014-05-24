@@ -155,10 +155,7 @@ void RectangularMatrixTest::constructDefault() {
 void RectangularMatrixTest::constructConversion() {
     constexpr Matrix2x2 a(Vector2(  1.3f, 2.7f),
                           Vector2(-15.0f, 7.0f));
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Matrix2x2i b(a);
+    constexpr Matrix2x2i b(a);
 
     CORRADE_COMPARE(b, Matrix2x2i(Vector2i(  1, 2),
                                   Vector2i(-15, 7)));
@@ -215,16 +212,10 @@ void RectangularMatrixTest::convert() {
     constexpr Matrix2x3 b(Vector3(1.5f, 2.0f, -3.5f),
                           Vector3(2.0f, -3.1f,  0.4f));
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Matrix2x3 c(b);
+    constexpr Matrix2x3 c(b);
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Mat2x3 d(b);
+    constexpr Mat2x3 d(b);
     for(std::size_t i = 0; i != 5; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 

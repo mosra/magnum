@@ -163,51 +163,37 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
         Vector2i _viewport;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base camera for two-dimensional scenes
 
 Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See
 @ref AbstractCamera for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see @ref AbstractCamera2D, @ref AbstractBasicCamera3D
 */
 template<class T> using AbstractBasicCamera2D = AbstractCamera<2, T>;
-#endif
 
 /**
 @brief Base camera for two-dimensional float scenes
 
 @see @ref AbstractCamera3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicCamera2D<Float> AbstractCamera2D;
-#else
-typedef AbstractCamera<2, Float> AbstractCamera2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base camera for three-dimensional scenes
 
 Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See
 @ref AbstractCamera for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
 @see @ref AbstractCamera3D, @ref AbstractBasicCamera2D
 */
 template<class T> using AbstractBasicCamera3D = AbstractCamera<3, T>;
-#endif
 
 /**
 @brief Base camera for three-dimensional float scenes
 
 @see @ref AbstractCamera2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicCamera3D<Float> AbstractCamera3D;
-#else
-typedef AbstractCamera<3, Float> AbstractCamera3D;
-#endif
 
 #ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<2, Float>;

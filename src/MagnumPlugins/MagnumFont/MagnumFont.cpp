@@ -37,10 +37,6 @@
 namespace Magnum { namespace Text {
 
 struct MagnumFont::Data {
-    #ifdef CORRADE_GCC46_COMPATIBILITY
-    explicit Data(Utility::Configuration&& conf, Trade::ImageData2D&& image, std::unordered_map<char32_t, UnsignedInt>&& glyphId, std::vector<Vector2>&& glyphAdvance): conf(std::move(conf)), image(std::move(image)), glyphId(std::move(glyphId)), glyphAdvance(std::move(glyphAdvance)) {}
-    #endif
-
     Utility::Configuration conf;
     Trade::ImageData2D image;
     std::unordered_map<char32_t, UnsignedInt> glyphId;
@@ -162,11 +158,7 @@ std::pair<Float, Float> MagnumFont::openInternal(Utility::Configuration&& conf, 
     for(const Utility::ConfigurationGroup* const c: chars) {
         const UnsignedInt glyphId = c->value<UnsignedInt>("glyph");
         CORRADE_INTERNAL_ASSERT(glyphId < _opened->glyphAdvance.size());
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         _opened->glyphId.emplace(c->value<char32_t>("unicode"), glyphId);
-        #else
-        _opened->glyphId.insert({c->value<char32_t>("unicode"), glyphId});
-        #endif
     }
 
     return {_opened->conf.value<Float>("fontSize"), _opened->conf.value<Float>("lineHeight")};

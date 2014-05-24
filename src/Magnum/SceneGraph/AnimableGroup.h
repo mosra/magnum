@@ -72,51 +72,37 @@ template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGro
         bool wakeUp;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief %Animable group for two-dimensional scenes
 
 Convenience alternative to <tt>%AnimableGroup<2, T></tt>. See Animable for
 more information.
-@note Not available on GCC < 4.7. Use <tt>%AnimableGroup<2, T></tt> instead.
 @see @ref AnimableGroup2D, @ref BasicAnimableGroup3D
 */
 template<class T> using BasicAnimableGroup2D = AnimableGroup<2, T>;
-#endif
 
 /**
 @brief %Animable group for two-dimensional float scenes
 
 @see @ref AnimableGroup3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicAnimableGroup2D<Float> AnimableGroup2D;
-#else
-typedef AnimableGroup<2, Float> AnimableGroup2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief %Animable group for three-dimensional scenes
 
 Convenience alternative to <tt>%AnimableGroup<3, T></tt>. See Animable for
 more information.
-@note Not available on GCC < 4.7. Use <tt>%AnimableGroup<3, T></tt> instead.
 @see @ref AnimableGroup3D, @ref BasicAnimableGroup2D
 */
 template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
-#endif
 
 /**
 @brief %Animable group for three-dimensional float scenes
 
 @see @ref AnimableGroup2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicAnimableGroup3D<Float> AnimableGroup3D;
-#else
-typedef AnimableGroup<3, Float> AnimableGroup3D;
-#endif
 
 #ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<2, Float>;

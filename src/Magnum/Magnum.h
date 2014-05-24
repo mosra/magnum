@@ -49,14 +49,12 @@ namespace Math {
 
     /** @todoc Remove `ifndef` when Doxygen is able to handle operator"" */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     #ifndef MAGNUM_TARGET_GLES
     constexpr Rad<Double> operator "" _rad(long double);
     constexpr Deg<Double> operator "" _deg(long double);
     #endif
     constexpr Rad<Float> operator "" _radf(long double);
     constexpr Deg<Float> operator "" _degf(long double);
-    #endif
     #endif
 }
 
@@ -228,11 +226,7 @@ typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix4<Float> Matrix4;
 
 /** @brief 2x2 float matrix */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix2x2<Float> Matrix2x2;
-#else
-typedef Math::Matrix<2, Float> Matrix2x2;
-#endif
 
 /**
 @brief 3x3 float matrix
@@ -240,11 +234,7 @@ typedef Math::Matrix<2, Float> Matrix2x2;
 Note that this is different from @ref Matrix3, which contains additional
 functions for transformations in 2D.
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix3x3<Float> Matrix3x3;
-#else
-typedef Math::Matrix<3, Float> Matrix3x3;
-#endif
 
 /**
 @brief 4x4 float matrix
@@ -252,53 +242,25 @@ typedef Math::Matrix<3, Float> Matrix3x3;
 Note that this is different from @ref Matrix4, which contains additional
 functions for transformations in 3D.
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix4x4<Float> Matrix4x4;
-#else
-typedef Math::Matrix<4, Float> Matrix4x4;
-#endif
 
 /** @brief Float matrix with 2 columns and 3 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix2x3<Float> Matrix2x3;
-#else
-typedef Math::RectangularMatrix<2, 3, Float> Matrix2x3;
-#endif
 
 /** @brief Float matrix with 3 columns and 2 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix3x2<Float> Matrix3x2;
-#else
-typedef Math::RectangularMatrix<3, 2, Float> Matrix3x2;
-#endif
 
 /** @brief Float matrix with 2 columns and 4 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix2x4<Float> Matrix2x4;
-#else
-typedef Math::RectangularMatrix<2, 4, Float> Matrix2x4;
-#endif
 
 /** @brief Float matrix with 4 columns and 2 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix4x2<Float> Matrix4x2;
-#else
-typedef Math::RectangularMatrix<4, 2, Float> Matrix4x2;
-#endif
 
 /** @brief Float matrix with 3 columns and 4 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix3x4<Float> Matrix3x4;
-#else
-typedef Math::RectangularMatrix<3, 4, Float> Matrix3x4;
-#endif
 
 /** @brief Float matrix with 4 columns and 3 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix4x3<Float> Matrix4x3;
-#else
-typedef Math::RectangularMatrix<4, 3, Float> Matrix4x3;
-#endif
 
 /** @brief Float complex number */
 typedef Math::Complex<Float> Complex;
@@ -322,11 +284,7 @@ typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
 
 /** @brief Float 1D range */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Range1D<Float> Range1D;
-#else
-typedef Math::Range<1, Float> Range1D;
-#endif
 
 /** @brief Float 2D range */
 typedef Math::Range2D<Float> Range2D;
@@ -335,11 +293,7 @@ typedef Math::Range2D<Float> Range2D;
 typedef Math::Range3D<Float> Range3D;
 
 /** @brief Signed integer 1D range */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Range1D<Int> Range1Di;
-#else
-typedef Math::Range<1, Int> Range1Di;
-#endif
 
 /** @brief Signed integer 2D range */
 typedef Math::Range2D<Int> Range2Di;
@@ -397,11 +351,7 @@ typedef Math::Matrix3<Double> Matrix3d;
 typedef Math::Matrix4<Double> Matrix4d;
 
 /** @brief 2x2 double matrix */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix2x2<Double> Matrix2x2d;
-#else
-typedef Math::Matrix<2, Double> Matrix2x2d;
-#endif
 
 /**
 @brief 3x3 double matrix
@@ -409,11 +359,7 @@ typedef Math::Matrix<2, Double> Matrix2x2d;
 Note that this is different from @ref Matrix3d, which contains additional
 functions for transformations in 2D.
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix3x3<Double> Matrix3x3d;
-#else
-typedef Math::Matrix<3, Double> Matrix3x3d;
-#endif
 
 /**
 @brief 4x4 double matrix
@@ -421,53 +367,25 @@ typedef Math::Matrix<3, Double> Matrix3x3d;
 Note that this is different from @ref Matrix4d, which contains additional
 functions for transformations in 3D.
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix4x4<Double> Matrix4x4d;
-#else
-typedef Math::Matrix<4, Double> Matrix4x4d;
-#endif
 
 /** @brief Double matrix with 2 columns and 3 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix2x3<Double> Matrix2x3d;
-#else
-typedef Math::RectangularMatrix<2, 3, Double> Matrix2x3d;
-#endif
 
 /** @brief Double matrix with 3 columns and 2 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix3x2<Double> Matrix3x2d;
-#else
-typedef Math::RectangularMatrix<3, 2, Double> Matrix3x2d;
-#endif
 
 /** @brief Double matrix with 2 columns and 4 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix2x4<Double> Matrix2x4d;
-#else
-typedef Math::RectangularMatrix<2, 4, Double> Matrix2x4d;
-#endif
 
 /** @brief Double matrix with 4 columns and 2 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix4x2<Double> Matrix4x2d;
-#else
-typedef Math::RectangularMatrix<4, 2, Double> Matrix4x2d;
-#endif
 
 /** @brief Double matrix with 3 columns and 4 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix3x4<Double> Matrix3x4d;
-#else
-typedef Math::RectangularMatrix<3, 4, Double> Matrix3x4d;
-#endif
 
 /** @brief Double matrix with 4 columns and 3 rows */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Matrix4x3<Double> Matrix4x3d;
-#else
-typedef Math::RectangularMatrix<4, 3, Double> Matrix4x3d;
-#endif
 
 /** @brief Double complex number */
 typedef Math::Complex<Double> Complexd;
@@ -491,11 +409,7 @@ typedef Math::Deg<Double> Degd;
 typedef Math::Rad<Double> Radd;
 
 /** @brief Double 1D range */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Range1D<Double> Range1Dd;
-#else
-typedef Math::Range<1, Double> Range1Dd;
-#endif
 
 /** @brief Double 2D range */
 typedef Math::Range2D<Double> Range2Dd;
@@ -514,7 +428,6 @@ typedef CORRADE_DEPRECATED("use Range2Dd instead") Math::Geometry::Rectangle<Dou
 /*@}*/
 #endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /* Using angle literals from Math namespace */
 #ifndef MAGNUM_TARGET_GLES
 using Math::operator "" _deg;
@@ -522,7 +435,6 @@ using Math::operator "" _rad;
 #endif
 using Math::operator "" _degf;
 using Math::operator "" _radf;
-#endif
 
 /* Forward declarations for all types in root namespace */
 

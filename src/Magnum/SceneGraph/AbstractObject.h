@@ -266,40 +266,30 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         virtual void doSetClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects) = 0;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base object for two-dimensional scenes
 
 Convenience alternative to <tt>%AbstractObject<2, T></tt>. See
 @ref AbstractObject for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
 @see @ref AbstractObject2D, @ref AbstractBasicObject3D
 */
 template<class T> using AbstractBasicObject2D = AbstractObject<2, T>;
-#endif
 
 /**
 @brief Base object for two-dimensional float scenes
 
 @see @ref AbstractObject3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicObject2D<Float> AbstractObject2D;
-#else
-typedef AbstractObject<2, Float> AbstractObject2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base object for three-dimensional scenes
 
 Convenience alternative to <tt>%AbstractObject<3, T></tt>. See
 @ref AbstractObject for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
 @see @ref AbstractObject3D, @ref AbstractBasicObject2D
 */
 template<class T> using AbstractBasicObject3D = AbstractObject<3, T>;
-#endif
 
 /**
 @brief Base object for three-dimensional float scenes

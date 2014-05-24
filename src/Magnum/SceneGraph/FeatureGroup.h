@@ -113,14 +113,11 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
         FeatureGroup<dimensions, Feature, T>& remove(Feature& feature);
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base feature group for two-dimensional scenes
 
 Convenience alternative to <tt>%FeatureGroup<2, Feature, T></tt>. See
 @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<2, Feature, T></tt>
-    instead.
 @see @ref FeatureGroup2D, @ref BasicFeatureGroup3D
 */
 template<class Feature, class T> using BasicFeatureGroup2D = FeatureGroup<2, Feature, T>;
@@ -130,8 +127,6 @@ template<class Feature, class T> using BasicFeatureGroup2D = FeatureGroup<2, Fea
 
 Convenience alternative to <tt>%BasicFeatureGroup2D<Feature, Float></tt>. See
 @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<2, Feature, Float></tt>
-    instead.
 @see @ref FeatureGroup3D
 */
 template<class Feature> using FeatureGroup2D = BasicFeatureGroup2D<Feature, Float>;
@@ -141,8 +136,6 @@ template<class Feature> using FeatureGroup2D = BasicFeatureGroup2D<Feature, Floa
 
 Convenience alternative to <tt>%FeatureGroup<3, Feature, T></tt>. See
 @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<3, Feature, T></tt>
-    instead.
 @see @ref FeatureGroup3D, @ref BasicFeatureGroup2D
 */
 template<class Feature, class T> using BasicFeatureGroup3D = FeatureGroup<3, Feature, T>;
@@ -152,12 +145,9 @@ template<class Feature, class T> using BasicFeatureGroup3D = FeatureGroup<3, Fea
 
 Convenience alternative to <tt>%BasicFeatureGroup3D<Feature, Float></tt>. See
 @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%FeatureGroup<3, Feature, Float></tt>
-    instead.
 @see @ref FeatureGroup2D
 */
 template<class Feature> using FeatureGroup3D = BasicFeatureGroup3D<Feature, Float>;
-#endif
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>::~FeatureGroup() {
     for(auto i: AbstractFeatureGroup<dimensions, T>::features) static_cast<Feature&>(i.get())._group = nullptr;

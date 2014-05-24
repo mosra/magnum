@@ -90,18 +90,10 @@ void BoolVectorTest::constructDefault() {
 }
 
 void BoolVectorTest::constructOneValue() {
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr BoolVector19 a(false);
-    #else
-    BoolVector19 a(false); /* not constexpr under GCC < 4.7 */
-    #endif
     CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     constexpr BoolVector19 b(true);
-    #else
-    BoolVector19 b(true); /* not constexpr under GCC < 4.7 */
-    #endif
     CORRADE_COMPARE(b, BoolVector19(0xff, 0xff, 0x07));
 
     CORRADE_VERIFY(!(std::is_convertible<bool, BoolVector19>::value));

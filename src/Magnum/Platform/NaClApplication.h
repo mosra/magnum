@@ -30,7 +30,6 @@
  */
 
 #include <string>
-#include <Corrade/compatibility.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/instance.h>

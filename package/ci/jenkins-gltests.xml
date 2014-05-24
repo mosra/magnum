@@ -52,7 +52,6 @@
       <values>
         <string>g++</string>
         <string>g++-4.7</string>
-        <string>g++-4.6</string>
         <string>clang++</string>
         <string>clang++-libc++</string>
       </values>

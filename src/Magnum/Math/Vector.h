@@ -59,11 +59,6 @@ template<std::size_t size, class T> class Vector {
 
     template<std::size_t, class> friend class Vector;
 
-    #ifdef CORRADE_GCC46_COMPATIBILITY
-    /* So it can call internal constexpr constructor from one value */
-    template<std::size_t, class> friend class Matrix;
-    #endif
-
     public:
         typedef T Type;                         /**< @brief Underlying data type */
         const static std::size_t Size = size;   /**< @brief %Vector size */
@@ -137,13 +132,7 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit Vector(T value);
         #else
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
-        #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> explicit Vector(U value) {
-            *this = Vector(typename Implementation::GenerateSequence<size>::Type(), value);
-        }
-        #endif
         #endif
 
         /**
@@ -157,22 +146,10 @@ template<std::size_t size, class T> class Vector {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U> constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
-        #else
-        template<class U> explicit Vector(const Vector<size, U>& other) {
-            *this = Vector(typename Implementation::GenerateSequence<size>::Type(), other);
-        }
-        #endif
 
         /** @brief Construct vector from external representation */
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
-        #else
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> explicit Vector(const U& other) {
-            *this = Implementation::VectorConverter<size, T, U>::from(other);
-        }
-        #endif
 
         /** @brief Copy constructor */
         constexpr Vector(const Vector<size, T>&) = default;
@@ -182,7 +159,6 @@ template<std::size_t size, class T> class Vector {
 
         /** @brief Convert vector to external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
-            /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::VectorConverter<size, T, U>::to(*this);
         }
 

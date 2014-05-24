@@ -41,23 +41,14 @@ template<UnsignedInt dimensions> ResourceKey shaderKey();
 template<> inline ResourceKey shaderKey<2>() { return ResourceKey("FlatShader2D"); }
 template<> inline ResourceKey shaderKey<3>() { return ResourceKey("FlatShader3D"); }
 
-/** @bug Why this is not constexpr under GCC 4.6? */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 constexpr std::array<Vector2, 4> positions{{
-#else
-const std::array<Vector2, 4> positions{{
-#endif
     {0.0f,  0.0f},
     {1.0f,  0.0f},
     {0.9f,  0.1f},
     {0.9f, -0.1f}
 }};
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 constexpr std::array<UnsignedByte, 6> indices{{
-#else
-const std::array<UnsignedByte, 6> indices{{
-#endif
     0, 1,
     1, 2,
     1, 3

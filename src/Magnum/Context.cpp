@@ -424,11 +424,7 @@ Context::Context() {
     std::unordered_map<std::string, Extension> futureExtensions;
     for(std::size_t i = future; i != versions.size(); ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))
-            #ifndef CORRADE_GCC46_COMPATIBILITY
             futureExtensions.emplace(extension._string, extension);
-            #else
-            futureExtensions.insert({extension._string, extension});
-            #endif
 
     /* Check for presence of future and vendor extensions */
     const std::vector<std::string> extensions = extensionStrings();

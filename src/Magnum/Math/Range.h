@@ -185,16 +185,13 @@ template<UnsignedInt dimensions, class T> class Range {
     }
 #endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief One-dimensional range
 
 Convenience alternative to <tt>%Range<1, T></tt>. See @ref Range for more
 information.
-@note Not available on GCC < 4.7. Use <tt>%Range<1, T></tt> instead.
 */
 template<class T> using Range1D = Range<1, T>;
-#endif
 
 /**
 @brief Two-dimensional range

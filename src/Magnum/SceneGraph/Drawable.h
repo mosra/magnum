@@ -148,20 +148,12 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          * If the drawable doesn't belong to any group, returns `nullptr`.
          */
         DrawableGroup<dimensions, T>* drawables() {
-            #ifndef CORRADE_GCC46_COMPATIBILITY
             return AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group();
-            #else
-            return static_cast<DrawableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group());
-            #endif
         }
 
         /** @overload */
         const DrawableGroup<dimensions, T>* drawables() const {
-            #ifndef CORRADE_GCC46_COMPATIBILITY
             return AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group();
-            #else
-            return static_cast<const DrawableGroup<dimensions, T>*>(AbstractGroupedFeature<dimensions, Drawable<dimensions, T>, T>::group());
-            #endif
         }
 
         /**
@@ -176,51 +168,37 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
         virtual void draw(const typename DimensionTraits<dimensions, T>::MatrixType& transformationMatrix, AbstractCamera<dimensions, T>& camera) = 0;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief %Drawable for two-dimensional scenes
 
 Convenience alternative to <tt>%Drawable<2, T></tt>. See @ref Drawable for more
 information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<2, T></tt> instead.
 @see @ref Drawable2D, @ref BasicDrawable3D
 */
 template<class T> using BasicDrawable2D = Drawable<2, T>;
-#endif
 
 /**
 @brief %Drawable for two-dimensional float scenes
 
 @see @ref Drawable3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicDrawable2D<Float> Drawable2D;
-#else
-typedef Drawable<2, Float> Drawable2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief %Drawable for three-dimensional scenes
 
 Convenience alternative to <tt>%Drawable<3, T></tt>. See @ref Drawable for more
 information.
-@note Not available on GCC < 4.7. Use <tt>%Drawable<3, T></tt> instead.
 @see @ref Drawable3D, @ref BasicDrawable3D
 */
 template<class T> using BasicDrawable3D = Drawable<3, T>;
-#endif
 
 /**
 @brief %Drawable for three-dimensional float scenes
 
 @see @ref Drawable2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicDrawable3D<Float> Drawable3D;
-#else
-typedef Drawable<3, Float> Drawable3D;
-#endif
 
 /**
 @brief Group of drawables
@@ -229,57 +207,39 @@ See @ref Drawable for more information.
 @see @ref scenegraph, @ref BasicDrawableGroup2D, @ref BasicDrawableGroup3D,
     @ref DrawableGroup2D, @ref DrawableGroup3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<UnsignedInt dimensions, class T> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
-#else
-template<UnsignedInt dimensions, class T> class DrawableGroup: public FeatureGroup<dimensions, Drawable<dimensions, T>, T> {};
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Group of drawables for two-dimensional scenes
 
 Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See @ref Drawable for
 more information.
-@note Not available on GCC < 4.7. Use <tt>%DrawableGroup<2, T></tt> instead.
 @see @ref DrawableGroup2D, @ref BasicDrawableGroup3D
 */
 template<class T> using BasicDrawableGroup2D = DrawableGroup<2, T>;
-#endif
 
 /**
 @brief Group of drawables for two-dimensional float scenes
 
 @see @ref DrawableGroup3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicDrawableGroup2D<Float> DrawableGroup2D;
-#else
-typedef DrawableGroup<2, Float> DrawableGroup2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Group of drawables for three-dimensional scenes
 
 Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See @ref Drawable for
 more information.
-@note Not available on GCC < 4.7. Use <tt>%DrawableGroup<3, T></tt> instead.
 @see @ref DrawableGroup3D, @ref BasicDrawableGroup2D
 */
 template<class T> using BasicDrawableGroup3D = DrawableGroup<3, T>;
-#endif
 
 /**
 @brief Group of drawables for three-dimensional float scenes
 
 @see @ref DrawableGroup2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicDrawableGroup3D<Float> DrawableGroup3D;
-#else
-typedef DrawableGroup<3, Float> DrawableGroup3D;
-#endif
 
 #ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT Drawable<2, Float>;

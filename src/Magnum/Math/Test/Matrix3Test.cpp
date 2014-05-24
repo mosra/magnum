@@ -162,10 +162,7 @@ void Matrix3Test::constructConversion() {
     constexpr Matrix3 a({3.0f,  5.0f, 8.0f},
                         {4.5f,  4.0f, 7.0f},
                         {7.9f, -1.0f, 8.0f});
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Matrix3i b(a);
+    constexpr Matrix3i b(a);
     CORRADE_COMPARE(b, Matrix3i({3,  5, 8},
                                 {4,  4, 7},
                                 {7, -1, 8}));
@@ -195,10 +192,7 @@ void Matrix3Test::convert() {
     constexpr Matrix3 c(b);
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Mat3 d(b);
+    constexpr Mat3 d(b);
     for(std::size_t i = 0; i != 9; ++i)
         CORRADE_COMPARE(d.a[0], a.a[0]);
 

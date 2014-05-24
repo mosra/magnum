@@ -96,10 +96,7 @@ void AbstractShaderProgramGLTest::construct() {
 
 void AbstractShaderProgramGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<DummyShader, const DummyShader&>{}));
-    /* GCC 4.6 doesn't have std::is_assignable */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<DummyShader, const DummyShader&>{}));
-    #endif
 }
 
 void AbstractShaderProgramGLTest::constructMove() {

@@ -33,9 +33,9 @@ namespace Magnum {
 Minimal set of tools and libraries required for building is:
 
 -   C++ compiler with good C++11 support. Currently there are two compilers
-    which are tested to have everything needed: **GCC** >= 4.6 and **Clang**
-    >= 3.1. On Windows you can use **MinGW**. GCC 4.5, 4.4 and **MSVC** 2013
-    support involves some ugly workarounds and thus is available only in
+    which are tested to have everything needed: **GCC** >= 4.7 and **Clang**
+    >= 3.1. On Windows you can use **MinGW**. GCC 4.6, 4.5, 4.4 and **MSVC**
+    2013 support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
 -   **CMake** >= 2.8.8
 -   **Corrade** - Plugin management and utility library. See
@@ -493,7 +493,7 @@ or `update-job`).
 
 Build is done using **Ninja** build system and everything possible is enabled,
 thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects that
-**GCC** >=4.8.2, 4.7, 4.6 and **Clang** are installed and there are **OpenGL**,
+**GCC** >=4.8.2, 4.7 and **Clang** are installed and there are **OpenGL**,
 **OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to compile the
 library with every combination of them. You can add/remove the axes in
 `axes/hudson.matrix.TextAxis` or via the web interface later.

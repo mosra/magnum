@@ -73,12 +73,7 @@ template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both BasicCamera2D and
            AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<2, T>, U>::value>::type> BasicCamera2D(U& object):
-            #ifndef CORRADE_GCC46_COMPATIBILITY
-            BasicCamera2D(static_cast<AbstractObject<2, T>&>(object)) {}
-            #else
-            AbstractCamera<2, T>(static_cast<AbstractObject<2, T>&>(object)) {}
-            #endif
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<2, T>, U>::value>::type> BasicCamera2D(U& object): BasicCamera2D(static_cast<AbstractObject<2, T>&>(object)) {}
         #endif
 
         /**

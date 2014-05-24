@@ -75,10 +75,7 @@ void RenderbufferGLTest::construct() {
 
 void RenderbufferGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<Renderbuffer, const Renderbuffer&>{}));
-    /* GCC 4.6 doesn't have std::is_assignable */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<Renderbuffer, const Renderbuffer&>{}));
-    #endif
 }
 
 void RenderbufferGLTest::constructMove() {

@@ -35,8 +35,6 @@
 #undef None
 #undef Status
 
-#include <Corrade/compatibility.h>
-
 #include "Magnum/Platform/AbstractXApplication.h"
 #include "Magnum/Platform/Implementation/AbstractContextHandler.h"
 

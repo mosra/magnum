@@ -82,14 +82,11 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         virtual void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type) = 0;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
 Convenience alternative to <tt>%AbstractTranslation<2, T, TranslationType></tt>.
 See @ref AbstractTranslation for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractTranslation<2, T, TranslationType></tt>
-    instead.
 @see @ref AbstractTranslation2D, @ref AbstractBasicTranslation3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -98,27 +95,19 @@ template<class T, class TranslationType = T>
 template<class T, class TranslationType>
 #endif
 using AbstractBasicTranslation2D = AbstractTranslation<2, T, TranslationType>;
-#endif
 
 /**
 @brief Base transformation for two-dimensional float scenes supporting translation
 
 @see @ref AbstractTranslation3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicTranslation2D<Float> AbstractTranslation2D;
-#else
-typedef AbstractTranslation<2, Float> AbstractTranslation2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base transformation for three-dimensional scenes supporting translation
 
 Convenience alternative to <tt>%AbstractTranslation<3, T, TranslationType></tt>.
 See @ref AbstractTranslation for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractTranslation<3, T, TranslationType></tt>
-    instead.
 @see @ref AbstractTranslation3D, @ref AbstractBasicTranslation2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -127,18 +116,13 @@ template<class T, class TranslationType = T>
 template<class T, class TranslationType>
 #endif
 using AbstractBasicTranslation3D = AbstractTranslation<3, T, TranslationType>;
-#endif
 
 /**
 @brief Base transformation for three-dimensional float scenes supporting translation
 
 @see @ref AbstractTranslation2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicTranslation3D<Float> AbstractTranslation3D;
-#else
-typedef AbstractTranslation<3, Float> AbstractTranslation3D;
-#endif
 
 }}
 

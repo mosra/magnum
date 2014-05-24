@@ -111,10 +111,7 @@ void Vector3Test::constructDefault() {
 }
 
 void Vector3Test::constructOneValue() {
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Vector3 a(-3.0f);
+    constexpr Vector3 a(-3.0f);
     CORRADE_COMPARE(a, Vector3(-3.0f, -3.0f, -3.0f));
 
     /* Implicit conversion is not allowed */
@@ -129,10 +126,7 @@ void Vector3Test::constructParts() {
 
 void Vector3Test::constructConversion() {
     constexpr Vector3 a(1.0f, 2.5f, -3.0f);
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Vector3i b(a);
+    constexpr Vector3i b(a);
     CORRADE_COMPARE(b, Vector3i(1, 2, -3));
 
     /* Implicit conversion is not allowed */
@@ -152,10 +146,7 @@ void Vector3Test::convert() {
     constexpr Vector3 c(a);
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Vec3 d(b);
+    constexpr Vec3 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

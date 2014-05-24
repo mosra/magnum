@@ -91,10 +91,7 @@ void ShaderGLTest::constructNoVersion() {
 
 void ShaderGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<Shader, const Shader&>{}));
-    /* GCC 4.6 doesn't have std::is_assignable */
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_assignable<Shader, const Shader&>{}));
-    #endif
 }
 
 void ShaderGLTest::constructMove() {

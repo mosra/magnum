@@ -30,7 +30,6 @@
  */
 
 #include <string>
-#include <Corrade/compatibility.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/module.h>

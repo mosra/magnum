@@ -70,7 +70,7 @@ for more information.
 
 Each feature is marked accordingly if it is not available on some compilers,
 see @ref SceneGraph::DrawableGroup3D for an example. It is up to you (or your
-platform) which compiler your code will support, code written for e.g. GCC 4.6
+platform) which compiler your code will support, code written for e.g. GCC 4.7
 will work also on Magnum compiled with support for newer compilers, although
 newer compilers may catch errors that weren't spotted by earlier versions.
 

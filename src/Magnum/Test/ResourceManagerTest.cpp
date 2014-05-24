@@ -24,7 +24,6 @@
 */
 
 #include <sstream>
-#include <Corrade/compatibility.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/AbstractResourceLoader.h"

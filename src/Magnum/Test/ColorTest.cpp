@@ -115,10 +115,7 @@ void ColorTest::constructDefault() {
 }
 
 void ColorTest::constructOneValue() {
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Color3 a(0.25f);
+    constexpr Color3 a(0.25f);
     CORRADE_COMPARE(a, Color3(0.25f, 0.25f, 0.25f));
 
     constexpr Color4 b(0.25f, 0.5f);
@@ -151,17 +148,11 @@ void ColorTest::constructParts() {
 
 void ColorTest::constructConversion() {
     constexpr Color3 a(10.1f, 12.5f, 0.75f);
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Color3ub b(a);
+    constexpr Color3ub b(a);
     CORRADE_COMPARE(b, Color3ub(10, 12, 0));
 
     constexpr Color4 c(10.1f, 12.5f, 0.75f, 5.25f);
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Color4ub d(c);
+    constexpr Color4ub d(c);
     CORRADE_COMPARE(d, Color4ub(10, 12, 0, 5));
 
     /* Implicit conversion is not allowed */

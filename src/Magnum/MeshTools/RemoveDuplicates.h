@@ -131,11 +131,7 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
         for(std::size_t i = 0; i != data.size(); ++i) {
             /* Try to insert new vertex to the table */
             const Math::Vector<Vector::Size, std::size_t> v((data[i] + moved - min)/epsilon);
-            #ifndef CORRADE_GCC46_COMPATIBILITY
             const auto result = table.emplace(v, table.size());
-            #else
-            const auto result = table.insert({v, table.size()});
-            #endif
 
             /* Add the (either new or already existing) index to index array */
             indices.push_back(result.first->second);

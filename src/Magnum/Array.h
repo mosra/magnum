@@ -73,13 +73,7 @@ template<UnsignedInt dimensions, class T> class Array {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr /*implicit*/ Array(T value);
         #else
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type> constexpr /*implicit*/ Array(U value): Array(typename Math::Implementation::GenerateSequence<dimensions>::Type(), value) {}
-        #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type> /*implicit*/ Array(U value) {
-            *this = Array(typename Math::Implementation::GenerateSequence<dimensions>::Type(), value);
-        }
-        #endif
         #endif
 
         /** @brief Equality */

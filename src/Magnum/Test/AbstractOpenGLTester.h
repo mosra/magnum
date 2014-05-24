@@ -26,7 +26,6 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/compatibility.h>
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"

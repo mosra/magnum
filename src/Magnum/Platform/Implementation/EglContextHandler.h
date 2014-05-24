@@ -33,8 +33,6 @@
 #undef None
 #undef Complex
 
-#include <Corrade/compatibility.h>
-
 #include "Magnum/Magnum.h"
 #include "Magnum/Platform/AbstractXApplication.h"
 #include "Magnum/Platform/Implementation/AbstractContextHandler.h"

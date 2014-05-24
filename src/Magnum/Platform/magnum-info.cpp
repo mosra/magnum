@@ -25,7 +25,6 @@
 
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/compatibility.h>
 #ifdef CORRADE_TARGET_NACL
 #include <Corrade/Utility/NaClStreamBuffer.h>
 #endif
@@ -105,9 +104,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "Used application: Platform::WindowlessGlxApplication";
     #endif
     Debug() << "Compilation flags:";
-    #ifdef CORRADE_GCC46_COMPATIBILITY
-    Debug() << "    CORRADE_GCC46_COMPATIBILITY";
-    #endif
     #ifdef CORRADE_GCC47_COMPATIBILITY
     Debug() << "    CORRADE_GCC47_COMPATIBILITY";
     #endif

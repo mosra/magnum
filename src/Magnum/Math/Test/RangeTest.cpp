@@ -65,18 +65,10 @@ class RangeTest: public Corrade::TestSuite::Tester {
         void configuration();
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Range1D<Float> Range1D;
-#else
-typedef Math::Range<1, Float> Range1D;
-#endif
 typedef Math::Range2D<Float> Range2D;
 typedef Math::Range3D<Float> Range3D;
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef Math::Range1D<Int> Range1Di;
-#else
-typedef Math::Range<1, Int> Range1Di;
-#endif
 typedef Math::Range2D<Int> Range2Di;
 typedef Math::Range3D<Int> Range3Di;
 typedef Vector2<Int> Vector2i;
@@ -140,22 +132,13 @@ void RangeTest::constructConversion() {
     constexpr Range2D b({1.3f, 2.7f}, {-15.0f, 7.0f});
     constexpr Range3D c({1.3f, 2.7f, -1.5f}, {-15.0f, 7.0f, 0.3f});
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Range1Di d(a);
+    constexpr Range1Di d(a);
     CORRADE_COMPARE(d, Range1Di(1, -15));
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Range2Di e(b);
+    constexpr Range2Di e(b);
     CORRADE_COMPARE(e, Range2Di({1, 2}, {-15, 7}));
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Range3Di f(c);
+    constexpr Range3Di f(c);
     CORRADE_COMPARE(f, Range3Di({1, 2, -1}, {-15, 7, 0}));
 
     /* Implicit conversion is not allowed */

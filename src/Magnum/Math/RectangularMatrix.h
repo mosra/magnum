@@ -130,22 +130,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other): RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
-        #else
-        template<class U> explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) {
-            *this = RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other);
-        }
-        #endif
 
         /** @brief Construct matrix from external representation */
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
-        #else
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> explicit RectangularMatrix(const U& other) {
-            *this = Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other);
-        }
-        #endif
 
         /** @brief Copy constructor */
         constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
@@ -155,7 +143,6 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         /** @brief Convert matrix to external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
-            /** @bug Why this is not constexpr under GCC 4.6? */
             return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);
         }
 
@@ -379,14 +366,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         Vector<rows, T> _data[cols];
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief %Matrix with 2 columns and 3 rows
 
 Convenience alternative to <tt>%RectangularMatrix<2, 3, T></tt>. See
 @ref RectangularMatrix for more information.
-@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<2, 3, T></tt>
-    instead.
 @see @ref Magnum::Matrix2x3, @ref Magnum::Matrix2x3d
 */
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
@@ -396,8 +380,6 @@ template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
 
 Convenience alternative to <tt>%RectangularMatrix<3, 2, T></tt>. See
 @ref RectangularMatrix for more information.
-@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<3, 2, T></tt>
-    instead.
 @see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d
 */
 template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
@@ -407,8 +389,6 @@ template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 
 Convenience alternative to <tt>%RectangularMatrix<2, 4, T></tt>. See
 @ref RectangularMatrix for more information.
-@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<2, 4, T></tt>
-    instead.
 @see @ref Magnum::Matrix2x4, @ref Magnum::Matrix2x4d
 */
 template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
@@ -418,8 +398,6 @@ template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
 
 Convenience alternative to <tt>%RectangularMatrix<4, 2, T></tt>. See
 @ref RectangularMatrix for more information.
-@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<4, 2, T></tt>
-    instead.
 @see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d
 */
 template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
@@ -429,8 +407,6 @@ template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 
 Convenience alternative to <tt>%RectangularMatrix<3, 4, T></tt>. See
 @ref RectangularMatrix for more information.
-@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<3, 4, T></tt>
-    instead.
 @see @ref Magnum::Matrix3x4, @ref Magnum::Matrix3x4d
 */
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
@@ -440,12 +416,9 @@ template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
 
 Convenience alternative to <tt>%RectangularMatrix<4, 3, T></tt>. See
 @ref RectangularMatrix for more information.
-@note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<4, 3, T></tt>
-    instead.
 @see @ref Magnum::Matrix4x3, @ref Magnum::Matrix4x3d
 */
 template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
-#endif
 
 /** @relates RectangularMatrix
 @brief Multiply number with matrix

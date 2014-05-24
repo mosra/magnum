@@ -126,14 +126,11 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         typename DimensionTraits<dimensions, TranslationType>::VectorType _transformation;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
 Convenience alternative to <tt>%TranslationTransformation<2, T, TranslationType></tt>.
 See @ref TranslationTransformation for more information.
-@note Not available on GCC < 4.7. Use <tt>%TranslationTransformation<2, T, TranslationType></tt>
-    instead.
 @see @ref TranslationTransformation2D, @ref BasicTranslationTransformation3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -142,27 +139,19 @@ template<class T, class TranslationType = T>
 template<class T, class TranslationType>
 #endif
 using BasicTranslationTransformation2D = TranslationTransformation<2, T, TranslationType>;
-#endif
 
 /**
 @brief Base transformation for two-dimensional float scenes supporting translation
 
 @see @ref TranslationTransformation3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicTranslationTransformation2D<Float> TranslationTransformation2D;
-#else
-typedef TranslationTransformation<2, Float> TranslationTransformation2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base transformation for three-dimensional scenes supporting translation
 
 Convenience alternative to <tt>%TranslationTransformation<3, T, TranslationType></tt>.
 See @ref TranslationTransformation for more information.
-@note Not available on GCC < 4.7. Use <tt>%TranslationTransformation<3, T, TranslationType></tt>
-    instead.
 @see @ref TranslationTransformation3D, @ref BasicTranslationTransformation2D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -171,18 +160,13 @@ template<class T, class TranslationType = T>
 template<class T, class TranslationType>
 #endif
 using BasicTranslationTransformation3D = TranslationTransformation<3, T, TranslationType>;
-#endif
 
 /**
 @brief Base transformation for three-dimensional float scenes supporting translation
 
 @see @ref TranslationTransformation2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicTranslationTransformation3D<Float> TranslationTransformation3D;
-#else
-typedef TranslationTransformation<3, Float> TranslationTransformation3D;
-#endif
 
 namespace Implementation {
 

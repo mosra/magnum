@@ -46,11 +46,9 @@ template<class> class DualComplex;
 template<class> class DualQuaternion;
 
 template<std::size_t, class> class Matrix;
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T> using Matrix2x2 = Matrix<2, T>;
 template<class T> using Matrix3x3 = Matrix<3, T>;
 template<class T> using Matrix4x4 = Matrix<4, T>;
-#endif
 
 template<class> class Matrix3;
 template<class> class Matrix4;
@@ -58,14 +56,12 @@ template<class> class Matrix4;
 template<class> class Quaternion;
 
 template<std::size_t, std::size_t, class> class RectangularMatrix;
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
 template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
 template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
 template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
-#endif
 
 template<template<class> class, class> class Unit;
 template<class> class Deg;
@@ -77,9 +73,7 @@ template<class> class Vector3;
 template<class> class Vector4;
 
 template<UnsignedInt, class> class Range;
-#ifndef CORRADE_GCC46_COMPATIBILITY
 template<class T> using Range1D = Range<1, T>;
-#endif
 template<class> class Range2D;
 template<class> class Range3D;
 

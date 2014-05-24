@@ -105,7 +105,6 @@ void AngleTest::construct() {
 }
 
 void AngleTest::literals() {
-    #ifndef CORRADE_GCC46_COMPATIBILITY
     #ifndef MAGNUM_TARGET_GLES
     constexpr auto a = 25.0_deg;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));
@@ -123,9 +122,6 @@ void AngleTest::literals() {
     constexpr auto n = 3.14_radf;
     CORRADE_VERIFY((std::is_same<decltype(n), const Rad>::value));
     CORRADE_COMPARE(Float(n), 3.14f);
-    #else
-    CORRADE_SKIP("User-defined literals are not available on GCC < 4.7.");
-    #endif
 }
 
 void AngleTest::conversion() {

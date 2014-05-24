@@ -23,13 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Disable `-pedantic` for GCC 4.6, as the compiler doesn't like
-# list-initialization of array of classes (RectangularMatrix constructors). It
-# is perfectly legal C++11 and both GCC 4.7 and Clang accept it without notice.
-if(CORRADE_GCC46_COMPATIBILITY)
-    string(REPLACE "-pedantic" "" CORRADE_CXX_FLAGS "${CORRADE_CXX_FLAGS}")
-endif()
-
 # On 4.8.2 strict aliasing causes failure of DebugToolsCylinderRendererTest
 # without any warning, only in release build, any attempt to add debug print
 # results in issue disappearing. Not an issue on Clang or GCC < 4.8.

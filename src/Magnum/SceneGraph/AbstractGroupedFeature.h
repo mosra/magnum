@@ -107,14 +107,11 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
         FeatureGroup<dimensions, Derived, T>* _group;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base grouped feature for two-dimensional scenes
 
 Convenience alternative to <tt>%AbstractGroupedFeature<2, Derived, T></tt>. See
 @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<2, Derived, T></tt>
-    instead.
 @see @ref AbstractGroupedFeature2D, @ref AbstractBasicGroupedFeature3D
 */
 template<class Derived, class T> using AbstractBasicGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
@@ -124,8 +121,6 @@ template<class Derived, class T> using AbstractBasicGroupedFeature2D = AbstractG
 
 Convenience alternative to <tt>%AbstractBasicGroupedFeature2D<Derived, Float></tt>.
 See @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<2, Derived, Float></tt>
-    instead.
 @see @ref AbstractGroupedFeature3D
 */
 template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFeature2D<Derived, Float>;
@@ -135,8 +130,6 @@ template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFea
 
 Convenience alternative to <tt>%AbstractGroupedFeature<3, Derived, T></tt>. See
 @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<3, Derived, T></tt>
-    instead.
 @see @ref AbstractGroupedFeature3D, @ref AbstractBasicGroupedFeature2D
 */
 template<class Derived, class T> using AbstractBasicGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
@@ -146,12 +139,9 @@ template<class Derived, class T> using AbstractBasicGroupedFeature3D = AbstractG
 
 Convenience alternative to <tt>%AbstractBasicGroupedFeature3D<Derived, Float></tt>.
 See @ref AbstractGroupedFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractGroupedFeature<3, Derived, Float></tt>
-    instead.
 @see @ref AbstractGroupedFeature2D
 */
 template<class Derived> using AbstractGroupedFeature3D = AbstractBasicGroupedFeature3D<Derived, Float>;
-#endif
 
 }}
 

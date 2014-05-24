@@ -71,14 +71,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * `%Matrix m(Matrix::Identity);`. Optional parameter @p value allows
          * you to specify value on diagonal.
          */
-        constexpr /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)): RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(),
-            /* The original one is not constexpr under GCC 4.6 */
-            #ifndef CORRADE_GCC46_COMPATIBILITY
-            Vector<size, T>(value)
-            #else
-            Vector<size, T>(typename Implementation::GenerateSequence<size>::Type(), value)
-            #endif
-        ) {}
+        constexpr /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)): RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)) {}
 
         /**
          * @brief %Matrix from column vectors
@@ -188,13 +181,11 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         #endif
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief 2x2 matrix
 
 Convenience alternative to <tt>%Matrix<2, T></tt>. See @ref Matrix for more
 information.
-@note Not available on GCC < 4.7. Use <tt>%Matrix<2, T></tt> instead.
 @see @ref Magnum::Matrix2x2, @ref Magnum::Matrix2x2d
 */
 template<class T> using Matrix2x2 = Matrix<2, T>;
@@ -205,7 +196,6 @@ template<class T> using Matrix2x2 = Matrix<2, T>;
 Convenience alternative to <tt>%Matrix<3, T></tt>. See @ref Matrix for more
 information. Note that this is different from @ref Matrix3, which contains
 additional functions for transformations in 2D.
-@note Not available on GCC < 4.7. Use <tt>%Matrix<3, T></tt> instead.
 @see @ref Magnum::Matrix3x3, @ref Magnum::Matrix3x3d
 */
 template<class T> using Matrix3x3 = Matrix<3, T>;
@@ -216,11 +206,9 @@ template<class T> using Matrix3x3 = Matrix<3, T>;
 Convenience alternative to <tt>%Matrix<4, T></tt>. See @ref Matrix for more
 information. Note that this is different from @ref Matrix4, which contains
 additional functions for transformations in 3D.
-@note Not available on GCC < 4.7. Use <tt>%Matrix<3, T></tt> instead.
 @see @ref Magnum::Matrix4x4, @ref Magnum::Matrix4x4d
 */
 template<class T> using Matrix4x4 = Matrix<4, T>;
-#endif
 
 MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)
 

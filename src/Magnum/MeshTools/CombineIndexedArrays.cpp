@@ -136,11 +136,7 @@ std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> combineIndexArrays
     std::vector<UnsignedInt> newInterleavedArrays;
     for(std::size_t oldIndex = 0, end = interleavedArrays.size()/stride; oldIndex != end; ++oldIndex) {
         /* Try to insert new index combination to the map */
-        #ifndef CORRADE_GCC46_COMPATIBILITY
         const auto result = indexCombinations.emplace(oldIndex, indexCombinations.size());
-        #else
-        const auto result = indexCombinations.insert({oldIndex, indexCombinations.size()});
-        #endif
 
         /* Add the (either new or already existing) index to resulting index array */
         combinedIndices.push_back(result.first->second);

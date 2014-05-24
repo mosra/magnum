@@ -108,10 +108,7 @@ void Vector4Test::constructDefault() {
 }
 
 void Vector4Test::constructOneValue() {
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Vector4 a(4.3f);
+    constexpr Vector4 a(4.3f);
     CORRADE_COMPARE(a, Vector4(4.3f, 4.3f, 4.3f, 4.3f));
 
     /* Implicit conversion is not allowed */
@@ -126,10 +123,7 @@ void Vector4Test::constructParts() {
 
 void Vector4Test::constructConversion() {
     constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f);
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Vector4i b(a);
+    constexpr Vector4i b(a);
     CORRADE_COMPARE(b, Vector4i(1, -2, 3, 4));
 
     /* Implicit conversion is not allowed */
@@ -149,10 +143,7 @@ void Vector4Test::convert() {
     constexpr Vector4 c(a);
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Vec4 d(b);
+    constexpr Vec4 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

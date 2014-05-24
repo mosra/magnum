@@ -183,14 +183,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both AbstractFeature and
            AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> AbstractFeature(U& object)
-        #ifndef CORRADE_GCC46_COMPATIBILITY
-        : AbstractFeature(static_cast<AbstractObject<dimensions, T>&>(object)) {}
-        #else
-        {
-            object.Containers::template LinkedList<AbstractFeature<dimensions, T>>::insert(this);
-        }
-        #endif
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> AbstractFeature(U& object): AbstractFeature(static_cast<AbstractObject<dimensions, T>&>(object)) {}
         #endif
 
         virtual ~AbstractFeature() = 0;
@@ -298,51 +291,37 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         CachedTransformations _cachedTransformations;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base feature for two-dimensional scenes
 
 Convenience alternative to <tt>%AbstractFeature<2, T></tt>. See
 @ref AbstractFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractFeature<2, T></tt> instead.
 @see @ref AbstractFeature2D, @ref AbstractBasicFeature3D
 */
 template<class T> using AbstractBasicFeature2D = AbstractFeature<2, T>;
-#endif
 
 /**
 @brief Base feature for two-dimensional float scenes
 
 @see @ref AbstractFeature3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicFeature2D<Float> AbstractFeature2D;
-#else
-typedef AbstractFeature<2, Float> AbstractFeature2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base feature for three-dimensional scenes
 
 Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See
 @ref AbstractFeature for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractFeature<3, T></tt> instead.
 @see @ref AbstractFeature3D, @ref AbstractBasicFeature2D
 */
 template<class T> using AbstractBasicFeature3D = AbstractFeature<3, T>;
-#endif
 
 /**
 @brief Base feature for three-dimensional float scenes
 
 @see @ref AbstractFeature2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicFeature3D<Float> AbstractFeature3D;
-#else
-typedef AbstractFeature<3, Float> AbstractFeature3D;
-#endif
 
 #ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;

@@ -25,8 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/compatibility.h>
-
 #include "Magnum/Shapes/Shapes.h"
 
 #include "AbstractShapeRenderer.h"

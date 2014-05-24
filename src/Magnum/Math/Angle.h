@@ -146,7 +146,6 @@ template<class T> class Deg: public Unit<Deg, T> {
         constexpr /*implicit*/ Deg(Unit<Rad, T> value);
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 #ifndef MAGNUM_TARGET_GLES
 /** @relates Deg
 @brief Double-precision degree value literal
@@ -157,7 +156,6 @@ Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see Magnum::operator""_deg(), operator""_degf(), operator""_rad()
-@note Not available on GCC < 4.7. Use @ref Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 @todoc Make references explicit when Doxygen can link to operator""
 */
@@ -173,12 +171,10 @@ Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
 Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
-@note Not available on GCC < 4.7. Use @ref Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
 @todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
-#endif
 
 /**
 @brief Angle in radians
@@ -211,14 +207,12 @@ template<class T> class Rad: public Unit<Rad, T> {
         constexpr /*implicit*/ Rad(Unit<Deg, T> value);
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 #ifndef MAGNUM_TARGET_GLES
 /** @relates Rad
 @brief Double-precision radian value literal
 
 See operator""_rad() for more information.
 @see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
-@note Not available on GCC < 4.7. Use @ref Rad::Rad(T) instead.
 @todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
@@ -229,11 +223,9 @@ constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(v
 
 See operator""_degf() for more information.
 @see Magnum::operator""_radf(), operator""_rad(), operator""_degf()
-@note Not available on GCC < 4.7. Use @ref Rad::Rad(T) instead.
 @todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
-#endif
 
 template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
 template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}

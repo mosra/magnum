@@ -181,10 +181,7 @@ void Matrix4Test::constructConversion() {
                         {4.5f,  4.0f, 7.0f,  2.0f},
                         {1.0f,  2.0f, 3.0f, -1.0f},
                         {7.9f, -1.0f, 8.0f, -1.5f});
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Matrix4i b(a);
+    constexpr Matrix4i b(a);
     CORRADE_COMPARE(b, Matrix4i({3,  5, 8, -3},
                                 {4,  4, 7,  2},
                                 {1,  2, 3, -1},
@@ -219,10 +216,7 @@ void Matrix4Test::convert() {
     constexpr Matrix4 c(b);
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_GCC46_COMPATIBILITY
-    constexpr /* Not constexpr under GCC < 4.7 */
-    #endif
-    Mat4 d(b);
+    constexpr Mat4 d(b);
     for(std::size_t i = 0; i != 16; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 

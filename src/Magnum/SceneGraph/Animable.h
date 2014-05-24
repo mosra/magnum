@@ -336,51 +336,37 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
         UnsignedShort repeats;
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief %Animable for two-dimensional scenes
 
 Convenience alternative to <tt>%Animable<2, T></tt>. See @ref Animable for more
 information.
-@note Not available on GCC < 4.7. Use <tt>%Animable<2, T></tt> instead.
 @see @ref Animable2D, @ref BasicAnimable3D
 */
 template<class T> using BasicAnimable2D = Animable<2, T>;
-#endif
 
 /**
 @brief %Animable for two-dimensional float scenes
 
 @see @ref Animable3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicAnimable2D<Float> Animable2D;
-#else
-typedef Animable<2, Float> Animable2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief %Animable for three-dimensional scenes
 
 Convenience alternative to <tt>%Animable<3, T></tt>. See @ref Animable for more
 information.
-@note Not available on GCC < 4.7. Use <tt>%Animable<3, T></tt> instead.
 @see @ref Animable3D, @ref BasicAnimable2D
 */
 template<class T> using BasicAnimable3D = Animable<3, T>;
-#endif
 
 /**
 @brief %Animable for three-dimensional float scenes
 
 @see @ref Animable2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef BasicAnimable3D<Float> Animable3D;
-#else
-typedef Animable<3, Float> Animable3D;
-#endif
 
 #ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT Animable<2, Float>;

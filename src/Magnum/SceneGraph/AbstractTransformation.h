@@ -97,53 +97,37 @@ enum class TransformationType: UnsignedByte {
     Local = 0x01
 };
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base transformation for two-dimensional scenes
 
 Convenience alternative to <tt>%AbstractTransformation<2, T></tt>. See
 @ref AbstractTransformation for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<2, T></tt>
-    instead.
 @see @ref AbstractTransformation2D, @ref AbstractBasicTransformation3D
 */
 template<class T> using AbstractBasicTransformation2D = AbstractTransformation<2, T>;
-#endif
 
 /**
 @brief Base transformation for two-dimensional float scenes
 
 @see @ref AbstractTransformation3D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicTransformation2D<Float> AbstractTransformation2D;
-#else
-typedef AbstractTransformation<2, Float> AbstractTransformation2D;
-#endif
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base transformation for three-dimensional scenes
 
 Convenience alternative to <tt>%AbstractTransformation<3, T></tt>. See
 @ref AbstractTransformation for more information.
-@note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
-    instead.
 @see @ref AbstractTransformation3D, @ref AbstractBasicTransformation2D
 */
 template<class T> using AbstractBasicTransformation3D = AbstractTransformation<3, T>;
-#endif
 
 /**
 @brief Base transformation for three-dimensional float scenes
 
 @see @ref AbstractTransformation2D
 */
-#ifndef CORRADE_GCC46_COMPATIBILITY
 typedef AbstractBasicTransformation3D<Float> AbstractTransformation3D;
-#else
-typedef AbstractTransformation<3, Float> AbstractTransformation3D;
-#endif
 
 #ifdef CORRADE_TARGET_WINDOWS
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<2, Float>;
