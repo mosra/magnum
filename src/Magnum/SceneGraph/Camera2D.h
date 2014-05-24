@@ -58,7 +58,7 @@ class documentation or @ref compilation-speedup-hpp for more information.
 @see @ref scenegraph, @ref Camera2D, @ref BasicCamera3D, @ref Drawable,
     @ref DrawableGroup
 */
-template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
+template<class T> class BasicCamera2D: public AbstractBasicCamera2D<T> {
     public:
         /**
          * @brief Constructor
@@ -67,13 +67,13 @@ template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see @ref setProjection()
          */
-        explicit BasicCamera2D(AbstractObject<2, T>& object);
+        explicit BasicCamera2D(AbstractBasicObject2D<T>& object);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both BasicCamera2D and
            AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<2, T>, U>::value>::type> BasicCamera2D(U& object): BasicCamera2D(static_cast<AbstractObject<2, T>&>(object)) {}
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractBasicObject2D<T>, U>::value>::type> BasicCamera2D(U& object): BasicCamera2D(static_cast<AbstractBasicObject2D<T>&>(object)) {}
         #endif
 
         /**
@@ -88,7 +88,7 @@ template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         BasicCamera2D<T>& setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractCamera<2, T>::setAspectRatioPolicy(policy);
+            AbstractBasicCamera2D<T>::setAspectRatioPolicy(policy);
             return *this;
         }
         #endif

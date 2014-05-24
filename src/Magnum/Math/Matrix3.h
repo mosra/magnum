@@ -43,7 +43,7 @@ See @ref matrix-vector and @ref transformations for brief introduction.
     @ref DualComplex, @ref SceneGraph::MatrixTransformation2D
 @configurationvalueref{Magnum::Math::Matrix3}
 */
-template<class T> class Matrix3: public Matrix<3, T> {
+template<class T> class Matrix3: public Matrix3x3<T> {
     public:
         /**
          * @brief 2D translation matrix
@@ -95,7 +95,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
         static Matrix3<T> reflection(const Vector2<T>& normal) {
             CORRADE_ASSERT(normal.isNormalized(),
                            "Math::Matrix3::reflection(): normal must be normalized", {});
-            return from(Matrix<2, T>() - T(2)*normal*RectangularMatrix<1, 2, T>(normal).transposed(), {});
+            return from(Matrix2x2<T>() - T(2)*normal*RectangularMatrix<1, 2, T>(normal).transposed(), {});
         }
 
         /**
@@ -119,14 +119,14 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @see @ref rotationScaling(), translation() const
          * @todoc Explicit reference when Doxygen can handle const
          */
-        constexpr static Matrix3<T> from(const Matrix<2, T>& rotationScaling, const Vector2<T>& translation) {
+        constexpr static Matrix3<T> from(const Matrix2x2<T>& rotationScaling, const Vector2<T>& translation) {
             return {{rotationScaling[0], T(0)},
                     {rotationScaling[1], T(0)},
                     {       translation, T(1)}};
         }
 
         /** @copydoc Matrix::Matrix(ZeroType) */
-        constexpr explicit Matrix3(typename Matrix<3, T>::ZeroType): Matrix<3, T>(Matrix<3, T>::Zero) {}
+        constexpr explicit Matrix3(typename Matrix3x3<T>::ZeroType): Matrix3x3<T>(Matrix3x3<T>::Zero) {}
 
         /**
          * @brief Default constructor
@@ -135,19 +135,19 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * constructor with `%Matrix3 m(Matrix3::Identity);`. Optional
          * parameter @p value allows you to specify value on diagonal.
          */
-        constexpr /*implicit*/ Matrix3(typename Matrix<3, T>::IdentityType = (Matrix<3, T>::Identity), T value = T(1)): Matrix<3, T>(Matrix<3, T>::Identity, value) {}
+        constexpr /*implicit*/ Matrix3(typename Matrix3x3<T>::IdentityType = (Matrix3x3<T>::Identity), T value = T(1)): Matrix3x3<T>(Matrix3x3<T>::Identity, value) {}
 
         /** @brief %Matrix from column vectors */
-        constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix<3, T>(first, second, third) {}
+        constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix3x3<T>(first, second, third) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
-        template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other): Matrix<3, T>(other) {}
+        template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other): Matrix3x3<T>(other) {}
 
         /** @brief Construct matrix from external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other): Matrix<3, T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other): Matrix3x3<T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix<3, T>(other) {}
+        constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix3x3<T>(other) {}
 
         /**
          * @brief Check whether the matrix represents rigid transformation
@@ -164,13 +164,13 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D rotation and scaling part of the matrix
          *
          * Upper-left 2x2 part of the matrix.
-         * @see @ref from(const Matrix<2, T>&, const Vector2<T>&),
+         * @see @ref from(const Matrix2x2<T>&, const Vector2<T>&),
          *      rotation() const, @ref rotationNormalized(),
          *      @ref uniformScaling(), @ref rotation(Rad<T>),
          *      @ref Matrix4::rotationScaling()
          * @todoc Explicit reference when Doxygen can handle const
          */
-        constexpr Matrix<2, T> rotationScaling() const {
+        constexpr Matrix2x2<T> rotationScaling() const {
             return {(*this)[0].xy(),
                     (*this)[1].xy()};
         }
@@ -185,7 +185,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @todo assert also orthogonality or this is good enough?
          * @todoc Explicit reference when Doxygen can handle const
          */
-        Matrix<2, T> rotationNormalized() const {
+        Matrix2x2<T> rotationNormalized() const {
             CORRADE_ASSERT((*this)[0].xy().isNormalized() && (*this)[1].xy().isNormalized(),
                            "Math::Matrix3::rotationNormalized(): the rotation part is not normalized", {});
             return {(*this)[0].xy(),
@@ -202,7 +202,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          *      Matrix4::rotation() const
          * @todoc Explicit reference when Doxygen can handle const
          */
-        Matrix<2, T> rotation() const {
+        Matrix2x2<T> rotation() const {
             CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xy().dot(), (*this)[1].xy().dot()),
                            "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling", {});
             return {(*this)[0].xy().normalized(),
@@ -263,7 +263,7 @@ template<class T> class Matrix3: public Matrix<3, T> {
          * @brief 2D translation part of the matrix
          *
          * First two elements of third column.
-         * @see @ref from(const Matrix<2, T>&, const Vector2<T>&),
+         * @see @ref from(const Matrix2x2<T>&, const Vector2<T>&),
          *      @ref translation(const Vector2<T>&),
          *      @ref Matrix4::translation()
          */
@@ -323,7 +323,7 @@ MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(3, Matrix3)
 
 /** @debugoperator{Magnum::Math::Matrix3} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix3<T>& value) {
-    return debug << static_cast<const Matrix<3, T>&>(value);
+    return debug << static_cast<const Matrix3x3<T>&>(value);
 }
 
 template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
@@ -339,7 +339,7 @@ template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
     CORRADE_ASSERT(isRigidTransformation(),
         "Math::Matrix3::invertedRigid(): the matrix doesn't represent rigid transformation", {});
 
-    Matrix<2, T> inverseRotation = rotationScaling().transposed();
+    Matrix2x2<T> inverseRotation = rotationScaling().transposed();
     return from(inverseRotation, inverseRotation*-translation());
 }
 
@@ -347,7 +347,7 @@ template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
 
 namespace Corrade { namespace Utility {
     /** @configurationvalue{Magnum::Math::Matrix3} */
-    template<class T> struct ConfigurationValue<Magnum::Math::Matrix3<T>>: public ConfigurationValue<Magnum::Math::Matrix<3, T>> {};
+    template<class T> struct ConfigurationValue<Magnum::Math::Matrix3<T>>: public ConfigurationValue<Magnum::Math::Matrix3x3<T>> {};
 }}
 
 #endif

@@ -133,7 +133,7 @@ void TranslationTransformationTest::translate() {
 }
 
 void TranslationTransformationTest::integral() {
-    typedef Object<TranslationTransformation<2, Float, Short>> Object2Di;
+    typedef Object<BasicTranslationTransformation2D<Float, Short>> Object2Di;
 
     Object2Di o;
     o.translate({3, -7});

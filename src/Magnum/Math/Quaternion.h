@@ -126,7 +126,7 @@ template<class T> class Quaternion {
          * @see @ref toMatrix(), @ref DualComplex::fromMatrix(),
          *      @ref Matrix::isOrthogonal()
          */
-        static Quaternion<T> fromMatrix(const Matrix<3, T>& matrix);
+        static Quaternion<T> fromMatrix(const Matrix3x3<T>& matrix);
 
         /**
          * @brief Default constructor
@@ -210,9 +210,9 @@ template<class T> class Quaternion {
          * @brief Convert quaternion to rotation matrix
          *
          * @see @ref fromMatrix(), @ref DualQuaternion::toMatrix(),
-         *      @ref Matrix4::from(const Matrix<3, T>&, const Vector3<T>&)
+         *      @ref Matrix4::from(const Matrix3x3<T>&, const Vector3<T>&)
          */
-        Matrix<3, T> toMatrix() const;
+        Matrix3x3<T> toMatrix() const;
 
         /**
          * @brief Add and assign quaternion
@@ -474,7 +474,7 @@ namespace Implementation {
 
 /* No assertions fired, for internal use. Not private member because used from
    outside the class. */
-template<class T> Quaternion<T> quaternionFromMatrix(const Matrix<3, T>& m) {
+template<class T> Quaternion<T> quaternionFromMatrix(const Matrix3x3<T>& m) {
     const Vector<3, T> diagonal = m.diagonal();
     const T trace = diagonal.sum();
 
@@ -530,7 +530,7 @@ template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angl
     return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
 }
 
-template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix<3, T>& matrix) {
+template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix3x3<T>& matrix) {
     CORRADE_ASSERT(matrix.isOrthogonal(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal", {});
     return Implementation::quaternionFromMatrix(matrix);
 }
@@ -546,7 +546,7 @@ template<class T> inline Vector3<T> Quaternion<T>::axis() const {
     return _vector/std::sqrt(1-pow2(_scalar));
 }
 
-template<class T> Matrix<3, T> Quaternion<T>::toMatrix() const {
+template<class T> Matrix3x3<T> Quaternion<T>::toMatrix() const {
     return {
         Vector<3, T>(T(1) - 2*pow2(_vector.y()) - 2*pow2(_vector.z()),
             2*_vector.x()*_vector.y() + 2*_vector.z()*_scalar,

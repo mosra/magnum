@@ -48,7 +48,7 @@ See @ref matrix-vector and @ref transformations for brief introduction.
     @ref DualQuaternion, @ref SceneGraph::MatrixTransformation3D
 @configurationvalueref{Magnum::Math::Matrix4}
  */
-template<class T> class Matrix4: public Matrix<4, T> {
+template<class T> class Matrix4: public Matrix4x4<T> {
     public:
         /**
          * @brief 3D translation
@@ -187,7 +187,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @see @ref rotationScaling(), translation() const
          * @todoc Explicit reference when Doxygen can handle const
          */
-        constexpr static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
+        constexpr static Matrix4<T> from(const Matrix3x3<T>& rotationScaling, const Vector3<T>& translation) {
             return {{rotationScaling[0], T(0)},
                     {rotationScaling[1], T(0)},
                     {rotationScaling[2], T(0)},
@@ -195,7 +195,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /** @copydoc Matrix::Matrix(ZeroType) */
-        constexpr explicit Matrix4(typename Matrix<4, T>::ZeroType): Matrix<4, T>(Matrix<4, T>::Zero) {}
+        constexpr explicit Matrix4(typename Matrix4x4<T>::ZeroType): Matrix4x4<T>(Matrix4x4<T>::Zero) {}
 
         /**
          * @brief Default constructor
@@ -204,19 +204,19 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * constructor with `%Matrix4 m(Matrix4::Identity);`. Optional
          * parameter @p value allows you to specify value on diagonal.
          */
-        constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(Matrix<4, T>::Identity, value) {}
+        constexpr /*implicit*/ Matrix4(typename Matrix4x4<T>::IdentityType = (Matrix4x4<T>::Identity), T value = T(1)): Matrix4x4<T>(Matrix4x4<T>::Identity, value) {}
 
         /** @brief %Matrix from column vectors */
-        constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix<4, T>(first, second, third, fourth) {}
+        constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix4x4<T>(first, second, third, fourth) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
-        template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix<4, T>(other) {}
+        template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix4x4<T>(other) {}
 
         /** @brief Construct matrix from external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> constexpr explicit Matrix4(const U& other): Matrix<4, T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> constexpr explicit Matrix4(const U& other): Matrix4x4<T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix<4, T>(other) {}
+        constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix4x4<T>(other) {}
 
         /**
          * @brief Check whether the matrix represents rigid transformation
@@ -233,14 +233,13 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation and scaling part of the matrix
          *
          * Upper-left 3x3 part of the matrix.
-         * @see @ref from(const Matrix<3, T>&, const Vector3<T>&),
+         * @see @ref from(const Matrix3x3<T>&, const Vector3<T>&),
          *      rotation() const, @ref rotationNormalized(),
          *      @ref uniformScaling(), @ref rotation(Rad, const Vector3<T>&),
          *      Matrix3::rotationScaling() const
          * @todoc Explicit reference when Doxygen can handle const
          */
-        /* Not Matrix3, because it is for affine 2D transformations */
-        constexpr Matrix<3, T> rotationScaling() const {
+        constexpr Matrix3x3<T> rotationScaling() const {
             return {(*this)[0].xyz(),
                     (*this)[1].xyz(),
                     (*this)[2].xyz()};
@@ -256,8 +255,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @todo assert also orthogonality or this is good enough?
          * @todoc Explicit reference when Doxygen can handle const
          */
-        /* Not Matrix3, because it is for affine 2D transformations */
-        Matrix<3, T> rotationNormalized() const {
+        Matrix3x3<T> rotationNormalized() const {
             CORRADE_ASSERT((*this)[0].xyz().isNormalized() && (*this)[1].xyz().isNormalized() && (*this)[2].xyz().isNormalized(),
                            "Math::Matrix4::rotationNormalized(): the rotation part is not normalized", {});
             return {(*this)[0].xyz(),
@@ -275,8 +273,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *      Matrix3::rotation() const
          * @todoc Explicit reference when Doxygen can handle const
          */
-        /* Not Matrix3, because it is for affine 2D transformations */
-        Matrix<3, T> rotation() const;
+        Matrix3x3<T> rotation() const;
 
         /**
          * @brief Uniform scaling part of the matrix, squared
@@ -338,7 +335,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D translation part of the matrix
          *
          * First three elements of fourth column.
-         * @see @ref from(const Matrix<3, T>&, const Vector3<T>&),
+         * @see @ref from(const Matrix3x3<T>&, const Vector3<T>&),
          *      @ref translation(const Vector3<T>&),
          *      @ref Matrix3::translation()
          */
@@ -398,7 +395,7 @@ MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(4, Matrix4)
 
 /** @debugoperator{Magnum::Math::Matrix4} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix4<T>& value) {
-    return debug << static_cast<const Matrix<4, T>&>(value);
+    return debug << static_cast<const Matrix4x4<T>&>(value);
 }
 
 template<class T> Matrix4<T> Matrix4<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {
@@ -466,7 +463,7 @@ template<class T> Matrix4<T> Matrix4<T>::rotationZ(const Rad<T> angle) {
 template<class T> Matrix4<T> Matrix4<T>::reflection(const Vector3<T>& normal) {
     CORRADE_ASSERT(normal.isNormalized(),
                     "Math::Matrix4::reflection(): normal must be normalized", {});
-    return from(Matrix<3, T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
+    return from(Matrix3x3<T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
 }
 
 template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& size, const T near, const T far) {
@@ -489,7 +486,7 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
             {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
 }
 
-template<class T> inline Matrix<3, T> Matrix4<T>::rotation() const {
+template<class T> inline Matrix3x3<T> Matrix4<T>::rotation() const {
     CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xyz().dot(), (*this)[1].xyz().dot()) &&
                    TypeTraits<T>::equals((*this)[1].xyz().dot(), (*this)[2].xyz().dot()),
         "Math::Matrix4::rotation(): the matrix doesn't have uniform scaling", {});
@@ -510,7 +507,7 @@ template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {
     CORRADE_ASSERT(isRigidTransformation(),
         "Math::Matrix4::invertedRigid(): the matrix doesn't represent rigid transformation", {});
 
-    Matrix<3, T> inverseRotation = rotationScaling().transposed();
+    Matrix3x3<T> inverseRotation = rotationScaling().transposed();
     return from(inverseRotation, inverseRotation*-translation());
 }
 
@@ -518,7 +515,7 @@ template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {
 
 namespace Corrade { namespace Utility {
     /** @configurationvalue{Magnum::Math::Matrix4} */
-    template<class T> struct ConfigurationValue<Magnum::Math::Matrix4<T>>: public ConfigurationValue<Magnum::Math::Matrix<4, T>> {};
+    template<class T> struct ConfigurationValue<Magnum::Math::Matrix4<T>>: public ConfigurationValue<Magnum::Math::Matrix4x4<T>> {};
 }}
 
 #endif

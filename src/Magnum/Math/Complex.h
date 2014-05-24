@@ -41,7 +41,7 @@ namespace Magnum { namespace Math {
 namespace Implementation {
     /* No assertions fired, for internal use. Not private member because used
        from outside the class. */
-    template<class T> constexpr static Complex<T> complexFromMatrix(const Matrix<2, T>& matrix) {
+    template<class T> constexpr static Complex<T> complexFromMatrix(const Matrix2x2<T>& matrix) {
         return {matrix[0][0], matrix[0][1]};
     }
 }
@@ -106,7 +106,7 @@ template<class T> class Complex {
          * @see @ref toMatrix(), @ref DualComplex::fromMatrix(),
          *      @ref Matrix::isOrthogonal()
          */
-        static Complex<T> fromMatrix(const Matrix<2, T>& matrix) {
+        static Complex<T> fromMatrix(const Matrix2x2<T>& matrix) {
             CORRADE_ASSERT(matrix.isOrthogonal(),
                 "Math::Complex::fromMatrix(): the matrix is not orthogonal", {});
             return Implementation::complexFromMatrix(matrix);
@@ -203,9 +203,9 @@ template<class T> class Complex {
          *          \end{pmatrix}
          * @f]
          * @see @ref fromMatrix(), @ref DualComplex::toMatrix(),
-         *      @ref Matrix3::from(const Matrix<2, T>&, const Vector2<T>&)
+         *      @ref Matrix3::from(const Matrix2x2<T>&, const Vector2<T>&)
          */
-        Matrix<2, T> toMatrix() const {
+        Matrix2x2<T> toMatrix() const {
             return {Vector<2, T>(_real, _imaginary),
                     Vector<2, T>(-_imaginary, _real)};
         }

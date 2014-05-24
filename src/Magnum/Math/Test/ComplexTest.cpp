@@ -101,7 +101,7 @@ typedef Math::Rad<Float> Rad;
 typedef Math::Complex<Float> Complex;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Matrix3<Float> Matrix3;
-typedef Math::Matrix<2, Float> Matrix2x2;
+typedef Math::Matrix2x2<Float> Matrix2x2;
 
 void ComplexTest::construct() {
     constexpr Complex a(0.5f, -3.7f);

@@ -63,19 +63,19 @@ class documentation or @ref compilation-speedup-hpp for more information.
 @see @ref scenegraph, @ref Camera3D, @ref BasicCamera2D, @ref Drawable,
     @ref DrawableGroup
 */
-template<class T> class BasicCamera3D: public AbstractCamera<3, T> {
+template<class T> class BasicCamera3D: public AbstractBasicCamera3D<T> {
     public:
         /**
          * @brief Constructor
          * @param object    %Object holding this feature
          */
-        explicit BasicCamera3D(AbstractObject<3, T>& object);
+        explicit BasicCamera3D(AbstractBasicObject3D<T>& object);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both BasicCamera3D and
            AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<3, T>, U>::value>::type> BasicCamera3D(U& object): BasicCamera3D(static_cast<AbstractObject<3, T>&>(object)) {}
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractBasicObject3D<T>, U>::value>::type> BasicCamera3D(U& object): BasicCamera3D(static_cast<AbstractBasicObject3D<T>&>(object)) {}
         #endif
 
         /**
@@ -121,7 +121,7 @@ template<class T> class BasicCamera3D: public AbstractCamera<3, T> {
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         BasicCamera3D<T>& setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractCamera<3, T>::setAspectRatioPolicy(policy);
+            AbstractBasicCamera3D<T>::setAspectRatioPolicy(policy);
             return *this;
         }
         #endif

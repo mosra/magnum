@@ -32,16 +32,14 @@
 #include "Magnum/SceneGraph/AbstractCamera.hpp"
 #include "Magnum/SceneGraph/Camera2D.h"
 
-/** @todo Use AbstractBasicCamera2D<T> when support for GCC 4.6 is dropped (also in header) */
-
 namespace Magnum { namespace SceneGraph {
 
-template<class T> BasicCamera2D<T>::BasicCamera2D(AbstractObject<2, T>& object): AbstractCamera<2, T>(object) {}
+template<class T> BasicCamera2D<T>::BasicCamera2D(AbstractBasicObject2D<T>& object): AbstractBasicCamera2D<T>(object) {}
 
 template<class T> BasicCamera2D<T>& BasicCamera2D<T>::setProjection(const Math::Vector2<T>& size) {
-    AbstractCamera<2, T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);
+    AbstractBasicCamera2D<T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);
 
-    AbstractCamera<2, T>::fixAspectRatio();
+    AbstractBasicCamera2D<T>::fixAspectRatio();
     return *this;
 }
 

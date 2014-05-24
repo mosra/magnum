@@ -91,7 +91,7 @@ class Matrix3Test: public Corrade::TestSuite::Tester {
 typedef Math::Deg<Float> Deg;
 typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix3<Int> Matrix3i;
-typedef Math::Matrix<2, Float> Matrix2x2;
+typedef Math::Matrix2x2<Float> Matrix2x2;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector2<Float> Vector2;
 
