@@ -25,16 +25,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/** @file
+ * @brief Class @ref Magnum::DimensionTraits, alias @ref Magnum::VectorTypeFor, @ref Magnum::MatrixTypeFor
+ */
+
 #include "Magnum/Math/Math.h"
 #include "Magnum/Types.h"
 
-/** @file
- * @brief Class @ref Magnum::DimensionTraits
- */
-
 namespace Magnum {
 
-/** @brief Matrix and vector specializations for given dimension count */
+/**
+@brief Matrix and vector specializations for given dimension count
+
+@see @ref VectorTypeFor, @ref MatrixTypeFor
+*/
 template<UnsignedInt dimensions, class T> struct DimensionTraits {
     DimensionTraits() = delete;
 
@@ -58,10 +62,20 @@ template<UnsignedInt dimensions, class T> struct DimensionTraits {
 };
 
 /**
-@todo `using VectorTypeForDimension<dimensions, T> = typename DimensionTraits<dimensions, T>::VectorType`
-    etc. shortcuts when support for GCC 4.6 is dropped (similarly to what C++14
-    does with type traits)
- */
+@brief Vector type for given dimension count and type
+
+Convenience alternative to <tt>typename %DimensionTraits<dimensions, T>::%VectorType</tt>.
+See @ref DimensionTraits::VectorType for more information.
+*/
+template<UnsignedInt dimensions, class T> using VectorTypeFor = typename DimensionTraits<dimensions, T>::VectorType;
+
+/**
+@brief Matrix type for given dimension count and type
+
+Convenience alternative to <tt>typename %DimensionTraits<dimensions, T>::%MatrixType</tt>.
+See @ref DimensionTraits::MatrixType for more information.
+*/
+template<UnsignedInt dimensions, class T> using MatrixTypeFor = typename DimensionTraits<dimensions, T>::MatrixType;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* One dimension */
