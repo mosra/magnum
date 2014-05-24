@@ -126,9 +126,9 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
 void MeshView::multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
     for(MeshView& mesh: meshes) {
         #ifndef MAGNUM_TARGET_GLES2
-        mesh._original.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
         #else
-        mesh._original.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
+        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
         #endif
     }
 }
