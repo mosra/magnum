@@ -35,30 +35,20 @@ namespace Magnum { namespace Platform {
 
 GlutApplication* GlutApplication::instance = nullptr;
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+GlutApplication::GlutApplication(const Arguments& arguments): GlutApplication{arguments, Configuration{}} {}
+#endif
 
-GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): c(nullptr) {
-    initialize(arguments.argc, arguments.argv);
+GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): GlutApplication{arguments, nullptr} {
     createContext(configuration);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
-    initialize(arguments.argc, arguments.argv);
-    createContext();
-}
-#endif
-
 GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t): c(nullptr) {
-    initialize(arguments.argc, arguments.argv);
-}
-
-void GlutApplication::initialize(int& argc, char** argv) {
     /* Save global instance */
     instance = this;
 
     /* Init GLUT */
-    glutInit(&argc, argv);
+    glutInit(&arguments.argc, arguments.argv);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 }
 

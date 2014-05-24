@@ -58,21 +58,15 @@ NaClApplication::ConsoleDebugOutput::ConsoleDebugOutput(pp::Instance* instance):
     Error::setOutput(&errorOutput);
 }
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+NaClApplication::NaClApplication(const Arguments& arguments): NaClApplication{arguments, Configuration{}} {}
+#endif
 
-NaClApplication::NaClApplication(const Arguments& arguments, const Configuration& configuration): Instance(arguments), Graphics3DClient(this), MouseLock(this), graphics(nullptr), fullscreen(nullptr), c(nullptr) {
-    debugOutput = new ConsoleDebugOutput(this);
+NaClApplication::NaClApplication(const Arguments& arguments, const Configuration& configuration): NaClApplication{arguments, nullptr} {
     createContext(configuration);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-NaClApplication::NaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr) {
-    debugOutput = new ConsoleDebugOutput(this);
-    createContext();
-}
-#endif
-
-NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this), c(nullptr)  {
+NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this), graphics(nullptr), fullscreen(nullptr), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);
 }
 

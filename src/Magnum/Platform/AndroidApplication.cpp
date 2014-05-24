@@ -34,22 +34,17 @@
 
 namespace Magnum { namespace Platform {
 
-/** @todo Delegating constructors when support for GCC 4.6 can be dropped */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+AndroidApplication::AndroidApplication(const Arguments& arguments): AndroidApplication{arguments, Configuration{}} {}
+#endif
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): _state(arguments) {
-    initialize();
+AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): AndroidApplication{arguments, nullptr} {
     createContext(configuration);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-AndroidApplication::AndroidApplication(const Arguments& arguments): _state(arguments) {
-    initialize();
-    createContext();
-}
-#endif
-
 AndroidApplication::AndroidApplication(const Arguments& arguments, std::nullptr_t): _state(arguments) {
-    initialize();
+    /* Redirect debug output to Android log */
+    _logOutput.reset(new LogOutput);
 }
 
 AndroidApplication::~AndroidApplication() {
@@ -75,11 +70,6 @@ AndroidApplication::LogOutput::LogOutput():
     Debug::setOutput(&debugStream);
     Warning::setOutput(&warningStream);
     Error::setOutput(&errorStream);
-}
-
-void AndroidApplication::initialize() {
-    /* Redirect debug output to Android log */
-    _logOutput.reset(new LogOutput);
 }
 
 void AndroidApplication::createContext() { createContext({}); }

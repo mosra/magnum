@@ -33,8 +33,6 @@
 
 namespace Magnum { namespace Platform {
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 int WindowlessWglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UINT, WPARAM, LPARAM)) {
     const WNDCLASS wc{
@@ -58,15 +56,13 @@ int WindowlessWglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UIN
 }
 #endif
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, const Configuration& configuration): _window(arguments.window), _c(nullptr) {
+#ifndef DOXYGEN_GENERATING_OUTPUT
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): WindowlessWglApplication{arguments, Configuration{}} {}
+#endif
+
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessWglApplication{arguments, nullptr} {
     createContext(configuration);
 }
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): _window(arguments.window), _c(nullptr) {
-    createContext();
-}
-#endif
 
 WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window), _c(nullptr) {}
 

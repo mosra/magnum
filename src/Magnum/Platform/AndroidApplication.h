@@ -299,8 +299,6 @@ class AndroidApplication {
         static void commandEvent(android_app* state, std::int32_t cmd);
         static std::int32_t inputEvent(android_app* state, AInputEvent* event);
 
-        void initialize();
-
         android_app* const _state;
         Flags _flags;
 

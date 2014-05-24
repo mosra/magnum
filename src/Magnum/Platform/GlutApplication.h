@@ -247,8 +247,6 @@ class GlutApplication {
         /*@}*/
 
     private:
-        void initialize(int& argc, char** argv);
-
         static void staticViewportEvent(int x, int y) {
             instance->viewportEvent({x, y});
         }

@@ -397,7 +397,6 @@ class Sdl2Application {
         static void staticMainLoop();
         #endif
 
-        void initialize();
         void mainLoop();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN

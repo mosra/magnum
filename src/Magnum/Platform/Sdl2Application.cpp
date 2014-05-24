@@ -62,25 +62,15 @@ void Sdl2Application::staticMainLoop() {
 }
 #endif
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
+#endif
 
-Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configuration): context(nullptr), flags(Flag::Redraw) {
-    initialize();
+Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, nullptr} {
     createContext(configuration);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
-    initialize();
-    createContext();
-}
-#endif
-
 Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): context(nullptr), flags(Flag::Redraw) {
-    initialize();
-}
-
-void Sdl2Application::initialize() {
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_ASSERT(!instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
     instance = this;

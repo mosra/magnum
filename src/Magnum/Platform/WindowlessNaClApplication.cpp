@@ -50,19 +50,14 @@ WindowlessNaClApplication::ConsoleDebugOutput::ConsoleDebugOutput(pp::Instance* 
     Error::setOutput(&errorOutput);
 }
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments): WindowlessNaClApplication{arguments, Configuration{}} {}
+#endif
 
-WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
-    debugOutput = new ConsoleDebugOutput(this);
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration):
+WindowlessNaClApplication{arguments, nullptr} {
     createContext(configuration);
 }
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments): Instance(arguments), Graphics3DClient(this), c(nullptr) {
-    debugOutput = new ConsoleDebugOutput(this);
-    createContext();
-}
-#endif
 
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
     debugOutput = new ConsoleDebugOutput(this);

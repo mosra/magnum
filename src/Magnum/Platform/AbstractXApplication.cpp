@@ -37,9 +37,7 @@
 
 namespace Magnum { namespace Platform {
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
-
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration): AbstractXApplication(contextHandler, arguments, nullptr) {
     createContext(configuration);
 }
 

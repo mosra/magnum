@@ -34,17 +34,13 @@
 
 namespace Magnum { namespace Platform {
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments): WindowlessGlxApplication{arguments, Configuration{}}  {}
+#endif
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, const Configuration& configuration): c(nullptr) {
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration): WindowlessGlxApplication{arguments, nullptr} {
     createContext(configuration);
 }
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&): c(nullptr) {
-    createContext();
-}
-#endif
 
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t): c(nullptr) {}
 

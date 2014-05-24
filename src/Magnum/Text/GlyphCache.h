@@ -188,7 +188,6 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
         virtual void setImage(const Vector2i& offset, const ImageReference2D& image);
 
     private:
-        void MAGNUM_LOCAL initialize(const Vector2i& size);
         void MAGNUM_LOCAL initialize(TextureFormat internalFormat, const Vector2i& size);
 
         Vector2i _size, _padding;
