@@ -1421,7 +1421,12 @@ template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
         UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV
         #endif
     };
-    constexpr static DataType DefaultDataType = DataType::Float;
+    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
+    constexpr static
+    #else
+    static const
+    #endif
+    DataType DefaultDataType = DataType::Float;
 
     typedef FloatAttribute::DataOption DataOption;
     typedef FloatAttribute::DataOptions DataOptions;
