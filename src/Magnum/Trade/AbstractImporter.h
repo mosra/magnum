@@ -89,7 +89,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
         };
 
         /** @brief Set of features supported by this importer */
-        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
+        typedef Containers::EnumSet<Feature> Features;
 
         /** @brief Default constructor */
         explicit AbstractImporter();

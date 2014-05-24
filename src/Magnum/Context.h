@@ -160,14 +160,14 @@ class MAGNUM_EXPORT Context {
          *
          * @see @ref resetState()
          */
-        typedef Containers::EnumSet<State, UnsignedInt> States;
+        typedef Containers::EnumSet<State> States;
 
         /**
          * @brief %Context flags
          *
          * @see @ref flags()
          */
-        typedef Containers::EnumSet<Flag, GLint> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
 
         /**
          * @brief Constructor

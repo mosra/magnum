@@ -106,7 +106,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
         };
 
         /** @brief %Flags */
-        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
 
         /**
          * @brief Constructor

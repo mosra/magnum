@@ -44,7 +44,7 @@ namespace Implementation {
         Joint = 1 << 2
     };
 
-    typedef Containers::EnumSet<ObjectFlag, UnsignedByte> ObjectFlags;
+    typedef Containers::EnumSet<ObjectFlag> ObjectFlags;
 
     CORRADE_ENUMSET_OPERATORS(ObjectFlags)
 }

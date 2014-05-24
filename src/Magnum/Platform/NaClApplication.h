@@ -360,7 +360,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
             WillBeFullscreen = 1 << 3,
             MouseLocked = 1 << 4
         };
-        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
 
         void Graphics3DContextLost() override {
             CORRADE_ASSERT(false, "NaClApplication: context unexpectedly lost", );
@@ -482,7 +482,7 @@ class NaClApplication::InputEvent {
          *
          * @see @ref modifiers()
          */
-        typedef Containers::EnumSet<Modifier, std::uint32_t> Modifiers;
+        typedef Containers::EnumSet<Modifier> Modifiers;
 
         /**
          * @brief Mouse button
@@ -500,7 +500,7 @@ class NaClApplication::InputEvent {
          *
          * @see @ref buttons()
          */
-        typedef Containers::EnumSet<Button, std::uint32_t> Buttons;
+        typedef Containers::EnumSet<Button> Buttons;
 
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;

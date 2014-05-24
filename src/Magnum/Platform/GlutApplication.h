@@ -295,9 +295,9 @@ class GlutApplication::Configuration {
          * @see @ref setFlags()
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, int, GLUT_DEBUG> Flags;
+        typedef Containers::EnumSet<Flag, GLUT_DEBUG> Flags;
         #else
-        typedef Containers::EnumSet<Flag, int> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
         #endif
 
         /*implicit*/ Configuration();
@@ -583,7 +583,7 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
          *
          * @see @ref buttons()
          */
-        typedef Containers::EnumSet<Button, UnsignedByte> Buttons;
+        typedef Containers::EnumSet<Button> Buttons;
 
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }

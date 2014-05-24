@@ -79,7 +79,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
          *
          * @see @ref features()
          */
-        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
+        typedef Containers::EnumSet<Feature> Features;
 
         /** @brief Default constructor */
         explicit AbstractImporter();

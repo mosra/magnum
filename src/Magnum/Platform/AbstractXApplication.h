@@ -174,7 +174,7 @@ class AbstractXApplication {
             Exit = 1 << 1
         };
 
-        typedef Containers::EnumSet<Flag, unsigned int> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         Display* display;
@@ -272,7 +272,7 @@ class AbstractXApplication::InputEvent {
          *
          * @see @ref modifiers()
          */
-        typedef Containers::EnumSet<Modifier, unsigned int> Modifiers;
+        typedef Containers::EnumSet<Modifier> Modifiers;
 
         /**
          * @brief Mouse button
@@ -290,7 +290,7 @@ class AbstractXApplication::InputEvent {
          *
          * @see @ref buttons()
          */
-        typedef Containers::EnumSet<Button, unsigned int> Buttons;
+        typedef Containers::EnumSet<Button> Buttons;
 
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;

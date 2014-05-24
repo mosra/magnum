@@ -1122,7 +1122,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
          * @see @ref Attribute()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        typedef typename Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+        typedef typename Containers::EnumSet<DataOption> DataOptions;
         #else
         typedef typename Implementation::Attribute<T>::DataOptions DataOptions;
         #endif
@@ -1269,7 +1269,7 @@ struct FloatAttribute {
     enum class DataOption: UnsignedByte {
         Normalized = 1 << 0
     };
-    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef Containers::EnumSet<DataOption> DataOptions;
 
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
@@ -1294,7 +1294,7 @@ struct IntAttribute {
     constexpr static DataType DefaultDataType = DataType::Int;
 
     enum class DataOption: UnsignedByte {};
-    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
+    typedef Containers::EnumSet<DataOption> DataOptions;
 
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };

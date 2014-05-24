@@ -59,7 +59,7 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          *
          * @see @ref solid(), @ref wireframe()
          */
-        typedef Containers::EnumSet<Flag, int> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
 
         /**
          * @brief Solid cylinder

@@ -106,7 +106,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * @see @ref flags()
          */
-        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
 
         /**
          * @brief Constructor

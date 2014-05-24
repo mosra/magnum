@@ -41,7 +41,7 @@ namespace Implementation {
         Input = 1 << 1
     };
 
-    typedef Containers::EnumSet<PropagatedScreenEvent, UnsignedByte> PropagatedScreenEvents;
+    typedef Containers::EnumSet<PropagatedScreenEvent> PropagatedScreenEvents;
     CORRADE_ENUMSET_OPERATORS(PropagatedScreenEvents)
 }
 
@@ -101,7 +101,7 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
          *
          * @see @ref setPropagatedEvents()
          */
-        typedef Containers::EnumSet<PropagatedEvent, UnsignedByte> PropagatedEvents;
+        typedef Containers::EnumSet<PropagatedEvent> PropagatedEvents;
         #else
         typedef Implementation::PropagatedScreenEvent PropagatedEvent;
         typedef Implementation::PropagatedScreenEvents PropagatedEvents;

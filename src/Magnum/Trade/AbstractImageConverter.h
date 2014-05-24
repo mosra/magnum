@@ -78,7 +78,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          *
          * @see @ref features()
          */
-        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
+        typedef Containers::EnumSet<Feature> Features;
 
         /** @brief Default constructor */
         explicit AbstractImageConverter();

@@ -389,7 +389,7 @@ class Sdl2Application {
             #endif
         };
 
-        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         #ifdef CORRADE_TARGET_EMSCRIPTEN
@@ -445,10 +445,10 @@ class Sdl2Application::Configuration {
          * @see @ref setFlags()
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, int, SDL_GL_CONTEXT_DEBUG_FLAG|
+        typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
             SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG> Flags;
         #else
-        typedef Containers::EnumSet<Flag, int> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
         #endif
         #endif
 
@@ -472,11 +472,11 @@ class Sdl2Application::Configuration {
          * @see @ref setWindowFlags()
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<WindowFlag, Uint32, SDL_WINDOW_RESIZABLE|
+        typedef Containers::EnumSet<WindowFlag, SDL_WINDOW_RESIZABLE|
             SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
             SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> WindowFlags;
         #else
-        typedef Containers::EnumSet<WindowFlag, Uint32> WindowFlags;
+        typedef Containers::EnumSet<WindowFlag> WindowFlags;
         #endif
 
         /*implicit*/ Configuration();
@@ -648,7 +648,7 @@ class Sdl2Application::InputEvent {
          * @see @ref KeyEvent::modifiers(), @ref MouseEvent::modifiers(),
          *      @ref MouseMoveEvent::modifiers()
          */
-        typedef Containers::EnumSet<Modifier, Uint16> Modifiers;
+        typedef Containers::EnumSet<Modifier> Modifiers;
 
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;
@@ -857,7 +857,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
          *
          * @see @ref buttons()
          */
-        typedef Containers::EnumSet<Button, Uint32> Buttons;
+        typedef Containers::EnumSet<Button> Buttons;
 
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }

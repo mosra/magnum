@@ -294,7 +294,7 @@ class AndroidApplication {
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0
         };
-        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
 
         static void commandEvent(android_app* state, std::int32_t cmd);
         static std::int32_t inputEvent(android_app* state, AInputEvent* event);
@@ -539,7 +539,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
          *
          * @see @ref buttons()
          */
-        typedef Containers::EnumSet<Button, std::int32_t> Buttons;
+        typedef Containers::EnumSet<Button> Buttons;
 
         /** @brief Position */
         Vector2i position() const {

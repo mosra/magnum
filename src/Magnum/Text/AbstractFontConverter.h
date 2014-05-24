@@ -117,7 +117,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * @see @ref features()
          */
-        typedef Containers::EnumSet<Feature, UnsignedByte> Features;
+        typedef Containers::EnumSet<Feature> Features;
 
         /** @brief Default constructor */
         explicit AbstractFontConverter();

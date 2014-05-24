@@ -71,7 +71,7 @@ enum class CachedTransformation: UnsignedByte {
 @see @ref scenegraph-caching, @ref AbstractFeature::setCachedTransformations(),
     @ref AbstractFeature::clean(), @ref AbstractFeature::cleanInverted()
 */
-typedef Containers::EnumSet<CachedTransformation, UnsignedByte> CachedTransformations;
+typedef Containers::EnumSet<CachedTransformation> CachedTransformations;
 
 CORRADE_ENUMSET_OPERATORS(CachedTransformations)
 

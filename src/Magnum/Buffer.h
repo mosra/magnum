@@ -434,7 +434,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles30 %Extension @es_extension{EXT,map_buffer_range} in
          *      OpenGL ES 2.0
          */
-        typedef Containers::EnumSet<MapFlag, GLbitfield> MapFlags;
+        typedef Containers::EnumSet<MapFlag> MapFlags;
 
         #ifndef MAGNUM_TARGET_GLES
         /**

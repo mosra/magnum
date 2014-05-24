@@ -40,7 +40,7 @@ namespace Magnum { namespace Shaders {
 
 namespace Implementation {
     enum class FlatFlag: UnsignedByte { Textured = 1 << 0 };
-    typedef Containers::EnumSet<FlatFlag, UnsignedByte> FlatFlags;
+    typedef Containers::EnumSet<FlatFlag> FlatFlags;
 }
 
 /**
@@ -97,7 +97,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          *
          * @see @ref flags()
          */
-        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
         #else
         typedef Implementation::FlatFlag Flag;
         typedef Implementation::FlatFlags Flags;

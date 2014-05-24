@@ -62,7 +62,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
          *
          * @see @ref flags()
          */
-        typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
+        typedef Containers::EnumSet<Flag> Flags;
 
         /**
          * @brief Constructor
