@@ -67,7 +67,10 @@ if(WITH_FONTCONVERTER)
 
     add_executable(magnum-fontconverter fontconverter.cpp)
 
-    if(UNIX AND NOT TARGET_GLES)
+    if(APPLE)
+        find_library(OpenGL_LIBRARY OpenGL)
+        target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessCglApplication ${OpenGL_LIBRARY})
+    elseif(UNIX AND NOT TARGET_GLES)
         target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
     elseif(WIN32)
         target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessWglApplication)

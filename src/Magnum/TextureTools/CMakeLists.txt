@@ -56,7 +56,10 @@ if(WITH_DISTANCEFIELDCONVERTER)
 
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
 
-    if(UNIX AND NOT TARGET_GLES)
+    if(APPLE)
+        find_library(OpenGL_LIBRARY OpenGL)
+        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessCglApplication Magnum ${OpenGL_LIBRARIES})
+    elseif(UNIX AND NOT TARGET_GLES)
         target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
     elseif(WIN32)
         target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessWglApplication Magnum)
