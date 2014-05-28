@@ -47,6 +47,7 @@
 #  NaClApplication  - NaCl application
 #  Sdl2Application  - SDL2 application
 #  XEglApplication  - X/EGL application
+#  WindowlessCglApplication - Windowless CGL application
 #  WindowlessGlxApplication - Windowless GLX application
 #  WindowlessNaClApplication - Windowless NaCl application
 #  WindowlessWglApplication - Windowless WGL application
