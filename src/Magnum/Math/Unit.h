@@ -93,7 +93,7 @@ template<template<class> class Derived, class T> class Unit {
         }
 
         /** @brief Add and assign value */
-        Unit<Derived, T>& operator+=(Unit<Derived, T> other) {
+        constexpr Unit<Derived, T>& operator+=(Unit<Derived, T> other) {
             value += other.value;
             return *this;
         }
@@ -104,7 +104,7 @@ template<template<class> class Derived, class T> class Unit {
         }
 
         /** @brief Subtract and assign value */
-        Unit<Derived, T>& operator-=(Unit<Derived, T> other) {
+        constexpr Unit<Derived, T>& operator-=(Unit<Derived, T> other) {
             value -= other.value;
             return *this;
         }
@@ -115,7 +115,7 @@ template<template<class> class Derived, class T> class Unit {
         }
 
         /** @brief Multiply with number and assign */
-        Unit<Derived, T>& operator*=(T number) {
+        constexpr Unit<Derived, T>& operator*=(T number) {
             value *= number;
             return *this;
         }
@@ -126,7 +126,7 @@ template<template<class> class Derived, class T> class Unit {
         }
 
         /** @brief Divide with number and assign */
-        Unit<Derived, T>& operator/=(T number) {
+        constexpr Unit<Derived, T>& operator/=(T number) {
             value /= number;
             return *this;
         }
