@@ -91,7 +91,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref Vector2::perpendicular()
          * @todoc Explicit reference when Doxygen can handle const
          */
-        static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+        constexpr static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             return (a*b).sum();
         }
 
@@ -155,7 +155,7 @@ template<std::size_t size, class T> class Vector {
         constexpr Vector(const Vector<size, T>&) = default;
 
         /** @brief Assignment operator */
-        Vector<size, T>& operator=(const Vector<size, T>&) = default;
+        constexpr Vector<size, T>& operator=(const Vector<size, T>&) = default;
 
         /** @brief Convert vector to external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
@@ -168,7 +168,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator[]()
          */
-        T* data() { return _data; }
+        constexpr T* data() { return _data; }
         constexpr const T* data() const { return _data; } /**< @overload */
 
         /**
@@ -176,7 +176,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref data()
          */
-        T& operator[](std::size_t pos) { return _data[pos]; }
+        constexpr T& operator[](std::size_t pos) { return _data[pos]; }
         constexpr T operator[](std::size_t pos) const { return _data[pos]; } /**< @overload */
 
         /** @brief Equality comparison */
@@ -193,16 +193,16 @@ template<std::size_t size, class T> class Vector {
         }
 
         /** @brief Component-wise less than */
-        BoolVector<size> operator<(const Vector<size, T>& other) const;
+        constexpr BoolVector<size> operator<(const Vector<size, T>& other) const;
 
         /** @brief Component-wise less than or equal */
-        BoolVector<size> operator<=(const Vector<size, T>& other) const;
+        constexpr BoolVector<size> operator<=(const Vector<size, T>& other) const;
 
         /** @brief Component-wise greater than or equal */
-        BoolVector<size> operator>=(const Vector<size, T>& other) const;
+        constexpr BoolVector<size> operator>=(const Vector<size, T>& other) const;
 
         /** @brief Component-wise greater than */
-        BoolVector<size> operator>(const Vector<size, T>& other) const;
+        constexpr BoolVector<size> operator>(const Vector<size, T>& other) const;
 
         /**
          * @brief Whether the vector is zero
@@ -236,7 +236,7 @@ template<std::size_t size, class T> class Vector {
          * @f]
          * @see @ref Vector2::perpendicular()
          */
-        Vector<size, T> operator-() const;
+        constexpr Vector<size, T> operator-() const;
 
         /**
          * @brief Add and assign vector
@@ -245,7 +245,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_i = \boldsymbol a_i + \boldsymbol b_i
          * @f]
          */
-        Vector<size, T>& operator+=(const Vector<size, T>& other) {
+        constexpr Vector<size, T>& operator+=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] += other._data[i];
 
@@ -257,7 +257,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator+=(), @ref sum()
          */
-        Vector<size, T> operator+(const Vector<size, T>& other) const {
+        constexpr Vector<size, T> operator+(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) += other;
         }
 
@@ -268,7 +268,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_i = \boldsymbol a_i - \boldsymbol b_i
          * @f]
          */
-        Vector<size, T>& operator-=(const Vector<size, T>& other) {
+        constexpr Vector<size, T>& operator-=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] -= other._data[i];
 
@@ -280,7 +280,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator-=()
          */
-        Vector<size, T> operator-(const Vector<size, T>& other) const {
+        constexpr Vector<size, T> operator-(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) -= other;
         }
 
@@ -293,7 +293,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator*=(const Vector<size, T>&),
          *      @ref operator*=(Vector<size, Integral>&, FloatingPoint)
          */
-        Vector<size, T>& operator*=(T number) {
+        constexpr Vector<size, T>& operator*=(T number) {
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] *= number;
 
@@ -307,7 +307,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator*=(T), operator*(T, const Vector<size, T>&),
          *      @ref operator*(const Vector<size, Integral>&, FloatingPoint)
          */
-        Vector<size, T> operator*(T number) const {
+        constexpr Vector<size, T> operator*(T number) const {
             return Vector<size, T>(*this) *= number;
         }
 
@@ -320,7 +320,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator/=(const Vector<size, T>&),
          *      @ref operator/=(Vector<size, Integral>&, FloatingPoint)
          */
-        Vector<size, T>& operator/=(T number) {
+        constexpr Vector<size, T>& operator/=(T number) {
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] /= number;
 
@@ -334,7 +334,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator/=(T), operator/(T, const Vector<size, T>&),
          *      @ref operator/(const Vector<size, Integral>&, FloatingPoint)
          */
-        Vector<size, T> operator/(T number) const {
+        constexpr Vector<size, T> operator/(T number) const {
             return Vector<size, T>(*this) /= number;
         }
 
@@ -347,7 +347,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator*=(T),
          *      @ref operator*=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
-        Vector<size, T>& operator*=(const Vector<size, T>& other) {
+        constexpr Vector<size, T>& operator*=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] *= other._data[i];
 
@@ -361,7 +361,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&),
          *      @ref product()
          */
-        Vector<size, T> operator*(const Vector<size, T>& other) const {
+        constexpr Vector<size, T> operator*(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) *= other;
         }
 
@@ -374,7 +374,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator/=(T),
          *      @ref operator/=(Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
-        Vector<size, T>& operator/=(const Vector<size, T>& other) {
+        constexpr Vector<size, T>& operator/=(const Vector<size, T>& other) {
             for(std::size_t i = 0; i != size; ++i)
                 _data[i] /= other._data[i];
 
@@ -387,7 +387,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator/(T) const, @ref operator/=(const Vector<size, T>&),
          *      @ref operator/(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&)
          */
-        Vector<size, T> operator/(const Vector<size, T>& other) const {
+        constexpr Vector<size, T> operator/(const Vector<size, T>& other) const {
             return Vector<size, T>(*this) /= other;
         }
 
@@ -401,7 +401,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref dot(const Vector<size, T>&, const Vector<size, T>&),
          *      @ref isNormalized()
          */
-        T dot() const { return dot(*this, *this); }
+        constexpr T dot() const { return dot(*this, *this); }
 
         /**
          * @brief %Vector length
@@ -479,14 +479,14 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref operator+()
          */
-        T sum() const;
+        constexpr T sum() const;
 
         /**
          * @brief Product of values in the vector
          *
          * @see @ref operator*(const Vector<size, T>&) const
          */
-        T product() const;
+        constexpr T product() const;
 
         /**
          * @brief Minimal value in the vector
@@ -517,7 +517,7 @@ template<std::size_t size, class T> class Vector {
 
 Same as @ref Vector::operator*(T) const.
 */
-template<std::size_t size, class T> inline Vector<size, T> operator*(
+template<std::size_t size, class T> inline constexpr Vector<size, T> operator*(
     #ifdef DOXYGEN_GENERATING_OUTPUT
     T
     #else
@@ -536,7 +536,7 @@ template<std::size_t size, class T> inline Vector<size, T> operator*(
 @f]
 @see @ref Vector::operator/(T) const
 */
-template<std::size_t size, class T> inline Vector<size, T> operator/(
+template<std::size_t size, class T> inline constexpr Vector<size, T> operator/(
     #ifdef DOXYGEN_GENERATING_OUTPUT
     T
     #else
@@ -544,7 +544,7 @@ template<std::size_t size, class T> inline Vector<size, T> operator/(
     #endif
     number, const Vector<size, T>& vector)
 {
-    Vector<size, T> out;
+    Vector<size, T> out{};
 
     for(std::size_t i = 0; i != size; ++i)
         out[i] = number/vector[i];
@@ -557,7 +557,7 @@ template<std::size_t size, class T> inline Vector<size, T> operator/(
 
 The computation is done in-place.
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -573,7 +573,7 @@ operator%=(Vector<size, Integral>& a, Integral b) {
 /** @relates Vector
 @brief Modulo of integral vector
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -589,7 +589,7 @@ operator%(const Vector<size, Integral>& a, Integral b) {
 
 The computation is done in-place.
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -605,7 +605,7 @@ operator%=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 /** @relates Vector
 @brief Modulo of two integral vectors
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -619,14 +619,14 @@ operator%(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 /** @relates Vector
 @brief Bitwise NOT of integral vector
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
 typename std::enable_if<std::is_integral<Integral>::value, Vector<size, Integral>>::type
 #endif
 operator~(const Vector<size, Integral>& vector) {
-    Vector<size, Integral> out;
+    Vector<size, Integral> out{};
 
     for(std::size_t i = 0; i != size; ++i)
         out[i] = ~vector[i];
@@ -639,7 +639,7 @@ operator~(const Vector<size, Integral>& vector) {
 
 The computation is done in-place.
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -655,7 +655,7 @@ operator&=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 /** @relates Vector
 @brief Bitwise AND of two integral vectors
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -671,7 +671,7 @@ operator&(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 
 The computation is done in-place.
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -687,7 +687,7 @@ operator|=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 /** @relates Vector
 @brief Bitwise OR of two integral vectors
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -703,7 +703,7 @@ operator|(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 
 The computation is done in-place.
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -719,7 +719,7 @@ operator^=(Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 /** @relates Vector
 @brief Bitwise XOR of two integral vectors
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -735,7 +735,7 @@ operator^(const Vector<size, Integral>& a, const Vector<size, Integral>& b) {
 
 The computation is done in-place.
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -758,7 +758,7 @@ operator<<=(Vector<size, Integral>& vector,
 /** @relates Vector
 @brief Bitwise left shift of integral vector
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -781,7 +781,7 @@ operator<<(const Vector<size, Integral>& vector,
 
 The computation is done in-place.
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -803,7 +803,7 @@ operator>>=(Vector<size, Integral>& vector,
 /** @relates Vector
 @brief Bitwise left shift of integral vector
 */
-template<std::size_t size, class Integral> inline
+template<std::size_t size, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -826,7 +826,7 @@ operator>>(const Vector<size, Integral>& vector,
 Similar to @ref Vector::operator*=(T), except that the multiplication is done
 in floating-point. The computation is done in-place.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -845,7 +845,7 @@ operator*=(Vector<size, Integral>& vector, FloatingPoint number) {
 Similar to @ref Vector::operator*(T) const, except that the multiplication is
 done in floating-point.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -861,7 +861,7 @@ operator*(const Vector<size, Integral>& vector, FloatingPoint number) {
 
 Same as @ref operator*(const Vector<size, Integral>&, FloatingPoint).
 */
-template<std::size_t size, class FloatingPoint, class Integral> inline
+template<std::size_t size, class FloatingPoint, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -877,7 +877,7 @@ operator*(FloatingPoint number, const Vector<size, Integral>& vector) {
 Similar to @ref Vector::operator/=(T), except that the division is done in
 floating-point. The computation is done in-place.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -896,7 +896,7 @@ operator/=(Vector<size, Integral>& vector, FloatingPoint number) {
 Similar to @ref Vector::operator/(T) const, except that the division is done in
 floating-point.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -913,7 +913,7 @@ operator/(const Vector<size, Integral>& vector, FloatingPoint number) {
 Similar to @ref Vector::operator*=(const Vector<size, T>&), except that the
 multiplication is done in floating-point. The computation is done in-place.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -934,7 +934,7 @@ the multiplication is done in floating-point. The result is always integral
 vector, convert both arguments to the same floating-point type to have
 floating-point result.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -950,7 +950,7 @@ operator*(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
 
 Same as @ref operator*(const Vector<size, Integral>&, const Vector<size, FloatingPoint>&).
 */
-template<std::size_t size, class FloatingPoint, class Integral> inline
+template<std::size_t size, class FloatingPoint, class Integral> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -966,7 +966,7 @@ operator*(const Vector<size, FloatingPoint>& a, const Vector<size, Integral>& b)
 Similar to @ref Vector::operator/=(const Vector<size, T>&), except that the
 division is done in floating-point. The computation is done in-place.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>&
 #else
@@ -987,7 +987,7 @@ the division is done in floating-point. The result is always integral vector,
 convert both arguments to the same floating-point type to have floating-point
 result.
 */
-template<std::size_t size, class Integral, class FloatingPoint> inline
+template<std::size_t size, class Integral, class FloatingPoint> inline constexpr
 #ifdef DOXYGEN_GENERATING_OUTPUT
 Vector<size, Integral>
 #else
@@ -1038,54 +1038,54 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
                                                                             \
-    Type<T>& operator=(const Type<T>& other) {                              \
+    constexpr Type<T>& operator=(const Type<T>& other) {                    \
         Math::Vector<size, T>::operator=(other);                            \
         return *this;                                                       \
     }                                                                       \
                                                                             \
-    Type<T> operator-() const {                                             \
+    constexpr Type<T> operator-() const {                                   \
         return Math::Vector<size, T>::operator-();                          \
     }                                                                       \
-    Type<T>& operator+=(const Math::Vector<size, T>& other) {               \
+    constexpr Type<T>& operator+=(const Math::Vector<size, T>& other) {     \
         Math::Vector<size, T>::operator+=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator+(const Math::Vector<size, T>& other) const {           \
+    constexpr Type<T> operator+(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::operator+(other);                     \
     }                                                                       \
-    Type<T>& operator-=(const Math::Vector<size, T>& other) {               \
+    constexpr Type<T>& operator-=(const Math::Vector<size, T>& other) {     \
         Math::Vector<size, T>::operator-=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator-(const Math::Vector<size, T>& other) const {           \
+    constexpr Type<T> operator-(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::operator-(other);                     \
     }                                                                       \
-    Type<T>& operator*=(T number) {                                         \
+    constexpr Type<T>& operator*=(T number) {                               \
         Math::Vector<size, T>::operator*=(number);                          \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator*(T number) const {                                     \
+    constexpr Type<T> operator*(T number) const {                           \
         return Math::Vector<size, T>::operator*(number);                    \
     }                                                                       \
-    Type<T>& operator/=(T number) {                                         \
+    constexpr Type<T>& operator/=(T number) {                               \
         Math::Vector<size, T>::operator/=(number);                          \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator/(T number) const {                                     \
+    constexpr Type<T> operator/(T number) const {                           \
         return Math::Vector<size, T>::operator/(number);                    \
     }                                                                       \
-    Type<T>& operator*=(const Math::Vector<size, T>& other) {               \
+    constexpr Type<T>& operator*=(const Math::Vector<size, T>& other) {     \
         Math::Vector<size, T>::operator*=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator*(const Math::Vector<size, T>& other) const {           \
+    constexpr Type<T> operator*(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::operator*(other);                     \
     }                                                                       \
-    Type<T>& operator/=(const Math::Vector<size, T>& other) {               \
+    constexpr Type<T>& operator/=(const Math::Vector<size, T>& other) {     \
         Math::Vector<size, T>::operator/=(other);                           \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator/(const Math::Vector<size, T>& other) const {           \
+    constexpr Type<T> operator/(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::operator/(other);                     \
     }                                                                       \
                                                                             \
@@ -1103,99 +1103,99 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }
 
 #define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                  \
-    template<class T> inline Type<T> operator*(typename std::common_type<T>::type number, const Type<T>& vector) { \
+    template<class T> inline constexpr Type<T> operator*(typename std::common_type<T>::type number, const Type<T>& vector) { \
         return number*static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
-    template<class T> inline Type<T> operator/(typename std::common_type<T>::type number, const Type<T>& vector) { \
+    template<class T> inline constexpr Type<T> operator/(typename std::common_type<T>::type number, const Type<T>& vector) { \
         return number/static_cast<const Math::Vector<size, T>&>(vector);    \
     }                                                                       \
                                                                             \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, Integral b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, Integral b) { \
         static_cast<Math::Vector<size, Integral>&>(a) %= b;                 \
         return a;                                                           \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, Integral b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, Integral b) { \
         return static_cast<const Math::Vector<size, Integral>&>(a) % b;     \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator%=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         static_cast<Math::Vector<size, Integral>&>(a) %= b;                 \
         return a;                                                           \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator%(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         return static_cast<const Math::Vector<size, Integral>&>(a) % b;     \
     }                                                                       \
                                                                             \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator~(const Type<Integral>& vector) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator~(const Type<Integral>& vector) { \
         return ~static_cast<const Math::Vector<size, Integral>&>(vector);   \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator&=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator&=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         static_cast<Math::Vector<size, Integral>&>(a) &= b;                 \
         return a;                                                           \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator&(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator&(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         return static_cast<const Math::Vector<size, Integral>&>(a) & b;     \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator|=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator|=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         static_cast<Math::Vector<size, Integral>&>(a) |= b;                 \
         return a;                                                           \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator|(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator|(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         return static_cast<const Math::Vector<size, Integral>&>(a) | b;     \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator^=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator^=(Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         static_cast<Math::Vector<size, Integral>&>(a) ^= b;                 \
         return a;                                                           \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator^(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator^(const Type<Integral>& a, const Math::Vector<size, Integral>& b) { \
         return static_cast<const Math::Vector<size, Integral>&>(a) ^ b;     \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator<<=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator<<=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
         static_cast<Math::Vector<size, Integral>&>(vector) <<= shift;       \
         return vector;                                                      \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator<<(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator<<(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
         return static_cast<const Math::Vector<size, Integral>&>(vector) << shift; \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator>>=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>&>::type operator>>=(Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
         static_cast<Math::Vector<size, Integral>&>(vector) >>= shift;       \
         return vector;                                                      \
     }                                                                       \
-    template<class Integral> inline typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator>>(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
+    template<class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value, Type<Integral>>::type operator>>(const Type<Integral>& vector, typename std::common_type<Integral>::type shift) { \
         return static_cast<const Math::Vector<size, Integral>&>(vector) >> shift; \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& vector, FloatingPoint number) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& vector, FloatingPoint number) { \
         static_cast<Math::Vector<size, Integral>&>(vector) *= number;       \
         return vector;                                                      \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& vector, FloatingPoint number) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& vector, FloatingPoint number) { \
         return static_cast<const Math::Vector<size, Integral>&>(vector)*number; \
     }                                                                       \
-    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint number, const Type<Integral>& vector) { \
+    template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(FloatingPoint number, const Type<Integral>& vector) { \
         return number*static_cast<const Math::Vector<size, Integral>&>(vector); \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& vector, FloatingPoint number) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& vector, FloatingPoint number) { \
         static_cast<Math::Vector<size, Integral>&>(vector) /= number;       \
         return vector;                                                      \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& vector, FloatingPoint number) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& vector, FloatingPoint number) { \
         return static_cast<const Math::Vector<size, Integral>&>(vector)/number; \
     }                                                                       \
                                                                             \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator*=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
         static_cast<Math::Vector<size, Integral>&>(a) *= b;                 \
         return a;                                                           \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
         return static_cast<const Math::Vector<size, Integral>&>(a)*b;       \
     }                                                                       \
-    template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Math::Vector<size, FloatingPoint>& a, const Type<Integral>& b) { \
+    template<class FloatingPoint, class Integral> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator*(const Math::Vector<size, FloatingPoint>& a, const Type<Integral>& b) { \
         return a*static_cast<const Math::Vector<size, Integral>&>(b);       \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>&>::type operator/=(Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
         static_cast<Math::Vector<size, Integral>&>(a) /= b;                 \
         return a;                                                           \
     }                                                                       \
-    template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
+    template<class Integral, class FloatingPoint> inline constexpr typename std::enable_if<std::is_integral<Integral>::value && std::is_floating_point<FloatingPoint>::value, Type<Integral>>::type operator/(const Type<Integral>& a, const Math::Vector<size, FloatingPoint>& b) { \
         return static_cast<const Math::Vector<size, Integral>&>(a)/b;       \
     }
 #endif
@@ -1206,8 +1206,8 @@ template<std::size_t size, class T> inline Rad<T> Vector<size, T>::angle(const V
     return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
 }
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline constexpr BoolVector<size> Vector<size, T>::operator<(const Vector<size, T>& other) const {
+    BoolVector<size> out{};
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] < other._data[i]);
@@ -1215,8 +1215,8 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<=(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline constexpr BoolVector<size> Vector<size, T>::operator<=(const Vector<size, T>& other) const {
+    BoolVector<size> out{};
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] <= other._data[i]);
@@ -1224,8 +1224,8 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator>=(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline constexpr BoolVector<size> Vector<size, T>::operator>=(const Vector<size, T>& other) const {
+    BoolVector<size> out{};
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] >= other._data[i]);
@@ -1233,8 +1233,8 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator>(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline constexpr BoolVector<size> Vector<size, T>::operator>(const Vector<size, T>& other) const {
+    BoolVector<size> out{};
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] > other._data[i]);
@@ -1242,8 +1242,8 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::operator-() const {
-    Vector<size, T> out;
+template<std::size_t size, class T> inline constexpr Vector<size, T> Vector<size, T>::operator-() const {
+    Vector<size, T> out{};
 
     for(std::size_t i = 0; i != size; ++i)
         out._data[i] = -_data[i];
@@ -1257,7 +1257,7 @@ template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::proj
     return line*dot(*this, line);
 }
 
-template<std::size_t size, class T> inline T Vector<size, T>::sum() const {
+template<std::size_t size, class T> inline constexpr T Vector<size, T>::sum() const {
     T out(_data[0]);
 
     for(std::size_t i = 1; i != size; ++i)
@@ -1266,7 +1266,7 @@ template<std::size_t size, class T> inline T Vector<size, T>::sum() const {
     return out;
 }
 
-template<std::size_t size, class T> inline T Vector<size, T>::product() const {
+template<std::size_t size, class T> inline constexpr T Vector<size, T>::product() const {
     T out(_data[0]);
 
     for(std::size_t i = 1; i != size; ++i)
