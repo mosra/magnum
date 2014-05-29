@@ -241,23 +241,24 @@ void RectangularMatrixTest::data() {
                                  Vector4(4.0f, 5.0f, 6.0f, 7.0f)));
 
     /* Pointer chasings, i.e. *(b.data()[1]), are not possible */
-    constexpr Matrix3x4 a(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
-                          Vector4(4.5f,  4.0f, 7.0f, 3.0f),
-                          Vector4(7.0f, -1.7f, 8.0f, 0.0f));
-    constexpr Vector4 b = a[2];
-    constexpr Float c = a[1][2];
-    constexpr Float d = *a.data();
+    constexpr const Matrix3x4 a(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
+                                Vector4(4.5f,  4.0f, 7.0f, 3.0f),
+                                Vector4(7.0f, -1.7f, 8.0f, 0.0f));
+    constexpr auto b = a[2];
+    constexpr auto c = a[1][2];
+    constexpr auto d = *a.data();
     CORRADE_COMPARE(b, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
     CORRADE_COMPARE(c, 7.0f);
     CORRADE_COMPARE(d, 3.0f);
 }
 
 void RectangularMatrixTest::row() {
-    const Matrix3x4 a(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
-                      Vector4(5.0f,  6.0f,  7.0f,  8.0f),
-                      Vector4(9.0f, 10.0f, 11.0f, 12.0f));
+    constexpr Matrix3x4 a(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                          Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                          Vector4(9.0f, 10.0f, 11.0f, 12.0f));
 
-    CORRADE_COMPARE(a.row(1), Vector3(2.0f, 6.0f, 10.0f));
+    constexpr auto b = a.row(1);
+    CORRADE_COMPARE(b, Vector3(2.0f, 6.0f, 10.0f));
 }
 
 void RectangularMatrixTest::compare() {
@@ -279,58 +280,67 @@ void RectangularMatrixTest::compare() {
 }
 
 void RectangularMatrixTest::negative() {
-    Matrix2x2 matrix(Vector2(1.0f,  -3.0f),
-                     Vector2(5.0f, -10.0f));
-    Matrix2x2 negated(Vector2(-1.0f,  3.0f),
-                      Vector2(-5.0f, 10.0f));
-    CORRADE_COMPARE(-matrix, negated);
+    constexpr Matrix2x2 matrix(Vector2(1.0f,  -3.0f),
+                               Vector2(5.0f, -10.0f));
+    constexpr Matrix2x2 negated(Vector2(-1.0f,  3.0f),
+                                Vector2(-5.0f, 10.0f));
+
+    constexpr auto a = -matrix;
+    CORRADE_COMPARE(a, negated);
 }
 
 void RectangularMatrixTest::addSubtract() {
-    Matrix4x3 a(Vector3(0.0f,   1.0f,   3.0f),
-                Vector3(4.0f,   5.0f,   7.0f),
-                Vector3(8.0f,   9.0f,   11.0f),
-                Vector3(12.0f, 13.0f,  15.0f));
-    Matrix4x3 b(Vector3(-4.0f,  0.5f,   9.0f),
-                Vector3(-9.0f, 11.0f,  0.25f),
-                Vector3( 0.0f, -8.0f,  19.0f),
-                Vector3(-3.0f, -5.0f,   2.0f));
-    Matrix4x3 c(Vector3(-4.0f,  1.5f,  12.0f),
-                Vector3(-5.0f, 16.0f,  7.25f),
-                Vector3( 8.0f,  1.0f,  30.0f),
-                Vector3( 9.0f,  8.0f,  17.0f));
+    constexpr Matrix4x3 a(Vector3(0.0f,   1.0f,   3.0f),
+                          Vector3(4.0f,   5.0f,   7.0f),
+                          Vector3(8.0f,   9.0f,  11.0f),
+                          Vector3(12.0f, 13.0f,  15.0f));
+    constexpr Matrix4x3 b(Vector3(-4.0f,  0.5f,   9.0f),
+                          Vector3(-9.0f, 11.0f,  0.25f),
+                          Vector3( 0.0f, -8.0f,  19.0f),
+                          Vector3(-3.0f, -5.0f,   2.0f));
+    constexpr Matrix4x3 c(Vector3(-4.0f,  1.5f,  12.0f),
+                          Vector3(-5.0f, 16.0f,  7.25f),
+                          Vector3( 8.0f,  1.0f,  30.0f),
+                          Vector3( 9.0f,  8.0f,  17.0f));
 
-    CORRADE_COMPARE(a + b, c);
-    CORRADE_COMPARE(c - b, a);
+    constexpr auto d = a + b;
+    constexpr auto e = c - b;
+    CORRADE_COMPARE(d, c);
+    CORRADE_COMPARE(e, a);
 }
 
 void RectangularMatrixTest::multiplyDivide() {
-    Matrix2x2 matrix(Vector2(1.0f, 2.0f),
-                     Vector2(3.0f, 4.0f));
-    Matrix2x2 multiplied(Vector2(-1.5f, -3.0f),
-                         Vector2(-4.5f, -6.0f));
+    constexpr Matrix2x2 matrix(Vector2(1.0f, 2.0f),
+                               Vector2(3.0f, 4.0f));
+    constexpr Matrix2x2 multiplied(Vector2(-1.5f, -3.0f),
+                                   Vector2(-4.5f, -6.0f));
 
-    CORRADE_COMPARE(matrix*-1.5f, multiplied);
-    CORRADE_COMPARE(-1.5f*matrix, multiplied);
-    CORRADE_COMPARE(multiplied/-1.5f, matrix);
+    constexpr auto a = matrix*-1.5f;
+    constexpr auto b = -1.5f*matrix;
+    constexpr auto c = multiplied/-1.5f;
+    CORRADE_COMPARE(a, multiplied);
+    CORRADE_COMPARE(b, multiplied);
+    CORRADE_COMPARE(c, matrix);
 
     /* Divide vector with number and inverse */
-    Matrix2x2 divisor(Vector2( 1.0f, 2.0f),
-                      Vector2(-4.0f, 8.0f));
-    Matrix2x2 result(Vector2(  1.0f,   0.5f),
-                     Vector2(-0.25f, 0.125f));
-    CORRADE_COMPARE(1.0f/divisor, result);
+    constexpr Matrix2x2 divisor(Vector2( 1.0f, 2.0f),
+                                Vector2(-4.0f, 8.0f));
+    constexpr Matrix2x2 result(Vector2(  1.0f,   0.5f),
+                               Vector2(-0.25f, 0.125f));
+
+    constexpr auto d = 1.0f/divisor;
+    CORRADE_COMPARE(d, result);
 }
 
 void RectangularMatrixTest::multiply() {
-    RectangularMatrix<4, 6, Int> left(
+    constexpr RectangularMatrix<4, 6, Int> left(
         Vector<6, Int>(-5,   27, 10,  33, 0, -15),
         Vector<6, Int>( 7,   56, 66,   1, 0, -24),
         Vector<6, Int>( 4,   41,  4,   0, 1,  -4),
         Vector<6, Int>( 9, -100, 19, -49, 1,   9)
     );
 
-    RectangularMatrix<5, 4, Int> right(
+    constexpr RectangularMatrix<5, 4, Int> right(
         Vector<4, Int>(1,  -7,  0,  158),
         Vector<4, Int>(2,  24, -3,   40),
         Vector<4, Int>(3, -15, -2,  -50),
@@ -338,7 +348,7 @@ void RectangularMatrixTest::multiply() {
         Vector<4, Int>(5,  30,  4,   18)
     );
 
-    RectangularMatrix<5, 6, Int> expected(
+    constexpr RectangularMatrix<5, 6, Int> expected(
        Vector<6, Int>( 1368, -16165,  2550, -7716,  158,  1575),
        Vector<6, Int>(  506,  -2725,  2352, -1870,   37,  -234),
        Vector<6, Int>( -578,   4159, -1918,  2534,  -52,  -127),
@@ -346,36 +356,42 @@ void RectangularMatrixTest::multiply() {
        Vector<6, Int>(  363,    179,  2388,  -687,   22,  -649)
     );
 
-    CORRADE_COMPARE(left*right, expected);
+    constexpr auto a = left*right;
+    CORRADE_COMPARE(a, expected);
 }
 
 void RectangularMatrixTest::multiplyVector() {
-    Vector4i a(-5, 27, 10, 33);
-    RectangularMatrix<3, 1, Int> b(1, 2, 3);
-    CORRADE_COMPARE(a*b, Matrix3x4i(
+    constexpr Vector4i a(-5, 27, 10, 33);
+    constexpr RectangularMatrix<3, 1, Int> b(1, 2, 3);
+
+    constexpr auto c = a*b;
+    CORRADE_COMPARE(c, Matrix3x4i(
        Vector4i( -5,  27, 10,  33),
        Vector4i(-10,  54, 20,  66),
        Vector4i(-15,  81, 30,  99)
     ));
 
-    Matrix3x4i c(Vector4i(0, 4,  8, 12),
-                 Vector4i(1, 5,  9, 13),
-                 Vector4i(3, 7, 11, 15));
-    Vector3i d(2, -2, 3);
-    CORRADE_COMPARE(c*d, Vector4i(7, 19, 31, 43));
+    constexpr Matrix3x4i d(Vector4i(0, 4,  8, 12),
+                           Vector4i(1, 5,  9, 13),
+                           Vector4i(3, 7, 11, 15));
+    constexpr Vector3i e(2, -2, 3);
+
+    constexpr auto f = d*e;
+    CORRADE_COMPARE(f, Vector4i(7, 19, 31, 43));
 }
 
 void RectangularMatrixTest::transposed() {
-    Matrix4x3 original(Vector3( 0.0f,  1.0f,  3.0f),
-                       Vector3( 4.0f,  5.0f,  7.0f),
-                       Vector3( 8.0f,  9.0f, 11.0f),
-                       Vector3(12.0f, 13.0f, 15.0f));
+    constexpr Matrix4x3 original(Vector3( 0.0f,  1.0f,  3.0f),
+                                 Vector3( 4.0f,  5.0f,  7.0f),
+                                 Vector3( 8.0f,  9.0f, 11.0f),
+                                 Vector3(12.0f, 13.0f, 15.0f));
 
-    Matrix3x4 transposed(Vector4(0.0f, 4.0f,  8.0f, 12.0f),
-                         Vector4(1.0f, 5.0f,  9.0f, 13.0f),
-                         Vector4(3.0f, 7.0f, 11.0f, 15.0f));
+    constexpr Matrix3x4 transposed(Vector4(0.0f, 4.0f,  8.0f, 12.0f),
+                                   Vector4(1.0f, 5.0f,  9.0f, 13.0f),
+                                   Vector4(3.0f, 7.0f, 11.0f, 15.0f));
 
-    CORRADE_COMPARE(original.transposed(), transposed);
+    constexpr auto a = original.transposed();
+    CORRADE_COMPARE(a, transposed);
 }
 
 void RectangularMatrixTest::diagonal() {
@@ -475,48 +491,59 @@ void RectangularMatrixTest::subclass() {
     CORRADE_COMPARE(Mat2x2::fromDiagonal({1.0f, -2.0f}), Mat2x2(Vector2(1.0f,  0.0f),
                                                                 Vector2(0.0f, -2.0f)));
 
-    const Mat2x2 a(Vector2(1.0f, -3.0f),
-                   Vector2(-3.0f, 1.0f));
-    CORRADE_COMPARE(-a, Mat2x2(Vector2(-1.0f, 3.0f),
+    constexpr const Mat2x2 a(Vector2(1.0f, -3.0f),
+                       Vector2(-3.0f, 1.0f));
+    constexpr auto a0 = -a;
+    CORRADE_COMPARE(a0, Mat2x2(Vector2(-1.0f, 3.0f),
                                Vector2(3.0f, -1.0f)));
 
-    Mat2x2 b(Vector2(-2.0f, 5.0f),
-             Vector2(5.0f, -2.0f));
-    const Mat2x2 bExpected(Vector2(-1.0f, 2.0f),
-                           Vector2(2.0f, -1.0f));
-    CORRADE_COMPARE(b + a, bExpected);
+    constexpr const Mat2x2 b(Vector2(-2.0f, 5.0f),
+                             Vector2(5.0f, -2.0f));
+    constexpr Mat2x2 bExpected(Vector2(-1.0f, 2.0f),
+                               Vector2(2.0f, -1.0f));
+    constexpr auto b0 = b + a;
+    CORRADE_COMPARE(b0, bExpected);
 
-    Mat2x2 c(Vector2(-2.0f, 5.0f),
-             Vector2(5.0f, -2.0f));
+    constexpr Mat2x2 c(Vector2(-2.0f, 5.0f),
+                       Vector2(5.0f, -2.0f));
     const Mat2x2 cExpected(Vector2(-3.0f, 8.0f),
                            Vector2(8.0f, -3.0f));
-    CORRADE_COMPARE(c - a, cExpected);
+    constexpr auto c0 = c - a;
+    CORRADE_COMPARE(c0, cExpected);
 
-    Mat2x2 d(Vector2(-2.0f, 5.0f),
-             Vector2(5.0f, -2.0f));
+    constexpr Mat2x2 d(Vector2(-2.0f, 5.0f),
+                       Vector2(5.0f, -2.0f));
     const Mat2x2 dExpected(Vector2(-4.0f, 10.0f),
                            Vector2(10.0f, -4.0f));
-    CORRADE_COMPARE(d*2.0f, dExpected);
-    CORRADE_COMPARE(2.0f*d, dExpected);
+    constexpr auto d0 = d*2.0f;
+    constexpr auto d1 = 2.0f*d;
+    CORRADE_COMPARE(d0, dExpected);
+    CORRADE_COMPARE(d1, dExpected);
 
-    Mat2x2 e(Vector2(-2.0f, 5.0f),
-             Vector2(5.0f, -2.0f));
-    CORRADE_COMPARE(e/0.5f, dExpected);
-    CORRADE_COMPARE(2.0f/e, Mat2x2(Vector2(-1.0f, 0.4f),
-                                   Vector2(0.4f, -1.0f)));
-    const Vector2 f(2.0f, 5.0f);
-    const Math::RectangularMatrix<2, 1, Float> g(3.0f, -1.0f);
-    CORRADE_COMPARE(f*g, Mat2x2(Vector2(6.0f, 15.0f),
-                                Vector2(-2.0f, -5.0f)));
+    constexpr Mat2x2 e(Vector2(-2.0f, 5.0f),
+                       Vector2(5.0f, -2.0f));
+    constexpr auto e0 = e/0.5f;
+    constexpr auto e1 = 2.0f/e;
+    CORRADE_COMPARE(e0, dExpected);
+    CORRADE_COMPARE(e1, Mat2x2(Vector2(-1.0f, 0.4f),
+                               Vector2(0.4f, -1.0f)));
+    constexpr const Vector2 f(2.0f, 5.0f);
+    constexpr const Math::RectangularMatrix<2, 1, Float> g(3.0f, -1.0f);
+    constexpr auto f0 = f*g;
+    CORRADE_COMPARE(f0, Mat2x2(Vector2(6.0f, 15.0f),
+                               Vector2(-2.0f, -5.0f)));
 
     /* Operators on variable-sized matrix */
-    const BasicMat<1, Float> h(-2.0f);
-    CORRADE_COMPARE(2.0f*h, (BasicMat<1, Float>(-4.0f)));
-    CORRADE_COMPARE(2.0f/h, (BasicMat<1, Float>(-1.0f)));
+    constexpr const BasicMat<1, Float> h(-2.0f);
+    constexpr auto h0 = 2.0f*h;
+    constexpr auto h1 = 2.0f/h;
+    CORRADE_COMPARE(h0, (BasicMat<1, Float>(-4.0f)));
+    CORRADE_COMPARE(h1, (BasicMat<1, Float>(-1.0f)));
 
-    const Math::Vector<1, Float> i(2.0f);
-    const Math::RectangularMatrix<1, 1, Float> j(3.0f);
-    CORRADE_COMPARE(i*j, (BasicMat<1, Float>(6.0f)));
+    constexpr const Math::Vector<1, Float> i(2.0f);
+    constexpr const Math::RectangularMatrix<1, 1, Float> j(3.0f);
+    constexpr auto i0 = i*j;
+    CORRADE_COMPARE(i0, (BasicMat<1, Float>(6.0f)));
 }
 
 void RectangularMatrixTest::debug() {
