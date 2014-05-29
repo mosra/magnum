@@ -166,25 +166,27 @@ void Vector3Test::access() {
     CORRADE_COMPARE(vec.b(), 5.0f);
 
     constexpr Vector3 cvec(1.0f, -2.0f, 5.0f);
-    constexpr Float x = cvec.x();
-    constexpr Float r = cvec.r();
-    constexpr Float y = cvec.y();
-    constexpr Float g = cvec.g();
-    constexpr Float z = cvec.z();
-    constexpr Float b = cvec.b();
-    CORRADE_COMPARE(x, 1.0f);
-    CORRADE_COMPARE(r, 1.0f);
-    CORRADE_COMPARE(y, -2.0f);
-    CORRADE_COMPARE(g, -2.0f);
-    CORRADE_COMPARE(z, 5.0f);
-    CORRADE_COMPARE(b, 5.0f);
+    constexpr auto cx = cvec.x();
+    constexpr auto cr = cvec.r();
+    constexpr auto cy = cvec.y();
+    constexpr auto cg = cvec.g();
+    constexpr auto cz = cvec.z();
+    constexpr auto cb = cvec.b();
+    CORRADE_COMPARE(cx, 1.0f);
+    CORRADE_COMPARE(cr, 1.0f);
+    CORRADE_COMPARE(cy, -2.0f);
+    CORRADE_COMPARE(cg, -2.0f);
+    CORRADE_COMPARE(cz, 5.0f);
+    CORRADE_COMPARE(cb, 5.0f);
 }
 
 void Vector3Test::cross() {
-    Vector3i a(1, -1, 1);
-    Vector3i b(4, 3, 7);
+    constexpr Vector3i a(1, -1, 1);
+    constexpr Vector3i b(4, 3, 7);
 
-    CORRADE_COMPARE(Vector3i::cross(a, b), Vector3i(-10, -3, 7));
+    constexpr auto c = Vector3i::cross(a, b);
+
+    CORRADE_COMPARE(c, Vector3i(-10, -3, 7));
 }
 
 void Vector3Test::axes() {

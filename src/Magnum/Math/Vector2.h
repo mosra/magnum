@@ -94,7 +94,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * @see @ref perpendicular(),
          *      @ref dot(const Vector<size, T>&, const Vector<size, T>&)
          */
-        static T cross(const Vector2<T>& a, const Vector2<T>& b) {
+        constexpr static T cross(const Vector2<T>& a, const Vector2<T>& b) {
             return Vector<2, T>::dot(a.perpendicular(), b);
         }
 
@@ -122,9 +122,9 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @brief Copy constructor */
         constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
 
-        T& x() { return (*this)[0]; }                   /**< @brief X component */
+        constexpr T& x() { return (*this)[0]; }         /**< @brief X component */
         constexpr T x() const { return (*this)[0]; }    /**< @overload */
-        T& y() { return (*this)[1]; }                   /**< @brief Y component */
+        constexpr T& y() { return (*this)[1]; }         /**< @brief Y component */
         constexpr T y() const { return (*this)[1]; }    /**< @overload */
 
         /**
@@ -137,7 +137,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *      @ref dot(const Vector<size, T>&, const Vector<size, T>&),
          *      @ref operator-() const
          */
-        Vector2<T> perpendicular() const { return {-y(), x()}; }
+        constexpr Vector2<T> perpendicular() const { return {-y(), x()}; }
 
         /**
          * @brief Aspect ratio
@@ -146,7 +146,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *      a = \frac{v_x}{v_y}
          * @f]
          */
-        T aspectRatio() const { return x()/y(); }
+        constexpr T aspectRatio() const { return x()/y(); }
 
         /**
          * @brief Minimum and maximum value

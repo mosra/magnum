@@ -157,17 +157,19 @@ void Vector2Test::access() {
     CORRADE_COMPARE(vec.y(), -2.0f);
 
     constexpr Vector2 cvec(1.0f, -2.0f);
-    constexpr Float x = cvec.x();
-    constexpr Float y = cvec.y();
-    CORRADE_COMPARE(x, 1.0f);
-    CORRADE_COMPARE(y, -2.0f);
+    constexpr auto cx = cvec.x();
+    constexpr auto cy = cvec.y();
+    CORRADE_COMPARE(cx, 1.0f);
+    CORRADE_COMPARE(cy, -2.0f);
 }
 
 void Vector2Test::cross() {
-    Vector2i a(1, -1);
-    Vector2i b(4, 3);
+    constexpr Vector2i a(1, -1);
+    constexpr Vector2i b(4, 3);
 
-    CORRADE_COMPARE(Vector2i::cross(a, b), 7);
+    constexpr auto c = Vector2i::cross(a, b);
+
+    CORRADE_COMPARE(c, 7);
     CORRADE_COMPARE(Vector3i::cross({a, 0}, {b, 0}), Vector3i(0, 0, Vector2i::cross(a, b)));
 }
 
@@ -186,14 +188,16 @@ void Vector2Test::scales() {
 }
 
 void Vector2Test::perpendicular() {
-    const Vector2 a(0.5f, -15.0f);
-    CORRADE_COMPARE(a.perpendicular(), Vector2(15.0f, 0.5f));
+    constexpr Vector2 a(0.5f, -15.0f);
+    constexpr auto b = a.perpendicular();
+    CORRADE_COMPARE(b, Vector2(15.0f, 0.5f));
     CORRADE_COMPARE(Vector2::dot(a.perpendicular(), a), 0.0f);
     CORRADE_COMPARE(Vector2::xAxis().perpendicular(), Vector2::yAxis());
 }
 
 void Vector2Test::aspectRatio() {
-    CORRADE_COMPARE(Vector2(3.0f, 4.0f).aspectRatio(), 0.75f);
+    constexpr auto a = Vector2(3.0f, 4.0f).aspectRatio();
+    CORRADE_COMPARE(a, 0.75f);
 }
 
 void Vector2Test::minmax() {

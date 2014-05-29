@@ -110,7 +110,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @f]
          * @see @ref Vector2::cross()
          */
-        static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+        constexpr static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
             return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
                    swizzle<'z', 'x', 'y'>(a)*swizzle<'y', 'z', 'x'>(b);
         }
@@ -153,7 +153,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * @see @ref r()
          */
-        T& x() { return (*this)[0]; }
+        constexpr T& x() { return (*this)[0]; }
         constexpr T x() const { return (*this)[0]; }    /**< @overload */
 
         /**
@@ -161,7 +161,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * @see @ref g()
          */
-        T& y() { return (*this)[1]; }
+        constexpr T& y() { return (*this)[1]; }
         constexpr T y() const { return (*this)[1]; }    /**< @overload */
 
         /**
@@ -169,7 +169,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * @see @ref b()
          */
-        T& z() { return (*this)[2]; }
+        constexpr T& z() { return (*this)[2]; }
         constexpr T z() const { return (*this)[2]; }    /**< @overload */
 
         /**
@@ -177,7 +177,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * Equivalent to @ref x().
          */
-        T& r() { return x(); }
+        constexpr T& r() { return x(); }
         constexpr T r() const { return x(); }           /**< @overload */
 
         /**
@@ -185,7 +185,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * Equivalent to @ref y().
          */
-        T& g() { return y(); }
+        constexpr T& g() { return y(); }
         constexpr T g() const { return y(); }           /**< @overload */
 
         /**
@@ -193,7 +193,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * Equivalent to @ref z().
          */
-        T& b() { return z(); }
+        constexpr T& b() { return z(); }
         constexpr T b() const { return z(); }           /**< @overload */
 
         /**
