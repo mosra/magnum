@@ -34,7 +34,7 @@
 namespace Magnum { namespace Math {
 
 namespace Implementation {
-    template<std::size_t size, class T> class MatrixDeterminant;
+    template<std::size_t, class> struct MatrixDeterminant;
 }
 
 /**
@@ -248,9 +248,8 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
 
 namespace Implementation {
 
-template<std::size_t size, class T> class MatrixDeterminant {
-    public:
-        T operator()(const Matrix<size, T>& m);
+template<std::size_t size, class T> struct MatrixDeterminant {
+    T operator()(const Matrix<size, T>& m);
 };
 
 template<std::size_t size, class T> T MatrixDeterminant<size, T>::operator()(const Matrix<size, T>& m) {
@@ -262,18 +261,16 @@ template<std::size_t size, class T> T MatrixDeterminant<size, T>::operator()(con
     return out;
 }
 
-template<class T> class MatrixDeterminant<2, T> {
-    public:
-        constexpr T operator()(const Matrix<2, T>& m) const {
-            return m[0][0]*m[1][1] - m[1][0]*m[0][1];
-        }
+template<class T> struct MatrixDeterminant<2, T> {
+    constexpr T operator()(const Matrix<2, T>& m) const {
+        return m[0][0]*m[1][1] - m[1][0]*m[0][1];
+    }
 };
 
-template<class T> class MatrixDeterminant<1, T> {
-    public:
-        constexpr T operator()(const Matrix<1, T>& m) const {
-            return m[0][0];
-        }
+template<class T> struct MatrixDeterminant<1, T> {
+    constexpr T operator()(const Matrix<1, T>& m) const {
+        return m[0][0];
+    }
 };
 
 }
