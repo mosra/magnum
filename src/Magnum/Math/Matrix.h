@@ -119,10 +119,10 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * tr(A) = \sum_{i=1}^n a_{i,i}
          * @f]
          */
-        T trace() const { return RectangularMatrix<size, size, T>::diagonal().sum(); }
+        constexpr T trace() const { return RectangularMatrix<size, size, T>::diagonal().sum(); }
 
         /** @brief %Matrix without given column and row */
-        Matrix<size-1, T> ij(std::size_t skipCol, std::size_t skipRow) const;
+        constexpr Matrix<size-1, T> ij(std::size_t skipCol, std::size_t skipRow) const;
 
         /**
          * @brief Determinant
@@ -135,7 +135,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          *      \det(A) = a_{0, 0} a_{1, 1} - a_{1, 0} a_{0, 1}
          * @f]
          */
-        T determinant() const { return Implementation::MatrixDeterminant<size, T>()(*this); }
+        constexpr T determinant() const { return Implementation::MatrixDeterminant<size, T>()(*this); }
 
         /**
          * @brief Inverted matrix
@@ -147,7 +147,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @ref Matrix4::invertedRigid() which are faster alternatives for
          * particular matrix types.
          */
-        Matrix<size, T> inverted() const;
+        constexpr Matrix<size, T> inverted() const;
 
         /**
          * @brief Inverted orthogonal matrix
@@ -168,13 +168,13 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Reimplementation of functions to return correct type */
-        Matrix<size, T> operator*(const Matrix<size, T>& other) const {
+        constexpr Matrix<size, T> operator*(const Matrix<size, T>& other) const {
             return RectangularMatrix<size, size, T>::operator*(other);
         }
-        template<std::size_t otherCols> RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const {
+        template<std::size_t otherCols> RectangularMatrix<otherCols, size, T> constexpr operator*(const RectangularMatrix<otherCols, size, T>& other) const {
             return RectangularMatrix<size, size, T>::operator*(other);
         }
-        Vector<size, T> operator*(const Vector<size, T>& other) const {
+        constexpr Vector<size, T> operator*(const Vector<size, T>& other) const {
             return RectangularMatrix<size, size, T>::operator*(other);
         }
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, Matrix<size, T>)
@@ -219,40 +219,40 @@ template<std::size_t size, class T> inline Corrade::Utility::Debug operator<<(Co
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(size, Type, VectorType)       \
-    VectorType<T>& operator[](std::size_t col) {                            \
+    constexpr VectorType<T>& operator[](std::size_t col) {                  \
         return static_cast<VectorType<T>&>(Matrix<size, T>::operator[](col)); \
     }                                                                       \
     constexpr const VectorType<T> operator[](std::size_t col) const {       \
         return VectorType<T>(Matrix<size, T>::operator[](col));             \
     }                                                                       \
-    VectorType<T> row(std::size_t row) const {                              \
+    constexpr VectorType<T> row(std::size_t row) const {                    \
         return VectorType<T>(Matrix<size, T>::row(row));                    \
     }                                                                       \
                                                                             \
-    Type<T> operator*(const Matrix<size, T>& other) const {                 \
+    constexpr Type<T> operator*(const Matrix<size, T>& other) const {       \
         return Matrix<size, T>::operator*(other);                           \
     }                                                                       \
-    template<std::size_t otherCols> RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const { \
+    template<std::size_t otherCols> constexpr RectangularMatrix<otherCols, size, T> operator*(const RectangularMatrix<otherCols, size, T>& other) const { \
         return Matrix<size, T>::operator*(other);                           \
     }                                                                       \
-    VectorType<T> operator*(const Vector<size, T>& other) const {           \
+    constexpr VectorType<T> operator*(const Vector<size, T>& other) const { \
         return Matrix<size, T>::operator*(other);                           \
     }                                                                       \
                                                                             \
-    Type<T> transposed() const { return Matrix<size, T>::transposed(); }    \
+    constexpr Type<T> transposed() const { return Matrix<size, T>::transposed(); } \
     constexpr VectorType<T> diagonal() const { return Matrix<size, T>::diagonal(); } \
-    Type<T> inverted() const { return Matrix<size, T>::inverted(); }        \
-    Type<T> invertedOrthogonal() const {                                    \
+    constexpr Type<T> inverted() const { return Matrix<size, T>::inverted(); } \
+    constexpr Type<T> invertedOrthogonal() const {                          \
         return Matrix<size, T>::invertedOrthogonal();                       \
     }
 
 namespace Implementation {
 
 template<std::size_t size, class T> struct MatrixDeterminant {
-    T operator()(const Matrix<size, T>& m);
+    constexpr T operator()(const Matrix<size, T>& m);
 };
 
-template<std::size_t size, class T> T MatrixDeterminant<size, T>::operator()(const Matrix<size, T>& m) {
+template<std::size_t size, class T> constexpr T MatrixDeterminant<size, T>::operator()(const Matrix<size, T>& m) {
     T out(0);
 
     for(std::size_t col = 0; col != size; ++col)
@@ -290,7 +290,7 @@ template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
     return true;
 }
 
-template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const std::size_t skipCol, const std::size_t skipRow) const {
+template<std::size_t size, class T> constexpr Matrix<size-1, T> Matrix<size, T>::ij(const std::size_t skipCol, const std::size_t skipRow) const {
     Matrix<size-1, T> out(Matrix<size-1, T>::Zero);
 
     for(std::size_t col = 0; col != size-1; ++col)
@@ -301,7 +301,7 @@ template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const 
     return out;
 }
 
-template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::inverted() const {
+template<std::size_t size, class T> constexpr Matrix<size, T> Matrix<size, T>::inverted() const {
     Matrix<size, T> out(Zero);
 
     const T _determinant = determinant();

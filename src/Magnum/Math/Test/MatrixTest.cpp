@@ -214,7 +214,7 @@ void MatrixTest::isOrthogonal() {
 }
 
 void MatrixTest::trace() {
-    Matrix<5, Int> m(
+    constexpr Matrix<5, Int> m(
         Vector<5, Int>(1, 2,   3,  0,  0),
         Vector<5, Int>(2, 3,   2,  1, -2),
         Vector<5, Int>(1, 1, -20,  1,  0),
@@ -222,24 +222,27 @@ void MatrixTest::trace() {
         Vector<5, Int>(3, 1,   0,  1, -2)
     );
 
-    CORRADE_COMPARE(m.trace(), -8);
+    constexpr auto a = m.trace();
+
+    CORRADE_COMPARE(a, -8);
 }
 
 void MatrixTest::ij() {
-    Matrix4x4 original(Vector4( 0.0f,  1.0f,  2.0f,  3.0f),
-                       Vector4( 4.0f,  5.0f,  6.0f,  7.0f),
-                       Vector4( 8.0f,  9.0f, 10.0f, 11.0f),
-                       Vector4(12.0f, 13.0f, 14.0f, 15.0f));
+    constexpr Matrix4x4 original(Vector4( 0.0f,  1.0f,  2.0f,  3.0f),
+                                 Vector4( 4.0f,  5.0f,  6.0f,  7.0f),
+                                 Vector4( 8.0f,  9.0f, 10.0f, 11.0f),
+                                 Vector4(12.0f, 13.0f, 14.0f, 15.0f));
 
     Matrix3x3 skipped(Vector3( 0.0f,  1.0f,  3.0f),
                       Vector3( 8.0f,  9.0f, 11.0f),
                       Vector3(12.0f, 13.0f, 15.0f));
 
-    CORRADE_COMPARE(original.ij(1, 2), skipped);
+    constexpr auto a = original.ij(1, 2);
+    CORRADE_COMPARE(a, skipped);
 }
 
 void MatrixTest::determinant() {
-    Matrix<5, Int> m(
+    constexpr Matrix<5, Int> m(
         Vector<5, Int>(1, 2, 2, 1,  0),
         Vector<5, Int>(2, 3, 2, 1, -2),
         Vector<5, Int>(1, 1, 1, 1,  0),
@@ -247,21 +250,22 @@ void MatrixTest::determinant() {
         Vector<5, Int>(3, 1, 0, 1, -2)
     );
 
-    CORRADE_COMPARE(m.determinant(), -2);
+    constexpr auto a = m.determinant();
+    CORRADE_COMPARE(a, -2);
 }
 
 void MatrixTest::inverted() {
-    Matrix4x4 m(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
-                Vector4(4.0f,  4.0f, 7.0f, 3.0f),
-                Vector4(7.0f, -1.0f, 8.0f, 0.0f),
-                Vector4(9.0f,  4.0f, 5.0f, 9.0f));
+    constexpr Matrix4x4 m(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
+                          Vector4(4.0f,  4.0f, 7.0f, 3.0f),
+                          Vector4(7.0f, -1.0f, 8.0f, 0.0f),
+                          Vector4(9.0f,  4.0f, 5.0f, 9.0f));
 
-    Matrix4x4 inverse(Vector4(-60/103.0f,   71/103.0f,  -4/103.0f,  3/103.0f),
-                      Vector4(-66/103.0f,  109/103.0f, -25/103.0f, -7/103.0f),
-                      Vector4(177/412.0f,  -97/206.0f,  53/412.0f, -7/206.0f),
-                      Vector4(259/412.0f, -185/206.0f,  31/412.0f, 27/206.0f));
+    constexpr Matrix4x4 inverse(Vector4(-60/103.0f,   71/103.0f,  -4/103.0f,  3/103.0f),
+                                Vector4(-66/103.0f,  109/103.0f, -25/103.0f, -7/103.0f),
+                                Vector4(177/412.0f,  -97/206.0f,  53/412.0f, -7/206.0f),
+                                Vector4(259/412.0f, -185/206.0f,  31/412.0f, 27/206.0f));
 
-    Matrix4x4 _inverse = m.inverted();
+    constexpr Matrix4x4 _inverse = m.inverted();
 
     CORRADE_COMPARE(_inverse, inverse);
     CORRADE_COMPARE(_inverse*m, Matrix4x4());
@@ -315,26 +319,36 @@ void MatrixTest::subclassTypes() {
 }
 
 void MatrixTest::subclass() {
-    const Mat2 a(Vec2(2.0f, 3.5f),
-                 Vec2(3.0f, 1.0f));
+    constexpr Mat2 a(Vec2(2.0f, 3.5f),
+                     Vec2(3.0f, 1.0f));
+    constexpr auto a0 = a[1];
+    constexpr auto a1 = a.row(1);
+    CORRADE_COMPARE(a0, Vec2(3.0f, 1.0f));
+    CORRADE_COMPARE(a1, Vec2(3.5f, 1.0f));
+
     Mat2 b(Vec2(2.0f, 3.5f),
            Vec2(3.0f, 1.0f));
-    CORRADE_COMPARE(a[1], Vec2(3.0f, 1.0f));
     CORRADE_COMPARE(b[1], Vec2(3.0f, 1.0f));
-    CORRADE_COMPARE(a.row(1), Vec2(3.5f, 1.0f));
 
-    CORRADE_COMPARE(a*b, Mat2(Vec2(14.5f, 10.5f),
-                              Vec2(9.0f, 11.5f)));
-    CORRADE_COMPARE(a*Vec2(1.0f, 0.5f), Vec2(3.5f, 4.0f));
+    constexpr Mat2 cb(Vec2(2.0f, 3.5f),
+                      Vec2(3.0f, 1.0f));
+    constexpr auto b0 = a*cb;
+    constexpr auto b1 = a*Vec2(1.0f, 0.5f);
+    CORRADE_COMPARE(b0, Mat2(Vec2(14.5f, 10.5f),
+                             Vec2(9.0f, 11.5f)));
+    CORRADE_COMPARE(b1, Vec2(3.5f, 4.0f));
 
-    CORRADE_COMPARE(a.transposed(), Mat2(Vec2(2.0f, 3.0f),
-                                         Vec2(3.5f, 1.0f)));
-    CORRADE_COMPARE(a.diagonal(), Vec2(2.0f, 1.0f));
+    constexpr auto b2 = a.transposed();
+    constexpr auto b3 = a.diagonal();
+    CORRADE_COMPARE(b2, Mat2(Vec2(2.0f, 3.0f),
+                             Vec2(3.5f, 1.0f)));
+    CORRADE_COMPARE(b3, Vec2(2.0f, 1.0f));
 
-    Mat2 c(Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f),
-           Vec2(-Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f));
-    CORRADE_COMPARE(c.inverted(), Mat2(Vec2(Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f),
-                                       Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f)));
+    constexpr Mat2 c(Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f),
+                     Vec2(-Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f));
+    constexpr auto c0 = c.inverted();
+    CORRADE_COMPARE(c0, Mat2(Vec2(Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f),
+                             Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f)));
     CORRADE_COMPARE(c.invertedOrthogonal(), Mat2(Vec2(Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f),
                                                  Vec2(Constants::sqrt2()/2.0f, Constants::sqrt2()/2.0f)));
 }
