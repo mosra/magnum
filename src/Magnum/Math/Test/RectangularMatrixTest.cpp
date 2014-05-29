@@ -413,7 +413,7 @@ void RectangularMatrixTest::vector() {
 
 template<std::size_t size, class T> class BasicMat: public Math::RectangularMatrix<size, size, T> {
     public:
-        template<class ...U> BasicMat(U&&... args): Math::RectangularMatrix<size, size, T>{std::forward<U>(args)...} {}
+        template<class ...U> constexpr BasicMat(U&&... args): Math::RectangularMatrix<size, size, T>{std::forward<U>(args)...} {}
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, BasicMat<size, T>)
 };
@@ -422,7 +422,7 @@ MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(BasicMat<size, T>)
 
 template<class T> class BasicMat2x2: public BasicMat<2, T> {
     public:
-        template<class ...U> BasicMat2x2(U&&... args): BasicMat<2, T>{std::forward<U>(args)...} {}
+        template<class ...U> constexpr BasicMat2x2(U&&... args): BasicMat<2, T>{std::forward<U>(args)...} {}
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(2, 2, BasicMat2x2<T>)
 };
