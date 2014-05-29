@@ -136,67 +136,87 @@ void BoolVectorTest::data() {
 }
 
 void BoolVectorTest::compare() {
-    BoolVector19 a(0xa5, 0x5f, 0x07);
-    CORRADE_VERIFY(a == a);
+    constexpr BoolVector19 a(0xa5, 0x5f, 0x07);
+    constexpr auto b = a == a;
+    CORRADE_VERIFY(b);
 
     /* Change in full segments */
-    BoolVector19 b(0xa3, 0x5f, 0x07);
-    BoolVector19 c(0xa5, 0x98, 0x07);
-    CORRADE_VERIFY(a != b);
-    CORRADE_VERIFY(a != c);
+    constexpr BoolVector19 c(0xa3, 0x5f, 0x07);
+    constexpr BoolVector19 d(0xa5, 0x98, 0x07);
+    constexpr auto e = a != c;
+    constexpr auto f = a != d;
+    CORRADE_VERIFY(e);
+    CORRADE_VERIFY(f);
 
     /* Change in last bit */
-    BoolVector19 d(0xa5, 0x5f, 0x06);
-    CORRADE_VERIFY(a != d);
+    constexpr BoolVector19 g(0xa5, 0x5f, 0x06);
+    constexpr auto h = a != g;
+    CORRADE_VERIFY(h);
 }
 
 void BoolVectorTest::compareUndefined() {
-    BoolVector19 a(0xa5, 0x5f, 0x07);
+    constexpr BoolVector19 a(0xa5, 0x5f, 0x07);
 
     /* Change in unused part of last segment */
-    BoolVector19 b(0xa5, 0x5f, 0x0f);
-    CORRADE_VERIFY(a == b);
+    constexpr BoolVector19 b(0xa5, 0x5f, 0x0f);
+    constexpr auto c = a == b;
+    CORRADE_VERIFY(c);
 
     /* Change in used part of last segment */
-    BoolVector19 c(0xa5, 0x5f, 0x03);
-    CORRADE_VERIFY(a != c);
+    constexpr BoolVector19 d(0xa5, 0x5f, 0x03);
+    constexpr auto e = a != d;
+    CORRADE_VERIFY(e);
 }
 
 void BoolVectorTest::all() {
-    CORRADE_VERIFY(BoolVector19(0xff, 0xff, 0x07).all());
+    constexpr auto a = BoolVector19(0xff, 0xff, 0x07).all();
+    CORRADE_VERIFY(a);
 
     /* Last segment - bit in used and unused part */
-    CORRADE_VERIFY(BoolVector19(0xff, 0xff, 0x0f).all());
-    CORRADE_VERIFY(!BoolVector19(0xff, 0xff, 0x04).all());
+    constexpr auto b = BoolVector19(0xff, 0xff, 0x0f).all();
+    constexpr auto c = BoolVector19(0xff, 0xff, 0x04).all();
+    CORRADE_VERIFY(b);
+    CORRADE_VERIFY(!c);
 }
 
 void BoolVectorTest::none() {
-    CORRADE_VERIFY(BoolVector19(0x00, 0x00, 0x00).none());
+    constexpr auto a = BoolVector19(0x00, 0x00, 0x00).none();
+    CORRADE_VERIFY(a);
 
     /* Last segment - bit in used and unused part */
-    CORRADE_VERIFY(BoolVector19(0x00, 0x00, 0x08).none());
-    CORRADE_VERIFY(!BoolVector19(0x00, 0x00, 0x04).none());
+    constexpr auto b = BoolVector19(0x00, 0x00, 0x08).none();
+    constexpr auto c = BoolVector19(0x00, 0x00, 0x04).none();
+    CORRADE_VERIFY(b);
+    CORRADE_VERIFY(!c);
 }
 
 void BoolVectorTest::any() {
-    CORRADE_VERIFY(BoolVector19(0x00, 0x01, 0x00).any());
+    constexpr auto a = BoolVector19(0x00, 0x01, 0x00).any();
+    CORRADE_VERIFY(a);
 
     /* Last segment - bit in used and unused part */
-    CORRADE_VERIFY(BoolVector19(0x00, 0x00, 0x04).any());
-    CORRADE_VERIFY(!BoolVector19(0x00, 0x00, 0x08).any());
+    constexpr auto b = BoolVector19(0x00, 0x00, 0x04).any();
+    constexpr auto c = BoolVector19(0x00, 0x00, 0x08).any();
+    CORRADE_VERIFY(b);
+    CORRADE_VERIFY(!c);
 }
 
 void BoolVectorTest::bitInverse() {
-    CORRADE_COMPARE(~BoolVector19(0xa5, 0x5f, 0x03), BoolVector19(0x5a, 0xa0, 0x04));
+    constexpr auto a = ~BoolVector19(0xa5, 0x5f, 0x03);
+    CORRADE_COMPARE(a, BoolVector19(0x5a, 0xa0, 0x04));
 }
 
 void BoolVectorTest::bitAndOrXor() {
-    BoolVector19 a(0xa5, 0x5f, 0x03);
-    BoolVector19 b(0x37, 0xf3, 0x06);
+    constexpr BoolVector19 a(0xa5, 0x5f, 0x03);
+    constexpr BoolVector19 b(0x37, 0xf3, 0x06);
 
-    CORRADE_COMPARE(a & b, BoolVector19(0x25, 0x53, 0x02));
-    CORRADE_COMPARE(a | b, BoolVector19(0xb7, 0xff, 0x07));
-    CORRADE_COMPARE(a ^ b, BoolVector19(0x92, 0xac, 0x05));
+    constexpr auto c = a & b;
+    constexpr auto d = a | b;
+    constexpr auto e = a ^ b;
+
+    CORRADE_COMPARE(c, BoolVector19(0x25, 0x53, 0x02));
+    CORRADE_COMPARE(d, BoolVector19(0xb7, 0xff, 0x07));
+    CORRADE_COMPARE(e, BoolVector19(0x92, 0xac, 0x05));
 }
 
 void BoolVectorTest::debug() {

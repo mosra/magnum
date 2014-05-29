@@ -94,7 +94,7 @@ template<std::size_t size> class BoolVector {
         constexpr BoolVector(const BoolVector<size>&) = default;
 
         /** @brief Copy assignment */
-        BoolVector<size>& operator=(const BoolVector<size>&) = default;
+        constexpr BoolVector<size>& operator=(const BoolVector<size>&) = default;
 
         /**
          * @brief Raw data
@@ -102,7 +102,7 @@ template<std::size_t size> class BoolVector {
          *
          * @see @ref operator[](), @ref set()
          */
-        UnsignedByte* data() { return _data; }
+        constexpr UnsignedByte* data() { return _data; }
         constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
 
         /** @brief Bit at given position */
@@ -111,37 +111,37 @@ template<std::size_t size> class BoolVector {
         }
 
         /** @brief Set bit at given position */
-        BoolVector<size>& set(std::size_t i, bool value) {
+        constexpr BoolVector<size>& set(std::size_t i, bool value) {
             _data[i/8] |= ((value & 0x01) << i%8);
             return *this;
         }
 
         /** @brief Equality comparison */
-        bool operator==(const BoolVector<size>& other) const;
+        constexpr bool operator==(const BoolVector<size>& other) const;
 
         /** @brief Non-equality comparison */
-        bool operator!=(const BoolVector<size>& other) const {
+        constexpr bool operator!=(const BoolVector<size>& other) const {
             return !operator==(other);
         }
 
         /** @brief Whether all bits are set */
-        bool all() const;
+        constexpr bool all() const;
 
         /** @brief Whether no bits are set */
-        bool none() const;
+        constexpr bool none() const;
 
         /** @brief Whether any bit is set */
-        bool any() const { return !none(); }
+        constexpr bool any() const { return !none(); }
 
         /** @brief Bitwise inversion */
-        BoolVector<size> operator~() const;
+        constexpr BoolVector<size> operator~() const;
 
         /**
          * @brief Bitwise AND and assign
          *
          * The computation is done in-place.
          */
-        BoolVector<size>& operator&=(const BoolVector<size>& other) {
+        constexpr BoolVector<size>& operator&=(const BoolVector<size>& other) {
             for(std::size_t i = 0; i != DataSize; ++i)
                 _data[i] &= other._data[i];
 
@@ -153,7 +153,7 @@ template<std::size_t size> class BoolVector {
          *
          * @see @ref operator&=()
          */
-        BoolVector<size> operator&(const BoolVector<size>& other) const {
+        constexpr BoolVector<size> operator&(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) &= other;
         }
 
@@ -162,7 +162,7 @@ template<std::size_t size> class BoolVector {
          *
          * The computation is done in-place.
          */
-        BoolVector<size>& operator|=(const BoolVector<size>& other) {
+        constexpr BoolVector<size>& operator|=(const BoolVector<size>& other) {
             for(std::size_t i = 0; i != DataSize; ++i)
                 _data[i] |= other._data[i];
 
@@ -174,7 +174,7 @@ template<std::size_t size> class BoolVector {
          *
          * @see @ref operator|=()
          */
-        BoolVector<size> operator|(const BoolVector<size>& other) const {
+        constexpr BoolVector<size> operator|(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) |= other;
         }
 
@@ -183,7 +183,7 @@ template<std::size_t size> class BoolVector {
          *
          * The computation is done in-place.
          */
-        BoolVector<size>& operator^=(const BoolVector<size>& other) {
+        constexpr BoolVector<size>& operator^=(const BoolVector<size>& other) {
             for(std::size_t i = 0; i != DataSize; ++i)
                 _data[i] ^= other._data[i];
 
@@ -195,7 +195,7 @@ template<std::size_t size> class BoolVector {
          *
          * @see @ref operator^=()
          */
-        BoolVector<size> operator^(const BoolVector<size>& other) const {
+        constexpr BoolVector<size> operator^(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) ^= other;
         }
 
@@ -224,7 +224,7 @@ template<std::size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::
     return debug;
 }
 
-template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector< size >& other) const {
+template<std::size_t size> inline constexpr bool BoolVector<size>::operator==(const BoolVector< size >& other) const {
     for(std::size_t i = 0; i != size/8; ++i)
         if(_data[i] != other._data[i]) return false;
 
@@ -235,7 +235,7 @@ template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVe
     return true;
 }
 
-template<std::size_t size> inline bool BoolVector<size>::all() const {
+template<std::size_t size> inline constexpr bool BoolVector<size>::all() const {
     /* Check all full segments */
     for(std::size_t i = 0; i != size/8; ++i)
         if(_data[i] != FullSegmentMask) return false;
@@ -247,7 +247,7 @@ template<std::size_t size> inline bool BoolVector<size>::all() const {
     return true;
 }
 
-template<std::size_t size> inline bool BoolVector<size>::none() const {
+template<std::size_t size> inline constexpr bool BoolVector<size>::none() const {
     /* Check all full segments */
     for(std::size_t i = 0; i != size/8; ++i)
         if(_data[i]) return false;
@@ -259,8 +259,8 @@ template<std::size_t size> inline bool BoolVector<size>::none() const {
     return true;
 }
 
-template<std::size_t size> inline BoolVector<size> BoolVector<size>::operator~() const {
-    BoolVector<size> out;
+template<std::size_t size> inline constexpr BoolVector<size> BoolVector<size>::operator~() const {
+    BoolVector<size> out{};
 
     for(std::size_t i = 0; i != DataSize; ++i)
         out._data[i] = ~_data[i];
