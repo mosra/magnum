@@ -259,7 +259,8 @@ void Matrix3Test::projection() {
                      {     0.0f, 2.0f/3.0f, 0.0f},
                      {     0.0f,      0.0f, 1.0f});
 
-    CORRADE_COMPARE(Matrix3::projection({4.0f, 3.0f}), expected);
+    constexpr auto a = Matrix3::projection({4.0f, 3.0f});
+    CORRADE_COMPARE(a, expected);
 }
 
 void Matrix3Test::fromParts() {

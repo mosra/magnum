@@ -151,7 +151,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * @see @ref perspectiveProjection(), @ref Matrix3::projection()
          */
-        static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
+        constexpr static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
 
         /**
          * @brief 3D perspective projection matrix
@@ -161,7 +161,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * @see @ref orthographicProjection(), @ref Matrix3::projection()
          */
-        static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
+        constexpr static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
         /**
          * @brief 3D perspective projection matrix
@@ -309,7 +309,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @see @ref up(), @ref backward(), @ref Vector3::xAxis(),
          *      @ref Matrix3::right()
          */
-        Vector3<T>& right() { return (*this)[0].xyz(); }
+        constexpr Vector3<T>& right() { return (*this)[0].xyz(); }
         constexpr Vector3<T> right() const { return (*this)[0].xyz(); } /**< @overload */
 
         /**
@@ -319,7 +319,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @see @ref right(), @ref backward(), @ref Vector3::yAxis(),
          *      @ref Matrix3::up()
          */
-        Vector3<T>& up() { return (*this)[1].xyz(); }
+        constexpr Vector3<T>& up() { return (*this)[1].xyz(); }
         constexpr Vector3<T> up() const { return (*this)[1].xyz(); } /**< @overload */
 
         /**
@@ -328,7 +328,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * First three elements of third column.
          * @see @ref right(), @ref up(), @ref Vector3::yAxis()
          */
-        Vector3<T>& backward() { return (*this)[2].xyz(); }
+        constexpr Vector3<T>& backward() { return (*this)[2].xyz(); }
         constexpr Vector3<T> backward() const { return (*this)[2].xyz(); } /**< @overload */
 
         /**
@@ -339,7 +339,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref translation(const Vector3<T>&),
          *      @ref Matrix3::translation()
          */
-        Vector3<T>& translation() { return (*this)[3].xyz(); }
+        constexpr Vector3<T>& translation() { return (*this)[3].xyz(); }
         constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */
 
         /**
@@ -369,7 +369,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref Matrix3::transformVector()
          * @todo extract 3x3 matrix and multiply directly? (benchmark that)
          */
-        Vector3<T> transformVector(const Vector3<T>& vector) const {
+        constexpr Vector3<T> transformVector(const Vector3<T>& vector) const {
             return ((*this)*Vector4<T>(vector, T(0))).xyz();
         }
 
@@ -383,7 +383,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @see @ref DualQuaternion::transformPoint(),
          *      @ref Matrix3::transformPoint()
          */
-        Vector3<T> transformPoint(const Vector3<T>& vector) const {
+        constexpr Vector3<T> transformPoint(const Vector3<T>& vector) const {
             return ((*this)*Vector4<T>(vector, T(1))).xyz();
         }
 
@@ -466,7 +466,7 @@ template<class T> Matrix4<T> Matrix4<T>::reflection(const Vector3<T>& normal) {
     return from(Matrix3x3<T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
 }
 
-template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& size, const T near, const T far) {
+template<class T> constexpr Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>& size, const T near, const T far) {
     const Vector2<T> xyScale = T(2.0)/size;
     const T zScale = T(2.0)/(near-far);
 
@@ -476,7 +476,7 @@ template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>
             {       T(0),        T(0), near*zScale-T(1), T(1)}};
 }
 
-template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {
+template<class T> constexpr Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {
     Vector2<T> xyScale = 2*near/size;
     T zScale = T(1.0)/(near-far);
 

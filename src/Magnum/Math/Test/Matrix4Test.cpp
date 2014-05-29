@@ -318,19 +318,23 @@ void Matrix4Test::reflection() {
 }
 
 void Matrix4Test::orthographicProjection() {
+    constexpr auto a = Matrix4::orthographicProjection({5.0f, 4.0f}, 1, 9);
+
     Matrix4 expected({0.4f, 0.0f,   0.0f, 0.0f},
                      {0.0f, 0.5f,   0.0f, 0.0f},
                      {0.0f, 0.0f, -0.25f, 0.0f},
                      {0.0f, 0.0f, -1.25f, 1.0f});
-    CORRADE_COMPARE(Matrix4::orthographicProjection({5.0f, 4.0f}, 1, 9), expected);
+    CORRADE_COMPARE(a, expected);
 }
 
 void Matrix4Test::perspectiveProjection() {
+    constexpr auto a = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100);
+
     Matrix4 expected({4.0f,      0.0f,         0.0f,  0.0f},
                      {0.0f, 7.111111f,         0.0f,  0.0f},
                      {0.0f,      0.0f,  -1.9411764f, -1.0f},
                      {0.0f,      0.0f, -94.1176452f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100), expected);
+    CORRADE_COMPARE(a, expected);
 }
 
 void Matrix4Test::perspectiveProjectionFov() {

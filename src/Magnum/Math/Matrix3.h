@@ -105,7 +105,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @see @ref Matrix4::orthographicProjection(),
          *      @ref Matrix4::perspectiveProjection()
          */
-        static Matrix3<T> projection(const Vector2<T>& size) {
+        constexpr static Matrix3<T> projection(const Vector2<T>& size) {
             return scaling(2.0f/size);
         }
 
@@ -247,7 +247,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * First two elements of first column.
          * @see @ref up(), @ref Vector2::xAxis(), @ref Matrix4::right()
          */
-        Vector2<T>& right() { return (*this)[0].xy(); }
+        constexpr Vector2<T>& right() { return (*this)[0].xy(); }
         constexpr Vector2<T> right() const { return (*this)[0].xy(); } /**< @overload */
 
         /**
@@ -256,7 +256,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * First two elements of second column.
          * @see @ref right(), @ref Vector2::yAxis(), @ref Matrix4::up()
          */
-        Vector2<T>& up() { return (*this)[1].xy(); }
+        constexpr Vector2<T>& up() { return (*this)[1].xy(); }
         constexpr Vector2<T> up() const { return (*this)[1].xy(); } /**< @overload */
 
         /**
@@ -267,7 +267,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      @ref translation(const Vector2<T>&),
          *      @ref Matrix4::translation()
          */
-        Vector2<T>& translation() { return (*this)[2].xy(); }
+        constexpr Vector2<T>& translation() { return (*this)[2].xy(); }
         constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */
 
         /**
@@ -297,7 +297,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      @ref Matrix4::transformVector()
          * @todo extract 2x2 matrix and multiply directly? (benchmark that)
          */
-        Vector2<T> transformVector(const Vector2<T>& vector) const {
+        constexpr Vector2<T> transformVector(const Vector2<T>& vector) const {
             return ((*this)*Vector3<T>(vector, T(0))).xy();
         }
 
@@ -311,7 +311,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @see @ref DualComplex::transformPoint(),
          *      @ref Matrix4::transformPoint()
          */
-        Vector2<T> transformPoint(const Vector2<T>& vector) const {
+        constexpr Vector2<T> transformPoint(const Vector2<T>& vector) const {
             return ((*this)*Vector3<T>(vector, T(1))).xy();
         }
 
