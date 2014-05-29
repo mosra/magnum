@@ -51,7 +51,7 @@ Platforms:
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     SDL2 or GLUT toolkit)
 *   **Windows** (through SDL2 or GLUT toolkit)
-*   **OS X** (through SDL2 toolkit, thanks to [Miguel Martin](https://github.com/miguelishawt))
+*   **OS X** (through SDL2 toolkit)
 *   **Android** 2.3 (API Level 9) and higher
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
     both `newlib` and `glibc` toolchains are supported)
@@ -170,6 +170,12 @@ idea? Feel free to visit my website or contact me at:
 *   Twitter -- https://twitter.com/czmosra
 *   E-mail -- mosra@centrum.cz
 *   Jabber -- mosra@jabbim.cz
+
+CONTRIBUTORS
+============
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md) file for details. Big thanks to everyone
+involved!
 
 LICENSE
 =======
