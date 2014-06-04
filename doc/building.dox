@@ -199,12 +199,13 @@ platform best:
 -   `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
 -   `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
 -   `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
+-   `WITH_WINDOWLESSCGLAPPLICATION` - @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 
 There are also a few command-line utilities. They are currently available only
-on Linux and Windows, also disabled by default:
+on Linux, Mac OS X and Windows, also disabled by default:
 
 -   `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
     the engine and OpenGL capabilities.
