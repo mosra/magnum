@@ -7,19 +7,28 @@
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
+#  MAGNUM_PLUGINS_DEBUG_DIR     - Base directory with dynamic plugins for
+#   debug builds, defaults to magnum-d/ subdirectory of dir where Magnum
+#   library was found
+#  MAGNUM_PLUGINS_RELEASE_DIR   - Base directory with dynamic plugins for
+#   release builds, defaults to magnum/ subdirectory of dir where Magnum
+#   library was found
 #  MAGNUM_PLUGINS_DIR           - Base directory with dynamic plugins, defaults
-#   to magnum/ subdirectory of dir where Magnum library was found (or magnum-d/
-#   in debug build). You can modify it (e.g. set it to `.` when deploying on
-#   Windows with plugins stored relatively to the executable), the following
-#   MAGNUM_PLUGINS_*_DIR variables depend on it.
-#  MAGNUM_PLUGINS_FONT_DIR      - Directory with dynamic font plugins
-#  MAGNUM_PLUGINS_FONTCONVERTER_DIR - Directory with dynamic font converter
+#   to MAGNUM_PLUGINS_RELEASE_DIR in release builds and multi-configuration
+#   builds or to MAGNUM_PLUGINS_DEBUG_DIR in debug builds. You can modify all
+#   three variable (e.g. set them to . when deploying on Windows with plugins
+#   stored relatively to the executable), the following MAGNUM_PLUGINS_*_DIR
+#   variables depend on it.
+#  MAGNUM_PLUGINS_FONT[|_DEBUG|_RELEASE]_DIR - Directory with dynamic font
 #   plugins
-#  MAGNUM_PLUGINS_IMAGECONVERTER_DIR - Directory with dynamic image converter
-#   plugins
-#  MAGNUM_PLUGINS_IMPORTER_DIR  - Directory with dynamic importer plugins
-#  MAGNUM_PLUGINS_AUDIOIMPORTER_DIR - Directory with dynamic audio importer
-#   plugins
+#  MAGNUM_PLUGINS_FONTCONVERTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
+#   font converter plugins
+#  MAGNUM_PLUGINS_IMAGECONVERTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
+#   image converter plugins
+#  MAGNUM_PLUGINS_IMPORTER[|_DEBUG|_RELEASE]_DIR  - Directory with dynamic
+#   importer plugins
+#  MAGNUM_PLUGINS_AUDIOIMPORTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
+#   audio importer plugins
 # This command will try to find only the base library, not the optional
 # components. The base library depends on Corrade and OpenGL libraries (or
 # OpenGL ES libraries). Additional dependencies are specified by the
@@ -69,11 +78,10 @@
 # plugins) are found, proper version is chosen based on actual build
 # configuration of the project (i.e. Debug build is linked to debug libraries,
 # Release build to release libraries). Note that this autodetection might fail
-# for the MAGNUM_PLUGINS_DIR variable, i.e. you might need to switch it
-# manually to magnum-d/ or magnum/ subdirectory based on whether you want
-# to dynamically load plugins with or without debug information. You can also
-# make use of CMAKE_BUILD_TYPE or CMAKE_CFG_INTDIR CMake variables for
-# compile-time decision.
+# for the MAGNUM_PLUGINS_DIR variable, especially on multi-configuration build
+# systems. You can make use of CORRADE_IS_DEBUG_BUILD preprocessor variable
+# along with MAGNUM_PLUGINS_*_DEBUG_DIR / MAGNUM_PLUGINS_*_RELEASE_DIR
+# variables to decide in preprocessing step.
 #
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
@@ -156,7 +164,6 @@ if(MAGNUM_LIBRARY_DEBUG AND MAGNUM_LIBRARY_RELEASE)
         debug ${MAGNUM_LIBRARY_DEBUG}
         optimized ${MAGNUM_LIBRARY_RELEASE})
     get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_DEBUG} PATH)
-    # TODO: how to handle this with MSVC and other multi-configuration tools?
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(_MAGNUM_PLUGINS_DIR_SUFFIX "-d")
     endif()
@@ -516,12 +523,26 @@ if(MAGNUM_BUILD_DEPRECATED)
 endif()
 
 # Get base plugin directory from main library location
+set(MAGNUM_PLUGINS_DEBUG_DIR ${_MAGNUM_LIBRARY_PATH}/magnum-d
+    CACHE PATH "Base directory where to look for Magnum plugins for debug builds")
+set(MAGNUM_PLUGINS_RELEASE_DIR ${_MAGNUM_LIBRARY_PATH}/magnum
+    CACHE PATH "Base directory where to look for Magnum plugins for release builds")
 set(MAGNUM_PLUGINS_DIR ${_MAGNUM_LIBRARY_PATH}/magnum${_MAGNUM_PLUGINS_DIR_SUFFIX}
     CACHE PATH "Base directory where to look for Magnum plugins")
 
 # Plugin directories
 set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONT_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONT_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONTCONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/fontconverters)
 set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/imageconverters)
 set(MAGNUM_PLUGINS_IMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/importers)
+set(MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/importers)
+set(MAGNUM_PLUGINS_IMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/importers)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/audioimporters)

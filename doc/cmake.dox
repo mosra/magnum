@@ -51,19 +51,28 @@ variables:
 -   `MAGNUM_FOUND` -- Whether the library was found
 -   `MAGNUM_LIBRARIES` -- %Magnum library and dependent libraries
 -   `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
+-   `MAGNUM_PLUGINS_DEBUG_DIR` -- Base directory with dynamic plugins for debug
+    builds, defaults to `magnum-d/` subdirectory of dir where %Magnum library
+    was found
+-   `MAGNUM_PLUGINS_RELEASE_DIR` -- Base directory with dynamic plugins for
+    release builds, defaults to `magnum/` subdirectory of dir where %Magnum
+    library was found
 -   `MAGNUM_PLUGINS_DIR` -- Base directory with dynamic plugins, defaults to
-    `magnum/` subdirectory of dir where Magnum library was found (or
-    `magnum-d/` in debug build). . You can modify it (e.g. set it to `.` when
-    deploying on Windows with plugins stored relatively to the executable),
-    the following `MAGNUM_PLUGINS_*_DIR` variables depend on it.
--   `MAGNUM_PLUGINS_FONT_DIR` -- Directory with dynamic font plugins
--   `MAGNUM_PLUGINS_FONTCONVERTER_DIR` -- Directory with dynamic font converter
+    `MAGNUM_PLUGINS_RELEASE_DIR` in release builds and multi-configuration
+    builds or to `MAGNUM_PLUGINS_DEBUG_DIR` in debug builds. You can modify all
+    three variable (e.g. set them to `.` when deploying on Windows with plugins
+    stored relatively to the executable), the following `MAGNUM_PLUGINS_*_DIR`
+    variables depend on it.
+-   `MAGNUM_PLUGINS_FONT[|_DEBUG|_RELEASE]_DIR` -- Directory with dynamic font
     plugins
--   `MAGNUM_PLUGINS_IMAGECONVERTER_DIR` -- Directory with dynamic image
-    converter plugins
--   `MAGNUM_PLUGINS_IMPORTER_DIR` -- Directory with dynamic importer plugins
--   `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR` -- Directory with dynamic audio importer
-    plugins
+-   `MAGNUM_PLUGINS_FONTCONVERTER[|_DEBUG|_RELEASE]_DIR` -- Directory with
+    dynamic font converter plugins
+-   `MAGNUM_PLUGINS_IMAGECONVERTER[|_DEBUG|_RELEASE]_DIR` -- Directory with
+    dynamic image converter plugins
+-   `MAGNUM_PLUGINS_IMPORTER[|_DEBUG|_RELEASE]_DIR` -- Directory with dynamic
+    importer plugins
+-   `MAGNUM_PLUGINS_AUDIOIMPORTER[|_DEBUG|_RELEASE]_DIR` -- Directory with
+    dynamic audio importer plugins
 
 However, this command will try to find only the base library, not the optional
 components. The base library depends on %Corrade and OpenGL libraries (or
@@ -141,11 +150,10 @@ library (or plugin) is found. If both debug and release libraries (or plugins)
 are found, proper version is chosen based on actual build configuration of the
 project (i.e. `Debug` build is linked to debug libraries, `Release` build to
 release libraries). Note that this autodetection might fail for the
-`MAGNUM_PLUGINS_DIR` variable, i.e. you might need to switch it manually to
-`magnum-d/` or `magnum/` subdirectory based on whether you want to dynamically
-load plugins with or without debug information. You can also make use of
-`CMAKE_BUILD_TYPE` or `CMAKE_CFG_INTDIR` CMake variables for compile-time
-decision.
+`MAGNUM_PLUGINS_DIR` variable, especially on multi-configuration build systems.
+You can make use of @ref corrade-cmake "CORRADE_IS_DEBUG_BUILD" preprocessor
+variable along with `MAGNUM_PLUGINS_*_DEBUG_DIR` / `MAGNUM_PLUGINS_*_RELEASE_DIR`
+variables to decide in preprocessing step.
 
 Features of found %Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including Magnum.h:
