@@ -53,7 +53,7 @@
 
 #ifdef CORRADE_TARGET_NACL
 #include "Magnum/Platform/WindowlessNaClApplication.h"
-#elif defined(__APPLE__)
+#elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
 #include "Magnum/Platform/WindowlessGlxApplication.h"
@@ -103,10 +103,14 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #ifdef CORRADE_TARGET_NACL
     Debug() << "Used application: Platform::WindowlessNaClApplication";
-    #elif defined(__APPLE__)
+    #elif defined(CORRADE_TARGET_APPLE)
     Debug() << "Used application: Platform::WindowlessCglApplication";
-    #else
+    #elif defined(CORRADE_TARGET_UNIX)
     Debug() << "Used application: Platform::WindowlessGlxApplication";
+    #elif defined(CORRADE_TARGET_WINDOWS)
+    Debug() << "Used application: Platform::WindowlessWglApplication";
+    #else
+    #error No windowless application available on this platform
     #endif
     Debug() << "Compilation flags:";
     #ifdef CORRADE_GCC44_COMPATIBILITY

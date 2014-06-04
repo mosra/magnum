@@ -502,13 +502,15 @@ in `axes/hudson.matrix.TextAxis` or via the web interface later.
 Magnum-Compatibility-GLTests depend on active X11 session, thus they should be
 run from Jenkins instance running on graphical user session.
 
-There is also MinGW32 and Emscripten configuration, add or update them with the
-commands below. See @ref building-crosscompiling for more information about
-setting up the crosscompilers and `toolchains/` submodule. For Emscripten you
-need also **Node.js** installed to run the tests.
+There is also MinGW32, MinGW-w64, Emscripten and NaCl configuration, add or
+update them with the commands below. See @ref building-crosscompiling for more
+information about setting up the crosscompilers and `toolchains/` submodule.
+For Emscripten you need also **Node.js** installed to run the tests.
 
     java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-MinGW32 < jenkins-mingw32.xml
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-MinGW-w64 < jenkins-mingw-w64.xml
     java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Emscripten < jenkins-emscripten.xml
+    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-NaCl < jenkins-nacl.xml
 */
 
 }

@@ -58,8 +58,12 @@ if(CORRADE_TARGET_NACL)
 elseif(CORRADE_TARGET_ANDROID)
     option(WITH_ANDROIDAPPLICATION "Build AndroidApplication library" OFF)
 
+# OS X-specific application libraries
+elseif(CORRADE_TARGET_APPLE)
+    cmake_dependent_option(WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
+
 # X11, GLX and EGL-specific application libraries
-elseif(CORRADE_TARGET_UNIX AND NOT APPLE)
+elseif(CORRADE_TARGET_UNIX)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
     cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
@@ -67,10 +71,6 @@ elseif(CORRADE_TARGET_UNIX AND NOT APPLE)
 # Windows-specific application libraries
 elseif(CORRADE_TARGET_WINDOWS)
     cmake_dependent_option(WITH_WINDOWLESSWGLAPPLICATION "Build WindowlessWglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-
-# OS X-specific application libraries
-elseif(APPLE)
-    cmake_dependent_option(WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 endif()
 
 # Platform-independent (almost) application libraries

@@ -33,7 +33,7 @@ namespace Magnum { namespace Audio {
 /* Verify types */
 static_assert(std::is_same<ALubyte, UnsignedByte>::value, "ALubyte is not the same as UnsignedByte");
 /** @todo Why `ALbyte` is defined as `char` and not `signed char` on OSX? */
-#ifndef __APPLE__
+#ifndef CORRADE_TARGET_APPLE
 static_assert(std::is_same<ALbyte, Byte>::value, "ALbyte is not the same as Byte");
 #else
 static_assert(std::is_signed<ALbyte>::value && sizeof(ALbyte) == 1, "ALbyte does not have the same characteristics as Byte");

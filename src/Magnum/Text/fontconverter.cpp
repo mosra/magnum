@@ -32,7 +32,7 @@
 #include "Magnum/Text/DistanceFieldGlyphCache.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 
-#ifdef __APPLE__
+#ifdef CORRADE_TARGET_APPLE
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
 #include "Magnum/Platform/WindowlessGlxApplication.h"
