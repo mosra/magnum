@@ -44,8 +44,8 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
 
     #ifndef CORRADE_NO_ASSERT
     const Mesh* original = &meshes.begin()->get()._original.get();
-    for(MeshView& mesh: meshes)
-        CORRADE_ASSERT(&mesh._original.get() == original, "MeshView::draw(): all meshes must be views of the same original mesh", );
+    for(auto it = meshes.begin(); it != meshes.end(); ++it)
+        CORRADE_ASSERT(&it->get()._original.get() == original, "MeshView::draw(): all meshes must be views of the same original mesh", );
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -70,7 +70,8 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
     bool hasBaseVertex = false;
     #endif
     std::size_t i = 0;
-    for(MeshView& mesh: meshes) {
+    for(auto it = meshes.begin(); it != meshes.end(); ++it) {
+        MeshView& mesh = it->get();
         CORRADE_ASSERT(mesh._instanceCount == 1, "MeshView::draw(): cannot draw multiple instanced meshes", );
 
         count[i] = mesh._count;
