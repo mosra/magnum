@@ -36,6 +36,10 @@
 #include "Magnum/OpenGL.h"
 #include "Magnum/visibility.h"
 
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
+#include "Magnum/Mesh.h"
+#endif
+
 namespace Magnum {
 
 namespace Implementation { struct MeshState; }
