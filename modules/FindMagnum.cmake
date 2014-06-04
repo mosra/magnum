@@ -230,7 +230,7 @@ endif()
 # ${MAGNUM_LIBRARIES} listed in dependencies also after all other library names
 # to avoid linker errors. Applicaiton libraries are often last thus it is
 # +- sufficient to add it there only.
-if(WIN32 OR MAGNUM_BUILD_STATIC)
+if(CORRADE_TARGET_WINDOWS OR MAGNUM_BUILD_STATIC)
     set(_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY ${MAGNUM_LIBRARIES})
 endif()
 

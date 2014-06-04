@@ -143,7 +143,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
        in Apple's GL drivers, thus we would be forever stuck on 2.1 without the
        new features. In practice SDL fails to create 2.1 context on recent OS X
        versions. */
-    #elif defined(__APPLE__)
+    #elif defined(CORRADE_TARGET_APPLE)
     else {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -161,7 +161,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     }
 
     /* Fall back to GL 2.1, if 3.2 context creation fails on OS X */
-    #ifdef __APPLE__
+    #ifdef CORRADE_TARGET_APPLE
     if(!(context = SDL_GL_CreateContext(window))){
         Warning() << "Platform::Sdl2Application::tryCreateContext(): cannot create core context:" << SDL_GetError() << "(falling back to compatibility context)";
         SDL_DestroyWindow(window);

@@ -38,7 +38,7 @@ add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_
     pluginRegistration.cpp)
 target_link_libraries(MagnumFont Magnum MagnumText)
 
-if(WIN32)
+if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFont TgaImporter)
 endif()
 
@@ -51,7 +51,7 @@ if(BUILD_GL_TESTS)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
-    if(WIN32 AND NOT CMAKE_CROSSCOMPILING)
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
         install(TARGETS MagnumMagnumFontTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
