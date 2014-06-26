@@ -311,10 +311,11 @@ also @ref Attribute::DataType enum for additional type options.
 %Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
-If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1) or
-@extension{EXT,direct_state_access} is available, uniform setting functions
-use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}. See
-@ref setUniform() documentation for more information.
+If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1),
+@extension{EXT,direct_state_access} or @es_extension{EXT,separate_shader_objects}
+on OpenGL ES is available, uniform setting functions use DSA functions to avoid
+unnecessary calls to @fn_gl{UseProgram}. See @ref setUniform() documentation
+for more information.
 
 To achieve least state changes, set all uniforms in one run -- method chaining
 comes in handy.
@@ -726,8 +727,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param values        Values
          *
          * If neither @extension{ARB,separate_shader_objects} (part of OpenGL
-         * 4.1) nor @extension{EXT,direct_state_access} is available, the
-         * shader is marked for use before the operation.
+         * 4.1) nor @extension{EXT,direct_state_access} nor
+         * @es_extension{EXT,separate_shader_objects} (on OpenGL ES) is
+         * available, the shader is marked for use before the operation.
          * @see @ref setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
          *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */

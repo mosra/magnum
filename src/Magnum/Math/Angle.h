@@ -174,7 +174,6 @@ Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
 @note Not available on GCC < 4.7 and MSVC 2013. Use @ref Deg::Deg(T) instead.
-@requires_gl Only single-precision types are available in OpenGL ES.
 @todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
@@ -219,6 +218,7 @@ template<class T> class Rad: public Unit<Rad, T> {
 See operator""_rad() for more information.
 @see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
 @note Not available on GCC < 4.7 and MSVC 2013. Use @ref Rad::Rad(T) instead.
+@requires_gl Only single-precision types are available in OpenGL ES.
 @todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
