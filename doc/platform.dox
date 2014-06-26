@@ -125,15 +125,19 @@ void MyApplication::viewportEvent(const Vector2i& size) {
 Windowless applications provide just a context for ofscreen rendering or
 performing tasks on GPU. There is not yet any platform-independent toolkit
 which could handle this in portable way, thus you have to use platform-specific
-ones. As example we use @ref Platform::WindowlessGlxApplication, you need to
-implement just @ref WindowlessGlxApplication::exec() "exec()" function. The
-class can be then used directly in `main()`, but again, for convenience and
-portability it's better to use @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
-macro.
+ones. %Magnum provides windowless applications for X11-based Unix, OS X and
+Windows. To make things simple, as an example we will use only
+@ref Platform::WindowlessGlxApplication, see link for bootstrap application
+below for fully portable example.
+
+You need to implement just @ref WindowlessGlxApplication::exec() "exec()"
+function. The class can be then used directly in `main()`, but again, for
+convenience and portability it's better to use
+@ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN() macro.
 
 Similarly as with windowed applications, to simplify the porting, the library
 provides `Platform::WindowlessApplication` typedef and `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`
-macro, but only if only one windowless application header is included. Changing
+macro, but only if just one windowless application header is included. Changing
 the code to use different toolkit is then matter of replacing only the
 <tt>#</tt>`include` statement. Aliases for windowless applications are
 separated from aliases for windowed applications, because projects commonly
@@ -143,8 +147,10 @@ etc.).
 Barebone application which will just print out current OpenGL version and
 renderer string and exits is in the following code listing.
 
-@note Fully contained windowless application along with CMake setup is
-    available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+@note Fully contained windowless application using @ref Platform::WindowlessCglApplication
+    on OS X, @ref Platform::WindowlessGlxApplication on Unix and
+    @ref Platform::WindowlessWglApplication on Windows along with CMake setup
+    is available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
 @code
