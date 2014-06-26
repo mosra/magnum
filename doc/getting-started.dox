@@ -61,6 +61,10 @@ The code will be slightly different from what is presented below, but the
 changes are only minor (two modified lines and one additional file) and the
 main principles are the same.
 
+If you are using `compatibility` branch of Magnum and Corrade, replace
+`modules/FindCorrade.cmake` with [the one from `compatibility` branch](https://github.com/mosra/corrade/blob/compatibility/modules/FindCorrade.cmake)
+so the compatibility mode gets properly detected and used.
+
 @section getting-started-review Review project structure
 
 The base project consists of just six files in two subfolders. %Magnum uses
