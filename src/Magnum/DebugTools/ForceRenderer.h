@@ -119,7 +119,10 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          */
         explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 
-        /** @overload */
+        /**
+         * You have to pass reference to existing force instance, as the
+         * renderer uses the current value when rendering.
+         */
         ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
 
     private:

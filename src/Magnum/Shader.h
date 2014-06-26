@@ -362,11 +362,11 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * `0`.
          * @see @ref maxCombinedTextureImageUnits(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_TEXTURE_IMAGE_UNITS},
-         *      @fn_gl{MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS},
-         *      @fn_gl{MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS},
-         *      @fn_gl{MAX_GEOMETRY_TEXTURE_IMAGE_UNITS},
-         *      @fn_gl{MAX_COMPUTE_TEXTURE_IMAGE_UNITS},
-         *      @fn_gl{MAX_TEXTURE_IMAGE_UNITS}
+         *      @def_gl{MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS},
+         *      @def_gl{MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS},
+         *      @def_gl{MAX_GEOMETRY_TEXTURE_IMAGE_UNITS},
+         *      @def_gl{MAX_COMPUTE_TEXTURE_IMAGE_UNITS},
+         *      @def_gl{MAX_TEXTURE_IMAGE_UNITS}
          */
         static Int maxTextureImageUnits(Type type);
 
