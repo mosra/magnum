@@ -157,6 +157,9 @@ template<class T> using BasicDrawable2D = Drawable<2, T>;
 template<class T> using BasicDrawable3D = Drawable<3, T>;
 typedef BasicDrawable2D<Float> Drawable2D;
 typedef BasicDrawable3D<Float> Drawable3D;
+#else
+typedef Drawable<2, Float> Drawable2D;
+typedef Drawable<3, Float> Drawable3D;
 #endif
 
 template<class> class BasicDualComplexTransformation;
