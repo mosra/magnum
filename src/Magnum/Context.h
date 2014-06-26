@@ -131,6 +131,13 @@ class MAGNUM_EXPORT Context {
         };
 
         /**
+         * @brief %Context flags
+         *
+         * @see @ref flags()
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        /**
          * @brief State to reset
          *
          * @see @ref States, @ref resetState()
@@ -161,13 +168,6 @@ class MAGNUM_EXPORT Context {
          * @see @ref resetState()
          */
         typedef Containers::EnumSet<State> States;
-
-        /**
-         * @brief %Context flags
-         *
-         * @see @ref flags()
-         */
-        typedef Containers::EnumSet<Flag> Flags;
 
         /**
          * @brief Constructor
