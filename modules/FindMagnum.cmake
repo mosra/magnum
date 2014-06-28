@@ -92,6 +92,7 @@
 #  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_DESKTOP_GLES   - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
+#  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
 #
 # If `MAGNUM_BUILD_DEPRECATED` is defined, the `MAGNUM_INCLUDE_DIR` variable
 # also contains path directly to Magnum directory (i.e. for includes without
@@ -206,6 +207,10 @@ endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
 if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
+endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_WEBGL" _TARGET_WEBGL)
+if(NOT _TARGET_WEBGL EQUAL -1)
+    set(MAGNUM_TARGET_WEBGL 1)
 endif()
 
 # Dependent libraries and includes
