@@ -139,7 +139,8 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 }
 
 void BufferState::reset() {
-    std::fill_n(bindings, TargetCount, State::DisengagedBinding);
+    /* GCC 4.4 (?) needs explicit cast to GLuint */
+    std::fill_n(bindings, TargetCount, GLuint(State::DisengagedBinding));
 }
 
 }}
