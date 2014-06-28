@@ -96,7 +96,8 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
 }
 
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
-template<UnsignedInt dimensions> ForceRenderer<dimensions>::~ForceRenderer() = default;
+/* GCC 4.4 has linker error when using =default */
+template<UnsignedInt dimensions> ForceRenderer<dimensions>::~ForceRenderer() {}
 
 template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), force)*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->scale())))

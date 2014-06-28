@@ -176,7 +176,8 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
 }
 
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
-template<UnsignedInt dimensions> ObjectRenderer<dimensions>::~ObjectRenderer() = default;
+/* GCC 4.4 has linker error when using =default */
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::~ObjectRenderer() {}
 
 template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->size())));
