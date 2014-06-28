@@ -86,6 +86,9 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     ResourceManager::instance().set(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
+/* To avoid deleting pointers to incomplete type on destruction of Resource members */
+template<UnsignedInt dimensions> ForceRenderer<dimensions>::~ForceRenderer() = default;
+
 template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), force)*MatrixTypeFor<dimensions, Float>::scaling(VectorTypeFor<dimensions, Float>{options->scale()}))
         .setColor(options->color());
