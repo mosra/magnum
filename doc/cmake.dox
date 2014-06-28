@@ -156,17 +156,18 @@ variable along with `MAGNUM_PLUGINS_*_DEBUG_DIR` / `MAGNUM_PLUGINS_*_RELEASE_DIR
 variables to decide in preprocessing step.
 
 Features of found %Magnum library are exposed in these CMake variables, they
-are also available as preprocessor variables if including Magnum.h:
+are also available as preprocessor variables if including @ref Magnum/Magnum.h:
 
 -   `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
     included
--   `MAGNUM_BUILD_STATIC` -- Defined if built as static libraries. Default are
-    shared libraries.
+-   `MAGNUM_BUILD_STATIC` -- Defined if compiled as static libraries. Default
+    are shared libraries.
 -   `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
 -   `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
 -   `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
 -   `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES
     emulation on desktop OpenGL
+-   `MAGNUM_TARGET_WEBGL` --- Defined if compiled for WebGL
 
 If `MAGNUM_BUILD_DEPRECATED` is defined, the `MAGNUM_INCLUDE_DIR` variable also
 contains path directly to Magnum directory (i.e. for includes without `Magnum/`

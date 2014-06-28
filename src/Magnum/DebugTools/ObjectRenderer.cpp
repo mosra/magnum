@@ -175,6 +175,9 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     ResourceManager::instance().set<Mesh>(this->mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
+/* To avoid deleting pointers to incomplete type on destruction of Resource members */
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::~ObjectRenderer() = default;
+
 template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*DimensionTraits<dimensions, Float>::MatrixType::scaling(typename DimensionTraits<dimensions, Float>::VectorType(options->size())));
     mesh->draw(*shader);

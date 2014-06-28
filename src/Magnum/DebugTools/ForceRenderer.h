@@ -125,6 +125,8 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          */
         ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const typename DimensionTraits<dimensions, Float>::VectorType&, typename DimensionTraits<dimensions, Float>::VectorType&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
 
+        ~ForceRenderer();
+
     private:
         void draw(const typename DimensionTraits<dimensions, Float>::MatrixType& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
 

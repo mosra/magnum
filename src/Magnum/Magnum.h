@@ -75,7 +75,7 @@ using Corrade::Utility::Error;
 Defined if the library contains deprecated API (which will be removed in the
 future). To preserve backward compatibility, %Magnum is by default built with
 deprecated API included.
-@see @ref building
+@see @ref building, @ref cmake
 */
 #define MAGNUM_BUILD_DEPRECATED
 /* (enabled by default) */
@@ -84,7 +84,7 @@ deprecated API included.
 @brief Static library build
 
 Defined if built as static libraries. Default are shared libraries.
-@see @ref building
+@see @ref building, @ref cmake
 */
 #define MAGNUM_BUILD_STATIC
 #undef MAGNUM_BUILD_STATIC
@@ -94,7 +94,7 @@ Defined if built as static libraries. Default are shared libraries.
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
 @see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
-    @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
+    @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building, @ref cmake
 */
 #define MAGNUM_TARGET_GLES
 #undef MAGNUM_TARGET_GLES
@@ -104,7 +104,8 @@ Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
 
 Defined if the engine is built for OpenGL ES 2.0. Implies also
 @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES3, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
+@see @ref MAGNUM_TARGET_GLES3, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building,
+    @ref cmake
 */
 #define MAGNUM_TARGET_GLES2
 #undef MAGNUM_TARGET_GLES2
@@ -114,7 +115,8 @@ Defined if the engine is built for OpenGL ES 2.0. Implies also
 
 Defined if the engine is built for OpenGL ES 3.0. Implies also
 @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building,
+    @ref cmake
 */
 #define MAGNUM_TARGET_GLES3
 #undef MAGNUM_TARGET_GLES3
@@ -124,7 +126,8 @@ Defined if the engine is built for OpenGL ES 3.0. Implies also
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0 emulated
 within standard desktop OpenGL. Implies also @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3, @ref building
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3, @ref building,
+    @ref cmake
 */
 #define MAGNUM_TARGET_DESKTOP_GLES
 #undef MAGNUM_TARGET_DESKTOP_GLES
@@ -138,7 +141,7 @@ differently, but there are some
 [specific restrictions and features](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
 which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES and
 @ref MAGNUM_TARGET_GLES2.
-@see @ref CORRADE_TARGET_EMSCRIPTEN, @ref building
+@see @ref CORRADE_TARGET_EMSCRIPTEN, @ref building, @ref cmake
 */
 #define MAGNUM_TARGET_WEBGL
 #undef MAGNUM_TARGET_WEBGL
