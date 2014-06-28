@@ -381,6 +381,7 @@ class MAGNUM_EXPORT Context {
          * as it does most operations in compile time.
          * @see @ref supportedExtensions(), @ref Extension::extensions(),
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+         * @todoc Explicit reference when Doxygen can handle const
          */
         bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(_extensionRequiredVersion[extension._index]) && extensionStatus[extension._index];
@@ -414,6 +415,7 @@ class MAGNUM_EXPORT Context {
          * Can be used e.g. for listing extensions available on current
          * hardware, but for general usage prefer isExtensionDisabled() const,
          * as it does most operations in compile time.
+         * @todoc Explicit reference when Doxygen can handle const
          */
         bool isExtensionDisabled(const Extension& extension) const {
             return isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index] && !isVersionSupported(_extensionRequiredVersion[extension._index]);
