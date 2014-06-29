@@ -59,8 +59,8 @@ class FontConverter: public Platform::WindowlessApplication {
 FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     args.addArgument("input").setHelp("input", "input font")
         .addArgument("output").setHelp("output", "output filename prefix")
-        .addNamedArgument("font").setHelp("font", "plugin for opening the font")
-        .addNamedArgument("converter").setHelp("converter", "plugin for converting the font")
+        .addNamedArgument("font").setHelp("font", "font plugin")
+        .addNamedArgument("converter").setHelp("converter", "font converter plugin")
         .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
