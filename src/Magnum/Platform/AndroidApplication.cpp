@@ -34,7 +34,23 @@
 
 namespace Magnum { namespace Platform {
 
-/** @todo Delegating constructors when support for GCC 4.6 can be dropped */
+struct AndroidApplication::LogOutput {
+    LogOutput();
+
+    Utility::AndroidLogStreamBuffer debugBuffer, warningBuffer, errorBuffer;
+    std::ostream debugStream, warningStream, errorStream;
+};
+
+AndroidApplication::LogOutput::LogOutput():
+    debugBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Info, "magnum"),
+    warningBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Warning, "magnum"),
+    errorBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Error, "magnum"),
+    debugStream(&debugBuffer), warningStream(&warningBuffer), errorStream(&errorBuffer)
+{
+    Debug::setOutput(&debugStream);
+    Warning::setOutput(&warningStream);
+    Error::setOutput(&errorStream);
+}
 
 AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): _state(arguments) {
     initialize();
@@ -57,24 +73,6 @@ AndroidApplication::~AndroidApplication() {
     eglDestroyContext(_display, _context);
     eglDestroySurface(_display, _surface);
     eglTerminate(_display);
-}
-
-struct AndroidApplication::LogOutput {
-    LogOutput();
-
-    Utility::AndroidLogStreamBuffer debugBuffer, warningBuffer, errorBuffer;
-    std::ostream debugStream, warningStream, errorStream;
-};
-
-AndroidApplication::LogOutput::LogOutput():
-    debugBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Info, "magnum"),
-    warningBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Warning, "magnum"),
-    errorBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Error, "magnum"),
-    debugStream(&debugBuffer), warningStream(&warningBuffer), errorStream(&errorBuffer)
-{
-    Debug::setOutput(&debugStream);
-    Warning::setOutput(&warningStream);
-    Error::setOutput(&errorStream);
 }
 
 void AndroidApplication::initialize() {
