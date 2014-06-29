@@ -77,16 +77,16 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
 
 int FontConverter::exec() {
     /* Font converter dependencies */
-    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "imageconverters/"));
+    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager(Utility::Directory::join(args.value("plugin-dir"), "imageconverters/"));
 
     /* Load font */
-    PluginManager::Manager<Text::AbstractFont> fontManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fonts/"));
+    PluginManager::Manager<Text::AbstractFont> fontManager(Utility::Directory::join(args.value("plugin-dir"), "fonts/"));
     if(!(fontManager.load(args.value("font")) & PluginManager::LoadState::Loaded))
         std::exit(1);
     std::unique_ptr<Text::AbstractFont> font = fontManager.instance(args.value("font"));
 
     /* Load font converter */
-    PluginManager::Manager<Text::AbstractFontConverter> converterManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fontconverters/"));
+    PluginManager::Manager<Text::AbstractFontConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "fontconverters/"));
     if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
         std::exit(1);
     std::unique_ptr<Text::AbstractFontConverter> converter = converterManager.instance(args.value("converter"));
