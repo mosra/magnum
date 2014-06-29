@@ -201,7 +201,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see @ref detectedDriver()
          */
-        typedef Containers::EnumSet<DetectedDriver> DetectedDrivers;
+        typedef Containers::EnumSet<DetectedDriver, UnsignedShort> DetectedDrivers;
 
         /**
          * @brief Constructor
