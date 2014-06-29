@@ -167,26 +167,27 @@ CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
 information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
 additional information.
 
-By default the engine is built with nearly everything except Audio library,
-plugins and application libraries (see below). Using `WITH_*` CMake parameters
-you can specify which parts will be built and which not:
+By default the engine is built with nearly everything except @ref Audio
+library, plugins and application libraries (see below). Using `WITH_*` CMake
+parameters you can specify which parts will be built and which not:
 
--   `WITH_AUDIO` - Audio library. Depends on **OpenAL** library, not built by
-    default.
--   `WITH_DEBUGTOOLS` - DebugTools library. Enables also building of MeshTools,
-    Primitives, SceneGraph, Shaders and Shapes libraries.
--   `WITH_MESHTOOLS` - MeshTools library. Enabled automatically if
+-   `WITH_AUDIO` - @ref Audio library. Depends on **OpenAL** library, not built
+    by default.
+-   `WITH_DEBUGTOOLS` - @ref DebugTools library. Enables also building of
+    %MeshTools, %Primitives, %SceneGraph, %Shaders and %Shapes libraries.
+-   `WITH_MESHTOOLS` - @ref MeshTools library. Enabled automatically if
     `WITH_DEBUGTOOLS` is enabled.
--   `WITH_PRIMITIVES` - Primitives library. Enabled automatically if
+-   `WITH_PRIMITIVES` - @ref Primitives library. Enabled automatically if
     `WITH_DEBUGTOOLS` is enabled.
--   `WITH_SCENEGRAPH` - SceneGraph library. Enabled automatically if
+-   `WITH_SCENEGRAPH` - @ref SceneGraph library. Enabled automatically if
     `WITH_DEBUGTOOLS` or `WITH_SHAPES` is enabled.
--   `WITH_SHADERS` - Shaders library. Enabled automatically if `WITH_DEBUGTOOLS`
-    is enabled.
--   `WITH_SHAPES` - Shapes library. Enables also building of SceneGraph
+-   `WITH_SHADERS` - @ref Shaders library. Enabled automatically if
+    `WITH_DEBUGTOOLS` is enabled.
+-   `WITH_SHAPES` - @ref Shapes library. Enables also building of %SceneGraph
     library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
--   `WITH_TEXT` - Text library. Enables also building of TextureTools library.
--   `WITH_TEXTURETOOLS` - TextureTools library. Enabled automatically if
+-   `WITH_TEXT` - @ref Text library. Enables also building of %TextureTools
+    library.
+-   `WITH_TEXTURETOOLS` - @ref TextureTools library. Enabled automatically if
     `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
 
 None of the @ref Platform "application libraries" is built by default (and you
@@ -207,15 +208,16 @@ platform best:
 There are also a few command-line utilities. They are currently available only
 on Linux, Mac OS X and Windows, also disabled by default:
 
--   `WITH_MAGNUMINFO` - `magnum-info` executable, provides information about
-    the engine and OpenGL capabilities.
--   `WITH_FONTCONVERTER` - `magnum-fontconverter` executable for converting
-    fonts to raster ones. Enables also building of Text library.
--   `WITH_DISTANCEFIELDCONVERTER` - `magnum-distancefieldconverter` executable
-    for converting black&white images to distance field textures. Enables also
-    building of TextureTools library.
+-   `WITH_MAGNUMINFO` - @ref magnum-info "magnum-info" executable, provides
+    information about the engine and OpenGL capabilities.
+-   `WITH_DISTANCEFIELDCONVERTER` - @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
+    executable for converting black&white images to distance field textures.
+    Enables also building of %TextureTools library.
+-   `WITH_FONTCONVERTER` - @ref magnum-fontconverter "magnum-fontconverter"
+    executable for converting fonts to raster ones. Enables also building of
+    %Text library.
 
-Magnum also contains a set of dependency-less plugins for importing essential
+%Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
 default.

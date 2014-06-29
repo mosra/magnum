@@ -41,9 +41,7 @@ namespace Magnum {
 /**
 @brief %Shader
 
-See @ref AbstractShaderProgram for more information.
-
-@todoc Usage...
+See @ref AbstractShaderProgram for usage information.
 
 ## Performance optimizations
 
