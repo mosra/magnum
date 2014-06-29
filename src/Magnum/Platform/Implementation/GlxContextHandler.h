@@ -70,7 +70,7 @@ class GlxContextHandler: public AbstractContextHandler<AbstractXApplication::Con
 };
 
 /* GCC 4.5 can't have this defaulted in class body */
-GlxContextHandler::GlxContextHandler() = default;
+inline GlxContextHandler::GlxContextHandler() = default;
 
 }}}
 

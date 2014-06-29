@@ -183,7 +183,7 @@ template<class T> struct Shape: AbstractShape<T::Dimensions> {
     }
 };
 
-template<class T> Shape<T>::Shape() = default;
+template<class T> inline Shape<T>::Shape() = default;
 
 }}}
 

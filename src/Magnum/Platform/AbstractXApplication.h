@@ -341,7 +341,7 @@ class AbstractXApplication::InputEvent {
 };
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
-AbstractXApplication::InputEvent::~InputEvent() = default;
+inline AbstractXApplication::InputEvent::~InputEvent() = default;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Modifiers)

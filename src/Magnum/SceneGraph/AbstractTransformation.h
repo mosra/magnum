@@ -85,7 +85,7 @@ template<UnsignedInt dimensions, class T> class AbstractTransformation {
         virtual void doResetTransformation() = 0;
 };
 
-template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::~AbstractTransformation() = default;
+template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() = default;
 
 /**
 @brief Transformation type

@@ -435,7 +435,7 @@ class GlutApplication::InputEvent {
 };
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
-GlutApplication::InputEvent::~InputEvent() = default;
+inline GlutApplication::InputEvent::~InputEvent() = default;
 #endif
 
 /**

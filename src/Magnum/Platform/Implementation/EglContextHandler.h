@@ -79,7 +79,7 @@ class EglContextHandler: public AbstractContextHandler<AbstractXApplication::Con
 };
 
 /* GCC 4.5 can't have this defaulted in class body */
-EglContextHandler::EglContextHandler() = default;
+inline EglContextHandler::EglContextHandler() = default;
 
 }}}
 

@@ -78,8 +78,8 @@ typedef AbstractVector<2> AbstractVector2D;
 typedef AbstractVector<3> AbstractVector3D;
 
 /* GCC 4.5 doesn't like it defaulted in class body */
-template<UnsignedInt dimensions> AbstractVector<dimensions>::AbstractVector() = default;
-template<UnsignedInt dimensions> AbstractVector<dimensions>::~AbstractVector() = default;
+template<UnsignedInt dimensions> inline AbstractVector<dimensions>::AbstractVector() = default;
+template<UnsignedInt dimensions> inline AbstractVector<dimensions>::~AbstractVector() = default;
 
 }}
 

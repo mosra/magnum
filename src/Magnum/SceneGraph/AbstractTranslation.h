@@ -82,9 +82,9 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         virtual void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type) = 0;
 };
 
-template<UnsignedInt dimensions, class T, class TranslationType> AbstractTranslation<dimensions, T, TranslationType>::AbstractTranslation() = default;
+template<UnsignedInt dimensions, class T, class TranslationType> inline AbstractTranslation<dimensions, T, TranslationType>::AbstractTranslation() = default;
 
-template<UnsignedInt dimensions, class T, class TranslationType> AbstractTranslation<dimensions, T, TranslationType>::~AbstractTranslation() = default;
+template<UnsignedInt dimensions, class T, class TranslationType> inline AbstractTranslation<dimensions, T, TranslationType>::~AbstractTranslation() = default;
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**

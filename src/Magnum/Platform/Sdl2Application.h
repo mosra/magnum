@@ -699,7 +699,7 @@ class Sdl2Application::InputEvent {
 };
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
-Sdl2Application::InputEvent::~InputEvent() = default;
+inline Sdl2Application::InputEvent::~InputEvent() = default;
 #endif
 
 /**
