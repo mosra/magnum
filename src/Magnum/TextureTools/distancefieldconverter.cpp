@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/Directory.h>
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/Math/Range.h"
@@ -66,6 +67,7 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "TgaImporter").setHelp("image importer plugin")
         .addOption("converter", "TgaImageConverter").setHelp("image converter plugin")
+        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addNamedArgument("output-size").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "size of output image")
         .addNamedArgument("radius").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
         .setHelp("Converts black&white image to distance-field representation.")
@@ -76,13 +78,13 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
 
 int DistanceFieldConverter::exec() {
     /* Load importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> importerManager(MAGNUM_IMPORTER_PLUGIN_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> importerManager(Utility::Directory::join(args.value("plugin-dir"), "importers/"));
     if(!(importerManager.load(args.value("importer")) & PluginManager::LoadState::Loaded))
         return 1;
     std::unique_ptr<Trade::AbstractImporter> importer = importerManager.instance(args.value("importer"));
 
     /* Load converter plugin */
-    PluginManager::Manager<Trade::AbstractImageConverter> converterManager(MAGNUM_IMAGECONVERTER_PLUGIN_DIR);
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "imageconverters/"));
     if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
         return 1;
     std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.instance(args.value("converter"));
