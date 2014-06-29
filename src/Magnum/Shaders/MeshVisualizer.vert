@@ -58,10 +58,17 @@ void main() {
 
     #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
     barycentric = vec3(0.0);
-    #ifndef NEW_GLSL
+
+    #ifdef SUBSCRIPTING_WORKAROUND
+    int i = int(mod(vertexIndex, 3.0));
+         if(i == 0) barycentric.x = 1.0;
+    else if(i == 1) barycentric.y = 1.0;
+    else            barycentric.z = 1.0;
+    #elif !defined(NEW_GLSL)
     barycentric[int(mod(vertexIndex, 3.0))] = 1.0;
     #else
     barycentric[gl_VertexID % 3] = 1.0;
     #endif
+
     #endif
 }
