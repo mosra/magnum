@@ -42,7 +42,7 @@
 #error No windowless application available on this platform
 #endif
 
-#include "configure.h"
+#include "fontconverterConfigure.h"
 
 namespace Magnum { namespace Text {
 
