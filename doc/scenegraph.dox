@@ -227,7 +227,7 @@ by calling @ref Object::setClean(). @ref Camera3D "Camera", for example, calls
 it automatically before it starts rendering, as it needs its own inverse
 transformation to properly draw the objects.
 
-See @ref AbstractFeature-subclassing-caching for more information.
+See @ref SceneGraph-AbstractFeature-subclassing-caching for more information.
 
 @section scenegraph-construction-order Construction and destruction order
 

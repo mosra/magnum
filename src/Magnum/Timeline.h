@@ -43,7 +43,7 @@ namespace Magnum {
 Keeps track of time delta between frames and allows FPS limiting. Can be used
 as source for animation speed computations.
 
-@section Timeline-usage Basic usage
+## Basic usage
 
 Construct the timeline on initialization so the instance is available for
 whole lifetime of the application. Call @ref start() before first draw event is

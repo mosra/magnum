@@ -60,10 +60,10 @@ install(TARGETS MagnumText
 install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)
 
 if(WITH_FONTCONVERTER)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fontconverterConfigure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/fontconverterConfigure.h)
 
-    include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(magnum-fontconverter fontconverter.cpp)
 

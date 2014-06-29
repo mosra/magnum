@@ -45,7 +45,7 @@ namespace Magnum { namespace Math {
 Along with Rad provides convenience classes to make angle specification and
 conversion less error-prone.
 
-@section Rad-usage Usage
+## Usage
 
 You can enter the value either by using literal:
 @code
@@ -92,7 +92,7 @@ Float d = Double(b);            // 60.0
 //Float e = b;                  // error, no implicit conversion
 @endcode
 
-@section Rad-conversions Requirement of explicit conversion
+## Requirement of explicit conversion
 
 The requirement of explicit conversions from and to unitless types helps to
 reduce unit-based errors. Consider following example with implicit conversions

@@ -42,9 +42,52 @@
 #error No windowless application available on this platform
 #endif
 
-#include "configure.h"
+#include "fontconverterConfigure.h"
 
-namespace Magnum { namespace Text {
+namespace Magnum {
+
+/**
+@page magnum-fontconverter Font conversion utility
+@brief Converts font to raster one of given atlas size
+
+@section magnum-fontconverter-usage Usage
+
+    magnum-fontconverter [-h|--help] --font FONT --converter CONVERTER [--plugin-dir DIR] [--characters CHARACTERS] [--font-size N] [--atlas-size "X Y"] [--output-size "X Y"] [--radius N] [--] input output
+
+Arguments:
+
+-   `input` -- input font
+-   `output` -- output filename prefix
+-   `-h`, `--help` -- display help message and exit
+-   `--font FONT` -- font plugin
+-   `--converter CONVERTER` -- font converter plugin
+-   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
+    %Magnum install location)
+-   `--characters CHARACTERS` -- characters to include in the output (default:
+    `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!:,.&nbsp;`)
+-   `--font-size N` -- input font size (default: `128`)
+-   `--atlas-size "X Y"` -- glyph atlas size (default: `"2048 2048"`)
+-   `--output-size "X Y"` -- output atlas size. If set to zero size, distance
+    field computation will not be used. (default: `"256 256"`)
+-   `--radius N` -- distance field computation radius (default: `24`)
+
+The resulting font files can be then used as specified in the documentation of
+`converter` plugin.
+
+@section magnum-fontconverter-example Example usage
+
+Making raster font from TTF file with default set of characters using
+@ref Text::FreeTypeFont "FreeTypeFont" font plugin and
+@ref Text::MagnumFontConverter "MagnumFontConverter" converter plugin:
+
+    magnum-fontconverter --font FreeTypeFont --converter MagnumFontConverter DejaVuSans.ttf myfont
+
+According to `MagnumFontConverter` plugin documentation, this will generate
+files `myfont.conf` and `myfont.tga` in current directory. You can then load
+and use them with the @ref Text::MagnumFont "MagnumFont" plugin.
+*/
+
+namespace Text {
 
 class FontConverter: public Platform::WindowlessApplication {
     public:
@@ -59,13 +102,13 @@ class FontConverter: public Platform::WindowlessApplication {
 FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     args.addArgument("input").setHelp("input", "input font")
         .addArgument("output").setHelp("output", "output filename prefix")
-        .addNamedArgument("font").setHelp("font", "plugin for opening the font")
-        .addNamedArgument("converter").setHelp("converter", "plugin for converting the font")
+        .addNamedArgument("font").setHelp("font", "font plugin")
+        .addNamedArgument("converter").setHelp("converter", "font converter plugin")
         .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                  "0123456789?!:,. ").setHelp("characters", "characters to include in the output")
-        .addOption("font-size", "128").setHelpKey("font-size", "N").setHelp("font-size", "TTF font size")
+        .addOption("font-size", "128").setHelpKey("font-size", "N").setHelp("font-size", "input font size")
         .addOption("atlas-size", "2048 2048").setHelpKey("atlas-size", "\"X Y\"").setHelp("atlas-size", "glyph atlas size")
         .addOption("output-size", "256 256").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "output atlas size. If set to zero size, distance field computation will not be used.")
         .addOption("radius", "24").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
@@ -77,16 +120,16 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
 
 int FontConverter::exec() {
     /* Font converter dependencies */
-    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "imageconverters/"));
+    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager(Utility::Directory::join(args.value("plugin-dir"), "imageconverters/"));
 
     /* Load font */
-    PluginManager::Manager<Text::AbstractFont> fontManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fonts/"));
+    PluginManager::Manager<Text::AbstractFont> fontManager(Utility::Directory::join(args.value("plugin-dir"), "fonts/"));
     if(!(fontManager.load(args.value("font")) & PluginManager::LoadState::Loaded))
         std::exit(1);
     std::unique_ptr<Text::AbstractFont> font = fontManager.instance(args.value("font"));
 
     /* Load font converter */
-    PluginManager::Manager<Text::AbstractFontConverter> converterManager(Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fontconverters/"));
+    PluginManager::Manager<Text::AbstractFontConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "fontconverters/"));
     if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
         std::exit(1);
     std::unique_ptr<Text::AbstractFontConverter> converter = converterManager.instance(args.value("converter"));
@@ -130,6 +173,8 @@ int FontConverter::exec() {
     return 0;
 }
 
-}}
+}
+
+}
 
 MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::Text::FontConverter)

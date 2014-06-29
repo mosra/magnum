@@ -55,13 +55,14 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 }
 @endcode
 
-@section AbstractObject-explicit-specializations Explicit template specializations
+@anchor SceneGraph-AbstractObject-explicit-specializations
+## Explicit template specializations
 
-The following specialization are explicitly compiled into @ref SceneGraph
+The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type) you have to
 use @ref Object.hpp implementation file to avoid linker errors. See also
-relevant sections in @ref Object-explicit-specializations "Object" and
-@ref AbstractTransformation-explicit-specializations "AbstractTransformation"
+relevant sections in @ref SceneGraph-Object-explicit-specializations "Object" and
+@ref SceneGraph-AbstractTransformation-explicit-specializations "AbstractTransformation"
 class documentation or @ref compilation-speedup-hpp for more information.
 
 -   @ref AbstractObject2D

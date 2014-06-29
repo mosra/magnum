@@ -72,14 +72,15 @@ for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
 }
 @endcode
 
-@section Object-explicit-specializations Explicit template specializations
+@anchor SceneGraph-Object-explicit-specializations
+## Explicit template specializations
 
-The following specialization are explicitly compiled into @ref SceneGraph
+The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type or special
 transformation class) you have to use @ref Object.hpp implementation file to
 avoid linker errors. See also relevant sections in
-@ref AbstractObject-explicit-specializations "AbstractObject" and
-@ref AbstractTransformation-explicit-specializations "AbstractTransformation"
+@ref SceneGraph-AbstractObject-explicit-specializations "AbstractObject" and
+@ref SceneGraph-AbstractTransformation-explicit-specializations "AbstractTransformation"
 class documentation or @ref compilation-speedup-hpp for more information.
 
 -   @ref DualComplexTransformation "Object<DualComplexTransformation>"

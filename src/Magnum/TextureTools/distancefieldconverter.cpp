@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/Directory.h>
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/Math/Range.h"
@@ -49,7 +50,42 @@
 
 #include "distancefieldconverterConfigure.h"
 
-namespace Magnum { namespace TextureTools {
+namespace Magnum {
+
+/** @page magnum-distancefieldconverter Distance Field conversion utility
+@brief Converts black&white image to distance field representation
+
+@section magnum-distancefieldconverter-usage Usage
+
+    magnum-distancefieldconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER] [--plugin-dir DIR] --output-size "X Y" --radius N [--] input output
+
+Arguments:
+
+-   `input` -- input image
+-   `output` -- output image
+-   `-h`, `--help` -- display help message and exit
+-   `--importer IMPORTER` -- image importer plugin (default: @ref Trade::TgaImporter "TgaImporter")
+-   `--converter CONVERTER` -- image converter plugin (default: @ref Trade::TgaImageConverter "TgaImageConverter")
+-   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
+    %Magnum install location)
+-   `--output-size "X Y"` -- size of output image
+-   `--radius N` -- distance field computation radius
+
+The resulting image can be then used with @ref Shaders::DistanceFieldVector
+shader. See also @ref TextureTools::distanceField() for more information about
+the algorithm and parameters.
+
+@section magnum-distancefield-example Example usage
+
+    magnum-distancefieldconverter --importer PngImporter --output-size "256 256" --radius 24 logo.png logo.tga
+
+This will open binary `logo.png` image using @ref Trade::PngImporter "PngImporter"
+plugin and converts it to 256x256 distance field `logo.tga` using
+@ref Trade::TgaImageConverter "TgaImageConverter".
+
+*/
+
+namespace TextureTools {
 
 class DistanceFieldConverter: public Platform::WindowlessApplication {
     public:
@@ -64,11 +100,12 @@ class DistanceFieldConverter: public Platform::WindowlessApplication {
 DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image")
-        .addOption("importer", "TgaImporter").setHelp("image importer plugin")
-        .addOption("converter", "TgaImageConverter").setHelp("image converter plugin")
+        .addOption("importer", "TgaImporter").setHelp("importer", "image importer plugin")
+        .addOption("converter", "TgaImageConverter").setHelp("converter", "image converter plugin")
+        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addNamedArgument("output-size").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "size of output image")
         .addNamedArgument("radius").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
-        .setHelp("Converts black&white image to distance-field representation.")
+        .setHelp("Converts black&white image to distance field representation.")
         .parse(arguments.argc, arguments.argv);
 
     createContext();
@@ -76,13 +113,13 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
 
 int DistanceFieldConverter::exec() {
     /* Load importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> importerManager(MAGNUM_IMPORTER_PLUGIN_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> importerManager(Utility::Directory::join(args.value("plugin-dir"), "importers/"));
     if(!(importerManager.load(args.value("importer")) & PluginManager::LoadState::Loaded))
         return 1;
     std::unique_ptr<Trade::AbstractImporter> importer = importerManager.instance(args.value("importer"));
 
     /* Load converter plugin */
-    PluginManager::Manager<Trade::AbstractImageConverter> converterManager(MAGNUM_IMAGECONVERTER_PLUGIN_DIR);
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "imageconverters/"));
     if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
         return 1;
     std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.instance(args.value("converter"));

@@ -40,7 +40,7 @@ Adds drawing function to the object. Each %Drawable is part of some
 @ref DrawableGroup and the whole group is drawn with particular camera using
 @ref AbstractCamera::draw().
 
-@section Drawable-usage Usage
+## Usage
 
 First thing is to add @ref Drawable feature to some object and implement
 @ref draw(). You can do it conveniently using multiple inheritance (see
@@ -91,7 +91,7 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-@section Drawable-performance Using drawable groups to improve performance
+## Using drawable groups to improve performance
 
 You can organize your drawables to multiple groups to minimize OpenGL state
 changes -- for example put all objects using the same shader, the same light
@@ -117,7 +117,7 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-@section Drawable-explicit-specializations Explicit template specializations
+## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type) you have to

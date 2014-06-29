@@ -47,7 +47,7 @@ Provides interface for importing 2D/3D scene, mesh, material, texture and image
 data. See @ref plugins for more information and `*Importer` classes in
 @ref Trade namespace for available importer plugins.
 
-@section AbstractImporter-subclassing Subclassing
+## Subclassing
 
 Plugin implements function @ref doFeatures(), @ref doIsOpened(), one of or both
 @ref doOpenData() and @ref doOpenFile() functions, function @ref doClose() and

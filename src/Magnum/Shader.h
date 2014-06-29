@@ -45,11 +45,9 @@ namespace Magnum {
 /**
 @brief %Shader
 
-See @ref AbstractShaderProgram for more information.
+See @ref AbstractShaderProgram for usage information.
 
-@todoc Usage...
-
-@section Shader-performance-optimization Performance optimizations
+## Performance optimizations
 
 %Shader limits and implementation-defined values (such as @ref maxUniformComponents())
 are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.

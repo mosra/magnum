@@ -156,7 +156,8 @@ variable along with `MAGNUM_PLUGINS_*_DEBUG_DIR` / `MAGNUM_PLUGINS_*_RELEASE_DIR
 variables to decide in preprocessing step.
 
 Features of found %Magnum library are exposed in these CMake variables, they
-are also available as preprocessor variables if including @ref Magnum/Magnum.h:
+are also available as preprocessor variables if including
+@ref Magnum/Magnum.h "Magnum/Magnum.h":
 
 -   `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
     included

@@ -46,7 +46,8 @@ namespace Implementation {
 /**
 @brief Base for shader program implementations
 
-@section AbstractShaderProgram-subclassing Subclassing workflow
+@anchor AbstractShaderProgram-subclassing
+## Subclassing workflow
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
@@ -116,7 +117,8 @@ MyShader& setSpecularTexture(Texture2D& texture) {
 }
 @endcode
 
-@subsection AbstractShaderProgram-attribute-location Binding attribute location
+@anchor AbstractShaderProgram-attribute-location
+### Binding attribute location
 
 The preferred workflow is to specify attribute location for vertex shader input
 attributes and fragment shader output attributes explicitly in the shader code,
@@ -184,7 +186,8 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 @todo @es_extension{EXT,separate_shader_objects} supports explicit attrib
     location
 
-@subsection AbstractShaderProgram-uniform-location Uniform locations
+@anchor AbstractShaderProgram-uniform-location
+### Uniform locations
 
 The preferred workflow is to specify uniform locations directly in the shader
 code, e.g.:
@@ -219,7 +222,8 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
     @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()"
     instead.
 
-@subsection AbstractShaderProgram-texture-units Specifying texture binding units
+@anchor AbstractShaderProgram-texture-units
+### Specifying texture binding units
 
 The preferred workflow is to specify texture binding unit directly in the
 shader code, e.g.:
@@ -251,7 +255,8 @@ setUniform(uniformLocation("specularTexture"), 1);
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
 
-@section AbstractShaderProgram-rendering-workflow Rendering workflow
+@anchor AbstractShaderProgram-rendering-workflow
+## Rendering workflow
 
 Basic workflow with %AbstractShaderProgram subclasses is: instance shader
 class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
@@ -268,7 +273,8 @@ shader.setTransformation(transformation)
 mesh.draw(shader);
 @endcode
 
-@section AbstractShaderProgram-types Mapping between GLSL and Magnum types
+@anchor AbstractShaderProgram-types
+## Mapping between GLSL and %Magnum types
 
 See @ref types for more information, only types with GLSL equivalent can be used
 (and their super- or subclasses with the same size and underlying type). See
@@ -306,7 +312,8 @@ also @ref Attribute::DataType enum for additional type options.
     @ref Magnum::Matrix4x3 "Matrix4x3") are not available in OpenGL ES 2.0.
 @requires_gl Double attributes and uniforms are not available in OpenGL ES.
 
-@section AbstractShaderProgram-performance-optimization Performance optimizations
+@anchor AbstractShaderProgram-performance-optimization
+## Performance optimizations
 
 %Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.

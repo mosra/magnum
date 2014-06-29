@@ -62,13 +62,14 @@ Encapsulates one OpenGL texture object. See @ref Texture, @ref TextureArray,
 @ref BufferTexture and @ref MultisampleTexture documentation for more
 information and usage examples.
 
-@section AbstractTexture-webgl-restrictions WebGL restrictions
+## WebGL restrictions
 
 @ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on type of data
 submitted to @ref Texture::setSubImage() "*Texture::setSubImage()", see its
 documentation for details.
 
-@section AbstractTexture-performance-optimization Performance optimizations and security
+@anchor AbstractTexture-performance-optimization
+## Performance optimizations and security
 
 The engine tracks currently bound textures in all available texture units to
 avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.

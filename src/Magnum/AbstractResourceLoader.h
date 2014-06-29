@@ -40,7 +40,7 @@ namespace Magnum {
 
 Provides (a)synchronous resource loading for @ref ResourceManager.
 
-@section AbstractResourceLoader-usage Usage and subclassing
+## Usage and subclassing
 
 Usage is done by subclassing. Subclass instances can be added to
 @ref ResourceManager using @ref ResourceManager::setLoader(). After adding the

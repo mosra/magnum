@@ -39,9 +39,10 @@ namespace Magnum { namespace SceneGraph {
 
 Provides transformation implementation for @ref Object instances.
 
-@section AbstractTransformation-explicit-specializations Explicit template specializations
+@anchor SceneGraph-AbstractTransformation-explicit-specializations
+## Explicit template specializations
 
-The following specialization are explicitly compiled into @ref SceneGraph
+The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type) you have to
 use @ref Object.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.

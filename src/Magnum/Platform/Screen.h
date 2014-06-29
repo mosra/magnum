@@ -53,7 +53,7 @@ See @ref BasicScreenedApplication for more information.
 If exactly one application header is included, this class is also aliased to
 `Platform::Screen`.
 
-@section Screen-explicit-specializations Explicit template specializations
+## Explicit template specializations
 
 The following specialization are explicitly compiled into each particular
 `*Application` library. For other specializations you have to use

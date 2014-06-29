@@ -38,6 +38,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 #include "Magnum/visibility.h"
+#include "MagnumExternal/Optional/optional.hpp"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
 #include "Version.h"
@@ -172,6 +173,35 @@ class MAGNUM_EXPORT Context {
          * @see @ref resetState()
          */
         typedef Containers::EnumSet<State, UnsignedInt> States;
+
+        /**
+         * @brief Detected driver
+         *
+         * @see @ref DetectedDriver, @ref detectedDriver()
+         */
+        enum class DetectedDriver: UnsignedShort {
+            #ifndef MAGNUM_TARGET_GLES
+            /** Binary AMD desktop drivers on Windows and Linux */
+            AMD = 1 << 0,
+            #endif
+
+            #ifdef MAGNUM_TARGET_GLES2
+            /**
+             * OpenGL ES 2.0 implementation by ANGLE (translated to D3D9), used
+             * by browsers on Windows for Native Client and WebGL. As the WebGL
+             * specification explicitly disallows exposing driver information
+             * to the application, this check cannot be done reliably.
+             */
+            ProbablyAngle = 1 << 1
+            #endif
+        };
+
+        /**
+         * @brief Detected drivers
+         *
+         * @see @ref detectedDriver()
+         */
+        typedef Containers::EnumSet<DetectedDriver> DetectedDrivers;
 
         /**
          * @brief Constructor
@@ -436,6 +466,15 @@ class MAGNUM_EXPORT Context {
          */
         void resetState(States states = ~States{});
 
+        /**
+         * @brief Detect driver
+         *
+         * Tries to detect driver using various OpenGL state queries. Once the
+         * detection is done, the result is cached, repeated queries don't
+         * result in repeated GL calls.
+         */
+        DetectedDrivers detectedDriver();
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         Implementation::State& state() { return *_state; }
         #endif
@@ -455,6 +494,8 @@ class MAGNUM_EXPORT Context {
         std::vector<Extension> _supportedExtensions;
 
         Implementation::State* _state;
+
+        std::optional<DetectedDrivers> _detectedDrivers;
 };
 
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */

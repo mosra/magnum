@@ -43,7 +43,7 @@ namespace Magnum {
 
 See also @ref AbstractTexture documentation for more information.
 
-@section RectangleTexture-usage Usage
+## Usage
 
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. @ref Image2D. Example configuration:

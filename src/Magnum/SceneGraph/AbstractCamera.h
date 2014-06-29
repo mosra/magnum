@@ -58,13 +58,14 @@ See Drawable documentation for more information. This class is not directly
 instantiatable, use @ref BasicCamera2D or @ref BasicCamera3D subclasses
 instead.
 
-@section AbstractCamera-explicit-specializations Explicit template specializations
+@anchor SceneGraph-AbstractCamera-explicit-specializations
+## Explicit template specializations
 
-The following specialization are explicitly compiled into @ref SceneGraph
+The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type) you have to
 use @ref AbstractCamera.hpp implementation file to avoid linker errors. See
-also relevant sections in @ref Camera2D-explicit-specializations "Camera2D"
-and @ref Camera3D-explicit-specializations "Camera3D" class documentation or
+also relevant sections in @ref SceneGraph-Camera2D-explicit-specializations "Camera2D"
+and @ref SceneGraph-Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
 -   @ref AbstractCamera2D

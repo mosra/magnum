@@ -163,7 +163,7 @@ template<class T> class ResourceManagerData {
 Provides storage for arbitrary set of types, accessible globally using
 @ref instance().
 
-@section ResourceManager-usage Usage
+## Usage
 
 Each resource is referenced from @ref Resource class. For optimizing
 performance, each resource can be set as mutable or final. Mutable resources

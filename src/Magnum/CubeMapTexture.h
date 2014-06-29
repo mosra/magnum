@@ -50,7 +50,7 @@ turned upside down (+Y is top):
               | +Y |
               +----+
 
-@section CubeMapTexture-usage Basic usage
+## Basic usage
 
 See @ref Texture documentation for introduction.
 

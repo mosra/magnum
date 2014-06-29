@@ -43,7 +43,7 @@ Provides interface for importing various audio formats. See @ref plugins for
 more information and `*Importer` classes in @ref Audio namespace for available
 importer plugins.
 
-@section Audio-AbstractImporter-subclassing Subclassing
+## Subclassing
 
 Plugin implements function @ref doFeatures(), @ref doIsOpened(), one of or both
 @ref doOpenData() and @ref doOpenFile() functions, function @ref doClose() and

@@ -43,7 +43,7 @@ namespace Magnum {
 
 See @ref CubeMapTexture documentation for introduction.
 
-@section CubeMapTextureArray-usage Usage
+## Usage
 
 See @ref Texture documentation for introduction.
 

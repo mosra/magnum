@@ -122,7 +122,7 @@ namespace Implementation { struct BufferState; }
 Encapsulates one OpenGL buffer object and provides functions for convenient
 data updates.
 
-@section Buffer-data Data updating
+## Data updating
 
 Default way to set or update buffer data with @ref setData() or @ref setSubData()
 is to use @ref Corrade::Containers::ArrayReference. See its documentation for
@@ -138,7 +138,8 @@ std::vector<Vector3> data;
 buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 
-@subsection Buffer-data-mapping Memory mapping
+@anchor Buffer-data-mapping
+## Memory mapping
 
 %Buffer data can be also updated asynchronously. First you need to allocate
 the buffer to desired size by passing `nullptr` to @ref setData(), e.g.:
@@ -166,7 +167,7 @@ for(std::size_t i: {7, 27, 56, 128}) {
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 
-@section Buffer-webgl-restrictions WebGL and NaCl restrictions
+## WebGL and NaCl restrictions
 
 Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" and @ref CORRADE_TARGET_NACL "NaCl"
 need to be bound only to one unique target, i.e., @ref Buffer bound to
@@ -183,7 +184,7 @@ Buffer indices{Buffer::Target::ElementArray};
 To ease up the development, @ref Mesh checks proper target hint when adding
 vertex and index buffers in both WebGL and NaCl.
 
-@section Buffer-performance-optimization Performance optimizations
+## Performance optimizations
 
 The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl{BindBuffer}. If the buffer is already bound to some target, functions

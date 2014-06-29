@@ -61,6 +61,12 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
 
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
+        #ifdef MAGNUM_TARGET_WEBGL
+        .addSource("#define SUBSCRIPTING_WORKAROUND\n")
+        #elif defined(MAGNUM_TARGET_GLES)
+        .addSource(Context::current()->detectedDriver() & Context::DetectedDriver::ProbablyAngle ?
+            "#define SUBSCRIPTING_WORKAROUND\n" : "")
+        #endif
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.vert"));
     frag.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")

@@ -23,8 +23,35 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef CORRADE_IS_DEBUG_BUILD
-#define MAGNUM_PLUGINS_DIR "${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}"
-#else
-#define MAGNUM_PLUGINS_DIR "${MAGNUM_PLUGINS_INSTALL_DIR}"
-#endif
+#include "Magnum/Context.h"
+#include "Magnum/Math/Range.h"
+
+namespace Magnum {
+
+auto Context::detectedDriver() -> Context::DetectedDrivers {
+    if(_detectedDrivers) return *_detectedDrivers;
+
+    _detectedDrivers = DetectedDrivers{};
+
+    /* AMD binary desktop drivers */
+    #ifndef MAGNUM_TARGET_GLES
+    const std::string vendor = vendorString();
+    if(vendor.find("ATI Technologies Inc.") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::AMD;
+    #endif
+
+    /* OpenGL ES 2.0 implementation using ANGLE. Taken from
+       http://stackoverflow.com/a/20149090 */
+    #ifdef MAGNUM_TARGET_GLES2
+    {
+        Range1Di range;
+        glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
+        if(range.min() == 1 && range.max() == 1)
+            return *_detectedDrivers |= DetectedDriver::ProbablyAngle;
+    }
+    #endif
+
+    return *_detectedDrivers;
+}
+
+}

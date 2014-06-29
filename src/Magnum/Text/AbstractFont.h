@@ -48,14 +48,14 @@ Provides interface for opening fonts, filling glyph cache and layouting the
 glyphs. See @ref plugins for more information and `*Font` classes in @ref Text
 namespace for available font plugins.
 
-@section AbstractFont-usage Usage
+## Usage
 
 First step is to open the font using @ref openData(), @ref openSingleData() or
 @ref openFile(). Next step is to prerender all the glyphs which will be used in
 text rendering later, see @ref GlyphCache for more information. See
 @ref Renderer for information about text rendering.
 
-@section AbstractFont-subclassing Subclassing
+## Subclassing
 
 Plugin implements @ref doFeatures(), @ref doClose(), @ref doLayout(), either
 @ref doCreateGlyphCache() or @ref doFillGlyphCache() and one or more of
@@ -304,7 +304,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
 
 Returned by @ref AbstractFont::layout().
 
-@section TextAbstractLayouter-subclassing Subclassing
+## Subclassing
 
 Plugin creates private subclass (no need to expose it to end users) and
 implements @ref doRenderGlyph(). Bounds checking on @p i is done automatically

@@ -157,7 +157,8 @@ namespace Implementation { struct FramebufferState; }
 
 See @ref DefaultFramebuffer and @ref Framebuffer for more information.
 
-@section AbstractFramebuffer-performance-optimization Performance optimizations and security
+@anchor AbstractFramebuffer-performance-optimization
+## Performance optimizations and security
 
 The engine tracks currently bound framebuffer and current viewport to avoid
 unnecessary calls to @fn_gl{BindFramebuffer} and @fn_gl{Viewport} when

@@ -44,7 +44,7 @@ Provides functionality for converting images between various internal formats
 or compressing them. See @ref plugins for more information and `*ImageConverter`
 classes in @ref Trade namespace for available image converter plugins.
 
-@section AbstractImageConverter-subclassing Subclassing
+## Subclassing
 
 Plugin implements function @ref doFeatures() and one or more of
 @ref doExportToImage(), @ref doExportToData() or @ref doExportToFile()

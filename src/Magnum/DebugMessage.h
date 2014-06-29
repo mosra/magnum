@@ -46,7 +46,7 @@ Allows retrieving and inserting debug messages from and to OpenGL command
 stream, for example with conjunction with various debuggers, such as Apitrace
 or gDEBugger.
 
-@section DebugMessage-usage Basic usage
+## Basic usage
 
 To retrieve debug messages from either the GL or your application you need to
 have OpenGL 4.3 or @extension{KHR,debug} desktop/ES extension. You need to
