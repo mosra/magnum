@@ -38,7 +38,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-#ifdef CORRADE_TARGET_NACL_NEWLIB
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
 #include <sstream>
 #endif
 
@@ -66,12 +66,12 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
 
     Math::Vector<size, Float> output;
 
-    #ifdef CORRADE_TARGET_NACL_NEWLIB
+    #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
     std::istringstream in;
     #endif
 
     for(std::size_t i = 0; i != size; ++i) {
-        #ifndef CORRADE_TARGET_NACL_NEWLIB
+        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
         output[i] = std::stof(data[i]);
         #else
         in.str(data[i]);
@@ -80,7 +80,7 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
     }
 
     if(data.size() == size+1) {
-        #ifndef CORRADE_TARGET_NACL_NEWLIB
+        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
         *extra = std::stof(data.back());
         #else
         in.str(data.back());
@@ -369,7 +369,7 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
                 }
 
                 /* Position indices */
-                #ifndef CORRADE_TARGET_NACL_NEWLIB
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
                 positionIndices.push_back(std::stoul(indices[0]) - positionIndexOffset);
                 #else
                 std::istringstream in(indices[0]);
@@ -380,7 +380,7 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
 
                 /* Texture coordinates */
                 if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty())) {
-                    #ifndef CORRADE_TARGET_NACL_NEWLIB
+                    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
                     textureCoordinateIndices.push_back(std::stoul(indices[1]) - textureCoordinateIndexOffset);
                     #else
                     in.str(indices[1]);
@@ -391,7 +391,7 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
 
                 /* Normal indices */
                 if(indices.size() == 3) {
-                    #ifndef CORRADE_TARGET_NACL_NEWLIB
+                    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
                     normalIndices.push_back(std::stoul(indices[2]) - normalIndexOffset);
                     #else
                     in.str(indices[2]);
