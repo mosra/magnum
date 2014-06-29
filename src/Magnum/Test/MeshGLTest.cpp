@@ -1742,7 +1742,8 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
 
 template<class T> T MultiChecker::get(ColorFormat format, ColorType type) {
     Image2D image(format, type);
-    framebuffer.read({}, Vector2i(1), image);
+    /* GCC 4.5 needs explicit type here */
+    framebuffer.read(Vector2i{}, Vector2i(1), image);
     return image.data<T>()[0];
 }
 #endif
