@@ -7,7 +7,7 @@ arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('emscripten-corrade')
-makedepends=('cmake' 'ninja')
+makedepends=('cmake' 'ninja' 'emscripten-git')
 options=('!strip' '!buildflags' 'staticlibs')
 
 build() {
@@ -25,7 +25,7 @@ build() {
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
+        -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
         -DWITH_SDL2APPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_OBJIMPORTER=ON \
