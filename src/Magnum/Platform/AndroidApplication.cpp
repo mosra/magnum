@@ -34,19 +34,6 @@
 
 namespace Magnum { namespace Platform {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-AndroidApplication::AndroidApplication(const Arguments& arguments): AndroidApplication{arguments, Configuration{}} {}
-#endif
-
-AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): AndroidApplication{arguments, nullptr} {
-    createContext(configuration);
-}
-
-AndroidApplication::AndroidApplication(const Arguments& arguments, std::nullptr_t): _state(arguments) {
-    /* Redirect debug output to Android log */
-    _logOutput.reset(new LogOutput);
-}
-
 AndroidApplication::~AndroidApplication() {
     eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(_display, _context);
@@ -60,6 +47,19 @@ struct AndroidApplication::LogOutput {
     Utility::AndroidLogStreamBuffer debugBuffer, warningBuffer, errorBuffer;
     std::ostream debugStream, warningStream, errorStream;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+AndroidApplication::AndroidApplication(const Arguments& arguments): AndroidApplication{arguments, Configuration{}} {}
+#endif
+
+AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): AndroidApplication{arguments, nullptr} {
+    createContext(configuration);
+}
+
+AndroidApplication::AndroidApplication(const Arguments& arguments, std::nullptr_t): _state(arguments) {
+    /* Redirect debug output to Android log */
+    _logOutput.reset(new LogOutput);
+}
 
 AndroidApplication::LogOutput::LogOutput():
     debugBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Info, "magnum"),
