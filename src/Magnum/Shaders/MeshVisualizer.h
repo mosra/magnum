@@ -44,7 +44,7 @@ Uses geometry shader to visualize wireframe. You need to provide @ref Position
 attribute in your triangle mesh and call at least @ref setTransformationProjectionMatrix()
 to be able to render.
 
-@section ShadersMeshVisualizer-wireframe Wireframe visualization
+## Wireframe visualization
 
 Wireframe visualization is done by enabling @ref Flag::Wireframe. It is done
 either using geometry shaders or with help of additional vertex information.

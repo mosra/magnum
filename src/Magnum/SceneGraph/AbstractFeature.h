@@ -84,13 +84,14 @@ Contained in @ref Object, takes care of transformation caching. See
 Uses @ref Corrade::Containers::LinkedList for accessing holder object and
 sibling features.
 
-@section AbstractFeature-subclassing Subclassing
+## Subclassing
 
 Feature is templated on dimension count and underlying transformation type, so
 it can be used only on object having transformation with the same dimension
 count and type.
 
-@subsection AbstractFeature-subclassing-caching Caching transformations in features
+@anchor SceneGraph-AbstractFeature-subclassing-caching
+### Caching transformations in features
 
 Features can cache absolute transformation of the object instead of computing
 it from scratch every time to achieve better performance. See
@@ -120,7 +121,7 @@ class CachingFeature: public SceneGraph::AbstractFeature3D {
 Before using the cached value explicitly request object cleaning by calling
 `object()->setClean()`.
 
-@subsection AbstractFeature-subclassing-transformation Accessing object transformation
+### Accessing object transformation
 
 Features has by default access only to @ref AbstractObject, which is base of
 @ref Object not depending on any particular transformation implementation. This
@@ -150,9 +151,9 @@ from @ref AbstractBasicTranslationRotationScaling3D "AbstractTranslationRotation
 which is derived from @ref AbstractBasicTranslationRotation3D "AbstractTranslationRotation3D",
 which is automatically extracted from the reference in our constructor.
 
-@section AbstractFeature-explicit-specializations Explicit template specializations
+## Explicit template specializations
 
-The following specialization are explicitly compiled into @ref SceneGraph
+The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type) you have to
 use @ref AbstractFeature.hpp implementation file to avoid linker errors. See
 also @ref compilation-speedup-hpp for more information.

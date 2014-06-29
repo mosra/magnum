@@ -69,7 +69,8 @@ class ObjectRendererOptions {
 Visualizes object position, rotation and scale using colored axes. See
 @ref debug-tools-renderers for more information.
 
-@section ObjectRenderer-usage Basic usage
+@anchor DebugTools-ObjectRenderer-usage
+## Basic usage
 
 Example code:
 @code
@@ -89,8 +90,8 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
          * @brief Constructor
          * @param object    Object for which to create debug renderer
          * @param options   Options resource key. See
-         *      @ref ObjectRenderer-usage "class documentation" for more
-         *      information.
+         *      @ref DebugTools-ObjectRenderer-usage "class documentation" for
+         *      more information.
          * @param drawables Drawable group
          *
          * The renderer is automatically added to object's features.

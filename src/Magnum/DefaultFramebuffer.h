@@ -41,7 +41,8 @@ created when @ref Context is created and it is available through global
 variable @ref defaultFramebuffer. It is by default mapped to whole screen
 surface.
 
-@section DefaultFramebuffer-usage Usage
+@anchor DefaultFramebuffer-usage
+## Usage
 
 When you are using only the default framebuffer, the usage is simple. You
 must ensure that it is properly resized when application surface is resized,
@@ -69,7 +70,7 @@ void drawEvent() {
 See Framebuffer documentation for more involved usage, usage of non-default or
 multiple framebuffers.
 
-@section DefaultFramebuffer-performance-optimization Performance optimizations
+## Performance optimizations
 
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 

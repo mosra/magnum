@@ -62,7 +62,7 @@ namespace Implementation {
 Template class for one- to three-dimensional textures. See also
 @ref AbstractTexture documentation for more information.
 
-@section Texture-usage Usage
+## Usage
 
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. @ref Image. Example configuration of high quality texture with

@@ -41,7 +41,7 @@ namespace Magnum { namespace SceneGraph {
 
 Used together with @ref FeatureGroup.
 
-@section AbstractGroupedFeature-subclassing Subclassing
+## Subclassing
 
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 and typedef'ing @ref FeatureGroup to accept only given type, e.g.:
@@ -53,9 +53,9 @@ class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
 typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
 @endcode
 
-@section AbstractGroupedFeature-explicit-specializations Explicit template specializations
+## Explicit template specializations
 
-The following specialization are explicitly compiled into @ref SceneGraph
+The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type) you have to
 use @ref FeatureGroup.hpp implementation file to avoid linker errors. See also
 @ref compilation-speedup-hpp for more information.

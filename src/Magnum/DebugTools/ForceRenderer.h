@@ -85,7 +85,8 @@ class ForceRendererOptions {
 Visualizes force pushing on object by an arrow of the same direction and size.
 See @ref debug-tools-renderers for more information.
 
-@section ForceRenderer-usage Basic usage
+@anchor DebugTools-ForceRenderer-usage
+## Basic usage
 
 Example code:
 @code
@@ -109,8 +110,8 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          * @param forcePosition Where to render the force, relative to object
          * @param force         Force vector
          * @param options       Options resource key. See
-         *      @ref ForceRenderer-usage "class documentation" for more
-         *      information.
+         *      @ref DebugTools-ForceRenderer-usage "class documentation" for
+         *      more information.
          * @param drawables     Drawable group
          *
          * The renderer is automatically added to object's features, @p force is

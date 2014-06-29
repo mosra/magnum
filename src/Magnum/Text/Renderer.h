@@ -169,7 +169,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
 Lays out the text into mesh using given font. Use of ligatures, kerning etc.
 depends on features supported by particular font and its layouter.
 
-@section Renderer-usage Usage
+## Usage
 
 Immutable text (e.g. menu items, credits) can be simply rendered using static
 methods, returning result either as data arrays or as fully configured mesh.
@@ -220,7 +220,7 @@ shader.setTransformationProjectionMatrix(projection*Matrix3::translation(-render
 renderer.mesh().draw(shader);
 @endcode
 
-@section Renderer-extensions Required OpenGL functionality
+## Required OpenGL functionality
 
 Mutable text rendering requires @extension{ARB,map_buffer_range} on desktop
 OpenGL (also part of OpenGL ES 3.0). If neither @es_extension{EXT,map_buffer_range}

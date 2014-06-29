@@ -157,7 +157,7 @@ enum class BufferTextureFormat: GLenum {
 This texture is, unlike classic textures such as @ref Texture used as simple
 data source, without any unnecessary interpolation and wrapping methods.
 
-@section BufferTexture-usage Usage
+## Usage
 
 %Texture data are stored in buffer and after binding the buffer to the texture
 using @ref setBuffer(), you can fill the buffer at any time using data setting
@@ -185,7 +185,7 @@ In shader, the texture is used via `samplerBuffer`, `isamplerBuffer` or
 are integer coordinates passed to `texelFetch()`. See @ref AbstractShaderProgram
 documentation for more information about usage in shaders.
 
-@section BufferTexture-performance-optimization Performance optimizations
+## Performance optimizations
 
 If extension @extension{EXT,direct_state_access} is available, @ref setBuffer()
 functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and

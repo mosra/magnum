@@ -65,7 +65,7 @@ Debug MAGNUM_SCENEGRAPH_EXPORT operator<<(Debug debug, AnimationState value);
 Adds animation feature to object. Each %Animable is part of some
 @ref AnimableGroup, which takes care of running the animations.
 
-@section Animable-usage Usage
+## Usage
 
 First thing is to add @ref Animable feature to some object and implement
 @ref animationStep(). You can do it conveniently using multiple inheritance
@@ -120,7 +120,7 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-@section Animable-performance Using animable groups to improve performance
+## Using animable groups to improve performance
 
 @ref AnimableGroup is optimized for case when no animation is running -- it
 just puts itself to rest and waits until some animation changes its state to
@@ -128,7 +128,7 @@ just puts itself to rest and waits until some animation changes its state to
 pernamently running to separate group, they will not be always traversed when
 calling @ref AnimableGroup::step(), saving precious frame time.
 
-@section Animable-explicit-specializations Explicit template specializations
+## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Double type) you have to

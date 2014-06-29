@@ -45,7 +45,7 @@ Provides functionality for converting arbitrary font to different format. See
 @ref plugins for more information and `*FontConverter` classes in @ref Text
 namespace for available font converter plugins.
 
-@section AbstractFontConverter-subclassing Subclassing
+## Subclassing
 
 Plugin implements @ref doFeatures() and one or more of `exportTo*()` /
 `importFrom*()` functions based on what features are supported. Characters

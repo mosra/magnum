@@ -42,7 +42,7 @@ namespace Implementation { struct FramebufferState; }
 Attachable to framebuffer as render target, see @ref Framebuffer documentation
 for more information.
 
-@section Renderbuffer-performance-optimization Performance optimizations
+## Performance optimizations
 
 The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 @fn_gl{BindRenderbuffer} in @ref setStorage(). %Renderbuffer limits and

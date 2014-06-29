@@ -120,7 +120,8 @@ namespace Implementation { struct MeshState; }
 /**
 @brief %Mesh
 
-@section Mesh-configuration Mesh configuration
+@anchor Mesh-configuration
+## %Mesh configuration
 
 You have to specify at least primitive and vertex/index count using
 @ref setPrimitive() and @ref setCount(). Then fill your vertex buffers with
@@ -146,9 +147,9 @@ different usage) or store data for more meshes in one buffer.
 If vertex/index count or instance count is zero, the mesh is empty and no draw
 commands are issued when calling @ref draw().
 
-@subsection Mesh-configuration-examples Example mesh configuration
+### Example mesh configuration
 
-@subsubsection Mesh-configuration-examples-nonindexed Basic non-indexed mesh
+#### Basic non-indexed mesh
 
 @code
 // Custom shader, needing only position data
@@ -173,7 +174,7 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position{});
 @endcode
 
-@subsubsection Mesh-configuration-examples-nonindexed-phong Interleaved vertex data
+#### Interleaved vertex data
 
 @code
 // Non-indexed primitive with positions and normals
@@ -190,7 +191,7 @@ mesh.setPrimitive(plane.primitive())
     .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{});
 @endcode
 
-@subsubsection Mesh-configuration-examples-indexed-phong Indexed mesh
+#### Indexed mesh
 
 @code
 // Custom shader
@@ -254,7 +255,7 @@ mesh.setPrimitive(plane.primitive())
 Or, if you plan to use the mesh with stock shaders, you can just use
 @ref MeshTools::compile().
 
-@subsubsection Mesh-configuration-examples-data-options Specific formats of vertex data
+#### Specific formats of vertex data
 
 @code
 // Custom shader with colors specified as four floating-point values
@@ -300,19 +301,20 @@ mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color{
     MyShader::Color::DataOption::Normalized});
 @endcode
 
-@section Mesh-drawing Rendering meshes
+## Rendering meshes
 
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
 respective shader (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call @ref Mesh::draw().
 
-@section Mesh-webgl-restrictions WebGL restrictions
+## WebGL restrictions
 
 @ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
 layout, see @ref addVertexBuffer() documentation for details.
 
-@section Mesh-performance-optimization Performance optimizations
+@anchor Mesh-performance-optimization
+## Performance optimizations
 
 If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
 @es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are

@@ -120,7 +120,8 @@ class ShapeRendererOptions {
 Visualizes collision shapes using wireframe primitives. See
 @ref debug-tools-renderers for more information.
 
-@section ShapeRenderer-usage Basic usage
+@anchor DebugTools-ShapeRenderer-usage
+## Basic usage
 
 Example code:
 @code
@@ -147,8 +148,8 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
          * @brief Constructor
          * @param shape     Shape for which to create debug renderer
          * @param options   Options resource key. See
-         *      @ref ShapeRenderer-usage "class documentation" for more
-         *      information.
+         *      @ref DebugTools-ShapeRenderer-usage "class documentation" for
+         *      more information.
          * @param drawables Drawable group
          *
          * The renderer is automatically added to shape's object features,

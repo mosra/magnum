@@ -75,7 +75,7 @@ for(Screen* s = app.backScreen(); s; s = s->nextNearerScreen()) {
 }
 @endcode
 
-@section ScreenedApplication-explicit-specializations Explicit template specializations
+## Explicit template specializations
 
 The following specialization are explicitly compiled into each particular
 `*Application` library. For other specializations you have to use

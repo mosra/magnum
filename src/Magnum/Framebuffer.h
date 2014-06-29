@@ -45,7 +45,8 @@ Unlike @ref DefaultFramebuffer, which is used for on-screen rendering, this
 class is used for off-screen rendering, usable either in windowless
 applications, texture generation or for various post-processing effects.
 
-@section Framebuffer-usage Example usage
+@anchor Framebuffer-usage
+## Example usage
 
 See @ref DefaultFramebuffer-usage "DefaultFramebuffer documentation" for
 introduction. Imagine you have shader with multiple outputs (e.g. for deferred
@@ -88,7 +89,7 @@ void drawEvent() {
 }
 @endcode
 
-@section Framebuffer-performance-optimization Performance optimizations
+## Performance optimizations
 
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 

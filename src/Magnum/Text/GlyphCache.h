@@ -43,7 +43,7 @@ namespace Magnum { namespace Text {
 
 Contains font glyphs prerendered into texture atlas.
 
-@section GlyphCache-usage Usage
+## Usage
 
 Create %GlyphCache object with sufficient size and then call
 @ref AbstractFont::createGlyphCache() to fill it with glyphs.

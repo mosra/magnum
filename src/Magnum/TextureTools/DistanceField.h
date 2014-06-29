@@ -56,6 +56,8 @@ less memory and can be scaled without aliasing issues. Additionally it provides
 foundation for features like outlining, glow or drop shadow essentially for
 free.
 
+### The algorithm
+
 For each pixel inside @p rectangle the algorithm looks at corresponding pixel in
 @p input and tries to find nearest pixel of opposite color in area given by
 @p radius. Signed distance between the points is then saved as value of given
@@ -67,7 +69,7 @@ that the pixel was originally black and nearest white pixel is farther than
 The resulting texture can be used with bilinear filtering. It can be converted
 back to binary form in shader using e.g. GLSL `smoothstep()` function with step
 around `0.5` to create antialiased edges. Or you can exploit the distance field
-features to create many other effects. See also Shaders::DistanceFieldVectorShader.
+features to create many other effects. See also @ref Shaders::DistanceFieldVector.
 
 Based on: *Chris Green - Improved Alpha-Tested Magnification for Vector Textures
 and Special Effects, SIGGRAPH 2007,
