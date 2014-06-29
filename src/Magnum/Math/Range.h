@@ -104,6 +104,13 @@ template<UnsignedInt dimensions, class T> class Range {
         }
 
         /**
+         * @brief Raw data
+         * @return One-dimensional array of `dimensions`*2 length.
+         */
+        T* data() { return _min.data(); }
+        constexpr const T* data() const { return _min.data(); } /**< @overload */
+
+        /**
          * @brief Minimal coordinates (inclusive)
          *
          * @see @ref size(), @ref Range2D::bottomLeft(),
