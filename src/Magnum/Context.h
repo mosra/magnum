@@ -38,6 +38,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 #include "Magnum/visibility.h"
+#include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum {
 
@@ -168,6 +169,25 @@ class MAGNUM_EXPORT Context {
          * @see @ref resetState()
          */
         typedef Containers::EnumSet<State> States;
+
+        /**
+         * @brief Detected driver
+         *
+         * @see @ref DetectedDriver, @ref detectedDriver()
+         */
+        enum class DetectedDriver: UnsignedShort {
+            #ifndef MAGNUM_TARGET_GLES
+            /** Binary AMD desktop drivers on Windows and Linux */
+            AMD = 1 << 0
+            #endif
+        };
+
+        /**
+         * @brief Detected drivers
+         *
+         * @see @ref detectedDriver()
+         */
+        typedef Containers::EnumSet<DetectedDriver> DetectedDrivers;
 
         /**
          * @brief Constructor
@@ -432,6 +452,15 @@ class MAGNUM_EXPORT Context {
          */
         void resetState(States states = ~States{});
 
+        /**
+         * @brief Detect driver
+         *
+         * Tries to detect driver using various OpenGL state queries. Once the
+         * detection is done, the result is cached, repeated queries don't
+         * result in repeated GL calls.
+         */
+        DetectedDrivers detectedDriver();
+
         #ifndef DOXYGEN_GENERATING_OUTPUT
         Implementation::State& state() { return *_state; }
         #endif
@@ -451,6 +480,8 @@ class MAGNUM_EXPORT Context {
         std::vector<Extension> _supportedExtensions;
 
         Implementation::State* _state;
+
+        std::optional<DetectedDrivers> _detectedDrivers;
 };
 
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */

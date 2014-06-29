@@ -62,6 +62,7 @@ set(Magnum_SRCS
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp
+    Implementation/detectedDriver.cpp
     Implementation/maxTextureSize.cpp
     Implementation/setupDriverWorkarounds.cpp
 
