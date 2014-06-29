@@ -65,12 +65,12 @@ class DistanceFieldConverter: public Platform::WindowlessApplication {
 DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image")
-        .addOption("importer", "TgaImporter").setHelp("image importer plugin")
-        .addOption("converter", "TgaImageConverter").setHelp("image converter plugin")
+        .addOption("importer", "TgaImporter").setHelp("importer", "image importer plugin")
+        .addOption("converter", "TgaImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addNamedArgument("output-size").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "size of output image")
         .addNamedArgument("radius").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
-        .setHelp("Converts black&white image to distance-field representation.")
+        .setHelp("Converts black&white image to distance field representation.")
         .parse(arguments.argc, arguments.argv);
 
     createContext();
