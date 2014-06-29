@@ -83,7 +83,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
         indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
-        indexBuffer->setData(data, usage);
+        indexBuffer->setData(indexData, usage);
         mesh.setCount(meshData.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
 
@@ -155,12 +155,12 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
         indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
-        indexBuffer->setData(data, usage);
+        indexBuffer->setData(indexData, usage);
         mesh.setCount(meshData.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
 
     /* Else set vertex count */
-    } mesh.setCount(meshData.positions(0).size());
+    } else mesh.setCount(meshData.positions(0).size());
 
     return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
 }

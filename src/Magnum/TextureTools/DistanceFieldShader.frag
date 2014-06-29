@@ -64,7 +64,7 @@ out lowp float value;
 
 #ifdef TEXELFETCH_USABLE
 mediump ivec2 rotate(const mediump ivec2 vec) {
-    return mediump ivec2(-vec.y, vec.x);
+    return ivec2(-vec.y, vec.x);
 }
 
 bool hasValue(const mediump ivec2 position, const mediump ivec2 offset) {
@@ -72,7 +72,7 @@ bool hasValue(const mediump ivec2 position, const mediump ivec2 offset) {
 }
 #else
 mediump vec2 rotate(const mediump vec2 vec) {
-    return mediump vec2(-vec.y, vec.x);
+    return vec2(-vec.y, vec.x);
 }
 
 bool hasValue(const mediump vec2 position, const mediump vec2 offset) {

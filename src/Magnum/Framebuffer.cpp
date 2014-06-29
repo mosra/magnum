@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Context.h"
+#include "Magnum/DefaultFramebuffer.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
 #include "Magnum/Renderbuffer.h"
@@ -92,7 +93,17 @@ Framebuffer::~Framebuffer() {
     /* If bound, remove itself from state */
     Implementation::FramebufferState* state = Context::current()->state().framebuffer;
     if(state->readBinding == _id) state->readBinding = 0;
-    if(state->drawBinding == _id) state->drawBinding = 0;
+
+    /* For draw binding reset also viewport */
+    if(state->drawBinding == _id) {
+        state->drawBinding = 0;
+
+        /**
+         * @todo Less ugly solution (need to call setViewportInternal() to
+         * reset the viewport to size of default framebuffer)
+         */
+        defaultFramebuffer.bind(FramebufferTarget::Draw);
+    }
 
     glDeleteFramebuffers(1, &_id);
 }
