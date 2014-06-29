@@ -375,7 +375,8 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
                    "void main() { result = " + conversion + "; }\n");
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
     attachShader(vert);
     attachShader(frag);
 
@@ -404,7 +405,8 @@ IntegerShader::IntegerShader(const std::string& type) {
                    "out mediump " + type + " result;\n"
                    "void main() { result = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
     attachShader(vert);
     attachShader(frag);
 
@@ -429,7 +431,8 @@ DoubleShader::DoubleShader(const std::string& type, const std::string& outputTyp
                    "out " + outputType + " result;\n"
                    "void main() { result = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
     attachShader(vert);
     attachShader(frag);
 
@@ -1101,7 +1104,8 @@ MultipleShader::MultipleShader() {
     frag.addSource("varying mediump vec4 valueInterpolated;\n"
                    "void main() { gl_FragColor = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
     attachShader(vert);
     attachShader(frag);
 
@@ -1737,7 +1741,8 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
          .setIndexRange(1);
     } else b.setBaseVertex(1);
 
-    MeshView::draw(shader, {a, b});
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    MeshView::draw(shader, {std::ref(a), std::ref(b)});
 }
 
 template<class T> T MultiChecker::get(ColorFormat format, ColorType type) {
