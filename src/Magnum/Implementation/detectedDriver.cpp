@@ -40,6 +40,17 @@ auto Context::detectedDriver() -> Context::DetectedDrivers {
         return *_detectedDrivers |= DetectedDriver::AMD;
     #endif
 
+    /* OpenGL ES 2.0 implementation using ANGLE. Taken from
+       http://stackoverflow.com/a/20149090 */
+    #ifdef MAGNUM_TARGET_GLES2
+    {
+        Range1Di range;
+        glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
+        if(range.min() == 1 && range.max() == 1)
+            return *_detectedDrivers |= DetectedDriver::ProbablyAngle;
+    }
+    #endif
+
     return *_detectedDrivers;
 }
 
