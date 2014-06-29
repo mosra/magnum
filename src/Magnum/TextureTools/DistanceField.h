@@ -56,6 +56,11 @@ less memory and can be scaled without aliasing issues. Additionally it provides
 foundation for features like outlining, glow or drop shadow essentially for
 free.
 
+You can also use the @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
+utility to do distance field conversion on command-line. By extension, this
+functionality is also provided through @ref magnum-fontconverter "magnum-fontconverter"
+utility.
+
 ### The algorithm
 
 For each pixel inside @p rectangle the algorithm looks at corresponding pixel in

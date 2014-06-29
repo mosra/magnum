@@ -50,7 +50,42 @@
 
 #include "distancefieldconverterConfigure.h"
 
-namespace Magnum { namespace TextureTools {
+namespace Magnum {
+
+/** @page magnum-distancefieldconverter Distance Field conversion utility
+@brief Converts black&white image to distance field representation
+
+@section magnum-distancefieldconverter-usage Usage
+
+    magnum-distancefieldconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER] [--plugin-dir DIR] --output-size "X Y" --radius N [--] input output
+
+Arguments:
+
+-   `input` -- input image
+-   `output` -- output image
+-   `-h`, `--help` -- display help message and exit
+-   `--importer IMPORTER` -- image importer plugin (default: @ref Trade::TgaImporter "TgaImporter")
+-   `--converter CONVERTER` -- image converter plugin (default: @ref Trade::TgaImageConverter "TgaImageConverter")
+-   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
+    %Magnum install location)
+-   `--output-size "X Y"` -- size of output image
+-   `--radius N` -- distance field computation radius
+
+The resulting image can be then used with @ref Shaders::DistanceFieldVector
+shader. See also @ref TextureTools::distanceField() for more information about
+the algorithm and parameters.
+
+@section magnum-distancefield-example Example usage
+
+    magnum-distancefieldconverter --importer PngImporter --output-size "256 256" --radius 24 logo.png logo.tga
+
+This will open binary `logo.png` image using @ref Trade::PngImporter "PngImporter"
+plugin and converts it to 256x256 distance field `logo.tga` using
+@ref Trade::TgaImageConverter "TgaImageConverter".
+
+*/
+
+namespace TextureTools {
 
 class DistanceFieldConverter: public Platform::WindowlessApplication {
     public:

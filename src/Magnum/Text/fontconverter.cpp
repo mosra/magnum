@@ -44,7 +44,50 @@
 
 #include "fontconverterConfigure.h"
 
-namespace Magnum { namespace Text {
+namespace Magnum {
+
+/**
+@page magnum-fontconverter Font conversion utility
+@brief Converts font to raster one of given atlas size
+
+@section magnum-fontconverter-usage Usage
+
+    magnum-fontconverter [-h|--help] --font FONT --converter CONVERTER [--plugin-dir DIR] [--characters CHARACTERS] [--font-size N] [--atlas-size "X Y"] [--output-size "X Y"] [--radius N] [--] input output
+
+Arguments:
+
+-   `input` -- input font
+-   `output` -- output filename prefix
+-   `-h`, `--help` -- display help message and exit
+-   `--font FONT` -- font plugin
+-   `--converter CONVERTER` -- font converter plugin
+-   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
+    %Magnum install location)
+-   `--characters CHARACTERS` -- characters to include in the output (default:
+    `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!:,.&nbsp;`)
+-   `--font-size N` -- input font size (default: `128`)
+-   `--atlas-size "X Y"` -- glyph atlas size (default: `"2048 2048"`)
+-   `--output-size "X Y"` -- output atlas size. If set to zero size, distance
+    field computation will not be used. (default: `"256 256"`)
+-   `--radius N` -- distance field computation radius (default: `24`)
+
+The resulting font files can be then used as specified in the documentation of
+`converter` plugin.
+
+@section magnum-fontconverter-example Example usage
+
+Making raster font from TTF file with default set of characters using
+@ref Text::FreeTypeFont "FreeTypeFont" font plugin and
+@ref Text::MagnumFontConverter "MagnumFontConverter" converter plugin:
+
+    magnum-fontconverter --font FreeTypeFont --converter MagnumFontConverter DejaVuSans.ttf myfont
+
+According to `MagnumFontConverter` plugin documentation, this will generate
+files `myfont.conf` and `myfont.tga` in current directory. You can then load
+and use them with the @ref Text::MagnumFont "MagnumFont" plugin.
+*/
+
+namespace Text {
 
 class FontConverter: public Platform::WindowlessApplication {
     public:
@@ -130,6 +173,8 @@ int FontConverter::exec() {
     return 0;
 }
 
-}}
+}
+
+}
 
 MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::Text::FontConverter)

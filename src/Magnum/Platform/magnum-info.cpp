@@ -64,6 +64,61 @@
 
 namespace Magnum {
 
+/** @page magnum-info Magnum Info
+@brief Displays information about %Magnum engine and OpenGL capabilities
+
+@section magnum-info-usage Usage
+
+    magnum-info [-h|--help] [--all-extensions] [--limits]
+
+Arguments:
+
+-   ` -h`, `--help` -- display this help message and exit
+-   `--all-extensions` -- show extensions also for fully supported versions
+-   `--limits` -- display also limits and implementation-defined values
+
+@section magnum-info-example Example output
+
+      +---------------------------------------------------------+
+      | Information about Magnum engine and OpenGL capabilities |
+      +---------------------------------------------------------+
+
+    Used application: Platform::WindowlessGlxApplication
+    Compilation flags:
+        CORRADE_BUILD_DEPRECATED
+        MAGNUM_BUILD_DEPRECATED
+
+    Vendor: NVIDIA Corporation
+    Renderer: GeForce GT 740M/PCIe/SSE2
+    OpenGL version: OpenGL 4.4 (4.4.0 NVIDIA 337.25)
+    Context flags:
+    Supported GLSL versions:
+        440 core
+        430 core
+        420 core
+        410 core
+        400 core
+        330 core
+        310 es
+        300 es
+        100
+
+    Vendor extension support:
+        GL_AMD_vertex_shader_layer                                        -
+        GL_AMD_shader_trinary_minmax                                      -
+        GL_ARB_robustness                                             SUPPORTED
+        GL_ATI_texture_mirror_once                                    SUPPORTED
+        GL_EXT_texture_filter_anisotropic                             SUPPORTED
+        GL_EXT_texture_mirror_clamp                                   SUPPORTED
+        GL_EXT_direct_state_access                                    SUPPORTED
+        GL_EXT_texture_sRGB_decode                                    SUPPORTED
+        GL_EXT_shader_integer_mix                                     SUPPORTED
+        GL_EXT_debug_label                                                -
+        GL_EXT_debug_marker                                               -
+        GL_GREMEDY_string_marker                                          -
+
+*/
+
 class MagnumInfo: public Platform::WindowlessApplication {
     public:
         explicit MagnumInfo(const Arguments& arguments);

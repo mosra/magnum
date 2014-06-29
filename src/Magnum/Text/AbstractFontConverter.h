@@ -45,6 +45,9 @@ Provides functionality for converting arbitrary font to different format. See
 @ref plugins for more information and `*FontConverter` classes in @ref Text
 namespace for available font converter plugins.
 
+You can use the @ref magnum-fontconverter "magnum-fontconverter" utility to do
+font conversion on command-line.
+
 ## Subclassing
 
 Plugin implements @ref doFeatures() and one or more of `exportTo*()` /
