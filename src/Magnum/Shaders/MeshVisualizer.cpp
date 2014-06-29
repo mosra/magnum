@@ -63,7 +63,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         #ifdef MAGNUM_TARGET_WEBGL
         .addSource("#define SUBSCRIPTING_WORKAROUND\n")
-        #elif defined(MAGNUM_TARGET_GLES)
+        #elif defined(MAGNUM_TARGET_GLES2)
         .addSource(Context::current()->detectedDriver() & Context::DetectedDriver::ProbablyAngle ?
             "#define SUBSCRIPTING_WORKAROUND\n" : "")
         #endif
