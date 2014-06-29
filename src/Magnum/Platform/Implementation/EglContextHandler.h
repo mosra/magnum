@@ -57,7 +57,7 @@ Used in XEglApplication.
 */
 class EglContextHandler: public AbstractContextHandler<AbstractXApplication::Configuration, EGLNativeDisplayType, VisualId, EGLNativeWindowType> {
     public:
-        explicit EglContextHandler() = default;
+        explicit EglContextHandler();
         ~EglContextHandler();
 
         VisualId getVisualId(EGLNativeDisplayType nativeDisplay) override;
@@ -77,6 +77,9 @@ class EglContextHandler: public AbstractContextHandler<AbstractXApplication::Con
         EGLSurface surface;
         EGLContext context;
 };
+
+/* GCC 4.5 can't have this defaulted in class body */
+EglContextHandler::EglContextHandler() = default;
 
 }}}
 
