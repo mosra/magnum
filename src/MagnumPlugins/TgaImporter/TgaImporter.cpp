@@ -79,9 +79,9 @@ UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
 std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     /* Check if the file is long enough */
     in->seekg(0, std::istream::end);
-    std::streampos filesize = in->tellg();
+    std::streamoff filesize = in->tellg();
     in->seekg(0, std::istream::beg);
-    if(filesize < std::streampos(sizeof(TgaHeader))) {
+    if(filesize < std::streamoff(sizeof(TgaHeader))) {
         Error() << "Trade::TgaImporter::image2D(): the file is too short:" << filesize << "bytes";
         return std::nullopt;
     }
