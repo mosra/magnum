@@ -94,10 +94,10 @@
 #   emulation on desktop OpenGL
 #  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
 #
-# If `MAGNUM_BUILD_DEPRECATED` is defined, the `MAGNUM_INCLUDE_DIR` variable
-# also contains path directly to Magnum directory (i.e. for includes without
-# `Magnum/` prefix) and `MAGNUM_PLUGINS_INCLUDE_DIR` contains include dir for
-# plugins (i.e. instead of `MagnumPlugins/` prefix).
+# If MAGNUM_BUILD_DEPRECATED is defined, the MAGNUM_INCLUDE_DIR variable also
+# contains path directly to Magnum directory (i.e. for includes without
+# Magnum/ prefix) and MAGNUM_PLUGINS_INCLUDE_DIR contains include dir for
+# plugins (i.e. for includes without MagnumPlugins/ prefix).
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR           - Root include dir (w/o dependencies)

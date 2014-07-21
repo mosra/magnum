@@ -173,7 +173,7 @@ are also available as preprocessor variables if including
 If `MAGNUM_BUILD_DEPRECATED` is defined, the `MAGNUM_INCLUDE_DIR` variable also
 contains path directly to Magnum directory (i.e. for includes without `Magnum/`
 prefix) and `MAGNUM_PLUGINS_INCLUDE_DIR` contains include dir for plugins (i.e.
-instead of `MagnumPlugins/` prefix).
+for includes without `MagnumPlugins/` prefix).
 
 %Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.
