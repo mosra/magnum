@@ -181,6 +181,15 @@ endif()
 find_path(MAGNUM_INCLUDE_DIR
     NAMES Magnum/Magnum.h)
 
+# We need to open configure.h file from MAGNUM_INCLUDE_DIR before we check for
+# the components. Bail out with proper error message if it wasn't found. The
+# complete check with all components is further below.
+if(NOT MAGNUM_INCLUDE_DIR)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(Magnum
+        REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR)
+endif()
+
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
 
@@ -471,7 +480,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     endif()
 endforeach()
 
-include(FindPackageHandleStandardArgs)
+# Complete the check with also all components
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR
     HANDLE_COMPONENTS)
