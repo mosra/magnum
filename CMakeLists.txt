@@ -26,6 +26,20 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(Magnum)
 
+if (APPLE)
+    # enable @rpath in the install name for any shared library being built
+    # note: it is planned that a future version of CMake will enable this by default
+    set(CMAKE_MACOSX_RPATH 1)
+    # add the automatically determined parts of the RPATH
+    # which point to directories outside the build tree to the install RPATH
+    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    # the RPATH to be used when installing, but only if it's not a system directory
+    LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    IF("${isSystemDir}" STREQUAL "-1")
+       SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    ENDIF("${isSystemDir}" STREQUAL "-1")
+endif()
+
 # Find Corrade first so we can check on the target
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 find_package(Corrade REQUIRED)
