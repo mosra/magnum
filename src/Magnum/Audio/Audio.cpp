@@ -26,6 +26,7 @@
 #include <type_traits>
 #include <al.h>
 
+#include "Corrade/configure.h"
 #include "Magnum/Types.h"
 
 namespace Magnum { namespace Audio {
