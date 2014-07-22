@@ -85,17 +85,17 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
     #endif
 
     Shader vert(v, Shader::Type::Vertex);
+    Shader frag(v, Shader::Type::Fragment);
+
     vert.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("FullScreenTriangle.glsl"))
         .addSource(rs.get("DistanceFieldShader.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
-    Shader frag(v, Shader::Type::Fragment);
     frag.addSource(rs.get("compatibility.glsl"))
         .addSource(rs.get("DistanceFieldShader.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShaders({vert, frag});
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
     #ifndef MAGNUM_TARGET_GLES
