@@ -615,6 +615,15 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void attachShader(Shader& shader);
 
         /**
+         * @brief Attach shaders
+         *
+         * Convenience overload to the above, allowing the user to specify more
+         * than one shader at once. Other than that there is no other
+         * (performance) difference when using this function.
+         */
+        void attachShaders(std::initializer_list<std::reference_wrapper<Shader>> shaders);
+
+        /**
          * @brief Bind attribute to given location
          * @param location      Location
          * @param name          %Attribute name

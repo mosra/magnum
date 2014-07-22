@@ -262,6 +262,10 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
     glAttachShader(_id, shader.id());
 }
 
+void AbstractShaderProgram::attachShaders(std::initializer_list<std::reference_wrapper<Shader>> shaders) {
+    for(Shader& s: shaders) attachShader(s);
+}
+
 void AbstractShaderProgram::bindAttributeLocation(UnsignedInt location, const std::string& name) {
     glBindAttribLocation(_id, location, name.data());
 }
