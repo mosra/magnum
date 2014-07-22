@@ -62,15 +62,16 @@ void PrimitiveQueryGLTest::query() {
 
             explicit MyShader() {
                 Utility::Resource rs("QueryGLTest");
-                Shader vert(Version::GL210, Shader::Type::Vertex);
-                vert.addSource(rs.get("MyShader.vert"));
-                CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-                attachShader(vert);
 
+                Shader vert(Version::GL210, Shader::Type::Vertex);
                 Shader frag(Version::GL210, Shader::Type::Fragment);
+
+                vert.addSource(rs.get("MyShader.vert"));
                 frag.addSource(rs.get("MyShader.frag"));
-                CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-                attachShader(frag);
+
+                CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+                attachShaders({vert, frag});
 
                 CORRADE_INTERNAL_ASSERT_OUTPUT(link());
             }

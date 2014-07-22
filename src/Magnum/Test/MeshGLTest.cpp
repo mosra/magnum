@@ -369,8 +369,8 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(0, "value");
 
@@ -398,8 +398,8 @@ IntegerShader::IntegerShader(const std::string& type) {
                    "void main() { result = valueInterpolated; }\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(0, "value");
 
@@ -423,8 +423,8 @@ DoubleShader::DoubleShader(const std::string& type, const std::string& outputTyp
                    "void main() { result = valueInterpolated; }\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(0, "value");
 
@@ -1095,8 +1095,8 @@ MultipleShader::MultipleShader() {
                    "void main() { gl_FragColor = valueInterpolated; }\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(Position::Location, "position");
     bindAttributeLocation(Normal::Location, "normal");

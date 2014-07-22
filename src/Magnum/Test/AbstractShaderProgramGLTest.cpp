@@ -138,7 +138,7 @@ void AbstractShaderProgramGLTest::label() {
 
 namespace {
     struct MyPublicShader: AbstractShaderProgram {
-        using AbstractShaderProgram::attachShader;
+        using AbstractShaderProgram::attachShaders;
         using AbstractShaderProgram::bindAttributeLocation;
         #ifndef MAGNUM_TARGET_GLES
         using AbstractShaderProgram::bindFragmentDataLocationIndexed;
@@ -173,8 +173,7 @@ void AbstractShaderProgramGLTest::create() {
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
-    program.attachShader(vert);
-    program.attachShader(frag);
+    program.attachShaders({vert, frag});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -215,8 +214,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
-    program.attachShader(vert);
-    program.attachShader(frag);
+    program.attachShaders({vert, frag});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -253,8 +251,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
-    program.attachShader(vert);
-    program.attachShader(frag);
+    program.attachShaders({vert, frag});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -289,21 +286,17 @@ MyShader::MyShader() {
 
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
-    #else
-    Shader vert(Version::GLES200, Shader::Type::Vertex);
-    #endif
-    vert.addSource(rs.get("MyShader.vert"))
-        .compile();
-    attachShader(vert);
-
-    #ifndef MAGNUM_TARGET_GLES
     Shader frag(Version::GL210, Shader::Type::Fragment);
     #else
+    Shader vert(Version::GLES200, Shader::Type::Vertex);
     Shader frag(Version::GLES200, Shader::Type::Fragment);
     #endif
-    frag.addSource(rs.get("MyShader.frag"))
-        .compile();
-    attachShader(frag);
+    vert.addSource(rs.get("MyShader.vert"));
+    frag.addSource(rs.get("MyShader.frag"));
+
+    Shader::compile({vert, frag});
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(0, "position");
     link();
