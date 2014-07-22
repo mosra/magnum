@@ -59,8 +59,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-    attachShader(vert);
-    attachShader(frag);
+    attachShaders({vert, frag});
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))

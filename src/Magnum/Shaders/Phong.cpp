@@ -66,8 +66,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-    attachShader(vert);
-    attachShader(frag);
+    attachShaders({vert, frag});
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))

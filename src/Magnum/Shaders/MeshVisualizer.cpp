@@ -87,8 +87,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     #endif
         Shader::compile({vert, frag});
 
-    attachShader(vert);
-    attachShader(frag);
+    attachShaders({vert, frag});
     #ifndef MAGNUM_TARGET_GLES
     if(geom) attachShader(*geom);
     #endif

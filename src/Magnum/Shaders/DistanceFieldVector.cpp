@@ -59,8 +59,7 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({frag, vert}));
 
-    AbstractShaderProgram::attachShader(frag);
-    AbstractShaderProgram::attachShader(vert);
+    AbstractShaderProgram::attachShaders({frag, vert});
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
