@@ -60,7 +60,7 @@ void TimeQueryGLTest::queryTime() {
 
     TimeQuery q2;
     q2.begin(TimeQuery::Target::TimeElapsed);
-    Renderer::setFeature(Renderer::Feature::Blending, true);
+    Renderer::enable(Renderer::Feature::Blending);
     Renderer::finish();
     q2.end();
     const auto result2 = q2.result<UnsignedInt>();
@@ -80,7 +80,7 @@ void TimeQueryGLTest::queryTimestamp() {
     q1.timestamp();
 
     q.begin(TimeQuery::Target::TimeElapsed);
-    Renderer::setFeature(Renderer::Feature::Blending, true);
+    Renderer::enable(Renderer::Feature::Blending);
     Renderer::finish();
     q.end();
 

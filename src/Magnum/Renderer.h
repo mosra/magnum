@@ -74,7 +74,7 @@ class MAGNUM_EXPORT Renderer {
          * @brief Features
          *
          * All features are disabled by default unless specified otherwise.
-         * @see @ref setFeature()
+         * @see @ref enable(), @ref disable(), @ref setFeature()
          */
         enum class Feature: GLenum {
             /**
@@ -219,9 +219,28 @@ class MAGNUM_EXPORT Renderer {
         };
 
         /**
-         * @brief Set feature
+         * @brief Enable feature
          *
-         * @see @fn_gl{Enable}/@fn_gl{Disable}
+         * @see @ref disable(), @ref setFeature(), @fn_gl{Enable}
+         */
+        static void enable(Feature feature);
+
+        /**
+         * @brief Disable feature
+         *
+         * @see @ref enable(), @ref setFeature(), @fn_gl{Disable}
+         */
+        static void disable(Feature feature);
+
+        /**
+         * @brief Enable or disable feature
+         *
+         * Convenience equivalent to the following:
+         * @code
+         * enabled ? Renderer::enable(feature) : Renderer::disable(feature)
+         * @endcode
+         * Prefer to use @ref enable() and @ref disable() directly to avoid
+         * unnecessary branching.
          */
         static void setFeature(Feature feature, bool enabled);
 
