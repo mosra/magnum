@@ -31,7 +31,7 @@
 
 #include <memory>
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/PluginManager/AbstractPlugin.h>
+#include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -74,7 +74,7 @@ checked by the implementation:
 
 @todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
-class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
+class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.3")
 
     public:
@@ -93,6 +93,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
 
         /** @brief Default constructor */
         explicit AbstractImporter();
+
+        /** @brief Default constructor with access to plugin manaer */
+        explicit AbstractImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
         explicit AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin);
