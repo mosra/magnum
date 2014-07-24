@@ -31,6 +31,7 @@
 
 #include <functional>
 #include <string>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/AbstractObject.h"
@@ -540,7 +541,14 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @def_gl{PROGRAM} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{PROGRAM_OBJECT_EXT}
          */
-        AbstractShaderProgram& setLabel(const std::string& label);
+        AbstractShaderProgram& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> AbstractShaderProgram& setLabel(const char (&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /**
          * @brief Validate program
@@ -817,6 +825,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
     private:
+        AbstractShaderProgram& setLabelInternal(Containers::ArrayReference<const char> label);
+
         #ifndef MAGNUM_BUILD_DEPRECATED
         void use();
         #endif

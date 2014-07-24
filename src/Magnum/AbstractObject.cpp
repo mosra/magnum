@@ -26,6 +26,7 @@
 #include "AbstractObject.h"
 
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -123,26 +124,26 @@ Int AbstractObject::maxLabelLength() {
     return value;
 }
 
-void AbstractObject::labelImplementationNoOp(GLenum, GLuint, const std::string&) {}
+void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayReference<const char>) {}
 
-void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const std::string& label) {
+void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
     /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    glObjectLabel(identifier, name, label.size(), label.data());
+    glObjectLabel(identifier, name, label.size(), label);
     #else
     static_cast<void>(identifier);
     static_cast<void>(name);
     static_cast<void>(label);
     CORRADE_INTERNAL_ASSERT(false);
-    //glObjectLabelKHR(identifier, name, label.size(), label.data());
+    //glObjectLabelKHR(identifier, name, label.size(), label);
     #endif
 }
 
-void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const std::string& label) {
+void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
     const GLenum type = extTypeFromKhrIdentifier(identifier);
     /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    glLabelObjectEXT(type, name, label.size(), label.data());
+    glLabelObjectEXT(type, name, label.size(), label);
     #else
     static_cast<void>(type);
     static_cast<void>(name);

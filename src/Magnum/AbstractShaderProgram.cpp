@@ -225,7 +225,7 @@ std::string AbstractShaderProgram::label() const {
     #endif
 }
 
-AbstractShaderProgram& AbstractShaderProgram::setLabel(const std::string& label) {
+AbstractShaderProgram& AbstractShaderProgram::setLabelInternal(const Containers::ArrayReference<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_PROGRAM, _id, label);
     #else

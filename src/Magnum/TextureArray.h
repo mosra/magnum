@@ -389,6 +389,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             AbstractTexture::setLabel(label);
             return *this;
         }
+        template<std::size_t size> TextureArray<dimensions>& setLabel(const char(&label)[size]) {
+            AbstractTexture::setLabel<size>(label);
+            return *this;
+        }
         #endif
 };
 

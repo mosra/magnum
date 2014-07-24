@@ -354,7 +354,14 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
          */
-        Framebuffer& setLabel(const std::string& label);
+        Framebuffer& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> Framebuffer& setLabel(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /**
          * @brief Check framebuffer status
@@ -627,6 +634,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 
     private:
+        Framebuffer& setLabelInternal(Containers::ArrayReference<const char> label);
+
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer);

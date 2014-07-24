@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::AbstractQuery, @ref Magnum::PrimitiveQuery, @ref Magnum::SampleQuery, @ref Magnum::TimeQuery
  */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/AbstractObject.h"
@@ -84,7 +85,14 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          *      @def_gl{QUERY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{QUERY_OBJECT_EXT}
          */
-        AbstractQuery& setLabel(const std::string& label);
+        AbstractQuery& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> AbstractQuery& setLabel(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /**
          * @brief Whether the result is available
@@ -140,6 +148,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         void begin(GLenum target);
 
     private:
+        AbstractQuery& setLabelInternal(Containers::ArrayReference<const char> label);
+
         GLuint _id;
         GLenum target;
 };
@@ -215,6 +225,10 @@ class PrimitiveQuery: public AbstractQuery {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         PrimitiveQuery& setLabel(const std::string& label) {
             AbstractQuery::setLabel(label);
+            return *this;
+        }
+        template<std::size_t size> PrimitiveQuery& setLabel(const char(&label)[size]) {
+            AbstractQuery::setLabel<size>(label);
             return *this;
         }
         #endif
@@ -367,6 +381,10 @@ class SampleQuery: public AbstractQuery {
             AbstractQuery::setLabel(label);
             return *this;
         }
+        template<std::size_t size> SampleQuery& setLabel(const char(&label)[size]) {
+            AbstractQuery::setLabel<size>(label);
+            return *this;
+        }
         #endif
 };
 
@@ -444,6 +462,10 @@ class TimeQuery: public AbstractQuery {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         TimeQuery& setLabel(const std::string& label) {
             AbstractQuery::setLabel(label);
+            return *this;
+        }
+        template<std::size_t size> TimeQuery& setLabel(const char(&label)[size]) {
+            AbstractQuery::setLabel<size>(label);
             return *this;
         }
         #endif

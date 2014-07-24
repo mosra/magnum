@@ -36,7 +36,7 @@ struct DebugState {
     explicit DebugState(Context& context, std::vector<std::string>& extensions);
 
     std::string(*getLabelImplementation)(GLenum, GLuint);
-    void(*labelImplementation)(GLenum, GLuint, const std::string&);
+    void(*labelImplementation)(GLenum, GLuint, Containers::ArrayReference<const char>);
 
     void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugMessage::Severity, const std::string&);
     void(*messageCallbackImplementation)(DebugMessage::Callback, const void*);

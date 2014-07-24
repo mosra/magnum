@@ -112,7 +112,7 @@ std::string Framebuffer::label() const {
     return Context::current()->state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
 }
 
-Framebuffer& Framebuffer::setLabel(const std::string& label) {
+Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
     Context::current()->state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;
 }

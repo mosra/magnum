@@ -32,6 +32,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
@@ -504,7 +505,14 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{SHADER} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{SHADER_OBJECT_EXT}
          */
-        Shader& setLabel(const std::string& label);
+        Shader& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> Shader& setLabel(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /** @brief %Shader type */
         Type type() const { return _type; }
@@ -545,6 +553,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         bool compile() { return compile({*this}); }
 
     private:
+        Shader& setLabelInternal(Containers::ArrayReference<const char> label);
+
         Type _type;
         GLuint _id;
 

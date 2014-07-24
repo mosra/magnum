@@ -467,7 +467,14 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          */
-        Mesh& setLabel(const std::string& label);
+        Mesh& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> Mesh& setLabelInternal(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /**
          * @brief Whether the mesh is indexed
@@ -835,6 +842,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
         #endif
+
+        Mesh& setLabelInternal(Containers::ArrayReference<const char> label);
 
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {

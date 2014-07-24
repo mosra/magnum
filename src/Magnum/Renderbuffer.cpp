@@ -81,7 +81,7 @@ std::string Renderbuffer::label() const {
     return Context::current()->state().debug->getLabelImplementation(GL_RENDERBUFFER, _id);
 }
 
-Renderbuffer& Renderbuffer::setLabel(const std::string& label) {
+Renderbuffer& Renderbuffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
     Context::current()->state().debug->labelImplementation(GL_RENDERBUFFER, _id, label);
     return *this;
 }

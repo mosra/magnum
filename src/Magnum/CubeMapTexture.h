@@ -382,6 +382,10 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             AbstractTexture::setLabel(label);
             return *this;
         }
+        template<std::size_t size> CubeMapTexture& setLabel(const char(&label)[size]) {
+            AbstractTexture::setLabel<size>(label);
+            return *this;
+        }
         #endif
 };
 
