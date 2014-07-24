@@ -266,16 +266,16 @@ void AbstractShaderProgram::attachShaders(std::initializer_list<std::reference_w
     for(Shader& s: shaders) attachShader(s);
 }
 
-void AbstractShaderProgram::bindAttributeLocation(UnsignedInt location, const std::string& name) {
-    glBindAttribLocation(_id, location, name.data());
+void AbstractShaderProgram::bindAttributeLocationInternal(const UnsignedInt location, const Containers::ArrayReference<const char> name) {
+    glBindAttribLocation(_id, location, name);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractShaderProgram::bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
-    glBindFragDataLocation(_id, location, name.data());
+void AbstractShaderProgram::bindFragmentDataLocationInternal(const UnsignedInt location, const Containers::ArrayReference<const char> name) {
+    glBindFragDataLocation(_id, location, name);
 }
-void AbstractShaderProgram::bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
-    glBindFragDataLocationIndexed(_id, location, index, name.data());
+void AbstractShaderProgram::bindFragmentDataLocationIndexedInternal(const UnsignedInt location, UnsignedInt index, const Containers::ArrayReference<const char> name) {
+    glBindFragDataLocationIndexed(_id, location, index, name);
 }
 #endif
 
@@ -346,10 +346,10 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
     return allSuccess;
 }
 
-Int AbstractShaderProgram::uniformLocation(const std::string& name) {
-    GLint location = glGetUniformLocation(_id, name.data());
+Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayReference<const char> name) {
+    GLint location = glGetUniformLocation(_id, name);
     if(location == -1)
-        Warning() << "AbstractShaderProgram: location of uniform \'" + name + "\' cannot be retrieved!";
+        Warning() << "AbstractShaderProgram: location of uniform \'" + std::string{name, name.size()} + "\' cannot be retrieved!";
     return location;
 }
 
