@@ -199,7 +199,19 @@ void FramebufferGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+    {
+        /** @todo Is this even legal optimization? */
+        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
+    Renderbuffer renderbuffer;
+    #ifndef MAGNUM_TARGET_GLES2
+    renderbuffer.setStorage(RenderbufferFormat::RGBA8, {128, 128});
+    #else
+    renderbuffer.setStorage(RenderbufferFormat::RGBA4, {128, 128});
+    #endif
     Framebuffer framebuffer({{}, Vector2i(32)});
+    framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment(Framebuffer::BufferAttachment::Depth), renderbuffer);
 
     CORRADE_COMPARE(framebuffer.label(), "");
     MAGNUM_VERIFY_NO_ERROR();
