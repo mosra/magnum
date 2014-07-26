@@ -263,10 +263,10 @@ void Matrix4Test::rotation() {
     CORRADE_COMPARE(Matrix4::rotation(Deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
     CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): axis must be normalized\n");
 
-    Matrix4 matrix({ 0.35612214f,  -0.80181062f, 0.47987163f, 0.0f},
-                   { 0.47987163f,   0.59757638f,  0.6423595f, 0.0f},
-                   {-0.80181062f, 0.0015183985f, 0.59757638f, 0.0f},
-                   {        0.0f,          0.0f,        0.0f, 1.0f});
+    Matrix4 matrix({ 0.35612202f, -0.80181062f, 0.47987163f, 0.0f},
+                   { 0.47987163f,  0.59757626f,  0.6423596f, 0.0f},
+                   {-0.80181062f,  0.00151846f, 0.59757626f, 0.0f},
+                   {        0.0f,         0.0f,        0.0f, 1.0f});
     CORRADE_COMPARE(Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
 }
 
@@ -388,9 +388,9 @@ void Matrix4Test::rotationNormalizedPart() {
 
 void Matrix4Test::rotationPart() {
     Matrix4 rotation = Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized());
-    Matrix3x3 expectedRotationPart(Vector3( 0.35612214f,  -0.80181062f, 0.47987163f),
-                                   Vector3( 0.47987163f,   0.59757638f,  0.6423595f),
-                                   Vector3(-0.80181062f, 0.0015183985f, 0.59757638f));
+    Matrix3x3 expectedRotationPart(Vector3( 0.35612206f, -0.80181074f, 0.47987169f),
+                                   Vector3( 0.47987163f,  0.59757626f, 0.64235962f),
+                                   Vector3(-0.80181062f,  0.00151846f, 0.59757626f));
 
     /* For rotation and translation this is the same as rotationScaling() */
     Matrix4 rotationTranslation = rotation*Matrix4::translation({2.0f, 5.0f, -3.0f});

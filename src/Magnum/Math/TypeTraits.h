@@ -106,14 +106,6 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     #endif
 };
 
-/** @bug Infinity comparison! */
-
-/**
- * @todo Implement better fuzzy comparison algorithm, like at
- * http://floating-point-gui.de/errors/comparison/ or
- * http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
- */
-
 /* Integral scalar types */
 namespace Implementation {
     template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T> {
@@ -159,13 +151,31 @@ template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
 
 /* Floating-point scalar types */
 namespace Implementation {
-    template<class T> struct TypeTraitsFloatingPoint {
-        TypeTraitsFloatingPoint() = delete;
 
-        static bool equals(T a, T b) {
-            return std::abs(a - b) < TypeTraits<T>::epsilon();
-        }
-    };
+template<class T> struct TypeTraitsFloatingPoint {
+    TypeTraitsFloatingPoint() = delete;
+
+    static bool equals(T a, T b);
+};
+
+/* Adapted from http://floating-point-gui.de/errors/comparison/ */
+template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) {
+    /* Shortcut for binary equality (also infinites) */
+    if (a == b) return true;
+
+    const T absA = std::abs(a);
+    const T absB = std::abs(b);
+    const T difference = std::abs(a - b);
+
+    /* One of the numbers is zero or both are extremely close to it, relative
+       error is meaningless */
+    if (a == T{} || b == T{} || difference < TypeTraits<T>::epsilon())
+        return difference < TypeTraits<T>::epsilon();
+
+    /* Relative error */
+    return difference/(absA + absB) < TypeTraits<T>::epsilon();
+}
+
 }
 
 template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Float> {

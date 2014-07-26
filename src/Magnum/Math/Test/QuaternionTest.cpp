@@ -347,7 +347,7 @@ void QuaternionTest::slerp() {
     CORRADE_COMPARE(o.str(), "Math::Quaternion::slerp(): quaternions must be normalized\n");
 
     Quaternion slerp = Quaternion::slerp(a, b, 0.35f);
-    CORRADE_COMPARE(slerp, Quaternion({0.119165f, 0.0491109f, 0.0491109f}, 0.990442f));
+    CORRADE_COMPARE(slerp, Quaternion({0.1191653f, 0.0491109f, 0.0491109f}, 0.9904423f));
 }
 
 void QuaternionTest::transformVector() {

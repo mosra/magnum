@@ -34,17 +34,29 @@ class TypeTraitsTest: public Corrade::TestSuite::Tester {
     public:
         TypeTraitsTest();
 
-        void equalsFloatingPoint();
         void equalsIntegral();
+        void equalsFloatingPoint0();
+        void equalsFloatingPoint1();
+        void equalsFloatingPointLarge();
+        void equalsFloatingPointInfinity();
+        void equalsFloatingPointNaN();
 
     private:
-        template<class T> void _equalsFloatingPoint();
-        template<class T> void _equalsIntegral();
+        template<class> void _equalsIntegral();
+        template<class> void _equalsFloatingPoint0();
+        template<class> void _equalsFloatingPoint1();
+        template<class> void _equalsFloatingPointLarge();
+        template<class> void _equalsFloatingPointInfinity();
+        template<class> void _equalsFloatingPointNaN();
 };
 
 TypeTraitsTest::TypeTraitsTest() {
     addTests({&TypeTraitsTest::equalsIntegral,
-              &TypeTraitsTest::equalsFloatingPoint});
+              &TypeTraitsTest::equalsFloatingPoint0,
+              &TypeTraitsTest::equalsFloatingPoint1,
+              &TypeTraitsTest::equalsFloatingPointLarge,
+              &TypeTraitsTest::equalsFloatingPointInfinity,
+              &TypeTraitsTest::equalsFloatingPointNaN});
 }
 
 void TypeTraitsTest::equalsIntegral() {
@@ -58,29 +70,68 @@ void TypeTraitsTest::equalsIntegral() {
     _equalsIntegral<Long>();
 }
 
-void TypeTraitsTest::equalsFloatingPoint() {
-    _equalsFloatingPoint<Float>();
-    #ifndef MAGNUM_TARGET_GLES
-    _equalsFloatingPoint<Double>();
-    #endif
-}
-
 template<class T> void TypeTraitsTest::_equalsIntegral() {
     CORRADE_VERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
 }
 
-template<class T> void TypeTraitsTest::_equalsFloatingPoint() {
+void TypeTraitsTest::equalsFloatingPoint0() {
+    _equalsFloatingPoint0<Float>();
+    #ifndef MAGNUM_TARGET_GLES
+    _equalsFloatingPoint0<Double>();
+    #endif
+}
+
+template<class T> void TypeTraitsTest::_equalsFloatingPoint0() {
+    CORRADE_VERIFY(TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()/T(2), T(0)));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()*T(2), T(0)));
+}
+
+void TypeTraitsTest::equalsFloatingPoint1() {
+    _equalsFloatingPoint1<Float>();
+    #ifndef MAGNUM_TARGET_GLES
+    _equalsFloatingPoint1<Double>();
+    #endif
+}
+
+template<class T> void TypeTraitsTest::_equalsFloatingPoint1() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
-    CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(2), T(1)));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(3), T(1)));
+}
 
-    {
-        CORRADE_EXPECT_FAIL("Comparing to infinity is broken");
-        CORRADE_VERIFY(TypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
-                                                std::numeric_limits<T>::infinity()));
-    }
+void TypeTraitsTest::equalsFloatingPointLarge() {
+    _equalsFloatingPointLarge<Float>();
+    #ifndef MAGNUM_TARGET_GLES
+    _equalsFloatingPointLarge<Double>();
+    #endif
+}
 
+template<class T> void TypeTraitsTest::_equalsFloatingPointLarge() {
+    CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
+}
+
+void TypeTraitsTest::equalsFloatingPointInfinity() {
+    _equalsFloatingPointInfinity<Float>();
+    #ifndef MAGNUM_TARGET_GLES
+    _equalsFloatingPointInfinity<Double>();
+    #endif
+}
+
+template<class T> void TypeTraitsTest::_equalsFloatingPointInfinity() {
+    CORRADE_VERIFY(TypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
+                                         std::numeric_limits<T>::infinity()));
+}
+
+void TypeTraitsTest::equalsFloatingPointNaN() {
+    _equalsFloatingPointNaN<Float>();
+    #ifndef MAGNUM_TARGET_GLES
+    _equalsFloatingPointNaN<Double>();
+    #endif
+}
+
+template<class T> void TypeTraitsTest::_equalsFloatingPointNaN() {
     CORRADE_VERIFY(!TypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
-                                              std::numeric_limits<T>::quiet_NaN()));
+                                          std::numeric_limits<T>::quiet_NaN()));
 }
 
 }}}

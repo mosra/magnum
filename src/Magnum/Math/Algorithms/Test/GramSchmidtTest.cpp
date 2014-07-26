@@ -90,9 +90,9 @@ void GramSchmidtTest::orthonormalize() {
     CORRADE_COMPARE(Vector3::dot(orthonormalized[1], orthonormalized[2]), 0.0f);
 
     /* Just to be sure */
-    Matrix3x3 expected(Vector3( 0.303046f,  0.505076f,  0.808122f),
-                       Vector3( 0.928316f, -0.348119f, -0.130544f),
-                       Vector3(-0.215388f, -0.789754f,  0.574367f));
+    Matrix3x3 expected(Vector3( 0.3030458f,  0.5050763f,  0.8081220f),
+                       Vector3( 0.9283164f, -0.3481189f, -0.1305445f),
+                       Vector3(-0.2153877f, -0.7897540f,  0.5743665f));
     CORRADE_COMPARE(orthonormalized, expected);
 }
 
