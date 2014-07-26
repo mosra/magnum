@@ -25,8 +25,8 @@
 
 #include "AbstractImporter.h"
 
-#include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 

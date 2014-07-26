@@ -94,7 +94,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /** @brief Default constructor */
         explicit AbstractImporter();
 
-        /** @brief Default constructor with access to plugin manaer */
+        /** @brief Default constructor with access to plugin manager */
         explicit AbstractImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
