@@ -35,7 +35,7 @@
 
 /** @brief Precision when testing floats for equality */
 #ifndef FLOAT_EQUALITY_PRECISION
-#define FLOAT_EQUALITY_PRECISION 1.0e-6f
+#define FLOAT_EQUALITY_PRECISION 1.0e-5f
 #endif
 
 /** @brief Precision when testing doubles for equality */
