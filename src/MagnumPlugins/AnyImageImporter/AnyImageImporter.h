@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::AnyImageImporter
+ * @brief Class @ref Magnum::Trade::AnyImageImporter
  */
 
 #include <Corrade/Containers/Array.h>
@@ -54,11 +54,7 @@ Only loading from files is supported.
 */
 class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
     public:
-        /**
-         * @brief Constructor
-         *
-         * The plugin needs access to plugin manager to function properly.
-         */
+        /** @brief Constructor with access to plugin manager */
         explicit AnyImageImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
