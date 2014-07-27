@@ -59,6 +59,8 @@ checked by the implementation:
     supported.
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
+
+Plugin interface string is `"cz.mosra.magnum.Audio.AbstractImporter/0.1"`.
 */
 class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Audio.AbstractImporter/0.1")

@@ -72,6 +72,8 @@ checked by the implementation:
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 
+Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImporter/0.3"`.
+
 @todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
 class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
@@ -94,7 +96,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /** @brief Default constructor */
         explicit AbstractImporter();
 
-        /** @brief Default constructor with access to plugin manager */
+        /** @brief Constructor with access to plugin manager */
         explicit AbstractImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
