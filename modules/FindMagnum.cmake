@@ -357,20 +357,18 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
 
         # GLUT application dependencies
-        if(${component} STREQUAL GlutApplication)
+        elseif(${component} STREQUAL GlutApplication)
             find_package(GLUT)
             if(GLUT_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_glut_LIBRARY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
 
         # SDL2 application dependencies
-        if(${component} STREQUAL Sdl2Application)
+        elseif(${component} STREQUAL Sdl2Application)
             find_package(SDL2)
             if(SDL2_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY})
@@ -378,25 +376,25 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
 
         # (Windowless) NaCl application dependencies
-        if(${component} STREQUAL NaClApplication OR ${component} STREQUAL WindowlessNaClApplication)
+        elseif(${component} STREQUAL NaClApplication OR ${component} STREQUAL WindowlessNaClApplication)
             set(_MAGNUM_${_COMPONENT}_LIBRARIES ppapi_cpp ppapi)
-        endif()
 
-        # GLX application dependencies
-        if(${component} STREQUAL GlxApplication OR ${component} STREQUAL WindowlessGlxApplication)
+        # (Windowless) GLX application dependencies
+        elseif(${component} STREQUAL GlxApplication OR ${component} STREQUAL WindowlessGlxApplication)
             find_package(X11)
             if(X11_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
+
+        # Windowless CGL application has no additional dependencies
+        # Windowless WGL application has no additional dependencies
 
         # X/EGL application dependencies
-        if(${component} STREQUAL XEglApplication)
+        elseif(${component} STREQUAL XEglApplication)
             find_package(EGL)
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)
@@ -407,7 +405,9 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Common application dependencies
-        set(_MAGNUM_${_COMPONENT}_LIBRARIES ${_MAGNUM_${_COMPONENT}_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
+        set(_MAGNUM_${_COMPONENT}_LIBRARIES
+            ${_MAGNUM_${_COMPONENT}_LIBRARIES}
+            ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
 
     # Audio library
     elseif(${component} STREQUAL Audio)
