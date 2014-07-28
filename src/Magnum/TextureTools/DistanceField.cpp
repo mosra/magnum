@@ -36,6 +36,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Shader.h"
 #include "Magnum/Texture.h"
+#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 namespace Magnum { namespace TextureTools {
 
@@ -84,14 +85,12 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
     const Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert(v, Shader::Type::Vertex);
-    Shader frag(v, Shader::Type::Fragment);
+    Shader vert = Shaders::Implementation::createCompatibilityShader(v, Shader::Type::Vertex);
+    Shader frag = Shaders::Implementation::createCompatibilityShader(v, Shader::Type::Fragment);
 
-    vert.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("FullScreenTriangle.glsl"))
+    vert.addSource(rs.get("FullScreenTriangle.glsl"))
         .addSource(rs.get("DistanceFieldShader.vert"));
-    frag.addSource(rs.get("compatibility.glsl"))
-        .addSource(rs.get("DistanceFieldShader.frag"));
+    frag.addSource(rs.get("DistanceFieldShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
