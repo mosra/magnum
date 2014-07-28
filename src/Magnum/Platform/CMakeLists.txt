@@ -108,6 +108,7 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
 
     add_library(MagnumWindowlessNaClApplication STATIC WindowlessNaClApplication.cpp)
     set_target_properties(MagnumWindowlessNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
+    target_link_libraries(MagnumWindowlessNaClApplication Magnum ppapi_cpp ppapi)
     install(FILES WindowlessNaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessNaClApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -171,6 +172,7 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
     set_target_properties(MagnumWindowlessGlxApplication PROPERTIES
         COMPILE_FLAGS "-Wno-old-style-cast"
         DEBUG_POSTFIX "-d")
+    target_link_libraries(MagnumWindowlessGlxApplication Magnum ${X11_LIBRARIES})
     install(FILES WindowlessGlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -184,6 +186,7 @@ if(WITH_WINDOWLESSWGLAPPLICATION)
     set_target_properties(MagnumWindowlessWglApplication PROPERTIES
         COMPILE_FLAGS "-DUNICODE"
         DEBUG_POSTFIX "-d")
+    target_link_libraries(MagnumWindowlessWglApplication Magnum)
     install(FILES WindowlessWglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessWglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -194,6 +197,7 @@ endif()
 # Windowless CGL application
 if(WITH_WINDOWLESSCGLAPPLICATION)
     add_library(MagnumWindowlessCglApplication STATIC WindowlessCglApplication.cpp)
+    target_link_libraries(MagnumWindowlessCglApplication Magnum)
     install(FILES WindowlessCglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessCglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -235,9 +239,9 @@ if(WITH_MAGNUMINFO)
     if(CORRADE_TARGET_APPLE)
         target_link_libraries(magnum-info MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_NACL)
-        target_link_libraries(magnum-info MagnumWindowlessNaClApplication ppapi_cpp ppapi)
+        target_link_libraries(magnum-info MagnumWindowlessNaClApplication)
     elseif(CORRADE_TARGET_UNIX)
-        target_link_libraries(magnum-info MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+        target_link_libraries(magnum-info MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS)
         target_link_libraries(magnum-info MagnumWindowlessWglApplication)
     else()
