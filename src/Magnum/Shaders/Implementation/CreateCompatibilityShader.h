@@ -25,11 +25,36 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Resource.h>
+
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
 
 namespace Magnum { namespace Shaders { namespace Implementation {
 
-Shader createCompatibilityShader(Version version, Shader::Type type);
+inline Shader createCompatibilityShader(Version version, Shader::Type type) {
+    Shader shader(version, type);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(version))
+        shader.addSource("#define DISABLE_GL_ARB_explicit_attrib_location\n");
+    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::shading_language_420pack>(version))
+        shader.addSource("#define DISABLE_GL_ARB_shading_language_420pack\n");
+    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_uniform_location>(version))
+        shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n");
+    #endif
+
+    /* My Android emulator (running on NVidia) doesn't define GL_ES
+       preprocessor macro, thus *all* the stock shaders fail to compile */
+    /** @todo remove this when Android emulator is sane */
+    #ifdef CORRADE_TARGET_ANDROID
+    shader.addSource("#ifndef GL_ES\n#define GL_ES 1\n#endif\n");
+    #endif
+
+    shader.addSource(Utility::Resource("MagnumShaders").get("compatibility.glsl"));
+    return shader;
+}
 
 }}}
 

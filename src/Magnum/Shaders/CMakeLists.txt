@@ -34,8 +34,6 @@ set(MagnumShaders_SRCS
     Vector.cpp
     VertexColor.cpp
 
-    Implementation/CreateCompatibilityShader.cpp
-
     ${MagnumShaders_RCS})
 
 set(MagnumShaders_HEADERS
