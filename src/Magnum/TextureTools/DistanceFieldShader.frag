@@ -26,8 +26,11 @@
 #ifndef NEW_GLSL
 #define in varying
 #define value gl_FragColor.x
-#define const
 #define texture texture2D
+#endif
+
+#ifndef RUNTIME_CONST
+#define const
 #endif
 
 #if (defined(GL_ES) && __VERSION__ >= 300) || (!defined(GL_ES) && __VERSION__ >= 150)
