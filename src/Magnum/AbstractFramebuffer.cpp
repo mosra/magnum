@@ -211,7 +211,9 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Buf
 }
 #endif
 
-void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments) {
+void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum* const) {}
+
+void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments) {
     /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glInvalidateFramebuffer(GLenum(bindInternal()), count, attachments);
@@ -223,7 +225,9 @@ void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attach
     #endif
 }
 
-void AbstractFramebuffer::invalidateImplementation(GLsizei count, GLenum* attachments, const Range2Di& rectangle) {
+void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&) {}
+
+void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
     /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());

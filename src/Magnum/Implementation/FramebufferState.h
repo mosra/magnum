@@ -41,6 +41,8 @@ struct FramebufferState {
     void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
     void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);
     void(AbstractFramebuffer::*readBufferImplementation)(GLenum);
+    void(AbstractFramebuffer::*invalidateImplementation)(GLsizei, const GLenum*);
+    void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
 
     void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, Renderbuffer&);
     #ifndef MAGNUM_TARGET_GLES

@@ -77,7 +77,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    invalidateImplementation(attachments.size(), _attachments);
+    (this->*Context::current()->state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
 }
 
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
@@ -86,7 +86,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    invalidateImplementation(attachments.size(), _attachments, rectangle);
+    (this->*Context::current()->state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
 
 void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {

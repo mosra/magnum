@@ -138,6 +138,36 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDefault;
         #endif
     }
+
+    /* Framebuffer invalidation implementation on desktop GL */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
+        extensions.push_back(Extensions::GL::ARB::invalidate_subdata::string());
+
+        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+    } else {
+        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
+        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
+    }
+
+    /* Framebuffer invalidation implementation on ES2 */
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(context.isExtensionSupported<Extensions::GL::EXT::discard_framebuffer>()) {
+        extensions.push_back(Extensions::GL::EXT::discard_framebuffer::string());
+
+        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+    } else {
+        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
+        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
+    }
+
+    /* Always available on ES3 */
+    #else
+    invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+    invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+    #endif
 }
 
 void FramebufferState::reset() {

@@ -643,11 +643,6 @@ void FramebufferGLTest::invalidate() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>())
-        CORRADE_SKIP(Extensions::GL::ARB::invalidate_subdata::string() + std::string(" is not available."));
-    #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::discard_framebuffer>())
-        CORRADE_SKIP(Extensions::GL::EXT::discard_framebuffer::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -675,11 +670,6 @@ void FramebufferGLTest::invalidateSub() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>())
-        CORRADE_SKIP(Extensions::GL::ARB::invalidate_subdata::string() + std::string(" is not available."));
-    #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::discard_framebuffer>())
-        CORRADE_SKIP(Extensions::GL::EXT::discard_framebuffer::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
