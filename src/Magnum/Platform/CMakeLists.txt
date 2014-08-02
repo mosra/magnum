@@ -197,6 +197,7 @@ endif()
 # Windowless CGL application
 if(WITH_WINDOWLESSCGLAPPLICATION)
     add_library(MagnumWindowlessCglApplication STATIC WindowlessCglApplication.cpp)
+    set_target_properties(MagnumWindowlessCglApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessCglApplication Magnum)
     install(FILES WindowlessCglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessCglApplication
