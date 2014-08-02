@@ -840,17 +840,7 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
     glTexStorage1D(target, levels, GLenum(internalFormat), size[0]);
-    #else
-    static_cast<void>(target);
-    static_cast<void>(levels);
-    static_cast<void>(internalFormat);
-    static_cast<void>(size);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
-    #endif
 }
 
 void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
@@ -1013,19 +1003,8 @@ void AbstractTexture::getImageImplementationDSA(const GLenum target, const GLint
 }
 
 void AbstractTexture::getImageImplementationRobustness(const GLenum target, const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
     bindInternal();
     glGetnTexImageARB(target, level, GLenum(format), GLenum(type), dataSize, data);
-    #else
-    static_cast<void>(target);
-    static_cast<void>(level);
-    static_cast<void>(format);
-    static_cast<void>(type);
-    static_cast<void>(dataSize);
-    static_cast<void>(data);
-    CORRADE_INTERNAL_ASSERT(false);
-    #endif
 }
 #endif
 

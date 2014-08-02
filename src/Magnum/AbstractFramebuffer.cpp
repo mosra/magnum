@@ -196,11 +196,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Ima
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
-    #else
-    bindInternal(readTarget);
-    #endif
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image.size() != size)
