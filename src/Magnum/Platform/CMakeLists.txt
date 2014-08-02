@@ -30,6 +30,9 @@ set(MagnumPlatform_HEADERS
     ScreenedApplication.h
     ScreenedApplication.hpp)
 
+# Files to display in project view of IDEs only (filled in below)
+set(MagnumPlatform_FILES )
+
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # Android application
@@ -40,12 +43,21 @@ if(WITH_ANDROIDAPPLICATION)
 
     include_directories(${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
 
-    add_library(MagnumAndroidApplication STATIC
+    set(MagnumAndroidApplication_SRCS
         AndroidApplication.cpp
-        Implementation/Egl.cpp
+        Implementation/Egl.cpp)
+    set(MagnumAndroidApplication_HEADERS
+        AndroidApplication.h)
+    set(MagnumAndroidApplication_PRIVATE_HEADERS
+        Implementation/Egl.h)
+
+    add_library(MagnumAndroidApplication STATIC
+        ${MagnumAndroidApplication_SRCS}
+        ${MagnumAndroidApplication_HEADERS}
+        ${MagnumAndroidApplication_PRIVATE_HEADERS}
         ${ANDROID_NATIVE_APP_GLUE_SRC})
     set_target_properties(MagnumAndroidApplication PROPERTIES DEBUG_POSTFIX "-d")
-    install(FILES AndroidApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumAndroidApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumAndroidApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -59,9 +71,14 @@ if(WITH_GLUTAPPLICATION)
         message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTAPPLICATION to OFF to skip building it.")
     endif()
 
-    add_library(MagnumGlutApplication STATIC GlutApplication.cpp)
+    set(MagnumGlutApplication_SRCS GlutApplication.cpp)
+    set(MagnumGlutApplication_HEADERS GlutApplication.h)
+
+    add_library(MagnumGlutApplication STATIC
+        ${MagnumGlutApplication_SRCS}
+        ${MagnumGlutApplication_HEADERS})
     set_target_properties(MagnumGlutApplication PROPERTIES DEBUG_POSTFIX "-d")
-    install(FILES MagnumGlutApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumGlutApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlutApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -76,9 +93,15 @@ if(WITH_SDL2APPLICATION)
     endif()
 
     include_directories(${SDL2_INCLUDE_DIR})
-    add_library(MagnumSdl2Application STATIC Sdl2Application.cpp)
+
+    set(MagnumSdl2Application_SRCS Sdl2Application.cpp)
+    set(MagnumSdl2Application_HEADERS Sdl2Application.h)
+
+    add_library(MagnumSdl2Application STATIC
+        ${MagnumSdl2Application_SRCS}
+        ${MagnumSdl2Application_HEADERS})
     set_target_properties(MagnumSdl2Application PROPERTIES DEBUG_POSTFIX "-d")
-    install(FILES Sdl2Application.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumSdl2Application
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -91,9 +114,14 @@ if(WITH_NACLAPPLICATION)
         message(FATAL_ERROR "NaClApplication is available only when targeting Google Chrome Native Client. Set WITH_NACLAPPLICATION to OFF to skip building it.")
     endif()
 
-    add_library(MagnumNaClApplication STATIC NaClApplication.cpp)
+    set(MagnumNaClApplication_SRCS NaClApplication.cpp)
+    set(MagnumNaClApplication_HEADERS NaClApplication.h)
+
+    add_library(MagnumNaClApplication STATIC
+        ${MagnumNaClApplication_SRCS}
+        ${MagnumNaClApplication_HEADERS})
     set_target_properties(MagnumNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
-    install(FILES NaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumNaClApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumNaClApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -106,10 +134,15 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
         message(FATAL_ERROR "WindowlessNaClApplication is available only when targeting Google Chrome Native Client. Set WITH_WINDOWLESSNACLAPPLICATION to OFF to skip building it.")
     endif()
 
-    add_library(MagnumWindowlessNaClApplication STATIC WindowlessNaClApplication.cpp)
+    set(MagnumWindowlessNaClApplication_SRCS WindowlessNaClApplication.cpp)
+    set(MagnumWindowlessNaClApplication_HEADERS WindowlessNaClApplication.h)
+
+    add_library(MagnumWindowlessNaClApplication STATIC
+        ${MagnumWindowlessNaClApplication_SRCS}
+        ${MagnumWindowlessNaClApplication_HEADERS})
     set_target_properties(MagnumWindowlessNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessNaClApplication Magnum ppapi_cpp ppapi)
-    install(FILES WindowlessNaClApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumWindowlessNaClApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessNaClApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -118,24 +151,38 @@ endif()
 
 # JavaScript and CSS stuff for NaCl
 if(WITH_NACLAPPLICATION OR WITH_WINDOWLESSNACLAPPLICATION)
-    install(FILES NaClApplication.js WebApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+    set(MagnumNaClApplication_FILES
+        NaClApplication.js
+        WebApplication.css)
+    list(APPEND MagnumPlatform_FILES ${MagnumNaClApplication_FILES})
+    install(FILES ${MagnumNaClApplication_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
 # JavaScript and CSS stuff for Emscripten
 if(WITH_SDL2APPLICATION AND CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES EmscriptenApplication.js WebApplication.css DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+    set(MagnumSdl2Application_FILES
+        EmscriptenApplication.js
+        WebApplication.css)
+    list(APPEND MagnumPlatform_FILES ${MagnumSdl2Application_FILES})
+    install(FILES ${MagnumSdl2Application_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
 # GLX application
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
     set(NEED_GLXCONTEXT 1)
-    add_library(MagnumGlxApplication STATIC
+
+    set(MagnumGlxApplication_SRCS
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
         $<TARGET_OBJECTS:MagnumGlxContextHandler>
         GlxApplication.cpp)
+    set(MagnumGlxApplication_HEADERS GlxApplication.h)
+
+    add_library(MagnumGlxApplication STATIC
+        ${MagnumGlxApplication_SRCS}
+        ${MagnumGlxApplication_HEADERS})
     set_target_properties(MagnumGlxApplication PROPERTIES DEBUG_POSTFIX "-d")
-    install(FILES GlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -146,12 +193,18 @@ endif()
 if(WITH_XEGLAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
     set(NEED_EGLCONTEXT 1)
-    add_library(MagnumXEglApplication STATIC
+
+    set(MagnumXEglApplication_SRCS
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
         $<TARGET_OBJECTS:MagnumEglContextHandler>
         XEglApplication.cpp)
+    set(MagnumXEglApplication_HEADERS XEglApplication.h)
+
+    add_library(MagnumXEglApplication STATIC
+        ${MagnumXEglApplication_SRCS}
+        ${MagnumXEglApplication_HEADERS})
     set_target_properties(MagnumXEglApplication PROPERTIES DEBUG_POSTFIX "-d")
-    install(FILES XEglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumXEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumXEglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -167,13 +220,18 @@ endif()
 
 # Windowless GLX application
 if(WITH_WINDOWLESSGLXAPPLICATION)
-    add_library(MagnumWindowlessGlxApplication STATIC WindowlessGlxApplication.cpp)
+    set(MagnumWindowlessGlxApplication_SRCS WindowlessGlxApplication.cpp)
+    set(MagnumWindowlessGlxApplication_HEADERS WindowlessGlxApplication.h)
+
+    add_library(MagnumWindowlessGlxApplication STATIC
+        ${MagnumWindowlessGlxApplication_SRCS}
+        ${MagnumWindowlessGlxApplication_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumWindowlessGlxApplication PROPERTIES
         COMPILE_FLAGS "-Wno-old-style-cast"
         DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessGlxApplication Magnum ${X11_LIBRARIES})
-    install(FILES WindowlessGlxApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumWindowlessGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -182,12 +240,17 @@ endif()
 
 # Windowless WGL application
 if(WITH_WINDOWLESSWGLAPPLICATION)
-    add_library(MagnumWindowlessWglApplication STATIC WindowlessWglApplication.cpp)
+    set(MagnumWindowlessWglApplication_SRCS WindowlessWglApplication.cpp)
+    set(MagnumWindowlessWglApplication_HEADERS WindowlessWglApplication.h)
+
+    add_library(MagnumWindowlessWglApplication STATIC
+        ${MagnumWindowlessWglApplication_SRCS}
+        ${MagnumWindowlessWglApplication_HEADERS})
     set_target_properties(MagnumWindowlessWglApplication PROPERTIES
         COMPILE_FLAGS "-DUNICODE"
         DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessWglApplication Magnum)
-    install(FILES WindowlessWglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumWindowlessWglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessWglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -196,10 +259,15 @@ endif()
 
 # Windowless CGL application
 if(WITH_WINDOWLESSCGLAPPLICATION)
-    add_library(MagnumWindowlessCglApplication STATIC WindowlessCglApplication.cpp)
+    set(MagnumWindowlessCglApplication_SRCS WindowlessCglApplication.cpp)
+    set(MagnumWindowlessCglApplication_HEADERS WindowlessCglApplication.h)
+
+    add_library(MagnumWindowlessCglApplication STATIC
+        ${MagnumWindowlessCglApplication_SRCS}
+        ${MagnumWindowlessCglApplication_HEADERS})
     set_target_properties(MagnumWindowlessCglApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessCglApplication Magnum)
-    install(FILES WindowlessCglApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumWindowlessGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessCglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -208,15 +276,28 @@ endif()
 
 # Abstract X application
 if(NEED_ABSTRACTXAPPLICATION)
-    add_library(MagnumAbstractXApplication OBJECT AbstractXApplication.cpp)
+    set(MagnumAbstractXApplication_SRCS AbstractXApplication.cpp)
+    set(MagnumAbstractXApplication_HEADERS AbstractXApplication.h)
+
+    add_library(MagnumAbstractXApplication OBJECT
+        ${MagnumAbstractXApplication_SRCS}
+        ${MagnumAbstractXApplication_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumAbstractXApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
-    install(FILES AbstractXApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumAbstractXApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
 # GLX context
 if(NEED_GLXCONTEXT)
-    add_library(MagnumGlxContextHandler OBJECT Implementation/GlxContextHandler.cpp)
+    set(MagnumGlxContextHandler_SRCS
+        Implementation/GlxContextHandler.cpp)
+    set(MagnumGlxContextHandler_PRIVATE_HEADERS
+        Implementation/AbstractContextHandler.h
+        Implementation/GlxContextHandler.h)
+
+    add_library(MagnumGlxContextHandler OBJECT
+        ${MagnumGlxContextHandler_SRCS}
+        ${MagnumGlxContextHandler_PRIVATE_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumGlxContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
 endif()
@@ -227,9 +308,18 @@ if(NEED_EGLCONTEXT)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
-    add_library(MagnumEglContextHandler OBJECT
+
+    set(MagnumEglContextHandler_SRCS
         Implementation/EglContextHandler.cpp
         Implementation/Egl.cpp)
+    set(MagnumEglContextHandler_PRIVATE_HEADERS
+        Implementation/AbstractContextHandler.h
+        Implementation/EglContextHandler.h
+        Implementation/Egl.h)
+
+    add_library(MagnumEglContextHandler OBJECT
+        ${MagnumEglContextHandler_SRCS}
+        ${MagnumEglContextHandler_PRIVATE_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
 endif()
@@ -254,5 +344,9 @@ if(WITH_MAGNUMINFO)
     if(CORRADE_TARGET_NACL)
         install(FILES magnum-info-nacl.html DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.html)
         install(FILES magnum-info-nacl.nmf DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.nmf)
+        list(APPEND MagnumPlatform_FILES magnum-info-nacl.html magnum-info-nacl.nmf)
     endif()
 endif()
+
+# Force IDEs display also all header files and additional files in project view
+add_custom_target(MagnumPlatform SOURCES ${MagnumPlatform_HEADERS} ${MagnumPlatform_FILES})

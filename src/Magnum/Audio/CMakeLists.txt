@@ -45,7 +45,9 @@ set(MagnumAudio_HEADERS
 
     visibility.h)
 
-add_library(MagnumAudio ${SHARED_OR_STATIC} ${MagnumAudio_SRCS})
+add_library(MagnumAudio ${SHARED_OR_STATIC}
+    ${MagnumAudio_SRCS}
+    ${MagnumAudio_HEADERS})
 set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
 target_link_libraries(MagnumAudio ${CORRADE_PLUGINMANAGER_LIBRARIES} ${OPENAL_LIBRARY})
 

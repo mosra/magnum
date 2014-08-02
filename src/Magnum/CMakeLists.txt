@@ -119,6 +119,19 @@ set(Magnum_HEADERS
 
     visibility.h)
 
+# Header files to display in project view of IDEs only
+set(Magnum_PRIVATE_HEADERS
+    Implementation/BufferState.h
+    Implementation/DebugState.h
+    Implementation/FramebufferState.h
+    Implementation/maxTextureSize.h
+    Implementation/MeshState.h
+    Implementation/RendererState.h
+    Implementation/ShaderProgramState.h
+    Implementation/ShaderState.h
+    Implementation/State.h
+    Implementation/TextureState.h)
+
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
@@ -159,6 +172,8 @@ set(MagnumMath_SRCS
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_SRCS}
+    ${Magnum_HEADERS}
+    ${Magnum_PRIVATE_HEADERS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
 

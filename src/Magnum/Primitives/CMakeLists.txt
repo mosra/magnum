@@ -52,7 +52,15 @@ set(MagnumPrimitives_HEADERS
 
     visibility.h)
 
-add_library(MagnumPrimitives ${SHARED_OR_STATIC} ${MagnumPrimitives_SRCS})
+# Header files to display in project view of IDEs only
+set(MagnumPrimitives_PRIVATE_HEADERS
+    Implementation/Spheroid.h
+    Implementation/WireframeSpheroid.h)
+
+add_library(MagnumPrimitives ${SHARED_OR_STATIC}
+    ${MagnumPrimitives_SRCS}
+    ${MagnumPrimitives_HEADERS}
+    ${MagnumPrimitives_PRIVATE_HEADERS})
 set_target_properties(MagnumPrimitives PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property

@@ -40,7 +40,9 @@ if(BUILD_STATIC)
     set(MagnumTextureTools_HEADERS ${MagnumTextureTools_HEADERS} magnumTextureToolsResourceImport.hpp)
 endif()
 
-add_library(MagnumTextureTools ${SHARED_OR_STATIC} ${MagnumTextureTools_SRCS})
+add_library(MagnumTextureTools ${SHARED_OR_STATIC}
+    ${MagnumTextureTools_SRCS}
+    ${MagnumTextureTools_HEADERS})
 set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property

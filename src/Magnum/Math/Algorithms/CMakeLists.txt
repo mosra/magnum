@@ -28,6 +28,9 @@ set(MagnumMathAlgorithms_HEADERS
     GramSchmidt.h
     Svd.h)
 
+# Force IDEs to display all header files in project view
+add_custom_target(MagnumMathAlgorithms SOURCES ${MagnumMathAlgorithms_HEADERS})
+
 install(FILES ${MagnumMathAlgorithms_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Algorithms)
 
 if(BUILD_TESTS)
