@@ -189,7 +189,7 @@ compilation of the executable and linking `${MAGNUM_LIBRARIES}` and
 `${MAGNUM_SDL2APPLICATION_LIBRARIES}` to it.
 
 Again, to simplify porting, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_WAPPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`,
+and `${MAGNUM_APPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`,
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
 only if only one application (windowless application) component is requested to
 avoid ambiguity. Changing the build script to use different toolkit is then

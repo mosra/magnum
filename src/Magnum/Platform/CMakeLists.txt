@@ -170,7 +170,7 @@ endif()
 # GLX application
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
-    set(NEED_GLXCONTEXT 1)
+    set(NEED_GLXCONTEXTHANDLER 1)
 
     set(MagnumGlxApplication_SRCS
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
@@ -192,7 +192,7 @@ endif()
 # X/EGL application
 if(WITH_XEGLAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
-    set(NEED_EGLCONTEXT 1)
+    set(NEED_EGLCONTEXTHANDLER 1)
 
     set(MagnumXEglApplication_SRCS
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
@@ -288,7 +288,7 @@ if(NEED_ABSTRACTXAPPLICATION)
 endif()
 
 # GLX context
-if(NEED_GLXCONTEXT)
+if(NEED_GLXCONTEXTHANDLER)
     set(MagnumGlxContextHandler_SRCS
         Implementation/GlxContextHandler.cpp)
     set(MagnumGlxContextHandler_PRIVATE_HEADERS
@@ -303,7 +303,7 @@ if(NEED_GLXCONTEXT)
 endif()
 
 # EGL context
-if(NEED_EGLCONTEXT)
+if(NEED_EGLCONTEXTHANDLER)
     find_package(EGL)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")

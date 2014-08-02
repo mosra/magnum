@@ -456,8 +456,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             MAGNUM_${_COMPONENT}_LIBRARY
             _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
 
-        # Global aliases for Windowless*Application and *Application components.
-        # If already set, unset them to avoid ambiguity.
+        # Global aliases for Windowless*Application and *Application
+        # components. If already set, unset them to avoid ambiguity.
         if(${component} MATCHES Windowless.+Application)
             if(NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
                 set(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
