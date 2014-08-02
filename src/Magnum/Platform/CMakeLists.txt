@@ -24,13 +24,13 @@
 #
 
 # Headers
-set(Platform_HEADERS
+set(MagnumPlatform_HEADERS
     Platform.h
     Screen.h
     ScreenedApplication.h
     ScreenedApplication.hpp)
 
-install(FILES ${Platform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # Android application
 if(WITH_ANDROIDAPPLICATION)
@@ -55,34 +55,34 @@ endif()
 # GLUT application
 if(WITH_GLUTAPPLICATION)
     find_package(GLUT)
-    if(GLUT_FOUND)
-        add_library(MagnumGlutApplication STATIC GlutApplication.cpp)
-        set_target_properties(MagnumGlutApplication PROPERTIES DEBUG_POSTFIX "-d")
-        install(FILES GlutApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-        install(TARGETS MagnumGlutApplication
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    else()
+    if(NOT GLUT_FOUND)
         message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTAPPLICATION to OFF to skip building it.")
     endif()
+
+    add_library(MagnumGlutApplication STATIC GlutApplication.cpp)
+    set_target_properties(MagnumGlutApplication PROPERTIES DEBUG_POSTFIX "-d")
+    install(FILES MagnumGlutApplication.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumGlutApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
 # SDL2 application
 if(WITH_SDL2APPLICATION)
     find_package(SDL2)
-    if(SDL2_FOUND)
-        include_directories(${SDL2_INCLUDE_DIR})
-        add_library(MagnumSdl2Application STATIC Sdl2Application.cpp)
-        set_target_properties(MagnumSdl2Application PROPERTIES DEBUG_POSTFIX "-d")
-        install(FILES Sdl2Application.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-        install(TARGETS MagnumSdl2Application
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    else()
+    if(NOT SDL2_FOUND)
         message(FATAL_ERROR "SDL2 library, required by Sdl2Application, was not found. Set WITH_SDL2APPLICATION to OFF to skip building it.")
     endif()
+
+    include_directories(${SDL2_INCLUDE_DIR})
+    add_library(MagnumSdl2Application STATIC Sdl2Application.cpp)
+    set_target_properties(MagnumSdl2Application PROPERTIES DEBUG_POSTFIX "-d")
+    install(FILES Sdl2Application.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumSdl2Application
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
 # NaCl application
