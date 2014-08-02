@@ -48,6 +48,7 @@ Debug operator<<(Debug debug, Version value) {
         #else
         _c(GLES200, "OpenGL ES 2.0")
         _c(GLES300, "OpenGL ES 3.0")
+        _c(GLES310, "OpenGL ES 3.1")
         #endif
         #undef _c
     }

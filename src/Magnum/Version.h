@@ -77,9 +77,13 @@ enum class Version: Int {
      * equivalent to @ref Version::GL430.
      */
     #ifndef MAGNUM_TARGET_GLES
-    GLES300 = 430
+    GLES300 = 430,
     #else
-    GLES300 = 300
+    GLES300 = 300,
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    GLES310 = 310                   /**< @brief OpenGL ES 3.1, GLSL ES 3.10 */
     #endif
 };
 
