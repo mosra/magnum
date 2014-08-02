@@ -109,9 +109,9 @@ void MyApplication::drawEvent() {
           .setAmbientColor(ambientColor);
     camera.draw(phongObjects);
 
-    Renderer::setFeature(Renderer::Feature::Blending, true);
+    Renderer::enable(Renderer::Feature::Blending);
     camera.draw(transparentObjects);
-    Renderer::setFeature(Renderer::Feature::Blending, false);
+    Renderer::disable(Renderer::Feature::Blending);
 
     // ...
 }

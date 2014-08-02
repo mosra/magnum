@@ -47,6 +47,9 @@ set(MagnumMath_HEADERS
     Vector3.h
     Vector4.h)
 
+# Force IDEs to display all header files in project view
+add_custom_target(MagnumMath SOURCES ${MagnumMath_HEADERS})
+
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 
 add_subdirectory(Algorithms)

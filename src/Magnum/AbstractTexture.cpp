@@ -190,7 +190,7 @@ std::string AbstractTexture::label() const {
     return Context::current()->state().debug->getLabelImplementation(GL_TEXTURE, _id);
 }
 
-AbstractTexture& AbstractTexture::setLabel(const std::string& label) {
+AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayReference<const char> label) {
     Context::current()->state().debug->labelImplementation(GL_TEXTURE, _id, label);
     return *this;
 }

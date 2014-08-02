@@ -404,6 +404,10 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
             AbstractTexture::setLabel(label);
             return *this;
         }
+        template<std::size_t size> RectangleTexture& setLabel(const char(&label)[size]) {
+            AbstractTexture::setLabel<size>(label);
+            return *this;
+        }
         #endif
 };
 

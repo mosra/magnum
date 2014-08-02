@@ -40,7 +40,9 @@ if(BUILD_STATIC)
     set(MagnumTextureTools_HEADERS ${MagnumTextureTools_HEADERS} magnumTextureToolsResourceImport.hpp)
 endif()
 
-add_library(MagnumTextureTools ${SHARED_OR_STATIC} ${MagnumTextureTools_SRCS})
+add_library(MagnumTextureTools ${SHARED_OR_STATIC}
+    ${MagnumTextureTools_SRCS}
+    ${MagnumTextureTools_HEADERS})
 set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
@@ -57,11 +59,11 @@ if(WITH_DISTANCEFIELDCONVERTER)
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
 
     if(CORRADE_TARGET_APPLE)
-        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessCglApplication Magnum)
+        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX AND NOT TARGET_GLES)
-        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS)
-        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessWglApplication Magnum)
+        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessWglApplication)
     else()
         message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
     endif()

@@ -55,6 +55,8 @@ checked by the implementation:
 
 -   Functions @ref doExportToImage() or @ref doExportToData() are called only
     if @ref Feature::ConvertImage or @ref Feature::ConvertData is supported.
+
+Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1"`.
 */
 class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")

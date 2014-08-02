@@ -123,7 +123,18 @@ void RenderbufferGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+    {
+        /** @todo Is this even legal optimization? */
+        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
     Renderbuffer renderbuffer;
+    #ifndef MAGNUM_TARGET_GLES2
+    renderbuffer.setStorage(RenderbufferFormat::RGBA8, {128, 128});
+    #else
+    renderbuffer.setStorage(RenderbufferFormat::RGBA4, {128, 128});
+    #endif
+
     CORRADE_COMPARE(renderbuffer.label(), "");
 
     renderbuffer.setLabel("MyRenderbuffer");

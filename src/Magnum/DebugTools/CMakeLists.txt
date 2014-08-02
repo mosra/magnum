@@ -50,7 +50,26 @@ set(MagnumDebugTools_HEADERS
 
     visibility.h)
 
-add_library(MagnumDebugTools ${SHARED_OR_STATIC} ${MagnumDebugTools_SRCS})
+# Header files to display in project view of IDEs only
+set(MagnumDebugTools_PRIVATE_HEADERS
+    Implementation/AbstractBoxRenderer.h
+    Implementation/AbstractShapeRenderer.h
+    Implementation/AxisAlignedBoxRenderer.h
+    Implementation/BoxRenderer.h
+    Implementation/CapsuleRenderer.h
+    Implementation/CapsuleRendererTransformation.h
+    Implementation/CylinderRenderer.h
+    Implementation/CylinderRendererTransformation.h
+    Implementation/ForceRendererTransformation.h
+    Implementation/LineSegmentRenderer.h
+    Implementation/LineSegmentRendererTransformation.h
+    Implementation/PointRenderer.h
+    Implementation/SphereRenderer.h)
+
+add_library(MagnumDebugTools ${SHARED_OR_STATIC}
+    ${MagnumDebugTools_SRCS}
+    ${MagnumDebugTools_HEADERS}
+    ${MagnumDebugTools_PRIVATE_HEADERS})
 set_target_properties(MagnumDebugTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property

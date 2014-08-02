@@ -56,8 +56,8 @@ using @ref setCallback() or use the default one provided in
 @ref setDefaultCallback():
 
 @code
-Renderer::setFeature(Renderer::Feature::DebugOutput, true);
-Renderer::setFeature(Renderer::Feature::DebugOutputSynchronous, true);
+Renderer::enable(Renderer::Feature::DebugOutput);
+Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
 
 DebugMessage::setDefaultCallback();
 DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,

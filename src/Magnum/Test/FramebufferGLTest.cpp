@@ -206,7 +206,19 @@ void FramebufferGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+    {
+        /** @todo Is this even legal optimization? */
+        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
+    Renderbuffer renderbuffer;
+    #ifndef MAGNUM_TARGET_GLES2
+    renderbuffer.setStorage(RenderbufferFormat::RGBA8, {128, 128});
+    #else
+    renderbuffer.setStorage(RenderbufferFormat::RGBA4, {128, 128});
+    #endif
     Framebuffer framebuffer({{}, Vector2i(32)});
+    framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment(Framebuffer::BufferAttachment::Depth), renderbuffer);
 
     CORRADE_COMPARE(framebuffer.label(), "");
     MAGNUM_VERIFY_NO_ERROR();
@@ -638,11 +650,6 @@ void FramebufferGLTest::invalidate() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>())
-        CORRADE_SKIP(Extensions::GL::ARB::invalidate_subdata::string() + std::string(" is not available."));
-    #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::discard_framebuffer>())
-        CORRADE_SKIP(Extensions::GL::EXT::discard_framebuffer::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -670,11 +677,6 @@ void FramebufferGLTest::invalidateSub() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>())
-        CORRADE_SKIP(Extensions::GL::ARB::invalidate_subdata::string() + std::string(" is not available."));
-    #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::discard_framebuffer>())
-        CORRADE_SKIP(Extensions::GL::EXT::discard_framebuffer::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;

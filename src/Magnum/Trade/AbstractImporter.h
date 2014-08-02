@@ -31,7 +31,7 @@
 
 #include <memory>
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/PluginManager/AbstractPlugin.h>
+#include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -72,9 +72,11 @@ checked by the implementation:
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 
+Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImporter/0.3"`.
+
 @todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
-class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
+class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.3")
 
     public:
@@ -93,6 +95,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
 
         /** @brief Default constructor */
         explicit AbstractImporter();
+
+        /** @brief Constructor with access to plugin manager */
+        explicit AbstractImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
         explicit AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin);

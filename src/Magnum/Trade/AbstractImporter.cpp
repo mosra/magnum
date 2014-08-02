@@ -26,6 +26,7 @@
 #include "AbstractImporter.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -44,7 +45,9 @@ namespace Magnum { namespace Trade {
 
 AbstractImporter::AbstractImporter() = default;
 
-AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
+AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractManagingPlugin{manager} {}
+
+AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractManagingPlugin(manager, std::move(plugin)) {}
 
 bool AbstractImporter::openData(Containers::ArrayReference<const unsigned char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,

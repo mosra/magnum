@@ -61,7 +61,13 @@ set(MagnumShapes_HEADERS
     shapeImplementation.h
     visibility.h)
 
-add_library(MagnumShapes ${SHARED_OR_STATIC} ${MagnumShapes_SRCS})
+# Header files to display in project view of IDEs only
+set(MagnumShapes_PRIVATE_HEADERS Implementation/CollisionDispatch.h)
+
+add_library(MagnumShapes ${SHARED_OR_STATIC}
+    ${MagnumShapes_SRCS}
+    ${MagnumShapes_HEADERS}
+    ${MagnumShapes_PRIVATE_HEADERS})
 set_target_properties(MagnumShapes PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property

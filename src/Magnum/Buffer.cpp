@@ -138,7 +138,7 @@ std::string Buffer::label() const {
     #endif
 }
 
-Buffer& Buffer::setLabel(const std::string& label) {
+Buffer& Buffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_BUFFER, _id, label);
     #else

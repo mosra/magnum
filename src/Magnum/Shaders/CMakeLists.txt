@@ -34,8 +34,6 @@ set(MagnumShaders_SRCS
     Vector.cpp
     VertexColor.cpp
 
-    Implementation/CreateCompatibilityShader.cpp
-
     ${MagnumShaders_RCS})
 
 set(MagnumShaders_HEADERS
@@ -51,6 +49,9 @@ set(MagnumShaders_HEADERS
 
     visibility.h)
 
+# Header files to display in project view of IDEs only
+set(MagnumShaders_PRIVATE_HEADERS Implementation/CreateCompatibilityShader.h)
+
 if(BUILD_STATIC)
     set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} resourceImport.hpp)
 
@@ -59,7 +60,10 @@ if(BUILD_STATIC)
     endif()
 endif()
 
-add_library(MagnumShaders ${SHARED_OR_STATIC} ${MagnumShaders_SRCS})
+add_library(MagnumShaders ${SHARED_OR_STATIC}
+    ${MagnumShaders_SRCS}
+    ${MagnumShaders_HEADERS}
+    ${MagnumShaders_PRIVATE_HEADERS})
 set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property

@@ -338,9 +338,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         FramebufferTarget MAGNUM_LOCAL bindInternal();
         void MAGNUM_LOCAL setViewportInternal();
 
-        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments);
-        void MAGNUM_LOCAL invalidateImplementation(GLsizei count, GLenum* attachments, const Range2Di& rectangle);
-
         GLuint _id;
         Range2Di _viewport;
 
@@ -367,6 +364,12 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+
+        void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
+        void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);
+
+        void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&);
+        void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
 };
 
 inline AbstractFramebuffer::AbstractFramebuffer() = default;

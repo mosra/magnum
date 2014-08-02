@@ -54,7 +54,9 @@ set(MagnumMeshTools_HEADERS
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-add_library(MagnumMeshToolsObjects OBJECT ${MagnumMeshTools_SRCS})
+add_library(MagnumMeshToolsObjects OBJECT
+    ${MagnumMeshTools_SRCS}
+    ${MagnumMeshTools_HEADERS})
 if(NOT BUILD_SHARED OR BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")

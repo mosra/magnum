@@ -26,6 +26,7 @@
 #include "AbstractObject.h"
 
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -123,26 +124,26 @@ Int AbstractObject::maxLabelLength() {
     return value;
 }
 
-void AbstractObject::labelImplementationNoOp(GLenum, GLuint, const std::string&) {}
+void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayReference<const char>) {}
 
-void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const std::string& label) {
+void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
     /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    glObjectLabel(identifier, name, label.size(), label.data());
+    glObjectLabel(identifier, name, label.size(), label);
     #else
     static_cast<void>(identifier);
     static_cast<void>(name);
     static_cast<void>(label);
     CORRADE_INTERNAL_ASSERT(false);
-    //glObjectLabelKHR(identifier, name, label.size(), label.data());
+    //glObjectLabelKHR(identifier, name, label.size(), label);
     #endif
 }
 
-void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const std::string& label) {
+void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
     const GLenum type = extTypeFromKhrIdentifier(identifier);
     /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    glLabelObjectEXT(type, name, label.size(), label.data());
+    glLabelObjectEXT(type, name, label.size(), label);
     #else
     static_cast<void>(type);
     static_cast<void>(name);
@@ -154,46 +155,31 @@ void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuin
 std::string AbstractObject::getLabelImplementationNoOp(GLenum, GLuint) { return  {}; }
 
 std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, const GLuint name) {
-    /**
-     * @todo Get rid of this workaround when NVidia returns proper size for
-     *      length=0 & label=nullptr (even crashes on length>0 & label=nullptr)
-     */
-    #if 0
     /* Get label size (w/o null terminator) */
     GLsizei size;
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
-    glGetObjectLabel(type, name, 0, &size, nullptr);
+    glGetObjectLabel(identifier, name, 0, &size, nullptr);
     #else
-    glGetObjectLabelKHR(type, name, 0, &size, nullptr);
+    static_cast<void>(identifier);
+    static_cast<void>(name);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glGetObjectLabelKHR(identifier, name, 0, &size, nullptr);
     #endif
 
     /* Make place also for the null terminator */
     std::string label;
     label.resize(size+1);
+    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, size+1, nullptr, &label[0]);
     #else
-    glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
+    //glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
     #endif
 
     /* Pop null terminator and return the string */
     label.resize(size);
     return label;
-    #else
-    GLsizei size;
-    std::string label;
-    label.resize(maxLabelLength());
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
-    glGetObjectLabel(identifier, name, label.size(), &size, &label[0]);
-    #else
-    static_cast<void>(identifier);
-    static_cast<void>(name);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glGetObjectLabelKHR(identifier, name, label.size(), &size, &label[0]);
-    #endif
-    return label.substr(0, size);
-    #endif
 }
 
 std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, const GLuint name) {

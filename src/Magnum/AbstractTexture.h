@@ -29,6 +29,8 @@
  * @brief Class @ref Magnum::AbstractTexture
  */
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/Sampler.h"
 #include "Magnum/AbstractObject.h"
 
@@ -264,7 +266,14 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{TEXTURE}
          */
-        AbstractTexture& setLabel(const std::string& label);
+        AbstractTexture& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> AbstractTexture& setLabel(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /** @brief OpenGL texture ID */
         GLuint id() const { return _id; }
@@ -293,6 +302,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         template<UnsignedInt textureDimensions> struct DataHelper {};
 
         explicit AbstractTexture(GLenum target);
+
+        AbstractTexture& setLabelInternal(Containers::ArrayReference<const char> label);
 
         /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();

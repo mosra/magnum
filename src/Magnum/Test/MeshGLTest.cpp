@@ -302,7 +302,15 @@ void MeshGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+    {
+        /** @todo Is this even legal optimization? */
+        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
+    Buffer buffer{Buffer::Target::ElementArray};
     Mesh mesh;
+    mesh.setIndexBuffer(buffer, 0, Mesh::IndexType::UnsignedShort);
+
     CORRADE_COMPARE(mesh.label(), "");
 
     mesh.setLabel("MyMesh");
@@ -377,8 +385,8 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
 
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(0, "value");
 
@@ -407,8 +415,8 @@ IntegerShader::IntegerShader(const std::string& type) {
 
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(0, "value");
 
@@ -433,8 +441,8 @@ DoubleShader::DoubleShader(const std::string& type, const std::string& outputTyp
 
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(0, "value");
 
@@ -1106,8 +1114,8 @@ MultipleShader::MultipleShader() {
 
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
-    attachShader(vert);
-    attachShader(frag);
+
+    attachShaders({vert, frag});
 
     bindAttributeLocation(Position::Location, "position");
     bindAttributeLocation(Normal::Location, "normal");

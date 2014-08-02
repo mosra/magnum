@@ -29,6 +29,8 @@
  * @brief Class @ref Magnum::Renderbuffer
  */
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
 
@@ -139,7 +141,14 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
          */
-        Renderbuffer& setLabel(const std::string& label);
+        Renderbuffer& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> Renderbuffer& setLabel(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /**
          * @brief Set renderbuffer storage
@@ -173,6 +182,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
 
     private:
+        Renderbuffer& setLabelInternal(Containers::ArrayReference<const char> label);
+
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size);

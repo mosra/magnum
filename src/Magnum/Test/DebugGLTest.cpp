@@ -77,16 +77,16 @@ void DebugGLTest::insertMessage() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
         CORRADE_SKIP(Extensions::GL::KHR::debug::string() + std::string(" is not supported"));
 
-    Renderer::setFeature(Renderer::Feature::DebugOutput, true);
+    Renderer::enable(Renderer::Feature::DebugOutput);
 
-    Renderer::setFeature(Renderer::Feature::DebugOutputSynchronous, true);
+    Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
     std::ostringstream out;
     Debug::setOutput(&out);
     DebugMessage::setDefaultCallback();
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
         1337, DebugMessage::Severity::Notification, "Hello from OpenGL command stream!");
 
-    Renderer::setFeature(Renderer::Feature::DebugOutput, false);
+    Renderer::enable(Renderer::Feature::DebugOutput);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(out.str(),

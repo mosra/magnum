@@ -370,7 +370,14 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
          */
-        Framebuffer& setLabel(const std::string& label);
+        Framebuffer& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> Framebuffer& setLabel(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /**
          * @brief Check framebuffer status
@@ -466,16 +473,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @param attachments       Attachments to invalidate
          * @param rectangle         %Rectangle to invalidate
          *
-         * The framebuffer is bound to some target before the operation, if
-         * not already.
-         * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
+         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
+         * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
+         * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
+         * The framebuffer is bound to some target before the operation, if not
+         * already.
+         * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}. Use
-         *      @ref Magnum::Framebuffer::clear() "clear()" instead where the
-         *      extension is not supported.
-         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
-         *      in OpenGL ES 2.0. Use @ref Magnum::Framebuffer::clear() "clear()"
-         *      instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 
@@ -485,11 +489,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @param renderbuffer      %Renderbuffer
          * @return Reference to self (for method chaining)
          *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
-         *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
+         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
+         * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
+         * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
+         * The framebuffer is bound to some target before the operation, if not
+         * already.
+         * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
+         *      on OpenGL ES 2.0
          */
         Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer& renderbuffer);
 
@@ -643,6 +649,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 
     private:
+        Framebuffer& setLabelInternal(Containers::ArrayReference<const char> label);
+
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer);

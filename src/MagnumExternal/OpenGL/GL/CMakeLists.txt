@@ -25,7 +25,7 @@
 
 add_library(MagnumGLLoadGenObjects OBJECT gl_magnum.c)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang")
     set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -fvisibility=hidden -DGLLoadGen_EXPORTS")
 else()
     set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DGLLoadGen_EXPORTS")

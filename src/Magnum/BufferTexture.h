@@ -279,6 +279,10 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
             AbstractTexture::setLabel(label);
             return *this;
         }
+        template<std::size_t size> BufferTexture& setLabel(const char(&label)[size]) {
+            AbstractTexture::setLabel<size>(label);
+            return *this;
+        }
         #endif
 
     private:

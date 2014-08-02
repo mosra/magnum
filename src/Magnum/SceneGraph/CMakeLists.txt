@@ -71,7 +71,9 @@ set(MagnumSceneGraph_HEADERS
 
 # Set shared library flags for the objects, as they will be part of shared lib
 # TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-add_library(MagnumSceneGraphObjects OBJECT ${MagnumSceneGraph_SRCS})
+add_library(MagnumSceneGraphObjects OBJECT
+    ${MagnumSceneGraph_SRCS}
+    ${MagnumSceneGraph_HEADERS})
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")

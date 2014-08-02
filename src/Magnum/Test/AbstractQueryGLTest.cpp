@@ -113,7 +113,15 @@ void AbstractQueryGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+    {
+        /** @todo Is this even legal optimization? */
+        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
     SampleQuery query;
+    query.begin(SampleQuery::Target::AnySamplesPassed);
+    query.end();
+
     CORRADE_COMPARE(query.label(), "");
 
     query.setLabel("MyQuery");

@@ -332,7 +332,7 @@ Context::Context() {
         /* Allow ES2 context on driver that reports ES3 as supported */
         const std::string version = versionString();
         #ifndef MAGNUM_TARGET_GLES
-        if(version.compare(0, 4, "2.1 ") == 0)
+        if(version.compare(0, 3, "2.1") == 0)
         #elif defined(MAGNUM_TARGET_WEBGL)
         if(version.find("WebGL 1") != std::string::npos)
         #else

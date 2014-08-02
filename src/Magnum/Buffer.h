@@ -582,7 +582,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      or @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
          */
-        Buffer& setLabel(const std::string& label);
+        Buffer& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> Buffer& setLabel(const char(&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /** @brief Target hint */
         Target targetHint() const { return _targetHint; }
@@ -854,6 +861,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #endif
 
     private:
+        Buffer& setLabelInternal(Containers::ArrayReference<const char> label);
+
         static void bind(Target hint, GLuint id);
         Target MAGNUM_LOCAL bindInternal(Target hint);
 

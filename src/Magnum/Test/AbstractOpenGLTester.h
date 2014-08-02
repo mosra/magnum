@@ -54,8 +54,8 @@ class AbstractOpenGLTester: public TestSuite::Tester, public Platform::Windowles
 
 AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({zero, nullptr}) {
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
-        Renderer::setFeature(Renderer::Feature::DebugOutput, true);
-        Renderer::setFeature(Renderer::Feature::DebugOutputSynchronous, true);
+        Renderer::enable(Renderer::Feature::DebugOutput);
+        Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
         DebugMessage::setDefaultCallback();
     }
 }

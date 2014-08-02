@@ -180,6 +180,10 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
             AbstractTexture::setLabel(label);
             return *this;
         }
+        template<std::size_t size> MultisampleTexture<dimensions>& setLabel(const char(&label)[size]) {
+            AbstractTexture::setLabel<size>(label);
+            return *this;
+        }
         #endif
 };
 

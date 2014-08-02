@@ -31,6 +31,7 @@
 
 #include <functional>
 #include <string>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/AbstractObject.h"
@@ -540,7 +541,14 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @def_gl{PROGRAM} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{PROGRAM_OBJECT_EXT}
          */
-        AbstractShaderProgram& setLabel(const std::string& label);
+        AbstractShaderProgram& setLabel(const std::string& label) {
+            return setLabelInternal({label.data(), label.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> AbstractShaderProgram& setLabel(const char (&label)[size]) {
+            return setLabelInternal(label);
+        }
 
         /**
          * @brief Validate program
@@ -615,6 +623,15 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void attachShader(Shader& shader);
 
         /**
+         * @brief Attach shaders
+         *
+         * Convenience overload to the above, allowing the user to specify more
+         * than one shader at once. Other than that there is no other
+         * (performance) difference when using this function.
+         */
+        void attachShaders(std::initializer_list<std::reference_wrapper<Shader>> shaders);
+
+        /**
          * @brief Bind attribute to given location
          * @param location      Location
          * @param name          %Attribute name
@@ -627,7 +644,14 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          */
-        void bindAttributeLocation(UnsignedInt location, const std::string& name);
+        void bindAttributeLocation(UnsignedInt location, const std::string& name) {
+            bindAttributeLocationInternal(location, {name.data(), name.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> void bindAttributeLocation(UnsignedInt location, const char(&name)[size]) {
+            bindAttributeLocationInternal(location, name);
+        }
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -648,7 +672,14 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES.
          */
-        void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name);
+        void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
+            bindFragmentDataLocationIndexedInternal(location, index, {name.data(), name.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const char(&name)[size]) {
+            bindFragmentDataLocationIndexedInternal(location, index, name);
+        }
 
         /**
          * @brief Bind fragment data to given location and first color input index
@@ -663,7 +694,15 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      and `gl_FragData[n]` provided by @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          *      in OpenGL ES 2.0.
          */
-        void bindFragmentDataLocation(UnsignedInt location, const std::string& name);
+        void bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
+            bindFragmentDataLocationInternal(location, {name.data(), name.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> void bindFragmentDataLocation(UnsignedInt location, const char(&name)[size]) {
+            /* Not using const char* parameter, because this way it avoids most accidents with non-zero-terminated strings */
+            bindFragmentDataLocationInternal(location, name);
+        }
         #endif
 
         /**
@@ -689,7 +728,14 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref AbstractShaderProgram-uniform-location "class documentation"
          *      for more information.
          */
-        Int uniformLocation(const std::string& name);
+        Int uniformLocation(const std::string& name) {
+            return uniformLocationInternal({name.data(), name.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> Int uniformLocation(const char(&name)[size]) {
+            return uniformLocationInternal(name);
+        }
 
         /**
          * @brief Set uniform value
@@ -811,6 +857,12 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
     private:
+        AbstractShaderProgram& setLabelInternal(Containers::ArrayReference<const char> label);
+        void bindAttributeLocationInternal(UnsignedInt location, Containers::ArrayReference<const char> name);
+        void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayReference<const char> name);
+        void bindFragmentDataLocationInternal(UnsignedInt location, Containers::ArrayReference<const char> name);
+        Int uniformLocationInternal(Containers::ArrayReference<const char> name);
+
         #ifndef MAGNUM_BUILD_DEPRECATED
         void use();
         #endif

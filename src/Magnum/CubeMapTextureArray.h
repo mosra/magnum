@@ -415,6 +415,10 @@ class CubeMapTextureArray: public AbstractTexture {
             AbstractTexture::setLabel(label);
             return *this;
         }
+        template<std::size_t size> CubeMapTextureArray& setLabel(const char(&label)[size]) {
+            AbstractTexture::setLabel<size>(label);
+            return *this;
+        }
         #endif
 };
 

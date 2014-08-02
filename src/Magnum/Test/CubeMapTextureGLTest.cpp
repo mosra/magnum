@@ -467,7 +467,7 @@ void CubeMapTextureGLTest::invalidateImage() {
 void CubeMapTextureGLTest::invalidateSubImage() {
     CubeMapTexture texture;
     texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
-    texture.invalidateSubImage(1, Vector3i(2), Vector3i(8));
+    texture.invalidateSubImage(1, Vector3i(2), Vector3i(Vector2i(8), 4));
 
     MAGNUM_VERIFY_NO_ERROR();
 }

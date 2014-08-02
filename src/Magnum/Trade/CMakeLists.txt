@@ -41,6 +41,9 @@ set(MagnumTrade_HEADERS
     TextureData.h
     Trade.h)
 
+# Force IDEs to display all header files in project view
+add_custom_target(MagnumTrade SOURCES ${MagnumTrade_HEADERS})
+
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
 if(BUILD_TESTS)

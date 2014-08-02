@@ -35,8 +35,16 @@
 
 namespace Magnum {
 
+void Renderer::enable(const Feature feature) {
+    glEnable(GLenum(feature));
+}
+
+void Renderer::disable(const Feature feature) {
+    glDisable(GLenum(feature));
+}
+
 void Renderer::setFeature(const Feature feature, const bool enabled) {
-    enabled ? glEnable(GLenum(feature)) : glDisable(GLenum(feature));
+    enabled ? enable(feature) : disable(feature);
 }
 
 void Renderer::setHint(const Hint target, const HintMode mode) {

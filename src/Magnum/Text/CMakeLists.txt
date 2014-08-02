@@ -45,7 +45,9 @@ if(MAGNUM_BUILD_DEPRECATED)
         TextRenderer.h)
 endif()
 
-add_library(MagnumText ${SHARED_OR_STATIC} ${MagnumText_SRCS})
+add_library(MagnumText ${SHARED_OR_STATIC}
+    ${MagnumText_SRCS}
+    ${MagnumText_HEADERS})
 set_target_properties(MagnumText PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
@@ -68,11 +70,11 @@ if(WITH_FONTCONVERTER)
     add_executable(magnum-fontconverter fontconverter.cpp)
 
     if(CORRADE_TARGET_APPLE)
-        target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessCglApplication)
+        target_link_libraries(magnum-fontconverter MagnumText MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX AND NOT TARGET_GLES)
-        target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessGlxApplication ${X11_LIBRARIES})
+        target_link_libraries(magnum-fontconverter MagnumText MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS)
-        target_link_libraries(magnum-fontconverter MagnumText Magnum MagnumWindowlessWglApplication)
+        target_link_libraries(magnum-fontconverter MagnumText MagnumWindowlessWglApplication)
     else()
         message(FATAL_ERROR "magnum-fontconverter is not available on this platform. Set WITH_FONTCONVERTER to OFF to suppress this warning.")
     endif()

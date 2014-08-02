@@ -581,7 +581,7 @@ std::string Shader::label() const {
     #endif
 }
 
-Shader& Shader::setLabel(const std::string& label) {
+Shader& Shader::setLabelInternal(const Containers::ArrayReference<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_SHADER, _id, label);
     #else

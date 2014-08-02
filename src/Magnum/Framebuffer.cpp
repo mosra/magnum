@@ -112,7 +112,7 @@ std::string Framebuffer::label() const {
     return Context::current()->state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
 }
 
-Framebuffer& Framebuffer::setLabel(const std::string& label) {
+Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
     Context::current()->state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;
 }
@@ -154,7 +154,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    invalidateImplementation(attachments.size(), _attachments);
+    (this->*Context::current()->state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
 }
 
 void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
@@ -163,7 +163,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    invalidateImplementation(attachments.size(), _attachments, rectangle);
+    (this->*Context::current()->state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
 
 Framebuffer& Framebuffer::attachRenderbuffer(const BufferAttachment attachment, Renderbuffer& renderbuffer) {

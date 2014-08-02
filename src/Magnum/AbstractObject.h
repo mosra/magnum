@@ -30,9 +30,10 @@
  */
 
 #include <string>
+#include <Corrade/Containers/Containers.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
-#include "Magnum/Types.h"
 #include "Magnum/visibility.h"
 
 namespace Magnum {
@@ -66,9 +67,9 @@ class MAGNUM_EXPORT AbstractObject {
         MAGNUM_LOCAL ~AbstractObject();
 
     private:
-        static MAGNUM_LOCAL void labelImplementationNoOp(GLenum, GLuint, const std::string&);
-        static MAGNUM_LOCAL void labelImplementationExt(GLenum identifier, GLuint name, const std::string& label);
-        static MAGNUM_LOCAL void labelImplementationKhr(GLenum identifier, GLuint name, const std::string& label);
+        static MAGNUM_LOCAL void labelImplementationNoOp(GLenum, GLuint, Containers::ArrayReference<const char> label);
+        static MAGNUM_LOCAL void labelImplementationExt(GLenum identifier, GLuint name, Containers::ArrayReference<const char> label);
+        static MAGNUM_LOCAL void labelImplementationKhr(GLenum identifier, GLuint name, Containers::ArrayReference<const char> label);
         static MAGNUM_LOCAL std::string getLabelImplementationNoOp(GLenum, GLuint);
         static MAGNUM_LOCAL std::string getLabelImplementationExt(GLenum identifier, GLuint name);
         static MAGNUM_LOCAL std::string getLabelImplementationKhr(GLenum identifier, GLuint name);
