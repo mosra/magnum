@@ -27,7 +27,7 @@ find_package(OpenAL REQUIRED)
 
 include_directories(${OPENAL_INCLUDE_DIR})
 
-set(MagnumAudio_SOURCES
+set(MagnumAudio_SRCS
     AbstractImporter.cpp
     Audio.cpp
     Buffer.cpp
@@ -45,7 +45,7 @@ set(MagnumAudio_HEADERS
 
     visibility.h)
 
-add_library(MagnumAudio ${SHARED_OR_STATIC} ${MagnumAudio_SOURCES})
+add_library(MagnumAudio ${SHARED_OR_STATIC} ${MagnumAudio_SRCS})
 set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
 target_link_libraries(MagnumAudio ${CORRADE_PLUGINMANAGER_LIBRARIES} ${OPENAL_LIBRARY})
 
