@@ -363,8 +363,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);
 
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(FramebufferClearMask)

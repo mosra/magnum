@@ -157,10 +157,8 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         extensions.push_back(Extensions::GL::EXT::discard_framebuffer::string());
 
         invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
-        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
     } else {
         invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
-        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
     }
 
     /* Always available on ES3 */

@@ -221,20 +221,13 @@ void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, c
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&) {}
 
 void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
     glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
-    #else
-    static_cast<void>(count);
-    static_cast<void>(attachments);
-    static_cast<void>(rectangle);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glDiscardSubFramebufferEXT(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
-    #endif
 }
+#endif
 
 GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
     bindInternal(target);

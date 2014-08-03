@@ -404,12 +404,11 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @param rectangle         %Rectangle to invalidate
          *
          * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
-         * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
-         * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
+         * 4.3) or OpenGL ES 3.0 is not available, this function does nothing.
          * The framebuffer is bound to some target before the operation, if not
          * already.
-         * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
-         *      on OpenGL ES 2.0
+         * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
+         *      @fn_gl{InvalidateSubFramebuffer}
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 
@@ -430,6 +429,11 @@ extern DefaultFramebuffer MAGNUM_EXPORT defaultFramebuffer;
 
 /** @debugoperatorclassenum{Magnum::DefaultFramebuffer,Magnum::DefaultFramebuffer::Status} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, DefaultFramebuffer::Status value);
+
+#ifdef MAGNUM_TARGET_GLES2
+/* No-op implementation on ES2 */
+inline void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment>, const Range2Di&) {}
+#endif
 
 }
 

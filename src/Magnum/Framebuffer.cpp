@@ -157,6 +157,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     (this->*Context::current()->state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
 }
 
+#ifndef MAGNUM_TARGET_GLES2
 void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
@@ -165,6 +166,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
 
     (this->*Context::current()->state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
+#endif
 
 Framebuffer& Framebuffer::attachRenderbuffer(const BufferAttachment attachment, Renderbuffer& renderbuffer) {
     (this->*Context::current()->state().framebuffer->renderbufferImplementation)(attachment, renderbuffer);
