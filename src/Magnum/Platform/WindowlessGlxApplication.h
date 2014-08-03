@@ -40,6 +40,7 @@
 #undef Status
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
 
@@ -157,7 +158,7 @@ class WindowlessGlxApplication {
         GLXContext context;
         GLXPbuffer pbuffer;
 
-        Context* c;
+        Platform::Context* c;
 };
 
 /**

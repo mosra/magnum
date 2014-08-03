@@ -31,7 +31,7 @@
 #include <emscripten/emscripten.h>
 #endif
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 #include "Magnum/Version.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
@@ -198,7 +198,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     context = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
     #endif
 
-    c = new Context;
+    c = new Platform::Context;
     return true;
 }
 

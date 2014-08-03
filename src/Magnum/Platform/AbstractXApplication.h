@@ -41,6 +41,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"
+#include "Magnum/Platform/Platform.h"
 
 namespace Magnum {
 
@@ -183,7 +184,7 @@ class AbstractXApplication {
 
         Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler;
 
-        Context* c;
+        Platform::Context* c;
 
         /** @todo Get this from the created window */
         Vector2i viewportSize;

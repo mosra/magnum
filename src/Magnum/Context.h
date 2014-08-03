@@ -42,9 +42,8 @@
 
 namespace Magnum {
 
-namespace Implementation {
-    struct State;
-}
+namespace Implementation { struct State; }
+namespace Platform { class Context; }
 
 /**
 @brief Run-time information about OpenGL extension
@@ -88,11 +87,15 @@ class MAGNUM_EXPORT Extension {
 
 Provides access to version and extension information. Instance available
 through @ref Context::current() is automatically created during construction of
-*Application classes in @ref Platform namespace. You can safely assume that the
-instance is available during whole lifetime of *Application object. See
-@ref platform documentation for more information about engine setup.
+`*Application` classes in @ref Platform namespace. You can safely assume that
+the instance is available during whole lifetime of `*Application` object. It's
+also possible to create the context without using any `*Application` class
+using @ref Platform::Context subclass, see @ref platform documentation for more
+information.
 */
 class MAGNUM_EXPORT Context {
+    friend class Platform::Context;
+
     public:
         /**
          * @brief %Context flag
@@ -198,17 +201,6 @@ class MAGNUM_EXPORT Context {
          * @see @ref detectedDriver()
          */
         typedef Containers::EnumSet<DetectedDriver> DetectedDrivers;
-
-        /**
-         * @brief Constructor
-         *
-         * Does initial setup, detects available features and enables them
-         * throughout the engine.
-         * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
-         *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
-         *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
-         */
-        explicit Context();
 
         /** @brief Copying is not allowed */
         Context(const Context&) = delete;
@@ -477,6 +469,8 @@ class MAGNUM_EXPORT Context {
 
     private:
         static Context* _current;
+
+        explicit Context(void functionLoader());
 
         MAGNUM_LOCAL void setupDriverWorkarounds();
 

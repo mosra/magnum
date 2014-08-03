@@ -30,7 +30,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/NaClStreamBuffer.h>
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
 
@@ -97,7 +97,7 @@ bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
 
     glSetCurrentContextPPAPI(graphics->pp_resource());
 
-    c = new Context;
+    c = new Platform::Context;
     return true;
 }
 

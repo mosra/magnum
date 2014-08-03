@@ -406,7 +406,7 @@ class Sdl2Application {
         SDL_Surface* context;
         #endif
 
-        Context* c;
+        Platform::Context* c;
 
         Flags flags;
 };

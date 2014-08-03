@@ -171,7 +171,7 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         bool Init(std::uint32_t, const char*, const char*) override;
 
         pp::Graphics3D* graphics;
-        Context* c;
+        Platform::Context* c;
         ConsoleDebugOutput* debugOutput;
 };
 

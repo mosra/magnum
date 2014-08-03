@@ -306,7 +306,7 @@ class AndroidApplication {
         EGLSurface _surface;
         EGLContext _context;
 
-        std::unique_ptr<Context> _c;
+        std::unique_ptr<Platform::Context> _c;
         std::unique_ptr<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)

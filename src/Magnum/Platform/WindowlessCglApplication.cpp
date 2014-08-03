@@ -30,7 +30,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
 
@@ -113,7 +113,7 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
     }
 
     cglError = CGLSetCurrentContext(context);
-    c = new Context;
+    c = new Platform::Context;
     return true;
 }
 

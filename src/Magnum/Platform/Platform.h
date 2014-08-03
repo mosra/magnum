@@ -33,6 +33,7 @@ namespace Magnum { namespace Platform {
 
 template<class> class BasicScreen;
 template<class> class BasicScreenedApplication;
+class Context;
 
 }}
 

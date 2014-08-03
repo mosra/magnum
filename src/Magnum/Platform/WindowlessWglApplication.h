@@ -154,7 +154,7 @@ class WindowlessWglApplication {
         HDC _deviceContext;
         HGLRC _renderingContext;
 
-        Context* _c;
+        Platform::Context* _c;
 };
 
 /**
