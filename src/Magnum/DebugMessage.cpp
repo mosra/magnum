@@ -36,8 +36,7 @@ namespace Magnum {
 
 namespace {
 
-/** @todo Re-enable when extension wrangler is available for ES */
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
 void
 #ifdef CORRADE_TARGET_WINDOWS
 APIENTRY
@@ -113,27 +112,26 @@ void DebugMessage::insertInternal(const Source source, const Type type, const Un
 void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, Severity, const Containers::ArrayReference<const char>) {}
 
 void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const Severity severity, const Containers::ArrayReference<const char> string) {
-    /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glDebugMessageInsert(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDebugMessageInsertKHR(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
     #else
     static_cast<void>(source);
     static_cast<void>(type);
     static_cast<void>(id);
     static_cast<void>(severity);
     static_cast<void>(string);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glDebugMessageInsertEXT(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
 void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, Severity, const Containers::ArrayReference<const char> string) {
-    /** @todo Re-enable when extension wrangler is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glInsertEventMarkerEXT(string.size(), string.data());
     #else
     static_cast<void>(string);
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -150,17 +148,17 @@ void DebugMessage::setEnabledInternal(const GLenum source, const GLenum type, co
 void DebugMessage::controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool) {}
 
 void DebugMessage::controlImplementationKhr(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
-    /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glDebugMessageControl(source, type, severity, ids.size(), ids.begin(), enabled);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDebugMessageControlKHR(source, type, severity, ids.size(), ids.begin(), enabled);
     #else
     static_cast<void>(source);
     static_cast<void>(type);
     static_cast<void>(severity);
     static_cast<void>(ids);
     static_cast<void>(enabled);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glDebugMessageControlKHR(source, type, severity, ids.size(), ids.begin(), enabled);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -173,23 +171,23 @@ void DebugMessage::callbackImplementationKhr(const Callback callback, const void
 
     /* Adding callback */
     if(!original && callback) {
-        /** @todo Re-enable when extension wrangler is available for ES */
         #ifndef MAGNUM_TARGET_GLES
         glDebugMessageCallback(callbackWrapper, userParam);
+        #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+        glDebugMessageCallbackKHR(callbackWrapper, userParam);
         #else
         static_cast<void>(userParam);
-        CORRADE_INTERNAL_ASSERT(false);
-        //glDebugMessageCallbackEXT(callbackWrapper, userParam);
+        CORRADE_ASSERT_UNREACHABLE();
         #endif
 
     /* Deleting callback */
     } else if(original && !callback) {
-        /** @todo Re-enable when extension wrangler is available for ES */
         #ifndef MAGNUM_TARGET_GLES
         glDebugMessageCallback(nullptr, nullptr);
+        #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+        glDebugMessageCallbackKHR(nullptr, nullptr);
         #else
-        CORRADE_INTERNAL_ASSERT(false);
-        //glDebugMessageCallbackEXT(nullptr, nullptr);
+        CORRADE_ASSERT_UNREACHABLE();
         #endif
     }
 }

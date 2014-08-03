@@ -212,12 +212,12 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationDefault
 }
 
 Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustness() {
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     return GraphicsResetStatus(glGetGraphicsResetStatusARB());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 

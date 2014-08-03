@@ -212,15 +212,14 @@ void* Buffer::map(const MapAccess access) {
 
 #ifdef MAGNUM_TARGET_GLES2
 void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAccess access) {
-    /** @todo Enable also in Emscripten (?) when extension loader is available */
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
     return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
     #else
-    CORRADE_INTERNAL_ASSERT(false);
     static_cast<void>(offset);
     static_cast<void>(length);
     static_cast<void>(access);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 #endif
@@ -238,13 +237,12 @@ bool Buffer::unmap() { return (this->*Context::current()->state().buffer->unmapI
 
 #ifdef MAGNUM_TARGET_GLES2
 void Buffer::unmapSub() {
-    /** @todo Enable also in Emscripten (?) when extension loader is available */
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(_mappedBuffer, "Buffer::unmapSub(): the buffer is not mapped", );
     glUnmapBufferSubDataCHROMIUM(_mappedBuffer);
     _mappedBuffer = nullptr;
     #else
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 #endif
@@ -324,13 +322,13 @@ void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) 
 #endif
 
 void* Buffer::mapImplementationDefault(MapAccess access) {
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     return glMapBuffer(GLenum(bindInternal(_targetHint)), GLenum(access));
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    return glMapBufferOES(GLenum(bindInternal(_targetHint)), GLenum(access));
     #else
     static_cast<void>(access);
-    CORRADE_INTERNAL_ASSERT(false);
-    //return glMapBufferOES(GLenum(bindInternal(_targetHint)), GLenum(access));
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -341,15 +339,15 @@ void* Buffer::mapImplementationDSA(MapAccess access) {
 #endif
 
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     return glMapBufferRange(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    return glMapBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
     static_cast<void>(access);
-    CORRADE_INTERNAL_ASSERT(false);
-    //return glMapBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -360,14 +358,14 @@ void* Buffer::mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapF
 #endif
 
 void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glFlushMappedBufferRange(GLenum(bindInternal(_targetHint)), offset, length);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glFlushMappedBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length);
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glFlushMappedBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -378,12 +376,12 @@ void Buffer::flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr lengt
 #endif
 
 bool Buffer::unmapImplementationDefault() {
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     return glUnmapBuffer(GLenum(bindInternal(_targetHint)));
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    return glUnmapBufferOES(GLenum(bindInternal(_targetHint)));
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //return glUnmapBufferOES(GLenum(bindInternal(_targetHint)));
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 

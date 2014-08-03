@@ -36,6 +36,7 @@
 
 namespace Magnum {
 
+#if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
 namespace {
     inline GLenum extTypeFromKhrIdentifier(GLenum khrIdentifier) {
         switch(khrIdentifier) {
@@ -106,6 +107,7 @@ namespace {
         CORRADE_ASSERT_UNREACHABLE();
     }
 }
+#endif
 
 Int AbstractObject::maxLabelLength() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
@@ -127,28 +129,27 @@ Int AbstractObject::maxLabelLength() {
 void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayReference<const char>) {}
 
 void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glObjectLabel(identifier, name, label.size(), label);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glObjectLabelKHR(identifier, name, label.size(), label);
     #else
     static_cast<void>(identifier);
     static_cast<void>(name);
     static_cast<void>(label);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glObjectLabelKHR(identifier, name, label.size(), label);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
 void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     const GLenum type = extTypeFromKhrIdentifier(identifier);
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
     glLabelObjectEXT(type, name, label.size(), label);
     #else
-    static_cast<void>(type);
+    static_cast<void>(identifier);
     static_cast<void>(name);
     static_cast<void>(label);
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -157,24 +158,25 @@ std::string AbstractObject::getLabelImplementationNoOp(GLenum, GLuint) { return 
 std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, const GLuint name) {
     /* Get label size (w/o null terminator) */
     GLsizei size;
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, 0, &size, nullptr);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glGetObjectLabelKHR(identifier, name, 0, &size, nullptr);
     #else
     static_cast<void>(identifier);
     static_cast<void>(name);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glGetObjectLabelKHR(identifier, name, 0, &size, nullptr);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 
     /* Make place also for the null terminator */
     std::string label;
     label.resize(size+1);
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, size+1, nullptr, &label[0]);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
     #else
-    //glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 
     /* Pop null terminator and return the string */
@@ -183,25 +185,25 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
 }
 
 std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, const GLuint name) {
-    const GLenum type = extTypeFromKhrIdentifier(identifier);
+    GLsizei size;
 
     /* Get label size (w/o null terminator) */
-    GLsizei size;
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    const GLenum type = extTypeFromKhrIdentifier(identifier);
     glGetObjectLabelEXT(type, name, 0, &size, nullptr);
     #else
-    static_cast<void>(type);
+    static_cast<void>(identifier);
     static_cast<void>(name);
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 
     /* Make place also for the null terminator */
     std::string label;
     label.resize(size+1);
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glGetObjectLabelEXT(identifier, name, size+1, nullptr, &label[0]);
+    #else
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 
     /* Pop null terminator and return the string */

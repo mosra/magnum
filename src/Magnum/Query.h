@@ -447,12 +447,12 @@ class TimeQuery: public AbstractQuery {
          * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
          */
         void timestamp() {
-            /** @todo Enable when extension wrangler for ES is available */
             #ifndef MAGNUM_TARGET_GLES
             glQueryCounter(id(), GL_TIMESTAMP);
+            #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+            glQueryCounterEXT(id(), GL_TIMESTAMP_EXT);
             #else
-            //glQueryCounterEXT(id(), GL_TIMESTAMP);
-            CORRADE_INTERNAL_ASSERT(false);
+            CORRADE_ASSERT_UNREACHABLE();
             #endif
         }
 

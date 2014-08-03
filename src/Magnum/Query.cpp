@@ -34,13 +34,12 @@
 namespace Magnum {
 
 AbstractQuery::AbstractQuery(): target() {
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glGenQueries(1, &_id);
-    #elif defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glGenQueriesEXT(1, &_id);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -48,13 +47,12 @@ AbstractQuery::~AbstractQuery() {
     /* Moved out, nothing to do */
     if(!_id) return;
 
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &_id);
-    #elif defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glDeleteQueriesEXT(1, &_id);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -78,14 +76,13 @@ AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayReference<
 bool AbstractQuery::resultAvailable() {
     CORRADE_ASSERT(!target, "AbstractQuery::resultAvailable(): the query is currently running", false);
 
-    /** @todo Re-enable when extension loader is available for ES */
     GLuint result;
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT_AVAILABLE, &result);
-    #elif defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_AVAILABLE_EXT, &result);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
     return result == GL_TRUE;
 }
@@ -94,14 +91,13 @@ bool AbstractQuery::resultAvailable() {
 template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
-    /** @todo Re-enable when extension loader is available for ES */
     UnsignedInt result;
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
-    #elif defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
     return result;
 }
@@ -111,14 +107,13 @@ template<> bool AbstractQuery::result<bool>() { return result<UnsignedInt>() != 
 template<> Int AbstractQuery::result<Int>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
-    /** @todo Re-enable when extension loader is available for ES */
     Int result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
-    #elif defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glGetQueryObjectivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
     return result;
 }
@@ -127,13 +122,13 @@ template<> Int AbstractQuery::result<Int>() {
 template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
-    /** @todo Re-enable when extension loader is available for ES */
     UnsignedLong result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glGetQueryObjectui64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glGetQueryObjectui64vEXT(_id, GL_QUERY_RESULT, &result);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
     return result;
 }
@@ -141,13 +136,13 @@ template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
 template<> Long AbstractQuery::result<Long>() {
     CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
 
-    /** @todo Re-enable when extension loader is available for ES */
     Long result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glGetQueryObjecti64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glGetQueryObjecti64vEXT(_id, GL_QUERY_RESULT, &result);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
     return result;
 }
@@ -157,27 +152,25 @@ template<> Long AbstractQuery::result<Long>() {
 void AbstractQuery::begin(GLenum target) {
     CORRADE_ASSERT(!this->target, "AbstractQuery::begin(): the query is already running", );
 
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glBeginQuery(this->target = target, id());
-    #elif defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glBeginQueryEXT(this->target = target, id());
     #else
     static_cast<void>(target);
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
 void AbstractQuery::end() {
     CORRADE_ASSERT(target, "AbstractQuery::end(): the query is not running", );
 
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glEndQuery(target);
-    #elif defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glEndQueryEXT(target);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
     target = {};
 }

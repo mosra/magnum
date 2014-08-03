@@ -891,16 +891,16 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage2D(target, levels, GLenum(internalFormat), size.x(), size.y());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
     #else
     static_cast<void>(target);
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -945,16 +945,16 @@ void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei level
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage3D(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexStorage3DEXT(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     #else
     static_cast<void>(target);
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexStorage3DEXT(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -1034,9 +1034,10 @@ void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, Texture
 
 void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexImage3D(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexImage3DOES(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
     #else
     static_cast<void>(target);
     static_cast<void>(level);
@@ -1045,8 +1046,7 @@ void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, Tex
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(data);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexImage3DOES(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -1080,9 +1080,10 @@ void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, cons
 
 void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexSubImage3D(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexSubImage3DOES(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
     #else
     static_cast<void>(target);
     static_cast<void>(level);
@@ -1091,8 +1092,7 @@ void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, 
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(data);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexSubImage3DOES(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
