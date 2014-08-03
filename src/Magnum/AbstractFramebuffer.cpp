@@ -132,18 +132,26 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
-    /** @todo Re-enable when extension loader is available for ES, add also ANGLE version */
     #ifndef MAGNUM_TARGET_GLES2
     glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
-    static_cast<void>(sourceRectangle);
-    static_cast<void>(destinationRectangle);
-    static_cast<void>(mask);
-    static_cast<void>(filter);
-    //glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
-    CORRADE_INTERNAL_ASSERT(false);
+    Context::current()->state().framebuffer->blitImplementation(sourceRectangle, destinationRectangle, mask, filter);
     #endif
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::blitImplementationANGLE(const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter) {
+    /** @todo Re-enable when extension loader is available for ES */
+    CORRADE_INTERNAL_ASSERT(false);
+    //glBlitFramebufferANGLE(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+
+void AbstractFramebuffer::blitImplementationNV(const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter) {
+    /** @todo Re-enable when extension loader is available for ES */
+    CORRADE_INTERNAL_ASSERT(false);
+    //glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+#endif
 
 AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle) {
     _viewport = rectangle;

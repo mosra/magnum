@@ -337,6 +337,11 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         Range2Di _viewport;
 
     private:
+        #ifdef MAGNUM_TARGET_GLES2
+        static void MAGNUM_LOCAL blitImplementationANGLE(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        static void MAGNUM_LOCAL blitImplementationNV(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #endif
+
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
         #ifndef MAGNUM_TARGET_GLES
         GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
