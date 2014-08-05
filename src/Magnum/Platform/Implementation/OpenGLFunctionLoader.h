@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_Context_h
-#define Magnum_Platform_Context_h
+#ifndef Magnum_Platform_Implementation_OpenGLFunctionLoader_h
+#define Magnum_Platform_Implementation_OpenGLFunctionLoader_h
 /*
     This file is part of Magnum.
 
@@ -25,40 +25,46 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/Debug.h>
+#include "Magnum/Magnum.h"
 
-#include "Magnum/Context.h"
-#include "Magnum/OpenGL.h"
+#ifdef CORRADE_TARGET_WINDOWS
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+#endif
 
-namespace Magnum { namespace Platform {
+namespace Magnum { namespace Platform { namespace Implementation {
 
-/**
-@brief Platform-specific context
-
-In most cases not needed to be used directly as the initialization is done
-automatically in `*Application` classes. See @ref platform for more
-information.
-*/
-class Context: public Magnum::Context {
+class OpenGLFunctionLoader {
     public:
-        /**
-         * @brief Constructor
-         *
-         * Does initial setup, loads OpenGL function pointers using
-         * platform-specific API, detects available features and enables them
-         * throughout the engine.
-         * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
-         *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
-         *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
-         */
-        explicit Context():
-            #ifndef MAGNUM_TARGET_GLES
-            Magnum::Context{flextGLInit} {}
-            #else
-            Magnum::Context{nullptr} {}
-            #endif
+        #ifndef CORRADE_TARGET_WINDOWS
+        using FunctionPointer = void(*)();
+        #else
+        using FunctionPointer = PROC;
+        #endif
+
+        explicit OpenGLFunctionLoader();
+        ~OpenGLFunctionLoader();
+
+        FunctionPointer load(const char* name);
+
+    private:
+        /* CGL-specific handles */
+        #ifdef CORRADE_TARGET_APPLE
+        void* library;
+
+        /* WGL-specific handles */
+        #elif defined(CORRADE_TARGET_WINDOWS)
+        HMODULE library;
+
+        /* GLX-specific handles (nothing needed */
+        #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
+
+        /* Otherwise unsupported */
+        #else
+        #error Unsupported platform
+        #endif
 };
 
-}}
+}}}
 
 #endif

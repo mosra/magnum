@@ -1,0 +1,96 @@
+@require(passthru, functions, enums, options, version, extensions)
+#ifndef _flextgl_h_
+#define _flextgl_h_
+
+/* Defensive include guards */
+
+#if defined(__glew_h__) || defined(__GLEW_H__)
+#error Attempt to include auto-generated header after including glew.h
+#endif
+#if defined(__gl_h_) || defined(__GL_H__)
+#error Attempt to include auto-generated header after including gl.h
+#endif
+#if defined(__glext_h_) || defined(__GLEXT_H_)
+#error Attempt to include auto-generated header after including glext.h
+#endif
+#if defined(__gltypes_h_)
+#error Attempt to include auto-generated header after gltypes.h
+#endif
+#if defined(__gl_ATI_h_)
+#error Attempt to include auto-generated header after including glATI.h
+#endif
+
+#define __glew_h__
+#define __GLEW_H__
+#define __gl_h_
+#define __GL_H__
+#define __glext_h_
+#define __GLEXT_H_
+#define __gltypes_h_
+#define __gl_ATI_h_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void flextGLInit();
+
+/* Function declaration macros */
+
+#ifdef _WIN32
+    #ifdef FlextGL_EXPORTS
+        #define FLEXTGL_EXPORT __declspec(dllexport)
+    #else
+        #define FLEXTGL_EXPORT __declspec(dllimport)
+    #endif
+#else
+    #define FLEXTGL_EXPORT __attribute__ ((visibility ("default")))
+#endif
+
+#if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
+#define WIN32_LEAN_AND_MEAN 1
+#ifndef WINAPI
+#define WINAPI __stdcall
+#endif
+#define APIENTRY WINAPI
+#endif
+
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+#ifndef GLAPI
+#define GLAPI extern
+#endif
+
+/* Data types */
+
+@passthru
+
+/* Enums */
+
+@enums
+
+/* Function prototypes */
+@for cat,funcs in functions:
+
+/* GL_@cat */
+
+    @if cat in ['VERSION_1_0', 'VERSION_1_1','VERSION_1_0_DEPRECATED', 'VERSION_1_1_DEPRECATED']:
+        @for f in funcs:
+GLAPI FLEXTGL_EXPORT @f.returntype APIENTRY gl@f.name\
+(@f.param_type_list_string());
+        @end
+    @else:
+        @for f in funcs:
+GLAPI FLEXTGL_EXPORT @f.returntype\
+(APIENTRY *flextgl@f.name)(@f.param_type_list_string());
+#define gl@f.name flextgl@f.name
+        @end
+    @end
+@end
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
