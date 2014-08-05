@@ -287,6 +287,35 @@ int main(int argc, char** argv) {
 }
 @endcode
 
+On majority of platforms the @ref Platform::Context class does GL function
+pointer loading using platform-specific APIs. In that case you also need to
+find particular `*Context` library, add its include dir and then link to it.
+These platform-specific libraries are available:
+
+-   `CglContext` -- CGL context
+-   `GlxContext` -- GLX context
+-   `WglContext` -- WGL context
+
+Systems not listed here (such as Emscripten or NaCl) don't need any Context
+library, because dynamic function pointer loading is not available on these.
+
+For example, when you create the OpenGL context using GLX, you need to find
+`GlxContext` component, include `${MAGNUM_GLCCONTEXT_INCLUDE_DIRS}` and link to
+`${MAGNUM_GLXCONTEXT_LIBRARIES}`. Similarly to application libraries, you can
+also use generic `${MAGNUM_CONTEXT_INCLUDE_DIRS}` and `${MAGNUM_CONTEXT_LIBRARIES}`,
+providing you requested only one `*Context` component in the `find_package()`
+call. Complete example:
+@code
+find_package(Magnum REQUIRED GlxContext)
+
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_CONTEXT_INCLUDE_DIRS})
+
+add_executable(myapplication MyCustomApplication.cpp)
+target_link_libraries(myapplication
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_CONTEXT_LIBRARIES})
+@endcode
+
 -   Next page: @ref types
 */
 }}

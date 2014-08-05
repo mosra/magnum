@@ -365,19 +365,52 @@ if(NOT MAGNUM_TARGET_GLES)
 endif()
 
 # CGL context
-if(NEED_CGLCONTEXT)
+if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
     add_library(MagnumCglContextObjects OBJECT ${MagnumContext_SRCS})
+
+    # Also create proper static library, if requested
+    if(WITH_CGLCONTEXT)
+        # CMake-generated XCode projects had some problems when library
+        # consisted only of $<TARGET_OBJECTS> entries, thus compiling the
+        # sources again in this case
+        add_library(MagnumCglContext STATIC ${MagnumContext_SRCS})
+        set_target_properties(MagnumCglContext PROPERTIES DEBUG_POSTFIX "-d")
+        install(TARGETS MagnumCglContext
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
 endif()
 
 # GLX context
-if(NEED_GLXCONTEXT)
+if(NEED_GLXCONTEXT OR WITH_GLXCONTEXT)
     add_library(MagnumGlxContextObjects OBJECT ${MagnumContext_SRCS})
     set_target_properties(MagnumGlxContextObjects PROPERTIES COMPILE_DEFINITIONS "MAGNUM_PLATFORM_USE_GLX")
+
+    # Also create proper static library, if requested
+    if(WITH_GLXCONTEXT)
+        add_library(MagnumGlxContext STATIC $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+        set_target_properties(MagnumGlxContext PROPERTIES DEBUG_POSTFIX "-d")
+        install(TARGETS MagnumGlxContext
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
 endif()
 
 # WGL context
-if(NEED_WGLCONTEXT)
+if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
     add_library(MagnumWglContextObjects OBJECT ${MagnumContext_SRCS})
+
+    # Also create proper static library, if requested
+    if(WITH_GLXCONTEXT)
+        add_library(MagnumWglContext STATIC $<TARGET_OBJECTS:MagnumWglContextObjects>)
+        set_target_properties(MagnumWglContext PROPERTIES DEBUG_POSTFIX "-d")
+        install(TARGETS MagnumWglContext
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
 endif()
 
 # Magnum Info

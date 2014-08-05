@@ -60,6 +60,9 @@
 #  WindowlessGlxApplication - Windowless GLX application
 #  WindowlessNaClApplication - Windowless NaCl application
 #  WindowlessWglApplication - Windowless WGL application
+#  CglContext       - CGL context
+#  GlxContext       - GLX context
+#  WglContext       - WGL context
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -71,7 +74,10 @@
 # component is requested and found, its libraries and include dirs are
 # available in convenience aliases MAGNUM_APPLICATION_LIBRARIES /
 # MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES and MAGNUM_APPLICATION_INCLUDE_DIRS
-# / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
+# / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting. Similarly,
+# if exactly one *Context component is requested and found, its libraries and
+# include dirs are available in convenience aliases MAGNUM_CONTEXT_LIBRARIES
+# and MAGNUM_CONTEXT_INCLUDE_DIRS.
 #
 # The package is found if either debug or release version of each requested
 # library (or plugin) is found. If both debug and release libraries (or
@@ -409,6 +415,24 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             ${_MAGNUM_${_COMPONENT}_LIBRARIES}
             ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
 
+    # Context libraries
+    elseif(${component} MATCHES .+Context)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
+
+        # GLX context dependencies
+        if(${component} STREQUAL GlxStub)
+            find_package(X11)
+            if(X11_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+
+        # No additional dependencies for CGL context
+        # No additional dependencies for WGL context
+
     # Audio library
     elseif(${component} STREQUAL Audio)
         find_package(OpenAL)
@@ -473,6 +497,18 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             else()
                 unset(MAGNUM_APPLICATION_LIBRARIES)
                 unset(MAGNUM_APPLICATION_INCLUDE_DIRS)
+            endif()
+        endif()
+
+        # Global aliases for *Context components. If already set, unset them to
+        # avoid ambiguity.
+        if(${component} MATCHES .+Context)
+            if(NOT DEFINED MAGNUM_CONTEXT_LIBRARIES AND NOT DEFINED MAGNUM_CONTEXT_INCLUDE_DIRS)
+                set(MAGNUM_CONTEXT_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
+                set(MAGNUM_CONTEXT_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
+            else()
+                unset(MAGNUM_CONTEXT_LIBRARIES)
+                unset(MAGNUM_CONTEXT_INCLUDE_DIRS)
             endif()
         endif()
     else()

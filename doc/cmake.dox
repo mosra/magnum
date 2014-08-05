@@ -102,6 +102,13 @@ Platform namespace is split into more components:
 -   `%WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `%WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 
+For manual context creation (without application wrappers) there are also
+platform-specific context libraries:
+
+-   `CglContext` -- CGL context
+-   `GlxContext` -- GLX context
+-   `WglContext` -- WGL context
+
 The library also contains a set of plugins for importing essential file
 formats. Additional plugins are provided in separate plugin repository, see
 @ref cmake-plugins for more information. If you are going to use dynamic
@@ -143,7 +150,10 @@ If exactly one `*Application` or exactly one `Windowless*Application` component
 is requested and found, its libraries and include dirs are available in
 convenience aliases `MAGNUM_APPLICATION_LIBRARIES` /
 `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES` and `MAGNUM_APPLICATION_INCLUDE_DIRS`
-/ `MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS` to simplify porting.
+/ `MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS` to simplify porting. Similarly,
+if exactly one `*Context` component is requested and found, its libraries and
+include dirs are available in convenience aliases `MAGNUM_CONTEXT_LIBRARIES`
+and `MAGNUM_CONTEXT_INCLUDE_DIRS`.
 
 The package is found if either debug or release version of each requested
 library (or plugin) is found. If both debug and release libraries (or plugins)
