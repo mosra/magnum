@@ -174,9 +174,9 @@ if(WITH_GLXAPPLICATION)
     set(NEED_GLXCONTEXTHANDLER 1)
 
     set(MagnumGlxApplication_SRCS
+        GlxApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumGlxContextHandler>
-        GlxApplication.cpp)
+        $<TARGET_OBJECTS:MagnumGlxContextHandler>)
     set(MagnumGlxApplication_HEADERS GlxApplication.h)
 
     add_library(MagnumGlxApplication STATIC
@@ -196,9 +196,9 @@ if(WITH_XEGLAPPLICATION)
     set(NEED_EGLCONTEXTHANDLER 1)
 
     set(MagnumXEglApplication_SRCS
+        XEglApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumEglContextHandler>
-        XEglApplication.cpp)
+        $<TARGET_OBJECTS:MagnumEglContextHandler>)
     set(MagnumXEglApplication_HEADERS XEglApplication.h)
 
     add_library(MagnumXEglApplication STATIC
@@ -288,7 +288,7 @@ if(NEED_ABSTRACTXAPPLICATION)
     install(FILES ${MagnumAbstractXApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
-# GLX context
+# GLX context handler
 if(NEED_GLXCONTEXTHANDLER)
     set(MagnumGlxContextHandler_SRCS
         Implementation/GlxContextHandler.cpp)
@@ -303,7 +303,7 @@ if(NEED_GLXCONTEXTHANDLER)
     set_target_properties(MagnumGlxContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
 endif()
 
-# EGL context
+# EGL context handler
 if(NEED_EGLCONTEXTHANDLER)
     find_package(EGL)
     if(NOT EGL_FOUND)
