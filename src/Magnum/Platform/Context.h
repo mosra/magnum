@@ -52,7 +52,7 @@ class Context: public Magnum::Context {
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
         explicit Context():
-            #ifndef MAGNUM_TARGET_GLES
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
             Magnum::Context{flextGLInit} {}
             #else
             Magnum::Context{nullptr} {}

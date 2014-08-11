@@ -23,6 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
 add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang")

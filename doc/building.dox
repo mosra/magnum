@@ -210,6 +210,7 @@ choose to not use any application library (see @ref platform-custom for more
 information):
 
 -   `WITH_CGLCONTEXT` -- CGL context
+-   `WITH_EGLCONTEXT` -- EGL context
 -   `WITH_GLXCONTEXT` -- GLX context
 -   `WITH_WGLCONTEXT` -- WGL context
 

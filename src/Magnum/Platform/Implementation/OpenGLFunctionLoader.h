@@ -59,6 +59,9 @@ class OpenGLFunctionLoader {
         /* GLX-specific handles (nothing needed) */
         #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
 
+        /* EGL-specific handles (nothing needed) */
+        #elif defined(MAGNUM_PLATFORM_USE_EGL)
+
         /* Otherwise unsupported */
         #else
         #error Unsupported platform
