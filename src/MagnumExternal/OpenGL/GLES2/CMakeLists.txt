@@ -23,15 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumOpenGL_HEADERS
-    gl2ext.h)
-
-# We need gl2ext.h also for ES3 (but not the others). NaCl has its own gl2.h,
-# this one causes linker issues
-if(TARGET_GLES2 AND NOT CORRADE_TARGET_NACL)
-    set(MagnumOpenGL_HEADERS ${MagnumOpenGL_HEADERS}
-        gl2platform.h
-        gl2.h)
+# NaCl and Emscripten are special, provide only some extensions for them
+if(CORRADE_TARGET_NACL)
+    set(MagnumOpenGL_HEADERS flextGLNaCl.h)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    set(MagnumOpenGL_HEADERS flextGLEmscripten.h)
+else()
+    set(MagnumOpenGL_HEADERS flextGL.h)
 endif()
 
 install(FILES ${MagnumOpenGL_HEADERS} DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES2)

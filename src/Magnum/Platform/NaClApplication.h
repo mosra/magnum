@@ -31,6 +31,10 @@
 
 #include <string>
 #include <Corrade/Containers/EnumSet.h>
+
+/* Needs to be first */
+#include "Magnum/OpenGL.h"
+
 #include <ppapi/cpp/input_event.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/module.h>
