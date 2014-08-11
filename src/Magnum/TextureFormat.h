@@ -540,15 +540,19 @@ enum class TextureFormat: GLenum {
      */
     RGB565 = GL_RGB565,
 
+    #ifndef MAGNUM_TARGET_GLES3
     /**
      * RGB, each component normalized unsigned 10bit.
      * @requires_es_extension %Extension @es_extension{OES,required_internalformat}
-     *      and @es_extension{EXT,texture_type_2_10_10_10_REV}
+     *      and @es_extension{EXT,texture_type_2_10_10_10_REV}. Included for
+     *      compatibility reasons only, use @ref Magnum::TextureFormat::RGB10A2 "TextureFormat::RGB10A2"
+     *      in OpenGL ES 3.0 instead.
      */
     #ifndef MAGNUM_TARGET_GLES
     RGB10 = GL_RGB10,
     #else
     RGB10 = GL_RGB10_EXT,
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
