@@ -1,0 +1,20 @@
+@require(passthru, functions, enums, options, version, extensions)
+#include "flextGL.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+@for category,funcs in functions:
+@if len(funcs) > 0 and category not in ['ES_VERSION_2_0']:
+
+/* GL_@category */
+@for f in funcs:
+FLEXTGL_EXPORT @f.returntype\
+(APIENTRY *flextgl@f.name)(@f.param_type_list_string()) = nullptr;
+@end
+@end
+@end
+
+#ifdef __cplusplus
+}
+#endif

@@ -149,8 +149,7 @@ if(NOT TARGET_GLES)
         BufferTexture.cpp
         CubeMapTextureArray.cpp
         MultisampleTexture.cpp
-        RectangleTexture.cpp
-        $<TARGET_OBJECTS:MagnumFlextGLObjects>)
+        RectangleTexture.cpp)
 endif()
 
 # Non-ES2 stuff
@@ -161,6 +160,11 @@ if(NOT TARGET_GLES2)
     set(Magnum_SRCS ${Magnum_SRCS}
         BufferImage.cpp
         TextureArray.cpp)
+endif()
+
+# Link in GL function pointer variables on platforms that support it
+if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
+    list(APPEND Magnum_SRCS $<TARGET_OBJECTS:MagnumFlextGLObjects>)
 endif()
 
 # Files shared between main library and math unit test library

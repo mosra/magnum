@@ -7,7 +7,7 @@ files for generic GLES2 implementations:
 
     .../flextGLgen.py -D . -t . extensions.txt
 
-It will generate `flextGL.h` file.
+It will generate `flextGL.h` and `flextGL.cpp` files.
 
 NaCl and Emscripten don't have the ability to manually load extension pointers,
 thus they have only header files:

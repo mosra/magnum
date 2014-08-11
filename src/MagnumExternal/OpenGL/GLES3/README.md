@@ -6,5 +6,6 @@ Call `flextGLgen.py` in this directory with the following arguments:
 
     .../flextGLgen.py -D . -t . extensions.txt
 
-It will generate `flextGL.h` file. As usual, be sure to check the diff for
-suspicious changes and whitespace-at-EOL (although there shouldn't be any).
+It will generate `flextGL.h` and `flextGL.cpp` files. As usual, be sure to
+check the diff for suspicious changes and whitespace-at-EOL (although there
+shouldn't be any).
