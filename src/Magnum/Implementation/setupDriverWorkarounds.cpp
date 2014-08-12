@@ -48,13 +48,8 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::ARB::shading_language_420pack, GL320);
     #endif
 
-    #ifdef MAGNUM_TARGET_GLES
-    /* Disable extensions for which we need extension loader, as they would
-       crash otherwise. */
-    /** @todo Remove this when extension loader for ES is available */
-    #ifndef CORRADE_TARGET_NACL
-    _setRequiredVersion(GL::CHROMIUM::map_sub, None);
-    #endif
+    /* Disable extensions not available on NaCl and Emscripten */
+    #if defined(CORRADE_TARGET_NACL) || defined(CORRADE_TARGET_EMSCRIPTEN)
     _setRequiredVersion(GL::EXT::multi_draw_arrays, None);
     _setRequiredVersion(GL::EXT::debug_label, None);
     _setRequiredVersion(GL::EXT::debug_marker, None);
@@ -65,16 +60,12 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::KHR::debug, None);
     _setRequiredVersion(GL::NV::read_buffer_front, None);
     _setRequiredVersion(GL::OES::mapbuffer, None);
-    #ifdef MAGNUM_TARGET_GLES2
     _setRequiredVersion(GL::ANGLE::framebuffer_blit, None);
     _setRequiredVersion(GL::ANGLE::framebuffer_multisample, None);
     _setRequiredVersion(GL::ANGLE::instanced_arrays, None);
     _setRequiredVersion(GL::APPLE::framebuffer_multisample, None);
     _setRequiredVersion(GL::EXT::discard_framebuffer, None);
     _setRequiredVersion(GL::EXT::blend_minmax, None);
-    #ifndef CORRADE_TARGET_NACL
-    _setRequiredVersion(GL::EXT::occlusion_query_boolean, None);
-    #endif
     _setRequiredVersion(GL::EXT::texture_storage, None);
     _setRequiredVersion(GL::EXT::map_buffer_range, None);
     _setRequiredVersion(GL::EXT::instanced_arrays, None);
@@ -89,6 +80,11 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::OES::texture_3D, None);
     _setRequiredVersion(GL::OES::vertex_array_object, None);
     #endif
+
+    /* Disable extensions not available on Emscripten */
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _setRequiredVersion(GL::CHROMIUM::map_sub, None);
+    _setRequiredVersion(GL::EXT::occlusion_query_boolean, None);
     #endif
 
     #undef _setRequiredVersion
