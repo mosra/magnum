@@ -98,10 +98,6 @@ Int DebugMessage::maxMessageLength() {
     return value;
 }
 
-void DebugMessage::insert(const Source source, const Type type, const UnsignedInt id, const Severity severity, const std::string& string) {
-    Context::current()->state().debug->messageInsertImplementation(source, type, id, severity, string);
-}
-
 void DebugMessage::setCallback(const Callback callback, const void* userParam) {
     Context::current()->state().debug->messageCallbackImplementation(callback, userParam);
 }
@@ -110,9 +106,13 @@ void DebugMessage::setDefaultCallback() {
     setCallback(defaultCallback, nullptr);
 }
 
-void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, Severity, const std::string&) {}
+void DebugMessage::insertInternal(const Source source, const Type type, const UnsignedInt id, const Severity severity, const Containers::ArrayReference<const char> string) {
+    Context::current()->state().debug->messageInsertImplementation(source, type, id, severity, string);
+}
 
-void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const Severity severity, const std::string& string) {
+void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, Severity, const Containers::ArrayReference<const char>) {}
+
+void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const Severity severity, const Containers::ArrayReference<const char> string) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glDebugMessageInsert(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
@@ -127,7 +127,7 @@ void DebugMessage::insertImplementationKhr(const Source source, const Type type,
     #endif
 }
 
-void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, Severity, const std::string& string) {
+void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, Severity, const Containers::ArrayReference<const char> string) {
     /** @todo Re-enable when extension wrangler is available for ES */
     #ifndef MAGNUM_TARGET_GLES
     glInsertEventMarkerEXT(string.size(), string.data());
@@ -138,8 +138,8 @@ void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, Severity, 
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, Severity, const std::string& string) {
-    glStringMarkerGREMEDY(string.length(), string.data());
+void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, Severity, const Containers::ArrayReference<const char> string) {
+    glStringMarkerGREMEDY(string.size(), string.data());
 }
 #endif
 

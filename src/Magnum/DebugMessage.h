@@ -30,6 +30,7 @@
  */
 
 #include <string>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
@@ -272,7 +273,14 @@ class MAGNUM_EXPORT DebugMessage {
          *      @fn_gl_extension2{InsertEventMarker,EXT,debug_marker} or
          *      @fn_gl_extension{StringMarker,GREMEDY,string_marker}
          */
-        static void insert(Source source, Type type, UnsignedInt id, Severity severity, const std::string& string);
+        static void insert(Source source, Type type, UnsignedInt id, Severity severity, const std::string& string) {
+            insertInternal(source, type, id, severity, {string.data(), string.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> static void insert(Source source, Type type, UnsignedInt id, Severity severity, const char(&string)[size]) {
+            insertInternal(source, type, id, severity, {string, size - 1});
+        }
 
         /**
          * @brief Set debug message callback
@@ -306,11 +314,12 @@ class MAGNUM_EXPORT DebugMessage {
         DebugMessage() = delete;
 
     private:
-        static MAGNUM_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, Severity, const std::string&);
-        static MAGNUM_LOCAL void insertImplementationKhr(Source source, Type type, UnsignedInt id, Severity severity, const std::string& string);
-        static MAGNUM_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, Severity, const std::string& string);
+        static void insertInternal(Source source, Type type, UnsignedInt id, Severity severity, Containers::ArrayReference<const char> string);
+        static MAGNUM_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, Severity, Containers::ArrayReference<const char>);
+        static MAGNUM_LOCAL void insertImplementationKhr(Source source, Type type, UnsignedInt id, Severity severity, Containers::ArrayReference<const char> string);
+        static MAGNUM_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, Severity, Containers::ArrayReference<const char> string);
         #ifndef MAGNUM_TARGET_GLES
-        static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, Severity, const std::string& string);
+        static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, Severity, Containers::ArrayReference<const char> string);
         #endif
 
         static MAGNUM_LOCAL void callbackImplementationNoOp(Callback, const void*);
