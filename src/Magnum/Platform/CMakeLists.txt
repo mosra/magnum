@@ -190,13 +190,17 @@ endif()
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
     set(NEED_GLXCONTEXTHANDLER 1)
-    set(NEED_GLXCONTEXT 1)
+    if(NOT MAGNUM_TARGET_GLES)
+        set(NEED_GLXCONTEXT 1)
+    endif()
 
     set(MagnumGlxApplication_SRCS
         GlxApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumGlxContextHandler>
-        $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+        $<TARGET_OBJECTS:MagnumGlxContextHandler>)
+    if(NOT MAGNUM_TARGET_GLES)
+        list(APPEND MagnumWindowlessGlxApplication_SRCS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+    endif()
     set(MagnumGlxApplication_HEADERS GlxApplication.h)
 
     add_library(MagnumGlxApplication STATIC
@@ -241,11 +245,14 @@ endif()
 
 # Windowless GLX application
 if(WITH_WINDOWLESSGLXAPPLICATION)
-    set(NEED_GLXCONTEXT 1)
+    if(NOT MAGNUM_TARGET_GLES)
+        set(NEED_GLXCONTEXT 1)
+    endif()
 
-    set(MagnumWindowlessGlxApplication_SRCS
-        WindowlessGlxApplication.cpp
-        $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+    set(MagnumWindowlessGlxApplication_SRCS WindowlessGlxApplication.cpp)
+    if(NOT MAGNUM_TARGET_GLES)
+        list(APPEND MagnumWindowlessGlxApplication_SRCS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+    endif()
     set(MagnumWindowlessGlxApplication_HEADERS WindowlessGlxApplication.h)
 
     add_library(MagnumWindowlessGlxApplication STATIC
