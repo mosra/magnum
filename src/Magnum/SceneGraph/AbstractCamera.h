@@ -196,7 +196,7 @@ template<class T> using AbstractBasicCamera3D = AbstractCamera<3, T>;
 */
 typedef AbstractBasicCamera3D<Float> AbstractCamera3D;
 
-#ifdef CORRADE_TARGET_WINDOWS
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractCamera<3, Float>;
 #endif

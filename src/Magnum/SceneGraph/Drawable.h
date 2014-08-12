@@ -241,7 +241,7 @@ template<class T> using BasicDrawableGroup3D = DrawableGroup<3, T>;
 */
 typedef BasicDrawableGroup3D<Float> DrawableGroup3D;
 
-#ifdef CORRADE_TARGET_WINDOWS
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template class MAGNUM_SCENEGRAPH_EXPORT Drawable<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT Drawable<3, Float>;
 #endif

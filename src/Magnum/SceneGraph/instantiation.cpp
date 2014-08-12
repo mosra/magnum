@@ -40,8 +40,9 @@
 
 namespace Magnum { namespace SceneGraph {
 
-/* On Windows the instantiations are already marked with extern template */
-#ifndef CORRADE_TARGET_WINDOWS
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(__MINGW32__)
 #define MAGNUM_SCENEGRAPH_EXPORT_HPP MAGNUM_SCENEGRAPH_EXPORT
 #else
 #define MAGNUM_SCENEGRAPH_EXPORT_HPP

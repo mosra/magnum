@@ -185,7 +185,7 @@ template<class T> struct Transformation<BasicDualComplexTransformation<T>> {
 
 }
 
-#ifdef CORRADE_TARGET_WINDOWS
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicDualComplexTransformation<Float>>;
 #endif
 

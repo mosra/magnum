@@ -324,7 +324,7 @@ template<class T> using AbstractBasicFeature3D = AbstractFeature<3, T>;
 */
 typedef AbstractBasicFeature3D<Float> AbstractFeature3D;
 
-#ifdef CORRADE_TARGET_WINDOWS
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeature<3, Float>;
 #endif
