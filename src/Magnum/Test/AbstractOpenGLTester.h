@@ -56,6 +56,9 @@ AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({z
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
         DebugMessage::setDefaultCallback();
+
+        /* Disable "Buffer detailed info" message on NV (too spammy) */
+        DebugMessage::setEnabled(DebugMessage::Source::Api, DebugMessage::Type::Other, {131185}, false);
     }
 }
 
