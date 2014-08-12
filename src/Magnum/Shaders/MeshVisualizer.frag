@@ -36,9 +36,7 @@
 #define layout(arg)
 #endif
 
-/* This is needed also on desktop ES 3.0 emulation on NVidia 330.20 even though
-   fwidth() is part of GLSL ES 3.0 */
-#if defined(WIREFRAME_RENDERING) && defined(GL_ES)
+#if defined(WIREFRAME_RENDERING) && defined(GL_ES) && __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
 #endif
 
