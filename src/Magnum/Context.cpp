@@ -189,6 +189,18 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_mirror_clamp_to_edge),
         _extension(GL,ARB,texture_stencil8),
         _extension(GL,ARB,vertex_type_10f_11f_11f_rev)};
+    static const std::vector<Extension> extensions450{
+        _extension(GL,ARB,ES3_1_compatibility),
+        _extension(GL,ARB,clip_control),
+        _extension(GL,ARB,conditional_render_inverted),
+        _extension(GL,ARB,cull_distance),
+        _extension(GL,ARB,derivative_control),
+        _extension(GL,ARB,direct_state_access),
+        _extension(GL,ARB,get_texture_sub_image),
+        _extension(GL,ARB,shader_texture_image_samples),
+        _extension(GL,ARB,texture_barrier),
+        _extension(GL,KHR,context_flush_control),
+        _extension(GL,KHR,robustness)};
     #undef _extension
     #else
     static const std::vector<Extension> extensions{
@@ -207,6 +219,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,multisampled_render_to_texture),
         _extension(GL,EXT,robustness),
         _extension(GL,KHR,debug),
+        _extension(GL,KHR,context_flush_control),
+        _extension(GL,KHR,robustness),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_stencil),
@@ -278,6 +292,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         /* case Version::GLES300: */
         case Version::GL430: return extensions430;
         case Version::GL440: return extensions440;
+        case Version::GL450: return extensions450;
         #else
         case Version::GLES200: return empty;
         case Version::GLES300:

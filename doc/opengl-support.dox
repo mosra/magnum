@@ -207,6 +207,22 @@ following:
 @extension{ARB,texture_stencil8}             | done
 @extension{ARB,vertex_type_10f_11f_11f_rev}  | done
 
+@subsection opengl-support-45 OpenGL 4.5
+
+%Extension                                   | Status
+-------------------------------------------- | ------
+@extension{ARB,ES3_1_compatibility}          | |
+@extension{ARB,clip_control}                 | |
+@extension{ARB,conditional_render_inverted}  | |
+@extension{ARB,cull_distance}                | |
+@extension{ARB,derivative_control}           | done (shading language only)
+@extension{ARB,direct_state_access}          | |
+@extension{ARB,get_texture_sub_image}        | |
+@extension{ARB,shader_texture_image_samples} | done (shading language only)
+@extension{ARB,texture_barrier}              | |
+@extension{KHR,context_flush_control} (also in ES) | |
+@extension{KHR,robustness} (also in ES)      | |
+
 @subsection opengl-support-extensions OpenGL extensions
 
 @todo @extension{ARB,sparse_texture}, @extension{ARB,bindless_texture} + their vendor equivalents

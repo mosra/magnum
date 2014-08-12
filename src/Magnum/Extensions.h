@@ -169,6 +169,15 @@ namespace GL {
         _extension(GL,ARB,texture_mirror_clamp_to_edge, GL210, GL440) // #149
         _extension(GL,ARB,texture_stencil8,             GL210, GL440) // #150
         _extension(GL,ARB,vertex_type_10f_11f_11f_rev,  GL300, GL440) // #151
+        _extension(GL,ARB,ES3_1_compatibility,          GL440, GL450) // #159
+        _extension(GL,ARB,clip_control,                 GL210, GL450) // #160
+        _extension(GL,ARB,conditional_render_inverted,  GL300, GL450) // #161
+        _extension(GL,ARB,cull_distance,                GL300, GL450) // #162
+        _extension(GL,ARB,derivative_control,           GL400, GL450) // #163
+        _extension(GL,ARB,direct_state_access,          GL210, GL450) // #164
+        _extension(GL,ARB,get_texture_sub_image,        GL210, GL450) // #165
+        _extension(GL,ARB,shader_texture_image_samples, GL430, GL450) // #166
+        _extension(GL,ARB,texture_barrier,              GL210, GL450) // #167
     } namespace ATI {
         _extension(GL,ATI,texture_mirror_once,          GL210,  None) // #221
     } namespace EXT {
@@ -197,6 +206,8 @@ namespace GL {
         /* INTEL_map_texture not supported */                         // #429
     } namespace KHR {
         _extension(GL,KHR,debug,                        GL210, GL430) // #119
+        _extension(GL,KHR,context_flush_control,        GL210, GL450) // #168
+        _extension(GL,KHR,robustness,                   GL320, GL450) // #170
     } namespace NV {
         _extension(GL,NV,half_float,                    GL210, GL300) // #283
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
@@ -271,6 +282,8 @@ namespace GL {
         #endif
     } namespace KHR {
         _extension(GL,KHR,debug,                    GLES200,    None) // #118
+        _extension(GL,KHR,robustness,               GLES200,    None) // #170
+        _extension(GL,KHR,context_flush_control,    GLES200,    None) // #191
     } namespace NV {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91

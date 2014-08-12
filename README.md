@@ -41,7 +41,7 @@ SUPPORTED PLATFORMS
 
 Graphics APIs:
 
-*   **OpenGL** 2.1 through 4.4, core profile functionality and modern
+*   **OpenGL** 2.1 through 4.5, core profile functionality and modern
     extensions
 *   **OpenGL ES** 2.0, 3.0, 3.1 and extensions to match desktop OpenGL
     functionality
