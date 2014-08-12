@@ -377,8 +377,8 @@ void AbstractTexture::bindInternal() {
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         case TextureFormat::Red:
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8:
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8Snorm:
         #endif
         #ifndef MAGNUM_TARGET_GLES
@@ -407,8 +407,8 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
 
         case TextureFormat::RG:
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG8:
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG8Snorm:
         #endif
         #ifndef MAGNUM_TARGET_GLES
@@ -568,10 +568,8 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RG:
         case TextureFormat::RGB:
         case TextureFormat::RGBA:
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8:
         case TextureFormat::RG8:
-        #endif
         case TextureFormat::RGB8:
         case TextureFormat::RGBA8:
         #ifndef MAGNUM_TARGET_GLES2
