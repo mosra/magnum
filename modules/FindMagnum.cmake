@@ -421,7 +421,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
 
         # GLX context dependencies
-        if(${component} STREQUAL GlxStub)
+        if(${component} STREQUAL GlxContext)
             find_package(X11)
             if(X11_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
