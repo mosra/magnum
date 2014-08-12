@@ -79,16 +79,16 @@ components. The base library depends on %Corrade and OpenGL libraries (or
 OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 
--   `%Audio` -- Audio library
--   `%DebugTools` -- DebugTools library (depends on `%MeshTools`,
+-   `%Audio` -- @ref Audio library
+-   `%DebugTools` -- @ref DebugTools library (depends on `%MeshTools`,
     `%Primitives`, `%SceneGraph`, `%Shaders` and `%Shapes` components)
--   `%MeshTools` -- MeshTools library
--   `%Primitives` -- Primitives library
--   `%SceneGraph` -- SceneGraph library
--   `%Shaders` -- Shaders library
--   `%Shapes` -- Shapes library (depends on `%SceneGraph` component)
--   `%Text` -- Text library (depends on `%TextureTools` component)
--   `%TextureTools` -- TextureTools library
+-   `%MeshTools` -- @ref MeshTools library
+-   `%Primitives` -- @ref Primitives library
+-   `%SceneGraph` -- @ref SceneGraph library
+-   `%Shaders` -- @ref Shaders library
+-   `%Shapes` -- @ref Shapes library (depends on `%SceneGraph` component)
+-   `%Text` -- @ref Text library (depends on `%TextureTools` component)
+-   `%TextureTools` -- @ref TextureTools library
 
 Platform namespace is split into more components:
 
@@ -103,7 +103,8 @@ Platform namespace is split into more components:
 -   `%WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 
 For manual context creation (without application wrappers) there are also
-platform-specific context libraries:
+platform-specific context libraries (see @ref platfom-custom for more
+information):
 
 -   `CglContext` -- CGL context
 -   `GlxContext` -- GLX context

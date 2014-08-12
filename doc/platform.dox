@@ -292,11 +292,11 @@ pointer loading using platform-specific APIs. In that case you also need to
 find particular `*Context` library, add its include dir and then link to it.
 These platform-specific libraries are available:
 
--   `CglContext` -- CGL context
--   `GlxContext` -- GLX context
--   `WglContext` -- WGL context
+-   `CglContext` -- CGL context (Mac OS X)
+-   `GlxContext` -- GLX context (X11-based Unix)
+-   `WglContext` -- WGL context (Windows)
 
-Systems not listed here (such as Emscripten or NaCl) don't need any Context
+Systems not listed here (such as Emscripten or NaCl) don't need any `Context`
 library, because dynamic function pointer loading is not available on these.
 
 For example, when you create the OpenGL context using GLX, you need to find

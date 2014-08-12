@@ -63,7 +63,7 @@ elseif(CORRADE_TARGET_APPLE)
     cmake_dependent_option(WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
     cmake_dependent_option(WITH_CGLCONTEXT "Build CglContext library" OFF "NOT TARGET_GLES" OFF)
 
-# X11, GLX and EGL-specific application libraries
+# X11 + GLX/EGL-specific application libraries
 elseif(CORRADE_TARGET_UNIX)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)

@@ -56,7 +56,7 @@ class OpenGLFunctionLoader {
         #elif defined(CORRADE_TARGET_WINDOWS)
         HMODULE library;
 
-        /* GLX-specific handles (nothing needed */
+        /* GLX-specific handles (nothing needed) */
         #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
 
         /* Otherwise unsupported */
