@@ -44,6 +44,8 @@ class DebugGLTest: public AbstractOpenGLTester {
         void insertMessage();
         void insertMessageFallback();
 
+        void setMessageEnabled();
+
         void deprecated();
 };
 
@@ -51,6 +53,8 @@ DebugGLTest::DebugGLTest() {
     addTests({&DebugGLTest::insertMessageNoOp,
               &DebugGLTest::insertMessage,
               &DebugGLTest::insertMessageFallback,
+
+              &DebugGLTest::setMessageEnabled,
 
               #ifdef MAGNUM_BUILD_DEPRECATED
               &DebugGLTest::deprecated
@@ -105,6 +109,18 @@ void DebugGLTest::insertMessageFallback() {
 
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
         1337, DebugMessage::Severity::Notification, "Hello from OpenGL command stream!");
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void DebugGLTest::setMessageEnabled() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
+        CORRADE_SKIP(Extensions::GL::KHR::debug::string() + std::string(" is not supported"));
+
+    /* Try at least some combinations */
+    DebugMessage::setEnabled(DebugMessage::Source::Application, true);
+    DebugMessage::setEnabled(DebugMessage::Source::Application, DebugMessage::Type::UndefinedBehavior, {3168, 35487, 234487}, false);
+    DebugMessage::setEnabled(true);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

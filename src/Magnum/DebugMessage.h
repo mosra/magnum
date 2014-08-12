@@ -283,6 +283,55 @@ class MAGNUM_EXPORT DebugMessage {
         }
 
         /**
+         * @brief Enable or disable particular message type
+         *
+         * @see @ref Renderer::Feature::DebugOutput, @fn_gl{DebugMessageControl}
+         */
+        static void setEnabled(Source source, Type type, std::initializer_list<UnsignedInt> ids, bool enabled) {
+            setEnabledInternal(GLenum(source), GLenum(type), GL_DONT_CARE, ids, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, Type type, Severity severity, bool enabled) {
+            setEnabledInternal(GLenum(source), GLenum(type), GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, Type type, bool enabled) {
+            setEnabledInternal(GLenum(source), GLenum(type), GL_DONT_CARE, {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, Severity severity, bool enabled) {
+            setEnabledInternal(GLenum(source), GL_DONT_CARE, GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, bool enabled) {
+            setEnabledInternal(GLenum(source), GL_DONT_CARE, GL_DONT_CARE, {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Type type, Severity severity, bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GLenum(type), GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Type type, bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GLenum(type), GL_DONT_CARE, {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Severity severity, bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GL_DONT_CARE, GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, {}, enabled);
+        }
+
+        /**
          * @brief Set debug message callback
          *
          * The messages are sent to the callback only if
@@ -321,6 +370,10 @@ class MAGNUM_EXPORT DebugMessage {
         #ifndef MAGNUM_TARGET_GLES
         static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, Severity, Containers::ArrayReference<const char> string);
         #endif
+
+        static void setEnabledInternal(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
+        static MAGNUM_LOCAL void controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
+        static MAGNUM_LOCAL void controlImplementationKhr(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
 
         static MAGNUM_LOCAL void callbackImplementationNoOp(Callback, const void*);
         static MAGNUM_LOCAL void callbackImplementationKhr(Callback callback, const void* userParam);

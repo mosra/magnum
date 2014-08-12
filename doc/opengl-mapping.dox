@@ -93,7 +93,7 @@ OpenGL function                        | Matching API
 @fn_gl{CreateShaderProgram} | |
 @fn_gl{CullFace}                       | @ref Renderer::setFaceCullingMode()
 @fn_gl{DebugMessageCallback}           | @ref DebugMessage::setCallback()
-@fn_gl{DebugMessageControl}            | |
+@fn_gl{DebugMessageControl}            | @ref DebugMessage::setEnabled()
 @fn_gl{DebugMessageInsert}, \n @fn_gl_extension2{InsertEventMarker,EXT,debug_marker}, \n @fn_gl_extension{StringMarker,GREMEDY,string_marker} | @ref DebugMessage::insert()
 @fn_gl{DepthFunc}                      | @ref Renderer::setDepthFunction()
 @fn_gl{DepthMask}                      | @ref Renderer::setDepthMask()

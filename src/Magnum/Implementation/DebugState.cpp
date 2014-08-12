@@ -38,6 +38,7 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions): 
         getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
         labelImplementation = &AbstractObject::labelImplementationKhr;
         messageInsertImplementation = &DebugMessage::insertImplementationKhr;
+        messageControlImplementation = &DebugMessage::controlImplementationKhr;
         messageCallbackImplementation = &DebugMessage::callbackImplementationKhr;
 
     } else {
@@ -63,6 +64,7 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions): 
         #endif
         } else messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
 
+        messageControlImplementation = &DebugMessage::controlImplementationNoOp;
         messageCallbackImplementation = &DebugMessage::callbackImplementationNoOp;
     }
 }

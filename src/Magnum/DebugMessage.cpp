@@ -143,6 +143,27 @@ void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, Severi
 }
 #endif
 
+void DebugMessage::setEnabledInternal(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
+    Context::current()->state().debug->messageControlImplementation(source, type, severity, ids, enabled);
+}
+
+void DebugMessage::controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool) {}
+
+void DebugMessage::controlImplementationKhr(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
+    /** @todo Re-enable when extension wrangler is available for ES */
+    #ifndef MAGNUM_TARGET_GLES
+    glDebugMessageControl(source, type, severity, ids.size(), ids.begin(), enabled);
+    #else
+    static_cast<void>(source);
+    static_cast<void>(type);
+    static_cast<void>(severity);
+    static_cast<void>(ids);
+    static_cast<void>(enabled);
+    CORRADE_INTERNAL_ASSERT(false);
+    //glDebugMessageControlKHR(source, type, severity, ids.size(), ids.begin(), enabled);
+    #endif
+}
+
 void DebugMessage::callbackImplementationNoOp(Callback, const void*) {}
 
 void DebugMessage::callbackImplementationKhr(const Callback callback, const void* userParam) {

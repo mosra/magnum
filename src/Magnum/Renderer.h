@@ -86,7 +86,8 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Debug output
-             * @see @ref DebugMessage, @ref Feature::DebugOutputSynchronous
+             * @see @ref DebugMessage, @ref DebugMessage::setEnabled(),
+             *      @ref Feature::DebugOutputSynchronous
              * @requires_gl43 %Extension @extension{KHR,debug}
              * @requires_es_extension %Extension @es_extension{KHR,debug}
              */
