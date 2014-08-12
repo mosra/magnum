@@ -1299,10 +1299,6 @@ void AbstractTexture::DataHelper<1>::setWrapping(AbstractTexture& texture, const
 #endif
 
 void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping) {
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(texture._target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Sampler::Wrapping::ClampToEdge || wrapping.x() == Sampler::Wrapping::ClampToBorder) && (wrapping.y() == Sampler::Wrapping::ClampToEdge || wrapping.y() == Sampler::Wrapping::ClampToBorder)), "Texture2D::setWrapping(): rectangle texture must be clamped to border or to edge", );
-    #endif
-
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
