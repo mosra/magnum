@@ -145,6 +145,9 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          */
         ~AbstractQuery();
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #endif
         void begin(GLenum target);
 
     private:
