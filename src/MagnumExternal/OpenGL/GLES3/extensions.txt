@@ -1,6 +1,6 @@
 # The following output is taken from `magnum-info` with removed `GL_` prefixes.
 
-version 3.0 es
+version 3.1 es
 
 extension APPLE_texture_format_BGRA8888         optional
 extension CHROMIUM_map_sub                      optional
