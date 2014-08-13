@@ -316,7 +316,7 @@ layout, see @ref addVertexBuffer() documentation for details.
 @anchor Mesh-performance-optimization
 ## Performance optimizations
 
-If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
+If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
 @es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
 in each @ref draw() call. The engine tracks currently bound VAO and currently
@@ -409,9 +409,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Constructor
          * @param primitive     Primitive type
          *
-         * Creates mesh with no vertex buffers and zero vertex count.
+         * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * available, vertex array object is created.
          * @see @ref setPrimitive(), @ref setCount(), @fn_gl{GenVertexArrays}
-         *      (if @extension{APPLE,vertex_array_object} is available)
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
 
@@ -424,8 +425,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         /**
          * @brief Destructor
          *
-         * @see @fn_gl{DeleteVertexArrays} (if
-         *      @extension{APPLE,vertex_array_object} is available)
+         * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * available, vertex array object is deleted.
+         * @see @fn_gl{DeleteVertexArrays}
          */
         ~Mesh();
 
@@ -438,8 +441,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         /**
          * @brief OpenGL mesh ID
          *
-         * If @extension{APPLE,vertex_array_object} (part of OpenGL 3.0) is not
-         * available, returns `0`.
+         * If neither @extension{ARB,vertex_array_object} (part of OpenGL 3.0)
+         * nor OpenGL ES 3.0 nor @es_extension{OES,vertex_array_object} in
+         * OpenGL ES 2.0 is available, returns `0`.
          */
         GLuint id() const { return _id; }
 
@@ -662,6 +666,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *     .addVertexBuffer(buffer, 76 + 24*vertexCount, Shaders::Phong::Normal());
          * @endcode
          *
+         * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * available, the vertex array object is used to hold the parameters.
+         *
          * @attention The buffer passed as parameter is not managed by the
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
@@ -678,7 +686,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
-         *      if @extension{APPLE,vertex_array_object} is available
          */
         template<class ...T> inline Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), 0, attributes...);
@@ -693,6 +700,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * number of instances that will pass until new data are fetched from
          * the buffer. Setting it to `0` is equivalent to calling
          * @ref addVertexBuffer().
+         *
+         * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * available, the vertex array object is used to hold the parameters.
+         *
          * @see @ref maxVertexAttributes(), @ref setPrimitive(),
          *      @ref setCount(), @ref setInstanceCount(), @ref setBaseInstance(),
          *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
@@ -701,7 +713,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access}
-         *      if @extension{APPLE,vertex_array_object} is available
          * @requires_gl33 %Extension @extension{ARB,instanced_arrays}
          * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension{EXT,instanced_arrays} or
@@ -728,10 +739,14 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * On OpenGL ES 2.0 this function behaves always as
          * @ref setIndexBuffer(Buffer&, GLintptr, IndexType), as this
          * functionality is not available there.
+         *
+         * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * available, the vertex array object is used to hold the parameters.
+         *
          * @see @ref maxElementsIndices(), @ref maxElementsVertices(),
          *      @ref setCount(), @ref isIndexed(), @fn_gl{BindVertexArray},
-         *      @fn_gl{BindBuffer} (if @extension{APPLE,vertex_array_object} is
-         *      available)
+         *      @fn_gl{BindBuffer}
          */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end);
 
@@ -758,14 +773,16 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * set up. If vertex/index count or instance count is `0`, no draw
          * commands are issued. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
-         * for more information.
+         * for more information. If @extension{ARB,vertex_array_object} (part
+         * of OpenGL 3.0), OpenGL ES 3.0 or @es_extension{OES,vertex_array_object}
+         * in OpenGL ES 2.0 is available, the associated vertex array object is
+         * bound instead of setting up the mesh from scratch.
          * @see @ref setCount(), @ref setInstanceCount(),
          *      @ref MeshView::draw(AbstractShaderProgram&),
          *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
          *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
          *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
-         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray} (if
-         *      @extension{APPLE,vertex_array_object} is available),
+         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray},
          *      @fn_gl{DrawArrays}/@fn_gl{DrawArraysInstanced}/
          *      @fn_gl{DrawArraysInstancedBaseInstance} or @fn_gl{DrawElements}/
          *      @fn_gl{DrawRangeElements}/@fn_gl{DrawElementsBaseVertex}/

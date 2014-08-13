@@ -39,7 +39,7 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+    if(context.isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
     if(context.isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
     #else
@@ -48,7 +48,7 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::APPLE::vertex_array_object::string());
+        extensions.push_back(Extensions::GL::ARB::vertex_array_object::string());
         #elif defined(MAGNUM_TARGET_GLES2)
         extensions.push_back(Extensions::GL::OES::vertex_array_object::string());
         #endif

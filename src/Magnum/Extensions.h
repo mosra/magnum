@@ -73,8 +73,6 @@ namespace GL {
     namespace AMD {
         _extension(GL,AMD,vertex_shader_layer,          GL210,  None) // #417
         _extension(GL,AMD,shader_trinary_minmax,        GL210,  None) // #428
-    } namespace APPLE {
-        _extension(GL,APPLE,vertex_array_object,        GL210, GL300) // #273
     } namespace ARB {
         _extension(GL,ARB,texture_rectangle,            GL210, GL310) // #38
         _extension(GL,ARB,color_buffer_float,           GL210, GL300) // #39
@@ -88,6 +86,7 @@ namespace GL {
         _extension(GL,ARB,map_buffer_range,             GL210, GL300) // #50
         _extension(GL,ARB,texture_buffer_object,        GL210, GL310) // #51
         _extension(GL,ARB,texture_rg,                   GL210, GL300) // #53
+        _extension(GL,ARB,vertex_array_object,          GL210, GL300) // #54
         _extension(GL,ARB,uniform_buffer_object,        GL210, GL310) // #57
         _extension(GL,ARB,copy_buffer,            /*?*/ GL210, GL310) // #59
         _extension(GL,ARB,depth_clamp,            /*?*/ GL210, GL320) // #61
