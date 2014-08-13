@@ -65,7 +65,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     std::initializer_list<std::reference_wrapper<Shader>> ss{std::ref(frag), std::ref(vert)};
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile(ss));
 
-    AbstractShaderProgram::attachShaders({vert,  frag});
+    AbstractShaderProgram::attachShaders(ss);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
