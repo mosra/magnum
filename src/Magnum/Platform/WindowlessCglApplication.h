@@ -151,7 +151,7 @@ class WindowlessCglApplication {
         CGLContextObj context;
         CGLPixelFormatObj pixelFormat;
 
-        Context* c;
+        Platform::Context* c;
 };
 
 /**

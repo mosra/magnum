@@ -28,7 +28,7 @@
 #include <Corrade/Utility/AndroidStreamBuffer.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 
 #include "Implementation/Egl.h"
 
@@ -144,7 +144,7 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
     /* Make the context current */
     CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _context));
 
-    _c.reset(new Context);
+    _c.reset(new Platform::Context);
     return true;
 }
 

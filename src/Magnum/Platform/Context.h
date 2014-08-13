@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_Platform_h
-#define Magnum_Platform_Platform_h
+#ifndef Magnum_Platform_Context_h
+#define Magnum_Platform_Context_h
 /*
     This file is part of Magnum.
 
@@ -25,15 +25,39 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for @ref Magnum::Platform namespace
- */
+#include <Corrade/Utility/Debug.h>
+
+#include "Magnum/Context.h"
+#include "Magnum/OpenGL.h"
 
 namespace Magnum { namespace Platform {
 
-template<class> class BasicScreen;
-template<class> class BasicScreenedApplication;
-class Context;
+/**
+@brief Platform-specific context
+
+In most cases not needed to be used directly as the initialization is done
+automatically in `*Application` classes. See @ref platform for more
+information.
+*/
+class Context: public Magnum::Context {
+    public:
+        /**
+         * @brief Constructor
+         *
+         * Does initial setup, loads OpenGL function pointers using
+         * platform-specific API, detects available features and enables them
+         * throughout the engine.
+         * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
+         *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
+         *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
+         */
+        explicit Context():
+            #ifndef MAGNUM_TARGET_GLES
+            Magnum::Context{flextGLInit} {}
+            #else
+            Magnum::Context{nullptr} {}
+            #endif
+};
 
 }}
 

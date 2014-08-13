@@ -30,6 +30,7 @@
  */
 
 #include <string>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
@@ -272,7 +273,63 @@ class MAGNUM_EXPORT DebugMessage {
          *      @fn_gl_extension2{InsertEventMarker,EXT,debug_marker} or
          *      @fn_gl_extension{StringMarker,GREMEDY,string_marker}
          */
-        static void insert(Source source, Type type, UnsignedInt id, Severity severity, const std::string& string);
+        static void insert(Source source, Type type, UnsignedInt id, Severity severity, const std::string& string) {
+            insertInternal(source, type, id, severity, {string.data(), string.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> static void insert(Source source, Type type, UnsignedInt id, Severity severity, const char(&string)[size]) {
+            insertInternal(source, type, id, severity, {string, size - 1});
+        }
+
+        /**
+         * @brief Enable or disable particular message type
+         *
+         * @see @ref Renderer::Feature::DebugOutput, @fn_gl{DebugMessageControl}
+         */
+        static void setEnabled(Source source, Type type, std::initializer_list<UnsignedInt> ids, bool enabled) {
+            setEnabledInternal(GLenum(source), GLenum(type), GL_DONT_CARE, ids, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, Type type, Severity severity, bool enabled) {
+            setEnabledInternal(GLenum(source), GLenum(type), GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, Type type, bool enabled) {
+            setEnabledInternal(GLenum(source), GLenum(type), GL_DONT_CARE, {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, Severity severity, bool enabled) {
+            setEnabledInternal(GLenum(source), GL_DONT_CARE, GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Source source, bool enabled) {
+            setEnabledInternal(GLenum(source), GL_DONT_CARE, GL_DONT_CARE, {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Type type, Severity severity, bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GLenum(type), GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Type type, bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GLenum(type), GL_DONT_CARE, {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(Severity severity, bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GL_DONT_CARE, GLenum(severity), {}, enabled);
+        }
+
+        /** @overload */
+        static void setEnabled(bool enabled) {
+            setEnabledInternal(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, {}, enabled);
+        }
 
         /**
          * @brief Set debug message callback
@@ -306,12 +363,17 @@ class MAGNUM_EXPORT DebugMessage {
         DebugMessage() = delete;
 
     private:
-        static MAGNUM_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, Severity, const std::string&);
-        static MAGNUM_LOCAL void insertImplementationKhr(Source source, Type type, UnsignedInt id, Severity severity, const std::string& string);
-        static MAGNUM_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, Severity, const std::string& string);
+        static void insertInternal(Source source, Type type, UnsignedInt id, Severity severity, Containers::ArrayReference<const char> string);
+        static MAGNUM_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, Severity, Containers::ArrayReference<const char>);
+        static MAGNUM_LOCAL void insertImplementationKhr(Source source, Type type, UnsignedInt id, Severity severity, Containers::ArrayReference<const char> string);
+        static MAGNUM_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, Severity, Containers::ArrayReference<const char> string);
         #ifndef MAGNUM_TARGET_GLES
-        static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, Severity, const std::string& string);
+        static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, Severity, Containers::ArrayReference<const char> string);
         #endif
+
+        static void setEnabledInternal(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
+        static MAGNUM_LOCAL void controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
+        static MAGNUM_LOCAL void controlImplementationKhr(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
 
         static MAGNUM_LOCAL void callbackImplementationNoOp(Callback, const void*);
         static MAGNUM_LOCAL void callbackImplementationKhr(Callback callback, const void* userParam);

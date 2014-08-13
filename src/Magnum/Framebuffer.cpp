@@ -157,6 +157,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     (this->*Context::current()->state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
 }
 
+#ifndef MAGNUM_TARGET_GLES2
 void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
@@ -165,6 +166,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
 
     (this->*Context::current()->state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
+#endif
 
 Framebuffer& Framebuffer::attachRenderbuffer(const BufferAttachment attachment, Renderbuffer& renderbuffer) {
     (this->*Context::current()->state().framebuffer->renderbufferImplementation)(attachment, renderbuffer);
@@ -184,13 +186,13 @@ Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Textu
 }
 
 #ifndef MAGNUM_TARGET_GLES
-Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, RectangleTexture& texture, const Int level) {
-    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), level);
+Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, RectangleTexture& texture) {
+    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), 0);
     return *this;
 }
 
-Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture, const Int level) {
-    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), level);
+Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture) {
+    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), 0);
     return *this;
 }
 #endif
@@ -225,8 +227,8 @@ Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attac
     return *this;
 }
 
-Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, MultisampleTexture2DArray& texture, Int level, Int layer) {
-    (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
+Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer) {
+    (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), 0, layer);
     return *this;
 }
 #endif

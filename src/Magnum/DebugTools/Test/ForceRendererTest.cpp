@@ -103,7 +103,7 @@ void ForceRendererTest::arbitrary3D() {
     CORRADE_COMPARE(Vector3::dot(m.right(), m.up()),       0.0f);
     CORRADE_COMPARE(Vector3::dot(m.right(), m.backward()), 0.0f);
     /** @todo This shouldn't be too different */
-    CORRADE_VERIFY(Math::abs(Vector3::dot(m.up(),    m.backward())) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_VERIFY(Math::abs(Vector3::dot(m.up(), m.backward())) < Math::TypeTraits<Float>::epsilon());
 }
 
 }}}}

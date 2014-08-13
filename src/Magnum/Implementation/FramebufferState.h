@@ -47,12 +47,17 @@ struct FramebufferState {
 
     void reset();
 
+    #ifdef MAGNUM_TARGET_GLES2
+    void(*blitImplementation)(const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
+    #endif
     GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
     void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
     void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);
     void(AbstractFramebuffer::*readBufferImplementation)(GLenum);
     void(AbstractFramebuffer::*invalidateImplementation)(GLsizei, const GLenum*);
+    #ifndef MAGNUM_TARGET_GLES2
     void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
+    #endif
 
     void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, Renderbuffer&);
     #ifndef MAGNUM_TARGET_GLES

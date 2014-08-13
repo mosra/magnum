@@ -29,7 +29,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
 
@@ -118,7 +118,7 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    _c = new Context;
+    _c = new Platform::Context;
     return true;
 }
 

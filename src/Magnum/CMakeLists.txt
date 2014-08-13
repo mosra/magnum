@@ -150,7 +150,7 @@ if(NOT TARGET_GLES)
         CubeMapTextureArray.cpp
         MultisampleTexture.cpp
         RectangleTexture.cpp
-        $<TARGET_OBJECTS:MagnumGLLoadGenObjects>)
+        $<TARGET_OBJECTS:MagnumFlextGLObjects>)
 endif()
 
 # Non-ES2 stuff
@@ -182,10 +182,10 @@ if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     # Set shared library flags for the objects, as they will be part of shared lib
     # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
     set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DGLLoadGen_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
 else()
     set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS")
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DGLLoadGen_EXPORTS")
+    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS")
 endif()
 
 set(Magnum_LIBS

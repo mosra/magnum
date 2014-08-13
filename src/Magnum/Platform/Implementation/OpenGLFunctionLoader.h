@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_Platform_h
-#define Magnum_Platform_Platform_h
+#ifndef Magnum_Platform_Implementation_OpenGLFunctionLoader_h
+#define Magnum_Platform_Implementation_OpenGLFunctionLoader_h
 /*
     This file is part of Magnum.
 
@@ -25,16 +25,46 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for @ref Magnum::Platform namespace
- */
+#include "Magnum/Magnum.h"
 
-namespace Magnum { namespace Platform {
+#ifdef CORRADE_TARGET_WINDOWS
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+#endif
 
-template<class> class BasicScreen;
-template<class> class BasicScreenedApplication;
-class Context;
+namespace Magnum { namespace Platform { namespace Implementation {
 
-}}
+class OpenGLFunctionLoader {
+    public:
+        #ifndef CORRADE_TARGET_WINDOWS
+        using FunctionPointer = void(*)();
+        #else
+        using FunctionPointer = PROC;
+        #endif
+
+        explicit OpenGLFunctionLoader();
+        ~OpenGLFunctionLoader();
+
+        FunctionPointer load(const char* name);
+
+    private:
+        /* CGL-specific handles */
+        #ifdef CORRADE_TARGET_APPLE
+        void* library;
+
+        /* WGL-specific handles */
+        #elif defined(CORRADE_TARGET_WINDOWS)
+        HMODULE library;
+
+        /* GLX-specific handles (nothing needed) */
+        #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
+
+        /* Otherwise unsupported */
+        #else
+        #error Unsupported platform
+        #endif
+};
+
+}}}
 
 #endif

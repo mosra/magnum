@@ -126,7 +126,7 @@ bool NaClApplication::tryCreateContext(const Configuration& configuration) {
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
     RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 
-    c = new Context;
+    c = new Platform::Context;
     return true;
 }
 

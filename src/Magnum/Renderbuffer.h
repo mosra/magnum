@@ -79,9 +79,9 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @brief Max supported sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If ES extension @es_extension{ANGLE,framebuffer_multisample}
-         * or @es_extension{NV,framebuffer_multisample} is not available,
-         * returns `0`.
+         * OpenGL calls. If neither OpenGL ES 3.0 nor ES extension
+         * @es_extension{ANGLE,framebuffer_multisample} /
+         * @es_extension{NV,framebuffer_multisample} is available, returns `0`.
          * @see @ref setStorageMultisample(), @fn_gl{Get} with @def_gl{MAX_SAMPLES}
          */
         static Int maxSamples();

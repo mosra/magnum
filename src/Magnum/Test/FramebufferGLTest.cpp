@@ -43,6 +43,7 @@
 
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/CubeMapTextureArray.h"
+#include "Magnum/MultisampleTexture.h"
 #include "Magnum/RectangleTexture.h"
 #endif
 
@@ -92,6 +93,11 @@ class FramebufferGLTest: public AbstractOpenGLTester {
         void readBuffer();
         #endif
         void blit();
+
+    #ifdef MAGNUM_TARGET_GLES2
+    private:
+        TextureFormat rgbaFormatES2, depthStencilFormatES2;
+    #endif
 };
 
 FramebufferGLTest::FramebufferGLTest() {
@@ -135,6 +141,16 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::readBuffer,
               #endif
               &FramebufferGLTest::blit});
+
+    #ifdef MAGNUM_TARGET_GLES2
+    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_storage>()) {
+        rgbaFormatES2 = TextureFormat::RGBA8;
+        depthStencilFormatES2 = TextureFormat::Depth24Stencil8;
+    } else {
+        rgbaFormatES2 = TextureFormat::RGBA;
+        depthStencilFormatES2 = TextureFormat::DepthStencil;
+    }
+    #endif
 }
 
 void FramebufferGLTest::construct() {
@@ -346,7 +362,7 @@ void FramebufferGLTest::attachTexture2D() {
     #ifndef MAGNUM_TARGET_GLES2
     color.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
     #else
-    color.setStorage(1, TextureFormat::RGBA, Vector2i(128));
+    color.setStorage(1, rgbaFormatES2, Vector2i(128));
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -363,12 +379,13 @@ void FramebufferGLTest::attachTexture2D() {
         Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
         #endif
 
+        /** @todo Is there any better way to select proper sized/unsized format on ES2? */
         Texture2D depthStencil;
         #ifndef MAGNUM_TARGET_GLES2
         depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i(128));
         framebuffer.attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
         #else
-        depthStencil.setStorage(1, TextureFormat::DepthStencil, Vector2i(128));
+        depthStencil.setStorage(1, depthStencilFormatES2, Vector2i(128));
         framebuffer.attachTexture(Framebuffer::BufferAttachment::Depth, depthStencil, 0)
                    .attachTexture(Framebuffer::BufferAttachment::Stencil, depthStencil, 0);
         #endif
@@ -401,7 +418,7 @@ void FramebufferGLTest::attachTexture3D() {
     #ifndef MAGNUM_TARGET_GLES2
     color.setStorage(1, TextureFormat::RGBA8, Vector3i(128));
     #else
-    color.setStorage(1, TextureFormat::RGBA4, Vector3i(128));
+    color.setStorage(1, rgbaFormatES2, Vector3i(128));
     #endif
 
     Framebuffer framebuffer({{}, Vector2i(128)});
@@ -457,11 +474,43 @@ void FramebufferGLTest::attachTexture2DArray() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture2DMultisample() {
-    CORRADE_SKIP("Multisample textures are not implemented yet.");
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+
+    MultisampleTexture2D color;
+    color.setStorage(4, TextureFormat::RGBA8, {128, 128});
+
+    MultisampleTexture2D depthStencil;
+    depthStencil.setStorage(4, TextureFormat::Depth24Stencil8, {128, 128});
+
+    Framebuffer framebuffer({{}, Vector2i(128)});
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color)
+               .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachTexture2DMultisampleArray() {
-    CORRADE_SKIP("Multisample textures are not implemented yet.");
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+
+    MultisampleTexture2DArray color;
+    color.setStorage(4, TextureFormat::RGBA8, {128, 128, 8});
+
+    MultisampleTexture2DArray depthStencil;
+    depthStencil.setStorage(4, TextureFormat::Depth24Stencil8, {128, 128, 8});
+
+    Framebuffer framebuffer({{}, Vector2i(128)});
+    framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 3)
+               .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachRectangleTexture() {
@@ -477,8 +526,8 @@ void FramebufferGLTest::attachRectangleTexture() {
     depthStencil.setStorage(TextureFormat::Depth24Stencil8, Vector2i(128));
 
     Framebuffer framebuffer({{}, Vector2i(128)});
-    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color, 0)
-               .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color)
+               .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
@@ -497,7 +546,7 @@ void FramebufferGLTest::attachCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES2
     color.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
     #else
-    color.setStorage(1, TextureFormat::RGBA, Vector2i(128));
+    color.setStorage(1, rgbaFormatES2, Vector2i(128));
     #endif
     framebuffer.attachCubeMapTexture(Framebuffer::ColorAttachment(0), color, CubeMapTexture::Coordinate::NegativeZ, 0);
 
@@ -515,7 +564,7 @@ void FramebufferGLTest::attachCubeMapTexture() {
         depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i(128));
         framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, CubeMapTexture::Coordinate::NegativeZ, 0);
         #else
-        depthStencil.setStorage(1, TextureFormat::DepthStencil, Vector2i(128));
+        depthStencil.setStorage(1, depthStencilFormatES2, Vector2i(128));
         framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::Depth, depthStencil, CubeMapTexture::Coordinate::NegativeZ, 0)
                    .attachCubeMapTexture(Framebuffer::BufferAttachment::Stencil, depthStencil, CubeMapTexture::Coordinate::NegativeZ, 0);
         #endif
@@ -569,14 +618,14 @@ void FramebufferGLTest::multipleColorOutputs() {
     #ifndef MAGNUM_TARGET_GLES2
     color1.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
     #else
-    color1.setStorage(1, TextureFormat::RGBA, Vector2i(128));
+    color1.setStorage(1, rgbaFormatES2, Vector2i(128));
     #endif
 
     Texture2D color2;
     #ifndef MAGNUM_TARGET_GLES2
     color2.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
     #else
-    color2.setStorage(1, TextureFormat::RGBA, Vector2i(128));
+    color2.setStorage(1, rgbaFormatES2, Vector2i(128));
     #endif
 
     Renderbuffer depth;

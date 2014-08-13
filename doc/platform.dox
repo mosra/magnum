@@ -189,7 +189,7 @@ compilation of the executable and linking `${MAGNUM_LIBRARIES}` and
 `${MAGNUM_SDL2APPLICATION_LIBRARIES}` to it.
 
 Again, to simplify porting, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_WAPPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`,
+and `${MAGNUM_APPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`,
 `${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
 only if only one application (windowless application) component is requested to
 avoid ambiguity. Changing the build script to use different toolkit is then
@@ -263,28 +263,57 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc
 @section platform-custom Using custom platform toolkits
 
 In case you want to use some not-yet-supported toolkit or you don't want to use
-the wrappers in @ref Platform namespace, you can initialize %Magnum manually.
-All you need is to create OpenGL context and then create instance of
-@ref Context class, which will take care of proper initialization and feature
-detection. The instance must be alive for whole application lifetime. Example
-`main()` function with manual initialization:
+the application wrappers in @ref Platform namespace, you can initialize %Magnum
+manually. First create OpenGL context and then create instance of
+@ref Platform::Context class, which will take care of proper initialization and
+feature detection. The instance must be alive for whole application lifetime.
+Example `main()` function with manual initialization:
 @code
 int main(int argc, char** argv) {
     // Create OpenGL context ...
 
     {
         // Initialize Magnum
-        Context context;
+        Platform::Context context;
 
-        // open window, enter main loop...
+        // Open window, enter main loop ...
 
         // Magnum context gets destroyed
     }
 
-    // delete OpenGL context ...
+    // Delete OpenGL context ...
 
     return 0;
 }
+@endcode
+
+On majority of platforms the @ref Platform::Context class does GL function
+pointer loading using platform-specific APIs. In that case you also need to
+find particular `*Context` library, add its include dir and then link to it.
+These platform-specific libraries are available:
+
+-   `CglContext` -- CGL context (Mac OS X)
+-   `GlxContext` -- GLX context (X11-based Unix)
+-   `WglContext` -- WGL context (Windows)
+
+Systems not listed here (such as Emscripten or NaCl) don't need any `Context`
+library, because dynamic function pointer loading is not available on these.
+
+For example, when you create the OpenGL context using GLX, you need to find
+`GlxContext` component, include `${MAGNUM_GLCCONTEXT_INCLUDE_DIRS}` and link to
+`${MAGNUM_GLXCONTEXT_LIBRARIES}`. Similarly to application libraries, you can
+also use generic `${MAGNUM_CONTEXT_INCLUDE_DIRS}` and `${MAGNUM_CONTEXT_LIBRARIES}`,
+providing you requested only one `*Context` component in the `find_package()`
+call. Complete example:
+@code
+find_package(Magnum REQUIRED GlxContext)
+
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_CONTEXT_INCLUDE_DIRS})
+
+add_executable(myapplication MyCustomApplication.cpp)
+target_link_libraries(myapplication
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_CONTEXT_LIBRARIES})
 @endcode
 
 -   Next page: @ref types

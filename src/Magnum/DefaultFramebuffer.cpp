@@ -80,6 +80,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     (this->*Context::current()->state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
 }
 
+#ifndef MAGNUM_TARGET_GLES2
 void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
@@ -88,6 +89,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 
     (this->*Context::current()->state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
+#endif
 
 void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
     Implementation::FramebufferState* state = context.state().framebuffer;

@@ -214,7 +214,7 @@ template<UnsignedInt dimensions, class T, class TranslationType> struct Transfor
 
 }
 
-#ifdef CORRADE_TARGET_WINDOWS
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<2, Float>>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<TranslationTransformation<3, Float>>;
 #endif

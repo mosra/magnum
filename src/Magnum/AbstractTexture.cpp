@@ -378,8 +378,8 @@ void AbstractTexture::bindInternal() {
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         case TextureFormat::Red:
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8:
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8Snorm:
         #endif
         #ifndef MAGNUM_TARGET_GLES
@@ -408,8 +408,8 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
 
         case TextureFormat::RG:
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG8:
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG8Snorm:
         #endif
         #ifndef MAGNUM_TARGET_GLES
@@ -456,7 +456,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RGB5:
         #endif
         case TextureFormat::RGB565:
+        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::RGB10:
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGB12:
         #endif
@@ -567,10 +569,8 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RG:
         case TextureFormat::RGB:
         case TextureFormat::RGBA:
-        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8:
         case TextureFormat::RG8:
-        #endif
         case TextureFormat::RGB8:
         case TextureFormat::RGBA8:
         #ifndef MAGNUM_TARGET_GLES2
@@ -699,7 +699,9 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RGB565:
             return ColorType::UnsignedShort565;
 
+        #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::RGB10:
+        #endif
         case TextureFormat::RGB10A2:
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB10A2UI:
@@ -841,17 +843,7 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
     glTexStorage1D(target, levels, GLenum(internalFormat), size[0]);
-    #else
-    static_cast<void>(target);
-    static_cast<void>(levels);
-    static_cast<void>(internalFormat);
-    static_cast<void>(size);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
-    #endif
 }
 
 void AbstractTexture::storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
@@ -1017,19 +1009,8 @@ void AbstractTexture::getImageImplementationDSA(const GLenum target, const GLint
 }
 
 void AbstractTexture::getImageImplementationRobustness(const GLenum target, const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES
     bindInternal();
     glGetnTexImageARB(target, level, GLenum(format), GLenum(type), dataSize, data);
-    #else
-    static_cast<void>(target);
-    static_cast<void>(level);
-    static_cast<void>(format);
-    static_cast<void>(type);
-    static_cast<void>(dataSize);
-    static_cast<void>(data);
-    CORRADE_INTERNAL_ASSERT(false);
-    #endif
 }
 #endif
 
@@ -1322,10 +1303,6 @@ void AbstractTexture::DataHelper<1>::setWrapping(AbstractTexture& texture, const
 #endif
 
 void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping) {
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(texture._target != GL_TEXTURE_RECTANGLE || ((wrapping.x() == Sampler::Wrapping::ClampToEdge || wrapping.x() == Sampler::Wrapping::ClampToBorder) && (wrapping.y() == Sampler::Wrapping::ClampToEdge || wrapping.y() == Sampler::Wrapping::ClampToBorder)), "Texture2D::setWrapping(): rectangle texture must be clamped to border or to edge", );
-    #endif
-
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));

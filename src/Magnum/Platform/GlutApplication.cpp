@@ -27,8 +27,8 @@
 
 #include <tuple>
 
-#include "Magnum/Context.h"
 #include "Magnum/Version.h"
+#include "Magnum/Platform/Context.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
@@ -112,7 +112,7 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
     glutMotionFunc(staticMouseMoveEvent);
     glutDisplayFunc(staticDrawEvent);
 
-    c = new Context;
+    c = new Platform::Context;
     return true;
 }
 

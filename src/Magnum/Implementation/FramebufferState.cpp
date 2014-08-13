@@ -157,16 +157,27 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         extensions.push_back(Extensions::GL::EXT::discard_framebuffer::string());
 
         invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
-        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
     } else {
         invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
-        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
     }
 
     /* Always available on ES3 */
     #else
     invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
     invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+    #endif
+
+    /* Blit implementation on ES2 */
+    #ifdef MAGNUM_TARGET_GLES2
+    if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>()) {
+        extensions.push_back(Extensions::GL::ANGLE::framebuffer_blit::string());
+        blitImplementation = &AbstractFramebuffer::blitImplementationANGLE;
+
+    } else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_blit>()) {
+        extensions.push_back(Extensions::GL::NV::framebuffer_blit::string());
+        blitImplementation = &AbstractFramebuffer::blitImplementationNV;
+
+    } else blitImplementation = nullptr;
     #endif
 }
 

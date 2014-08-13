@@ -25,6 +25,7 @@
 
 # Headers
 set(MagnumPlatform_HEADERS
+    Context.h
     Platform.h
     Screen.h
     ScreenedApplication.h
@@ -34,6 +35,20 @@ set(MagnumPlatform_HEADERS
 set(MagnumPlatform_FILES )
 
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+
+# Decide about platform-specific context for cross-platform toolkits
+if((WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION) AND NOT MAGNUM_TARGET_GLES)
+    if(CORRADE_TARGET_APPLE)
+        set(NEED_CGLCONTEXT 1)
+        set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
+    elseif(CORRADE_TARGET_WINDOWS)
+        set(NEED_WGLCONTEXT 1)
+        set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumWglContextObjects>)
+    elseif(CORRADE_TARGET_UNIX)
+        set(NEED_GLXCONTEXT 1)
+        set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+    endif()
+endif()
 
 # Android application
 if(WITH_ANDROIDAPPLICATION)
@@ -71,7 +86,9 @@ if(WITH_GLUTAPPLICATION)
         message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTAPPLICATION to OFF to skip building it.")
     endif()
 
-    set(MagnumGlutApplication_SRCS GlutApplication.cpp)
+    set(MagnumGlutApplication_SRCS
+        GlutApplication.cpp
+        ${MagnumSomeContext_OBJECTS})
     set(MagnumGlutApplication_HEADERS GlutApplication.h)
 
     add_library(MagnumGlutApplication STATIC
@@ -94,7 +111,9 @@ if(WITH_SDL2APPLICATION)
 
     include_directories(${SDL2_INCLUDE_DIR})
 
-    set(MagnumSdl2Application_SRCS Sdl2Application.cpp)
+    set(MagnumSdl2Application_SRCS
+        Sdl2Application.cpp
+        ${MagnumSomeContext_OBJECTS})
     set(MagnumSdl2Application_HEADERS Sdl2Application.h)
 
     add_library(MagnumSdl2Application STATIC
@@ -170,12 +189,18 @@ endif()
 # GLX application
 if(WITH_GLXAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
-    set(NEED_GLXCONTEXT 1)
+    set(NEED_GLXCONTEXTHANDLER 1)
+    if(NOT MAGNUM_TARGET_GLES)
+        set(NEED_GLXCONTEXT 1)
+    endif()
 
     set(MagnumGlxApplication_SRCS
+        GlxApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumGlxContextHandler>
-        GlxApplication.cpp)
+        $<TARGET_OBJECTS:MagnumGlxContextHandler>)
+    if(NOT MAGNUM_TARGET_GLES)
+        list(APPEND MagnumWindowlessGlxApplication_SRCS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+    endif()
     set(MagnumGlxApplication_HEADERS GlxApplication.h)
 
     add_library(MagnumGlxApplication STATIC
@@ -192,12 +217,12 @@ endif()
 # X/EGL application
 if(WITH_XEGLAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
-    set(NEED_EGLCONTEXT 1)
+    set(NEED_EGLCONTEXTHANDLER 1)
 
     set(MagnumXEglApplication_SRCS
+        XEglApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
-        $<TARGET_OBJECTS:MagnumEglContextHandler>
-        XEglApplication.cpp)
+        $<TARGET_OBJECTS:MagnumEglContextHandler>)
     set(MagnumXEglApplication_HEADERS XEglApplication.h)
 
     add_library(MagnumXEglApplication STATIC
@@ -220,7 +245,14 @@ endif()
 
 # Windowless GLX application
 if(WITH_WINDOWLESSGLXAPPLICATION)
+    if(NOT MAGNUM_TARGET_GLES)
+        set(NEED_GLXCONTEXT 1)
+    endif()
+
     set(MagnumWindowlessGlxApplication_SRCS WindowlessGlxApplication.cpp)
+    if(NOT MAGNUM_TARGET_GLES)
+        list(APPEND MagnumWindowlessGlxApplication_SRCS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+    endif()
     set(MagnumWindowlessGlxApplication_HEADERS WindowlessGlxApplication.h)
 
     add_library(MagnumWindowlessGlxApplication STATIC
@@ -240,7 +272,11 @@ endif()
 
 # Windowless WGL application
 if(WITH_WINDOWLESSWGLAPPLICATION)
-    set(MagnumWindowlessWglApplication_SRCS WindowlessWglApplication.cpp)
+    set(NEED_WGLCONTEXT 1)
+
+    set(MagnumWindowlessWglApplication_SRCS
+        WindowlessWglApplication.cpp
+        $<TARGET_OBJECTS:MagnumWglContextObjects>)
     set(MagnumWindowlessWglApplication_HEADERS WindowlessWglApplication.h)
 
     add_library(MagnumWindowlessWglApplication STATIC
@@ -259,7 +295,11 @@ endif()
 
 # Windowless CGL application
 if(WITH_WINDOWLESSCGLAPPLICATION)
-    set(MagnumWindowlessCglApplication_SRCS WindowlessCglApplication.cpp)
+    set(NEED_CGLCONTEXT 1)
+
+    set(MagnumWindowlessCglApplication_SRCS
+        WindowlessCglApplication.cpp
+        $<TARGET_OBJECTS:MagnumCglContextObjects>)
     set(MagnumWindowlessCglApplication_HEADERS WindowlessCglApplication.h)
 
     add_library(MagnumWindowlessCglApplication STATIC
@@ -287,8 +327,8 @@ if(NEED_ABSTRACTXAPPLICATION)
     install(FILES ${MagnumAbstractXApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
-# GLX context
-if(NEED_GLXCONTEXT)
+# GLX context handler
+if(NEED_GLXCONTEXTHANDLER)
     set(MagnumGlxContextHandler_SRCS
         Implementation/GlxContextHandler.cpp)
     set(MagnumGlxContextHandler_PRIVATE_HEADERS
@@ -302,8 +342,8 @@ if(NEED_GLXCONTEXT)
     set_target_properties(MagnumGlxContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
 endif()
 
-# EGL context
-if(NEED_EGLCONTEXT)
+# EGL context handler
+if(NEED_EGLCONTEXTHANDLER)
     find_package(EGL)
     if(NOT EGL_FOUND)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
@@ -322,6 +362,62 @@ if(NEED_EGLCONTEXT)
         ${MagnumEglContextHandler_PRIVATE_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+endif()
+
+# Platform-specific sources for context library
+if(NOT MAGNUM_TARGET_GLES)
+    set(MagnumContext_SRCS
+        Implementation/OpenGLFunctionLoader.cpp
+        ../../MagnumExternal/OpenGL/GL/flextGLPlatform.cpp)
+endif()
+
+# CGL context
+if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
+    add_library(MagnumCglContextObjects OBJECT ${MagnumContext_SRCS})
+
+    # Also create proper static library, if requested
+    if(WITH_CGLCONTEXT)
+        # CMake-generated XCode projects had some problems when library
+        # consisted only of $<TARGET_OBJECTS> entries, thus compiling the
+        # sources again in this case
+        add_library(MagnumCglContext STATIC ${MagnumContext_SRCS})
+        set_target_properties(MagnumCglContext PROPERTIES DEBUG_POSTFIX "-d")
+        install(TARGETS MagnumCglContext
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+endif()
+
+# GLX context
+if(NEED_GLXCONTEXT OR WITH_GLXCONTEXT)
+    add_library(MagnumGlxContextObjects OBJECT ${MagnumContext_SRCS})
+    set_target_properties(MagnumGlxContextObjects PROPERTIES COMPILE_DEFINITIONS "MAGNUM_PLATFORM_USE_GLX")
+
+    # Also create proper static library, if requested
+    if(WITH_GLXCONTEXT)
+        add_library(MagnumGlxContext STATIC $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+        set_target_properties(MagnumGlxContext PROPERTIES DEBUG_POSTFIX "-d")
+        install(TARGETS MagnumGlxContext
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+endif()
+
+# WGL context
+if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
+    add_library(MagnumWglContextObjects OBJECT ${MagnumContext_SRCS})
+
+    # Also create proper static library, if requested
+    if(WITH_GLXCONTEXT)
+        add_library(MagnumWglContext STATIC $<TARGET_OBJECTS:MagnumWglContextObjects>)
+        set_target_properties(MagnumWglContext PROPERTIES DEBUG_POSTFIX "-d")
+        install(TARGETS MagnumWglContext
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
 endif()
 
 # Magnum Info

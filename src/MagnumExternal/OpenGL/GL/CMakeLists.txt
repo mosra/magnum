@@ -23,12 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_library(MagnumGLLoadGenObjects OBJECT gl_magnum.c)
+# flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
+add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang")
-    set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -fvisibility=hidden -DGLLoadGen_EXPORTS")
+    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -fvisibility=hidden -DFlextGL_EXPORTS")
 else()
-    set_target_properties(MagnumGLLoadGenObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DGLLoadGen_EXPORTS")
+    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DFlextGL_EXPORTS")
 endif()
 
-install(FILES gl_magnum.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GL)
+install(FILES flextGL.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GL)

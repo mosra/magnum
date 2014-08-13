@@ -205,6 +205,14 @@ platform best:
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 
+None of the context libraries is built by default. You need them only if you
+choose to not use any application library (see @ref platform-custom for more
+information):
+
+-   `WITH_CGLCONTEXT` -- CGL context
+-   `WITH_GLXCONTEXT` -- GLX context
+-   `WITH_WGLCONTEXT` -- WGL context
+
 There are also a few command-line utilities. They are currently available only
 on Linux, Mac OS X and Windows, also disabled by default:
 

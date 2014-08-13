@@ -277,7 +277,7 @@ class GlutApplication {
 
         static GlutApplication* instance;
 
-        Context* c;
+        Platform::Context* c;
 };
 
 /**

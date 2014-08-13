@@ -388,7 +388,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 
         pp::Graphics3D* graphics;
         pp::Fullscreen* fullscreen;
-        Context* c;
+        Platform::Context* c;
         Vector2i viewportSize;
         Flags flags;
 

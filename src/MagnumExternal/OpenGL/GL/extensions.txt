@@ -1,15 +1,16 @@
-// The following output is taken from `magnum-info` with removed `GL_`
-// suffixes. Only vendor extensions are needed, everything else is pulled in
-// with OpenGL 4.4.
+# The following output is taken from `magnum-info` with removed `GL_` prefixes.
+# Only vendor extensions are needed, everything else is pulled in with GL 4.4.
 
-    AMD_vertex_shader_layer
-    AMD_shader_trinary_minmax
-    ARB_robustness
-    ATI_texture_mirror_once
-    EXT_texture_filter_anisotropic
-    EXT_texture_mirror_clamp
-    EXT_direct_state_access
-    EXT_texture_sRGB_decode
-    EXT_debug_label
-    EXT_debug_marker
-    GREMEDY_string_marker
+version 4.4 core
+
+extension AMD_vertex_shader_layer           optional
+extension AMD_shader_trinary_minmax         optional
+extension ARB_robustness                    optional
+extension ATI_texture_mirror_once           optional
+extension EXT_texture_filter_anisotropic    optional
+extension EXT_texture_mirror_clamp          optional
+extension EXT_direct_state_access           optional
+extension EXT_texture_sRGB_decode           optional
+extension EXT_debug_label                   optional
+extension EXT_debug_marker                  optional
+extension GREMEDY_string_marker             optional

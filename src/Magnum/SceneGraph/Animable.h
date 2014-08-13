@@ -390,7 +390,7 @@ typedef BasicAnimable3D<Float> Animable3D;
 typedef Animable<3, Float> Animable3D;
 #endif
 
-#ifdef CORRADE_TARGET_WINDOWS
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template class MAGNUM_SCENEGRAPH_EXPORT Animable<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT Animable<3, Float>;
 #endif

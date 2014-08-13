@@ -29,9 +29,15 @@
  * @brief Class @ref Magnum::Platform::WindowlessWglApplication, macro @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN()
  */
 
-#include "Magnum/OpenGL.h"
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#define WIN32_LEAN_AND_MEAN 1
+#define VC_EXTRALEAN
+#endif
+#include <windows.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/OpenGL.h"
+#include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
 
@@ -154,7 +160,7 @@ class WindowlessWglApplication {
         HDC _deviceContext;
         HGLRC _renderingContext;
 
-        Context* _c;
+        Platform::Context* _c;
 };
 
 /**

@@ -309,8 +309,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Max supported color attachment count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If ES extension @extension{NV,fbo_color_attachments}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither OpenGL ES 3.0 nor ES extension
+         * @extension{NV,fbo_color_attachments} is available, returns `0`.
          * @see @ref mapForDraw(), @fn_gl{Get} with @def_gl{MAX_COLOR_ATTACHMENTS}
          */
         static Int maxColorAttachments();
@@ -474,12 +474,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @param rectangle         %Rectangle to invalidate
          *
          * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
-         * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
-         * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
+         * 4.3) or OpenGL ES 3.0 is not available, this function does nothing.
          * The framebuffer is bound to some target before the operation, if not
          * already.
-         * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
-         *      on OpenGL ES 2.0
+         * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
+         *      @fn_gl{InvalidateFramebuffer}
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
 
@@ -539,13 +538,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_gl31 %Extension @extension{ARB,texture_rectangle}
          * @requires_gl Rectangle textures are not available in OpenGL ES.
          */
-        Framebuffer& attachTexture(BufferAttachment attachment, RectangleTexture& texture, Int level);
+        Framebuffer& attachTexture(BufferAttachment attachment, RectangleTexture& texture);
 
         /** @overload
          * @requires_gl32 %Extension @extension{ARB,texture_multisample}
          * @requires_gl Multisample textures are not available in OpenGL ES.
          */
-        Framebuffer& attachTexture(BufferAttachment attachment, MultisampleTexture2D& texture, Int level);
+        Framebuffer& attachTexture(BufferAttachment attachment, MultisampleTexture2D& texture);
         #endif
 
         /**
@@ -611,7 +610,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_gl32 %Extension @extension{ARB,texture_multisample}
          * @requires_gl Multisample textures are not available in OpenGL ES.
          */
-        Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int level, Int layer);
+        Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer);
         #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -687,6 +686,11 @@ inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
     std::swap(_viewport, other._viewport);
     return *this;
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+/* No-op implementation on ES2 */
+inline void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment>, const Range2Di&) {}
+#endif
 
 }
 

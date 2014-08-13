@@ -93,7 +93,7 @@ OpenGL function                        | Matching API
 @fn_gl{CreateShaderProgram} | |
 @fn_gl{CullFace}                       | @ref Renderer::setFaceCullingMode()
 @fn_gl{DebugMessageCallback}           | @ref DebugMessage::setCallback()
-@fn_gl{DebugMessageControl}            | |
+@fn_gl{DebugMessageControl}            | @ref DebugMessage::setEnabled()
 @fn_gl{DebugMessageInsert}, \n @fn_gl_extension2{InsertEventMarker,EXT,debug_marker}, \n @fn_gl_extension{StringMarker,GREMEDY,string_marker} | @ref DebugMessage::insert()
 @fn_gl{DepthFunc}                      | @ref Renderer::setDepthFunction()
 @fn_gl{DepthMask}                      | @ref Renderer::setDepthMask()
@@ -184,7 +184,7 @@ OpenGL function                        | Matching API
 @fn_gl{InvalidateBufferData}           | @ref Buffer::invalidateData()
 @fn_gl{InvalidateBufferSubData}        | @ref Buffer::invalidateSubData()
 @fn_gl{InvalidateFramebuffer}, \n @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
-@fn_gl{InvalidateSubFramebuffer}, \n @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
+@fn_gl{InvalidateSubFramebuffer}       | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
 @fn_gl{InvalidateTexImage}             | @ref Texture::invalidateImage(), \n @ref TextureArray::invalidateImage(), \n @ref CubeMapTexture::invalidateImage(), \n @ref CubeMapTextureArray::invalidateImage(), \n @ref RectangleTexture::invalidateImage(), \n @ref MultisampleTexture::invalidateImage()
 @fn_gl{InvalidateTexSubImage}          | @ref Texture::invalidateSubImage(), \n @ref TextureArray::invalidateSubImage(), \n @ref CubeMapTexture::invalidateSubImage(), \n @ref CubeMapTextureArray::invalidateSubImage(), \n @ref RectangleTexture::invalidateSubImage(), \n @ref MultisampleTexture::invalidateSubImage()
 @fn_gl{IsBuffer}, \n @fn_gl{IsFramebuffer}, \n @fn_gl{IsProgram}, \n @fn_gl{IsProgramPipeline}, \n @fn_gl{IsQuery}, \n @fn_gl{IsRenderbuffer}, \n @fn_gl{IsSampler}, \n @fn_gl{IsShader}, \n @fn_gl{IsSync}, \n @fn_gl{IsTexture}, \n @fn_gl{IsTransformFeedback}, \n @fn_gl{IsVertexArray} | not needed, objects are strongly typed

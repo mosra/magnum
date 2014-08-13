@@ -1,0 +1,21 @@
+@require(passthru, functions, enums, options, version, extensions)
+#include "flextGL.h"
+
+#include <cstdio>
+#include <cstdlib>
+
+#include "Magnum/Platform/Implementation/OpenGLFunctionLoader.h"
+
+void flextGLInit() {
+    Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
+    @for category,funcs in functions:
+    @if category not in ['VERSION_1_0', 'VERSION_1_1','VERSION_1_0_DEPRECATED', 'VERSION_1_1_DEPRECATED']:
+
+    /* GL_@category */
+    @for f in funcs:
+    flextgl@f.name = reinterpret_cast<@f.returntype\
+(APIENTRY*)(@f.param_type_list_string())>(loader.load("gl@f.name"));
+    @end
+    @end
+    @end
+}

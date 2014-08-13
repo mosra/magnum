@@ -37,7 +37,7 @@
 
 /* Desktop OpenGL */
 #ifndef MAGNUM_TARGET_GLES
-    #include "MagnumExternal/OpenGL/GL/gl_magnum.h"
+    #include "MagnumExternal/OpenGL/GL/flextGL.h"
 
 /* NaCl has its own gl2.h, the official one causes linker issues. Additionaly
    to NaCl's gl2ext.h we are including our own to prevent undeclared symbol

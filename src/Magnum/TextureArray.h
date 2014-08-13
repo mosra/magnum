@@ -400,13 +400,19 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 /**
 @brief One-dimensional texture array
 
+@requires_gl30 %Extension @extension{EXT,texture_array}
 @requires_gl Only @ref Magnum::Texture2DArray "Texture2DArray" is available in
     OpenGL ES.
 */
 typedef TextureArray<1> Texture1DArray;
 #endif
 
-/** @brief Two-dimensional texture array */
+/**
+@brief Two-dimensional texture array
+
+@requires_gl30 %Extension @extension{EXT,texture_array}
+@requires_gles30 %Array textures are not available in OpenGL ES 2.0.
+*/
 typedef TextureArray<2> Texture2DArray;
 
 }

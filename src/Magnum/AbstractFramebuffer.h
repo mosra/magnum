@@ -200,8 +200,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Max supported dual-source draw buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,blend_func_extended} is
-         * not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,blend_func_extended} (part
+         * of OpenGL 3.3) is not available, returns `0`.
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
          *      @fn_gl{Get} with @def_gl{MAX_DUAL_SOURCE_DRAW_BUFFERS}
          * @requires_gl Multiple blending inputs are not available in
@@ -342,6 +342,11 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         Range2Di _viewport;
 
     private:
+        #ifdef MAGNUM_TARGET_GLES2
+        static void MAGNUM_LOCAL blitImplementationANGLE(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        static void MAGNUM_LOCAL blitImplementationNV(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #endif
+
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
         #ifndef MAGNUM_TARGET_GLES
         GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
@@ -368,8 +373,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);
 
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #endif
 };
 
 inline AbstractFramebuffer::AbstractFramebuffer() = default;

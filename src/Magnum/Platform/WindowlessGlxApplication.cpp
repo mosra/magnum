@@ -28,7 +28,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 
 #define None 0L // redef Xlib nonsense
 
@@ -120,7 +120,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    c = new Context;
+    c = new Platform::Context;
     return true;
 }
 

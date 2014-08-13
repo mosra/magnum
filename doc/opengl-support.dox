@@ -108,7 +108,7 @@ following:
 %Extension                                   | Status
 -------------------------------------------- | ------
 @extension{ARB,instanced_arrays}             | done
-@extension{ARB,blend_func_extended}          | missing limit query
+@extension{ARB,blend_func_extended}          | done
 @extension{ARB,explicit_attrib_location}     | done (shading language only)
 @extension{ARB,occlusion_query2}             | done
 @extension{ARB,sampler_objects}              | |
@@ -173,7 +173,7 @@ following:
 @extension{ARB,clear_buffer_object}          | |
 @extension{ARB,compute_shader}               | |
 @extension{ARB,copy_image}                   | |
-@extension{KHR,debug} (also in ES)           | missing log control and retrieval, sync, pipeline, transform feedback and sampler label and debug groups
+@extension{KHR,debug} (also in ES)           | missing log retrieval, sync, pipeline, transform feedback and sampler label and debug groups
 @extension{ARB,explicit_uniform_location}    | done
 @extension{ARB,fragment_layer_viewport}      | done (shading language only)
 @extension{ARB,framebuffer_no_attachments}   | |

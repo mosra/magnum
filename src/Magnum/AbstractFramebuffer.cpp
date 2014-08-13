@@ -132,18 +132,26 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
-    /** @todo Re-enable when extension loader is available for ES, add also ANGLE version */
     #ifndef MAGNUM_TARGET_GLES2
     glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
-    static_cast<void>(sourceRectangle);
-    static_cast<void>(destinationRectangle);
-    static_cast<void>(mask);
-    static_cast<void>(filter);
-    //glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
-    CORRADE_INTERNAL_ASSERT(false);
+    Context::current()->state().framebuffer->blitImplementation(sourceRectangle, destinationRectangle, mask, filter);
     #endif
 }
+
+#ifdef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::blitImplementationANGLE(const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter) {
+    /** @todo Re-enable when extension loader is available for ES */
+    CORRADE_INTERNAL_ASSERT(false);
+    //glBlitFramebufferANGLE(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+
+void AbstractFramebuffer::blitImplementationNV(const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter) {
+    /** @todo Re-enable when extension loader is available for ES */
+    CORRADE_INTERNAL_ASSERT(false);
+    //glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+#endif
 
 AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle) {
     _viewport = rectangle;
@@ -196,11 +204,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Ima
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
-    #else
-    bindInternal(readTarget);
-    #endif
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image.size() != size)
@@ -225,20 +229,13 @@ void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, c
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&) {}
 
 void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
-    /** @todo Re-enable when extension loader is available for ES */
-    #ifndef MAGNUM_TARGET_GLES2
     glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
-    #else
-    static_cast<void>(count);
-    static_cast<void>(attachments);
-    static_cast<void>(rectangle);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glDiscardSubFramebufferEXT(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.width(), rectangle.height());
-    #endif
 }
+#endif
 
 GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
     bindInternal(target);

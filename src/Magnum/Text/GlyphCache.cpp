@@ -58,12 +58,15 @@ void GlyphCache::initialize(const Vector2i& size) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
     #endif
 
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    /** @todo Is there any better way to select proper sized/unsized format on ES2? */
+    #ifndef MAGNUM_TARGET_GLES2
     const TextureFormat internalFormat = TextureFormat::R8;
     #else
-    const TextureFormat internalFormat =
-        Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
-        TextureFormat::Red : TextureFormat::Luminance;
+    TextureFormat internalFormat;
+    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
+        internalFormat = Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_storage>() ?
+            TextureFormat::R8 : TextureFormat::Red;
+    } else internalFormat = TextureFormat::Luminance;
     #endif
 
     initialize(internalFormat, size);

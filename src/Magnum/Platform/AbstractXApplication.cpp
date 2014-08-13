@@ -27,7 +27,7 @@
 
 #include <Corrade/Utility/utilities.h>
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 #include "Magnum/Version.h"
 
 #include "Implementation/AbstractContextHandler.h"
@@ -102,7 +102,7 @@ bool AbstractXApplication::tryCreateContext(const Configuration& configuration) 
     /* Set OpenGL context as current */
     contextHandler->makeCurrent();
 
-    c = new Context;
+    c = new Platform::Context;
     return true;
 }
 
