@@ -486,8 +486,8 @@ void FramebufferGLTest::attachRectangleTexture() {
     depthStencil.setStorage(TextureFormat::Depth24Stencil8, Vector2i(128));
 
     Framebuffer framebuffer({{}, Vector2i(128)});
-    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color, 0)
-               .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color)
+               .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);

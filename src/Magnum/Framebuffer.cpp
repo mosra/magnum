@@ -186,13 +186,13 @@ Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Textu
 }
 
 #ifndef MAGNUM_TARGET_GLES
-Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, RectangleTexture& texture, const Int level) {
-    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), level);
+Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, RectangleTexture& texture) {
+    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), 0);
     return *this;
 }
 
-Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture, const Int level) {
-    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), level);
+Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture) {
+    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), 0);
     return *this;
 }
 #endif
@@ -227,8 +227,8 @@ Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attac
     return *this;
 }
 
-Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, MultisampleTexture2DArray& texture, Int level, Int layer) {
-    (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
+Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer) {
+    (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), 0, layer);
     return *this;
 }
 #endif
