@@ -72,7 +72,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,debug_marker),
         _extension(GL,GREMEDY,string_marker)};
     static const std::vector<Extension> extensions300{
-        _extension(GL,APPLE,flush_buffer_range),
         _extension(GL,APPLE,vertex_array_object),
         _extension(GL,ARB,map_buffer_range),
         _extension(GL,ARB,color_buffer_float),
