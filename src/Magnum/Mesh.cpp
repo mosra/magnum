@@ -355,7 +355,7 @@ void Mesh::attributePointerImplementationDSA(const Attribute& attribute) {
 
 void Mesh::vertexAttribPointer(const Attribute& attribute) {
     glEnableVertexAttribArray(attribute.location);
-    attribute.buffer->bind(Buffer::Target::Array);
+    attribute.buffer->bindInternal(Buffer::Target::Array);
     glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     if(attribute.divisor) {
         #ifndef MAGNUM_TARGET_GLES2
@@ -390,7 +390,7 @@ void Mesh::attributePointerImplementationDSA(const IntegerAttribute& attribute) 
 
 void Mesh::vertexAttribPointer(const IntegerAttribute& attribute) {
     glEnableVertexAttribArray(attribute.location);
-    attribute.buffer->bind(Buffer::Target::Array);
+    attribute.buffer->bindInternal(Buffer::Target::Array);
     glVertexAttribIPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     if(attribute.divisor) glVertexAttribDivisor(attribute.location, attribute.divisor);
 }
@@ -418,7 +418,7 @@ void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
 
 void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
     glEnableVertexAttribArray(attribute.location);
-    attribute.buffer->bind(Buffer::Target::Array);
+    attribute.buffer->bindInternal(Buffer::Target::Array);
     glVertexAttribLPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     if(attribute.divisor) glVertexAttribDivisor(attribute.location, attribute.divisor);
 }
@@ -465,7 +465,7 @@ void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
     /** @todo Do this cleaner way */
     Context::current()->state().buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::Target::ElementArray)] = 0;
 
-    buffer.bind(Buffer::Target::ElementArray);
+    buffer.bindInternal(Buffer::Target::ElementArray);
 }
 
 void Mesh::bindImplementationDefault() {
@@ -484,7 +484,7 @@ void Mesh::bindImplementationDefault() {
     #endif
 
     /* Bind index buffer, if the mesh is indexed */
-    if(_indexBuffer) _indexBuffer->bind(Buffer::Target::ElementArray);
+    if(_indexBuffer) _indexBuffer->bindInternal(Buffer::Target::ElementArray);
 }
 
 void Mesh::bindImplementationVAO() {

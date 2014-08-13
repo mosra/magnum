@@ -504,14 +504,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         static Int maxUniformBindings();
         #endif
 
-        /**
-         * @brief Unbind any buffer from given target
-         * @param target    %Target
-         *
-         * @see @fn_gl{BindBuffer}
-         */
-        static void unbind(Target target) { bind(target, 0); }
-
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Copy one buffer to another
@@ -621,18 +613,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             _targetHint = hint;
             return *this;
         }
-
-        /**
-         * @brief Bind buffer
-         * @param target    %Target
-         *
-         * @see @fn_gl{BindBuffer}
-         * @todo Allow binding to Target::ElementArray only if VAO is bound
-         *      to avoid potential issues?
-         * @todo Don't allow user to bind buffers?
-         * @bug Binding to ElementArray if any VAO is active will corrupt the mesh
-         */
-        void bind(Target target) { bind(target, _id); }
 
         /**
          * @brief %Buffer size
@@ -868,11 +848,18 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         void unmapSub();
         #endif
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #endif
+        /* There should be no need to use these from user code */
+        static void unbindInternal(Target target) { bindInternal(target, 0); }
+        void bindInternal(Target target) { bindInternal(target, _id); }
+
     private:
         Buffer& setLabelInternal(Containers::ArrayReference<const char> label);
 
-        static void bind(Target hint, GLuint id);
-        Target MAGNUM_LOCAL bindInternal(Target hint);
+        static void bindInternal(Target hint, GLuint id);
+        Target MAGNUM_LOCAL bindSomewhereInternal(Target hint);
 
         #ifndef MAGNUM_TARGET_GLES2
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);

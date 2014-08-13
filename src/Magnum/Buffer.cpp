@@ -161,7 +161,7 @@ Buffer& Buffer::setLabelInternal(const Containers::ArrayReference<const char> la
     return *this;
 }
 
-void Buffer::bind(Target target, GLuint id) {
+void Buffer::bindInternal(Target target, GLuint id) {
     GLuint& bound = Context::current()->state().buffer->bindings[Implementation::BufferState::indexForTarget(target)];
 
     /* Already bound, nothing to do */
@@ -172,7 +172,7 @@ void Buffer::bind(Target target, GLuint id) {
     glBindBuffer(GLenum(target), id);
 }
 
-Buffer::Target Buffer::bindInternal(Target hint) {
+Buffer::Target Buffer::bindSomewhereInternal(Target hint) {
     GLuint* bindings = Context::current()->state().buffer->bindings;
     GLuint& hintBinding = bindings[Implementation::BufferState::indexForTarget(hint)];
 
@@ -269,7 +269,7 @@ void Buffer::subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data) {
 
 #ifndef MAGNUM_TARGET_GLES2
 void Buffer::copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-    glCopyBufferSubData(GLenum(read.bindInternal(Target::CopyRead)), GLenum(write.bindInternal(Target::CopyWrite)), readOffset, writeOffset, size);
+    glCopyBufferSubData(GLenum(read.bindSomewhereInternal(Target::CopyRead)), GLenum(write.bindSomewhereInternal(Target::CopyWrite)), readOffset, writeOffset, size);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -280,7 +280,7 @@ void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOff
 #endif
 
 void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const data) {
-    glGetBufferParameteriv(GLenum(bindInternal(_targetHint)), value, data);
+    glGetBufferParameteriv(GLenum(bindSomewhereInternal(_targetHint)), value, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -291,7 +291,7 @@ void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data
 
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
-    glGetBufferSubData(GLenum(bindInternal(_targetHint)), offset, size, data);
+    glGetBufferSubData(GLenum(bindSomewhereInternal(_targetHint)), offset, size, data);
 }
 
 void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
@@ -300,7 +300,7 @@ void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr
 #endif
 
 void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
-    glBufferData(GLenum(bindInternal(_targetHint)), size, data, GLenum(usage));
+    glBufferData(GLenum(bindSomewhereInternal(_targetHint)), size, data, GLenum(usage));
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -310,7 +310,7 @@ void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUs
 #endif
 
 void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-    glBufferSubData(GLenum(bindInternal(_targetHint)), offset, size, data);
+    glBufferSubData(GLenum(bindSomewhereInternal(_targetHint)), offset, size, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -337,7 +337,7 @@ void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) 
 
 void* Buffer::mapImplementationDefault(MapAccess access) {
     #ifndef MAGNUM_TARGET_GLES
-    return glMapBuffer(GLenum(bindInternal(_targetHint)), GLenum(access));
+    return glMapBuffer(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     return glMapBufferOES(GLenum(bindInternal(_targetHint)), GLenum(access));
     #else
@@ -354,7 +354,7 @@ void* Buffer::mapImplementationDSA(MapAccess access) {
 
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
     #ifndef MAGNUM_TARGET_GLES2
-    return glMapBufferRange(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
+    return glMapBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     return glMapBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
     #else
@@ -373,7 +373,7 @@ void* Buffer::mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapF
 
 void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
     #ifndef MAGNUM_TARGET_GLES2
-    glFlushMappedBufferRange(GLenum(bindInternal(_targetHint)), offset, length);
+    glFlushMappedBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glFlushMappedBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length);
     #else
@@ -391,7 +391,7 @@ void Buffer::flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr lengt
 
 bool Buffer::unmapImplementationDefault() {
     #ifndef MAGNUM_TARGET_GLES2
-    return glUnmapBuffer(GLenum(bindInternal(_targetHint)));
+    return glUnmapBuffer(GLenum(bindSomewhereInternal(_targetHint)));
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     return glUnmapBufferOES(GLenum(bindInternal(_targetHint)));
     #else
