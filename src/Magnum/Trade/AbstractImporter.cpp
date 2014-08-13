@@ -45,9 +45,9 @@ namespace Magnum { namespace Trade {
 
 AbstractImporter::AbstractImporter() = default;
 
-AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractManagingPlugin{manager} {}
+AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager} {}
 
-AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractManagingPlugin(manager, std::move(plugin)) {}
+AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>(manager, std::move(plugin)) {}
 
 bool AbstractImporter::openData(Containers::ArrayReference<const unsigned char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
