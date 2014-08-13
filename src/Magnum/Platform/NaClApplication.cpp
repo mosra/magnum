@@ -30,7 +30,7 @@
 #include <ppapi/cpp/completion_callback.h>
 #include <Corrade/Utility/NaClStreamBuffer.h>
 
-#include "Magnum/Context.h"
+#include "Magnum/Platform/Context.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
