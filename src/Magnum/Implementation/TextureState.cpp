@@ -50,8 +50,11 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     maxLodBias{0.0f},
     #endif
     maxMaxAnisotropy(0.0f), currentTextureUnit(0)
+    #ifndef MAGNUM_TARGET_GLES2
+    , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0)
+    #endif
     #ifndef MAGNUM_TARGET_GLES
-    , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0), bufferOffsetAlignment(0)
+    , bufferOffsetAlignment(0)
     #endif
 {
     /* Bind implementation */

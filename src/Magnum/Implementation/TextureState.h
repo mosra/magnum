@@ -99,11 +99,13 @@ struct TextureState {
     #endif
     GLfloat maxMaxAnisotropy;
     GLint currentTextureUnit;
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     GLint maxColorSamples,
         maxDepthSamples,
-        maxIntegerSamples,
-        bufferOffsetAlignment;
+        maxIntegerSamples;
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    GLint bufferOffsetAlignment;
     #endif
 
     std::vector<std::pair<GLenum, GLuint>> bindings;

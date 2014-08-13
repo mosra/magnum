@@ -62,9 +62,13 @@ Float AbstractTexture::maxLodBias() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractTexture::maxColorSamples() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().texture->maxColorSamples;
@@ -77,7 +81,11 @@ Int AbstractTexture::maxColorSamples() {
 }
 
 Int AbstractTexture::maxDepthSamples() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().texture->maxDepthSamples;
@@ -90,7 +98,11 @@ Int AbstractTexture::maxDepthSamples() {
 }
 
 Int AbstractTexture::maxIntegerSamples() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().texture->maxIntegerSamples;

@@ -153,15 +153,15 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static Float maxLodBias();
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported color sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COLOR_TEXTURE_SAMPLES}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxColorSamples();
 
@@ -169,10 +169,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @brief Max supported depth sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxDepthSamples();
 
@@ -180,10 +180,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @brief Max supported integer sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_INTEGER_SAMPLES}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxIntegerSamples();
         #endif
