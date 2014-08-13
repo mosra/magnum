@@ -388,9 +388,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
         void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLenum target, GLint level, GLenum parameter, GLint* values);
+        #endif
         #endif
 
         void MAGNUM_LOCAL mipmapImplementationDefault();
@@ -514,7 +516,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     };
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     static Vector2i imageSize(AbstractTexture& texture, GLenum target, GLint level);
     #endif
 
@@ -551,7 +553,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     };
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     static Vector3i imageSize(AbstractTexture& texture, GLenum target, GLint level);
     #endif
 

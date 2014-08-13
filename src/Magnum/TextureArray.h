@@ -249,7 +249,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /** @copydoc Texture::imageSize() */
         VectorTypeFor<dimensions+1, Int> imageSize(Int level) {
             return DataHelper<dimensions+1>::imageSize(*this, _target, level);

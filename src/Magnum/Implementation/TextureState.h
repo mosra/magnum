@@ -53,7 +53,7 @@ struct TextureState {
     void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
     #endif
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
     #endif
     void(AbstractTexture::*mipmapImplementation)();

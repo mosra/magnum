@@ -113,6 +113,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         #ifndef MAGNUM_TARGET_GLES
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDefault;
         #endif
         mipmapImplementation = &AbstractTexture::mipmapImplementationDefault;

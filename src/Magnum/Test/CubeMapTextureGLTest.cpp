@@ -264,8 +264,12 @@ void CubeMapTextureGLTest::storage() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    /** @todo How to test this on ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing");
+    #endif
+
     CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 0), Vector2i(32));
     CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 0), Vector2i(32));
     CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 0), Vector2i(32));

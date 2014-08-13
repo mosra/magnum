@@ -236,14 +236,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief %Image size in given mip level
          * @param coordinate        Coordinate
          * @param level             Mip level
          *
          * See @ref Texture::imageSize() for more information.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         * @requires_gles31 %Texture image size queries are not available in
+         *      OpenGL ES 3.0 and older.
          */
         Vector2i imageSize(Coordinate coordinate, Int level) {
             return DataHelper<2>::imageSize(*this, GLenum(coordinate), level);

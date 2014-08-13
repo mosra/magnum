@@ -817,15 +817,17 @@ void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
     (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values) {
     bindInternal();
     glGetTexLevelParameteriv(target, level, parameter, values);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::getLevelParameterImplementationDSA(GLenum target, GLint level, GLenum parameter, GLint* values) {
     glGetTextureLevelParameterivEXT(_id, target, level, parameter, values);
 }
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -1155,7 +1157,9 @@ Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture
     (texture.*Context::current()->state().texture->getLevelParameterivImplementation)(target, level, GL_TEXTURE_WIDTH, &value[0]);
     return value;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture& texture, const GLenum target, const GLint level) {
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
