@@ -265,7 +265,7 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
 }
 
 void AbstractShaderProgram::attachShaders(std::initializer_list<std::reference_wrapper<Shader>> shaders) {
-    for(Shader& s: shaders) attachShader(s);
+    for(auto it = shaders.begin(); it != shaders.end(); ++it) attachShader(it->get());
 }
 
 void AbstractShaderProgram::bindAttributeLocationInternal(const UnsignedInt location, const Containers::ArrayReference<const char> name) {
