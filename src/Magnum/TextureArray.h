@@ -236,7 +236,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)

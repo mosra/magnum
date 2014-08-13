@@ -74,8 +74,11 @@ class TextureArrayGLTest: public AbstractOpenGLTester {
         void samplingBorderInteger1D();
         void samplingBorderInteger2D();
         void samplingDepthStencilMode1D();
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         void samplingDepthStencilMode2D();
-        #else
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
         void samplingBorder2D();
         #endif
 
@@ -457,19 +460,28 @@ void TextureArrayGLTest::samplingBorderInteger2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void TextureArrayGLTest::samplingDepthStencilMode2D() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
 
     Texture2DArray texture;
     texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#else
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::samplingBorder2D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
         CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));

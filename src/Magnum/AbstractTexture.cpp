@@ -326,7 +326,7 @@ void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function
         , GLenum(function));
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
 }

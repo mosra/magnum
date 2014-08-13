@@ -335,7 +335,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         void setCompareMode(Sampler::CompareMode mode);
         void setCompareFunction(Sampler::CompareFunction function);
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         void setDepthStencilMode(Sampler::DepthStencilMode mode);
         #endif
         void invalidateImage(Int level);

@@ -228,7 +228,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /** @copydoc Texture::setDepthStencilMode() */
         CubeMapTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);

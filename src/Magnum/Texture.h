@@ -531,7 +531,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set depth/stencil texture mode
          * @return Reference to self (for method chaining)
@@ -545,7 +545,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{DEPTH_STENCIL_TEXTURE_MODE}
          * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
-         * @requires_gl Stencil texturing is not available in OpenGL ES.
+         * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
+         *      and older.
          */
         Texture<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
