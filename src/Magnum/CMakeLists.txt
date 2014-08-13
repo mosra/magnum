@@ -143,12 +143,10 @@ if(NOT TARGET_GLES)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferTexture.h
         CubeMapTextureArray.h
-        MultisampleTexture.h
         RectangleTexture.h)
     set(Magnum_SRCS ${Magnum_SRCS}
         BufferTexture.cpp
         CubeMapTextureArray.cpp
-        MultisampleTexture.cpp
         RectangleTexture.cpp)
 endif()
 
@@ -156,9 +154,11 @@ endif()
 if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h
+        MultisampleTexture.h
         TextureArray.h)
     set(Magnum_SRCS ${Magnum_SRCS}
         BufferImage.cpp
+        MultisampleTexture.cpp
         TextureArray.cpp)
 endif()
 

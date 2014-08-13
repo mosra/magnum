@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 /** @file
  * @brief Class @ref Magnum::MultisampleTexture, typedef @ref Magnum::MultisampleTexture2D, @ref Magnum::MultisampleTexture2DArray
  */
@@ -35,17 +35,21 @@
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Vector3.h"
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 namespace Magnum {
 
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum multisampleTextureTarget();
     template<> inline constexpr GLenum multisampleTextureTarget<2>() { return GL_TEXTURE_2D_MULTISAMPLE; }
+    #ifndef MAGNUM_TARGET_GLES
     template<> inline constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
+    #endif
 
     template<UnsignedInt dimensions> VectorTypeFor<dimensions, Int> maxMultisampleTextureSize();
     template<> MAGNUM_EXPORT Vector2i maxMultisampleTextureSize<2>();
+    #ifndef MAGNUM_TARGET_GLES
     template<> MAGNUM_EXPORT Vector3i maxMultisampleTextureSize<3>();
+    #endif
 }
 
 /**
@@ -83,7 +87,10 @@ shaders.
     @ref TextureArray, @ref CubeMapTexture, @ref CubeMapTextureArray,
     @ref RectangleTexture, @ref BufferTexture
 @requires_gl32 %Extension @extension{ARB,texture_multisample}
-@requires_gl Multisample textures are not available in OpenGL ES.
+@requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
+    older.
+@requires_gl 2D array multisample textures are not available in OpenGL ES, only
+    2D ones.
  */
 template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTexture {
     public:
@@ -93,8 +100,9 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @brief Max supported multisample texture size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_multisample} (part
-         * of OpenGL 3.2) is not available, returns zero vector.
+         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns zero
+         * vector.
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
          *      @def_gl{MAX_3D_TEXTURE_SIZE}
          */
@@ -187,11 +195,25 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         #endif
 };
 
-/** @brief Two-dimensional multisample texture */
+/**
+@brief Two-dimensional multisample texture
+
+@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
+    older.
+*/
 typedef MultisampleTexture<2> MultisampleTexture2D;
 
-/** @brief Two-dimensional multisample texture array */
+#ifndef MAGNUM_TARGET_GLES
+/**
+@brief Two-dimensional multisample texture array
+
+@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gl Only @ref Magnum::MultisampleTexture2D "MultisampleTexture2D" is
+    available in OpenGL ES.
+*/
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
+#endif
 
 }
 #else

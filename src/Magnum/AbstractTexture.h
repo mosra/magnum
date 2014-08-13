@@ -420,9 +420,15 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
@@ -524,7 +530,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 
     static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
 
+    #ifndef MAGNUM_TARGET_GLES2
     static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedSampleLocations);
+    #endif
 
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference2D& image);
     #ifndef MAGNUM_TARGET_GLES2
@@ -561,7 +569,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
 
     static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
 
+    #ifndef MAGNUM_TARGET_GLES
     static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedSampleLocations);
+    #endif
 
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference3D& image);
     #ifndef MAGNUM_TARGET_GLES2
