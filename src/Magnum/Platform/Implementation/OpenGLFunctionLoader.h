@@ -36,10 +36,14 @@ namespace Magnum { namespace Platform { namespace Implementation {
 
 class OpenGLFunctionLoader {
     public:
+        #ifndef CORRADE_GCC46_COMPATIBILITY
         #ifndef CORRADE_TARGET_WINDOWS
         using FunctionPointer = void(*)();
         #else
         using FunctionPointer = PROC;
+        #endif
+        #else
+        typedef void(*FunctionPointer)();
         #endif
 
         explicit OpenGLFunctionLoader();
