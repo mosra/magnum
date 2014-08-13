@@ -1,6 +1,8 @@
 @require(passthru, functions, enums, options, version, extensions)
 #include "flextGL.h"
 
+#include <Corrade/compatibility.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
