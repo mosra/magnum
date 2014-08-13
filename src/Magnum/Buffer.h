@@ -213,7 +213,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /**
          * @brief %Buffer target
          *
-         * @see @ref bind(Target), @ref unbind(Target)
+         * @see @ref Buffer(), @ref setTargetHint()
          */
         enum class Target: GLenum {
             /** Used for storing vertex attributes. */
