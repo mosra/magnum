@@ -1,3 +1,10 @@
+Third-party components
+----------------------
+
+*   **flextGL** extension loader generator -- https://github.com/ginkgo/flextGL,
+    Copyright © 2011 Thomas Weber, licensed under
+    [MIT license](https://raw.githubusercontent.com/ginkgo/flextGL/master/COPYING)
+
 Contributors to Magnum library
 ------------------------------
 

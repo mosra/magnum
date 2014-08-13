@@ -172,11 +172,10 @@ idea? Feel free to visit my website or contact me at:
 *   E-mail -- mosra@centrum.cz
 *   Jabber -- mosra@jabbim.cz
 
-CONTRIBUTORS
-============
+CREDITS
+=======
 
-See [CONTRIBUTORS.md](CONTRIBUTORS.md) file for details. Big thanks to everyone
-involved!
+See [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone involved!
 
 LICENSE
 =======
