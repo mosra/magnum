@@ -1,5 +1,7 @@
 #include "flextGL.h"
 
+#include <Corrade/compatibility.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
