@@ -293,8 +293,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Max supported color attachment count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If ES extension @extension{NV,fbo_color_attachments}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither OpenGL ES 3.0 nor ES extension
+         * @extension{NV,fbo_color_attachments} is available, returns `0`.
          * @see @ref mapForDraw(), @fn_gl{Get} with @def_gl{MAX_COLOR_ATTACHMENTS}
          */
         static Int maxColorAttachments();

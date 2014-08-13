@@ -195,8 +195,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Max supported dual-source draw buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,blend_func_extended} is
-         * not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,blend_func_extended} (part
+         * of OpenGL 3.3) is not available, returns `0`.
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
          *      @fn_gl{Get} with @def_gl{MAX_DUAL_SOURCE_DRAW_BUFFERS}
          * @requires_gl Multiple blending inputs are not available in

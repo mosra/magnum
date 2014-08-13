@@ -108,7 +108,7 @@ following:
 %Extension                                   | Status
 -------------------------------------------- | ------
 @extension{ARB,instanced_arrays}             | done
-@extension{ARB,blend_func_extended}          | missing limit query
+@extension{ARB,blend_func_extended}          | done
 @extension{ARB,explicit_attrib_location}     | done (shading language only)
 @extension{ARB,occlusion_query2}             | done
 @extension{ARB,sampler_objects}              | |

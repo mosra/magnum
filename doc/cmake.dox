@@ -103,7 +103,7 @@ Platform namespace is split into more components:
 -   `%WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 
 For manual context creation (without application wrappers) there are also
-platform-specific context libraries (see @ref platfom-custom for more
+platform-specific context libraries (see @ref platform-custom for more
 information):
 
 -   `CglContext` -- CGL context

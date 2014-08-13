@@ -452,8 +452,8 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is `1.0f`.
          * @see @ref Feature::ProgramPointSize, @fn_gl{PointSize}
-         * @requires_gl In OpenGL ES use `gl_PointSize` builtin vertex shader
-         *      variable.
+         * @requires_gl Use `gl_PointSize` builtin vertex shader variable in
+         *      OpenGL ES instead.
          */
         static void setPointSize(Float size);
         #endif
