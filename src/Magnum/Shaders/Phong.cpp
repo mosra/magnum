@@ -67,7 +67,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))

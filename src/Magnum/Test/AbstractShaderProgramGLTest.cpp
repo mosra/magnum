@@ -190,7 +190,8 @@ void AbstractShaderProgramGLTest::create() {
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
-    program.attachShaders({vert, frag});
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    program.attachShaders({std::ref(vert), std::ref(frag)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -231,7 +232,8 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
-    program.attachShaders({vert, frag});
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    program.attachShaders({std::ref(vert), std::ref(frag)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -268,7 +270,8 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
-    program.attachShaders({vert, frag});
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    program.attachShaders({std::ref(vert), std::ref(frag)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -311,9 +314,10 @@ MyShader::MyShader() {
     vert.addSource(rs.get("MyShader.vert"));
     frag.addSource(rs.get("MyShader.frag"));
 
-    Shader::compile({vert, frag});
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    Shader::compile({std::ref(vert), std::ref(frag)});
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     bindAttributeLocation(0, "position");
     link();

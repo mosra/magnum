@@ -80,9 +80,10 @@ MyShader::MyShader() {
     vert.addSource(rs.get("MyShader.vert"));
     frag.addSource(rs.get("MyShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }

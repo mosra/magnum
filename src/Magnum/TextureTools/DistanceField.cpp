@@ -92,9 +92,9 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
         .addSource(rs.get("DistanceFieldShader.vert"));
     frag.addSource(rs.get("DistanceFieldShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
     #ifndef MAGNUM_TARGET_GLES

@@ -70,7 +70,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     std::initializer_list<std::reference_wrapper<Shader>> ss{std::ref(frag), std::ref(vert)};
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile(ss));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))

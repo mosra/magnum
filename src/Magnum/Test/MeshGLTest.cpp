@@ -386,7 +386,7 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     bindAttributeLocation(0, "value");
 
@@ -416,7 +416,7 @@ IntegerShader::IntegerShader(const std::string& type) {
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     bindAttributeLocation(0, "value");
 
@@ -442,7 +442,7 @@ DoubleShader::DoubleShader(const std::string& type, const std::string& outputTyp
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     bindAttributeLocation(0, "value");
 
@@ -1127,7 +1127,7 @@ MultipleShader::MultipleShader() {
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     bindAttributeLocation(Position::Location, "position");
     bindAttributeLocation(Normal::Location, "normal");
