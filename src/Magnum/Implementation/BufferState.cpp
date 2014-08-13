@@ -36,23 +36,21 @@ namespace Magnum { namespace Implementation {
 
 const Buffer::Target BufferState::targetForIndex[] = {
     Buffer::Target::Array,
-    Buffer::Target::ElementArray
+    Buffer::Target::ElementArray,
     #ifndef MAGNUM_TARGET_GLES2
-    ,
     Buffer::Target::CopyRead,
     Buffer::Target::CopyWrite,
     Buffer::Target::PixelPack,
     Buffer::Target::PixelUnpack,
     Buffer::Target::TransformFeedback,
-    Buffer::Target::Uniform
-    #endif
-    #ifndef MAGNUM_TARGET_GLES
-    ,
+    Buffer::Target::Uniform,
     Buffer::Target::AtomicCounter,
     Buffer::Target::DispatchIndirect,
     Buffer::Target::DrawIndirect,
     Buffer::Target::ShaderStorage,
+    #ifndef MAGNUM_TARGET_GLES
     Buffer::Target::Texture
+    #endif
     #endif
 };
 
@@ -67,13 +65,13 @@ std::size_t BufferState::indexForTarget(Buffer::Target target) {
         case Buffer::Target::PixelUnpack:       return 6;
         case Buffer::Target::TransformFeedback: return 7;
         case Buffer::Target::Uniform:           return 8;
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
         case Buffer::Target::AtomicCounter:     return 9;
         case Buffer::Target::DispatchIndirect:  return 10;
         case Buffer::Target::DrawIndirect:      return 11;
         case Buffer::Target::ShaderStorage:     return 12;
+        #ifndef MAGNUM_TARGET_GLES
         case Buffer::Target::Texture:           return 13;
+        #endif
         #endif
     }
 
@@ -83,9 +81,9 @@ std::size_t BufferState::indexForTarget(Buffer::Target target) {
 BufferState::BufferState(Context& context, std::vector<std::string>& extensions): bindings()
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    , minMapAlignment(0), maxAtomicCounterBindings(0), maxShaderStorageBindings(0), shaderStorageOffsetAlignment(0)
+    , minMapAlignment(0)
     #endif
-    , maxUniformBindings(0)
+    , maxAtomicCounterBindings(0), maxShaderStorageBindings(0), shaderStorageOffsetAlignment(0), maxUniformBindings(0)
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES

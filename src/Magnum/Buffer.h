@@ -219,11 +219,12 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Used for storing atomic counters.
              * @requires_gl42 %Extension @extension{ARB,shader_atomic_counters}
-             * @requires_gl Atomic counters are not available in OpenGL ES.
+             * @requires_gles31 Atomic counters are not available in OpenGL ES
+             *      3.0 and older.
              */
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
             #endif
@@ -246,18 +247,20 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             CopyWrite = GL_COPY_WRITE_BUFFER,
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Indirect compute dispatch commands.
              * @requires_gl43 %Extension @extension{ARB,compute_shader}
-             * @requires_gl Compute shaders are not available in OpenGL ES.
+             * @requires_gles31 Compute shaders are not available in OpenGL ES
+             *      3.0 and older.
              */
             DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
 
             /**
              * Used for supplying arguments for indirect drawing.
              * @requires_gl40 %Extension @extension{ARB,draw_indirect}
-             * @requires_gl Indirect drawing not available in OpenGL ES.
+             * @requires_gles31 Indirect drawing not available in OpenGL ES 3.0
+             *      and older.
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
             #endif
@@ -283,14 +286,17 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Used for shader storage.
              * @requires_gl43 %Extension @extension{ARB,shader_storage_buffer_object}
-             * @requires_gl Shader storage is not available in OpenGL ES.
+             * @requires_gles31 Shader storage is not available in OpenGL ES
+             *      3.0 and older.
              */
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
+            #endif
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Source for texel fetches. See @ref BufferTexture.
              * @requires_gl31 %Extension @extension{ARB,texture_buffer_object}
@@ -442,21 +448,23 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Minimal supported mapping alignment
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,map_buffer_alignment} is
-         * not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,map_buffer_alignment}
+         * (part of OpenGL 4.2) is not available, returns `0`.
          * @see @ref map(), @fn_gl{Get} with @def_gl{MIN_MAP_BUFFER_ALIGNMENT}
          * @requires_gl No minimal value is specified for OpenGL ES.
          */
         static Int minMapAlignment();
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported atomic counter buffer binding count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxAtomicCounterBindings();
 
@@ -464,10 +472,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Max supported shader storage buffer binding count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxShaderStorageBindings();
 
@@ -475,10 +483,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Alignment of shader storage buffer binding offset
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int shaderStorageOffsetAlignment();
         #endif
@@ -489,7 +497,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
-         * is not available, returns `0`.
+         * (part of OpenGL 3.1) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}
          * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          */

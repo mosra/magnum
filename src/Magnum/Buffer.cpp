@@ -48,9 +48,15 @@ Int Buffer::minMapAlignment() {
 
     return value;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Int Buffer::maxAtomicCounterBindings() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().buffer->maxAtomicCounterBindings;
@@ -62,7 +68,11 @@ Int Buffer::maxAtomicCounterBindings() {
 }
 
 Int Buffer::maxShaderStorageBindings() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().buffer->maxShaderStorageBindings;
@@ -74,7 +84,11 @@ Int Buffer::maxShaderStorageBindings() {
 }
 
 Int Buffer::shaderStorageOffsetAlignment() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().buffer->shaderStorageOffsetAlignment;
@@ -396,14 +410,10 @@ Debug operator<<(Debug debug, Buffer::Target value) {
     switch(value) {
         #define _c(value) case Buffer::Target::value: return debug << "Buffer::Target::" #value;
         _c(Array)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(AtomicCounter)
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
+        _c(AtomicCounter)
         _c(CopyRead)
         _c(CopyWrite)
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
         _c(DispatchIndirect)
         _c(DrawIndirect)
         #endif
@@ -411,9 +421,9 @@ Debug operator<<(Debug debug, Buffer::Target value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(PixelPack)
         _c(PixelUnpack)
+        _c(ShaderStorage)
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        _c(ShaderStorage)
         _c(Texture)
         #endif
         #ifndef MAGNUM_TARGET_GLES2
