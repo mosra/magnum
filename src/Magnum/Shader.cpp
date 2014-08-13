@@ -56,6 +56,8 @@ std::string shaderName(const Shader::Type type) {
         case Shader::Type::Geometry:                return "geometry";
         case Shader::Type::TessellationControl:     return "tessellation control";
         case Shader::Type::TessellationEvaluation:  return "tessellation evaluation";
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         case Shader::Type::Compute:                 return "compute";
         #endif
         case Shader::Type::Fragment:                return "fragment";
@@ -68,11 +70,13 @@ UnsignedInt typeToIndex(const Shader::Type type) {
     switch(type) {
         case Shader::Type::Vertex:                  return 0;
         case Shader::Type::Fragment:                return 1;
+        #ifndef MAGNUM_TARGET_GLES2
+        case Shader::Type::Compute:                 return 2;
+        #endif
         #ifndef MAGNUM_TARGET_GLES
-        case Shader::Type::Geometry:                return 2;
-        case Shader::Type::TessellationControl:     return 3;
-        case Shader::Type::TessellationEvaluation:  return 4;
-        case Shader::Type::Compute:                 return 5;
+        case Shader::Type::Geometry:                return 3;
+        case Shader::Type::TessellationControl:     return 4;
+        case Shader::Type::TessellationEvaluation:  return 5;
         #endif
     }
 
@@ -248,10 +252,18 @@ Int Shader::maxFragmentInputComponents() {
     return value;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Int Shader::maxAtomicCounterBuffers(const Type type) {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() || !isTypeSupported(type))
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
+        #else
+        !Context::current()->isVersionSupported(Version::GLES310) ||
+        #endif
+        !isTypeSupported(type))
+    {
         return 0;
+    }
 
     const UnsignedInt index = typeToIndex(type);
     GLint& value = Context::current()->state().shader->maxAtomicCounterBuffers[index];
@@ -260,10 +272,14 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS,
         GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS,
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS,
         GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS,
-        GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS,
-        GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS
+        GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS
+        #endif
     };
     if(value == 0)
         glGetIntegerv(what[index], &value);
@@ -272,7 +288,11 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
 }
 
 Int Shader::maxCombinedAtomicCounterBuffers() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shader->maxCombinedAtomicCounterBuffers;
@@ -285,8 +305,16 @@ Int Shader::maxCombinedAtomicCounterBuffers() {
 }
 
 Int Shader::maxAtomicCounters(const Type type) {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() || !isTypeSupported(type))
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
+        #else
+        !Context::current()->isVersionSupported(Version::GLES310) ||
+        #endif
+        !isTypeSupported(type))
+    {
         return 0;
+    }
 
     const UnsignedInt index = typeToIndex(type);
     GLint& value = Context::current()->state().shader->maxAtomicCounters[index];
@@ -295,10 +323,14 @@ Int Shader::maxAtomicCounters(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_ATOMIC_COUNTERS,
         GL_MAX_FRAGMENT_ATOMIC_COUNTERS,
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_MAX_COMPUTE_ATOMIC_COUNTERS,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_ATOMIC_COUNTERS,
         GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS,
         GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS,
-        GL_MAX_COMPUTE_ATOMIC_COUNTERS
+        #endif
     };
     if(value == 0)
         glGetIntegerv(what[index], &value);
@@ -307,7 +339,11 @@ Int Shader::maxAtomicCounters(const Type type) {
 }
 
 Int Shader::maxCombinedAtomicCounters() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shader->maxCombinedAtomicCounters;
@@ -320,8 +356,16 @@ Int Shader::maxCombinedAtomicCounters() {
 }
 
 Int Shader::maxImageUniforms(const Type type) {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>() || !isTypeSupported(type))
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>() ||
+        #else
+        !Context::current()->isVersionSupported(Version::GLES310) ||
+        #endif
+        !isTypeSupported(type))
+    {
         return 0;
+    }
 
     const UnsignedInt index = typeToIndex(type);
     GLint& value = Context::current()->state().shader->maxImageUniforms[index];
@@ -330,10 +374,14 @@ Int Shader::maxImageUniforms(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_IMAGE_UNIFORMS,
         GL_MAX_FRAGMENT_IMAGE_UNIFORMS,
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_MAX_COMPUTE_IMAGE_UNIFORMS,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_IMAGE_UNIFORMS,
         GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS,
-        GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS,
-        GL_MAX_COMPUTE_IMAGE_UNIFORMS
+        GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS
+        #endif
     };
     if(value == 0)
         glGetIntegerv(what[index], &value);
@@ -342,7 +390,11 @@ Int Shader::maxImageUniforms(const Type type) {
 }
 
 Int Shader::maxCombinedImageUniforms() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shader->maxCombinedImageUniforms;
@@ -355,8 +407,16 @@ Int Shader::maxCombinedImageUniforms() {
 }
 
 Int Shader::maxShaderStorageBlocks(const Type type) {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() || !isTypeSupported(type))
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() ||
+        #else
+        !Context::current()->isVersionSupported(Version::GLES310) ||
+        #endif
+        !isTypeSupported(type))
+    {
         return 0;
+    }
 
     const UnsignedInt index = typeToIndex(type);
     GLint& value = Context::current()->state().shader->maxShaderStorageBlocks[index];
@@ -365,10 +425,14 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS,
         GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS,
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS,
         GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS,
-        GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS,
-        GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS
+        GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS
+        #endif
     };
     if(value == 0)
         glGetIntegerv(what[index], &value);
@@ -377,7 +441,11 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
 }
 
 Int Shader::maxCombinedShaderStorageBlocks() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shader->maxCombinedShaderStorageBlocks;
@@ -401,11 +469,13 @@ Int Shader::maxTextureImageUnits(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,
         GL_MAX_TEXTURE_IMAGE_UNITS,
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS,
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS,
         GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS,
-        GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS,
-        GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS
+        GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS
         #endif
     };
     if(value == 0)
@@ -440,11 +510,13 @@ Int Shader::maxUniformBlocks(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_UNIFORM_BLOCKS,
         GL_MAX_FRAGMENT_UNIFORM_BLOCKS,
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_MAX_COMPUTE_UNIFORM_BLOCKS,
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_UNIFORM_BLOCKS,
         GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS,
-        GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS,
-        GL_MAX_COMPUTE_UNIFORM_BLOCKS
+        GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS
         #endif
     };
     if(value == 0)
@@ -481,11 +553,11 @@ Int Shader::maxUniformComponents(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_UNIFORM_COMPONENTS,
         GL_MAX_FRAGMENT_UNIFORM_COMPONENTS,
+        GL_MAX_COMPUTE_UNIFORM_COMPONENTS,
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_UNIFORM_COMPONENTS,
         GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS,
-        GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS,
-        GL_MAX_COMPUTE_UNIFORM_COMPONENTS
+        GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS
         #endif
     };
     if(value == 0)
@@ -522,11 +594,13 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS,
         GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS,
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS,
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS,
         GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS,
-        GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS,
-        GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS
+        GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS
         #endif
     };
     if(value == 0)
@@ -719,6 +793,8 @@ Debug operator<<(Debug debug, const Shader::Type value) {
         _c(TessellationControl)
         _c(TessellationEvaluation)
         _c(Geometry)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         _c(Compute)
         #endif
         _c(Fragment)

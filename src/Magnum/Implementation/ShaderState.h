@@ -35,7 +35,10 @@ struct ShaderState {
     explicit ShaderState():
         maxVertexOutputComponents{}, maxFragmentInputComponents{},
         #ifndef MAGNUM_TARGET_GLES
-        maxTessellationControlInputComponents{}, maxTessellationControlOutputComponents{}, maxTessellationControlTotalOutputComponents{}, maxTessellationEvaluationInputComponents{}, maxTessellationEvaluationOutputComponents{}, maxGeometryInputComponents{}, maxGeometryOutputComponents{}, maxGeometryTotalOutputComponents{}, maxAtomicCounterBuffers{}, maxCombinedAtomicCounterBuffers{}, maxAtomicCounters{}, maxCombinedAtomicCounters{}, maxImageUniforms{}, maxCombinedImageUniforms{}, maxShaderStorageBlocks{}, maxCombinedShaderStorageBlocks{},
+        maxTessellationControlInputComponents{}, maxTessellationControlOutputComponents{}, maxTessellationControlTotalOutputComponents{}, maxTessellationEvaluationInputComponents{}, maxTessellationEvaluationOutputComponents{}, maxGeometryInputComponents{}, maxGeometryOutputComponents{}, maxGeometryTotalOutputComponents{},
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        maxAtomicCounterBuffers{}, maxCombinedAtomicCounterBuffers{}, maxAtomicCounters{}, maxCombinedAtomicCounters{}, maxImageUniforms{}, maxCombinedImageUniforms{}, maxShaderStorageBlocks{}, maxCombinedShaderStorageBlocks{},
         #endif
         maxTextureImageUnits{}, maxTextureImageUnitsCombined{},
         #ifndef MAGNUM_TARGET_GLES2
@@ -66,6 +69,8 @@ struct ShaderState {
         maxGeometryInputComponents,
         maxGeometryOutputComponents,
         maxGeometryTotalOutputComponents;
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     GLint maxAtomicCounterBuffers[StageCount];
     GLint maxCombinedAtomicCounterBuffers;
     GLint maxAtomicCounters[StageCount];

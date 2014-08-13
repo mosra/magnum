@@ -50,9 +50,13 @@ Int AbstractShaderProgram::maxVertexAttributes() {
     return value;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxAtomicCounterBufferSize;
@@ -64,7 +68,11 @@ Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
 }
 
 Int AbstractShaderProgram::maxComputeSharedMemorySize() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxComputeSharedMemorySize;
@@ -76,7 +84,11 @@ Int AbstractShaderProgram::maxComputeSharedMemorySize() {
 }
 
 Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxComputeWorkGroupInvocations;
@@ -88,7 +100,11 @@ Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
 }
 
 Int AbstractShaderProgram::maxImageUnits() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxImageUnits;
@@ -98,7 +114,9 @@ Int AbstractShaderProgram::maxImageUnits() {
 
     return value;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 Int AbstractShaderProgram::maxImageSamples() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
         return 0;
@@ -110,9 +128,15 @@ Int AbstractShaderProgram::maxImageSamples() {
 
     return value;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractShaderProgram::maxCombinedShaderOutputResources() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() || !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxCombinedShaderOutputResources;
@@ -124,7 +148,11 @@ Int AbstractShaderProgram::maxCombinedShaderOutputResources() {
 }
 
 Long AbstractShaderProgram::maxShaderStorageBlockSize() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint64& value = Context::current()->state().shaderProgram->maxShaderStorageBlockSize;
@@ -152,9 +180,13 @@ Int AbstractShaderProgram::maxUniformBlockSize() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractShaderProgram::maxUniformLocations() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxUniformLocations;
