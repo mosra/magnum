@@ -339,7 +339,7 @@ void* Buffer::mapImplementationDefault(MapAccess access) {
     #ifndef MAGNUM_TARGET_GLES
     return glMapBuffer(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    return glMapBufferOES(GLenum(bindInternal(_targetHint)), GLenum(access));
+    return glMapBufferOES(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
     #else
     static_cast<void>(access);
     CORRADE_ASSERT_UNREACHABLE();
@@ -356,7 +356,7 @@ void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, 
     #ifndef MAGNUM_TARGET_GLES2
     return glMapBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    return glMapBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
+    return glMapBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
@@ -375,7 +375,7 @@ void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr l
     #ifndef MAGNUM_TARGET_GLES2
     glFlushMappedBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    glFlushMappedBufferRangeEXT(GLenum(bindInternal(_targetHint)), offset, length);
+    glFlushMappedBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
@@ -393,7 +393,7 @@ bool Buffer::unmapImplementationDefault() {
     #ifndef MAGNUM_TARGET_GLES2
     return glUnmapBuffer(GLenum(bindSomewhereInternal(_targetHint)));
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    return glUnmapBufferOES(GLenum(bindInternal(_targetHint)));
+    return glUnmapBufferOES(GLenum(bindSomewhereInternal(_targetHint)));
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif
