@@ -61,6 +61,7 @@
 #  WindowlessNaClApplication - Windowless NaCl application
 #  WindowlessWglApplication - Windowless WGL application
 #  CglContext       - CGL context
+#  EglContext       - EGL context
 #  GlxContext       - GLX context
 #  WglContext       - WGL context
 # Example usage with specifying additional components is:
@@ -425,6 +426,16 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             find_package(X11)
             if(X11_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+
+        # EGL context dependencies
+        if(${component} STREQUAL EglContext)
+            find_package(EGL)
+            if(EGL_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARIES})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()

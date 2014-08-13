@@ -281,6 +281,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         #else
         case Version::GLES200: return empty;
         case Version::GLES300:
+        case Version::GLES310:
             #ifdef MAGNUM_TARGET_GLES2
             return extensionsES300;
             #else
@@ -396,6 +397,7 @@ Context::Context(void functionLoader()) {
         #else
         Version::GLES200,
         Version::GLES300,
+        Version::GLES310,
         #endif
         Version::None
     };

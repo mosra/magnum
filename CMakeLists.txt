@@ -49,6 +49,11 @@ cmake_dependent_option(WITH_SHAPES "Build Shapes library" ON "NOT WITH_DEBUGTOOL
 option(WITH_TEXT "Build Text library" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 
+# EGL context, available everywhere except on platforms which don't support extension loading
+if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
+    option(WITH_EGLCONTEXT "Build EglContext library" OFF)
+endif()
+
 # NaCl-specific application libraries
 if(CORRADE_TARGET_NACL)
     option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
@@ -61,19 +66,19 @@ elseif(CORRADE_TARGET_ANDROID)
 # OS X-specific application libraries
 elseif(CORRADE_TARGET_APPLE)
     cmake_dependent_option(WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-    cmake_dependent_option(WITH_CGLCONTEXT "Build CglContext library" OFF "NOT TARGET_GLES" OFF)
+    option(WITH_CGLCONTEXT "Build CglContext library" OFF)
 
 # X11 + GLX/EGL-specific application libraries
 elseif(CORRADE_TARGET_UNIX)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
     cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
-    cmake_dependent_option(WITH_GLXCONTEXT "Build GlxContext library" OFF "NOT TARGET_GLES" OFF)
+    option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
 
 # Windows-specific application libraries
 elseif(CORRADE_TARGET_WINDOWS)
     cmake_dependent_option(WITH_WINDOWLESSWGLAPPLICATION "Build WindowlessWglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-    cmake_dependent_option(WITH_WGLCONTEXT "Build WglContext library" OFF "NOT TARGET_GLES" OFF)
+    option(WITH_WGLCONTEXT "Build WglContext library" OFF)
 endif()
 
 # Platform-independent (almost) application libraries

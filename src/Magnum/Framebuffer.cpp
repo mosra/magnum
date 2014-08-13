@@ -36,12 +36,12 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#include "Magnum/MultisampleTexture.h"
 #include "Magnum/TextureArray.h"
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/CubeMapTextureArray.h"
-#include "Magnum/MultisampleTexture.h"
 #include "Magnum/RectangleTexture.h"
 #endif
 
@@ -190,7 +190,9 @@ Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Recta
     (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), 0);
     return *this;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture) {
     (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), 0);
     return *this;
@@ -276,16 +278,16 @@ void Framebuffer::texture2DImplementationDSA(BufferAttachment attachment, GLenum
 #endif
 
 void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
-    /** @todo Re-enable when extension loader is available for ES 2.0 */
     #ifndef MAGNUM_TARGET_GLES2
     glFramebufferTextureLayer(GLenum(bindInternal()), GLenum(attachment), textureId, mipLevel, layer);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glFramebufferTexture3DOES(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_3D_OES, textureId, mipLevel, layer);
     #else
     static_cast<void>(attachment);
     static_cast<void>(textureId);
     static_cast<void>(mipLevel);
     static_cast<void>(layer);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glFramebufferTexture3DOES(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_3D_OES, texture.id(), mipLevel, layer);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 

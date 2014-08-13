@@ -293,6 +293,7 @@ find particular `*Context` library, add its include dir and then link to it.
 These platform-specific libraries are available:
 
 -   `CglContext` -- CGL context (Mac OS X)
+-   `EglContext` -- EGL context (everywhere except Emscripten and NaCl)
 -   `GlxContext` -- GLX context (X11-based Unix)
 -   `WglContext` -- WGL context (Windows)
 

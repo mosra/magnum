@@ -603,11 +603,13 @@ enum class MeshPrimitive: GLenum;
 class Mesh;
 class MeshView;
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 /* MultisampleTextureSampleLocations enum used only in the function */
 template<UnsignedInt> class MultisampleTexture;
 typedef MultisampleTexture<2> MultisampleTexture2D;
+#ifndef MAGNUM_TARGET_GLES
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
+#endif
 #endif
 
 /* AbstractQuery is not used directly */

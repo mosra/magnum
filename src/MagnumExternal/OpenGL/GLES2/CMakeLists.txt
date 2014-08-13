@@ -23,15 +23,25 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumOpenGL_HEADERS
-    gl2ext.h)
+# NaCl and Emscripten don't have the ability to load function pointers manually
+if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_EMSCRIPTEN)
+    # flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
+    add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
 
-# We need gl2ext.h also for ES3 (but not the others). NaCl has its own gl2.h,
-# this one causes linker issues
-if(TARGET_GLES2 AND NOT CORRADE_TARGET_NACL)
-    set(MagnumOpenGL_HEADERS ${MagnumOpenGL_HEADERS}
-        gl2platform.h
-        gl2.h)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang")
+        set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -fvisibility=hidden -DFlextGL_EXPORTS")
+    else()
+        set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DFlextGL_EXPORTS")
+    endif()
+endif()
+
+# NaCl and Emscripten are special, provide only some extensions for them
+if(CORRADE_TARGET_NACL)
+    set(MagnumOpenGL_HEADERS flextGLNaCl.h)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    set(MagnumOpenGL_HEADERS flextGLEmscripten.h)
+else()
+    set(MagnumOpenGL_HEADERS flextGL.h)
 endif()
 
 install(FILES ${MagnumOpenGL_HEADERS} DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES2)

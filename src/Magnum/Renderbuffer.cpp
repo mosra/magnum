@@ -114,24 +114,34 @@ void Renderbuffer::storageImplementationDSA(RenderbufferFormat internalFormat, c
 }
 #endif
 
-/** @todo Re-enable when extension loader is available for ES */
-
 #ifndef MAGNUM_TARGET_GLES2
 void Renderbuffer::storageMultisampleImplementationDefault(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
     bind();
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
 }
 #else
-void Renderbuffer::storageMultisampleImplementationANGLE(GLsizei, RenderbufferFormat, const Vector2i&) {
-    CORRADE_INTERNAL_ASSERT(false);
+void Renderbuffer::storageMultisampleImplementationANGLE(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     bind();
-    //glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, internalFormat, size.x(), size.y());
+    glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
+    #else
+    static_cast<void>(samples);
+    static_cast<void>(internalFormat);
+    static_cast<void>(size);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
-void Renderbuffer::storageMultisampleImplementationNV(GLsizei, RenderbufferFormat, const Vector2i&) {
-    CORRADE_INTERNAL_ASSERT(false);
+void Renderbuffer::storageMultisampleImplementationNV(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     bind();
-    //glRenderbufferStorageMultisampleNV(GL_RENDERBUFFER, samples, internalFormat, size.x(), size.y());
+    glRenderbufferStorageMultisampleNV(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
+    #else
+    static_cast<void>(samples);
+    static_cast<void>(internalFormat);
+    static_cast<void>(size);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 #endif
 

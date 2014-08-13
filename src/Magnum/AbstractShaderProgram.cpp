@@ -52,9 +52,13 @@ Int AbstractShaderProgram::maxVertexAttributes() {
     return value;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxAtomicCounterBufferSize;
@@ -66,7 +70,11 @@ Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
 }
 
 Int AbstractShaderProgram::maxComputeSharedMemorySize() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxComputeSharedMemorySize;
@@ -78,7 +86,11 @@ Int AbstractShaderProgram::maxComputeSharedMemorySize() {
 }
 
 Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxComputeWorkGroupInvocations;
@@ -90,7 +102,11 @@ Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
 }
 
 Int AbstractShaderProgram::maxImageUnits() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxImageUnits;
@@ -100,7 +116,9 @@ Int AbstractShaderProgram::maxImageUnits() {
 
     return value;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 Int AbstractShaderProgram::maxImageSamples() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
         return 0;
@@ -112,9 +130,15 @@ Int AbstractShaderProgram::maxImageSamples() {
 
     return value;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractShaderProgram::maxCombinedShaderOutputResources() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() || !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxCombinedShaderOutputResources;
@@ -126,7 +150,11 @@ Int AbstractShaderProgram::maxCombinedShaderOutputResources() {
 }
 
 Long AbstractShaderProgram::maxShaderStorageBlockSize() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint64& value = Context::current()->state().shaderProgram->maxShaderStorageBlockSize;
@@ -154,9 +182,13 @@ Int AbstractShaderProgram::maxUniformBlockSize() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractShaderProgram::maxUniformLocations() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().shaderProgram->maxUniformLocations;
@@ -376,15 +408,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const GLfloat* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform1fv(_id, location, count, values);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform1fvEXT(_id, location, count, values);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform1fvEXT(_id, location, count, values);
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -404,15 +436,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<2, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform2fv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform2fvEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform2fvEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -432,15 +464,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<3, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform3fv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform3fvEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform3fvEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -460,15 +492,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<4, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform4fv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform4fvEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform4fvEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -488,15 +520,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const GLint* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform1iv(_id, location, count, values);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform1ivEXT(_id, location, count, values);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform1ivEXT(_id, location, count, values);
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -516,15 +548,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<2, GLint>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform2iv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform2ivEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform2ivEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -544,15 +576,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<3, GLint>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform3iv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform3ivEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform3ivEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -572,15 +604,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<4, GLint>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform4iv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform4ivEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform4ivEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -601,15 +633,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const GLuint* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform1uiv(_id, location, count, values);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform1uivEXT(_id, location, count, values);
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform1uivEXT(_id, location, count, values);
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -629,15 +661,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<2, GLuint>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform2uiv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform2uivEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform2uivEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -657,15 +689,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<3, GLuint>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform3uiv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform3uivEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform3uivEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -685,15 +717,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::Vector<4, GLuint>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniform4uiv(_id, location, count, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniform4uivEXT(_id, location, count, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniform4uivEXT(_id, location, count, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -784,15 +816,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix2fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix2fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix2fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -812,15 +844,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix3fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix3fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix3fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -840,15 +872,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix4fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix4fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix4fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -869,15 +901,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix2x3fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix2x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix2x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -897,15 +929,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix3x2fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix3x2fv(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix3x2fv(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -925,15 +957,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix2x4fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix2x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix2x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -953,15 +985,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix4x2fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix4x2fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix4x2fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -981,15 +1013,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix3x4fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix3x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix3x4fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -1009,15 +1041,15 @@ void AbstractShaderProgram::uniformImplementationDefault(const GLint location, c
 }
 
 void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* const values) {
-    /** @todo Enable when extension loader for ES is available */
     #ifndef MAGNUM_TARGET_GLES
     glProgramUniformMatrix4x3fv(_id, location, count, GL_FALSE, values[0].data());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glProgramUniformMatrix4x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
     #else
-    CORRADE_INTERNAL_ASSERT(false);
-    //glProgramUniformMatrix4x3fvEXT(_id, location, count, GL_FALSE, values[0].data());
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 

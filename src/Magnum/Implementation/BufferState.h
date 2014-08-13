@@ -32,12 +32,10 @@ namespace Magnum { namespace Implementation {
 struct BufferState {
     #ifndef MAGNUM_TARGET_GLES
     static const std::size_t TargetCount = 13+1;
-    #else
-    #ifndef MAGNUM_TARGET_GLES2
-    static const std::size_t TargetCount = 8+1;
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    static const std::size_t TargetCount = 12+1;
     #else
     static const std::size_t TargetCount = 2+1;
-    #endif
     #endif
 
     /* Target <-> index mapping */
@@ -72,10 +70,10 @@ struct BufferState {
     GLint
         #ifndef MAGNUM_TARGET_GLES
         minMapAlignment,
+        #endif
         maxAtomicCounterBindings,
         maxShaderStorageBindings,
         shaderStorageOffsetAlignment,
-        #endif
         maxUniformBindings;
     #endif
 };

@@ -206,13 +206,14 @@ class MAGNUM_EXPORT Sampler {
             Greater = GL_GREATER
         };
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Depth/stencil texture mode
          *
          * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
          * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
-         * @requires_gl Stencil texturing is not available in OpenGL ES.
+         * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
+         *      and older
          */
         enum class DepthStencilMode: GLenum {
             /** Sample depth component */

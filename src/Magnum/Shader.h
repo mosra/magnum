@@ -92,11 +92,14 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
              * @requires_gl Geometry shaders are not available in OpenGL ES.
              */
             Geometry = GL_GEOMETRY_SHADER,
+            #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Compute shader
              * @requires_gl43 %Extension @extension{ARB,compute_shader}
-             * @requires_gl Compute shaders are not available in OpenGL ES.
+             * @requires_gles31 Compute shaders are not available in OpenGL ES
+             *      3.0 and older
              */
             Compute = GL_COMPUTE_SHADER,
             #endif
@@ -123,8 +126,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of tessellation control shader input vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,tessellation_shader}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,tessellation_shader} (part
+         * of OpenGL 4.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_CONTROL_INPUT_COMPONENTS}
          * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
@@ -134,8 +137,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of tessellation control shader output vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,tessellation_shader}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,tessellation_shader} (part
+         * of OpenGL 4.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_CONTROL_OUTPUT_COMPONENTS}
          * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
@@ -145,8 +148,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of all tessellation control shader output vertices combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,tessellation_shader}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,tessellation_shader} (part
+         * of OpenGL 4.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS}
          * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
@@ -156,8 +159,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of tessellation evaluation shader input vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,tessellation_shader}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,tessellation_shader} (part
+         * of OpenGL 4.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_EVALUATION_INPUT_COMPONENTS}
          * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
@@ -167,8 +170,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of tessellation evaluation shader output vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,tessellation_shader}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,tessellation_shader} (part
+         * of OpenGL 4.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_TESS_EVALUATION_OUTPUT_COMPONENTS}
          * @requires_gl Tessellation shaders are not available in OpenGL ES.
          */
@@ -178,8 +181,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of geometry shader input vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,geometry_shader4}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,geometry_shader4} (part of
+         * OpenGL 3.2) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_INPUT_COMPONENTS}
          * @requires_gl Geometry shaders are not available in OpenGL ES.
          */
@@ -189,8 +192,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of geometry shader output vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,geometry_shader4}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,geometry_shader4} (part of
+         * OpenGL 3.2) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_OUTPUT_COMPONENTS}
          * @requires_gl Geometry shaders are not available in OpenGL ES.
          */
@@ -200,8 +203,8 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of all geometry shader output vertices combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,geometry_shader4}
-         * is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,geometry_shader4} (part of
+         * OpenGL 3.2) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS}
          * @requires_gl Geometry shaders are not available in OpenGL ES.
          */
@@ -239,13 +242,14 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          */
         static Int maxUniformComponents(Type type);
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported atomic counter buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} or
-         * particular shader stage is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available or if particular
+         * shader stage is not available, returns `0`.
          * @see @ref maxCombinedAtomicCounterBuffers(), @ref maxAtomicCounters(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_ATOMIC_COUNTER_BUFFERS},
          *      @def_gl{MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS},
@@ -253,7 +257,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS},
          *      @def_gl{MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS} or
          *      @def_gl{MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxAtomicCounterBuffers(Type type);
 
@@ -261,11 +265,11 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported atomic counter buffer count for all stages combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @ref maxAtomicCounterBuffers(), @ref maxCombinedAtomicCounters(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_ATOMIC_COUNTER_BUFFERS}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxCombinedAtomicCounterBuffers();
 
@@ -273,8 +277,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported atomic counter count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} or
-         * particular shader stage is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available or if particular
+         * shader stage is not available, returns `0`.
          * @see @ref maxCombinedAtomicCounters(), @ref maxAtomicCounterBuffers(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_ATOMIC_COUNTERS},
          *      @def_gl{MAX_TESS_CONTROL_ATOMIC_COUNTERS},
@@ -282,7 +287,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_ATOMIC_COUNTERS},
          *      @def_gl{MAX_COMPUTE_ATOMIC_COUNTERS} or
          *      @def_gl{MAX_FRAGMENT_ATOMIC_COUNTERS}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxAtomicCounters(Type type);
 
@@ -290,11 +295,11 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported atomic counter count for all stages combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @ref maxAtomicCounters(), @ref maxCombinedAtomicCounterBuffers(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_ATOMIC_COUNTERS}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxCombinedAtomicCounters();
 
@@ -302,8 +307,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported image uniform count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
-         * or particular shader stage is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_image_load_store}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available or if particular
+         * shader stage is not available, returns `0`.
          * @see @ref maxCombinedImageUniforms(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_IMAGE_UNIFORMS},
          *      @def_gl{MAX_TESS_CONTROL_IMAGE_UNIFORMS},
@@ -311,7 +317,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_IMAGE_UNIFORMS},
          *      @def_gl{MAX_COMPUTE_IMAGE_UNIFORMS} or
          *      @def_gl{MAX_FRAGMENT_IMAGE_UNIFORMS}
-         * @requires_gl %Image load/store is not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxImageUniforms(Type type);
 
@@ -319,11 +325,11 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported image uniform count for all stages combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_image_load_store}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @ref maxImageUniforms(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_IMAGE_UNIFORMS}
-         * @requires_gl %Image load/store is not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxCombinedImageUniforms();
 
@@ -331,8 +337,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported shader storage block count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
-         * or particular shader stage is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available or if particular
+         * shader stage is not available, returns `0`.
          * @see @ref maxCombinedShaderStorageBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_SHADER_STORAGE_BLOCKS},
          *      @def_gl{MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS},
@@ -340,7 +347,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      @def_gl{MAX_GEOMETRY_SHADER_STORAGE_BLOCKS},
          *      @def_gl{MAX_COMPUTE_SHADER_STORAGE_BLOCKS} or
          *      @def_gl{MAX_FRAGMENT_SHADER_STORAGE_BLOCKS}
-         * @requires_gl %Shader storage is not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxShaderStorageBlocks(Type type);
 
@@ -348,11 +355,11 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported shader storage block count for all stages combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @ref maxShaderStorageBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_STORAGE_BLOCKS}
-         * @requires_gl %Shader storage is not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxCombinedShaderStorageBlocks();
         #endif
@@ -388,8 +395,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported uniform block count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects} or
-         * particular shader stage is not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects}
+         * (part of OpenGL 3.1) or particular shader stage is not available,
+         * returns `0`.
          * @see @ref maxCombinedUniformBlocks(), @ref maxUniformComponents(),
          *      @ref maxCombinedUniformComponents(),
          *      @fn_gl{Get} with @def_gl{MAX_VERTEX_UNIFORM_BLOCKS},
@@ -406,23 +414,22 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported uniform block count for all stages combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects} is
-         * not available, returns `0`.
+         * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects}
+         * (part of OpenGL 3.1) is not available, returns `0`.
          * @see @ref maxUniformBlocks(), @ref maxUniformComponents(),
          *      @ref maxCombinedUniformComponents(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_UNIFORM_BLOCKS}
          * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
          */
         static Int maxCombinedUniformBlocks();
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported uniform component count in all blocks combined
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_objects}
-         * or particular shader stage is not available, returns `0`.
+         * (part of OpenGL 3.1) or particular shader stage is not available,
+         * returns `0`.
          * @see @ref maxUniformComponents(), @ref maxUniformBlocks(),
          *      @fn_gl{Get} with @def_gl{MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS},
          *      @def_gl{MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS},

@@ -71,7 +71,7 @@ struct TextureState {
     void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
     #endif
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
     #endif
     void(AbstractTexture::*mipmapImplementation)();
@@ -80,8 +80,10 @@ struct TextureState {
     #endif
     void(AbstractTexture::*storage2DImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&);
     void(AbstractTexture::*storage3DImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&);
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     void(AbstractTexture::*storage2DMultisampleImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&, GLboolean);
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*storage3DMultisampleImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&, GLboolean);
     void(AbstractTexture::*getImageImplementation)(GLenum, GLint, ColorFormat, ColorType, std::size_t, GLvoid*);
     void(AbstractTexture::*image1DImplementation)(GLenum, GLint, TextureFormat, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
@@ -117,11 +119,13 @@ struct TextureState {
     #endif
     GLfloat maxMaxAnisotropy;
     GLint currentTextureUnit;
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     GLint maxColorSamples,
         maxDepthSamples,
-        maxIntegerSamples,
-        bufferOffsetAlignment;
+        maxIntegerSamples;
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    GLint bufferOffsetAlignment;
     #endif
 
     std::vector<std::pair<GLenum, GLuint>> bindings;

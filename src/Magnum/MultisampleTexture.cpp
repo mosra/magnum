@@ -25,7 +25,7 @@
 
 #include "MultisampleTexture.h"
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
@@ -34,18 +34,24 @@
 namespace Magnum { namespace Implementation {
 
 template<> Vector2i MAGNUM_EXPORT maxMultisampleTextureSize<2>() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        return {};
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
+        return Vector2i{0};
 
     return Vector2i{Implementation::maxTextureSideSize()};
 }
 
+#ifndef MAGNUM_TARGET_GLES
 template<> Vector3i MAGNUM_EXPORT maxMultisampleTextureSize<3>() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        return {};
+        return Vector3i{0};
 
     return {Vector2i{Implementation::maxTextureSideSize()}, Implementation::max3DTextureDepth()};
 }
+#endif
 
 }}
 #endif

@@ -219,8 +219,8 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 @requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
     explicit uniform location instead of using
     @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()".
-@requires_gl Explicit uniform location is not supported in OpenGL ES. Use
-    @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()"
+@requires_gles31 Explicit uniform location is not supported in OpenGL ES 3.0
+    and older. Use @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()"
     instead.
 
 @anchor AbstractShaderProgram-texture-units
@@ -252,8 +252,8 @@ setUniform(uniformLocation("specularTexture"), 1);
 @requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
     texture binding unit instead of using
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
-@requires_gl Explicit texture binding unit is not supported in OpenGL ES. Use
-    @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
+@requires_gles31 Explicit texture binding unit is not supported in OpenGL ES
+    3.0 and older. Use @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
 
 @anchor AbstractShaderProgram-rendering-workflow
@@ -352,15 +352,15 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         static Int maxVertexAttributes();
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported atomic counter buffer size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_atomic_counters} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
+         * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE}
-         * @requires_gl Atomic counters are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxAtomicCounterBufferSize();
 
@@ -368,10 +368,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Max supported compute shared memory size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,compute_shader} is not
-         * available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,compute_shader}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_SHARED_MEMORY_SIZE}
-         * @requires_gl Compute shaders are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxComputeSharedMemorySize();
 
@@ -379,10 +379,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Max supported compute work group invocation count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,compute_shader} is not
-         * available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,compute_shader}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS}
-         * @requires_gl Compute shaders are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxComputeWorkGroupInvocations();
 
@@ -393,32 +393,37 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
-         * is not available, returns `0`.
+         * (part of OpenGL 4.2) or OpenGL ES 3.1 is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_UNITS}
-         * @requires_gl %Image load/store is not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxImageUnits();
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Max supported image sample count
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
-         * is not available, returns `0`.
+         * (part of OpenGL 4.2) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_SAMPLES}
-         * @requires_gl %Image load/store is not available in OpenGL ES.
+         * @requires_gl Multisample image load/store is not available in OpenGL
+         *      ES.
          */
         static Int maxImageSamples();
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported combined shader output resource count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither @extension{ARB,shader_image_load_store}
-         * nor @extension{ARB,shader_storage_buffer_object} extension is
-         * available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_image_load_store}
+         * (part of OpenGL 4.2) nor extension @extension{ARB,shader_storage_buffer_object}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES}
-         * @requires_gl %Image load/store is not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxCombinedShaderOutputResources();
 
@@ -426,50 +431,44 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Max supported shader storage block size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,shader_storage_buffer_object}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE}
-         * @requires_gl %Shader storage is not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Long maxShaderStorageBlockSize();
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported uniform block size
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
-         * is not available, returns `0`.
+         * (part of OpenGL 3.1) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BLOCK_SIZE}
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0
          */
         static Int maxUniformBlockSize();
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Max supported explicit uniform location count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,explicit_uniform_location}
-         * is not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,explicit_uniform_location}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_LOCATIONS}
-         * @requires_gl Explicit uniform location is not supported in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxUniformLocations();
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Min supported program texel offset
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
-         * available, returns `0`.
+         * OpenGL calls. If extension @extension{EXT,gpu_shader4} (part of
+         * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
          * @requires_gles30 %Texture lookup with offset is not available in
-         *      OpenGL ES 2.0.
+         *      OpenGL ES 2.0
          */
         static Int minTexelOffset();
 
@@ -477,11 +476,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Max supported program texel offset
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{EXT,gpu_shader4} is not
-         * available, returns `0`.
+         * OpenGL calls. If extension @extension{EXT,gpu_shader4} (part of
+         * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
          * @requires_gles30 %Texture lookup with offset is not available in
-         *      OpenGL ES 2.0.
+         *      OpenGL ES 2.0
          */
         static Int maxTexelOffset();
         #endif

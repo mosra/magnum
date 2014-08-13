@@ -107,6 +107,7 @@ platform-specific context libraries (see @ref platform-custom for more
 information):
 
 -   `CglContext` -- CGL context
+-   `EglContext` -- EGL context
 -   `GlxContext` -- GLX context
 -   `WglContext` -- WGL context
 

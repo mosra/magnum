@@ -55,6 +55,8 @@ class CubeMapTextureGLTest: public AbstractOpenGLTester {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void samplingBorderInteger();
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         void samplingDepthStencilMode();
         #endif
 
@@ -90,6 +92,8 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               #endif
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureGLTest::samplingBorderInteger,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingDepthStencilMode,
               #endif
 
@@ -235,10 +239,17 @@ void CubeMapTextureGLTest::samplingBorderInteger() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::samplingDepthStencilMode() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 not supported.");
+    #endif
 
     CubeMapTexture texture;
     texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
@@ -253,8 +264,12 @@ void CubeMapTextureGLTest::storage() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    /** @todo How to test this on ES? */
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing");
+    #endif
+
     CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 0), Vector2i(32));
     CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 0), Vector2i(32));
     CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 0), Vector2i(32));

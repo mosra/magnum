@@ -285,14 +285,14 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 }
 
 void Mesh::bindVAO(GLuint vao) {
-    /** @todo Re-enable when extension loader is available for ES */
     GLuint& current = Context::current()->state().mesh->currentVAO;
     if(current != vao) {
         #ifndef MAGNUM_TARGET_GLES2
         glBindVertexArray(current = vao);
+        #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+        glBindVertexArrayOES(current = vao);
         #else
-        CORRADE_INTERNAL_ASSERT(false);
-        //glBindVertexArrayOES(current = vao);
+        CORRADE_ASSERT_UNREACHABLE();
         #endif
     }
 }
@@ -300,12 +300,12 @@ void Mesh::bindVAO(GLuint vao) {
 void Mesh::createImplementationDefault() { _id = 0; }
 
 void Mesh::createImplementationVAO() {
-    /** @todo Get some extension wrangler instead to avoid linker errors to glGenVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glGenVertexArrays(1, &_id);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glGenVertexArraysOES(1, &_id);
     #else
-    //glGenVertexArraysOES(1, &_id);
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
@@ -313,12 +313,12 @@ void Mesh::createImplementationVAO() {
 void Mesh::destroyImplementationDefault() {}
 
 void Mesh::destroyImplementationVAO() {
-    /** @todo Get some extension wrangler instead to avoid linker errors to glDeleteVertexArrays() on ES2 */
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteVertexArrays(1, &_id);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDeleteVertexArraysOES(1, &_id);
     #else
-    //glDeleteVertexArraysOES(1, &_id);
-    CORRADE_INTERNAL_ASSERT(false);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -426,24 +426,33 @@ void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
 
 #ifdef MAGNUM_TARGET_GLES2
 void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLuint divisor) {
-    //glVertexAttribDivisorANGLE(index, divisor);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glVertexAttribDivisorANGLE(index, divisor);
+    #else
     static_cast<void>(index);
     static_cast<void>(divisor);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
 void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint divisor) {
-    //glVertexAttribDivisorEXT(index, divisor);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glVertexAttribDivisorEXT(index, divisor);
+    #else
     static_cast<void>(index);
     static_cast<void>(divisor);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
 void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint divisor) {
-    //glVertexAttribDivisorNV(index, divisor);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glVertexAttribDivisorNV(index, divisor);
+    #else
     static_cast<void>(index);
     static_cast<void>(divisor);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 #endif
 
@@ -501,51 +510,69 @@ void Mesh::unbindImplementationVAO() {}
 
 #ifdef MAGNUM_TARGET_GLES2
 void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    //glDrawArraysInstancedANGLE(GLenum(_primitive), baseVertex, count, instanceCount);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawArraysInstancedANGLE(GLenum(_primitive), baseVertex, count, instanceCount);
+    #else
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
 void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    //glDrawArraysInstancedEXT(GLenum(_primitive), baseVertex, count, instanceCount);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawArraysInstancedEXT(GLenum(_primitive), baseVertex, count, instanceCount);
+    #else
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
 void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    //glDrawArraysInstancedNV(GLenum(_primitive), baseVertex, count, instanceCount);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawArraysInstancedNV(GLenum(_primitive), baseVertex, count, instanceCount);
+    #else
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
 void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    //glDrawElementsInstancedANGLE(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawElementsInstancedANGLE(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+    #else
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
 void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    //glDrawElementsInstancedEXT(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawElementsInstancedEXT(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+    #else
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 
 void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    //glDrawElementsInstancedNV(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-    CORRADE_INTERNAL_ASSERT(false);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawElementsInstancedNV(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+    #else
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 #endif
 

@@ -34,11 +34,11 @@
 namespace Magnum { namespace Implementation {
 
 ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string>& extensions): current(0), maxVertexAttributes(0)
-        #ifndef MAGNUM_TARGET_GLES
-        , maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxImageSamples(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0), maxShaderStorageBlockSize(0)
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
-        , minTexelOffset(0), maxTexelOffset(0), maxUniformBlockSize(0)
+        , maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0), minTexelOffset(0), maxTexelOffset(0), maxUniformBlockSize(0), maxShaderStorageBlockSize(0)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        , maxImageSamples(0)
         #endif
 {
     #ifndef MAGNUM_TARGET_GLES

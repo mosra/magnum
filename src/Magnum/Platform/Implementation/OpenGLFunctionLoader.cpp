@@ -42,6 +42,10 @@
 #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
 #include <GL/glx.h>
 
+/* EGL-specific includes */
+#elif defined(MAGNUM_PLATFORM_USE_EGL)
+#include <EGL/egl.h>
+
 /* Otherwise unsupported */
 #else
 #error Unsupported platform
@@ -90,6 +94,16 @@ OpenGLFunctionLoader::~OpenGLFunctionLoader() = default;
 
 auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
     return glXGetProcAddressARB(reinterpret_cast<const GLubyte*>(name));
+}
+
+/* EGL-specific implementation */
+#elif defined(MAGNUM_PLATFORM_USE_EGL)
+OpenGLFunctionLoader::OpenGLFunctionLoader() = default;
+
+OpenGLFunctionLoader::~OpenGLFunctionLoader() = default;
+
+auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
+    return eglGetProcAddress(name);
 }
 
 /* Otherwise unsupported */

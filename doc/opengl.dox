@@ -59,6 +59,7 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 - @subpage requires-gl
 - @subpage requires-gles20
 - @subpage requires-gles30
+- @subpage requires-gles31
 - @subpage requires-es-extension
 
 @see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
@@ -82,8 +83,13 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 @page requires-gles20 Functionality requiring OpenGL ES 2.0 (not available on desktop or ES 3.0)
 @see @ref MAGNUM_TARGET_GLES2
 
-@page requires-gles30 Functionality requiring OpenGL ES 3.0
+@page requires-gles30 Functionality requiring at least OpenGL ES 3.0
+
+The following symbols are not defined at all when targeting OpenGL ES 2.0.
+
 @see @ref MAGNUM_TARGET_GLES3
+
+@page requires-gles31 Functionality requiring OpenGL ES 3.1
 
 @page requires-es-extension Functionality requiring specific OpenGL ES extension
 @see @ref MAGNUM_TARGET_GLES2

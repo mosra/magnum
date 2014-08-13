@@ -238,6 +238,11 @@ supported.
 Features that have their equivalents implemented in desktop version are
 supported.
 
+@subsection opengl-support-es31 OpenGL ES 3.1
+
+Features that have their equivalents implemented in desktop version are
+supported.
+
 @subsection opengl-support-es30-extensions OpenGL ES 2.0 extensions to match ES 3.0 functionality
 
 %Extension                                   | Status

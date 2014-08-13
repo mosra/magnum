@@ -236,7 +236,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)
@@ -249,7 +249,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /** @copydoc Texture::imageSize() */
         typename DimensionTraits<dimensions+1, Int>::VectorType imageSize(Int level) {
             return DataHelper<dimensions+1>::imageSize(*this, _target, level);

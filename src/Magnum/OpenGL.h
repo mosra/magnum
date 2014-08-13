@@ -33,41 +33,29 @@
 
 #include "Magnum/configure.h"
 
-/** @todo Remove NaCl workaround when not needed */
-
 /* Desktop OpenGL */
 #ifndef MAGNUM_TARGET_GLES
     #include "MagnumExternal/OpenGL/GL/flextGL.h"
 
-/* NaCl has its own gl2.h, the official one causes linker issues. Additionaly
-   to NaCl's gl2ext.h we are including our own to prevent undeclared symbol
-   errors with some recent extensions. */
+/* Special case for NaCl */
 #elif defined(CORRADE_TARGET_NACL)
-    /* Enable function prototypes (the supported ones shouldn't fail at link time) */
-    #define GL_GLEXT_PROTOTYPES
+    /* No extension loading */
+    #include "MagnumExternal/OpenGL/GLES2/flextGLNaCl.h"
 
-    #include <GLES2/gl2.h>
+    /* Needed for NaCl-specific extensions */
+    #define GL_GLEXT_PROTOTYPES
+    #define GLES2_GET_FUN(name) GLES2##name
     #include <GLES2/gl2ext.h>
 
-    /* We need to define missing types for new extensions */
-    #include <cstdint>
-    typedef struct __GLsync *GLsync;
-    typedef std::uint64_t GLuint64;
-    typedef std::int64_t GLint64;
-    #undef __gl2ext_h_
-    #include "MagnumExternal/OpenGL/GLES2/gl2ext.h"
+/* Special case for Emscripten (no extension loading) */
+#elif defined(CORRADE_TARGET_EMSCRIPTEN)
+    #include "MagnumExternal/OpenGL/GLES2/flextGLEmscripten.h"
 
 /* Generic OpenGL ES */
+#elif defined(MAGNUM_TARGET_GLES2)
+    #include "MagnumExternal/OpenGL/GLES2/flextGL.h"
 #else
-    #include "MagnumExternal/OpenGL/KHR/khrplatform.h"
-    #ifndef MAGNUM_TARGET_GLES2
-        #include "MagnumExternal/OpenGL/GLES3/gl3platform.h"
-        #include "MagnumExternal/OpenGL/GLES3/gl3.h"
-    #else
-        #include "MagnumExternal/OpenGL/GLES2/gl2platform.h"
-        #include "MagnumExternal/OpenGL/GLES2/gl2.h"
-    #endif
-    #include "MagnumExternal/OpenGL/GLES2/gl2ext.h"
+    #include "MagnumExternal/OpenGL/GLES3/flextGL.h"
 #endif
 
 #endif

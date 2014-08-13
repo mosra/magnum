@@ -62,9 +62,13 @@ Float AbstractTexture::maxLodBias() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 Int AbstractTexture::maxColorSamples() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().texture->maxColorSamples;
@@ -77,7 +81,11 @@ Int AbstractTexture::maxColorSamples() {
 }
 
 Int AbstractTexture::maxDepthSamples() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().texture->maxDepthSamples;
@@ -90,7 +98,11 @@ Int AbstractTexture::maxDepthSamples() {
 }
 
 Int AbstractTexture::maxIntegerSamples() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+    #endif
         return 0;
 
     GLint& value = Context::current()->state().texture->maxIntegerSamples;
@@ -327,7 +339,7 @@ void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function
         , GLenum(function));
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
 }
@@ -818,15 +830,17 @@ void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
     (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values) {
     bindInternal();
     glGetTexLevelParameteriv(target, level, parameter, values);
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::getLevelParameterImplementationDSA(GLenum target, GLint level, GLenum parameter, GLint* values) {
     glGetTextureLevelParameterivEXT(_id, target, level, parameter, values);
 }
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -895,16 +909,16 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage2D(target, levels, GLenum(internalFormat), size.x(), size.y());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
     #else
     static_cast<void>(target);
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexStorage2DEXT(target, levels, GLenum(internalFormat), size.x(), size.y());
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -949,16 +963,16 @@ void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei level
 
 void AbstractTexture::storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage3D(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexStorage3DEXT(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     #else
     static_cast<void>(target);
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexStorage3DEXT(target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -973,12 +987,16 @@ void AbstractTexture::storageMultisampleImplementationFallback(const GLenum targ
     bindInternal();
     glTexImage2DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::storageMultisampleImplementationDefault(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
     bindInternal();
     glTexStorage2DMultisample(target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageMultisampleImplementationDSA(const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
     glTextureStorage2DMultisampleEXT(_id, target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
 }
@@ -1038,9 +1056,10 @@ void AbstractTexture::imageImplementationDSA(GLenum target, GLint level, Texture
 
 void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexImage3D(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexImage3DOES(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
     #else
     static_cast<void>(target);
     static_cast<void>(level);
@@ -1049,8 +1068,7 @@ void AbstractTexture::imageImplementationDefault(GLenum target, GLint level, Tex
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(data);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexImage3DOES(target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -1084,9 +1102,10 @@ void AbstractTexture::subImageImplementationDSA(GLenum target, GLint level, cons
 
 void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
-    /** @todo Re-enable when extension loader is available for ES */
     #ifndef MAGNUM_TARGET_GLES2
     glTexSubImage3D(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glTexSubImage3DOES(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
     #else
     static_cast<void>(target);
     static_cast<void>(level);
@@ -1095,8 +1114,7 @@ void AbstractTexture::subImageImplementationDefault(GLenum target, GLint level, 
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(data);
-    CORRADE_INTERNAL_ASSERT(false);
-    //glTexSubImage3DOES(target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
+    CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
@@ -1159,7 +1177,9 @@ Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture
     (texture.*Context::current()->state().texture->getLevelParameterivImplementation)(target, level, GL_TEXTURE_WIDTH, &value[0]);
     return value;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture& texture, const GLenum target, const GLint level) {
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
@@ -1194,11 +1214,13 @@ void AbstractTexture::DataHelper<3>::setStorage(AbstractTexture& texture, const 
     (texture.*Context::current()->state().texture->storage3DImplementation)(target, levels, internalFormat, size);
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<2>::setStorageMultisample(AbstractTexture& texture, const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
     (texture.*Context::current()->state().texture->storage2DMultisampleImplementation)(target, samples, internalFormat, size, fixedSampleLocations);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<3>::setStorageMultisample(AbstractTexture& texture, const GLenum target, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
     (texture.*Context::current()->state().texture->storage3DMultisampleImplementation)(target, samples, internalFormat, size, fixedSampleLocations);
 }

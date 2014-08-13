@@ -38,12 +38,12 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#include "Magnum/MultisampleTexture.h"
 #include "Magnum/TextureArray.h"
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/CubeMapTextureArray.h"
-#include "Magnum/MultisampleTexture.h"
 #include "Magnum/RectangleTexture.h"
 #endif
 
@@ -72,9 +72,9 @@ class FramebufferGLTest: public AbstractOpenGLTester {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         void attachTexture2DArray();
+        void attachTexture2DMultisample();
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void attachTexture2DMultisample();
         void attachTexture2DMultisampleArray();
         void attachRectangleTexture();
         #endif
@@ -120,9 +120,9 @@ FramebufferGLTest::FramebufferGLTest() {
               #endif
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::attachTexture2DArray,
+              &FramebufferGLTest::attachTexture2DMultisample,
               #endif
               #ifndef MAGNUM_TARGET_GLES
-              &FramebufferGLTest::attachTexture2DMultisample,
               &FramebufferGLTest::attachTexture2DMultisampleArray,
               &FramebufferGLTest::attachRectangleTexture,
               #endif
@@ -472,12 +472,17 @@ void FramebufferGLTest::attachTexture2DArray() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::attachTexture2DMultisample() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
 
     MultisampleTexture2D color;
     color.setStorage(4, TextureFormat::RGBA8, {128, 128});
@@ -492,7 +497,9 @@ void FramebufferGLTest::attachTexture2DMultisample() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture2DMultisampleArray() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));

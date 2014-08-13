@@ -159,15 +159,15 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static Float maxLodBias();
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported color sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COLOR_TEXTURE_SAMPLES}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxColorSamples();
 
@@ -175,10 +175,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @brief Max supported depth sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxDepthSamples();
 
@@ -186,10 +186,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @brief Max supported integer sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_multisample} is
-         * not available, returns `0`.
+         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_INTEGER_SAMPLES}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxIntegerSamples();
         #endif
@@ -341,7 +341,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         void setCompareMode(Sampler::CompareMode mode);
         void setCompareFunction(Sampler::CompareFunction function);
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         void setDepthStencilMode(Sampler::DepthStencilMode mode);
         #endif
         void invalidateImage(Int level);
@@ -394,9 +394,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
         void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLenum target, GLint level, GLenum parameter, GLint* values);
+        #endif
         #endif
 
         void MAGNUM_LOCAL mipmapImplementationDefault();
@@ -424,9 +426,15 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
@@ -520,7 +528,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     };
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     static Vector2i imageSize(AbstractTexture& texture, GLenum target, GLint level);
     #endif
 
@@ -528,7 +536,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 
     static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
 
+    #ifndef MAGNUM_TARGET_GLES2
     static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedSampleLocations);
+    #endif
 
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference2D& image);
     #ifndef MAGNUM_TARGET_GLES2
@@ -557,7 +567,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     };
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     static Vector3i imageSize(AbstractTexture& texture, GLenum target, GLint level);
     #endif
 
@@ -565,7 +575,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
 
     static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
 
+    #ifndef MAGNUM_TARGET_GLES
     static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedSampleLocations);
+    #endif
 
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference3D& image);
     #ifndef MAGNUM_TARGET_GLES2

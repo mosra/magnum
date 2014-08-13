@@ -14,7 +14,7 @@
 #error Attempt to include auto-generated header after including glext.h
 #endif
 #if defined(__gltypes_h_)
-#error Attempt to include auto-generated header after gltypes.h
+#error Attempt to include auto-generated header after including gltypes.h
 #endif
 #if defined(__gl_ATI_h_)
 #error Attempt to include auto-generated header after including glATI.h

@@ -23,4 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-install(FILES gl3.h gl3platform.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES3)
+# flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
+add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang")
+    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -fvisibility=hidden -DFlextGL_EXPORTS")
+else()
+    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DFlextGL_EXPORTS")
+endif()
+
+install(FILES flextGL.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES3)
