@@ -523,10 +523,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_gl Rectangle textures are not available in OpenGL ES.
          */
         Framebuffer& attachTexture(BufferAttachment attachment, RectangleTexture& texture);
+        #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
         /** @overload
          * @requires_gl32 %Extension @extension{ARB,texture_multisample}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gles31 Multisample textures are not available in OpenGL ES
+         *      3.0 and older.
          */
         Framebuffer& attachTexture(BufferAttachment attachment, MultisampleTexture2D& texture);
         #endif
@@ -592,7 +595,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 
         /** @overload
          * @requires_gl32 %Extension @extension{ARB,texture_multisample}
-         * @requires_gl Multisample textures are not available in OpenGL ES.
+         * @requires_gl Multisample array textures are not available in OpenGL ES.
          */
         Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer);
         #endif

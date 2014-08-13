@@ -36,12 +36,12 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#include "Magnum/MultisampleTexture.h"
 #include "Magnum/TextureArray.h"
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/CubeMapTextureArray.h"
-#include "Magnum/MultisampleTexture.h"
 #include "Magnum/RectangleTexture.h"
 #endif
 
@@ -190,7 +190,9 @@ Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Recta
     (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), 0);
     return *this;
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
 Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture) {
     (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), 0);
     return *this;
