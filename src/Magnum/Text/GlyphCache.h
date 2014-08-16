@@ -52,7 +52,7 @@ Text::AbstractFont* font;
 Text::GlyphCache* cache = new GlyphCache(Vector2i(512));
 font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                              "0123456789 ");
+                              "0123456789?!:;,. ");
 @endcode
 
 See @ref Renderer for information about text rendering.
