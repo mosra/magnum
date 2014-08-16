@@ -147,17 +147,20 @@ RELATED PROJECTS
 
 The engine itself is kept as small as possible with only little dependencies.
 Additional functionality, often depending on external libraries, is provided in
-separate repositories. Integration with various external math and physics
-libraries can be found at https://github.com/mosra/magnum-integration. Various
-importer plugins for image, audio and 3D model formats are maintained in
-separate repository, which can be found at https://github.com/mosra/magnum-plugins.
+separate repositories.
 
-There are also examples of engine usage, varying from simple *Hello World*-like
-example to more advanced applications, such as viewer for complex 3D models.
-Example repository is at https://github.com/mosra/magnum-examples.
-
-Repository with bootstrap projects for many use cases, helping you get up and
-running in no time is located at https://github.com/mosra/magnum-bootstrap.
+*   **Magnum Bootstrap** -- bootstrap projects for many use cases, helping you
+    get up and running in no time: https://github.com/mosra/magnum-bootstrap
+*   **Magnum Plugins** -- various importer plugins for image, font, audio and
+    3D model formats is at https://github.com/mosra/magnum-plugins
+*   **Magnum Integration** -- integration with various external math and
+    physics, get it at https://github.com/mosra/magnum-integration
+*   **Magnum Examples** -- examples of engine usage, varying from simple
+    *Hello World*-like example to more advanced applications, such as viewer
+    for complex 3D models. See it at https://github.com/mosra/magnum-examples
+*   **libRocket integration** -- integrates Magnum as rendering backend into
+    [libRocket](https://github.com/libRocket/libRocket) GUI library:
+    https://github.com/miguelmartin75/Magnum-libRocket
 
 CONTACT
 =======
