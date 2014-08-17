@@ -154,7 +154,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         AbstractQuery& setLabelInternal(Containers::ArrayReference<const char> label);
 
         GLuint _id;
-        GLenum target;
+        GLenum _target;
 };
 
 
@@ -474,13 +474,13 @@ class TimeQuery: public AbstractQuery {
         #endif
 };
 
-inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._id), target(other.target) {
+inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._id), _target(other._target) {
     other._id = 0;
 }
 
 inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
     std::swap(_id, other._id);
-    std::swap(target, other.target);
+    std::swap(_target, other._target);
     return *this;
 }
 

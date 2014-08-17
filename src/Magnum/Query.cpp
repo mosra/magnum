@@ -33,7 +33,7 @@
 
 namespace Magnum {
 
-AbstractQuery::AbstractQuery(): target() {
+AbstractQuery::AbstractQuery(): _target{} {
     #ifndef MAGNUM_TARGET_GLES2
     glGenQueries(1, &_id);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -74,7 +74,7 @@ AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayReference<
 }
 
 bool AbstractQuery::resultAvailable() {
-    CORRADE_ASSERT(!target, "AbstractQuery::resultAvailable(): the query is currently running", false);
+    CORRADE_ASSERT(!_target, "AbstractQuery::resultAvailable(): the query is currently running", false);
 
     GLuint result;
     #ifndef MAGNUM_TARGET_GLES2
@@ -89,7 +89,7 @@ bool AbstractQuery::resultAvailable() {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+    CORRADE_ASSERT(!_target, "AbstractQuery::result(): the query is currently running", {});
 
     UnsignedInt result;
     #ifndef MAGNUM_TARGET_GLES2
@@ -105,7 +105,7 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
 template<> bool AbstractQuery::result<bool>() { return result<UnsignedInt>() != 0; }
 
 template<> Int AbstractQuery::result<Int>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+    CORRADE_ASSERT(!_target, "AbstractQuery::result(): the query is currently running", {});
 
     Int result;
     #ifndef MAGNUM_TARGET_GLES
@@ -120,7 +120,7 @@ template<> Int AbstractQuery::result<Int>() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+    CORRADE_ASSERT(!_target, "AbstractQuery::result(): the query is currently running", {});
 
     UnsignedLong result;
     #ifndef MAGNUM_TARGET_GLES
@@ -134,7 +134,7 @@ template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
 }
 
 template<> Long AbstractQuery::result<Long>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
+    CORRADE_ASSERT(!_target, "AbstractQuery::result(): the query is currently running", {});
 
     Long result;
     #ifndef MAGNUM_TARGET_GLES
@@ -149,13 +149,13 @@ template<> Long AbstractQuery::result<Long>() {
 #endif
 #endif
 
-void AbstractQuery::begin(GLenum target) {
-    CORRADE_ASSERT(!this->target, "AbstractQuery::begin(): the query is already running", );
+void AbstractQuery::begin(const GLenum target) {
+    CORRADE_ASSERT(!_target, "AbstractQuery::begin(): the query is already running", );
 
     #ifndef MAGNUM_TARGET_GLES2
-    glBeginQuery(this->target = target, id());
+    glBeginQuery(_target = target, id());
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glBeginQueryEXT(this->target = target, id());
+    glBeginQueryEXT(_target = target, id());
     #else
     static_cast<void>(target);
     CORRADE_ASSERT_UNREACHABLE();
@@ -163,16 +163,16 @@ void AbstractQuery::begin(GLenum target) {
 }
 
 void AbstractQuery::end() {
-    CORRADE_ASSERT(target, "AbstractQuery::end(): the query is not running", );
+    CORRADE_ASSERT(_target, "AbstractQuery::end(): the query is not running", );
 
     #ifndef MAGNUM_TARGET_GLES2
-    glEndQuery(target);
+    glEndQuery(_target);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glEndQueryEXT(target);
+    glEndQueryEXT(_target);
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif
-    target = {};
+    _target = {};
 }
 
 }
