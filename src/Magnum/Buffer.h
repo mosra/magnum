@@ -569,7 +569,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
          */
-        std::string label() const;
+        std::string label();
 
         /**
          * @brief Set buffer label
@@ -852,13 +852,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
     private:
     #endif
         /* There should be no need to use these from user code */
-        static void unbindInternal(Target target) { bindInternal(target, 0); }
-        void bindInternal(Target target) { bindInternal(target, _id); }
+        static void unbindInternal(Target target) { bindInternal(target, nullptr); }
+        void bindInternal(Target target) { bindInternal(target, this); }
 
     private:
-        Buffer& setLabelInternal(Containers::ArrayReference<const char> label);
-
-        static void bindInternal(Target hint, GLuint id);
+        static void bindInternal(Target hint, Buffer* buffer);
         Target MAGNUM_LOCAL bindSomewhereInternal(Target hint);
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -867,6 +865,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         static void MAGNUM_LOCAL copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
         #endif
+
+        void MAGNUM_LOCAL createIfNotAlready();
+
+        Buffer& setLabelInternal(Containers::ArrayReference<const char> label);
 
         #ifndef MAGNUM_TARGET_GLES
         void subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data);
@@ -927,6 +929,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #ifdef CORRADE_TARGET_NACL
         void* _mappedBuffer;
         #endif
+        bool _created; /* see createIfNotAlready() for details */
 };
 
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
@@ -934,13 +937,14 @@ CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
 
-inline Buffer::Buffer(Buffer&& other) noexcept: _id(other._id), _targetHint(other._targetHint) {
+inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint}, _created{other._created} {
     other._id = 0;
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
     std::swap(_id, other._id);
     std::swap(_targetHint, other._targetHint);
+    std::swap(_created, other._created);
     return *this;
 }
 

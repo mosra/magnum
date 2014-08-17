@@ -118,20 +118,15 @@ void BufferGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
-    {
-        /** @todo Is this even legal optimization? */
-        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
-        CORRADE_VERIFY(false);
-    }
     Buffer buffer;
-    buffer.setData({nullptr, 3}, BufferUsage::StaticDraw);
 
     CORRADE_COMPARE(buffer.label(), "");
+    MAGNUM_VERIFY_NO_ERROR();
 
     buffer.setLabel("MyBuffer");
-    CORRADE_COMPARE(buffer.label(), "MyBuffer");
-
     MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(buffer.label(), "MyBuffer");
 }
 
 void BufferGLTest::data() {
