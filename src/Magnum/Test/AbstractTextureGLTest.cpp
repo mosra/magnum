@@ -93,20 +93,15 @@ void AbstractTextureGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
-    {
-        /** @todo Is this even legal optimization? */
-        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
-        CORRADE_VERIFY(false);
-    }
     Texture2D texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear);
 
     CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_ERROR();
 
     texture.setLabel("MyTexture");
-    CORRADE_COMPARE(texture.label(), "MyTexture");
-
     MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
 }
 
 }}

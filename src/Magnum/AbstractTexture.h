@@ -247,7 +247,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{TEXTURE}
          */
-        std::string label() const;
+        std::string label();
 
         /**
          * @brief Set texture label
@@ -359,6 +359,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
         #endif
+
+        void MAGNUM_LOCAL createIfNotAlready();
 
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
@@ -484,6 +486,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         ColorType MAGNUM_LOCAL imageTypeForInternalFormat(TextureFormat internalFormat);
 
         GLuint _id;
+        bool _created; /* see createIfNotAlready() for details */
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -587,13 +590,14 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
 };
 #endif
 
-inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _target(other._target), _id(other._id) {
+inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _target{other._target}, _id{other._id}, _created{other._created} {
     other._id = 0;
 }
 
 inline AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) noexcept {
     std::swap(_target, other._target);
     std::swap(_id, other._id);
+    std::swap(_created, other._created);
     return *this;
 }
 
