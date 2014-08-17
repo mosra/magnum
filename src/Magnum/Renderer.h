@@ -194,6 +194,16 @@ class MAGNUM_EXPORT Renderer {
             ProgramPointSize = GL_PROGRAM_POINT_SIZE,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Discard primitives before rasterization.
+             * @requires_gl30 %Extension @extension{EXT,transform_feedback}
+             * @requires_gles30 Transform feedback is not available in OpenGL
+             *      ES 2.0.
+             */
+            RasterizerDiscard = GL_RASTERIZER_DISCARD,
+            #endif
+
             /**
              * Scissor test
              * @see @ref setScissor()
