@@ -77,9 +77,9 @@ INSTALLATION
 ============
 
 You can either use packaging scripts, which are stored in `package/`
-subdirectory, or compile and install everything manually. Note that Doxygen
-documentation (see above or build your own using instructions below) contains
-more comprehensive guide for building, packaging and crosscompiling.
+subdirectory, or compile and install everything manually. Note that
+[Magnum documentation](http://mosra.cz/blog/magnum-doc/) contains more
+comprehensive guide for building, packaging and crosscompiling.
 
 Minimal dependencies
 --------------------
