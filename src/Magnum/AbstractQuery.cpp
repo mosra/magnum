@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Query.h"
+#include "AbstractQuery.h"
 
 #include <Corrade/Utility/Assert.h>
 

@@ -30,7 +30,7 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
-#include "Magnum/Query.h"
+#include "Magnum/PrimitiveQuery.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
