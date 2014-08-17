@@ -117,16 +117,30 @@ class SampleQuery: public AbstractQuery {
          */
         enum class ConditionalRenderMode: GLenum {
             /**
-             * If query result is not yet available, waits for it and
-             * then begins conditional rendering based on result value.
+             * If query result is not yet available, waits for it and then
+             * begins rendering only if result is nonzero.
              */
             Wait = GL_QUERY_WAIT,
 
             /**
-             * If query result is not yet available, OpenGL may begin
-             * rendering like if the result value was nonzero.
+             * If query result is not yet available, waits for it and then
+             * begins rendering only if result is zero.
+             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             */
+            WaitInverted = GL_QUERY_WAIT_INVERTED,
+
+            /**
+             * If query result is not yet available, begins rendering like if
+             * the result was nonzero.
              */
             NoWait = GL_QUERY_NO_WAIT,
+
+            /**
+             * If query result is not yet available, begins rendering like if
+             * the result was zero.
+             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             */
+            NoWaitInverted = GL_QUERY_NO_WAIT_INVERTED,
 
             /**
              * The same as @ref ConditionalRenderMode::Wait, but regions
@@ -135,10 +149,26 @@ class SampleQuery: public AbstractQuery {
             ByRegionWait = GL_QUERY_BY_REGION_WAIT,
 
             /**
+             * The same as @ref ConditionalRenderMode::WaitInverted, but
+             * regions untouched by the sample query may not be rendered at
+             * all.
+             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             */
+            ByRegionWaitInverted = GL_QUERY_BY_REGION_WAIT_INVERTED,
+
+            /**
              * The same as @ref ConditionalRenderMode::NoWait, but regions
              * untouched by the sample query may not be rendered at all.
              */
-            ByRegionNoWait = GL_QUERY_BY_REGION_NO_WAIT
+            ByRegionNoWait = GL_QUERY_BY_REGION_NO_WAIT,
+
+            /**
+             * The same as @ref ConditionalRenderMode::NoWaitInverted, but
+             * regions untouched by the sample query may not be rendered at
+             * all.
+             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             */
+            ByRegionNoWaitInverted = GL_QUERY_BY_REGION_NO_WAIT_INVERTED
         };
         #endif
 

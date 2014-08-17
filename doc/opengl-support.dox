@@ -210,7 +210,7 @@ following:
 -------------------------------------------- | ------
 @extension{ARB,ES3_1_compatibility}          | |
 @extension{ARB,clip_control}                 | |
-@extension{ARB,conditional_render_inverted}  | |
+@extension{ARB,conditional_render_inverted}  | done
 @extension{ARB,cull_distance}                | |
 @extension{ARB,derivative_control}           | done (shading language only)
 @extension{ARB,direct_state_access}          | |
