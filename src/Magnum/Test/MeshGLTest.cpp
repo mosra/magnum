@@ -295,21 +295,15 @@ void MeshGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
-    {
-        /** @todo Is this even legal optimization? */
-        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
-        CORRADE_VERIFY(false);
-    }
-    Buffer buffer{Buffer::Target::ElementArray};
     Mesh mesh;
-    mesh.setIndexBuffer(buffer, 0, Mesh::IndexType::UnsignedShort);
 
     CORRADE_COMPARE(mesh.label(), "");
+    MAGNUM_VERIFY_NO_ERROR();
 
     mesh.setLabel("MyMesh");
-    CORRADE_COMPARE(mesh.label(), "MyMesh");
-
     MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(mesh.label(), "MyMesh");
 }
 
 namespace {

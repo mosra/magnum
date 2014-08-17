@@ -72,7 +72,7 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Mesh::Mesh(MeshPrimitive primitive): _primitive(primitive), _count(0), _baseVertex(0), _instanceCount{1},
+Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _count{0}, _baseVertex{0}, _instanceCount{1},
     #ifndef MAGNUM_TARGET_GLES
     _baseInstance{0},
     #endif
@@ -95,7 +95,7 @@ Mesh::~Mesh() {
     (this->*Context::current()->state().mesh->destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
+Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _created{other._created}, _primitive(other._primitive), _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
     #ifndef MAGNUM_TARGET_GLES
     _baseInstance{other._baseInstance},
     #endif
@@ -115,6 +115,7 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive),
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
     std::swap(_id, other._id);
+    std::swap(_created, other._created);
     std::swap(_primitive, other._primitive);
     std::swap(_count, other._count);
     std::swap(_baseVertex, other._baseVertex);
@@ -140,7 +141,20 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     return *this;
 }
 
-std::string Mesh::label() const {
+inline void Mesh::createIfNotAlready() {
+    /* If VAO extension is not available, _created is always true */
+    if(_created) return;
+
+    /* glGen*() does not create the object, just reserves the name. Some
+       commands (such as glObjectLabel()) operate with IDs directly and they
+       require the object to be created. Binding the VAO finally creates it.
+       Also all EXT DSA functions implicitly create it. */
+    bindVAO();
+    CORRADE_INTERNAL_ASSERT(_created);
+}
+
+std::string Mesh::label() {
+    createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
     return Context::current()->state().debug->getLabelImplementation(GL_VERTEX_ARRAY, _id);
     #else
@@ -149,6 +163,7 @@ std::string Mesh::label() const {
 }
 
 Mesh& Mesh::setLabelInternal(const Containers::ArrayReference<const char> label) {
+    createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_VERTEX_ARRAY, _id, label);
     #else
@@ -284,22 +299,28 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
     (this->*state.unbindImplementation)();
 }
 
-void Mesh::bindVAO(GLuint vao) {
+void Mesh::bindVAO() {
     GLuint& current = Context::current()->state().mesh->currentVAO;
-    if(current != vao) {
+    if(current != _id) {
+        /* Binding the VAO finally creates it */
+        _created = true;
         #ifndef MAGNUM_TARGET_GLES2
-        glBindVertexArray(current = vao);
+        glBindVertexArray(current = _id);
         #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-        glBindVertexArrayOES(current = vao);
+        glBindVertexArrayOES(current = _id);
         #else
         CORRADE_ASSERT_UNREACHABLE();
         #endif
     }
 }
 
-void Mesh::createImplementationDefault() { _id = 0; }
+void Mesh::createImplementationDefault() {
+    _id = 0;
+    _created = true;
+}
 
 void Mesh::createImplementationVAO() {
+    _created = false;
     #ifndef MAGNUM_TARGET_GLES2
     glGenVertexArrays(1, &_id);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
@@ -341,12 +362,13 @@ void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
     #endif
 
-    bindVAO(_id);
+    bindVAO();
     vertexAttribPointer(attribute);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationDSA(const Attribute& attribute) {
+    _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
     if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
@@ -376,12 +398,13 @@ void Mesh::attributePointerImplementationDefault(const IntegerAttribute& attribu
 }
 
 void Mesh::attributePointerImplementationVAO(const IntegerAttribute& attribute) {
-    bindVAO(_id);
+    bindVAO();
     vertexAttribPointer(attribute);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationDSA(const IntegerAttribute& attribute) {
+    _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
@@ -406,11 +429,12 @@ void Mesh::attributePointerImplementationDefault(const LongAttribute& attribute)
 }
 
 void Mesh::attributePointerImplementationVAO(const LongAttribute& attribute) {
-    bindVAO(_id);
+    bindVAO();
     vertexAttribPointer(attribute);
 }
 
 void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
+    _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
@@ -459,7 +483,7 @@ void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint 
 void Mesh::bindIndexBufferImplementationDefault(Buffer&) {}
 
 void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
-    bindVAO(_id);
+    bindVAO();
 
     /* Reset ElementArray binding to force explicit glBindBuffer call later */
     /** @todo Do this cleaner way */
@@ -488,7 +512,7 @@ void Mesh::bindImplementationDefault() {
 }
 
 void Mesh::bindImplementationVAO() {
-    bindVAO(_id);
+    bindVAO();
 }
 
 void Mesh::unbindImplementationDefault() {

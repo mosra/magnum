@@ -458,7 +458,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          */
-        std::string label() const;
+        std::string label();
 
         /**
          * @brief Set mesh label
@@ -860,6 +860,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
 
+        void MAGNUM_LOCAL createIfNotAlready();
+
         Mesh& setLabelInternal(Containers::ArrayReference<const char> label);
 
         /* Computing stride of interleaved vertex attributes */
@@ -927,7 +929,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
 
-        static void MAGNUM_LOCAL bindVAO(GLuint vao);
+        void MAGNUM_LOCAL bindVAO();
 
         #ifndef MAGNUM_TARGET_GLES
         void drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd);
@@ -995,6 +997,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
         GLuint _id;
+        bool _created; /* see createIfNotAlready() for details */
         MeshPrimitive _primitive;
         Int _count, _baseVertex, _instanceCount;
         #ifndef MAGNUM_TARGET_GLES
