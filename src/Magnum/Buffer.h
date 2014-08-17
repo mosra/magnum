@@ -937,13 +937,24 @@ CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
 
-inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint}, _created{other._created} {
+inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint},
+    #ifdef CORRADE_TARGET_NACL
+    _mappedBuffer{other._mappedBuffer},
+    #endif
+     _created{other._created}
+{
     other._id = 0;
+    #ifdef CORRADE_TARGET_NACL
+    other._mappedBuffer = nullptr;
+    #endif
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
     std::swap(_id, other._id);
     std::swap(_targetHint, other._targetHint);
+    #ifdef CORRADE_TARGET_NACL
+    std::swap(_mappedBuffer, other._mappedBuffer);
+    #endif
     std::swap(_created, other._created);
     return *this;
 }
