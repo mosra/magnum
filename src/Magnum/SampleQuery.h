@@ -129,14 +129,14 @@ class SampleQuery: public AbstractQuery {
             NoWait = GL_QUERY_NO_WAIT,
 
             /**
-             * The same as Wait, but regions untouched by the sample query may
-             * not be rendered at all.
+             * The same as @ref ConditionalRenderMode::Wait, but regions
+             * untouched by the sample query may not be rendered at all.
              */
             ByRegionWait = GL_QUERY_BY_REGION_WAIT,
 
             /**
-             * The same as NoWait, but regions untouched by the sample query
-             * may not be rendered at all.
+             * The same as @ref ConditionalRenderMode::NoWait, but regions
+             * untouched by the sample query may not be rendered at all.
              */
             ByRegionNoWait = GL_QUERY_BY_REGION_NO_WAIT
         };

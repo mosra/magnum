@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Math::Geometry::Rectangle
- * @deprecated Use @ref Math/Range.h instead.
+ * @deprecated Use @ref Magnum/Math/Range.h instead.
  */
 
 #include "Magnum/Math/Range.h"
