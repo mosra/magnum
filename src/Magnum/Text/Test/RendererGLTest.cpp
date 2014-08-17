@@ -272,7 +272,7 @@ void RendererGLTest::mutableText() {
     CORRADE_COMPARE(renderer.rectangle(), Range2D());
 
     /* Reserve some capacity */
-    renderer.reserve(4, BufferUsage::StaticDraw, BufferUsage::StaticDraw);
+    renderer.reserve(4, BufferUsage::DynamicDraw, BufferUsage::DynamicDraw);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 4);
     /** @todo How to verify this on ES? */
