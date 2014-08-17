@@ -124,7 +124,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
          */
-        std::string label() const;
+        std::string label();
 
         /**
          * @brief Set renderbuffer label
@@ -178,6 +178,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
 
     private:
+        void MAGNUM_LOCAL createIfNotAlready();
+
         Renderbuffer& setLabelInternal(Containers::ArrayReference<const char> label);
 
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
@@ -198,14 +200,16 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void MAGNUM_LOCAL bind();
 
         GLuint _id;
+        bool _created; /* see createIfNotAlready() for details */
 };
 
-inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id(other._id) {
+inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id{other._id}, _created{other._created} {
     other._id = 0;
 }
 
 inline Renderbuffer& Renderbuffer::operator=(Renderbuffer&& other) noexcept {
     std::swap(_id, other._id);
+    std::swap(_created, other._created);
     return *this;
 }
 
