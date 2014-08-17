@@ -82,6 +82,17 @@ Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
 }
 #endif
 
+void AbstractFramebuffer::createIfNotAlready() {
+    if(_created) return;
+
+    /* glGen*() does not create the object, just reserves the name. Some
+       commands (such as glObjectLabel()) operate with IDs directly and they
+       require the object to be created. Binding the framebuffer finally
+       creates it. Also all EXT DSA functions implicitly create it. */
+    bindInternal();
+    CORRADE_INTERNAL_ASSERT(_created);
+}
+
 void AbstractFramebuffer::bind(FramebufferTarget target) {
     bindInternal(target);
     setViewportInternal();
@@ -102,6 +113,8 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
         state->readBinding = state->drawBinding = _id;
     } else CORRADE_ASSERT_UNREACHABLE();
 
+    /* Binding the framebuffer finally creates it */
+    _created = true;
     glBindFramebuffer(GLenum(target), _id);
 }
 
@@ -119,6 +132,8 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
     /* Or bind it, if not already */
     state->readBinding = _id;
 
+    /* Binding the framebuffer finally creates it */
+    _created = true;
     #ifndef MAGNUM_TARGET_GLES2
     glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
     return FramebufferTarget::Read;
@@ -256,6 +271,7 @@ GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTa
 
 #ifndef MAGNUM_TARGET_GLES
 GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
+    _created = true;
     return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
 }
 #endif
@@ -280,6 +296,7 @@ void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const 
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers) {
+    _created = true;
     glFramebufferDrawBuffersEXT(_id, count, buffers);
 }
 #endif
@@ -305,6 +322,7 @@ void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::drawBufferImplementationDSA(GLenum buffer) {
+    _created = true;
     glFramebufferDrawBufferEXT(_id, buffer);
 }
 #endif
@@ -328,6 +346,7 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
+    _created = true;
     glFramebufferReadBufferEXT(_id, buffer);
 }
 #endif

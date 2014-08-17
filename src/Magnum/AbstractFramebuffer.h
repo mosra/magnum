@@ -329,11 +329,14 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         explicit AbstractFramebuffer() = default;
         ~AbstractFramebuffer() = default;
 
+        void MAGNUM_LOCAL createIfNotAlready();
+
         void MAGNUM_LOCAL bindInternal(FramebufferTarget target);
         FramebufferTarget MAGNUM_LOCAL bindInternal();
         void MAGNUM_LOCAL setViewportInternal();
 
         GLuint _id;
+        bool _created; /* see createIfNotAlready() for details */
         Range2Di _viewport;
 
     private:

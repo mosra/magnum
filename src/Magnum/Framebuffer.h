@@ -341,7 +341,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
          */
-        std::string label() const;
+        std::string label();
 
         /**
          * @brief Set framebuffer label
@@ -664,6 +664,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
 inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
     _id = other._id;
     _viewport = other._viewport;
+    _created = other._created;
     other._id = 0;
     other._viewport = {};
 }
@@ -671,6 +672,7 @@ inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
 inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
     std::swap(_id, other._id);
     std::swap(_viewport, other._viewport);
+    std::swap(_created, other._created);
     return *this;
 }
 
