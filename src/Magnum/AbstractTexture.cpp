@@ -172,13 +172,21 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, std:
     /* Create array of IDs and also update bindings in state tracker */
     Containers::Array<GLuint> ids{textures.size()};
     Int i{};
+    bool different = false;
     for(AbstractTexture* const texture: textures) {
         if(texture) texture->createIfNotAlready();
-        textureState->bindings[firstTextureUnit + i].second = ids[i] = texture ? texture->_id : 0;
+
+        const GLuint id = ids[i] = texture ? texture->_id : 0;
+        if(textureState->bindings[firstTextureUnit + i].second != id) {
+            different = true;
+            textureState->bindings[firstTextureUnit + i].second = id;
+        }
+
         ++i;
     }
 
-    glBindTextures(firstTextureUnit, ids.size(), ids);
+    /* Avoid doing the binding if there is nothing different */
+    if(different) glBindTextures(firstTextureUnit, ids.size(), ids);
 }
 #endif
 
