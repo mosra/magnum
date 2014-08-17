@@ -76,6 +76,8 @@ with these four commands:
     cmake --build .
     ./src/MyApplication # or ./src/Debug/MyApplication
 
+See @ref cmake for more information.
+
 ## Bootstrap application for Emscripten
 
 Fully contained base application using @ref Sdl2Application for both desktop
@@ -115,7 +117,7 @@ In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
 `%Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw on the

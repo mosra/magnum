@@ -98,6 +98,8 @@ properly set **absolute** path to `toolchains/modules/` directory containing
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake"
     cmake --build .
 
+See @ref cmake for more information.
+
 The compiled binaries will be put into `lib/armeabi-v7a` and `lib/x86`. You can
 then build the APK package simply by running `ant`. The resulting APK package
 can be then installed directly on the device or emulator using `adb install`.
@@ -114,7 +116,7 @@ Request `%AndroidApplication` component, add
 `${MAGNUM_ANDROIDAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_ANDROIDAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
 @ref building and @ref cmake for more information. Note that unlike on other
 platforms you need to create *shared library* instead of executable. The
 resulting binary then needs to be copied to `lib/armeabi-v7a` and `lib/x86`,
