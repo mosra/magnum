@@ -153,9 +153,9 @@ void AbstractQuery::begin(const GLenum target) {
     CORRADE_ASSERT(!_target, "AbstractQuery::begin(): the query is already running", );
 
     #ifndef MAGNUM_TARGET_GLES2
-    glBeginQuery(_target = target, id());
+    glBeginQuery(_target = target, _id);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glBeginQueryEXT(_target = target, id());
+    glBeginQueryEXT(_target = target, _id);
     #else
     static_cast<void>(target);
     CORRADE_ASSERT_UNREACHABLE();

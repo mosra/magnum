@@ -80,8 +80,7 @@ MyShader() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
     // Attach the shaders
-    attachShader(vert);
-    attachShader(frag);
+    attachShader({vert, frag});
 
     // Link the program together
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
@@ -236,7 +235,7 @@ layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
 
 If you don't have the required extension, declare the uniforms without the
-`layout()` qualifier and set the texture binding unit using
+`binding` qualifier and set the texture binding unit using
 @ref setUniform(Int, const T&) "setUniform(Int, Int)". Note that additional
 syntax changes may be needed for GLSL 1.20 and GLSL ES 1.0.
 @code
@@ -688,6 +687,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The same as @ref bindFragmentDataLocationIndexed(), but with `index`
          * set to `0`.
          * @see @fn_gl{BindFragDataLocation}
+         * @deprecated_gl Preferred usage is to specify attribute location
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgram-attribute-location "class documentation"
+         *      for more information.
          * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0
          *      and `gl_FragData[n]` provided by @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}

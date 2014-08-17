@@ -98,9 +98,7 @@ Int Buffer::shaderStorageOffsetAlignment() {
 
     return value;
 }
-#endif
 
-#ifndef MAGNUM_TARGET_GLES2
 Int Buffer::maxUniformBindings() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
@@ -114,9 +112,7 @@ Int Buffer::maxUniformBindings() {
 
     return value;
 }
-#endif
 
-#ifndef MAGNUM_TARGET_GLES2
 void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const GLintptr writeOffset, const GLsizeiptr size) {
     Context::current()->state().buffer->copyImplementation(read, write, readOffset, writeOffset, size);
 }

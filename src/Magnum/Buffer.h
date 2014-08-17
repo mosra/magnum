@@ -227,9 +227,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              *      3.0 and older.
              */
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
-            #endif
 
-            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Source for copies. See @ref copy().
              * @requires_gl31 %Extension @extension{ARB,copy_buffer}
@@ -245,9 +243,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              *      2.0.
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
-            #endif
 
-            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Indirect compute dispatch commands.
              * @requires_gl43 %Extension @extension{ARB,compute_shader}
@@ -266,11 +262,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #endif
 
             /** Used for storing vertex indices. */
-            ElementArray = GL_ELEMENT_ARRAY_BUFFER
+            ElementArray = GL_ELEMENT_ARRAY_BUFFER,
 
             #ifndef MAGNUM_TARGET_GLES2
-            ,
-
             /**
              * Target for pixel pack operations.
              * @requires_gles30 Pixel buffer objects are not available in
@@ -284,9 +278,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              *      OpenGL ES 2.0.
              */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
-            #endif
 
-            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Used for shader storage.
              * @requires_gl43 %Extension @extension{ARB,shader_storage_buffer_object}
@@ -489,9 +481,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int shaderStorageOffsetAlignment();
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported uniform buffer binding count
          *
@@ -499,12 +489,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
          * (part of OpenGL 3.1) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0
          */
         static Int maxUniformBindings();
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Copy one buffer to another
          * @param read          %Buffer from which to read

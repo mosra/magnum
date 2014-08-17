@@ -211,6 +211,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * texture unit is unbound. If @extension{ARB,multi_bind} (part of
          * OpenGL 4.4) is not available, the feature is emulated with sequence
          * of @ref bind(Int) / @ref unbind() calls.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
          * @see @fn_gl{BindTextures}, eventually @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */

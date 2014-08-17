@@ -91,7 +91,7 @@ OpenGL function                        | Matching API
 @fn_gl{CopyTexSubImage1D}, \n `glCopyTextureSubImage1D()`, \n @fn_gl_extension{CopyTextureSubImage1D,EXT,direct_state_access}, \n @fn_gl{CopyTexSubImage2D}, \n `glCopyTextureSubImage2D()`, \n @fn_gl_extension{CopyTextureSubImage2D,EXT,direct_state_access}, \n @fn_gl{CopyTexSubImage3D}, \n `glCopyTextureSubImage3D()`, \n @fn_gl_extension{CopyTextureSubImage3D,EXT,direct_state_access} | |
 @fn_gl{CreateProgram}, @fn_gl{DeleteProgram} | @ref AbstractShaderProgram constructor and destructor
 @fn_gl{CreateShader}, @fn_gl{DeleteShader} | @ref Shader constructor and destructor
-@fn_gl{CreateShaderProgram} | |
+@fn_gl{CreateShaderProgram}            | |
 @fn_gl{CullFace}                       | @ref Renderer::setFaceCullingMode()
 @fn_gl{DebugMessageCallback}           | @ref DebugMessage::setCallback()
 @fn_gl{DebugMessageControl}            | @ref DebugMessage::setEnabled()
@@ -277,7 +277,6 @@ OpenGL function                        | Matching API
 @def_gl{BLEND}, \n @def_gl{COLOR_LOGIC_OP}, \n @def_gl{CULL_FACE}, \n @def_gl{DEBUG_OUTPUT}, \n @def_gl{DEBUG_OUTPUT_SYNCHRONOUS}, \n @def_gl{DEPTH_CLAMP}, \n @def_gl{DEPTH_TEST}, \n @def_gl{DITHER}, \n @def_gl{MULTISAMPLE}, \n @def_gl{POLYGON_OFFSET_FILL}, \n @def_gl{POLYGON_OFFSET_LINE}, \n @def_gl{POLYGON_OFFSET_POINT}, \n @def_gl{PROGRAM_POINT_SIZE}, \n @def_gl{SCISSOR}, \n @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}, \n @def_gl{STENCIL_TEST} | not queryable, @ref Renderer::setFeature() setter only
 @def_gl{COLOR_CLEAR_VALUE}, \n @def_gl{DEPTH_CLEAR_VALUE}, \n @def_gl{STENCIL_CLEAR_VALUE} | not queryable, @ref Renderer::setClearColor(), \n @ref Renderer::setClearDepth() and \n @ref Renderer::setClearStencil() setters only
 @def_gl{COLOR_WRITEMASK}, \n @def_gl{DEPTH_WRITEMASK}, \n @def_gl{STENCIL_BACK_WRITEMASK}, \n @def_gl{STENCIL_WRITEMASK}               | not queryable, @ref Renderer::setColorMask(), \n @ref Renderer::setDepthMask() and \n @ref Renderer::setStencilMask() setters only
-@def_gl{COMPRESSED_TEXTURE_FORMATS}    | |
 @def_gl{CONTEXT_FLAGS}                 | @ref Context::flags()
 @def_gl{CURRENT_PROGRAM}               | not queryable but tracked internally
 @def_gl{DEBUG_GROUP_STACK_DEPTH}       | |
@@ -337,7 +336,7 @@ OpenGL function                        | Matching API
 @def_gl{MAX_SERVER_WAIT_TIMEOUT}       | |
 @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE} | @ref AbstractShaderProgram::maxShaderStorageBlockSize()
 @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS} | @ref Buffer::maxShaderStorageBindings()
-@def_gl{MAX_TEXTURE_BUFFER_SIZE}       | |
+@def_gl{MAX_TEXTURE_BUFFER_SIZE}       | @ref BufferTexture::maxSize()
 @def_gl_extension{MAX_TEXTURE_MAX_ANISOTROPY,EXT,texture_filter_anisotropic} | @ref Sampler::maxMaxAnisotropy()
 @def_gl{MAX_TEXTURE_LOD_BIAS}          | @ref AbstractTexture::maxLodBias()
 @def_gl{MAX_UNIFORM_BLOCK_SIZE}        | @ref AbstractShaderProgram::maxUniformBlockSize()
@@ -350,7 +349,7 @@ OpenGL function                        | Matching API
 @def_gl{MAX_VIEWPORT_DIMS}             | @ref AbstractFramebuffer::maxViewportSize()
 @def_gl{MIN_MAP_BUFFER_ALIGNMENT}      | @ref Buffer::minMapAlignment()
 @def_gl{MIN_PROGRAM_TEXEL_OFFSET}, \n @def_gl{MAX_PROGRAM_TEXEL_OFFSET} | @ref AbstractShaderProgram::minTexelOffset(), \n @ref AbstractShaderProgram::maxTexelOffset()
-@def_gl{NUM_COMPRESSED_TEXTURE_FORMATS} | |
+@def_gl{NUM_COMPRESSED_TEXTURE_FORMATS}, \n @def_gl{COMPRESSED_TEXTURE_FORMATS} | |
 @def_gl{NUM_EXTENSIONS}                | @ref Context::supportedExtensions()
 @def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
 @def_gl{NUM_SHADER_BINARY_FORMATS}, \n @def_gl{SHADER_BINARY_FORMATS} | |
