@@ -78,6 +78,15 @@ can be built and installed using these four commands:
 
 See @ref building-features "below" for additional configuration options.
 
+If you have the dependencies installed in non-standard location (other than
+`/usr`, e.g. `/home/xyz/projects`), set `CMAKE_PREFIX_PATH` to that directory
+to help CMake find them. You can enter more different dirs if you separate them
+with semicolons.
+
+Also, if you plan to install the library to non-standard location, you might
+want to set `CMAKE_INSTALL_RPATH` to `lib/` subdir of given prefix (e.g.
+`/home/xyz/projects/lib`), so the dynamic libraries can be found at runtime.
+
 @subsection building-windows Building on Windows
 
 On Windows you can use either MinGW or MSVC 2013 compiler. It's then up to you
@@ -86,12 +95,11 @@ line. Note that for most convenient usage it's best use some dedicated
 directory (e.g. `C:/Sys`) for installing dependencies instead of putting each
 dependency to its own directory in `C:/Program Files`. Then add its `bin/`
 subdir (e.g. `C:/Sys/bin`) to PATH so all the DLLs are found when running the
-executables.  If you are using MinGW, the `C:/MinGW` directory is in most cases
+executables. If you are using MinGW, the `C:/MinGW` directory is in most cases
 already prepared for exactly this.
 
-When running CMake, set `CMAKE_INSTALL_PREFIX` parameter to that directory so
-CMake knows where to look for installed libraries and where to install new
-ones.
+Then, when running CMake, set `CMAKE_PREFIX_PATH` and `CMAKE_INSTALL_PREFIX`
+value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`).
 
 @subsubsection building-windows-msvc Using Visual Studio
 
@@ -116,8 +124,8 @@ On Windows you can also use QtCreator (just QtCreator, you don't need the full
 Qt SDK). Configure it to use CMake and either MSVC compiler or MinGW and and
 then just open project's root `CMakeLists.txt` file within it. QtCreator then
 asks you where to create build directory, allows you to specify initial CMake
-parameters (e.g. `CMAKE_FIND_ROOT_PATH` and `CMAKE_INSTALL_PREFIX`) and then
-you can just press *Configure* and everything is ready to be built.
+parameters (e.g. `CMAKE_PREFIX_PATH` and `CMAKE_INSTALL_PREFIX`) and then you
+can just press *Configure* and everything is ready to be built.
 
 After the initial import you might want to reconfigure some CMake variables,
 see @ref building-features "below" for more information.
