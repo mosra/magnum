@@ -39,7 +39,7 @@ namespace Magnum {
 #ifndef MAGNUM_TARGET_GLES
 Int Buffer::minMapAlignment() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>())
-        return 0;
+        return 1;
 
     GLint& value = Context::current()->state().buffer->minMapAlignment;
 
@@ -89,7 +89,7 @@ Int Buffer::shaderStorageOffsetAlignment() {
     #else
     if(!Context::current()->isVersionSupported(Version::GLES310))
     #endif
-        return 0;
+        return 1;
 
     GLint& value = Context::current()->state().buffer->shaderStorageOffsetAlignment;
 

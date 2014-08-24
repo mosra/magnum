@@ -49,7 +49,7 @@ Int BufferTexture::maxSize() {
 
 Int BufferTexture::offsetAlignment() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
-        return 0;
+        return 1;
 
     GLint& value = Context::current()->state().texture->bufferOffsetAlignment;
 

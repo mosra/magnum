@@ -441,7 +441,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,map_buffer_alignment}
-         * (part of OpenGL 4.2) is not available, returns `0`.
+         * (part of OpenGL 4.2) is not available, returns `1`.
          * @see @ref map(), @fn_gl{Get} with @def_gl{MIN_MAP_BUFFER_ALIGNMENT}
          * @requires_gl No minimal value is specified for OpenGL ES.
          */
@@ -476,7 +476,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
-         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `1`.
          * @see @fn_gl{Get} with @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT}
          * @requires_gles30 Not defined in OpenGL ES 2.0
          */
