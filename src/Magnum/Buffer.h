@@ -472,6 +472,17 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         static Int maxShaderStorageBindings();
 
         /**
+         * @brief Alignment of uniform buffer binding offset
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
+         * (part of OpenGL 3.1) is not available, returns `1`.
+         * @see @fn_gl{Get} with @def_gl{UNIFORM_BUFFER_OFFSET_ALIGNMENT}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0
+         */
+        static Int uniformOffsetAlignment();
+
+        /**
          * @brief Alignment of shader storage buffer binding offset
          *
          * The result is cached, repeated queries don't result in repeated

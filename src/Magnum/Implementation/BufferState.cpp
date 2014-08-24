@@ -83,7 +83,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_GLES
     , minMapAlignment(0)
     #endif
-    , maxAtomicCounterBindings(0), maxShaderStorageBindings(0), shaderStorageOffsetAlignment(0), maxUniformBindings(0)
+    , maxAtomicCounterBindings{0}, maxShaderStorageBindings{0}, shaderStorageOffsetAlignment{0}, uniformOffsetAlignment{0}, maxUniformBindings{0}
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES

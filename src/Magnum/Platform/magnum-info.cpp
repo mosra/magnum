@@ -513,6 +513,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(ARB::uniform_buffer_object)
         #endif
 
+        _l(Buffer::uniformOffsetAlignment())
         _l(Shader::maxUniformBlocks(Shader::Type::Vertex))
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))

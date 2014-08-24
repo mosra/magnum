@@ -74,6 +74,7 @@ struct BufferState {
         maxAtomicCounterBindings,
         maxShaderStorageBindings,
         shaderStorageOffsetAlignment,
+        uniformOffsetAlignment,
         maxUniformBindings;
     #endif
 };

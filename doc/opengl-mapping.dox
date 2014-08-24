@@ -377,7 +377,7 @@ OpenGL function                        | Matching API
 @def_gl{TEXTURE_BUFFER_OFFSET_ALIGNMENT} | @ref BufferTexture::offsetAlignment()
 @def_gl{TIMESTAMP}                     | |
 @def_gl{TRANSFORM_FEEDBACK_BUFFER_BINDING}, \n @def_gl{TRANSFORM_FEEDBACK_BUFFER_SIZE}, \n @def_gl{TRANSFORM_FEEDBACK_BUFFER_START} | not queryable
-@def_gl{UNIFORM_BUFFER_OFFSET_ALIGNMENT} | |
+@def_gl{UNIFORM_BUFFER_OFFSET_ALIGNMENT} | @ref Buffer::uniformOffsetAlignment()
 @def_gl{UNIFORM_BUFFER_BINDING}, \n @def_gl{UNIFORM_BUFFER_SIZE}, \n @def_gl{UNIFORM_BUFFER_START} | not queryable
 @def_gl{VERTEX_BINDING_DIVISOR}, \n @def_gl{VERTEX_BINDING_OFFSET}, \n @def_gl{VERTEX_BINDING_STRIDE} | not queryable
 @def_gl{VERTEX_PROGRAM_POINT_SIZE}     | not queryable

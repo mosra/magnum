@@ -99,6 +99,20 @@ Int Buffer::shaderStorageOffsetAlignment() {
     return value;
 }
 
+Int Buffer::uniformOffsetAlignment() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+        return 1;
+    #endif
+
+    GLint& value = Context::current()->state().buffer->uniformOffsetAlignment;
+
+    if(value == 0)
+        glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
+
+    return value;
+}
+
 Int Buffer::maxUniformBindings() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
