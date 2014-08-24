@@ -1262,7 +1262,7 @@ void MeshGLTest::setIndexBuffer() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1289,7 +1289,7 @@ void MeshGLTest::setIndexBufferRange() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1321,7 +1321,7 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedInt indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1352,7 +1352,7 @@ void MeshGLTest::setBaseVertex() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1428,7 +1428,7 @@ void MeshGLTest::setInstanceCountIndexed() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1500,7 +1500,7 @@ void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1534,7 +1534,7 @@ void MeshGLTest::setInstanceCountBaseVertex() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1570,7 +1570,7 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1788,7 +1788,7 @@ void MeshGLTest::multiDrawIndexed() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1813,7 +1813,7 @@ void MeshGLTest::multiDrawBaseVertex() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;

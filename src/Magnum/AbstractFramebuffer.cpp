@@ -237,7 +237,7 @@ void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Buf
     if(image.size() != size)
         image.setData(image.format(), image.type(), size, nullptr, usage);
 
-    image.buffer().bindInternal(Buffer::Target::PixelPack);
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (Context::current()->state().framebuffer->readImplementation)(offset, size, image.format(), image.type(), image.dataSize(size), nullptr);
 }
 #endif

@@ -215,7 +215,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref Buffer(), @ref setTargetHint()
          */
-        enum class Target: GLenum {
+        enum class TargetHint: GLenum {
             /** Used for storing vertex attributes. */
             Array = GL_ARRAY_BUFFER,
 
@@ -315,6 +315,139 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             Uniform = GL_UNIFORM_BUFFER
             #endif
         };
+
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_BUILD_DEPRECATED)
+        /**
+         * @brief %Buffer binding target
+         *
+         * @see @ref bind(), @ref unbind()
+         */
+        enum class Target: GLenum {
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * @copydoc TargetHint::Array
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::Array "TargetHint::Array"
+             *      instead.
+             */
+            Array = GL_ARRAY_BUFFER,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Atomic counter binding
+             * @requires_gl42 %Extension @extension{ARB,shader_atomic_counters}
+             * @requires_gles31 Atomic counters are not available in OpenGL ES
+             *      3.0 and older
+             */
+            AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
+            #endif
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * @copydoc TargetHint::CopyRead
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::CopyRead "TargetHint::CopyRead"
+             *      instead.
+             */
+            CopyRead = GL_COPY_READ_BUFFER,
+
+            /**
+             * @copydoc TargetHint::CopyWrite
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::CopyWrite "TargetHint::CopyWrite"
+             *      instead.
+             */
+            CopyWrite = GL_COPY_WRITE_BUFFER,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * @copydoc TargetHint::DispatchIndirect
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::DispatchIndirect "TargetHint::DispatchIndirect"
+             *      instead.
+             */
+            DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
+
+            /**
+             * @copydoc TargetHint::DrawIndirect
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::DrawIndirect "TargetHint::DrawIndirect"
+             *      instead.
+             */
+            DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
+            #endif
+
+            /**
+             * @copydoc TargetHint::ElementArray
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::ElementArray "TargetHint::ElementArray"
+             *      instead.
+             */
+            ElementArray = GL_ELEMENT_ARRAY_BUFFER,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * @copydoc TargetHint::PixelPack
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::PixelPack "TargetHint::PixelPack"
+             *      instead.
+             */
+            PixelPack = GL_PIXEL_PACK_BUFFER,
+
+            /**
+             * @copydoc TargetHint::PixelUnpack
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::PixelUnpack "TargetHint::PixelUnpack"
+             *      instead.
+             */
+            PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
+            #endif
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Shader storage binding
+             * @requires_gl43 %Extension @extension{ARB,shader_storage_buffer_object}
+             * @requires_gles31 Shader storage is not available in OpenGL ES
+             *      3.0 and older
+             */
+            ShaderStorage = GL_SHADER_STORAGE_BUFFER,
+            #endif
+
+            #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES)
+            /**
+             * @copydoc TargetHint::Texture
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::Texture "TargetHint::Texture"
+             *      instead.
+             */
+            Texture = GL_TEXTURE_BUFFER,
+            #endif
+
+            #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
+            /**
+             * @copydoc TargetHint::TransformFeedback
+             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
+             *      only, use @ref Magnum::Buffer::TargetHint::TransformFeedback "TargetHint::TransformFeedback"
+             *      instead.
+             */
+            TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Uniform binding
+             * @requires_gl31 %Extension @extension{ARB,uniform_buffer_object}
+             * @requires_gles30 Uniform buffers are not available in OpenGL ES
+             *      2.0
+             */
+            Uniform = GL_UNIFORM_BUFFER
+            #endif
+        };
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -455,7 +588,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
          * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS}
+         * @see @ref bind(), @ref unbind(), @fn_gl{Get} with
+         *      @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS}
          * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxAtomicCounterBindings();
@@ -466,7 +600,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS}
+         * @see @ref bind(), @ref unbind(), @fn_gl{Get} with
+         *      @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS}
          * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int maxShaderStorageBindings();
@@ -477,7 +612,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
          * (part of OpenGL 3.1) is not available, returns `1`.
-         * @see @fn_gl{Get} with @def_gl{UNIFORM_BUFFER_OFFSET_ALIGNMENT}
+         * @see @ref bind(), @fn_gl{Get} with @def_gl{UNIFORM_BUFFER_OFFSET_ALIGNMENT}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0
          */
         static Int uniformOffsetAlignment();
@@ -488,7 +623,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `1`.
-         * @see @fn_gl{Get} with @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT}
+         * @see @ref bind(), @fn_gl{Get} with @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT}
          * @requires_gles30 Not defined in OpenGL ES 2.0
          */
         static Int shaderStorageOffsetAlignment();
@@ -499,10 +634,107 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
          * (part of OpenGL 3.1) is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}
+         * @see @ref bind(), @ref unbind(), @fn_gl{Get} with
+         *      @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0
          */
         static Int maxUniformBindings();
+
+        /**
+         * @brief Unbind any buffer from given indexed target
+         *
+         * The @p index parameter must respect limits for given @p target.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bind(), @ref maxAtomicCounterBindings(),
+         *      @ref maxShaderStorageBindings(), @ref maxUniformBindings(),
+         *      @fn_gl{BindBufferBase}
+         * @requires_gl30 No form of indexed buffer binding is available in
+         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         * @requires_gles30 No form of indexed buffer binding is available in
+         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         */
+        static void unbind(Target target, UnsignedInt index);
+
+        /**
+         * @brief Unbind given range of indexed targets
+         *
+         * Unbinds all buffers in given target in range @f$ [ firstIndex ; firstIndex + count ] @f$.
+         * The range of indices must respect limits for given @p target. If
+         * @extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
+         * the feature is emulated with sequence of @ref unbind(Target, UnsignedInt)
+         * calls.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref unbind(Target, UnsignedInt), @ref maxAtomicCounterBindings(),
+         *      @ref maxShaderStorageBindings(), @ref maxUniformBindings(),
+         *      @fn_gl{BindBuffersBase} or @fn_gl{BindBufferBase}
+         * @requires_gl30 No form of indexed buffer binding is available in
+         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         * @requires_gles30 No form of indexed buffer binding is available in
+         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         */
+        static void unbind(Target target, UnsignedInt firstIndex, std::size_t count);
+
+        /**
+         * @brief Bind ranges of buffers to given range of indexed targets
+         *
+         * Binds first buffer in the list to @p firstIndex, second to
+         * `firstIndex + 1` etc. Second parameter is offset, third is size. If
+         * any buffer is `nullptr`, given indexed target is unbound. The range
+         * of indices must respect limits for given @p target. The offsets must
+         * respect alignment, which is 4 bytes for @ref Target::AtomicCounter
+         * and implementation-defined for other targets. If @extension{ARB,multi_bind}
+         * (part of OpenGL 4.4) is not available, the feature is emulated with
+         * sequence of @ref bind(Target, UnsignedInt, GLintptr, GLsizeiptr) /
+         * @ref unbind(Target, UnsignedInt) calls.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bind(Target, UnsignedInt, GLintptr, GLsizeiptr),
+         *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
+         *      @ref maxUniformBindings(), @ref shaderStorageOffsetAlignment(),
+         *      @ref uniformOffsetAlignment(), @fn_gl{BindBuffersRange} or
+         *      @fn_gl{BindBufferRange}
+         * @requires_gl30 No form of indexed buffer binding is available in
+         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         * @requires_gles30 No form of indexed buffer binding is available in
+         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         */
+        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+
+        /**
+         * @brief Bind buffers to given range of indexed targets
+         *
+         * Binds first buffer in the list to @p firstIndex, second to
+         * `firstIndex + 1` etc. If any buffer is `nullptr`, given indexed
+         * target is unbound. The range of indices must respect limits for
+         * given @p target. If @extension{ARB,multi_bind} (part of OpenGL 4.4)
+         * is not available, the feature is emulated with sequence of
+         * @ref bind(Target, UnsignedInt) / @ref unbind(Target, UnsignedInt)
+         * calls.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bind(Target, UnsignedInt), @ref maxAtomicCounterBindings(),
+         *      @ref maxShaderStorageBindings(), @ref maxUniformBindings(),
+         *      @fn_gl{BindBuffersBase} or @fn_gl{BindBufferBase}
+         * @requires_gl30 No form of indexed buffer binding is available in
+         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         * @requires_gles30 No form of indexed buffer binding is available in
+         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         */
+        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers);
 
         /**
          * @brief Copy one buffer to another
@@ -532,7 +764,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * Creates new OpenGL buffer.
          * @see @fn_gl{GenBuffers}
          */
-        explicit Buffer(Target targetHint = Target::Array);
+        explicit Buffer(TargetHint targetHint = TargetHint::Array);
+
+        /**
+         * @copybrief Buffer(TargetHint)
+         * @deprecated Use @ref Magnum::Buffer::Buffer(Magnum::Buffer::TargetHint) "Buffer(TargetHint)"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use Buffer(TargetHint) instead") explicit Buffer(Target targetHint): Buffer{static_cast<TargetHint>(targetHint)} {}
 
         /** @brief Copying is not allowed */
         Buffer(const Buffer&) = delete;
@@ -591,7 +830,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         }
 
         /** @brief Target hint */
-        Target targetHint() const { return _targetHint; }
+        TargetHint targetHint() const { return _targetHint; }
 
         /**
          * @brief Set target hint
@@ -608,10 +847,64 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
          *      ... damned GL state
          */
-        Buffer& setTargetHint(Target hint) {
+        Buffer& setTargetHint(TargetHint hint) {
             _targetHint = hint;
             return *this;
         }
+
+        /**
+         * @copybrief setTargetHint(TargetHint)
+         * @deprecated Use @ref Magnum::Buffer::setTargetHint(Magnum::Buffer::TargetHint) "setTargetHint(TargetHint)"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use setTargetHint(TargetHint) instead") Buffer& setTargetHint(Target hint) {
+            return setTargetHint(static_cast<TargetHint>(hint));
+        }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Bind buffer range to given binding index
+         *
+         * The @p index parameter must respect limits for given @p target. The
+         * @p offset parameter must respect alignment, which is 4 bytes for
+         * @ref Target::AtomicCounter and implementation-defined for other
+         * targets.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bind(Target, UnsignedInt, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>>),
+         *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
+         *      @ref maxUniformBindings(), @ref shaderStorageOffsetAlignment(),
+         *      @ref uniformOffsetAlignment(), @fn_gl{BindBufferRange}
+         * @requires_gl30 No form of indexed buffer binding is available in
+         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         * @requires_gles30 No form of indexed buffer binding is available in
+         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         * @todo State tracking for indexed binding
+         */
+        Buffer& bind(Target target, UnsignedInt index, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Bind buffer to given binding index
+         *
+         * The @p index parameter must respect limits for given @p target.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bind(Target, UnsignedInt, std::initializer_list<Buffer*>),
+         *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
+         *      @ref maxUniformBindings(), @fn_gl{BindBufferBase}
+         * @requires_gl30 No form of indexed buffer binding is available in
+         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         * @requires_gles30 No form of indexed buffer binding is available in
+         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
+         *      values for version requirements.
+         */
+        Buffer& bind(Target target, UnsignedInt index);
+        #endif
 
         /**
          * @brief %Buffer size
@@ -850,13 +1143,26 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #endif
-        /* There should be no need to use these from user code */
-        static void unbindInternal(Target target) { bindInternal(target, nullptr); }
-        void bindInternal(Target target) { bindInternal(target, this); }
+        /* There should be no need to use these from user code. Also it's a bit
+           unfortunate to have the parameter typed as TargetHint while in this
+           case it is no hint at all, but it allows to have cleaner public
+           binding API (just with short Target name) */
+        static void unbindInternal(TargetHint target) { bindInternal(target, nullptr); }
+        void bindInternal(TargetHint target) { bindInternal(target, this); }
 
     private:
-        static void bindInternal(Target hint, Buffer* buffer);
-        Target MAGNUM_LOCAL bindSomewhereInternal(Target hint);
+        static void bindInternal(TargetHint hint, Buffer* buffer);
+        TargetHint MAGNUM_LOCAL bindSomewhereInternal(TargetHint hint);
+
+        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint first, Containers::ArrayReference<Buffer* const> buffers);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint first, Containers::ArrayReference<Buffer* const> buffers);
+        #endif
+
+        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint first, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint first, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
@@ -924,7 +1230,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #endif
 
         GLuint _id;
-        Target _targetHint;
+        TargetHint _targetHint;
         #ifdef CORRADE_TARGET_NACL
         void* _mappedBuffer;
         #endif
@@ -933,8 +1239,13 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 
+/** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::TargetHint} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::TargetHint value);
+
+#if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_BUILD_DEPRECATED)
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
+#endif
 
 inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint},
     #ifdef CORRADE_TARGET_NACL

@@ -49,7 +49,7 @@ OpenGL function                        | Matching API
 @fn_gl{BeginTransformFeedback}, `glEndTransformFeedback()` | |
 @fn_gl{BindAttribLocation}             | @ref AbstractShaderProgram::bindAttributeLocation()
 @fn_gl{BindBuffer}                     | not needed, handled internally in @ref Buffer and elsewhere
-@fn_gl{BindBufferBase}, \n @fn_gl{BindBuffersBase}, \n @fn_gl{BindBufferRange}, \n @fn_gl{BindBuffersRange} | |
+@fn_gl{BindBufferBase}, \n @fn_gl{BindBuffersBase}, \n @fn_gl{BindBufferRange}, \n @fn_gl{BindBuffersRange} | @ref Buffer::bind(), \n @ref Buffer::unbind()
 @fn_gl{BindFragDataLocation}           | @ref AbstractShaderProgram::bindFragmentDataLocation()
 @fn_gl{BindFragDataLocationIndexed}    | @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
 @fn_gl{BindFramebuffer}                | @ref Framebuffer::bind()

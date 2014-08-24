@@ -301,7 +301,7 @@ void AbstractRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
     #endif
 }
 
-AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer(Buffer::Target::Array), _indexBuffer(Buffer::Target::ElementArray), font(font), cache(cache), size(size), _alignment(alignment), _capacity(0) {
+AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer{Buffer::TargetHint::Array}, _indexBuffer{Buffer::TargetHint::ElementArray}, font(font), cache(cache), size(size), _alignment(alignment), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
