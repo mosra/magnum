@@ -64,6 +64,7 @@ struct MeshState {
 
     GLuint currentVAO;
     #ifndef MAGNUM_TARGET_GLES2
+    GLint64 maxElementIndex;
     GLint maxElementsIndices, maxElementsVertices;
     #endif
 };

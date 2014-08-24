@@ -291,6 +291,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(AbstractFramebuffer::maxDrawBuffers())
     _l(Framebuffer::maxColorAttachments())
     #ifndef MAGNUM_TARGET_GLES2
+    _l(Mesh::maxElementIndex())
     _l(Mesh::maxElementsIndices())
     _l(Mesh::maxElementsVertices())
     #endif

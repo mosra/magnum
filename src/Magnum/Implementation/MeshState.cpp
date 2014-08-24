@@ -35,7 +35,7 @@ namespace Magnum { namespace Implementation {
 
 MeshState::MeshState(Context& context, std::vector<std::string>& extensions): currentVAO(0)
     #ifndef MAGNUM_TARGET_GLES2
-    , maxElementsIndices(0), maxElementsVertices(0)
+    , maxElementIndex{0}, maxElementsIndices{0}, maxElementsVertices{0}
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES

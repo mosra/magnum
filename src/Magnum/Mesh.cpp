@@ -41,6 +41,21 @@ namespace Magnum {
 Int Mesh::maxVertexAttributes() { return AbstractShaderProgram::maxVertexAttributes(); }
 
 #ifndef MAGNUM_TARGET_GLES2
+Long Mesh::maxElementIndex() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::ES3_compatibility>())
+        return 0xFFFFFFFFl;
+    #endif
+
+    GLint64& value = Context::current()->state().mesh->maxElementIndex;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetInteger64v(GL_MAX_ELEMENT_INDEX, &value);
+
+    return value;
+}
+
 Int Mesh::maxElementsIndices() {
     GLint& value = Context::current()->state().mesh->maxElementsIndices;
 

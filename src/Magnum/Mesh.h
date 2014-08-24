@@ -376,6 +376,19 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
+         * @brief Max supported index value
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,ES3_compatibility} (part
+         * of OpenGL 4.3) is not available, returns max representable 32-bit
+         * value (@f$ 2^32 - 1 @f$).
+         * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENT_INDEX}
+         * @requires_gles30 No upper limit is specified for index values in
+         *      OpenGL ES 2.0
+         */
+        static Long maxElementIndex();
+
+        /**
          * @brief Max recommended index count
          *
          * The result is cached, repeated queries don't result in repeated
@@ -744,9 +757,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
          * available, the vertex array object is used to hold the parameters.
          *
-         * @see @ref maxElementsIndices(), @ref maxElementsVertices(),
-         *      @ref setCount(), @ref isIndexed(), @fn_gl{BindVertexArray},
-         *      @fn_gl{BindBuffer}
+         * @see @ref maxElementIndex(), @ref maxElementsIndices(),
+         *      @ref maxElementsVertices(), @ref setCount(), @ref isIndexed(),
+         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer}
          */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end);
 

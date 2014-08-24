@@ -320,9 +320,9 @@ OpenGL function                        | Matching API
 @def_gl{MAX_COLOR_TEXTURE_SAMPLES}, \n @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}, \n @def_gl{MAX_INTEGER_SAMPLES} | @ref AbstractTexture::maxColorSamples(), \n @ref AbstractTexture::maxDepthSamples(), \n @ref AbstractTexture::maxIntegerSamples()
 @def_gl{MAX_DRAW_BUFFERS}              | @ref AbstractFramebuffer::maxDrawBuffers()
 @def_gl{MAX_DUAL_SOURCE_DRAW_BUFFERS}  | @ref AbstractFramebuffer::maxDualSourceDrawBuffers()
+@def_gl{MAX_ELEMENT_INDEX}             | @ref Mesh::maxElementIndex()
 @def_gl{MAX_ELEMENTS_INDICES}          | @ref Mesh::maxElementsIndices()
 @def_gl{MAX_ELEMENTS_VERTICES}         | @ref Mesh::maxElementsVertices()
-@def_gl{MAX_ELEMENT_INDEX}             | |
 @def_gl{MAX_FRAMEBUFFER_HEIGHT}        | |
 @def_gl{MAX_FRAMEBUFFER_LAYERS}        | |
 @def_gl{MAX_FRAMEBUFFER_SAMPLES}       | |
