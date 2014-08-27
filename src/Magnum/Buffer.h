@@ -1158,6 +1158,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         static void bindInternal(TargetHint hint, Buffer* buffer);
         TargetHint MAGNUM_LOCAL bindSomewhereInternal(TargetHint hint);
 
+        #ifndef MAGNUM_TARGET_GLES2
         static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint first, Containers::ArrayReference<Buffer* const> buffers);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint first, Containers::ArrayReference<Buffer* const> buffers);
@@ -1168,7 +1169,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint first, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
