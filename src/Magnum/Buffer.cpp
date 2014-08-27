@@ -387,7 +387,9 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
             std::tie(std::ignore, offsetsSizes[i], offsetsSizes[buffers.size() + i]) = buffers[i];
         } else {
             ids[i] = 0;
-            offsetsSizes[i] = offsetsSizes[buffers.size() + i] = 0;
+            offsetsSizes[i] = 0;
+            /** @todo fix workaround when NVidia 343.13 accepts zero sizes */
+            offsetsSizes[buffers.size() + i] = 1;
         }
     }
 
