@@ -151,42 +151,45 @@ void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
 }
 #endif
 
-void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+void AbstractTexture::unbind(const Int firstTextureUnit, const std::size_t count) {
     /* State tracker is updated in the implementations */
-    Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, textures);
+    Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, {nullptr, count});
 }
 
-void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
-    Int unit = firstTextureUnit;
-    for(AbstractTexture* const texture: textures) {
-        if(texture) texture->bind(unit);
-        else unbind(unit);
-        ++unit;
-    }
+/** @todoc const std::initializer_list makes Doxygen grumpy */
+void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+    /* State tracker is updated in the implementations */
+    Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, {textures.begin(), textures.size()});
+}
+
+void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, const Containers::ArrayReference<AbstractTexture* const> textures) {
+    for(std::size_t i = 0; i != textures.size(); ++i)
+        textures && textures[i] ? textures[i]->bind(firstTextureUnit + i) : unbind(firstTextureUnit + i);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, const Containers::ArrayReference<AbstractTexture* const> textures) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */
-    Containers::Array<GLuint> ids{textures.size()};
-    Int i{};
+    Containers::Array<GLuint> ids{textures ? textures.size() : 0};
     bool different = false;
-    for(AbstractTexture* const texture: textures) {
-        if(texture) texture->createIfNotAlready();
+    for(std::size_t i = 0; i != textures.size(); ++i) {
+        const GLuint id = textures && textures[i] ? textures[i]->_id : 0;
 
-        const GLuint id = ids[i] = texture ? texture->_id : 0;
+        if(textures) {
+            if(textures[i]) textures[i]->createIfNotAlready();
+            ids[i] = id;
+        }
+
         if(textureState->bindings[firstTextureUnit + i].second != id) {
             different = true;
             textureState->bindings[firstTextureUnit + i].second = id;
         }
-
-        ++i;
     }
 
     /* Avoid doing the binding if there is nothing different */
-    if(different) glBindTextures(firstTextureUnit, ids.size(), ids);
+    if(different) glBindTextures(firstTextureUnit, textures.size(), ids);
 }
 #endif
 

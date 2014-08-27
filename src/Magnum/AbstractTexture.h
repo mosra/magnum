@@ -204,18 +204,34 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static void unbind(Int textureUnit);
 
         /**
+         * @brief Unbind textures in given range of texture units
+         *
+         * Unbinds all texture in the range @f$ [ firstTextureUnit ; firstTextureUnit + count ) @f$.
+         * If @extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
+         * the feature is emulated with sequence of @ref unbind(Int) calls.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
+         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         */
+        static void unbind(Int firstTextureUnit, std::size_t count);
+
+        /**
          * @brief Bind textures to given range of texture units
          *
          * Binds first texture in the list to @p firstTextureUnit, second to
          * `firstTextureUnit + 1` etc. If any texture is `nullptr`, given
          * texture unit is unbound. If @extension{ARB,multi_bind} (part of
          * OpenGL 4.4) is not available, the feature is emulated with sequence
-         * of @ref bind(Int) / @ref unbind() calls.
+         * of @ref bind(Int) / @ref unbind(Int) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @fn_gl{BindTextures}, eventually @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
+         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
          */
         static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
 
@@ -358,9 +374,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static void MAGNUM_LOCAL unbindImplementationDSA(GLint textureUnit);
         #endif
 
-        static void MAGNUM_LOCAL bindImplementationFallback(GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+        static void MAGNUM_LOCAL bindImplementationFallback(GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+        static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures);
         #endif
 
         void MAGNUM_LOCAL createIfNotAlready();

@@ -303,6 +303,10 @@ void TextureGLTest::bind1D() {
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 #endif
 
@@ -317,6 +321,10 @@ void TextureGLTest::bind2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -337,6 +345,10 @@ void TextureGLTest::bind3D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

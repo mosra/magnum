@@ -146,6 +146,10 @@ void MultisampleTextureGLTest::bind2D() {
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -163,6 +167,10 @@ void MultisampleTextureGLTest::bind2DArray() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
