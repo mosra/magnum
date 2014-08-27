@@ -100,6 +100,9 @@ void BufferTextureGLTest::setBufferOffset() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
 
+    /* Check that we have correct offset alignment */
+    CORRADE_INTERNAL_ASSERT(256 % BufferTexture::offsetAlignment() == 0);
+
     BufferTexture texture;
     Buffer buffer;
     constexpr UnsignedByte data[] = {
@@ -108,8 +111,9 @@ void BufferTextureGLTest::setBufferOffset() {
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
         0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
     };
-    buffer.setData(data, BufferUsage::StaticDraw);
-    texture.setBuffer(BufferTextureFormat::R8UI, buffer, 16, 8);
+    buffer.setData({nullptr, 1024}, BufferUsage::StaticDraw);
+    buffer.setSubData(256 - 16, data);
+    texture.setBuffer(BufferTextureFormat::R8UI, buffer, 256, 8);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
