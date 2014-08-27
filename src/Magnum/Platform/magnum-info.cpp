@@ -245,8 +245,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         Version::GL420,
         Version::GL430,
         Version::GL440,
+        Version::GL450,
         #else
         Version::GLES300,
+        Version::GLES310,
         #endif
         Version::None
     };
