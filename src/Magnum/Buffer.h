@@ -766,12 +766,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          */
         explicit Buffer(TargetHint targetHint = TargetHint::Array);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief Buffer(TargetHint)
          * @deprecated Use @ref Magnum::Buffer::Buffer(Magnum::Buffer::TargetHint) "Buffer(TargetHint)"
          *      instead.
          */
         CORRADE_DEPRECATED("use Buffer(TargetHint) instead") explicit Buffer(Target targetHint): Buffer{static_cast<TargetHint>(targetHint)} {}
+        #endif
 
         /** @brief Copying is not allowed */
         Buffer(const Buffer&) = delete;
@@ -852,6 +854,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             return *this;
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief setTargetHint(TargetHint)
          * @deprecated Use @ref Magnum::Buffer::setTargetHint(Magnum::Buffer::TargetHint) "setTargetHint(TargetHint)"
@@ -860,6 +863,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         CORRADE_DEPRECATED("use setTargetHint(TargetHint) instead") Buffer& setTargetHint(Target hint) {
             return setTargetHint(static_cast<TargetHint>(hint));
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
