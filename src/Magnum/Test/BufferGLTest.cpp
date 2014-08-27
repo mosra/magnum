@@ -58,6 +58,8 @@ class BufferGLTest: public AbstractOpenGLTester {
 
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
+              &BufferGLTest::constructCopy,
+              &BufferGLTest::constructMove,
               &BufferGLTest::label,
               &BufferGLTest::data,
               &BufferGLTest::map,
