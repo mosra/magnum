@@ -271,7 +271,7 @@ void Sdl2Application::mainLoop() {
 
             case SDL_MOUSEWHEEL:
                 if(event.wheel.y != 0) {
-                    MouseEvent e(event.wheel.y < 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y});
+                    MouseEvent e(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y});
                     mousePressEvent(e);
                 } break;
 
