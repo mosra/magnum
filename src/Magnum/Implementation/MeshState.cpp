@@ -60,9 +60,9 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
             extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-            attributePointerImplementation = &Mesh::attributePointerImplementationDSA;
-            attributeIPointerImplementation = &Mesh::attributePointerImplementationDSA;
-            attributeLPointerImplementation = &Mesh::attributePointerImplementationDSA;
+            attributePointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
+            attributeIPointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
+            attributeLPointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
         } else
         #endif
         {

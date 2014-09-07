@@ -43,17 +43,17 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-        checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
-        drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
-        drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
-        readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
+        checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSAEXT;
+        drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSAEXT;
+        drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSAEXT;
+        readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSAEXT;
 
-        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
-        texture1DImplementation = &Framebuffer::texture1DImplementationDSA;
-        texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
-        textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
+        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSAEXT;
+        texture1DImplementation = &Framebuffer::texture1DImplementationDSAEXT;
+        texture2DImplementation = &Framebuffer::texture2DImplementationDSAEXT;
+        textureLayerImplementation = &Framebuffer::textureLayerImplementationDSAEXT;
 
-        renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
+        renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSAEXT;
     } else
     #endif
     {
@@ -120,7 +120,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension added above */
 
-        renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSA;
+        renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSAEXT;
     } else
     #endif
     {

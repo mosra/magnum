@@ -962,7 +962,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL attributePointerImplementationDefault(const Attribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const Attribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL attributePointerImplementationDSA(const Attribute& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const Attribute& attribute);
         #endif
         void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
 
@@ -971,7 +971,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL attributePointerImplementationDefault(const IntegerAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const IntegerAttribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL attributePointerImplementationDSA(const IntegerAttribute& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const IntegerAttribute& attribute);
         #endif
         void MAGNUM_LOCAL vertexAttribPointer(const IntegerAttribute& attribute);
         #endif
@@ -980,7 +980,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void attributePointerInternal(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDefault(const LongAttribute& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(const LongAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationDSA(const LongAttribute& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const LongAttribute& attribute);
         void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
         #endif
 

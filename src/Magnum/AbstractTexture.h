@@ -371,7 +371,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static void MAGNUM_LOCAL unbindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL unbindImplementationMulti(GLint textureUnit);
-        static void MAGNUM_LOCAL unbindImplementationDSA(GLint textureUnit);
+        static void MAGNUM_LOCAL unbindImplementationDSAEXT(GLint textureUnit);
         #endif
 
         static void MAGNUM_LOCAL bindImplementationFallback(GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures);
@@ -384,7 +384,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL bindImplementationMulti(GLint textureUnit);
-        void MAGNUM_LOCAL bindImplementationDSA(GLint textureUnit);
+        void MAGNUM_LOCAL bindImplementationDSAEXT(GLint textureUnit);
         #endif
 
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);
@@ -398,12 +398,12 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLint* values);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLint* values);
-        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
-        void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLuint* values);
-        void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLint* values);
+        void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, GLint value);
+        void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, GLfloat value);
+        void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, const GLint* values);
+        void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, const GLfloat* values);
+        void MAGNUM_LOCAL parameterIImplementationDSAEXT(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterIImplementationDSAEXT(GLenum parameter, const GLint* values);
         #endif
 
         void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
@@ -412,31 +412,31 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLenum target, GLint level, GLenum parameter, GLint* values);
         #endif
         #endif
 
         void MAGNUM_LOCAL mipmapImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL mipmapImplementationDSA();
+        void MAGNUM_LOCAL mipmapImplementationDSAEXT();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
-        void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        void MAGNUM_LOCAL storageImplementationDSAEXT(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         #endif
 
         void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageImplementationDSAEXT(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
 
         void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageImplementationDSA(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        void MAGNUM_LOCAL storageImplementationDSAEXT(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -446,49 +446,49 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
-        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getImageImplementationDefault(GLenum target, GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_LOCAL getImageImplementationDSA(GLenum target, GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSAEXT(GLenum target, GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         void MAGNUM_LOCAL getImageImplementationRobustness(GLenum target, GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
-        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSAEXT(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSAEXT(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL imageImplementationDSA(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDSAEXT(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDSA(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL invalidateImageImplementationNoOp(GLint level);

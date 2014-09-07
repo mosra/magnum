@@ -69,9 +69,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension name added below */
 
-        unbindImplementation = &AbstractTexture::unbindImplementationDSA;
+        unbindImplementation = &AbstractTexture::unbindImplementationDSAEXT;
         bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
-        bindImplementation = &AbstractTexture::bindImplementationDSA;
+        bindImplementation = &AbstractTexture::bindImplementationDSAEXT;
 
     } else
     #endif
@@ -86,24 +86,24 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-        parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
-        parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
-        parameterivImplementation = &AbstractTexture::parameterImplementationDSA;
-        parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
-        parameterIuivImplementation = &AbstractTexture::parameterIImplementationDSA;
-        parameterIivImplementation = &AbstractTexture::parameterIImplementationDSA;
-        getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSA;
-        mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
-        getImageImplementation = &AbstractTexture::getImageImplementationDSA;
-        image1DImplementation = &AbstractTexture::imageImplementationDSA;
-        image2DImplementation = &AbstractTexture::imageImplementationDSA;
-        image3DImplementation = &AbstractTexture::imageImplementationDSA;
-        subImage1DImplementation = &AbstractTexture::subImageImplementationDSA;
-        subImage2DImplementation = &AbstractTexture::subImageImplementationDSA;
-        subImage3DImplementation = &AbstractTexture::subImageImplementationDSA;
+        parameteriImplementation = &AbstractTexture::parameterImplementationDSAEXT;
+        parameterfImplementation = &AbstractTexture::parameterImplementationDSAEXT;
+        parameterivImplementation = &AbstractTexture::parameterImplementationDSAEXT;
+        parameterfvImplementation = &AbstractTexture::parameterImplementationDSAEXT;
+        parameterIuivImplementation = &AbstractTexture::parameterIImplementationDSAEXT;
+        parameterIivImplementation = &AbstractTexture::parameterIImplementationDSAEXT;
+        getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSAEXT;
+        mipmapImplementation = &AbstractTexture::mipmapImplementationDSAEXT;
+        getImageImplementation = &AbstractTexture::getImageImplementationDSAEXT;
+        image1DImplementation = &AbstractTexture::imageImplementationDSAEXT;
+        image2DImplementation = &AbstractTexture::imageImplementationDSAEXT;
+        image3DImplementation = &AbstractTexture::imageImplementationDSAEXT;
+        subImage1DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
+        subImage2DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
+        subImage3DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
 
-        setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
-        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
+        setBufferImplementation = &BufferTexture::setBufferImplementationDSAEXT;
+        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSAEXT;
     } else
     #endif
     {
@@ -178,9 +178,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
         #ifndef MAGNUM_TARGET_GLES
         if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-            storage1DImplementation = &AbstractTexture::storageImplementationDSA;
-            storage2DImplementation = &AbstractTexture::storageImplementationDSA;
-            storage3DImplementation = &AbstractTexture::storageImplementationDSA;
+            storage1DImplementation = &AbstractTexture::storageImplementationDSAEXT;
+            storage2DImplementation = &AbstractTexture::storageImplementationDSAEXT;
+            storage3DImplementation = &AbstractTexture::storageImplementationDSAEXT;
         } else
         #endif
         {
@@ -208,8 +208,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         extensions.push_back(Extensions::GL::ARB::texture_storage_multisample::string());
 
         if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
-            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
+            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSAEXT;
+            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSAEXT;
         } else {
             storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
             storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;

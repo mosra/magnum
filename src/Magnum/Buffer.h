@@ -1171,7 +1171,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
+        static void MAGNUM_LOCAL copyImplementationDSAEXT(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
         #endif
 
@@ -1185,22 +1185,22 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         void MAGNUM_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
+        void MAGNUM_LOCAL getParameterImplementationDSAEXT(GLenum value, GLint* data);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
-        void MAGNUM_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        void MAGNUM_LOCAL getSubDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
+        void MAGNUM_LOCAL dataImplementationDSAEXT(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
 
         void MAGNUM_LOCAL subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        void MAGNUM_LOCAL subDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL invalidateImplementationNoOp();
@@ -1215,22 +1215,22 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         void MAGNUM_LOCAL * mapImplementationDefault(MapAccess access);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL * mapImplementationDSA(MapAccess access);
+        void MAGNUM_LOCAL * mapImplementationDSAEXT(MapAccess access);
         #endif
 
         void MAGNUM_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL * mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access);
+        void MAGNUM_LOCAL * mapRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length, MapFlags access);
         #endif
 
         void MAGNUM_LOCAL flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length);
+        void MAGNUM_LOCAL flushMappedRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length);
         #endif
 
         bool MAGNUM_LOCAL unmapImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
-        bool MAGNUM_LOCAL unmapImplementationDSA();
+        bool MAGNUM_LOCAL unmapImplementationDSAEXT();
         #endif
 
         GLuint _id;

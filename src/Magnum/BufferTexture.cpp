@@ -75,7 +75,7 @@ void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalF
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
 }
 
-void BufferTexture::setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer) {
+void BufferTexture::setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer) {
     glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
 }
 
@@ -84,7 +84,7 @@ void BufferTexture::setBufferRangeImplementationDefault(BufferTextureFormat inte
     glTexBufferRange(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
 }
 
-void BufferTexture::setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+void BufferTexture::setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
     glTextureBufferRangeEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
 }
 

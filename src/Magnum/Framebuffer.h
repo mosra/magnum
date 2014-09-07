@@ -639,22 +639,22 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer);
+        void MAGNUM_LOCAL renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
-        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);
+        void MAGNUM_LOCAL texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
         void MAGNUM_LOCAL texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        void MAGNUM_LOCAL texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
 
         void MAGNUM_LOCAL textureLayerImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL textureLayerImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
+        void MAGNUM_LOCAL textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #endif
 };
 

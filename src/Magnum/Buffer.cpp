@@ -402,7 +402,7 @@ void Buffer::copyImplementationDefault(Buffer& read, Buffer& write, GLintptr rea
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
+void Buffer::copyImplementationDSAEXT(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
     read._created = write._created = true;
     glNamedCopyBufferSubDataEXT(read._id, write._id, readOffset, writeOffset, size);
 }
@@ -414,7 +414,7 @@ void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const 
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data) {
+void Buffer::getParameterImplementationDSAEXT(const GLenum value, GLint* const data) {
     _created = true;
     glGetNamedBufferParameterivEXT(_id, value, data);
 }
@@ -425,7 +425,7 @@ void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsize
     glGetBufferSubData(GLenum(bindSomewhereInternal(_targetHint)), offset, size, data);
 }
 
-void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+void Buffer::getSubDataImplementationDSAEXT(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
     _created = true;
     glGetNamedBufferSubDataEXT(_id, offset, size, data);
 }
@@ -436,7 +436,7 @@ void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buff
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
+void Buffer::dataImplementationDSAEXT(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
     _created = true;
     glNamedBufferDataEXT(_id, size, data, GLenum(usage));
 }
@@ -447,7 +447,7 @@ void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, cons
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+void Buffer::subDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     _created = true;
     glNamedBufferSubDataEXT(_id, offset, size, data);
 }
@@ -483,7 +483,7 @@ void* Buffer::mapImplementationDefault(MapAccess access) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void* Buffer::mapImplementationDSA(MapAccess access) {
+void* Buffer::mapImplementationDSAEXT(MapAccess access) {
     _created = true;
     return glMapNamedBufferEXT(_id, GLenum(access));
 }
@@ -503,7 +503,7 @@ void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, 
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void* Buffer::mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access) {
+void* Buffer::mapRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length, MapFlags access) {
     _created = true;
     return glMapNamedBufferRangeEXT(_id, offset, length, GLenum(access));
 }
@@ -522,7 +522,7 @@ void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr l
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length) {
+void Buffer::flushMappedRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length) {
     _created = true;
     glFlushMappedNamedBufferRangeEXT(_id, offset, length);
 }
@@ -539,7 +539,7 @@ bool Buffer::unmapImplementationDefault() {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-bool Buffer::unmapImplementationDSA() {
+bool Buffer::unmapImplementationDSAEXT() {
     _created = true;
     return glUnmapNamedBufferEXT(_id);
 }

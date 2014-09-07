@@ -257,7 +257,7 @@ void Framebuffer::renderbufferImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Framebuffer::renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer) {
+void Framebuffer::renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer) {
     _created = true;
     glNamedFramebufferRenderbufferEXT(_id, GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
 }
@@ -266,7 +266,7 @@ void Framebuffer::texture1DImplementationDefault(BufferAttachment attachment, GL
     glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
 }
 
-void Framebuffer::texture1DImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
+void Framebuffer::texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
     _created = true;
     glNamedFramebufferTexture1DEXT(_id, GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
 }
@@ -277,7 +277,7 @@ void Framebuffer::texture2DImplementationDefault(BufferAttachment attachment, GL
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Framebuffer::texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
+void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
     _created = true;
     glNamedFramebufferTexture2DEXT(_id, GLenum(attachment), textureTarget, textureId, mipLevel);
 }
@@ -298,7 +298,7 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Framebuffer::textureLayerImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
+void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
     _created = true;
     glNamedFramebufferTextureLayerEXT(_id, GLenum(attachment), textureId, mipLevel, layer);
 }

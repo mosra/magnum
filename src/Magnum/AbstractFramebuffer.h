@@ -347,22 +347,22 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
         #ifndef MAGNUM_TARGET_GLES
-        GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
+        GLenum MAGNUM_LOCAL checkStatusImplementationDSAEXT(FramebufferTarget target);
         #endif
 
         void MAGNUM_LOCAL drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers);
+        void MAGNUM_LOCAL drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers);
         #endif
 
         void MAGNUM_LOCAL drawBufferImplementationDefault(GLenum buffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL drawBufferImplementationDSA(GLenum buffer);
+        void MAGNUM_LOCAL drawBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
         void MAGNUM_LOCAL readBufferImplementationDefault(GLenum buffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
+        void MAGNUM_LOCAL readBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
         static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);

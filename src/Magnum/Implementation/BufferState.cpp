@@ -90,15 +90,15 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-        copyImplementation = &Buffer::copyImplementationDSA;
-        getParameterImplementation = &Buffer::getParameterImplementationDSA;
-        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
-        dataImplementation = &Buffer::dataImplementationDSA;
-        subDataImplementation = &Buffer::subDataImplementationDSA;
-        mapImplementation = &Buffer::mapImplementationDSA;
-        mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
-        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
-        unmapImplementation = &Buffer::unmapImplementationDSA;
+        copyImplementation = &Buffer::copyImplementationDSAEXT;
+        getParameterImplementation = &Buffer::getParameterImplementationDSAEXT;
+        getSubDataImplementation = &Buffer::getSubDataImplementationDSAEXT;
+        dataImplementation = &Buffer::dataImplementationDSAEXT;
+        subDataImplementation = &Buffer::subDataImplementationDSAEXT;
+        mapImplementation = &Buffer::mapImplementationDSAEXT;
+        mapRangeImplementation = &Buffer::mapRangeImplementationDSAEXT;
+        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSAEXT;
+        unmapImplementation = &Buffer::unmapImplementationDSAEXT;
     } else
     #endif
     {

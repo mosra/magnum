@@ -270,7 +270,7 @@ GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTa
 }
 
 #ifndef MAGNUM_TARGET_GLES
-GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
+GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTarget target) {
     _created = true;
     return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
 }
@@ -295,7 +295,7 @@ void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const 
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers) {
+void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers) {
     _created = true;
     glFramebufferDrawBuffersEXT(_id, count, buffers);
 }
@@ -321,7 +321,7 @@ void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::drawBufferImplementationDSA(GLenum buffer) {
+void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
     _created = true;
     glFramebufferDrawBufferEXT(_id, buffer);
 }
@@ -345,7 +345,7 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::readBufferImplementationDSA(GLenum buffer) {
+void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
     _created = true;
     glFramebufferReadBufferEXT(_id, buffer);
 }

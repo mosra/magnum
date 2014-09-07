@@ -382,7 +382,7 @@ void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDSA(const Attribute& attribute) {
+void Mesh::attributePointerImplementationDSAEXT(const Attribute& attribute) {
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
@@ -418,7 +418,7 @@ void Mesh::attributePointerImplementationVAO(const IntegerAttribute& attribute) 
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDSA(const IntegerAttribute& attribute) {
+void Mesh::attributePointerImplementationDSAEXT(const IntegerAttribute& attribute) {
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
@@ -448,7 +448,7 @@ void Mesh::attributePointerImplementationVAO(const LongAttribute& attribute) {
     vertexAttribPointer(attribute);
 }
 
-void Mesh::attributePointerImplementationDSA(const LongAttribute& attribute) {
+void Mesh::attributePointerImplementationDSAEXT(const LongAttribute& attribute) {
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
