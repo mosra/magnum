@@ -379,6 +379,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures);
         #endif
 
+        void MAGNUM_LOCAL createImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationDSA();
+        #endif
+
         void MAGNUM_LOCAL createIfNotAlready();
 
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);

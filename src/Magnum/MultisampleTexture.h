@@ -113,9 +113,12 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object.
-         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_2D_MULTISAMPLE} or
-         *      @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}
+         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * first use.
+         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_2D_MULTISAMPLE} or
+         *      @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}, eventually
+         *      @fn_gl{GenTextures}
          */
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
 

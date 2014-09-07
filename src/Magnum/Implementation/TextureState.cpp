@@ -57,6 +57,18 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     , bufferOffsetAlignment(0)
     #endif
 {
+    /* Create implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        createImplementation = &AbstractTexture::createImplementationDSA;
+
+    } else
+    #endif
+    {
+        createImplementation = &AbstractTexture::createImplementationDefault;
+    }
+
     /* Bind implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {

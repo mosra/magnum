@@ -193,10 +193,22 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, cons
 }
 #endif
 
-AbstractTexture::AbstractTexture(GLenum target): _target{target}, _created{false} {
-    glGenTextures(1, &_id);
+AbstractTexture::AbstractTexture(GLenum target): _target{target} {
+    (this->*Context::current()->state().texture->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
+
+void AbstractTexture::createImplementationDefault() {
+    glGenTextures(1, &_id);
+    _created = false;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::createImplementationDSA() {
+    glCreateTextures(_target, 1, &_id);
+    _created = true;
+}
+#endif
 
 AbstractTexture::~AbstractTexture() {
     /* Moved out, nothing to do */
