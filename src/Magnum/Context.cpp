@@ -408,6 +408,7 @@ Context::Context(void functionLoader()) {
         Version::GL420,
         Version::GL430,
         Version::GL440,
+        Version::GL450,
         #else
         Version::GLES200,
         Version::GLES300,
