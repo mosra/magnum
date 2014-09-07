@@ -761,8 +761,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @param targetHint    Target hint, see @ref setTargetHint() for more
          *      information
          *
-         * Creates new OpenGL buffer.
-         * @see @fn_gl{GenBuffers}
+         * Creates new OpenGL buffer object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the buffer is created on
+         * first use.
+         * @see @fn_gl{CreateBuffers}, eventually @fn_gl{GenBuffers}
          */
         explicit Buffer(TargetHint targetHint = TargetHint::Array);
 
@@ -784,7 +786,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Destructor
          *
-         * Deletes associated OpenGL buffer.
+         * Deletes associated OpenGL buffer object.
          * @see @fn_gl{DeleteBuffers}
          */
         ~Buffer();
@@ -1173,6 +1175,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL copyImplementationDSAEXT(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
+        #endif
+
+        void MAGNUM_LOCAL createImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationDSA();
         #endif
 
         void MAGNUM_LOCAL createIfNotAlready();

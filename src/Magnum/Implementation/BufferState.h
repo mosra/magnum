@@ -51,6 +51,7 @@ struct BufferState {
     void(*bindRangesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>>);
     void(*copyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
     #endif
+    void(Buffer::*createImplementation)();
     void(Buffer::*getParameterImplementation)(GLenum, GLint*);
     #ifndef MAGNUM_TARGET_GLES2
     void(Buffer::*getSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);

@@ -162,15 +162,26 @@ void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const 
 }
 #endif
 
-Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint},
+Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}
     #ifdef CORRADE_TARGET_NACL
-    _mappedBuffer{nullptr},
+    , _mappedBuffer{nullptr}
     #endif
-    _created{false}
 {
-    glGenBuffers(1, &_id);
+    (this->*Context::current()->state().buffer->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
+
+void Buffer::createImplementationDefault() {
+    glGenBuffers(1, &_id);
+    _created = false;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::createImplementationDSA() {
+    glCreateBuffers(1, &_id);
+    _created = true;
+}
+#endif
 
 Buffer::~Buffer() {
     /* Moved out, nothing to do */

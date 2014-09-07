@@ -86,6 +86,18 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     , maxAtomicCounterBindings{0}, maxShaderStorageBindings{0}, shaderStorageOffsetAlignment{0}, uniformOffsetAlignment{0}, maxUniformBindings{0}
     #endif
 {
+    /* Create implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        createImplementation = &Buffer::createImplementationDSA;
+
+    } else
+    #endif
+    {
+        createImplementation = &Buffer::createImplementationDefault;
+    }
+
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
