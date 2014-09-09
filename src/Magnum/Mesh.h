@@ -424,8 +424,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
          * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
-         * available, vertex array object is created.
-         * @see @ref setPrimitive(), @ref setCount(), @fn_gl{GenVertexArrays}
+         * available, vertex array object is created. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the vertex array object is
+         * created on first use.
+         * @see @ref setPrimitive(), @ref setCount(), @fn_gl{CreateVertexArrays},
+         *      eventually @fn_gl{GenVertexArrays}
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
 
@@ -440,7 +443,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
          * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
-         * available, vertex array object is deleted.
+         * available, associated vertex array object is deleted.
          * @see @fn_gl{DeleteVertexArrays}
          */
         ~Mesh();
@@ -954,6 +957,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         void MAGNUM_LOCAL createImplementationDefault();
         void MAGNUM_LOCAL createImplementationVAO();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationVAODSA();
+        #endif
 
         void MAGNUM_LOCAL destroyImplementationDefault();
         void MAGNUM_LOCAL destroyImplementationVAO();

@@ -335,7 +335,6 @@ void Mesh::createImplementationDefault() {
 }
 
 void Mesh::createImplementationVAO() {
-    _created = false;
     #ifndef MAGNUM_TARGET_GLES2
     glGenVertexArrays(1, &_id);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
@@ -343,8 +342,16 @@ void Mesh::createImplementationVAO() {
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif
+    _created = false;
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::createImplementationVAODSA() {
+    glCreateVertexArrays(1, &_id);
+    _created = true;
+}
+#endif
 
 void Mesh::destroyImplementationDefault() {}
 

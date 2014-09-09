@@ -96,6 +96,14 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* DSA create implementation (other cases handled above) */
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        createImplementation = &Mesh::createImplementationVAODSA;
+    }
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES
     /* Multi draw implementation on ES */
     if(context.isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>()) {
