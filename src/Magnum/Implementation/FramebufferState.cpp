@@ -38,6 +38,18 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     , maxDualSourceDrawBuffers(0)
     #endif
 {
+    /* Create implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        createImplementation = &Framebuffer::createImplementationDSA;
+
+    } else
+    #endif
+    {
+        createImplementation = &Framebuffer::createImplementationDefault;
+    }
+
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {

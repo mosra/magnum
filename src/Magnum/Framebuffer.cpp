@@ -81,11 +81,21 @@ Int Framebuffer::maxColorAttachments() {
 
 Framebuffer::Framebuffer(const Range2Di& viewport) {
     _viewport = viewport;
-    _created = false;
-
-    glGenFramebuffers(1, &_id);
+    (this->*Context::current()->state().framebuffer->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
+
+void Framebuffer::createImplementationDefault() {
+    glGenFramebuffers(1, &_id);
+    _created = false;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Framebuffer::createImplementationDSA() {
+    glCreateFramebuffers(1, &_id);
+    _created = true;
+}
+#endif
 
 Framebuffer::~Framebuffer() {
     /* Moved out, nothing to do */

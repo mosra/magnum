@@ -302,8 +302,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Constructor
          *
-         * Generates new OpenGL framebuffer.
-         * @see @ref setViewport(), @fn_gl{GenFramebuffers}
+         * Generates new OpenGL framebuffer object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the framebuffer is created on
+         * first use.
+         * @see @ref setViewport(), @fn_gl{CreateFramebuffers}, eventually
+         *      @fn_gl{GenFramebuffers}
          */
         explicit Framebuffer(const Range2Di& viewport);
 
@@ -316,7 +319,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Destructor
          *
-         * Deletes associated OpenGL framebuffer.
+         * Deletes associated OpenGL framebuffer object.
          * @see @fn_gl{DeleteFramebuffers}
          */
         ~Framebuffer();
@@ -635,6 +638,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 
     private:
+        void MAGNUM_LOCAL createImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationDSA();
+        #endif
+
         Framebuffer& setLabelInternal(Containers::ArrayReference<const char> label);
 
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
