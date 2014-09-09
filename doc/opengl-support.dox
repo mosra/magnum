@@ -213,7 +213,7 @@ following:
 @extension{ARB,conditional_render_inverted}  | done
 @extension{ARB,cull_distance}                | |
 @extension{ARB,derivative_control}           | done (shading language only)
-@extension{ARB,direct_state_access}          | |
+@extension{ARB,direct_state_access}          | object creation subset only
 @extension{ARB,get_texture_sub_image}        | |
 @extension{ARB,shader_texture_image_samples} | done (shading language only)
 @extension{ARB,texture_barrier}              | |
