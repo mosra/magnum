@@ -64,7 +64,21 @@ Int Renderbuffer::maxSamples() {
     return value;
 }
 
-Renderbuffer::Renderbuffer(): _created{false} { glGenRenderbuffers(1, &_id); }
+Renderbuffer::Renderbuffer() {
+    (this->*Context::current()->state().framebuffer->createRenderbufferImplementation)();
+}
+
+void Renderbuffer::createImplementationDefault() {
+    glGenRenderbuffers(1, &_id);
+    _created = false;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderbuffer::createImplementationDSA() {
+    glCreateRenderbuffers(1, &_id);
+    _created = true;
+}
+#endif
 
 Renderbuffer::~Renderbuffer() {
     /* Moved out, nothing to do */

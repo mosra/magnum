@@ -43,11 +43,13 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
         extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
         createImplementation = &Framebuffer::createImplementationDSA;
+        createRenderbufferImplementation = &Renderbuffer::createImplementationDSA;
 
     } else
     #endif
     {
         createImplementation = &Framebuffer::createImplementationDefault;
+        createRenderbufferImplementation = &Renderbuffer::createImplementationDefault;
     }
 
     /* DSA/non-DSA implementation */

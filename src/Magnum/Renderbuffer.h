@@ -85,8 +85,10 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         /**
          * @brief Constructor
          *
-         * Generates new OpenGL renderbuffer.
-         * @see @fn_gl{GenRenderbuffers}
+         * Generates new OpenGL renderbuffer object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the renderbuffer is created
+         * on first use.
+         * @see @fn_gl{CreateRenderbuffers}, eventually @fn_gl{GenRenderbuffers}
          */
         explicit Renderbuffer();
 
@@ -99,7 +101,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         /**
          * @brief Destructor
          *
-         * Deletes associated OpenGL renderbuffer.
+         * Deletes associated OpenGL renderbuffer object.
          * @see @fn_gl{DeleteRenderbuffers}
          */
         ~Renderbuffer();
@@ -178,6 +180,11 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
 
     private:
+        void MAGNUM_LOCAL createImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationDSA();
+        #endif
+
         void MAGNUM_LOCAL createIfNotAlready();
 
         Renderbuffer& setLabelInternal(Containers::ArrayReference<const char> label);
