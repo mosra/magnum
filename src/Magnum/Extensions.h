@@ -82,6 +82,7 @@ namespace GL {
         _extension(GL,ARB,draw_instanced,               GL210, GL310) // #44
         _extension(GL,ARB,framebuffer_object,           GL210, GL300) // #45
         _extension(GL,ARB,geometry_shader4,             GL210, GL320) // #47
+        _extension(GL,ARB,half_float_vertex,            GL210, GL300) // #48
         _extension(GL,ARB,instanced_arrays,             GL210, GL330) // #49
         _extension(GL,ARB,map_buffer_range,             GL210, GL300) // #50
         _extension(GL,ARB,texture_buffer_object,        GL210, GL310) // #51
@@ -207,7 +208,6 @@ namespace GL {
         _extension(GL,KHR,context_flush_control,        GL210, GL450) // #168
         _extension(GL,KHR,robustness,                   GL320, GL450) // #170
     } namespace NV {
-        _extension(GL,NV,half_float,                    GL210, GL300) // #283
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
         _extension(GL,NV,depth_buffer_float,            GL210, GL300) // #334
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346

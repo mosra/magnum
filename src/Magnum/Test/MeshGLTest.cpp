@@ -896,8 +896,8 @@ void MeshGLTest::addVertexBufferIntWithShort() {
 
 void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::half_float>())
-        CORRADE_SKIP(Extensions::GL::NV::half_float::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::half_float_vertex>())
+        CORRADE_SKIP(Extensions::GL::ARB::half_float_vertex::string() + std::string(" is not supported."));
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_half_float>())
         CORRADE_SKIP(Extensions::GL::OES::vertex_half_float::string() + std::string(" is not supported."));

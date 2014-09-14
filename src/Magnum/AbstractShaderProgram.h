@@ -1137,7 +1137,7 @@ template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
 
             /**
              * Half float. Only for float attribute types.
-             * @requires_gl30 %Extension @extension{NV,half_float}
+             * @requires_gl30 %Extension @extension{ARB,half_float_vertex}
              * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
              */

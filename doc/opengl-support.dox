@@ -49,7 +49,6 @@ following:
 
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
 @todo Add @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @extension{NV,depth_buffer_float} for non-linear depth buffer
-@todo @extension{ARB,half_float_pixel}, @extension{ARB,half_float_vertex}?
 
 %Extension                                  | Status
 ------------------------------------------- | ------
@@ -62,6 +61,7 @@ GLSL 1.30                                   | done
 @extension{ARB,texture_rg}                  | done
 @extension{ARB,vertex_array_object}         | done
 @extension{ARB,framebuffer_object}          | done
+@extension{ARB,half_float_vertex}           | done
 @extension{EXT,gpu_shader4}                 | done
 @extension{EXT,packed_float}                | done
 @extension{EXT,texture_array}               | done
@@ -71,7 +71,6 @@ GLSL 1.30                                   | done
 @extension{EXT,draw_buffers2}               | |
 @extension{EXT,texture_integer}             | done (GL 3.0 subset)
 @extension{EXT,transform_feedback}          | |
-@extension{NV,half_float}                   | done (GL 3.0 subset)
 @extension{NV,depth_buffer_float}           | |
 @extension{NV,conditional_render}           | done
 

@@ -80,6 +80,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_rg),
         _extension(GL,ARB,vertex_array_object),
         _extension(GL,ARB,framebuffer_object),
+        _extension(GL,ARB,half_float_vertex),
         _extension(GL,EXT,gpu_shader4),
         _extension(GL,EXT,packed_float),
         _extension(GL,EXT,texture_array),
@@ -89,7 +90,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,draw_buffers2),
         _extension(GL,EXT,texture_integer),
         _extension(GL,EXT,transform_feedback),
-        _extension(GL,NV,half_float),
         _extension(GL,NV,depth_buffer_float),
         _extension(GL,NV,conditional_render)};
     static const std::vector<Extension> extensions310{
