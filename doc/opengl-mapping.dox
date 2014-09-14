@@ -426,7 +426,7 @@ OpenGL function                         | Matching API
 @def_gl{MAX_FRAMEBUFFER_LAYERS}         | |
 @def_gl{MAX_FRAMEBUFFER_SAMPLES}        | |
 @def_gl{MAX_FRAMEBUFFER_WIDTH}          | |
-@def_gl{MAX_FRAGMENT_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_OUTPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VERTEX_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VARYING_COMPONENTS}, \n @def_gl{MAX_VARYING_FLOATS}, \n @def_gl{MAX_VARYING_VECTORS} | @ref Shader::maxFragmentInputComponents(), \n @ref Shader::maxGeometryInputComponents(), \n @ref Shader::maxGeometryOutputComponents(), \n @ref Shader::maxGeometryTotalOutputComponents(), \n @ref Shader::maxTessellationControlInputComponents(), \n @ref Shader::maxTessellationControlOutputComponents(), \n @ref Shader::maxTessellationControlTotalOutputComponents(), \n @ref Shader::maxTessellationEvaluationInputComponents(), \n @ref Shader::maxTessellationEvaluationOutputComponents(), \n @ref Shader::maxVertexOutputComponents()
+@def_gl{MAX_FRAGMENT_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_OUTPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VERTEX_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VARYING_VECTORS} | @ref Shader::maxFragmentInputComponents(), \n @ref Shader::maxGeometryInputComponents(), \n @ref Shader::maxGeometryOutputComponents(), \n @ref Shader::maxGeometryTotalOutputComponents(), \n @ref Shader::maxTessellationControlInputComponents(), \n @ref Shader::maxTessellationControlOutputComponents(), \n @ref Shader::maxTessellationControlTotalOutputComponents(), \n @ref Shader::maxTessellationEvaluationInputComponents(), \n @ref Shader::maxTessellationEvaluationOutputComponents(), \n @ref Shader::maxVertexOutputComponents()
 @def_gl{MAX_IMAGE_SAMPLES}              | @ref AbstractShaderProgram::maxImageSamples()
 @def_gl{MAX_IMAGE_UNITS}                | @ref AbstractShaderProgram::maxImageUnits()
 @def_gl{MAX_LABEL_LENGTH}               | @ref AbstractObject::maxLabelLength()
@@ -449,7 +449,6 @@ OpenGL function                         | Matching API
 @def_gl{MAX_VIEWPORT_DIMS}              | @ref AbstractFramebuffer::maxViewportSize()
 @def_gl{MIN_MAP_BUFFER_ALIGNMENT}       | @ref Buffer::minMapAlignment()
 @def_gl{MIN_PROGRAM_TEXEL_OFFSET}, \n @def_gl{MAX_PROGRAM_TEXEL_OFFSET} | @ref AbstractShaderProgram::minTexelOffset(), \n @ref AbstractShaderProgram::maxTexelOffset()
-@def_gl{NUM_COMPRESSED_TEXTURE_FORMATS}, \n @def_gl{COMPRESSED_TEXTURE_FORMATS} | |
 @def_gl{NUM_EXTENSIONS}                 | @ref Context::supportedExtensions()
 @def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
 @def_gl{NUM_SHADER_BINARY_FORMATS}, \n @def_gl{SHADER_BINARY_FORMATS} | |
