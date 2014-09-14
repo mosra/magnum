@@ -53,6 +53,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 1.30                                   | done
 @extension{ARB,map_buffer_range}            | done
 @extension{ARB,color_buffer_float}          | |
 @extension{ARB,half_float_pixel}            | done
@@ -78,6 +79,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 1.40                                   | done
 @extension{ARB,texture_rectangle}           | done
 @extension{ARB,draw_instanced}              | done
 @extension{ARB,texture_buffer_object}       | done
@@ -90,6 +92,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 1.50                                   | done
 @extension{ARB,geometry_shader4}            | missing layered attachments
 @extension{ARB,depth_clamp}                 | done
 @extension{ARB,draw_elements_base_vertex}   | done
@@ -104,6 +107,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 3.30                                   | done
 @extension{ARB,instanced_arrays}            | done
 @extension{ARB,blend_func_extended}         | done
 @extension{ARB,explicit_attrib_location}    | done (shading language only)
@@ -119,6 +123,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 4.00                                   | done
 @extension{ARB,draw_buffers_blend}          | |
 @extension{ARB,sample_shading}              | |
 @extension{ARB,texture_cube_map_array}      | done
@@ -137,6 +142,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 4.10                                   | done
 @extension{ARB,ES2_compatibility}           | only float depth clear
 @extension{ARB,get_program_binary}          | |
 @extension{ARB,separate_shader_objects}     | only direct uniform binding
@@ -148,6 +154,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 4.20                                   | done
 @extension{ARB,texture_compression_bptc}    | done
 @extension{ARB,base_instance}               | done
 @extension{ARB,shading_language_420pack}    | done (shading language only)
@@ -165,6 +172,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 4.30                                   | done
 @extension{ARB,arrays_of_arrays}            | done (shading language only)
 @extension{ARB,ES3_compatibility}           | only conservative sample query
 @extension{ARB,clear_buffer_object}         | |
@@ -195,6 +203,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 4.40                                   | done
 @def_gl{MAX_VERTEX_ATTRIB_STRIDE}           | |
 @extension{ARB,buffer_storage}              | |
 @extension{ARB,clear_texture}               | |
@@ -209,6 +218,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+GLSL 4.50                                   | done
 @extension{ARB,ES3_1_compatibility}         | |
 @extension{ARB,clip_control}                | |
 @extension{ARB,conditional_render_inverted} | done
@@ -245,17 +255,17 @@ following:
 @subsection opengl-support-es20 OpenGL ES 2.0
 
 Features that have their equivalents implemented in desktop version are
-supported.
+supported. ESSL 1.00 is supported.
 
 @subsection opengl-support-es30 OpenGL ES 3.0
 
 Features that have their equivalents implemented in desktop version are
-supported.
+supported. ESSL 3.00 is supported.
 
 @subsection opengl-support-es31 OpenGL ES 3.1
 
 Features that have their equivalents implemented in desktop version are
-supported.
+supported. ESSL 3.10 is supported.
 
 @subsection opengl-support-es30-extensions OpenGL ES 2.0 extensions to match ES 3.0 functionality
 
