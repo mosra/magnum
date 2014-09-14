@@ -218,6 +218,12 @@ OpenGL function                         | Matching API
 @fn_gl{GetUniformSubroutine}            | |
 @fn_gl{GetVertexAttrib}, \n @fn_gl{GetVertexArray}, \n @fn_gl_extension{GetVertexArray,EXT,direct_state_access} | not queryable, @ref Mesh::addVertexBuffer() setter only
 
+@subsection opengl-mapping-functions-h H
+
+OpenGL function                         | Matching API
+--------------------------------------- | ------------
+@fn_gl{Hint}                            | @ref Renderer::setHint()
+
 @subsection opengl-mapping-functions-i I
 
 OpenGL function                         | Matching API
