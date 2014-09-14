@@ -195,6 +195,7 @@ following:
 
 %Extension                                  | Status
 ------------------------------------------- | ------
+@def_gl{MAX_VERTEX_ATTRIB_STRIDE}           | |
 @extension{ARB,buffer_storage}              | |
 @extension{ARB,clear_texture}               | |
 @extension{ARB,enhanced_layouts}            | done (shading language only)
