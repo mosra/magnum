@@ -382,11 +382,12 @@ add any performance gains, is not supported in %Magnum. See also
 
 @subsection opengl-unsupported-extensions Unsupported extensions
 
-- @extension{INTEL,map_texture} negatively affects texture access performance.
-  Combination of buffer mapping and pixel buffers might be of the same or
-  better performance, without affecting texture access speed.
-- @extension{NV,draw_texture} can be done with framebuffer blitting and
-  doesn't make any full-screen postprocessing easier, as shaders are excluded.
+-   @extension{INTEL,map_texture} negatively affects texture access
+    performance. Combination of buffer mapping and pixel buffers might be of
+    the same or better performance, without affecting texture access speed.
+-   @extension{NV,draw_texture} can be done with framebuffer blitting and
+    doesn't make any full-screen postprocessing easier, as shaders are
+    excluded.
 
 */
 
