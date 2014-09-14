@@ -63,6 +63,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,AMD,shader_trinary_minmax),
         _extension(GL,ARB,robustness),
         _extension(GL,ARB,robustness_isolation),
+        _extension(GL,ARB,robustness_application_isolation),
+        _extension(GL,ARB,robustness_share_group_isolation),
         _extension(GL,ARB,bindless_texture),
         _extension(GL,ARB,compute_variable_group_size),
         _extension(GL,ARB,indirect_parameters),

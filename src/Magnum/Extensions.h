@@ -146,6 +146,8 @@ namespace GL {
         _extension(GL,ARB,texture_view,                 GL210, GL430) // #124
         _extension(GL,ARB,vertex_attrib_binding,        GL210, GL430) // #125
         _extension(GL,ARB,robustness_isolation,         GL210,  None) // #126
+        _extension(GL,ARB,robustness_application_isolation, GL210, None) // #126
+        _extension(GL,ARB,robustness_share_group_isolation, GL210, None) // #126
         _extension(GL,ARB,ES3_compatibility,            GL330, GL430) // #127
         _extension(GL,ARB,explicit_uniform_location,    GL210, GL430) // #128
         _extension(GL,ARB,fragment_layer_viewport,      GL300, GL430) // #129

@@ -436,7 +436,10 @@ class Sdl2Application::Configuration {
             Debug = SDL_GL_CONTEXT_DEBUG_FLAG,  /**< Create debug context */
 
             /** Create context with robust access */
-            RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG
+            RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
+
+            /** Create context with reset isolation */
+            ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
         };
 
         /**
@@ -447,7 +450,7 @@ class Sdl2Application::Configuration {
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
-            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG> Flags;
+            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG|SDL_GL_CONTEXT_RESET_ISOLATION_FLAG> Flags;
         #else
         typedef Containers::EnumSet<Flag> Flags;
         #endif
