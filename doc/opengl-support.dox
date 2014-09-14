@@ -230,7 +230,26 @@ GLSL 4.50                                   | done
 @extension{KHR,context_flush_control} (also in ES) | |
 @extension{KHR,robustness} (also in ES)     | |
 
-@subsection opengl-support-extensions OpenGL extensions
+@subsection opengl-support-extensions ARB / Khronos OpenGL extensions
+
+%Extension                                  | Status
+------------------------------------------- | ------
+@extension{ARB,robustness}                  | done
+@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} (also in ES) | |
+@extension{KHR,texture_compression_astc_hdr} (also in ES) | |
+@extension{ARB,robustness_isolation}        | |
+@extension{ARB,bindless_texture}            | |
+@extension{ARB,compute_variable_group_size} | |
+@extension{ARB,indirect_parameters}         | |
+@extension{ARB,seamless_cubemap_per_texture} | |
+@extension{ARB,shader_draw_parameters}      | done (shading language only)
+@extension{ARB,shader_group_vote}           | done (shading language only)
+@extension{ARB,sparse_texture}              | |
+@extension{ARB,pipeline_statistics_query}   | |
+@extension{ARB,sparse_buffer}               | |
+@extension{ARB,transform_feedback_overflow_query} | |
+
+@subsection opengl-support-extensions-vendor Vendor OpenGL extensions
 
 @todo @extension{ARB,sparse_texture}, @extension{ARB,bindless_texture} + their vendor equivalents
 @todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature
@@ -240,7 +259,6 @@ GLSL 4.50                                   | done
 ------------------------------------------- | ------
 @extension{AMD,vertex_shader_layer}         | done (shading language only)
 @extension{AMD,shader_trinary_minmax}       | done (shading language only)
-@extension{ARB,robustness}                  | done
 @extension{ATI,texture_mirror_once}         | done (GL 4.4 subset)
 @extension{EXT,texture_filter_anisotropic} (also in ES) | done
 @extension{EXT,texture_mirror_clamp}        | only GL 4.4 subset
@@ -333,6 +351,7 @@ Only extensions not already listed in above tables are included here.
 @es_extension{EXT,sRGB}                     | done
 @es_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
 @es_extension{EXT,robustness}               | done
+@es_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @es_extension2{NV,read_buffer_front,NV_read_buffer} | done
 @es_extension2{NV,read_depth,NV_read_depth_stencil} | done
 @es_extension2{NV,read_stencil,NV_read_depth_stencil} | done
@@ -380,7 +399,14 @@ add any performance gains, is not supported in %Magnum. See also
 -   Direct vertex data specification (as opposed to using buffers) is not
     supported, as it encourages bad practices.
 
-@subsection opengl-unsupported-extensions Unsupported extensions
+@subsection opengl-unsupported-extensions Unsupported ARB / Khronos extensions
+
+-   @extension{ARB,shading_language_include} is overly complicated and
+    supported exclusively by NVidia
+-   @extension{ARB,cl_event} seems to be not supported anywhere
+-   @extension{ARB,shader_stencil_export} is supported exclusively by AMD
+
+@subsection opengl-unsupported-extensions-vendor Unsupported vendor extensions
 
 -   @extension{INTEL,map_texture} negatively affects texture access
     performance. Combination of buffer mapping and pixel buffers might be of
