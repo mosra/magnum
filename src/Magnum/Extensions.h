@@ -81,6 +81,7 @@ namespace GL {
         _extension(GL,ARB,depth_buffer_float,           GL210, GL300) // #43
         _extension(GL,ARB,draw_instanced,               GL210, GL310) // #44
         _extension(GL,ARB,framebuffer_object,           GL210, GL300) // #45
+        _extension(GL,ARB,framebuffer_sRGB,             GL210, GL300) // #46
         _extension(GL,ARB,geometry_shader4,             GL210, GL320) // #47
         _extension(GL,ARB,half_float_vertex,            GL210, GL300) // #48
         _extension(GL,ARB,instanced_arrays,             GL210, GL330) // #49
@@ -202,7 +203,6 @@ namespace GL {
         _extension(GL,EXT,texture_array,                GL210, GL300) // #329
         _extension(GL,EXT,texture_compression_rgtc,     GL210, GL300) // #332
         _extension(GL,EXT,texture_shared_exponent,      GL210, GL300) // #333
-        _extension(GL,EXT,framebuffer_sRGB,             GL210, GL300) // #337
         _extension(GL,EXT,draw_buffers2,                GL210, GL300) // #340
         _extension(GL,EXT,texture_integer,              GL210, GL300) // #343
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352

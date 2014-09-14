@@ -61,13 +61,13 @@ GLSL 1.30                                   | done
 @extension{ARB,texture_rg}                  | done
 @extension{ARB,vertex_array_object}         | done
 @extension{ARB,framebuffer_object}          | done
+@extension{ARB,framebuffer_sRGB}            | |
 @extension{ARB,half_float_vertex}           | done
 @extension{EXT,gpu_shader4}                 | done
 @extension{EXT,packed_float}                | done
 @extension{EXT,texture_array}               | done
 @extension{EXT,texture_compression_rgtc}    | done
 @extension{EXT,texture_shared_exponent}     | done
-@extension{EXT,framebuffer_sRGB}            | |
 @extension{EXT,draw_buffers2}               | |
 @extension{EXT,texture_integer}             | done (GL 3.0 subset)
 @extension{EXT,transform_feedback}          | |
