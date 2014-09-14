@@ -195,6 +195,7 @@ OpenGL function                         | Matching API
 @fn_gl{GetProgramStage}                 | |
 @fn_gl{GetQueryIndexed}                 | |
 @fn_gl{GetQueryObject}                  | @ref AbstractQuery::result()
+@fn_gl{GetQueryBufferObject}            | |
 @fn_gl2{GetQuery,GetQueryiv}            | |
 @fn_gl{GetRenderbufferParameter}, \n `glGetNamedRenderbufferParameter()`, \n @fn_gl_extension{GetNamedRenderbufferParameter,EXT,direct_state_access} | not queryable, @ref Renderbuffer::setStorage() and \n @ref Renderbuffer::setStorageMultisample() setter only
 @fn_gl{GetSamplerParameter}             | |
