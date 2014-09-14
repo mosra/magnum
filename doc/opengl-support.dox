@@ -61,7 +61,7 @@ GLSL 1.30                                   | done
 @extension{ARB,texture_rg}                  | done
 @extension{ARB,vertex_array_object}         | done
 @extension{ARB,framebuffer_object}          | done
-@extension{ARB,framebuffer_sRGB}            | |
+@extension{ARB,framebuffer_sRGB}            | done
 @extension{ARB,half_float_vertex}           | done
 @extension{EXT,gpu_shader4}                 | done
 @extension{EXT,packed_float}                | done

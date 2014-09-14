@@ -136,6 +136,14 @@ class MAGNUM_EXPORT Renderer {
 
             #ifndef MAGNUM_TARGET_GLES
             /**
+             * sRGB encoding of the default framebuffer
+             * @requires_gl30 %Extension @extension{ARB,framebuffer_sRGB}
+             * @requires_gl sRGB encoding of the default framebuffer is
+             *      implementation-defined in OpenGL ES.
+             */
+            FramebufferSRGB = GL_FRAMEBUFFER_SRGB,
+
+            /**
              * Logical operation
              * @see @ref setLogicOperation()
              * @requires_gl Logical operations on framebuffer are not
