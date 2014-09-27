@@ -479,7 +479,10 @@ Context::Context(void functionLoader()) {
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );
     _current = this;
 
-    /* Initialize state tracker */
+    /* Print some info and initialize state tracker (which also prints some
+       more info) */
+    Debug() << "Renderer:" << rendererString() << "by" << vendorString();
+    Debug() << "OpenGL version:" << versionString();
     _state = new Implementation::State(*this);
 
     /* Initialize functionality based on current OpenGL version and extensions */

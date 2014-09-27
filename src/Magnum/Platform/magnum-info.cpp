@@ -214,9 +214,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
        place */
     createContext();
     Context* c = Context::current();
-    Debug() << "Vendor:" << c->vendorString();
-    Debug() << "Renderer:" << c->rendererString();
-    Debug() << "OpenGL version:" << c->version() << '(' + c->versionString() + ')';
 
     Debug() << "Context flags:";
     #ifndef MAGNUM_TARGET_GLES
