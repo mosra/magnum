@@ -37,6 +37,8 @@
 
 namespace Magnum {
 
+namespace Implementation { class QueryState; }
+
 /**
 @brief Base class for queries
 
@@ -45,6 +47,8 @@ more information.
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
+    friend class Implementation::QueryState;
+
     public:
         /** @brief Copying is not allowed */
         AbstractQuery(const AbstractQuery&) = delete;
@@ -121,6 +125,14 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         template<class T> T result();
 
         /**
+         * @brief Begin query
+         *
+         * Begins counting until @ref end() is called.
+         * @see @fn_gl{BeginQuery}
+         */
+        void begin();
+
+        /**
          * @brief End query
          *
          * The result can be then retrieved by calling @ref result().
@@ -129,14 +141,6 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         void end();
 
     protected:
-        /**
-         * @brief Constructor
-         *
-         * Generates one OpenGL query.
-         * @see @fn_gl{GenQueries}
-         */
-        explicit AbstractQuery();
-
         /**
          * @brief Destructor
          *
@@ -148,10 +152,20 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #endif
+        explicit AbstractQuery(GLenum target);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        explicit AbstractQuery();
         void begin(GLenum target);
+        #endif
 
     private:
         AbstractQuery& setLabelInternal(Containers::ArrayReference<const char> label);
+
+        void MAGNUM_LOCAL createImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationDSA();
+        #endif
 
         GLuint _id;
         GLenum _target;

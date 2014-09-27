@@ -50,15 +50,15 @@ void TimeQueryGLTest::queryTime() {
         CORRADE_SKIP(Extensions::GL::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif
 
-    TimeQuery q1;
-    q1.begin(TimeQuery::Target::TimeElapsed);
+    TimeQuery q1{TimeQuery::Target::TimeElapsed};
+    q1.begin();
     q1.end();
     const auto result1 = q1.result<UnsignedInt>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    TimeQuery q2;
-    q2.begin(TimeQuery::Target::TimeElapsed);
+    TimeQuery q2{TimeQuery::Target::TimeElapsed};
+    q2.begin();
     Renderer::enable(Renderer::Feature::Blending);
     Renderer::finish();
     q2.end();
@@ -74,11 +74,13 @@ void TimeQueryGLTest::queryTimestamp() {
         CORRADE_SKIP(Extensions::GL::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif
 
-    TimeQuery q1, q2, q;
+    TimeQuery q1{TimeQuery::Target::Timestamp},
+        q2{TimeQuery::Target::Timestamp},
+        q{TimeQuery::Target::TimeElapsed};
 
     q1.timestamp();
 
-    q.begin(TimeQuery::Target::TimeElapsed);
+    q.begin();
     Renderer::enable(Renderer::Feature::Blending);
     Renderer::finish();
     q.end();

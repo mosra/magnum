@@ -172,12 +172,38 @@ class SampleQuery: public AbstractQuery {
         };
         #endif
 
-        explicit SampleQuery() {}
 
-        /** @copydoc PrimitiveQuery::begin() */
-        void begin(Target target) {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief SampleQuery(Target)
+         * @deprecated Use @ref Magnum::SampleQuery::SampleQuery(Target) "SampleQuery(Target)"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use SampleQuery(Target) instead") explicit SampleQuery() {}
+        #endif
+
+        /**
+         * @brief Constructor
+         *
+         * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the query is created on first
+         * use.
+         * @see @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
+         */
+        explicit SampleQuery(Target target): AbstractQuery(GLenum(target)) {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief AbstractQuery::begin()
+         * @deprecated Use @ref Magnum::AbstractQuery::begin() "begin()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
+
+        using AbstractQuery::begin;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**

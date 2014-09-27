@@ -79,17 +79,37 @@ class PrimitiveQuery: public AbstractQuery {
             TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
         };
 
-        explicit PrimitiveQuery() {}
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief PrimitiveQuery(Target)
+         * @deprecated Use @ref Magnum::PrimitiveQuery::PrimitiveQuery(Target) "PrimitiveQuery(Target)"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use PrimitiveQuery(Target) instead") explicit PrimitiveQuery() {}
+        #endif
 
         /**
-         * @brief Begin query
+         * @brief Constructor
          *
-         * Begins counting of given @p target until @ref end() is called.
-         * @see @fn_gl{BeginQuery}
+         * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the query is created on first
+         * use.
+         * @see @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
          */
-        void begin(Target target) {
+        explicit PrimitiveQuery(Target target): AbstractQuery(GLenum(target)) {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief AbstractQuery::begin()
+         * @deprecated Use @ref Magnum::AbstractQuery::begin() "begin()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
+
+        using AbstractQuery::begin;
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT

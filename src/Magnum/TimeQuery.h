@@ -75,13 +75,37 @@ class TimeQuery: public AbstractQuery {
         enum class Target: GLenum {
             /** Elapsed time */
             #ifndef MAGNUM_TARGET_GLES
-            TimeElapsed = GL_TIME_ELAPSED
+            TimeElapsed = GL_TIME_ELAPSED,
             #else
-            TimeElapsed = GL_TIME_ELAPSED_EXT
+            TimeElapsed = GL_TIME_ELAPSED_EXT,
+            #endif
+
+            /** Timestamp (for use with @ref timestamp() only) */
+            #ifndef MAGNUM_TARGET_GLES
+            Timestamp = GL_TIMESTAMP
+            #else
+            Timestamp = GL_TIMESTAMP_EXT
             #endif
         };
 
-        explicit TimeQuery() {}
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief TimeQuery(Target)
+         * @deprecated Use @ref Magnum::TimeQuery::TimeQuery(Target) "TimeQuery(Target)"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use TimeQuery(Target) instead") explicit TimeQuery() {}
+        #endif
+
+        /**
+         * @brief Constructor
+         *
+         * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the query is created on first
+         * use.
+         * @see @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
+         */
+        explicit TimeQuery(Target target): AbstractQuery(GLenum(target)) {}
 
         /**
          * @brief Query timestamp
@@ -98,10 +122,18 @@ class TimeQuery: public AbstractQuery {
             #endif
         }
 
-        /** @copydoc PrimitiveQuery::begin() */
-        void begin(Target target) {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief AbstractQuery::begin()
+         * @deprecated Use @ref Magnum::AbstractQuery::begin() "begin()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
             AbstractQuery::begin(GLenum(target));
         }
+
+        using AbstractQuery::begin;
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT

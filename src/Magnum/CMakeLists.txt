@@ -58,6 +58,7 @@ set(Magnum_SRCS
     Implementation/DebugState.cpp
     Implementation/FramebufferState.cpp
     Implementation/MeshState.cpp
+    Implementation/QueryState.cpp
     Implementation/RendererState.cpp
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
@@ -128,6 +129,7 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/FramebufferState.h
     Implementation/maxTextureSize.h
     Implementation/MeshState.h
+    Implementation/QueryState.h
     Implementation/RendererState.h
     Implementation/ShaderProgramState.h
     Implementation/ShaderState.h

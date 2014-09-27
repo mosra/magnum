@@ -94,8 +94,8 @@ void PrimitiveQueryGLTest::query() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    PrimitiveQuery q;
-    q.begin(PrimitiveQuery::Target::PrimitivesGenerated);
+    PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
+    q.begin();
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
     mesh.draw(shader);

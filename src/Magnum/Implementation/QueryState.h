@@ -1,5 +1,5 @@
-#ifndef Magnum_Implementation_State_h
-#define Magnum_Implementation_State_h
+#ifndef Magnum_Implementation_QueryState_h
+#define Magnum_Implementation_QueryState_h
 /*
     This file is part of Magnum.
 
@@ -25,38 +25,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
+#include <vector>
+
+#include "Magnum/AbstractQuery.h"
 
 namespace Magnum { namespace Implementation {
 
-struct BufferState;
-struct DebugState;
-struct FramebufferState;
-struct MeshState;
-struct QueryState;
-struct RendererState;
-struct ShaderState;
-struct ShaderProgramState;
-struct TextureState;
+struct QueryState {
+    explicit QueryState(Context& context, std::vector<std::string>& extensions);
 
-struct State {
-    /* Initializes context-based functionality */
-    State(Context& context);
+    void reset();
 
-    ~State();
-
-    enum: GLuint { DisengagedBinding = ~0u };
-
-    BufferState* buffer;
-    DebugState* debug;
-    FramebufferState* framebuffer;
-    MeshState* mesh;
-    QueryState* query;
-    RendererState* renderer;
-    ShaderState* shader;
-    ShaderProgramState* shaderProgram;
-    TextureState* texture;
+    void(AbstractQuery::*createImplementation)();
 };
 
 }}

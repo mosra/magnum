@@ -1,5 +1,3 @@
-#ifndef Magnum_Implementation_State_h
-#define Magnum_Implementation_State_h
 /*
     This file is part of Magnum.
 
@@ -25,40 +23,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
+#include "QueryState.h"
+
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 
 namespace Magnum { namespace Implementation {
 
-struct BufferState;
-struct DebugState;
-struct FramebufferState;
-struct MeshState;
-struct QueryState;
-struct RendererState;
-struct ShaderState;
-struct ShaderProgramState;
-struct TextureState;
+QueryState::QueryState(Context& context, std::vector<std::string>& extensions) {
+    /* Create implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        createImplementation = &AbstractQuery::createImplementationDSA;
 
-struct State {
-    /* Initializes context-based functionality */
-    State(Context& context);
+    } else
+    #endif
+    {
+        createImplementation = &AbstractQuery::createImplementationDefault;
+    }
 
-    ~State();
-
-    enum: GLuint { DisengagedBinding = ~0u };
-
-    BufferState* buffer;
-    DebugState* debug;
-    FramebufferState* framebuffer;
-    MeshState* mesh;
-    QueryState* query;
-    RendererState* renderer;
-    ShaderState* shader;
-    ShaderProgramState* shaderProgram;
-    TextureState* texture;
-};
+    #ifdef MAGNUM_TARGET_GLES
+    static_cast<void>(context);
+    static_cast<void>(extensions);
+    #endif
+}
 
 }}
-
-#endif
