@@ -85,8 +85,8 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
     const Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert = Shaders::Implementation::createCompatibilityShader(v, Shader::Type::Vertex);
-    Shader frag = Shaders::Implementation::createCompatibilityShader(v, Shader::Type::Fragment);
+    Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, Shader::Type::Vertex);
+    Shader frag = Shaders::Implementation::createCompatibilityShader(rs, v, Shader::Type::Fragment);
 
     vert.addSource(rs.get("FullScreenTriangle.glsl"))
         .addSource(rs.get("DistanceFieldShader.vert"));

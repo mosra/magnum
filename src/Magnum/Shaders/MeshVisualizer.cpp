@@ -56,8 +56,8 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
 
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
@@ -76,7 +76,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     #ifndef MAGNUM_TARGET_GLES
     std::optional<Shader> geom;
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
-        geom = Implementation::createCompatibilityShader(version, Shader::Type::Geometry);
+        geom = Implementation::createCompatibilityShader(rs, version, Shader::Type::Geometry);
         geom->addSource(rs.get("MeshVisualizer.geom"));
     }
     #endif

@@ -50,8 +50,8 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
 
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
