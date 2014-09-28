@@ -34,9 +34,9 @@
 #include "Magnum/RenderbufferFormat.h"
 #endif
 
-/* We did't get memory corruption like in e.g. TextureState here, but include
-   the header just to be sure */
-#ifndef CORRADE_MSVC2013_COMPATIBILITY
+/* If not included, the following members have bad offsets, causing weird
+   runtime behavior */
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
 #include "Magnum/Renderbuffer.h"
 #endif
 
