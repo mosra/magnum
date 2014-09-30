@@ -192,9 +192,10 @@ void BufferGLTest::bindRange() {
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo C++14: get rid of std::make_tuple */
+    /* GCC 4.4 requires explicit type */
     Buffer::bind(Buffer::Target::Uniform, 7, {
-        std::make_tuple(&buffer, 256, 13), {},
-        std::make_tuple(&buffer, 768, 64)});
+        std::tuple<Buffer*, GLintptr, GLsizeiptr>{&buffer, 256, 13}, {},
+        std::tuple<Buffer*, GLintptr, GLsizeiptr>{&buffer, 768, 64}});
 
     MAGNUM_VERIFY_NO_ERROR();
 }
