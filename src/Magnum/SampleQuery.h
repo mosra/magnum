@@ -192,6 +192,17 @@ class SampleQuery: public AbstractQuery {
          */
         explicit SampleQuery(Target target): AbstractQuery(GLenum(target)) {}
 
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        /* GCC 4.5 somehow cannot do this on its own */
+        SampleQuery(const SampleQuery&) = delete;
+        SampleQuery(SampleQuery&& other): AbstractQuery(std::move(other)) {}
+        SampleQuery& operator=(const SampleQuery&) = delete;
+        SampleQuery& operator=(SampleQuery&& other) {
+            AbstractQuery::operator=(std::move(other));
+            return *this;
+        }
+        #endif
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief AbstractQuery::begin()

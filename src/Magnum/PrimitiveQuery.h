@@ -98,6 +98,17 @@ class PrimitiveQuery: public AbstractQuery {
          */
         explicit PrimitiveQuery(Target target): AbstractQuery(GLenum(target)) {}
 
+        #ifdef CORRADE_GCC45_COMPATIBILITY
+        /* GCC 4.5 somehow cannot do this on its own */
+        PrimitiveQuery(const PrimitiveQuery&) = delete;
+        PrimitiveQuery(PrimitiveQuery&& other): AbstractQuery(std::move(other)) {}
+        PrimitiveQuery& operator=(const PrimitiveQuery&) = delete;
+        PrimitiveQuery& operator=(PrimitiveQuery&& other) {
+            AbstractQuery::operator=(std::move(other));
+            return *this;
+        }
+        #endif
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief AbstractQuery::begin()
