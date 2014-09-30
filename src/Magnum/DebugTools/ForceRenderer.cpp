@@ -77,8 +77,9 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     if(mesh) return;
 
     /* Create the mesh */
-    Buffer* vertexBuffer = new Buffer{Buffer::TargetHint::Array};
-    Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
+    /* GCC 4.5 cannot handle {} here while we have deprecated Target constructor */
+    Buffer* vertexBuffer = new Buffer(Buffer::TargetHint::Array);
+    Buffer* indexBuffer = new Buffer(Buffer::TargetHint::ElementArray);
 
     vertexBuffer->setData(positions, BufferUsage::StaticDraw);
     ResourceManager::instance().set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);

@@ -156,8 +156,9 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     if(mesh) return;
 
     /* Create the mesh */
-    Buffer* vertexBuffer = new Buffer{Buffer::TargetHint::Array};
-    Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
+    /* GCC 4.5 cannot handle {} here while we have deprecated Target constructor */
+    Buffer* vertexBuffer = new Buffer(Buffer::TargetHint::Array);
+    Buffer* indexBuffer = new Buffer(Buffer::TargetHint::ElementArray);
     Mesh* mesh = new Mesh;
 
     vertexBuffer->setData(MeshTools::interleave(Renderer<dimensions>::positions, Renderer<dimensions>::colors), BufferUsage::StaticDraw);
