@@ -41,16 +41,15 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         , maxImageSamples(0)
         #endif
 {
+    #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>())
     #else
-    if(context.isExtensionSupported<Extensions::GL::EXT::separate_shader_objects>())
+    if(context.isVersionSupported(Version::GLES310))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         extensions.push_back(Extensions::GL::ARB::separate_shader_objects::string());
-        #else
-        extensions.push_back(Extensions::GL::EXT::separate_shader_objects::string());
         #endif
 
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
@@ -61,12 +60,10 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         uniform2ivImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniform3ivImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniform4ivImplementation = &AbstractShaderProgram::uniformImplementationSSO;
-        #ifndef MAGNUM_TARGET_GLES2
         uniform1uivImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniform2uivImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniform3uivImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniform4uivImplementation = &AbstractShaderProgram::uniformImplementationSSO;
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         uniform1dvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniform2dvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
@@ -77,14 +74,12 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         uniformMatrix2fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix3fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix4fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
-        #ifndef MAGNUM_TARGET_GLES2
         uniformMatrix2x3fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix3x2fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix2x4fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix4x2fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix3x4fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix4x3fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         uniformMatrix2dvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix3dvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
@@ -96,51 +91,65 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         uniformMatrix3x4dvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
         #endif
-    }
-
-    #ifndef MAGNUM_TARGET_GLES
-    else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
-
-        uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform2fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform3fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform4fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform1ivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform2ivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform3ivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform4ivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform1uivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform2uivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform3uivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform4uivImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform1dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform2dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform3dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniform4dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-
-        uniformMatrix2fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix3fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix4fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix2x3fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix3x2fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix2x4fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix4x2fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix3x4fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix4x3fvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix2dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix3dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix4dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix2x3dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix3x2dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix2x4dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix4x2dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix3x4dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-        uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDSA;
-    }
+    } else
     #endif
 
-    else {
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>())
+    #else
+    if(context.isExtensionSupported<Extensions::GL::EXT::separate_shader_objects>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
+        #else
+        extensions.push_back(Extensions::GL::EXT::separate_shader_objects::string());
+        #endif
+
+        uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform2fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform3fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform4fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform1ivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform2ivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform3ivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform4ivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        #ifndef MAGNUM_TARGET_GLES2
+        uniform1uivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform2uivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform3uivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniform4uivImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        uniform1dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniform2dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniform3dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniform4dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        #endif
+
+        uniformMatrix2fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniformMatrix3fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniformMatrix4fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        #ifndef MAGNUM_TARGET_GLES2
+        uniformMatrix2x3fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniformMatrix3x2fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniformMatrix2x4fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniformMatrix4x2fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniformMatrix3x4fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        uniformMatrix4x3fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        uniformMatrix2dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix3dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix4dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix2x3dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix3x2dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix2x4dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix4x2dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix3x4dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
+        #endif
+    } else {
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
         uniform2fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
         uniform3fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;

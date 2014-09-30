@@ -135,15 +135,6 @@ void MultisampleTextureGLTest::bind2D() {
     #endif
 
     MultisampleTexture2D texture;
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
-        texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
-        CORRADE_VERIFY(false);
-    }
-    #endif
-
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -153,6 +144,10 @@ void MultisampleTextureGLTest::bind2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -163,13 +158,6 @@ void MultisampleTextureGLTest::bind2DArray() {
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
 
     MultisampleTexture2DArray texture;
-
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
-        texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
-        CORRADE_VERIFY(false);
-    }
-
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -179,6 +167,10 @@ void MultisampleTextureGLTest::bind2DArray() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

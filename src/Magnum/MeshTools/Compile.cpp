@@ -49,7 +49,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         stride += sizeof(Shaders::Generic2D::TextureCoordinates::Type);
 
     /* Create vertex buffer */
-    std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::Target::Array}};
+    std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::TargetHint::Array}};
 
     /* Interleave positions */
     Containers::Array<char> data = MeshTools::interleave(
@@ -82,7 +82,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-        indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
+        indexBuffer.reset(new Buffer{Buffer::TargetHint::ElementArray});
         indexBuffer->setData(indexData, usage);
         mesh.setCount(meshData.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
@@ -109,7 +109,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         stride += sizeof(Shaders::Generic3D::TextureCoordinates::Type);
 
     /* Create vertex buffer */
-    std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::Target::Array}};
+    std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::TargetHint::Array}};
 
     /* Interleave positions */
     Containers::Array<char> data = MeshTools::interleave(
@@ -154,7 +154,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-        indexBuffer.reset(new Buffer{Buffer::Target::ElementArray});
+        indexBuffer.reset(new Buffer{Buffer::TargetHint::ElementArray});
         indexBuffer->setData(indexData, usage);
         mesh.setCount(meshData.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);

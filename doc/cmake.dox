@@ -41,6 +41,11 @@ Note that the module files are updated as the library evolves, you are
 encouraged to update your copies from time to time to avoid strange building
 issues.
 
+If you installed the library or its dependencies to non-standard location
+(other than `/usr`, e.g. `/home/xyz/projects`), set `CMAKE_PREFIX_PATH` to that
+directory to help CMake find it. You can enter more different dirs if you
+separate them with semicolons.
+
 Basic usage is:
 
     find_package(Magnum REQUIRED)

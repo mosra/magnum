@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Shaders { namespace Implementation {
 
-inline Shader createCompatibilityShader(Version version, Shader::Type type) {
+inline Shader createCompatibilityShader(const Utility::Resource& rs, Version version, Shader::Type type) {
     Shader shader(version, type);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -52,7 +52,7 @@ inline Shader createCompatibilityShader(Version version, Shader::Type type) {
     shader.addSource("#ifndef GL_ES\n#define GL_ES 1\n#endif\n");
     #endif
 
-    shader.addSource(Utility::Resource("MagnumShaders").get("compatibility.glsl"));
+    shader.addSource(rs.get("compatibility.glsl"));
     return shader;
 }
 

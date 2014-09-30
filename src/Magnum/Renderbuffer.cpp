@@ -64,7 +64,21 @@ Int Renderbuffer::maxSamples() {
     return value;
 }
 
-Renderbuffer::Renderbuffer() { glGenRenderbuffers(1, &_id); }
+Renderbuffer::Renderbuffer() {
+    (this->*Context::current()->state().framebuffer->createRenderbufferImplementation)();
+}
+
+void Renderbuffer::createImplementationDefault() {
+    glGenRenderbuffers(1, &_id);
+    _created = false;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderbuffer::createImplementationDSA() {
+    glCreateRenderbuffers(1, &_id);
+    _created = true;
+}
+#endif
 
 Renderbuffer::~Renderbuffer() {
     /* Moved out, nothing to do */
@@ -77,11 +91,24 @@ Renderbuffer::~Renderbuffer() {
     glDeleteRenderbuffers(1, &_id);
 }
 
-std::string Renderbuffer::label() const {
+inline void Renderbuffer::createIfNotAlready() {
+    if(_created) return;
+
+    /* glGen*() does not create the object, just reserves the name. Some
+       commands (such as glObjectLabel()) operate with IDs directly and they
+       require the object to be created. Binding the renderbuffer finally
+       creates it. Also all EXT DSA functions implicitly create it. */
+    bind();
+    CORRADE_INTERNAL_ASSERT(_created);
+}
+
+std::string Renderbuffer::label() {
+    createIfNotAlready();
     return Context::current()->state().debug->getLabelImplementation(GL_RENDERBUFFER, _id);
 }
 
 Renderbuffer& Renderbuffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
+    createIfNotAlready();
     Context::current()->state().debug->labelImplementation(GL_RENDERBUFFER, _id, label);
     return *this;
 }
@@ -99,7 +126,9 @@ void Renderbuffer::bind() {
 
     if(binding == _id) return;
 
+    /* Binding the renderbuffer finally creates it */
     binding = _id;
+    _created = true;
     glBindRenderbuffer(GL_RENDERBUFFER, _id);
 }
 
@@ -109,7 +138,8 @@ void Renderbuffer::storageImplementationDefault(RenderbufferFormat internalForma
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Renderbuffer::storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size) {
+void Renderbuffer::storageImplementationDSAEXT(RenderbufferFormat internalFormat, const Vector2i& size) {
+    _created = true;
     glNamedRenderbufferStorageEXT(_id, GLenum(internalFormat), size.x(), size.y());
 }
 #endif
@@ -146,7 +176,8 @@ void Renderbuffer::storageMultisampleImplementationNV(const GLsizei samples, con
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void Renderbuffer::storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size) {
+void Renderbuffer::storageMultisampleImplementationDSAEXT(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size) {
+    _created = true;
     glNamedRenderbufferStorageMultisampleEXT(_id, samples, GLenum(internalFormat), size.x(), size.y());
 }
 #endif

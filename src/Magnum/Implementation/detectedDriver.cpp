@@ -28,7 +28,7 @@
 
 namespace Magnum {
 
-auto Context::detectedDriver() -> Context::DetectedDrivers {
+auto Context::detectedDriver() -> DetectedDrivers {
     if(_detectedDrivers) return *_detectedDrivers;
 
     _detectedDrivers = DetectedDrivers{};

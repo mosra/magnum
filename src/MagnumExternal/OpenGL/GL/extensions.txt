@@ -1,7 +1,7 @@
 # The following output is taken from `magnum-info` with removed `GL_` prefixes.
-# Only vendor extensions are needed, everything else is pulled in with GL 4.4.
+# Only vendor extensions are needed, everything else is pulled in with GL 4.5.
 
-version 4.4 core
+version 4.5 core
 
 extension AMD_vertex_shader_layer           optional
 extension AMD_shader_trinary_minmax         optional

@@ -49,7 +49,7 @@ Int BufferTexture::maxSize() {
 
 Int BufferTexture::offsetAlignment() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
-        return 0;
+        return 1;
 
     GLint& value = Context::current()->state().texture->bufferOffsetAlignment;
 
@@ -75,7 +75,7 @@ void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalF
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
 }
 
-void BufferTexture::setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer) {
+void BufferTexture::setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer) {
     glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
 }
 
@@ -84,7 +84,7 @@ void BufferTexture::setBufferRangeImplementationDefault(BufferTextureFormat inte
     glTexBufferRange(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
 }
 
-void BufferTexture::setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+void BufferTexture::setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
     glTextureBufferRangeEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
 }
 

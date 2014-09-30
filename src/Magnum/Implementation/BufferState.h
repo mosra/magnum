@@ -39,16 +39,19 @@ struct BufferState {
     #endif
 
     /* Target <-> index mapping */
-    static std::size_t indexForTarget(Buffer::Target target);
-    static const Buffer::Target targetForIndex[TargetCount-1];
+    static std::size_t indexForTarget(Buffer::TargetHint target);
+    static const Buffer::TargetHint targetForIndex[TargetCount-1];
 
     explicit BufferState(Context& context, std::vector<std::string>& extensions);
 
     void reset();
 
     #ifndef MAGNUM_TARGET_GLES2
+    void(*bindBasesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayReference<Buffer* const>);
+    void(*bindRangesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>>);
     void(*copyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
     #endif
+    void(Buffer::*createImplementation)();
     void(Buffer::*getParameterImplementation)(GLenum, GLint*);
     #ifndef MAGNUM_TARGET_GLES2
     void(Buffer::*getSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
@@ -74,6 +77,7 @@ struct BufferState {
         maxAtomicCounterBindings,
         maxShaderStorageBindings,
         shaderStorageOffsetAlignment,
+        uniformOffsetAlignment,
         maxUniformBindings;
     #endif
 };

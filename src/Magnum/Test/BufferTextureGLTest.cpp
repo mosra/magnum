@@ -67,19 +67,6 @@ void BufferTextureGLTest::bind() {
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
 
     BufferTexture texture;
-
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it");
-        Buffer buffer;
-        constexpr UnsignedByte data[] = {
-            0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-            0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
-        };
-        buffer.setData(data, BufferUsage::StaticDraw);
-        texture.setBuffer(BufferTextureFormat::R8UI, buffer);
-        CORRADE_VERIFY(false);
-    }
-
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -89,6 +76,10 @@ void BufferTextureGLTest::bind() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -113,6 +104,9 @@ void BufferTextureGLTest::setBufferOffset() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
 
+    /* Check that we have correct offset alignment */
+    CORRADE_INTERNAL_ASSERT(256 % BufferTexture::offsetAlignment() == 0);
+
     BufferTexture texture;
     Buffer buffer;
     constexpr UnsignedByte data[] = {
@@ -121,8 +115,9 @@ void BufferTextureGLTest::setBufferOffset() {
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
         0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
     };
-    buffer.setData(data, BufferUsage::StaticDraw);
-    texture.setBuffer(BufferTextureFormat::R8UI, buffer, 16, 8);
+    buffer.setData({nullptr, 1024}, BufferUsage::StaticDraw);
+    buffer.setSubData(256 - 16, data);
+    texture.setBuffer(BufferTextureFormat::R8UI, buffer, 256, 8);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

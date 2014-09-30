@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Query.h"
+#include "Magnum/SampleQuery.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -54,7 +54,11 @@ void AbstractQueryGLTest::construct() {
     #endif
 
     {
-        const SampleQuery query;
+        #ifndef MAGNUM_TARGET_GLES
+        const SampleQuery query{SampleQuery::Target::SamplesPassed};
+        #else
+        const SampleQuery query{SampleQuery::Target::AnySamplesPassed};
+        #endif
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(query.id() > 0);
@@ -81,7 +85,11 @@ void AbstractQueryGLTest::constructMove() {
         CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
     #endif
 
-    SampleQuery a;
+    #ifndef MAGNUM_TARGET_GLES
+    SampleQuery a{SampleQuery::Target::SamplesPassed};
+    #else
+    SampleQuery a{SampleQuery::Target::AnySamplesPassed};
+    #endif
     const Int id = a.id();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -92,7 +100,11 @@ void AbstractQueryGLTest::constructMove() {
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
 
-    SampleQuery c;
+    #ifndef MAGNUM_TARGET_GLES
+    SampleQuery c{SampleQuery::Target::SamplesPassed};
+    #else
+    SampleQuery c{SampleQuery::Target::AnySamplesPassed};
+    #endif
     const Int cId = c.id();
     c = std::move(b);
 
@@ -113,14 +125,21 @@ void AbstractQueryGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+    #ifndef MAGNUM_TARGET_GLES
+    SampleQuery query{SampleQuery::Target::SamplesPassed};
+    #else
+    SampleQuery query{SampleQuery::Target::AnySamplesPassed};
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    #endif
     {
-        /** @todo Is this even legal optimization? */
-        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
+        query.begin(); query.end();
+
+        CORRADE_EXPECT_FAIL("Without ARB_direct_state_access, the object must be used at least once before setting/querying label.");
         CORRADE_VERIFY(false);
     }
-    SampleQuery query;
-    query.begin(SampleQuery::Target::AnySamplesPassed);
-    query.end();
 
     CORRADE_COMPARE(query.label(), "");
 

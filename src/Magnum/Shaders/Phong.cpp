@@ -53,8 +53,8 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
 
     vert.addSource(flags ? "#define TEXTURED\n" : "")
         .addSource(rs.get("generic.glsl"))

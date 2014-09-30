@@ -31,6 +31,7 @@ set(Magnum_SRCS
     AbstractFramebuffer.cpp
     AbstractImage.cpp
     AbstractObject.cpp
+    AbstractQuery.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Buffer.cpp
@@ -44,7 +45,6 @@ set(Magnum_SRCS
     Mesh.cpp
     MeshView.cpp
     OpenGL.cpp
-    Query.cpp
     Renderbuffer.cpp
     Renderer.cpp
     Resource.cpp
@@ -58,6 +58,7 @@ set(Magnum_SRCS
     Implementation/DebugState.cpp
     Implementation/FramebufferState.cpp
     Implementation/MeshState.cpp
+    Implementation/QueryState.cpp
     Implementation/RendererState.cpp
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
@@ -83,6 +84,7 @@ set(Magnum_HEADERS
     AbstractFramebuffer.h
     AbstractImage.h
     AbstractObject.h
+    AbstractQuery.h
     AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
@@ -103,17 +105,18 @@ set(Magnum_HEADERS
     Mesh.h
     MeshView.h
     OpenGL.h
-    Query.h
     Renderbuffer.h
     RenderbufferFormat.h
     Renderer.h
     Resource.h
     ResourceManager.h
+    SampleQuery.h
     Sampler.h
     Shader.h
     Texture.h
     TextureFormat.h
     Timeline.h
+    TimeQuery.h
     Types.h
     Version.h
 
@@ -126,6 +129,7 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/FramebufferState.h
     Implementation/maxTextureSize.h
     Implementation/MeshState.h
+    Implementation/QueryState.h
     Implementation/RendererState.h
     Implementation/ShaderProgramState.h
     Implementation/ShaderState.h
@@ -135,7 +139,8 @@ set(Magnum_PRIVATE_HEADERS
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
-        DebugMarker.h)
+        DebugMarker.h
+        Query.h)
 endif()
 
 # Desktop-only stuff
@@ -155,6 +160,7 @@ if(NOT TARGET_GLES2)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         BufferImage.h
         MultisampleTexture.h
+        PrimitiveQuery.h
         TextureArray.h)
     set(Magnum_SRCS ${Magnum_SRCS}
         BufferImage.cpp

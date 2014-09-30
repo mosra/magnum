@@ -34,6 +34,7 @@ struct BufferState;
 struct DebugState;
 struct FramebufferState;
 struct MeshState;
+struct QueryState;
 struct RendererState;
 struct ShaderState;
 struct ShaderProgramState;
@@ -51,6 +52,7 @@ struct State {
     DebugState* debug;
     FramebufferState* framebuffer;
     MeshState* mesh;
+    QueryState* query;
     RendererState* renderer;
     ShaderState* shader;
     ShaderProgramState* shaderProgram;

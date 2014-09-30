@@ -91,14 +91,14 @@ void ContextGLTest::isExtensionSupported() {
 
 void ContextGLTest::isExtensionDisabled() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
-        CORRADE_SKIP(Extensions::GL::APPLE::vertex_array_object::string() + std::string(" extension should be supported, can't test"));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::vertex_array_object::string() + std::string(" extension should be supported, can't test"));
 
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>())
         CORRADE_SKIP(Extensions::GL::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
 
     /* This is not disabled anywhere */
-    CORRADE_VERIFY(!Context::current()->isExtensionDisabled<Extensions::GL::APPLE::vertex_array_object>());
+    CORRADE_VERIFY(!Context::current()->isExtensionDisabled<Extensions::GL::ARB::vertex_array_object>());
 
     /* This is disabled in GL < 3.2 to work around GLSL compiler bugs */
     CORRADE_VERIFY(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(Version::GL310));

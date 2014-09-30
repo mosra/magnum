@@ -23,25 +23,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Query.h"
+#include "AbstractQuery.h"
 
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Context.h"
 #include "Magnum/Implementation/DebugState.h"
+#include "Magnum/Implementation/QueryState.h"
 #include "Magnum/Implementation/State.h"
 
 namespace Magnum {
 
-AbstractQuery::AbstractQuery(): target() {
-    #ifndef MAGNUM_TARGET_GLES2
-    glGenQueries(1, &_id);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glGenQueriesEXT(1, &_id);
-    #else
-    CORRADE_ASSERT_UNREACHABLE();
-    #endif
+AbstractQuery::AbstractQuery(GLenum target): _target{target} {
+    (this->*Context::current()->state().query->createImplementation)();
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+AbstractQuery::AbstractQuery(): _target{} {
+    createImplementationDefault();
+}
+#endif
 
 AbstractQuery::~AbstractQuery() {
     /* Moved out, nothing to do */
@@ -55,6 +56,22 @@ AbstractQuery::~AbstractQuery() {
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+
+void AbstractQuery::createImplementationDefault() {
+    #ifndef MAGNUM_TARGET_GLES2
+    glGenQueries(1, &_id);
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
+    glGenQueriesEXT(1, &_id);
+    #else
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractQuery::createImplementationDSA() {
+    glCreateQueries(_target, 1, &_id);
+}
+#endif
 
 std::string AbstractQuery::label() const {
     #ifndef MAGNUM_TARGET_GLES
@@ -74,8 +91,6 @@ AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayReference<
 }
 
 bool AbstractQuery::resultAvailable() {
-    CORRADE_ASSERT(!target, "AbstractQuery::resultAvailable(): the query is currently running", false);
-
     GLuint result;
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT_AVAILABLE, &result);
@@ -89,8 +104,6 @@ bool AbstractQuery::resultAvailable() {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
-
     UnsignedInt result;
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
@@ -105,8 +118,6 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
 template<> bool AbstractQuery::result<bool>() { return result<UnsignedInt>() != 0; }
 
 template<> Int AbstractQuery::result<Int>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
-
     Int result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
@@ -120,8 +131,6 @@ template<> Int AbstractQuery::result<Int>() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
-
     UnsignedLong result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
@@ -134,8 +143,6 @@ template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
 }
 
 template<> Long AbstractQuery::result<Long>() {
-    CORRADE_ASSERT(!target, "AbstractQuery::result(): the query is currently running", {});
-
     Long result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
@@ -149,30 +156,41 @@ template<> Long AbstractQuery::result<Long>() {
 #endif
 #endif
 
-void AbstractQuery::begin(GLenum target) {
-    CORRADE_ASSERT(!this->target, "AbstractQuery::begin(): the query is already running", );
+void AbstractQuery::begin() {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_INTERNAL_ASSERT(_target);
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    glBeginQuery(this->target = target, id());
+    glBeginQuery(_target, _id);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glBeginQueryEXT(this->target = target, id());
+    glBeginQueryEXT(_target, _id);
     #else
-    static_cast<void>(target);
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractQuery::begin(const GLenum target) {
+    CORRADE_INTERNAL_ASSERT(!_target || _target == target);
+
+    _target = target;
+    begin();
+}
+#endif
+
 void AbstractQuery::end() {
-    CORRADE_ASSERT(target, "AbstractQuery::end(): the query is not running", );
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_INTERNAL_ASSERT(_target);
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    glEndQuery(target);
+    glEndQuery(_target);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glEndQueryEXT(target);
+    glEndQueryEXT(_target);
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif
-    target = {};
 }
 
 }

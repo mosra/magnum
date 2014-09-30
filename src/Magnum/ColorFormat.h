@@ -331,7 +331,7 @@ enum class ColorType: GLenum {
 
     /**
      * Each component half float.
-     * @requires_gl30 %Extension @extension{NV,half_float} / @extension{ARB,half_float_pixel}
+     * @requires_gl30 %Extension @extension{ARB,half_float_pixel}
      * @requires_gles30 For texture data only, extension
      *      @es_extension2{OES,texture_half_float,OES_texture_float} in OpenGL
      *      ES 2.0

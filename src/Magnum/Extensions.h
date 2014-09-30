@@ -73,9 +73,6 @@ namespace GL {
     namespace AMD {
         _extension(GL,AMD,vertex_shader_layer,          GL210,  None) // #417
         _extension(GL,AMD,shader_trinary_minmax,        GL210,  None) // #428
-    } namespace APPLE {
-        _extension(GL,APPLE,flush_buffer_range,         GL210, GL300) // #321
-        _extension(GL,APPLE,vertex_array_object,        GL210, GL300) // #273
     } namespace ARB {
         _extension(GL,ARB,texture_rectangle,            GL210, GL310) // #38
         _extension(GL,ARB,color_buffer_float,           GL210, GL300) // #39
@@ -84,11 +81,14 @@ namespace GL {
         _extension(GL,ARB,depth_buffer_float,           GL210, GL300) // #43
         _extension(GL,ARB,draw_instanced,               GL210, GL310) // #44
         _extension(GL,ARB,framebuffer_object,           GL210, GL300) // #45
+        _extension(GL,ARB,framebuffer_sRGB,             GL210, GL300) // #46
         _extension(GL,ARB,geometry_shader4,             GL210, GL320) // #47
+        _extension(GL,ARB,half_float_vertex,            GL210, GL300) // #48
         _extension(GL,ARB,instanced_arrays,             GL210, GL330) // #49
         _extension(GL,ARB,map_buffer_range,             GL210, GL300) // #50
         _extension(GL,ARB,texture_buffer_object,        GL210, GL310) // #51
         _extension(GL,ARB,texture_rg,                   GL210, GL300) // #53
+        _extension(GL,ARB,vertex_array_object,          GL210, GL300) // #54
         _extension(GL,ARB,uniform_buffer_object,        GL210, GL310) // #57
         _extension(GL,ARB,copy_buffer,            /*?*/ GL210, GL310) // #59
         _extension(GL,ARB,depth_clamp,            /*?*/ GL210, GL320) // #61
@@ -146,6 +146,9 @@ namespace GL {
         _extension(GL,ARB,copy_image,                   GL210, GL430) // #123
         _extension(GL,ARB,texture_view,                 GL210, GL430) // #124
         _extension(GL,ARB,vertex_attrib_binding,        GL210, GL430) // #125
+        _extension(GL,ARB,robustness_isolation,         GL210,  None) // #126
+        _extension(GL,ARB,robustness_application_isolation, GL210, None) // #126
+        _extension(GL,ARB,robustness_share_group_isolation, GL210, None) // #126
         _extension(GL,ARB,ES3_compatibility,            GL330, GL430) // #127
         _extension(GL,ARB,explicit_uniform_location,    GL210, GL430) // #128
         _extension(GL,ARB,fragment_layer_viewport,      GL300, GL430) // #129
@@ -169,6 +172,25 @@ namespace GL {
         _extension(GL,ARB,texture_mirror_clamp_to_edge, GL210, GL440) // #149
         _extension(GL,ARB,texture_stencil8,             GL210, GL440) // #150
         _extension(GL,ARB,vertex_type_10f_11f_11f_rev,  GL300, GL440) // #151
+        _extension(GL,ARB,bindless_texture,             GL400,  None) // #152
+        _extension(GL,ARB,compute_variable_group_size,  GL420,  None) // #153
+        _extension(GL,ARB,indirect_parameters,          GL420,  None) // #154
+        _extension(GL,ARB,seamless_cubemap_per_texture, GL320,  None) // #155
+        _extension(GL,ARB,shader_draw_parameters,       GL310,  None) // #156
+        _extension(GL,ARB,shader_group_vote,            GL420,  None) // #157
+        _extension(GL,ARB,sparse_texture,               GL210,  None) // #158
+        _extension(GL,ARB,ES3_1_compatibility,          GL440, GL450) // #159
+        _extension(GL,ARB,clip_control,                 GL210, GL450) // #160
+        _extension(GL,ARB,conditional_render_inverted,  GL300, GL450) // #161
+        _extension(GL,ARB,cull_distance,                GL300, GL450) // #162
+        _extension(GL,ARB,derivative_control,           GL400, GL450) // #163
+        _extension(GL,ARB,direct_state_access,          GL210, GL450) // #164
+        _extension(GL,ARB,get_texture_sub_image,        GL210, GL450) // #165
+        _extension(GL,ARB,shader_texture_image_samples, GL430, GL450) // #166
+        _extension(GL,ARB,texture_barrier,              GL210, GL450) // #167
+        _extension(GL,ARB,pipeline_statistics_query,    GL300,  None) // #171
+        _extension(GL,ARB,sparse_buffer,                GL210,  None) // #172
+        _extension(GL,ARB,transform_feedback_overflow_query, GL300, None) // #173
     } namespace ATI {
         _extension(GL,ATI,texture_mirror_once,          GL210,  None) // #221
     } namespace EXT {
@@ -181,7 +203,6 @@ namespace GL {
         _extension(GL,EXT,texture_array,                GL210, GL300) // #329
         _extension(GL,EXT,texture_compression_rgtc,     GL210, GL300) // #332
         _extension(GL,EXT,texture_shared_exponent,      GL210, GL300) // #333
-        _extension(GL,EXT,framebuffer_sRGB,             GL210, GL300) // #337
         _extension(GL,EXT,draw_buffers2,                GL210, GL300) // #340
         _extension(GL,EXT,texture_integer,              GL210, GL300) // #343
         _extension(GL,EXT,transform_feedback,           GL210, GL300) // #352
@@ -193,18 +214,19 @@ namespace GL {
         _extension(GL,EXT,debug_marker,                 GL210,  None) // #440
     } namespace GREMEDY {
         _extension(GL,GREMEDY,string_marker,            GL210,  None) // #311
-    } namespace INTEL {
-        /* INTEL_map_texture not supported */                         // #429
     } namespace KHR {
+        _extension(GL,KHR,texture_compression_astc_ldr, GL210,  None) // #118
+        _extension(GL,KHR,texture_compression_astc_hdr, GL210,  None) // #118
         _extension(GL,KHR,debug,                        GL210, GL430) // #119
+        _extension(GL,KHR,context_flush_control,        GL210, GL450) // #168
+        _extension(GL,KHR,robustness,                   GL320, GL450) // #170
     } namespace NV {
-        _extension(GL,NV,half_float,                    GL210, GL300) // #283
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
         _extension(GL,NV,depth_buffer_float,            GL210, GL300) // #334
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346
         /* NV_draw_texture not supported */                           // #430
     }
-    /* IMPORTANT: if this line is > 226 (66 + size), don't forget to update array size in Context.h */
+    /* IMPORTANT: if this line is > 233 (73 + size), don't forget to update array size in Context.h */
     #else
     #line 1
     namespace ANGLE {
@@ -270,7 +292,12 @@ namespace GL {
         _extension(GL,EXT,shader_integer_mix,       GLES300,    None) // #161
         #endif
     } namespace KHR {
+        _extension(GL,KHR,texture_compression_astc_ldr, GLES200, None) // #117
+        _extension(GL,KHR,texture_compression_astc_hdr, GLES200, None) // #117
         _extension(GL,KHR,debug,                    GLES200,    None) // #118
+        _extension(GL,KHR,robustness,               GLES200,    None) // #170
+        _extension(GL,KHR,robust_buffer_access_behavior, GLES200, None) // #189
+        _extension(GL,KHR,context_flush_control,    GLES200,    None) // #191
     } namespace NV {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91

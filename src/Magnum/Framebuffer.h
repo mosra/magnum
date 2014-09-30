@@ -318,8 +318,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Constructor
          *
-         * Generates new OpenGL framebuffer.
-         * @see @ref setViewport(), @fn_gl{GenFramebuffers}
+         * Generates new OpenGL framebuffer object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the framebuffer is created on
+         * first use.
+         * @see @ref setViewport(), @fn_gl{CreateFramebuffers}, eventually
+         *      @fn_gl{GenFramebuffers}
          */
         explicit Framebuffer(const Range2Di& viewport);
 
@@ -332,7 +335,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Destructor
          *
-         * Deletes associated OpenGL framebuffer.
+         * Deletes associated OpenGL framebuffer object.
          * @see @fn_gl{DeleteFramebuffers}
          */
         ~Framebuffer();
@@ -357,7 +360,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
          */
-        std::string label() const;
+        std::string label();
 
         /**
          * @brief Set framebuffer label
@@ -651,26 +654,31 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 
     private:
+        void MAGNUM_LOCAL createImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationDSA();
+        #endif
+
         Framebuffer& setLabelInternal(Containers::ArrayReference<const char> label);
 
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer);
+        void MAGNUM_LOCAL renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
-        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);
+        void MAGNUM_LOCAL texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
         void MAGNUM_LOCAL texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        void MAGNUM_LOCAL texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
 
         void MAGNUM_LOCAL textureLayerImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL textureLayerImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
+        void MAGNUM_LOCAL textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #endif
 };
 
@@ -680,6 +688,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
 inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
     _id = other._id;
     _viewport = other._viewport;
+    _created = other._created;
     other._id = 0;
     other._viewport = {};
 }
@@ -687,6 +696,7 @@ inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
 inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
     std::swap(_id, other._id);
     std::swap(_viewport, other._viewport);
+    std::swap(_created, other._created);
     return *this;
 }
 

@@ -233,13 +233,6 @@ void TextureArrayGLTest::bind1D() {
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
-
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
-        texture.setBaseLevel(0);
-        CORRADE_VERIFY(false);
-    }
-
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -249,6 +242,10 @@ void TextureArrayGLTest::bind1D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -261,15 +258,6 @@ void TextureArrayGLTest::bind2D() {
     #endif
 
     Texture2DArray texture;
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        CORRADE_EXPECT_FAIL("With ARB_multi_bind the texture must be associated with given target at least once before binding it.");
-        texture.setBaseLevel(0);
-        CORRADE_VERIFY(false);
-    }
-    #endif
-
     texture.bind(15);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -279,6 +267,10 @@ void TextureArrayGLTest::bind2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

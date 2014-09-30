@@ -35,11 +35,11 @@ namespace Magnum { namespace Implementation {
 
 MeshState::MeshState(Context& context, std::vector<std::string>& extensions): currentVAO(0)
     #ifndef MAGNUM_TARGET_GLES2
-    , maxElementsIndices(0), maxElementsVertices(0)
+    , maxElementIndex{0}, maxElementsIndices{0}, maxElementsVertices{0}
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+    if(context.isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
     if(context.isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
     #else
@@ -48,7 +48,7 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::APPLE::vertex_array_object::string());
+        extensions.push_back(Extensions::GL::ARB::vertex_array_object::string());
         #elif defined(MAGNUM_TARGET_GLES2)
         extensions.push_back(Extensions::GL::OES::vertex_array_object::string());
         #endif
@@ -60,9 +60,9 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
             extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-            attributePointerImplementation = &Mesh::attributePointerImplementationDSA;
-            attributeIPointerImplementation = &Mesh::attributePointerImplementationDSA;
-            attributeLPointerImplementation = &Mesh::attributePointerImplementationDSA;
+            attributePointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
+            attributeIPointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
+            attributeLPointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
         } else
         #endif
         {
@@ -93,6 +93,14 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
         bindImplementation = &Mesh::bindImplementationDefault;
         unbindImplementation = &Mesh::unbindImplementationDefault;
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* DSA create implementation (other cases handled above) */
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        createImplementation = &Mesh::createImplementationVAODSA;
     }
     #endif
 

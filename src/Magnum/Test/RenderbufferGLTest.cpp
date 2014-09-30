@@ -118,29 +118,15 @@ void RenderbufferGLTest::label() {
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
-    /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
-        CORRADE_SKIP("Required extension is not available");
-
-    {
-        /** @todo Is this even legal optimization? */
-        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
-        CORRADE_VERIFY(false);
-    }
     Renderbuffer renderbuffer;
-    #ifndef MAGNUM_TARGET_GLES2
-    renderbuffer.setStorage(RenderbufferFormat::RGBA8, {128, 128});
-    #else
-    renderbuffer.setStorage(RenderbufferFormat::RGBA4, {128, 128});
-    #endif
 
     CORRADE_COMPARE(renderbuffer.label(), "");
+    MAGNUM_VERIFY_NO_ERROR();
 
     renderbuffer.setLabel("MyRenderbuffer");
-    CORRADE_COMPARE(renderbuffer.label(), "MyRenderbuffer");
-
     MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(renderbuffer.label(), "MyRenderbuffer");
 }
 
 void RenderbufferGLTest::setStorage() {

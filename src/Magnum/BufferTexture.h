@@ -217,7 +217,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,texture_buffer_range}
-         * (part of OpenGL 4.3) is not available, returns `0`.
+         * (part of OpenGL 4.3) is not available, returns `1`.
          * @see @fn_gl{Get} with @def_gl{TEXTURE_BUFFER_OFFSET_ALIGNMENT}
          */
         static Int offsetAlignment();
@@ -225,8 +225,11 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object.
-         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_BUFFER}
+         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * first use.
+         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_BUFFER}, eventually
+         *      @fn_gl{GenTextures}
          */
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
@@ -287,10 +290,10 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
 
     private:
         void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
-        void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
+        void MAGNUM_LOCAL setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer);
 
         void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
-        void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        void MAGNUM_LOCAL setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 };
 
 }

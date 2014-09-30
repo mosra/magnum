@@ -233,7 +233,7 @@ void MeshGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
 
         #ifndef MAGNUM_TARGET_GLES
-        if(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+        if(Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
         #elif defined(MAGNUM_TARGET_GLES2)
         if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
         #endif
@@ -264,7 +264,7 @@ void MeshGLTest::constructMove() {
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
     if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
     #endif
@@ -284,7 +284,7 @@ void MeshGLTest::constructMove() {
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::APPLE::vertex_array_object>())
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
     if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
     #endif
@@ -302,21 +302,15 @@ void MeshGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
-    {
-        /** @todo Is this even legal optimization? */
-        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
-        CORRADE_VERIFY(false);
-    }
-    Buffer buffer{Buffer::Target::ElementArray};
     Mesh mesh;
-    mesh.setIndexBuffer(buffer, 0, Mesh::IndexType::UnsignedShort);
 
     CORRADE_COMPARE(mesh.label(), "");
+    MAGNUM_VERIFY_NO_ERROR();
 
     mesh.setLabel("MyMesh");
-    CORRADE_COMPARE(mesh.label(), "MyMesh");
-
     MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(mesh.label(), "MyMesh");
 }
 
 namespace {
@@ -912,8 +906,8 @@ void MeshGLTest::addVertexBufferIntWithShort() {
 
 void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::half_float>())
-        CORRADE_SKIP(Extensions::GL::NV::half_float::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::half_float_vertex>())
+        CORRADE_SKIP(Extensions::GL::ARB::half_float_vertex::string() + std::string(" is not supported."));
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_half_float>())
         CORRADE_SKIP(Extensions::GL::OES::vertex_half_float::string() + std::string(" is not supported."));
@@ -1279,7 +1273,7 @@ void MeshGLTest::setIndexBuffer() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1306,7 +1300,7 @@ void MeshGLTest::setIndexBufferRange() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1338,7 +1332,7 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedInt indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1369,7 +1363,7 @@ void MeshGLTest::setBaseVertex() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1445,7 +1439,7 @@ void MeshGLTest::setInstanceCountIndexed() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1517,7 +1511,7 @@ void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1551,7 +1545,7 @@ void MeshGLTest::setInstanceCountBaseVertex() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1587,7 +1581,7 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1807,7 +1801,7 @@ void MeshGLTest::multiDrawIndexed() {
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
@@ -1832,7 +1826,7 @@ void MeshGLTest::multiDrawBaseVertex() {
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
 
     constexpr UnsignedShort indexData[] = { 2, 1, 0 };
-    Buffer indices(Buffer::Target::ElementArray);
+    Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;

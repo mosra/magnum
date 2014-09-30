@@ -70,13 +70,17 @@ class MAGNUM_EXPORT MeshView {
          * In OpenGL ES, if @es_extension2{EXT,multi_draw_arrays,multi_draw_arrays}
          * is not present, the functionality is emulated using sequence of
          * @ref draw(AbstractShaderProgram&) calls.
+         *
+         * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * available, the associated vertex array object is bound instead of
+         * setting up the mesh from scratch.
          * @attention All meshes must be views of the same original mesh and
          *      must not be instanced.
          * @see @ref draw(AbstractShaderProgram&), @fn_gl{UseProgram},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray} (if @extension{APPLE,vertex_array_object}
-         *      is available), @fn_gl{MultiDrawArrays} or
+         *      or @fn_gl{BindVertexArray}, @fn_gl{MultiDrawArrays} or
          *      @fn_gl{MultiDrawElements}/@fn_gl{MultiDrawElementsBaseVertex}
          */
         static void draw(AbstractShaderProgram& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes);

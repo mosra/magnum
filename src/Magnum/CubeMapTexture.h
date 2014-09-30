@@ -103,8 +103,11 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object.
-         * @see @fn_gl{GenTextures} with @def_gl{TEXTURE_CUBE_MAP}
+         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * first use.
+         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP},
+         *      eventually @fn_gl{GenTextures}
          */
         explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 

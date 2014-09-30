@@ -89,8 +89,10 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         /**
          * @brief Constructor
          *
-         * Generates new OpenGL renderbuffer.
-         * @see @fn_gl{GenRenderbuffers}
+         * Generates new OpenGL renderbuffer object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not supported, the renderbuffer is created
+         * on first use.
+         * @see @fn_gl{CreateRenderbuffers}, eventually @fn_gl{GenRenderbuffers}
          */
         explicit Renderbuffer();
 
@@ -103,7 +105,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         /**
          * @brief Destructor
          *
-         * Deletes associated OpenGL renderbuffer.
+         * Deletes associated OpenGL renderbuffer object.
          * @see @fn_gl{DeleteRenderbuffers}
          */
         ~Renderbuffer();
@@ -128,7 +130,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
          */
-        std::string label() const;
+        std::string label();
 
         /**
          * @brief Set renderbuffer label
@@ -182,17 +184,24 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
 
     private:
+        void MAGNUM_LOCAL createImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL createImplementationDSA();
+        #endif
+
+        void MAGNUM_LOCAL createIfNotAlready();
+
         Renderbuffer& setLabelInternal(Containers::ArrayReference<const char> label);
 
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageImplementationDSAEXT(RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
         #else
         void MAGNUM_LOCAL storageMultisampleImplementationANGLE(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
@@ -202,14 +211,16 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void MAGNUM_LOCAL bind();
 
         GLuint _id;
+        bool _created; /* see createIfNotAlready() for details */
 };
 
-inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id(other._id) {
+inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id{other._id}, _created{other._created} {
     other._id = 0;
 }
 
 inline Renderbuffer& Renderbuffer::operator=(Renderbuffer&& other) noexcept {
     std::swap(_id, other._id);
+    std::swap(_created, other._created);
     return *this;
 }
 

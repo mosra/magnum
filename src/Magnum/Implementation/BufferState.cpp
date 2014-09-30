@@ -34,43 +34,43 @@
 
 namespace Magnum { namespace Implementation {
 
-const Buffer::Target BufferState::targetForIndex[] = {
-    Buffer::Target::Array,
-    Buffer::Target::ElementArray,
+const Buffer::TargetHint BufferState::targetForIndex[] = {
+    Buffer::TargetHint::Array,
+    Buffer::TargetHint::ElementArray,
     #ifndef MAGNUM_TARGET_GLES2
-    Buffer::Target::CopyRead,
-    Buffer::Target::CopyWrite,
-    Buffer::Target::PixelPack,
-    Buffer::Target::PixelUnpack,
-    Buffer::Target::TransformFeedback,
-    Buffer::Target::Uniform,
-    Buffer::Target::AtomicCounter,
-    Buffer::Target::DispatchIndirect,
-    Buffer::Target::DrawIndirect,
-    Buffer::Target::ShaderStorage,
+    Buffer::TargetHint::CopyRead,
+    Buffer::TargetHint::CopyWrite,
+    Buffer::TargetHint::PixelPack,
+    Buffer::TargetHint::PixelUnpack,
+    Buffer::TargetHint::TransformFeedback,
+    Buffer::TargetHint::Uniform,
+    Buffer::TargetHint::AtomicCounter,
+    Buffer::TargetHint::DispatchIndirect,
+    Buffer::TargetHint::DrawIndirect,
+    Buffer::TargetHint::ShaderStorage,
     #ifndef MAGNUM_TARGET_GLES
-    Buffer::Target::Texture
+    Buffer::TargetHint::Texture
     #endif
     #endif
 };
 
-std::size_t BufferState::indexForTarget(Buffer::Target target) {
+std::size_t BufferState::indexForTarget(Buffer::TargetHint target) {
     switch(target) {
-        case Buffer::Target::Array:             return 1;
-        case Buffer::Target::ElementArray:      return 2;
+        case Buffer::TargetHint::Array:             return 1;
+        case Buffer::TargetHint::ElementArray:      return 2;
         #ifndef MAGNUM_TARGET_GLES2
-        case Buffer::Target::CopyRead:          return 3;
-        case Buffer::Target::CopyWrite:         return 4;
-        case Buffer::Target::PixelPack:         return 5;
-        case Buffer::Target::PixelUnpack:       return 6;
-        case Buffer::Target::TransformFeedback: return 7;
-        case Buffer::Target::Uniform:           return 8;
-        case Buffer::Target::AtomicCounter:     return 9;
-        case Buffer::Target::DispatchIndirect:  return 10;
-        case Buffer::Target::DrawIndirect:      return 11;
-        case Buffer::Target::ShaderStorage:     return 12;
+        case Buffer::TargetHint::CopyRead:          return 3;
+        case Buffer::TargetHint::CopyWrite:         return 4;
+        case Buffer::TargetHint::PixelPack:         return 5;
+        case Buffer::TargetHint::PixelUnpack:       return 6;
+        case Buffer::TargetHint::TransformFeedback: return 7;
+        case Buffer::TargetHint::Uniform:           return 8;
+        case Buffer::TargetHint::AtomicCounter:     return 9;
+        case Buffer::TargetHint::DispatchIndirect:  return 10;
+        case Buffer::TargetHint::DrawIndirect:      return 11;
+        case Buffer::TargetHint::ShaderStorage:     return 12;
         #ifndef MAGNUM_TARGET_GLES
-        case Buffer::Target::Texture:           return 13;
+        case Buffer::TargetHint::Texture:           return 13;
         #endif
         #endif
     }
@@ -83,22 +83,34 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_GLES
     , minMapAlignment(0)
     #endif
-    , maxAtomicCounterBindings(0), maxShaderStorageBindings(0), shaderStorageOffsetAlignment(0), maxUniformBindings(0)
+    , maxAtomicCounterBindings{0}, maxShaderStorageBindings{0}, shaderStorageOffsetAlignment{0}, uniformOffsetAlignment{0}, maxUniformBindings{0}
     #endif
 {
+    /* Create implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        createImplementation = &Buffer::createImplementationDSA;
+
+    } else
+    #endif
+    {
+        createImplementation = &Buffer::createImplementationDefault;
+    }
+
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
-        copyImplementation = &Buffer::copyImplementationDSA;
-        getParameterImplementation = &Buffer::getParameterImplementationDSA;
-        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
-        dataImplementation = &Buffer::dataImplementationDSA;
-        subDataImplementation = &Buffer::subDataImplementationDSA;
-        mapImplementation = &Buffer::mapImplementationDSA;
-        mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
-        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
-        unmapImplementation = &Buffer::unmapImplementationDSA;
+        copyImplementation = &Buffer::copyImplementationDSAEXT;
+        getParameterImplementation = &Buffer::getParameterImplementationDSAEXT;
+        getSubDataImplementation = &Buffer::getSubDataImplementationDSAEXT;
+        dataImplementation = &Buffer::dataImplementationDSAEXT;
+        subDataImplementation = &Buffer::subDataImplementationDSAEXT;
+        mapImplementation = &Buffer::mapImplementationDSAEXT;
+        mapRangeImplementation = &Buffer::mapRangeImplementationDSAEXT;
+        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSAEXT;
+        unmapImplementation = &Buffer::unmapImplementationDSAEXT;
     } else
     #endif
     {
@@ -129,6 +141,21 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         invalidateImplementation = &Buffer::invalidateImplementationNoOp;
         invalidateSubImplementation = &Buffer::invalidateSubImplementationNoOp;
     }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+
+        bindBasesImplementation = &Buffer::bindImplementationMulti;
+        bindRangesImplementation = &Buffer::bindImplementationMulti;
+    } else
+    #endif
+    {
+        bindBasesImplementation = &Buffer::bindImplementationFallback;
+        bindRangesImplementation = &Buffer::bindImplementationFallback;
+    }
+    #endif
 
     #ifdef MAGNUM_TARGET_GLES
     static_cast<void>(context);

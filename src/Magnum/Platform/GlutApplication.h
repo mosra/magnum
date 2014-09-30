@@ -74,13 +74,15 @@ with these four commands:
     cmake --build .
     ./src/MyApplication # or ./src/Debug/MyApplication
 
+See @ref cmake for more information.
+
 ## General usage
 
 In CMake you need to request `%GlutApplication` component, add
 `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
+`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw

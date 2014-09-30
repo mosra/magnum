@@ -136,6 +136,14 @@ class MAGNUM_EXPORT Renderer {
 
             #ifndef MAGNUM_TARGET_GLES
             /**
+             * sRGB encoding of the default framebuffer
+             * @requires_gl30 %Extension @extension{ARB,framebuffer_sRGB}
+             * @requires_gl sRGB encoding of the default framebuffer is
+             *      implementation-defined in OpenGL ES.
+             */
+            FramebufferSRGB = GL_FRAMEBUFFER_SRGB,
+
+            /**
              * Logical operation
              * @see @ref setLogicOperation()
              * @requires_gl Logical operations on framebuffer are not
@@ -192,6 +200,16 @@ class MAGNUM_EXPORT Renderer {
              * @requires_gl Always enabled on OpenGL ES.
              */
             ProgramPointSize = GL_PROGRAM_POINT_SIZE,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Discard primitives before rasterization.
+             * @requires_gl30 %Extension @extension{EXT,transform_feedback}
+             * @requires_gles30 Transform feedback is not available in OpenGL
+             *      ES 2.0.
+             */
+            RasterizerDiscard = GL_RASTERIZER_DISCARD,
             #endif
 
             /**
@@ -1030,6 +1048,12 @@ class MAGNUM_EXPORT Renderer {
          * OpenGL calls. If OpenGL extension @extension{ARB,robustness} or ES
          * extension @es_extension{EXT,robustness} is not available, this
          * function always returns @ref ResetNotificationStrategy::NoResetNotification.
+         *
+         * For the reset notification to work, additionally to the extension
+         * support the context must be created with
+         * @ref Platform::Sdl2Application::Configuration::Flag::RobustAccess "Platform::*Application::Configuration::Flag::RobustAccess"
+         * flag.
+         *
          * @see @ref graphicsResetStatus(), @fn_gl{Get} with
          *      @def_gl{RESET_NOTIFICATION_STRATEGY_ARB}
          */
@@ -1074,7 +1098,22 @@ class MAGNUM_EXPORT Renderer {
          * Reset causes all context state to be lost. If OpenGL extension
          * @extension{ARB,robustness} or ES extension @es_extension{EXT,robustness}
          * is not available, this function always returns @ref GraphicsResetStatus::NoError.
-         * @see @ref resetNotificationStrategy(), @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
+         *
+         * For the reset notification to work, additionally to the extension
+         * support the context must be created with
+         * @ref Platform::Sdl2Application::Configuration::Flag::RobustAccess "Platform::*Application::Configuration::Flag::RobustAccess"
+         * flag.
+         *
+         * If the reset occurs, @extension{ARB,robustness_isolation}
+         * extension is supported and context is created with
+         * @ref Platform::Sdl2Application::Configuration::Flag::ResetIsolation "Platform::*Application::Configuration::Flag::ResetIsolation",
+         * advertised support for @extension{ARB,robustness_application_isolation}
+         * indicates that no other application on the system will be affected
+         * by the graphics reset. Advertised support for
+         * @extension{ARB,robustness_share_group_isolation} indicates that no
+         * other share group will be affected by the graphics reset.
+         * @see @ref resetNotificationStrategy(),
+         *      @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
          */
         static GraphicsResetStatus graphicsResetStatus();
 

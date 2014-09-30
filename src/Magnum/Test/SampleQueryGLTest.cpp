@@ -30,9 +30,9 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
-#include "Magnum/Query.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
+#include "Magnum/SampleQuery.h"
 #include "Magnum/Shader.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
@@ -118,12 +118,12 @@ void SampleQueryGLTest::querySamplesPassed() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    SampleQuery q;
     #ifndef MAGNUM_TARGET_GLES
-    q.begin(SampleQuery::Target::SamplesPassed);
+    SampleQuery q{SampleQuery::Target::SamplesPassed};
     #else
-    q.begin(SampleQuery::Target::AnySamplesPassed);
+    SampleQuery q{SampleQuery::Target::AnySamplesPassed};
     #endif
+    q.begin();
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
     mesh.draw(shader);
@@ -168,16 +168,18 @@ void SampleQueryGLTest::conditionalRender() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    SampleQuery qYes, qNo, q;
+    SampleQuery qYes{SampleQuery::Target::SamplesPassed},
+        qNo{SampleQuery::Target::SamplesPassed},
+        q{SampleQuery::Target::SamplesPassed};
 
     /* This should generate some samples */
-    qYes.begin(SampleQuery::Target::SamplesPassed);
+    qYes.begin();
     mesh.draw(shader);
     qYes.end();
 
     /* Thus this should be rendered */
     qYes.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
-    q.begin(SampleQuery::Target::SamplesPassed);
+    q.begin();
     mesh.draw(shader);
     q.end();
     qYes.endConditionalRender();
@@ -187,12 +189,12 @@ void SampleQueryGLTest::conditionalRender() {
     CORRADE_VERIFY(q.result<bool>());
 
     /* This shouldn't generate any samples */
-    qNo.begin(SampleQuery::Target::SamplesPassed);
+    qNo.begin();
     qNo.end();
 
     /* Thus this should not be rendered */
     qNo.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
-    q.begin(SampleQuery::Target::SamplesPassed);
+    q.begin();
     mesh.draw(shader);
     q.end();
     qNo.endConditionalRender();

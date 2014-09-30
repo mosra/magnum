@@ -45,6 +45,7 @@ Debug operator<<(Debug debug, Version value) {
         _c(GL420, "OpenGL 4.2")
         _c(GL430, "OpenGL 4.3")
         _c(GL440, "OpenGL 4.4")
+        _c(GL450, "OpenGL 4.5")
         #else
         _c(GLES200, "OpenGL ES 2.0")
         _c(GLES300, "OpenGL ES 3.0")

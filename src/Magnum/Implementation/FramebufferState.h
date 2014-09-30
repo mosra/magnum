@@ -59,6 +59,7 @@ struct FramebufferState {
     void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
     #endif
 
+    void(Framebuffer::*createImplementation)();
     void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, Renderbuffer&);
     #ifndef MAGNUM_TARGET_GLES
     void(Framebuffer::*texture1DImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
@@ -66,6 +67,7 @@ struct FramebufferState {
     void(Framebuffer::*texture2DImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
     void(Framebuffer::*textureLayerImplementation)(Framebuffer::BufferAttachment, GLuint, GLint, GLint);
 
+    void(Renderbuffer::*createRenderbufferImplementation)();
     void(Renderbuffer::*renderbufferStorageImplementation)(RenderbufferFormat, const Vector2i&);
     void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
 

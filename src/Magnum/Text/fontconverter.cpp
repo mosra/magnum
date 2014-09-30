@@ -64,7 +64,7 @@ Arguments:
 -   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
     %Magnum install location)
 -   `--characters CHARACTERS` -- characters to include in the output (default:
-    `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!:,.&nbsp;`)
+    `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!:;,.&nbsp;`)
 -   `--font-size N` -- input font size (default: `128`)
 -   `--atlas-size "X Y"` -- glyph atlas size (default: `"2048 2048"`)
 -   `--output-size "X Y"` -- output atlas size. If set to zero size, distance
@@ -107,7 +107,7 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                 "0123456789?!:,. ").setHelp("characters", "characters to include in the output")
+                                 "0123456789?!:;,. ").setHelp("characters", "characters to include in the output")
         .addOption("font-size", "128").setHelpKey("font-size", "N").setHelp("font-size", "input font size")
         .addOption("atlas-size", "2048 2048").setHelpKey("atlas-size", "\"X Y\"").setHelp("atlas-size", "glyph atlas size")
         .addOption("output-size", "256 256").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "output atlas size. If set to zero size, distance field computation will not be used.")

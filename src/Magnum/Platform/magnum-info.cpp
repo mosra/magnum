@@ -224,9 +224,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
        place */
     createContext();
     Context* c = Context::current();
-    Debug() << "Vendor:" << c->vendorString();
-    Debug() << "Renderer:" << c->rendererString();
-    Debug() << "OpenGL version:" << c->version() << '(' + c->versionString() + ')';
 
     Debug() << "Context flags:";
     #ifndef MAGNUM_TARGET_GLES
@@ -256,8 +253,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         Version::GL420,
         Version::GL430,
         Version::GL440,
+        Version::GL450,
         #else
         Version::GLES300,
+        Version::GLES310,
         #endif
         Version::None
     };
@@ -305,6 +304,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(AbstractFramebuffer::maxDrawBuffers())
     _l(Framebuffer::maxColorAttachments())
     #ifndef MAGNUM_TARGET_GLES2
+    _l(Mesh::maxElementIndex())
     _l(Mesh::maxElementsIndices())
     _l(Mesh::maxElementsVertices())
     #endif
@@ -527,6 +527,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(ARB::uniform_buffer_object)
         #endif
 
+        _l(Buffer::uniformOffsetAlignment())
         _l(Shader::maxUniformBlocks(Shader::Type::Vertex))
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))

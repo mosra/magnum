@@ -34,6 +34,7 @@
 #include "DebugState.h"
 #include "FramebufferState.h"
 #include "MeshState.h"
+#include "QueryState.h"
 #include "RendererState.h"
 #include "ShaderState.h"
 #include "ShaderProgramState.h"
@@ -55,6 +56,7 @@ State::State(Context& context) {
     debug = new DebugState(context, extensions);
     framebuffer = new FramebufferState(context, extensions);
     mesh = new MeshState(context, extensions);
+    query = new QueryState(context, extensions);
     renderer = new RendererState(context, extensions);
     shader = new ShaderState;
     shaderProgram = new ShaderProgramState(context, extensions);

@@ -36,7 +36,10 @@ namespace Magnum {
 
 DefaultFramebuffer defaultFramebuffer;
 
-DefaultFramebuffer::DefaultFramebuffer() { _id = 0; }
+DefaultFramebuffer::DefaultFramebuffer() {
+    _id = 0;
+    _created = true;
+}
 
 DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarget target) {
     return Status((this->*Context::current()->state().framebuffer->checkStatusImplementation)(target));

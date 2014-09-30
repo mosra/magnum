@@ -61,8 +61,8 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     Version version = Context::current()->supportedVersion(vs);
     #endif
 
-    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
 
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));

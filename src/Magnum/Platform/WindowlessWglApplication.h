@@ -64,6 +64,8 @@ application with these four commands:
     cmake --build .
     ./src/MyApplication # or ./src/Debug/MyApplication
 
+See @ref cmake for more information.
+
 ## General usage
 
 In CMake you need to request `%WindowlessWglApplication` component, add
@@ -71,8 +73,8 @@ In CMake you need to request `%WindowlessWglApplication` component, add
 `${MAGNUM_WINDOWLESSWGLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
 `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. See
-@ref building and @ref cmake for more information.
+`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. Again,
+see @ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used in main
 function using @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN() macro. See

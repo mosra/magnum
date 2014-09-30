@@ -30,7 +30,7 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
-#include "Magnum/Query.h"
+#include "Magnum/PrimitiveQuery.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
@@ -94,8 +94,8 @@ void PrimitiveQueryGLTest::query() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    PrimitiveQuery q;
-    q.begin(PrimitiveQuery::Target::PrimitivesGenerated);
+    PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
+    q.begin();
 
     framebuffer.bind(FramebufferTarget::ReadDraw);
     mesh.draw(shader);

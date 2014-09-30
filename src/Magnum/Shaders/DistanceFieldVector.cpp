@@ -53,8 +53,8 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     #endif
     Version version = Context::current()->supportedVersion(vs);
 
-    Shader frag = Implementation::createCompatibilityShader(version, Shader::Type::Vertex);
-    Shader vert = Implementation::createCompatibilityShader(version, Shader::Type::Fragment);
+    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
+    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
 
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));

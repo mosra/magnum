@@ -49,7 +49,7 @@ Text::AbstractFont* font;
 Text::GlyphCache* cache = new Text::DistanceFieldGlyphCache(Vector2i(2048), Vector2i(384));
 font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                              "0123456789 ");
+                              "0123456789?!:;,. ");
 @endcode
 
 @see @ref TextureTools::distanceField()

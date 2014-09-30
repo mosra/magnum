@@ -62,6 +62,19 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,AMD,vertex_shader_layer),
         _extension(GL,AMD,shader_trinary_minmax),
         _extension(GL,ARB,robustness),
+        _extension(GL,ARB,robustness_isolation),
+        _extension(GL,ARB,robustness_application_isolation),
+        _extension(GL,ARB,robustness_share_group_isolation),
+        _extension(GL,ARB,bindless_texture),
+        _extension(GL,ARB,compute_variable_group_size),
+        _extension(GL,ARB,indirect_parameters),
+        _extension(GL,ARB,seamless_cubemap_per_texture),
+        _extension(GL,ARB,shader_draw_parameters),
+        _extension(GL,ARB,shader_group_vote),
+        _extension(GL,ARB,sparse_texture),
+        _extension(GL,ARB,pipeline_statistics_query),
+        _extension(GL,ARB,sparse_buffer),
+        _extension(GL,ARB,transform_feedback_overflow_query),
         _extension(GL,ATI,texture_mirror_once),
         _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,texture_mirror_clamp),
@@ -70,27 +83,28 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,shader_integer_mix),
         _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
-        _extension(GL,GREMEDY,string_marker)};
+        _extension(GL,GREMEDY,string_marker),
+        _extension(GL,KHR,texture_compression_astc_ldr),
+        _extension(GL,KHR,texture_compression_astc_hdr)};
     static const std::vector<Extension> extensions300{
-        _extension(GL,APPLE,flush_buffer_range),
-        _extension(GL,APPLE,vertex_array_object),
         _extension(GL,ARB,map_buffer_range),
         _extension(GL,ARB,color_buffer_float),
         _extension(GL,ARB,half_float_pixel),
         _extension(GL,ARB,texture_float),
         _extension(GL,ARB,depth_buffer_float),
         _extension(GL,ARB,texture_rg),
+        _extension(GL,ARB,vertex_array_object),
         _extension(GL,ARB,framebuffer_object),
+        _extension(GL,ARB,framebuffer_sRGB),
+        _extension(GL,ARB,half_float_vertex),
         _extension(GL,EXT,gpu_shader4),
         _extension(GL,EXT,packed_float),
         _extension(GL,EXT,texture_array),
         _extension(GL,EXT,texture_compression_rgtc),
         _extension(GL,EXT,texture_shared_exponent),
-        _extension(GL,EXT,framebuffer_sRGB),
         _extension(GL,EXT,draw_buffers2),
         _extension(GL,EXT,texture_integer),
         _extension(GL,EXT,transform_feedback),
-        _extension(GL,NV,half_float),
         _extension(GL,NV,depth_buffer_float),
         _extension(GL,NV,conditional_render)};
     static const std::vector<Extension> extensions310{
@@ -189,6 +203,18 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_mirror_clamp_to_edge),
         _extension(GL,ARB,texture_stencil8),
         _extension(GL,ARB,vertex_type_10f_11f_11f_rev)};
+    static const std::vector<Extension> extensions450{
+        _extension(GL,ARB,ES3_1_compatibility),
+        _extension(GL,ARB,clip_control),
+        _extension(GL,ARB,conditional_render_inverted),
+        _extension(GL,ARB,cull_distance),
+        _extension(GL,ARB,derivative_control),
+        _extension(GL,ARB,direct_state_access),
+        _extension(GL,ARB,get_texture_sub_image),
+        _extension(GL,ARB,shader_texture_image_samples),
+        _extension(GL,ARB,texture_barrier),
+        _extension(GL,KHR,context_flush_control),
+        _extension(GL,KHR,robustness)};
     #undef _extension
     #else
     static const std::vector<Extension> extensions{
@@ -206,7 +232,12 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,sRGB),
         _extension(GL,EXT,multisampled_render_to_texture),
         _extension(GL,EXT,robustness),
+        _extension(GL,KHR,texture_compression_astc_ldr),
+        _extension(GL,KHR,texture_compression_astc_hdr),
         _extension(GL,KHR,debug),
+        _extension(GL,KHR,robustness),
+        _extension(GL,KHR,robust_buffer_access_behavior),
+        _extension(GL,KHR,context_flush_control),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_stencil),
@@ -278,6 +309,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         /* case Version::GLES300: */
         case Version::GL430: return extensions430;
         case Version::GL440: return extensions440;
+        case Version::GL450: return extensions450;
         #else
         case Version::GLES200: return empty;
         case Version::GLES300:
@@ -394,6 +426,7 @@ Context::Context(void functionLoader()) {
         Version::GL420,
         Version::GL430,
         Version::GL440,
+        Version::GL450,
         #else
         Version::GLES200,
         Version::GLES300,
@@ -453,7 +486,10 @@ Context::Context(void functionLoader()) {
     CORRADE_ASSERT(!_current, "Context: Another context currently active", );
     _current = this;
 
-    /* Initialize state tracker */
+    /* Print some info and initialize state tracker (which also prints some
+       more info) */
+    Debug() << "Renderer:" << rendererString() << "by" << vendorString();
+    Debug() << "OpenGL version:" << versionString();
     _state = new Implementation::State(*this);
 
     /* Initialize functionality based on current OpenGL version and extensions */

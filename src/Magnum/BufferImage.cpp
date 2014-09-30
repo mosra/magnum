@@ -28,11 +28,11 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(ColorFormat format, ColorType type, const typename DimensionTraits< Dimensions, Int >::VectorType& size, const void* data, BufferUsage usage): AbstractImage(format, type), _size(size), _buffer(Buffer::Target::PixelPack) {
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(ColorFormat format, ColorType type, const typename DimensionTraits< Dimensions, Int >::VectorType& size, const void* data, BufferUsage usage): AbstractImage(format, type), _size(size), _buffer(Buffer::TargetHint::PixelPack) {
     _buffer.setData({data, dataSize(size)}, usage);
 }
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(ColorFormat format, ColorType type): AbstractImage(format, type), _buffer(Buffer::Target::PixelPack) {}
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(ColorFormat format, ColorType type): AbstractImage(format, type), _buffer(Buffer::TargetHint::PixelPack) {}
 
 template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage) {
     _format = format;

@@ -54,6 +54,7 @@ enum class Version: Int {
     GL420 = 420,                    /**< @brief OpenGL 4.2, GLSL 4.20 */
     GL430 = 430,                    /**< @brief OpenGL 4.3, GLSL 4.30 */
     GL440 = 440,                    /**< @brief OpenGL 4.4, GLSL 4.40 */
+    GL450 = 450,                    /**< @brief OpenGL 4.5, GLSL 4.50 */
     #endif
 
     /**
@@ -82,8 +83,17 @@ enum class Version: Int {
     GLES300 = 300,
     #endif
 
-    #ifdef MAGNUM_TARGET_GLES
-    GLES310 = 310                   /**< @brief OpenGL ES 3.1, GLSL ES 3.10 */
+    /**
+     * @brief OpenGL ES 3.1, GLSL ES 3.10
+     *
+     * All the functionality is present in OpenGL 4.5 (extension
+     * @extension{ARB,ES3_1_compatibility}), so on desktop OpenGL this is the
+     * equivalent to @ref Version::GL450.
+     */
+    #ifndef MAGNUM_TARGET_GLES
+    GLES310 = 450
+    #else
+    GLES310 = 310
     #endif
 };
 

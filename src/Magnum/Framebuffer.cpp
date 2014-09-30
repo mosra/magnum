@@ -81,10 +81,21 @@ Int Framebuffer::maxColorAttachments() {
 
 Framebuffer::Framebuffer(const Range2Di& viewport) {
     _viewport = viewport;
-
-    glGenFramebuffers(1, &_id);
+    (this->*Context::current()->state().framebuffer->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
+
+void Framebuffer::createImplementationDefault() {
+    glGenFramebuffers(1, &_id);
+    _created = false;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Framebuffer::createImplementationDSA() {
+    glCreateFramebuffers(1, &_id);
+    _created = true;
+}
+#endif
 
 Framebuffer::~Framebuffer() {
     /* Moved out, nothing to do */
@@ -108,11 +119,13 @@ Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &_id);
 }
 
-std::string Framebuffer::label() const {
+std::string Framebuffer::label() {
+    createIfNotAlready();
     return Context::current()->state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
 }
 
 Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
+    createIfNotAlready();
     Context::current()->state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;
 }
@@ -254,7 +267,8 @@ void Framebuffer::renderbufferImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Framebuffer::renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer) {
+void Framebuffer::renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer) {
+    _created = true;
     glNamedFramebufferRenderbufferEXT(_id, GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
 }
 
@@ -262,7 +276,8 @@ void Framebuffer::texture1DImplementationDefault(BufferAttachment attachment, GL
     glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
 }
 
-void Framebuffer::texture1DImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
+void Framebuffer::texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
+    _created = true;
     glNamedFramebufferTexture1DEXT(_id, GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
 }
 #endif
@@ -272,7 +287,8 @@ void Framebuffer::texture2DImplementationDefault(BufferAttachment attachment, GL
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Framebuffer::texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
+void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
+    _created = true;
     glNamedFramebufferTexture2DEXT(_id, GLenum(attachment), textureTarget, textureId, mipLevel);
 }
 #endif
@@ -292,7 +308,8 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Framebuffer::textureLayerImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
+void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
+    _created = true;
     glNamedFramebufferTextureLayerEXT(_id, GLenum(attachment), textureId, mipLevel, layer);
 }
 #endif

@@ -46,7 +46,7 @@ template<UnsignedInt dimensions> void create(typename MeshData<dimensions>::Type
 
 template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
     /* Vertex buffer */
-    Buffer* buffer = new Buffer(Buffer::Target::Array);
+    Buffer* buffer = new Buffer{Buffer::TargetHint::Array};
     buffer->setData(data.positions(0), BufferUsage::StaticDraw);
     ResourceManager::instance().set(vertexBufferResource.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
@@ -65,7 +65,7 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
 
-        Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
+        Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
         indexBuffer->setData(indexData, BufferUsage::StaticDraw);
         mesh->setCount(data.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
@@ -78,7 +78,7 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
 
 template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
     /* Vertex buffer */
-    Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
+    Buffer* vertexBuffer = new Buffer{Buffer::TargetHint::Array};
     vertexBuffer->setData(data.positions(0), BufferUsage::StaticDraw);
     ResourceManager::instance().set(vertexBufferResource.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
@@ -97,7 +97,7 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
 
-        Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
+        Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
         indexBuffer->setData(indexData, BufferUsage::StaticDraw);
         mesh->setCount(data.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);

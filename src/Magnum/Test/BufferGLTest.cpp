@@ -43,6 +43,12 @@ class BufferGLTest: public AbstractOpenGLTester {
         void constructMove();
 
         void label();
+
+        #ifndef MAGNUM_TARGET_GLES2
+        void bindBase();
+        void bindRange();
+        #endif
+
         void data();
         void map();
         #ifdef MAGNUM_TARGET_GLES2
@@ -58,7 +64,16 @@ class BufferGLTest: public AbstractOpenGLTester {
 
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
+              &BufferGLTest::constructCopy,
+              &BufferGLTest::constructMove,
+
               &BufferGLTest::label,
+
+              #ifndef MAGNUM_TARGET_GLES2
+              &BufferGLTest::bindBase,
+              &BufferGLTest::bindRange,
+              #endif
+
               &BufferGLTest::data,
               &BufferGLTest::map,
               #ifdef MAGNUM_TARGET_GLES2
@@ -78,7 +93,7 @@ void BufferGLTest::construct() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(buffer.id() > 0);
-        CORRADE_COMPARE(buffer.targetHint(), Buffer::Target::Array);
+        CORRADE_COMPARE(buffer.targetHint(), Buffer::TargetHint::Array);
         CORRADE_COMPARE(buffer.size(), 0);
     }
 
@@ -125,21 +140,65 @@ void BufferGLTest::label() {
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
-    {
-        /** @todo Is this even legal optimization? */
-        CORRADE_EXPECT_FAIL("The object must be used at least once before setting/querying label.");
-        CORRADE_VERIFY(false);
-    }
     Buffer buffer;
-    buffer.setData({nullptr, 3}, BufferUsage::StaticDraw);
 
     CORRADE_COMPARE(buffer.label(), "");
+    MAGNUM_VERIFY_NO_ERROR();
 
     buffer.setLabel("MyBuffer");
+    MAGNUM_VERIFY_NO_ERROR();
+
     CORRADE_COMPARE(buffer.label(), "MyBuffer");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void BufferGLTest::bindBase() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
+    #endif
+
+    Buffer buffer;
+    buffer.bind(Buffer::Target::Uniform, 15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Buffer::unbind(Buffer::Target::Uniform, 15);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Buffer::bind(Buffer::Target::Uniform, 7, {&buffer, nullptr, &buffer});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Buffer::unbind(Buffer::Target::Uniform, 7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+void BufferGLTest::bindRange() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
+    #endif
+
+    /* Check that we have correct offset alignment */
+    CORRADE_INTERNAL_ASSERT(256 % Buffer::uniformOffsetAlignment() == 0);
+
+    Buffer buffer;
+    buffer.setData({nullptr, 1024}, BufferUsage::StaticDraw)
+         .bind(Buffer::Target::Uniform, 15, 256, 13);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /** @todo C++14: get rid of std::make_tuple */
+    Buffer::bind(Buffer::Target::Uniform, 7, {
+        std::make_tuple(&buffer, 256, 13), {},
+        std::make_tuple(&buffer, 768, 64)});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
 
 void BufferGLTest::data() {
     Buffer buffer;

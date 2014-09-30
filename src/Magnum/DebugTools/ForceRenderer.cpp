@@ -77,8 +77,8 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     if(mesh) return;
 
     /* Create the mesh */
-    Buffer* vertexBuffer = new Buffer(Buffer::Target::Array);
-    Buffer* indexBuffer = new Buffer(Buffer::Target::ElementArray);
+    Buffer* vertexBuffer = new Buffer{Buffer::TargetHint::Array};
+    Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
 
     vertexBuffer->setData(positions, BufferUsage::StaticDraw);
     ResourceManager::instance().set(this->vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
