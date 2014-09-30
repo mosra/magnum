@@ -31,6 +31,7 @@
 
 #include <cstddef>
 #include <array>
+#include <tuple>
 #include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.h>
