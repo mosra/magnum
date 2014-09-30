@@ -415,7 +415,8 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
         }
     }
 
-    glBindBuffersRange(GLenum(target), firstIndex, buffers.size(), ids, offsetsSizes, offsetsSizes + buffers.size());
+    /* GCC 4.4 otherwise converts the last argument to std::size_t */
+    glBindBuffersRange(GLenum(target), firstIndex, buffers.size(), ids, offsetsSizes, offsetsSizes.data() + buffers.size());
 }
 #endif
 
