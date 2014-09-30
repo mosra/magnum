@@ -189,8 +189,8 @@ Mesh& Mesh::setLabelInternal(const Containers::ArrayReference<const char> label)
 
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(buffer.targetHint() == Buffer::Target::ElementArray,
-        "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::ElementArray << "but got" << buffer.targetHint(), *this);
+    CORRADE_ASSERT(buffer.targetHint() == Buffer::TargetHint::ElementArray,
+        "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
 
     _indexBuffer = &buffer;
@@ -371,8 +371,8 @@ void Mesh::attributePointerInternal(const Attribute& attribute) {
 
 void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::Target::Array,
-        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
+    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
+        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
     #endif
 
     _attributes.push_back(attribute);
@@ -380,8 +380,8 @@ void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
 
 void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::Target::Array,
-        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::Target::Array << "but got" << attribute.buffer->targetHint(), );
+    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
+        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
     #endif
 
     bindVAO();
