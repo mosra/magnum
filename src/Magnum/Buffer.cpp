@@ -171,6 +171,17 @@ Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+Buffer::Buffer(const Target targetHint): _targetHint{static_cast<TargetHint>(targetHint)}
+    #ifdef CORRADE_TARGET_NACL
+    , _mappedBuffer{nullptr}
+    #endif
+{
+    (this->*Context::current()->state().buffer->createImplementation)();
+    CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
+}
+#endif
+
 void Buffer::createImplementationDefault() {
     glGenBuffers(1, &_id);
     _created = false;

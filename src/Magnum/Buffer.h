@@ -774,7 +774,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @deprecated Use @ref Magnum::Buffer::Buffer(Magnum::Buffer::TargetHint) "Buffer(TargetHint)"
          *      instead.
          */
-        CORRADE_DEPRECATED("use Buffer(TargetHint) instead") explicit Buffer(Target targetHint): Buffer{static_cast<TargetHint>(targetHint)} {}
+        CORRADE_DEPRECATED("use Buffer(TargetHint) instead") explicit Buffer(Target targetHint);
         #endif
 
         /** @brief Copying is not allowed */
