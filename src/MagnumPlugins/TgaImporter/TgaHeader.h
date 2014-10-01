@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Struct Magnum::Trade::TgaHeader
+ * @brief Struct @ref Magnum::Trade::TgaHeader
  */
 
 #include "Magnum/Types.h"

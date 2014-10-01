@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Struct Magnum::Audio::WavHeader
+ * @brief Struct @ref Magnum::Audio::WavHeader
  */
 
 #include "Magnum/Types.h"

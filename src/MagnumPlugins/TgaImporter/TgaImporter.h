@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TgaImporter
+ * @brief Class @ref Magnum::Trade::TgaImporter
  */
 
 #include <Corrade/Utility/VisibilityMacros.h>

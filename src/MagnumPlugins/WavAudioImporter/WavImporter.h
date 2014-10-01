@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Audio::WavImporter
+ * @brief Class @ref Magnum::Audio::WavImporter
  */
 
 #include <Corrade/Containers/Array.h>

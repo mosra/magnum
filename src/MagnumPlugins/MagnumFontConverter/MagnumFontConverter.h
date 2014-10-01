@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::MagnumFontConverter
+ * @brief Class @ref Magnum::Text::MagnumFontConverter
  */
 
 #include "Magnum/Text/AbstractFontConverter.h"

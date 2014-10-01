@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TgaImageConverter
+ * @brief Class @ref Magnum::Trade::TgaImageConverter
  */
 
 #include "Magnum/Trade/AbstractImageConverter.h"
