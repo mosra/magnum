@@ -52,12 +52,22 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
 
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".tga"))
-        plugin = "TgaImporter";
-    else if(Utility::String::endsWith(filename, ".png"))
-        plugin = "PngImporter";
+    if(Utility::String::endsWith(filename, ".bmp"))
+        plugin = "BmpImporter";
+    else if(Utility::String::endsWith(filename, ".gif"))
+        plugin = "GifImporter";
+    else if(Utility::String::endsWith(filename, ".hdr"))
+        plugin = "HdrImporter";
     else if(Utility::String::endsWith(filename, ".jpg") || Utility::String::endsWith(filename, ".jpeg"))
         plugin = "JpegImporter";
+    else if(Utility::String::endsWith(filename, ".pic"))
+        plugin = "PicImporter";
+    else if(Utility::String::endsWith(filename, ".png"))
+        plugin = "PngImporter";
+    else if(Utility::String::endsWith(filename, ".psd"))
+        plugin = "PsdImporter";
+    else if(Utility::String::endsWith(filename, ".tga"))
+        plugin = "TgaImporter";
     else {
         Error() << "Trade::AnyImageImporter::openFile(): cannot determine type of file" << filename;
         return;
