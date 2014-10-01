@@ -284,6 +284,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float),
         _extension(GL,OES,texture_float),
+        _extension(GL,OES,texture_npot),
         _extension(GL,OES,vertex_half_float),
         _extension(GL,OES,packed_depth_stencil),
         _extension(GL,OES,depth_texture),

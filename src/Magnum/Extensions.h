@@ -337,6 +337,7 @@ namespace GL {
         _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #35
         _extension(GL,OES,texture_half_float,       GLES200, GLES300) // #36
         _extension(GL,OES,texture_float,            GLES200, GLES300) // #36
+        _extension(GL,OES,texture_npot,             GLES200, GLES300) // #37
         _extension(GL,OES,vertex_half_float,        GLES200, GLES300) // #38
         _extension(GL,OES,packed_depth_stencil,     GLES200, GLES300) // #43
         _extension(GL,OES,depth_texture,            GLES200, GLES300) // #44

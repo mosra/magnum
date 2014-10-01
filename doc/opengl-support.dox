@@ -323,6 +323,7 @@ supported. ESSL 3.10 is supported.
 @es_extension{OES,texture_float_linear}     | done
 @es_extension2{OES,texture_half_float,OES_texture_float} | done
 @es_extension{OES,texture_float}            | done
+@es_extension{OES,texture_npot}             | done (nothing to do)
 @es_extension{OES,vertex_half_float}        | done
 @es_extension{OES,packed_depth_stencil}     | done
 @es_extension{OES,depth_texture}            | done
