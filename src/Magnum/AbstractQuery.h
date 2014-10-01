@@ -37,7 +37,7 @@
 
 namespace Magnum {
 
-namespace Implementation { class QueryState; }
+namespace Implementation { struct QueryState; }
 
 /**
 @brief Base class for queries
