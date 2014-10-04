@@ -2,6 +2,10 @@
 #ifndef _flextgl_h_
 #define _flextgl_h_
 
+#include <Corrade/Utility/VisibilityMacros.h>
+
+#include "Magnum/configure.h"
+
 /* Defensive include guards */
 
 #if defined(__glew_h__) || defined(__GLEW_H__)
@@ -37,14 +41,14 @@ void flextGLInit();
 
 /* Function declaration macros */
 
-#ifdef _WIN32
+#ifndef MAGNUM_BUILD_STATIC
     #ifdef FlextGL_EXPORTS
-        #define FLEXTGL_EXPORT __declspec(dllexport)
+        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define FLEXTGL_EXPORT __declspec(dllimport)
+        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define FLEXTGL_EXPORT __attribute__ ((visibility ("default")))
+    #define FLEXTGL_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
