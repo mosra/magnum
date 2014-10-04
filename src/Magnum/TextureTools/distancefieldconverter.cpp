@@ -53,7 +53,7 @@
 namespace Magnum {
 
 /** @page magnum-distancefieldconverter Distance Field conversion utility
-@brief Converts black&white image to distance field representation
+@brief Converts red channel of an image to distance field representation
 
 @section magnum-distancefieldconverter-usage Usage
 
@@ -70,6 +70,9 @@ Arguments:
     %Magnum install location)
 -   `--output-size "X Y"` -- size of output image
 -   `--radius N` -- distance field computation radius
+
+Images with @ref ColorFormat::Red, @ref ColorFormat::RGB or @ref ColorFormat::RGBA
+are accepted on input.
 
 The resulting image can be then used with @ref Shaders::DistanceFieldVector
 shader. See also @ref TextureTools::distanceField() for more information about
@@ -105,7 +108,7 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
         .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addNamedArgument("output-size").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "size of output image")
         .addNamedArgument("radius").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
-        .setHelp("Converts black&white image to distance field representation.")
+        .setHelp("Converts red channel of an image to distance field representation.")
         .parse(arguments.argc, arguments.argv);
 
     createContext();
@@ -131,7 +134,12 @@ int DistanceFieldConverter::exec() {
         return 1;
     }
 
-    if(image->format() != ColorFormat::Red) {
+    /* Decide about internal format */
+    TextureFormat internalFormat;
+    if(image->format() == ColorFormat::Red) internalFormat = TextureFormat::R8;
+    else if(image->format() == ColorFormat::RGB) internalFormat = TextureFormat::RGB8;
+    else if(image->format() == ColorFormat::RGBA) internalFormat = TextureFormat::RGBA8;
+    else {
         Error() << "Unsupported image format" << image->format();
         return 1;
     }
@@ -141,7 +149,7 @@ int DistanceFieldConverter::exec() {
     input.setMinificationFilter(Sampler::Filter::Linear)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setImage(0, TextureFormat::R8, *image);
+        .setImage(0, internalFormat, *image);
 
     /* Output texture */
     Texture2D output;
