@@ -33,16 +33,23 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     _detectedDrivers = DetectedDrivers{};
 
-    /* AMD binary desktop drivers */
     #ifndef MAGNUM_TARGET_GLES
     const std::string vendor = vendorString();
+
+    /* AMD binary desktop drivers */
     if(vendor.find("ATI Technologies Inc.") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::AMD;
+
+    #ifdef CORRADE_TARGET_WINDOWS
+    /* Intel Windows drivers */
+    if(vendor.find("Intel") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::IntelWindows;
+    #endif
     #endif
 
+    #ifdef MAGNUM_TARGET_GLES2
     /* OpenGL ES 2.0 implementation using ANGLE. Taken from
        http://stackoverflow.com/a/20149090 */
-    #ifdef MAGNUM_TARGET_GLES2
     {
         Range1Di range;
         glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());

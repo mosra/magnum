@@ -182,6 +182,9 @@ class MAGNUM_EXPORT Context {
             #ifndef MAGNUM_TARGET_GLES
             /** Binary AMD desktop drivers on Windows and Linux */
             AMD = 1 << 0,
+
+            /** Intel desktop drivers on Windows */
+            IntelWindows = 1 << 1,
             #endif
 
             #ifdef MAGNUM_TARGET_GLES2
@@ -191,7 +194,7 @@ class MAGNUM_EXPORT Context {
              * specification explicitly disallows exposing driver information
              * to the application, this check cannot be done reliably.
              */
-            ProbablyAngle = 1 << 1
+            ProbablyAngle = 1 << 2
             #endif
         };
 
