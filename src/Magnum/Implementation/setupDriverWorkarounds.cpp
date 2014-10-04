@@ -41,7 +41,7 @@ void Context::setupDriverWorkarounds() {
     #ifdef CORRADE_TARGET_WINDOWS
     /* On Windows Intel drivers ARB_shading_language_420pack is exposed in GLSL
        even that the extension (e.g. binding keyword) is not supported */
-    if((detectedDriver() & DetectedDriver::IntelWindows) && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
+    if((detectedDriver() & DetectedDriver::IntelWindows) && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
         _setRequiredVersion(GL::ARB::shading_language_420pack, None);
     #endif
 
