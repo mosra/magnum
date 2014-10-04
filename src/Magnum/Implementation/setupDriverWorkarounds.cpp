@@ -37,9 +37,14 @@ void Context::setupDriverWorkarounds() {
     /* This extension causes crash in GLSL compiler on AMD linux drivers 13.251 */
     if(detectedDriver() & DetectedDriver::AMD)
         _setRequiredVersion(GL::ARB::explicit_uniform_location, None);
+
+    #ifdef CORRADE_TARGET_WINDOWS
+    /* On Windows Intel drivers ARB_shading_language_420pack is exposed in GLSL
+       even that the extension (e.g. binding keyword) is not supported */
+    if((detectedDriver() & DetectedDriver::IntelWindows) && !Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
+        _setRequiredVersion(GL::ARB::shading_language_420pack, None);
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
     /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL 1.30
        on NVidia and 1.40 on Mac OS X */
     /** @todo Different version on different vendors? */
