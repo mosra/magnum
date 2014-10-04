@@ -32,7 +32,7 @@ set(AnyImageImporter_HEADERS
 add_library(AnyImageImporterObjects OBJECT
     ${AnyImageImporter_SRCS}
     ${AnyImageImporter_HEADERS})
-set_target_properties(AnyImageImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set_target_properties(AnyImageImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DAnyImageImporterObjects_EXPORTS")
 
 add_plugin(AnyImageImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
     AnyImageImporter.conf
