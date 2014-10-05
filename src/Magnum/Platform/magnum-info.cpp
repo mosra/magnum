@@ -178,6 +178,15 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_BUILD_STATIC
     Debug() << "    CORRADE_BUILD_STATIC";
     #endif
+    #ifdef CORRADE_TARGET_UNIX
+    Debug() << "    CORRADE_TARGET_UNIX";
+    #endif
+    #ifdef CORRADE_TARGET_APPLE
+    Debug() << "    CORRADE_TARGET_APPLE";
+    #endif
+    #ifdef CORRADE_TARGET_WINDOWS
+    Debug() << "    CORRADE_TARGET_WINDOWS";
+    #endif
     #ifdef CORRADE_TARGET_NACL
     Debug() << "    CORRADE_TARGET_NACL";
     #endif
@@ -189,6 +198,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     Debug() << "    CORRADE_TARGET_EMSCRIPTEN";
+    #endif
+    #ifdef CORRADE_TARGET_ANDROID
+    Debug() << "    CORRADE_TARGET_ANDROID";
     #endif
     #ifdef MAGNUM_BUILD_DEPRECATED
     Debug() << "    MAGNUM_BUILD_DEPRECATED";
