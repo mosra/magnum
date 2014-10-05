@@ -89,7 +89,7 @@ Minimal dependencies
     >= 3.1. On Windows you can use **MinGW**. GCC 4.6, 4.5, 4.4 and **MSVC**
     2013 support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
-*   **CMake** >= 2.8.8
+*   **CMake** >= 2.8.9
 *   **Corrade** - Plugin management and utility library. You can get it at
     https://github.com/mosra/corrade.
 
