@@ -69,7 +69,7 @@ git submodule init
 git submodule update
 
 if [ ${libraries} = "static" ] ; then
-    static_build_flag="-DBUILD_STATIC=ON -DBUILD_STATIC_PIC=ON"
+    static_build_flag="-DBUILD_STATIC=ON -DBUILD_PLUGINS_STATIC=ON -DBUILD_STATIC_PIC=ON"
 fi
 
 if [ "${compatibility}" = "deprecated" ] ; then

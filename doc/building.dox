@@ -137,10 +137,12 @@ Installation to given prefix can be done from within QtCreator by adding new
 
 The libraries are build as shared by default. If you are developing for
 platform which doesn't support shared libraries or if you just want to link
-them statically, enable `BUILD_STATIC` to build the libraries as static. If you
-plan to use them with shared libraries later, enable also position-independent
-code with `BUILD_STATIC_PIC`. If you want to build with another compiler (e.g.
-Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
+them statically, enable `BUILD_STATIC` to build the libraries as static.
+Building of static plugins is controlled with separate `BUILD_PLUGINS_STATIC`
+variable. If you plan to use the static libraries with shared libraries later,
+enable also position-independent code with `BUILD_STATIC_PIC`. If you want to
+build with another compiler (e.g. Clang), pass `-DCMAKE_CXX_COMPILER=clang++`
+to CMake.
 
 Libraries and static plugins built in `Debug` configuration (e.g. with
 `CMAKE_BUILD_TYPE` set to `Debug`) have `-d` suffix to make it possible to have

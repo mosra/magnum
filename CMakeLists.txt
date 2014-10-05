@@ -112,7 +112,8 @@ if(BUILD_DEPRECATED)
 endif()
 
 option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
-cmake_dependent_option(BUILD_STATIC_PIC "Build static libraries with position-independent code" OFF "BUILD_STATIC" OFF)
+cmake_dependent_option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" OFF "BUILD_STATIC" OFF)
+option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
 option(BUILD_TESTS "Build unit tests." OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code." OFF "BUILD_TESTS" OFF)
 if(BUILD_TESTS)
@@ -142,6 +143,7 @@ endif()
 # meaningless on Emscripten and too inconvenient on Android
 if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(BUILD_STATIC ON)
+    set(BUILD_PLUGINS_STATIC ON)
 endif()
 
 if(BUILD_STATIC)
