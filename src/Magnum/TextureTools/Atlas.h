@@ -33,7 +33,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/TextureTools/magnumTextureToolsVisibility.h"
+#include "Magnum/TextureTools/visibility.h"
 
 namespace Magnum { namespace TextureTools {
 

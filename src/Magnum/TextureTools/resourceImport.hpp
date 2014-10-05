@@ -1,5 +1,5 @@
-#ifndef Magnum_TextureTools_magnumTextureToolsResourceImport_hpp
-#define Magnum_TextureTools_magnumTextureToolsResourceImport_hpp
+#ifndef Magnum_TextureTools_resourceImport_hpp
+#define Magnum_TextureTools_resourceImport_hpp
 /*
     This file is part of Magnum.
 
@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/magnumConfigure.h"
+#include "Magnum/configure.h"
 
 #ifdef MAGNUM_BUILD_STATIC
 #include <Corrade/Utility/Resource.h>
@@ -35,6 +35,8 @@ static int magnumTextureToolsResourceImport() {
     CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
     return 0;
 } CORRADE_AUTOMATIC_INITIALIZER(magnumTextureToolsResourceImport)
+#else
+#error this header is available only in static build
 #endif
 
 #endif

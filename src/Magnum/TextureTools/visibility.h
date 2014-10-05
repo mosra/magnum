@@ -1,5 +1,5 @@
-#ifndef Magnum_TextureTools_magnumTextureToolsVisibility_h
-#define Magnum_TextureTools_magnumTextureToolsVisibility_h
+#ifndef Magnum_TextureTools_visibility_h
+#define Magnum_TextureTools_visibility_h
 /*
     This file is part of Magnum.
 

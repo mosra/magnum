@@ -34,10 +34,10 @@ set(MagnumTextureTools_HEADERS
     Atlas.h
     DistanceField.h
 
-    magnumTextureToolsVisibility.h)
+    visibility.h)
 
 if(BUILD_STATIC)
-    set(MagnumTextureTools_HEADERS ${MagnumTextureTools_HEADERS} magnumTextureToolsResourceImport.hpp)
+    list(APPEND MagnumTextureTools_HEADERS resourceImport.hpp)
 endif()
 
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}

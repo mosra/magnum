@@ -34,7 +34,7 @@
 #endif
 #include "Magnum/Magnum.h"
 
-#include "Magnum/TextureTools/magnumTextureToolsVisibility.h"
+#include "Magnum/TextureTools/visibility.h"
 
 namespace Magnum { namespace TextureTools {
 
