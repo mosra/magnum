@@ -41,18 +41,7 @@ target_link_libraries(TgaImageConverter Magnum)
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 
 if(BUILD_TESTS)
-    add_library(MagnumTgaImageConverterTestLib ${SHARED_OR_STATIC} $<TARGET_OBJECTS:TgaImageConverterObjects>)
-    set_target_properties(MagnumTgaImageConverterTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    add_library(MagnumTgaImageConverterTestLib STATIC $<TARGET_OBJECTS:TgaImageConverterObjects>)
     target_link_libraries(MagnumTgaImageConverterTestLib Magnum)
-
-    # On Windows we need to install first and then run the tests to avoid "DLL
-    # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumTgaImageConverterTestLib
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    endif()
-
     add_subdirectory(Test)
 endif()
