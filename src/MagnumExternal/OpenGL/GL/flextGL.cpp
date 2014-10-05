@@ -611,6 +611,10 @@ FLEXTGL_EXPORT void(APIENTRY *flextglGetVertexArrayIndexed64iv)(GLuint, GLuint, 
 FLEXTGL_EXPORT void(APIENTRY *flextglCreateSamplers)(GLsizei, GLuint *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglCreateProgramPipelines)(GLsizei, GLuint *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglCreateQueries)(GLenum, GLsizei, GLuint *) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjecti64v)(GLuint, GLuint, GLenum, GLintptr) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjectiv)(GLuint, GLuint, GLenum, GLintptr) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjectui64v)(GLuint, GLuint, GLenum, GLintptr) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjectuiv)(GLuint, GLuint, GLenum, GLintptr) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglMemoryBarrierByRegion)(GLbitfield) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetTextureSubImage)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetCompressedTextureSubImage)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLsizei, void *) = nullptr;
