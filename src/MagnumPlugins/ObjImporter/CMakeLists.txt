@@ -23,18 +23,32 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_library(ObjImporterObjects OBJECT ObjImporter.cpp)
+set(ObjImporter_SRCS
+    ObjImporter.cpp)
+
+set(ObjImporter_HEADERS
+    ObjImporter.h)
+
+# Objects shared between plugin and test library
+add_library(ObjImporterObjects OBJECT
+    ${ObjImporter_SRCS}
+    ${ObjImporter_HEADERS})
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    set_target_properties(ObjImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(ObjImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
+# ObjImporter plugin
 add_plugin(ObjImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
     ObjImporter.conf
     $<TARGET_OBJECTS:ObjImporterObjects>
     pluginRegistration.cpp)
+if(BUILD_STATIC_PIC)
+    set_target_properties(ObjImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(ObjImporter Magnum MagnumMeshTools)
 
-install(FILES ObjImporter.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
+install(FILES ${ObjImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumObjImporterTestLib STATIC $<TARGET_OBJECTS:ObjImporterObjects>)

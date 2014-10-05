@@ -29,13 +29,24 @@ set(TgaImageConverter_SRCS
 set(TgaImageConverter_HEADERS
     TgaImageConverter.h)
 
-add_library(TgaImageConverterObjects OBJECT ${TgaImageConverter_SRCS})
-set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(TgaImageConverterObjects OBJECT
+    ${TgaImageConverter_SRCS}
+    ${TgaImageConverter_HEADERS})
+set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS")
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(TgaImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# TgaImageConverter plugin
 add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_INSTALL_DIR}
     TgaImageConverter.conf
     $<TARGET_OBJECTS:TgaImageConverterObjects>
     pluginRegistration.cpp)
+if(BUILD_STATIC_PIC)
+    set_target_properties(TgaImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(TgaImageConverter Magnum)
 
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)

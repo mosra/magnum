@@ -34,15 +34,23 @@ set(WavAudioImporter_HEADERS
     WavHeader.h
     WavImporter.h)
 
-add_library(WavAudioImporterObjects OBJECT ${WavAudioImporter_SRCS})
+# Objects shared between plugin and test library
+add_library(WavAudioImporterObjects OBJECT
+    ${WavAudioImporter_SRCS}
+    ${WavAudioImporter_HEADERS})
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    set_target_properties(WavAudioImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
+# WavAudioImporter plugin
 add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR}
     WavAudioImporter.conf
     $<TARGET_OBJECTS:WavAudioImporterObjects>
     pluginRegistration.cpp)
+if(BUILD_STATIC_PIC)
+    set_target_properties(WavAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)

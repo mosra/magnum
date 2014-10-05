@@ -60,15 +60,16 @@ if(BUILD_STATIC)
     endif()
 endif()
 
+# Shaders library
 add_library(MagnumShaders ${SHARED_OR_STATIC}
     ${MagnumShaders_SRCS}
     ${MagnumShaders_HEADERS}
     ${MagnumShaders_PRIVATE_HEADERS})
 set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumShaders PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(MagnumShaders PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
 target_link_libraries(MagnumShaders Magnum)
 
 install(TARGETS MagnumShaders

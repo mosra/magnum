@@ -23,21 +23,28 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumFontConverter_SOURCES
+set(MagnumFontConverter_SRCS
     MagnumFontConverter.cpp)
 
 set(MagnumFontConverter_HEADERS
     MagnumFontConverter.h)
 
-add_library(MagnumFontConverterObjects OBJECT ${MagnumFontConverter_SOURCES})
-set_target_properties(MagnumFontConverterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(MagnumFontConverterObjects OBJECT ${MagnumFontConverter_SRCS})
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumFontConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# MagnumFontConverter plugin
 add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_INSTALL_DIR}
     MagnumFontConverter.conf
     $<TARGET_OBJECTS:MagnumFontConverterObjects>
     pluginRegistration.cpp)
-target_link_libraries(MagnumFontConverter Magnum MagnumText)
+if(BUILD_STATIC_PIC)
+    set_target_properties(MagnumFontConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+target_link_libraries(MagnumFontConverter Magnum MagnumText)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFontConverter TgaImageConverter)
 endif()

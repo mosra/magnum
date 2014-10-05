@@ -178,24 +178,26 @@ set(MagnumMath_SRCS
     Math/Functions.cpp
     Math/instantiation.cpp)
 
-# Main library
+# Objects shared between main and test library
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
+if(NOT BUILD_STATIC)
+    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumMathObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
+# Main library
 add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_SRCS}
     ${Magnum_HEADERS}
     ${Magnum_PRIVATE_HEADERS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
-
-# TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    # Set shared library flags for the objects, as they will be part of shared lib
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-else()
-    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS")
+if(NOT BUILD_STATIC)
     set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS")
+elseif(BUILD_STATIC_PIC)
+    set_target_properties(Magnum PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
 set(Magnum_LIBS
@@ -258,7 +260,7 @@ if(WITH_TEXTURETOOLS)
 endif()
 
 if(BUILD_TESTS)
-    # Libraries with graceful assert for testing
+    # Library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumMathTestLib PROPERTIES

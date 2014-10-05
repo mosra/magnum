@@ -30,13 +30,24 @@ set(TgaImporter_HEADERS
     TgaHeader.h
     TgaImporter.h)
 
-add_library(TgaImporterObjects OBJECT ${TgaImporter_SRCS})
-set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(TgaImporterObjects OBJECT
+    ${TgaImporter_SRCS}
+    ${TgaImporter_HEADERS})
+set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS")
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(TgaImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# TgaImporter plugin
 add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
     TgaImporter.conf
     $<TARGET_OBJECTS:TgaImporterObjects>
     pluginRegistration.cpp)
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(TgaImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(TgaImporter Magnum)
 
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)

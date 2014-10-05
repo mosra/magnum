@@ -45,14 +45,15 @@ set(MagnumAudio_HEADERS
 
     visibility.h)
 
+# Audio library
 add_library(MagnumAudio ${SHARED_OR_STATIC}
     ${MagnumAudio_SRCS}
     ${MagnumAudio_HEADERS})
 set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumAudio PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(MagnumAudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
 target_link_libraries(MagnumAudio ${CORRADE_PLUGINMANAGER_LIBRARIES} ${OPENAL_LIBRARY})
 
 install(TARGETS MagnumAudio

@@ -23,21 +23,28 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumFont_SOURCES
+set(MagnumFont_SRCS
     MagnumFont.cpp)
 
 set(MagnumFont_HEADERS
     MagnumFont.h)
 
-add_library(MagnumFontObjects OBJECT ${MagnumFont_SOURCES})
-set_target_properties(MagnumFontObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(MagnumFontObjects OBJECT ${MagnumFont_SRCS})
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumFontObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# MagnumFont plugin
 add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_FONT_RELEASE_INSTALL_DIR}
     MagnumFont.conf
     $<TARGET_OBJECTS:MagnumFontObjects>
     pluginRegistration.cpp)
-target_link_libraries(MagnumFont Magnum MagnumText)
+if(BUILD_STATIC_PIC)
+    set_target_properties(MagnumFont PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+target_link_libraries(MagnumFont Magnum MagnumText)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFont TgaImporter)
 endif()

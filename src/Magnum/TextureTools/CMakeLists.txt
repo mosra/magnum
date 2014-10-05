@@ -40,14 +40,15 @@ if(BUILD_STATIC)
     list(APPEND MagnumTextureTools_HEADERS resourceImport.hpp)
 endif()
 
+# TextureTools library
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}
     ${MagnumTextureTools_SRCS}
     ${MagnumTextureTools_HEADERS})
 set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumTextureTools PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(MagnumTextureTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
 target_link_libraries(MagnumTextureTools Magnum)
 
 if(WITH_DISTANCEFIELDCONVERTER)

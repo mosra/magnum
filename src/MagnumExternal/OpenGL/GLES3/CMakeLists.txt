@@ -27,9 +27,12 @@
 add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang")
-    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -fvisibility=hidden -DFlextGL_EXPORTS")
+    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "-fvisibility=hidden -DFlextGL_EXPORTS")
 else()
-    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS} -DFlextGL_EXPORTS")
+    set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumFlextGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
 install(FILES flextGL.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES3)

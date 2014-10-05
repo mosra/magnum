@@ -83,7 +83,7 @@ project-wide `CMakeLists.txt`. It just sets up project name, specifies module
 directory and delegates everything important to `CMakeLists.txt` in `src/`
 subdirectory.
 @code
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MyApplication)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
