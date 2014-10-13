@@ -1,5 +1,5 @@
-#ifndef Magnum_Primitives_Cube_h
-#define Magnum_Primitives_Cube_h
+#ifndef Magnum_Primitives_Crosshair_h
+#define Magnum_Primitives_Crosshair_h
 /*
     This file is part of Magnum.
 
