@@ -43,7 +43,7 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
     positions.emplace_back();
 
     /* Points on circle */
-    const Rad angleIncrement(2*Constants::pi()/segments);
+    const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
@@ -60,7 +60,7 @@ Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
     positions.reserve(segments);
 
     /* Points on circle */
-    const Rad angleIncrement(2*Constants::pi()/segments);
+    const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         positions.emplace_back(Math::cos(angle), Math::sin(angle));

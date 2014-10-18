@@ -43,7 +43,7 @@ void Spheroid::capVertex(Float y, Float normalY, Float textureCoordsV) {
 }
 
 void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
-    Rad segmentAngleIncrement(2*Constants::pi()/segments);
+    Rad segmentAngleIncrement(Constants::tau()/segments);
     Float x, y, z;
     for(UnsignedInt i = 0; i != count; ++i) {
         Rad ringAngle = startRingAngle + Float(i)*ringAngleIncrement;
@@ -69,7 +69,7 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
 }
 
 void Spheroid::cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
-    Rad segmentAngleIncrement(2*Constants::pi()/segments);
+    Rad segmentAngleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
             Rad segmentAngle = Float(j)*segmentAngleIncrement;
@@ -143,7 +143,7 @@ void Spheroid::topFaceRing() {
 }
 
 void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& normal) {
-    Rad segmentAngleIncrement(2*Constants::pi()/segments);
+    Rad segmentAngleIncrement(Constants::tau()/segments);
 
     for(UnsignedInt i = 0; i != segments; ++i) {
         Rad segmentAngle = Float(i)*segmentAngleIncrement;
