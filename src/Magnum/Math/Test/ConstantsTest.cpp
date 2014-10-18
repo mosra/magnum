@@ -48,14 +48,20 @@ void ConstantsTest::constantsFloat() {
     constexpr Float b = Constants<Float>::sqrt3();
     CORRADE_COMPARE(Math::pow<2>(a), 2.0f);
     CORRADE_COMPARE(Math::pow<2>(b), 3.0f);
+
+    constexpr Float c = Constants<Float>::pi();
+    CORRADE_COMPARE(2.0f*c, Constants<Float>::tau());
 }
 
 void ConstantsTest::constantsDouble() {
     #ifndef MAGNUM_TARGET_GLES
-    constexpr Double c = Constants<Double>::sqrt2();
-    constexpr Double d = Constants<Double>::sqrt3();
-    CORRADE_COMPARE(Math::pow<2>(c), 2.0);
-    CORRADE_COMPARE(Math::pow<2>(d), 3.0);
+    constexpr Double a = Constants<Double>::sqrt2();
+    constexpr Double b = Constants<Double>::sqrt3();
+    CORRADE_COMPARE(Math::pow<2>(a), 2.0);
+    CORRADE_COMPARE(Math::pow<2>(b), 3.0);
+
+    constexpr Double c = Constants<Double>::pi();
+    CORRADE_COMPARE(2.0*c, Constants<Double>::tau());
     #else
     CORRADE_SKIP("Double precision is not supported when targeting OpenGL ES.");
     #endif

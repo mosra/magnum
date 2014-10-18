@@ -46,9 +46,17 @@ template<class T> struct Constants {
     /**
      * @brief Pi
      *
-     * @see @ref Deg, @ref Rad
+     * @see @ref tau(), @ref Deg, @ref Rad
      */
     static constexpr T pi();
+
+    /**
+     * @brief Tau
+     *
+     * Or two pi.
+     * @see @ref pi(), @ref Deg, @ref Rad
+     */
+    static constexpr T tau();
 
     static constexpr T sqrt2();  /**< @brief Square root of 2 */
     static constexpr T sqrt3();  /**< @brief Square root of 3 */
@@ -61,6 +69,7 @@ template<> struct Constants<Double> {
     Constants() = delete;
 
     static constexpr Double pi()    { return 3.141592653589793; }
+    static constexpr Double tau()   { return 6.283185307179586; }
     static constexpr Double sqrt2() { return 1.414213562373095; }
     static constexpr Double sqrt3() { return 1.732050807568877; }
 };
@@ -69,6 +78,7 @@ template<> struct Constants<Float> {
     Constants() = delete;
 
     static constexpr Float pi()    { return 3.141592654f; }
+    static constexpr Float tau()   { return 6.283185307f; }
     static constexpr Float sqrt2() { return 1.414213562f; }
     static constexpr Float sqrt3() { return 1.732050808f; }
 };
