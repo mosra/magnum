@@ -34,6 +34,7 @@ set(Magnum_SRCS
     AbstractQuery.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
+    Attribute.cpp
     Buffer.cpp
     ColorFormat.cpp
     CubeMapTexture.cpp
@@ -89,6 +90,7 @@ set(Magnum_HEADERS
     AbstractShaderProgram.h
     AbstractTexture.h
     Array.h
+    Attribute.h
     Buffer.h
     Color.h
     ColorFormat.h

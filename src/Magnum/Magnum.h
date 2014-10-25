@@ -454,6 +454,8 @@ template<class T> class Array1D;
 template<class T> class Array2D;
 template<class T> class Array3D;
 
+template<UnsignedInt, class> class Attribute;
+
 enum class BufferUsage: GLenum;
 class Buffer;
 

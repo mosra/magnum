@@ -68,17 +68,17 @@ template<UnsignedInt dimensions> struct Generic {
      *
      * Defined as @ref Vector2 in 2D and @ref Vector3 in 3D.
      */
-    typedef AbstractShaderProgram::Attribute<0, T> Position;
+    typedef Attribute<0, T> Position;
 
     /** @brief 2D texture coordinates */
-    typedef AbstractShaderProgram::Attribute<1, Vector2> TextureCoordinates;
+    typedef Attribute<1, Vector2> TextureCoordinates;
 
     /**
      * @brief Vertex normal
      *
      * Defined only in 3D.
      */
-    typedef AbstractShaderProgram::Attribute<2, Vector3> Normal;
+    typedef Attribute<2, Vector3> Normal;
 };
 #endif
 
@@ -90,16 +90,16 @@ typedef Generic<3> Generic3D;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct BaseGeneric {
-    typedef AbstractShaderProgram::Attribute<1, Vector2> TextureCoordinates;
+    typedef Attribute<1, Vector2> TextureCoordinates;
 };
 
 template<> struct Generic<2>: BaseGeneric {
-    typedef AbstractShaderProgram::Attribute<0, Vector2> Position;
+    typedef Attribute<0, Vector2> Position;
 };
 
 template<> struct Generic<3>: BaseGeneric {
-    typedef AbstractShaderProgram::Attribute<0, Vector3> Position;
-    typedef AbstractShaderProgram::Attribute<2, Vector3> Normal;
+    typedef Attribute<0, Vector3> Position;
+    typedef Attribute<2, Vector3> Normal;
 };
 #endif
 

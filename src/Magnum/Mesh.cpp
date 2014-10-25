@@ -27,6 +27,7 @@
 
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -207,6 +208,18 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
     return *this;
 }
 
+void Mesh::draw(AbstractShaderProgram& shader) {
+    shader.use();
+
+    #ifndef MAGNUM_TARGET_GLES
+    drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
+    #else
+    drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd)
 #elif !defined(MAGNUM_TARGET_GLES2)
@@ -365,11 +378,11 @@ void Mesh::destroyImplementationVAO() {
     #endif
 }
 
-void Mesh::attributePointerInternal(const Attribute& attribute) {
+void Mesh::attributePointerInternal(const GenericAttribute& attribute) {
     (this->*Context::current()->state().mesh->attributePointerImplementation)(attribute);
 }
 
-void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
+void Mesh::attributePointerImplementationDefault(const GenericAttribute& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
     CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
@@ -378,7 +391,7 @@ void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
     _attributes.push_back(attribute);
 }
 
-void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
+void Mesh::attributePointerImplementationVAO(const GenericAttribute& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
     CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
@@ -389,7 +402,7 @@ void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDSAEXT(const Attribute& attribute) {
+void Mesh::attributePointerImplementationDSAEXT(const GenericAttribute& attribute) {
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
@@ -397,7 +410,7 @@ void Mesh::attributePointerImplementationDSAEXT(const Attribute& attribute) {
 }
 #endif
 
-void Mesh::vertexAttribPointer(const Attribute& attribute) {
+void Mesh::vertexAttribPointer(const GenericAttribute& attribute) {
     glEnableVertexAttribArray(attribute.location);
     attribute.buffer->bindInternal(Buffer::TargetHint::Array);
     glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
@@ -516,7 +529,7 @@ void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
 
 void Mesh::bindImplementationDefault() {
     /* Specify vertex attributes */
-    for(const Attribute& attribute: _attributes)
+    for(const GenericAttribute& attribute: _attributes)
         vertexAttribPointer(attribute);
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -538,7 +551,7 @@ void Mesh::bindImplementationVAO() {
 }
 
 void Mesh::unbindImplementationDefault() {
-    for(const Attribute& attribute: _attributes)
+    for(const GenericAttribute& attribute: _attributes)
         glDisableVertexAttribArray(attribute.location);
 
     #ifndef MAGNUM_TARGET_GLES2

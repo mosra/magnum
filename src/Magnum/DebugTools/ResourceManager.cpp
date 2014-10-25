@@ -27,6 +27,7 @@
 
 #include "ResourceManager.h"
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshView.h"

@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Assert.h>
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Context.h"
 #include "Magnum/Mesh.h"
 

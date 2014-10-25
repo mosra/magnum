@@ -39,7 +39,7 @@ struct MeshState {
 
     void(Mesh::*createImplementation)();
     void(Mesh::*destroyImplementation)();
-    void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
+    void(Mesh::*attributePointerImplementation)(const Mesh::GenericAttribute&);
     #ifndef MAGNUM_TARGET_GLES2
     void(Mesh::*attributeIPointerImplementation)(const Mesh::IntegerAttribute&);
     #ifndef MAGNUM_TARGET_GLES
