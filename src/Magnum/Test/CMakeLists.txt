@@ -51,6 +51,7 @@ if(BUILD_GL_TESTS)
     corrade_add_test(FramebufferGLTest FramebufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(MeshGLTest MeshGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(RenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(SampleQueryGLTest SampleQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(TextureGLTest TextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(TimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
 
@@ -60,18 +61,6 @@ if(BUILD_GL_TESTS)
         ${AbstractShaderProgramGLTest_RES}
         LIBRARIES ${GL_TEST_LIBRARIES})
 
-    corrade_add_resource(QueryGLTest_RES QueryGLTestFiles/resources.conf)
-    if(NOT MAGNUM_TARGET_GLES2)
-        corrade_add_test(PrimitiveQueryGLTest
-            PrimitiveQueryGLTest.cpp
-            ${QueryGLTest_RES}
-            LIBRARIES ${GL_TEST_LIBRARIES})
-    endif()
-    corrade_add_test(SampleQueryGLTest
-        SampleQueryGLTest.cpp
-        ${QueryGLTest_RES}
-        LIBRARIES ${GL_TEST_LIBRARIES})
-
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
     include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
@@ -79,8 +68,9 @@ if(BUILD_GL_TESTS)
 
     if(NOT MAGNUM_TARGET_GLES2)
         corrade_add_test(BufferImageGLTest BufferImageGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
-        corrade_add_test(TextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
         corrade_add_test(MultisampleTextureGLTest MultisampleTextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+        corrade_add_test(PrimitiveQueryGLTest PrimitiveQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+        corrade_add_test(TextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     endif()
 
     if(NOT MAGNUM_TARGET_GLES)

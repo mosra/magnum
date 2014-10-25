@@ -67,8 +67,6 @@ namespace {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
-    Utility::Resource rs("QueryGLTest");
-
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
     Shader frag(Version::GL210, Shader::Type::Fragment);
@@ -77,8 +75,15 @@ MyShader::MyShader() {
     Shader frag(Version::GLES200, Shader::Type::Fragment);
     #endif
 
-    vert.addSource(rs.get("MyShader.vert"));
-    frag.addSource(rs.get("MyShader.frag"));
+    vert.addSource(
+        "attribute lowp vec4 position;\n"
+        "void main() {\n"
+        "    gl_Position = position;\n"
+        "}\n");
+    frag.addSource(
+        "void main() {\n"
+        "    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+        "}\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 

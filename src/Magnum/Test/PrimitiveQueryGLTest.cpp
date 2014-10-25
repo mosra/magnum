@@ -28,12 +28,10 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
-#include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/PrimitiveQuery.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -61,27 +59,18 @@ void PrimitiveQueryGLTest::query() {
             typedef Attribute<0, Vector2> Position;
 
             explicit MyShader() {
-                Utility::Resource rs("QueryGLTest");
-
                 Shader vert(Version::GL210, Shader::Type::Vertex);
-                Shader frag(Version::GL210, Shader::Type::Fragment);
 
-                vert.addSource(rs.get("MyShader.vert"));
-                frag.addSource(rs.get("MyShader.frag"));
+                CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
+                    "attribute lowp vec4 position;\n"
+                    "void main() {\n"
+                    "    gl_Position = position;\n"
+                    "}\n").compile());
 
-                CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
-
-                attachShaders({vert, frag});
-
+                attachShader(vert);
                 CORRADE_INTERNAL_ASSERT_OUTPUT(link());
             }
     } shader;
-
-    Renderbuffer renderbuffer;
-    renderbuffer.setStorage(RenderbufferFormat::RGBA8, Vector2i(32));
-
-    Framebuffer framebuffer({{}, Vector2i(32)});
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
     constexpr Vector2 data[9];
     Buffer vertices;
@@ -97,7 +86,7 @@ void PrimitiveQueryGLTest::query() {
     PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
     q.begin();
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    Renderer::enable(Renderer::Feature::RasterizerDiscard);
     mesh.draw(shader);
 
     q.end();
