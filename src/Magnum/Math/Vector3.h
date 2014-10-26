@@ -208,7 +208,9 @@ template<class T> class Vector3: public Vector<3, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Vector3)
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Vector3)
+#endif
 
 /** @debugoperator{Magnum::Math::Vector3} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector3<T>& value) {
