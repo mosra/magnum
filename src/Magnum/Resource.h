@@ -155,8 +155,8 @@ class Resource {
         /**
          * @brief %Resource state
          *
-         * @see operator bool(), @ref ResourceManager::state()
-         * @todoc Explicit reference when Doxygen can handle conversion operators
+         * @see @ref Resource::operator bool() "operator bool()", @ref ResourceManager::state()
+         * @todoc Remove workaround when Doxygen can handle unscoped conversion operators
          */
         ResourceState state() {
             acquire();

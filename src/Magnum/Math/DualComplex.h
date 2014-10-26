@@ -71,11 +71,11 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c = (0 + i1) + \epsilon (v_x + iv_y)
          * @f]
-         * @see translation() const,
+         * @see @link translation() const @endlink,
          *      @ref Matrix3::translation(const Vector2<T>&),
          *      @ref DualQuaternion::translation(), @ref Vector2::xAxis(),
          *      @ref Vector2::yAxis()
-         * @todoc Explicit reference when Doxygen can handle const
+         * @todoc Remove workaround when Doxygen can handle const
          */
         static DualComplex<T> translation(const Vector2<T>& vector) {
             return {{}, {vector.x(), vector.y()}};

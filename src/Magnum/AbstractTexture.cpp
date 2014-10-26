@@ -168,7 +168,8 @@ void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, c
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, const Containers::ArrayReference<AbstractTexture* const> textures) {
+/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures) {
     Implementation::TextureState* const textureState = Context::current()->state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */

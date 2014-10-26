@@ -378,7 +378,8 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
 }
 #endif
 
-void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, const Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers && std::get<0>(buffers[i]))
             std::get<0>(buffers[i])->bind(target, firstIndex + i, std::get<1>(buffers[i]), std::get<2>(buffers[i]));
@@ -387,7 +388,8 @@ void Buffer::bindImplementationFallback(const Target target, const GLuint firstI
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, const Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     /** @todo use ArrayTuple */
     Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
     Containers::Array<GLintptr> offsetsSizes{buffers ? buffers.size()*2 : 0};

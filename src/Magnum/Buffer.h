@@ -690,9 +690,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * any buffer is `nullptr`, given indexed target is unbound. The range
          * of indices must respect limits for given @p target. The offsets must
          * respect alignment, which is 4 bytes for @ref Target::AtomicCounter
-         * and implementation-defined for other targets. If @extension{ARB,multi_bind}
-         * (part of OpenGL 4.4) is not available, the feature is emulated with
-         * sequence of @ref bind(Target, UnsignedInt, GLintptr, GLsizeiptr) /
+         * and implementation-defined for other targets. All the buffers must
+         * have allocated data store. If @extension{ARB,multi_bind} (part of
+         * OpenGL 4.4) is not available, the feature is emulated with sequence
+         * of @ref bind(Target, UnsignedInt, GLintptr, GLsizeiptr) /
          * @ref unbind(Target, UnsignedInt) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
@@ -717,10 +718,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * Binds first buffer in the list to @p firstIndex, second to
          * `firstIndex + 1` etc. If any buffer is `nullptr`, given indexed
          * target is unbound. The range of indices must respect limits for
-         * given @p target. If @extension{ARB,multi_bind} (part of OpenGL 4.4)
-         * is not available, the feature is emulated with sequence of
-         * @ref bind(Target, UnsignedInt) / @ref unbind(Target, UnsignedInt)
-         * calls.
+         * given @p target. All the buffers must have allocated data store. If
+         * @extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
+         * the feature is emulated with sequence of @ref bind(Target, UnsignedInt)
+         * / @ref unbind(Target, UnsignedInt) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -874,7 +875,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * The @p index parameter must respect limits for given @p target. The
          * @p offset parameter must respect alignment, which is 4 bytes for
          * @ref Target::AtomicCounter and implementation-defined for other
-         * targets.
+         * targets. The buffer must have allocated data store.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -895,7 +896,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Bind buffer to given binding index
          *
-         * The @p index parameter must respect limits for given @p target.
+         * The @p index parameter must respect limits for given @p target. The
+         * buffer must have allocated data store.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -1161,14 +1163,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         TargetHint MAGNUM_LOCAL bindSomewhereInternal(TargetHint hint);
 
         #ifndef MAGNUM_TARGET_GLES2
-        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint first, Containers::ArrayReference<Buffer* const> buffers);
+        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayReference<Buffer* const> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint first, Containers::ArrayReference<Buffer* const> buffers);
+        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayReference<Buffer* const> buffers);
         #endif
 
-        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint first, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint first, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         #endif
 
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);

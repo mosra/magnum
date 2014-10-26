@@ -63,8 +63,8 @@ template<class T> class Complex {
          * @f[
          *      c_0 \cdot c_1 = a_0 a_1 + b_0 b_1
          * @f]
-         * @see dot() const
-         * @todoc Explicit reference when Doxygen can handle const
+         * @see @link Complex::dot() const @endlink
+         * @todoc Remove workaround when Doxygen can handle const
          */
         static T dot(const Complex<T>& a, const Complex<T>& b) {
             return a._real*b._real + a._imaginary*b._imaginary;
@@ -136,8 +136,8 @@ template<class T> class Complex {
          * To be used in transformations later. @f[
          *      c = v_x + iv_y
          * @f]
-         * @see operator Vector2(), @ref transformVector()
-         * @todoc Explicit reference when Doxygen can handle conversion operators
+         * @see @ref Complex::operator Vector2<T>() "operator Vector2<T>()", @ref transformVector()
+         * @todoc Remove workaround when Doxygen can handle unscoped conversion operators
          */
         constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
 
@@ -407,9 +407,9 @@ template<class T> class Complex {
          * @f[
          *      v' = c v = c (v_x + iv_y)
          * @f]
-         * @see @ref Complex(const Vector2<T>&), operator Vector2(),
+         * @see @ref Complex(const Vector2<T>&), @ref Complex::operator Vector2<T>() "operator Vector2<T>()",
          *      @ref Matrix3::transformVector()
-         * @todoc Explicit reference when Doxygen can handle conversion operators
+         * @todoc Remove workaround when Doxygen can handle unscoped conversion operators
          */
         Vector2<T> transformVector(const Vector2<T>& vector) const {
             return Vector2<T>((*this)*Complex<T>(vector));

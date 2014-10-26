@@ -43,9 +43,9 @@ namespace Implementation { template<class> struct Attribute; }
 @brief Base class for attribute location and type
 
 For use in @ref AbstractShaderProgram subclasses. Template parameter @p location
-is vertex attribute location, number between `0` and @ref maxVertexAttributes().
-To ensure compatibility, you should always have vertex attribute with location
-`0`.
+is vertex attribute location, number between `0` and
+@ref AbstractShaderProgram::maxVertexAttributes(). To ensure compatibility, you
+should always have vertex attribute with location `0`.
 
 Template parameter @p T is the type which is used for shader attribute, e.g.
 @ref Vector4i for `ivec4`. DataType is type of passed data when adding vertex

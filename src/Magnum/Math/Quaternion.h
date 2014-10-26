@@ -57,8 +57,8 @@ template<class T> class Quaternion {
          * @f[
          *      p \cdot q = \boldsymbol p_V \cdot \boldsymbol q_V + p_S q_S
          * @f]
-         * @see dot() const
-         * @todoc Explicit reference when Doxygen can handle const
+         * @see @link dot() const @endlink
+         * @todoc Remove workaround when Doxygen can handle const
          */
         static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
             /** @todo Use four-component SIMD implementation when available */
@@ -337,12 +337,12 @@ template<class T> class Quaternion {
         /**
          * @brief %Quaternion length
          *
-         * See also dot() const which is faster for comparing length with
-         * other values. @f[
+         * See also @link dot() const @endlink which is faster for comparing
+         * length with other values. @f[
          *      |q| = \sqrt{q \cdot q}
          * @f]
          * @see @ref isNormalized()
-         * @todoc Explicit reference when Doxygen can handle const
+         * @todoc Remove workaround when Doxygen can handle const
          */
         T length() const { return std::sqrt(dot()); }
 

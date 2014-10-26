@@ -352,8 +352,8 @@ class MAGNUM_EXPORT Context {
          * If no version from the list is supported, returns lowest available
          * OpenGL version (@ref Version::GL210 for desktop OpenGL,
          * @ref Version::GLES200 for OpenGL ES).
-         * @see isExtensionSupported(Version) const
-         * @todoc Explicit reference when Doxygen can handle const
+         * @see @link isExtensionSupported(Version) const @endlink
+         * @todoc Remove workaround when Doxygen can handle const
          */
         Version supportedVersion(std::initializer_list<Version> versions) const;
 
@@ -370,10 +370,10 @@ class MAGNUM_EXPORT Context {
          * }
          * @endcode
          *
-         * @see isExtensionSupported(const Extension&) const,
+         * @see @link isExtensionSupported(const Extension&) const @endlink,
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(),
          *      @ref isExtensionDisabled()
-         * @todoc Explicit reference when Doxygen can handle const
+         * @todoc Remove workaround when Doxygen can handle const
          */
         template<class T> bool isExtensionSupported() const {
             return isExtensionSupported<T>(version());
@@ -402,11 +402,11 @@ class MAGNUM_EXPORT Context {
          * @brief Whether given extension is supported
          *
          * Can be used e.g. for listing extensions available on current
-         * hardware, but for general usage prefer isExtensionSupported() const,
+         * hardware, but for general usage prefer @link isExtensionSupported() const @endlink,
          * as it does most operations in compile time.
          * @see @ref supportedExtensions(), @ref Extension::extensions(),
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
-         * @todoc Explicit reference when Doxygen can handle const
+         * @todoc Remove workaround when Doxygen can handle const
          */
         bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(_extensionRequiredVersion[extension._index]) && extensionStatus[extension._index];
@@ -438,9 +438,9 @@ class MAGNUM_EXPORT Context {
          * @brief Whether given extension is disabled
          *
          * Can be used e.g. for listing extensions available on current
-         * hardware, but for general usage prefer isExtensionDisabled() const,
+         * hardware, but for general usage prefer @link isExtensionDisabled() const @endlink,
          * as it does most operations in compile time.
-         * @todoc Explicit reference when Doxygen can handle const
+         * @todoc Remove workaround when Doxygen can handle const
          */
         bool isExtensionDisabled(const Extension& extension) const {
             return isVersionSupported(extension._requiredVersion) && !isVersionSupported(_extensionRequiredVersion[extension._index]);

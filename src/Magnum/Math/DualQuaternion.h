@@ -56,11 +56,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Expects that the rotation axis is normalized. @f[
          *      \hat q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2] + \epsilon [\boldsymbol 0, 0]
          * @f]
-         * @see rotation() const, @ref Quaternion::rotation(),
+         * @see @link rotation() const @endlink, @ref Quaternion::rotation(),
          *      @ref Matrix4::rotation(), @ref DualComplex::rotation(),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
          *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
-         * @todoc Explicit reference when Doxygen can handle const
+         * @todoc Remove workaround when Doxygen can handle const
          */
         static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
@@ -75,11 +75,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\frac{\boldsymbol v}{2}, 0]
          * @f]
-         * @see translation() const,
+         * @see @link translation() const @endlink,
          *      @ref Matrix4::translation(const Vector3<T>&),
          *      @ref DualComplex::translation(), @ref Vector3::xAxis(),
          *      @ref Vector3::yAxis(), @ref Vector3::zAxis()
-         * @todoc Explicit reference when Doxygen can handle const
+         * @todoc Remove workaround when Doxygen can handle const
          */
         static DualQuaternion<T> translation(const Vector3<T>& vector) {
             return {{}, {vector/T(2), T(0)}};
