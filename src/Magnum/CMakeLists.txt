@@ -163,11 +163,19 @@ if(NOT TARGET_GLES2)
         BufferImage.h
         MultisampleTexture.h
         PrimitiveQuery.h
-        TextureArray.h)
+        TextureArray.h
+        TransformFeedback.h)
+
+    list(APPEND Magnum_PRIVATE_HEADES
+        Implementation/TransformFeedbackState.h)
+
     set(Magnum_SRCS ${Magnum_SRCS}
         BufferImage.cpp
         MultisampleTexture.cpp
-        TextureArray.cpp)
+        TextureArray.cpp
+        TransformFeedback.cpp
+
+        Implementation/TransformFeedbackState.cpp)
 endif()
 
 # Link in GL function pointer variables on platforms that support it

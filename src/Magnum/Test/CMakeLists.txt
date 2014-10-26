@@ -71,6 +71,7 @@ if(BUILD_GL_TESTS)
         corrade_add_test(MultisampleTextureGLTest MultisampleTextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
         corrade_add_test(PrimitiveQueryGLTest PrimitiveQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
         corrade_add_test(TextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+        corrade_add_test(TransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     endif()
 
     if(NOT MAGNUM_TARGET_GLES)

@@ -112,6 +112,22 @@ MyShader& setSpecularTexture(Texture2D& texture) {
     return *this;
 }
 @endcode
+-   **Transform feedback setup function**, if needed, in which you bind buffers
+    to particular indices using @ref TransformFeedback::attachBuffer() and
+    similar, possibly with overloads based on desired use cases, e.g.:
+@code
+MyShader& setTransformFeedback(TransformFeedback& feedback, Buffer& positions, Buffer& data) {
+    feedback.attachBuffers(0, {positions, data});
+    return *this;
+}
+MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buffer& positions, GLintptr positionsOffset, Buffer& data, GLintptr dataOffset) {
+    feedback.attachBuffers(0, {
+        std::make_tuple(positions, positionsOffset, totalCount*sizeof(Vector3)),
+        std::make_tuple(data, dataOffset, totalCount*sizeof(Vector2ui))
+    });
+    return *this;
+}
+@endcode
 
 @anchor AbstractShaderProgram-attribute-location
 ### Binding attribute location
@@ -251,6 +267,53 @@ setUniform(uniformLocation("specularTexture"), 1);
     3.0 and older. Use @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
 
+@anchor AbstractShaderProgram-transform-feedback
+### Specifying transform feedback binding points
+
+The preferred workflow is to specify output binding points directly in the
+shader code, e.g.:
+@code
+// GLSL 4.40, or
+#extension GL_ARB_enhanced_layouts: enable
+layout(xfb_buffer = 0, xfb_stride = 32) out block {
+    layout(xfb_offset = 0) vec3 position;
+    layout(xfb_offset = 16) vec3 normal;
+};
+layout(xfb_buffer = 1) out vec3 velocity;
+@endcode
+
+If you don't have the required extension, declare the uniforms without the
+`xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
+Equivalent setup for the previous code would be the following:
+@code
+out block {
+    vec3 position;
+    vec3 normal;
+};
+out vec3 velocity;
+@endcode
+@code
+setTransformFeedbackOutputs({
+        // Buffer 0
+        "position", "gl_SkipComponents1", "normal", "gl_SkipComponents1",
+        // Buffer 1
+        "gl_NextBuffer", "velocity"
+    }, TransformFeedbackBufferMode::InterleavedAttributes);
+@endcode
+
+@see @ref TransformFeedback::maxInterleavedComponents(),
+    @ref TransformFeedback::maxSeparateAttributes(),
+    @ref TransformFeedback::maxSeparateComponents()
+@requires_gl40 %Extension @extension{ARB,transform_feedback3} for using
+    `gl_NextBuffer` or `gl_SkipComponents#` names in
+    @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
+    function
+@requires_gl44 %Extension @extension{ARB,enhanced_layouts} for explicit
+    transform feedback output specification instead of using
+    @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
+@requires_gl Explicit transform feedback output specification is not available
+    in OpenGL ES.
+
 @anchor AbstractShaderProgram-rendering-workflow
 ## Rendering workflow
 
@@ -334,6 +397,24 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
     friend struct Implementation::ShaderProgramState;
 
     public:
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief %Buffer mode for transform feedback
+         *
+         * @see @ref setTransformFeedbackOutputs()
+         * @requires_gl30 %Extension @extension{EXT,transform_feedback}
+         * @requires_gles30 Transform feedback is not available in OpenGL ES
+         *      2.0
+         */
+        enum class TransformFeedbackBufferMode: GLenum {
+            /** Attributes will be interleaved at one buffer binding point */
+            InterleavedAttributes = GL_INTERLEAVED_ATTRIBS,
+
+            /** Each attribute will be put into separate buffer binding point */
+            SeparateAttributes = GL_SEPARATE_ATTRIBS
+        };
+        #endif
+
         /**
          * @brief Max supported vertex attribute count
          *
@@ -698,6 +779,39 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
             /* Not using const char* parameter, because this way it avoids most accidents with non-zero-terminated strings */
             bindFragmentDataLocationInternal(location, name);
         }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Specify shader outputs to be recorded in transform feedback
+         * @param outputs       Names of output variables
+         * @param bufferMode    %Buffer mode
+         *
+         * Binds given output variables from vertex, geometry or tessellation
+         * shader to transform feedback buffer binding points. If
+         * @ref TransformFeedbackBufferMode::SeparateAttributes is used, each
+         * output is bound to separate binding point. If
+         * @ref TransformFeedbackBufferMode::InterleavedAttributes is used, the
+         * outputs are interleaved into single buffer binding point. In this
+         * case, special output name `gl_NextBuffer` causes the following
+         * output to be recorded into next buffer binding point and
+         * `gl_SkipComponents#` causes the transform feedback to offset the
+         * following output variable by `#` components.
+         * @see @fn_gl{TransformFeedbackVaryings}
+         * @deprecated_gl Preferred usage is to specify transform feedback
+         *      outputs explicitly in the shader instead of using this
+         *      function. See @ref AbstractShaderProgram-transform-feedback "class documentation"
+         *      for more information.
+         * @requires_gl30 %Extension @extension{EXT,transform_feedback}
+         * @requires_gl40 %Extension @extension{ARB,transform_feedback3} for
+         *      using `gl_NextBuffer` or `gl_SkipComponents#` names in
+         *      @p outputs array
+         * @requires_gles30 Transform feedback is not available in OpenGL ES
+         *      2.0
+         * @requires_gl Special output names `gl_NextBuffer` and
+         *      `gl_SkipComponents#` are not available in OpenGL ES
+         */
+        void setTransformFeedbackOutputs(std::initializer_list<std::string> outputs, TransformFeedbackBufferMode bufferMode);
         #endif
 
         /**

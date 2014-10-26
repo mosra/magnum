@@ -144,7 +144,7 @@ void Buffer::unbind(const Target target, const UnsignedInt firstIndex, const std
 /** @todoc const std::initializer_list makes Doxygen grumpy */
 void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     Context::current()->state().buffer->bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
@@ -152,7 +152,7 @@ void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initia
 /** @todoc const std::initializer_list makes Doxygen grumpy */
 void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     Context::current()->state().buffer->bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
@@ -262,7 +262,7 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
 #ifndef MAGNUM_TARGET_GLES2
 Buffer& Buffer::bind(const Target target, const UnsignedInt index, const GLintptr offset, const GLsizeiptr size) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     glBindBufferRange(GLenum(target), index, _id, offset, size);
     return *this;
@@ -270,7 +270,7 @@ Buffer& Buffer::bind(const Target target, const UnsignedInt index, const GLintpt
 
 Buffer& Buffer::bind(const Target target, const UnsignedInt index) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     glBindBufferBase(GLenum(target), index, _id);
     return *this;

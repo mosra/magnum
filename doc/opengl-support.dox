@@ -70,7 +70,7 @@ GLSL 1.30                                   | done
 @extension{EXT,texture_shared_exponent}     | done
 @extension{EXT,draw_buffers2}               | |
 @extension{EXT,texture_integer}             | done (GL 3.0 subset)
-@extension{EXT,transform_feedback}          | |
+@extension{EXT,transform_feedback}          | done
 @extension{NV,depth_buffer_float}           | |
 @extension{NV,conditional_render}           | done
 
@@ -134,8 +134,8 @@ GLSL 4.00                                   | done
 @extension{ARB,shader_subroutine}           | |
 @extension{ARB,tessellation_shader}         | missing some limit queries and patch parameter specification function
 @extension{ARB,texture_buffer_object_rgb32} | done
-@extension{ARB,transform_feedback2}         | |
-@extension{ARB,transform_feedback3}         | |
+@extension{ARB,transform_feedback2}         | missing transform feedback draw
+@extension{ARB,transform_feedback3}         | only advanced interleaving
 
 @subsection opengl-support-41 OpenGL 4.1
 

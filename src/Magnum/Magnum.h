@@ -556,6 +556,7 @@ typedef TextureArray<2> Texture2DArray;
 
 enum class TextureFormat: GLenum;
 
+class TransformFeedback;
 class Timeline;
 
 enum class Version: Int;

@@ -163,7 +163,12 @@ class MAGNUM_EXPORT Context {
             Shaders = 1 << 4,
 
             /** Reset tracked texture-related bindings and state */
-            Textures = 1 << 5
+            Textures = 1 << 5,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /** Reset tracked transform feedback-related bindings */
+            TransformFeedback = 1 << 6
+            #endif
         };
 
         /**

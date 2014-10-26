@@ -1,5 +1,5 @@
-#ifndef Magnum_Implementation_State_h
-#define Magnum_Implementation_State_h
+#ifndef Magnum_Implementation_TransformFeedbackState_h
+#define Magnum_Implementation_TransformFeedbackState_h
 /*
     This file is part of Magnum.
 
@@ -25,44 +25,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
+#include "Magnum/Context.h"
 
 namespace Magnum { namespace Implementation {
 
-struct BufferState;
-struct DebugState;
-struct FramebufferState;
-struct MeshState;
-struct QueryState;
-struct RendererState;
-struct ShaderState;
-struct ShaderProgramState;
-struct TextureState;
-#ifndef MAGNUM_TARGET_GLES2
-struct TransformFeedbackState;
-#endif
+struct TransformFeedbackState {
+    explicit TransformFeedbackState(Context& context, std::vector<std::string>& extensions);
 
-struct State {
-    /* Initializes context-based functionality */
-    State(Context& context);
+    void reset();
 
-    ~State();
-
-    enum: GLuint { DisengagedBinding = ~0u };
-
-    BufferState* buffer;
-    DebugState* debug;
-    FramebufferState* framebuffer;
-    MeshState* mesh;
-    QueryState* query;
-    RendererState* renderer;
-    ShaderState* shader;
-    ShaderProgramState* shaderProgram;
-    TextureState* texture;
-    #ifndef MAGNUM_TARGET_GLES2
-    TransformFeedbackState* transformFeedback;
+    GLint maxInterleavedComponents,
+        maxSeparateAttributes,
+        maxSeparateComponents;
+    #ifndef MAGNUM_TARGET_GLES
+    GLint maxBuffers;
     #endif
+
+        GLuint binding;
+
+    void(TransformFeedback::*createImplementation)();
+    void(TransformFeedback::*attachRangeImplementation)(GLuint, Buffer&, GLintptr, GLsizeiptr);
+    void(TransformFeedback::*attachBaseImplementation)(GLuint, Buffer&);
+    void(TransformFeedback::*attachRangesImplementation)(GLuint, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>>);
+    void(TransformFeedback::*attachBasesImplementation)(GLuint, std::initializer_list<Buffer*>);
 };
 
 }}

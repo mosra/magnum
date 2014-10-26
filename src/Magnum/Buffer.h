@@ -701,8 +701,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref bind(Target, UnsignedInt, GLintptr, GLsizeiptr),
          *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
          *      @ref maxUniformBindings(), @ref shaderStorageOffsetAlignment(),
-         *      @ref uniformOffsetAlignment(), @fn_gl{BindBuffersRange} or
-         *      @fn_gl{BindBufferRange}
+         *      @ref uniformOffsetAlignment(), @ref TransformFeedback::attachBuffers(),
+         *      @fn_gl{BindBuffersRange} or @fn_gl{BindBufferRange}
          * @requires_gl30 No form of indexed buffer binding is available in
          *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
          *      values for version requirements.
@@ -727,7 +727,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      for more information.
          * @see @ref bind(Target, UnsignedInt), @ref maxAtomicCounterBindings(),
          *      @ref maxShaderStorageBindings(), @ref maxUniformBindings(),
-         *      @fn_gl{BindBuffersBase} or @fn_gl{BindBufferBase}
+         *      @ref TransformFeedback::attachBuffers(), @fn_gl{BindBuffersBase}
+         *      or @fn_gl{BindBufferBase}
          * @requires_gl30 No form of indexed buffer binding is available in
          *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
          *      values for version requirements.
@@ -882,7 +883,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref bind(Target, UnsignedInt, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>>),
          *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
          *      @ref maxUniformBindings(), @ref shaderStorageOffsetAlignment(),
-         *      @ref uniformOffsetAlignment(), @fn_gl{BindBufferRange}
+         *      @ref uniformOffsetAlignment(), @ref TransformFeedback::attachBuffer(),
+         *      @fn_gl{BindBufferRange}
          * @requires_gl30 No form of indexed buffer binding is available in
          *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
          *      values for version requirements.
@@ -903,7 +905,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      for more information.
          * @see @ref bind(Target, UnsignedInt, std::initializer_list<Buffer*>),
          *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
-         *      @ref maxUniformBindings(), @fn_gl{BindBufferBase}
+         *      @ref maxUniformBindings(), @ref TransformFeedback::attachBuffer(),
+         *      @fn_gl{BindBufferBase}
          * @requires_gl30 No form of indexed buffer binding is available in
          *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
          *      values for version requirements.

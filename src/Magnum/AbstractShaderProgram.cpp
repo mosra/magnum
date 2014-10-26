@@ -311,6 +311,17 @@ void AbstractShaderProgram::bindFragmentDataLocationIndexedInternal(const Unsign
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractShaderProgram::setTransformFeedbackOutputs(const std::initializer_list<std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
+    Containers::Array<const char*> names{outputs.size()};
+
+    Int i = 0;
+    for(const std::string& output: outputs) names[i++] = output.data();
+
+    glTransformFeedbackVaryings(_id, outputs.size(), names, GLenum(bufferMode));
+}
+#endif
+
 bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders) {
     bool allSuccess = true;
 

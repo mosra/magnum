@@ -39,6 +39,9 @@
 #include "ShaderState.h"
 #include "ShaderProgramState.h"
 #include "TextureState.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "TransformFeedbackState.h"
+#endif
 
 namespace Magnum { namespace Implementation {
 
@@ -61,6 +64,9 @@ State::State(Context& context) {
     shader = new ShaderState;
     shaderProgram = new ShaderProgramState(context, extensions);
     texture = new TextureState(context, extensions);
+    #ifndef MAGNUM_TARGET_GLES2
+    transformFeedback = new TransformFeedbackState(context, extensions);
+    #endif
 
     /* Sort the features and remove duplicates */
     std::sort(extensions.begin(), extensions.end());

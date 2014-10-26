@@ -50,6 +50,7 @@
 #include "Implementation/MeshState.h"
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/TextureState.h"
+#include "Implementation/TransformFeedbackState.h"
 
 namespace Magnum {
 
@@ -578,6 +579,10 @@ void Context::resetState(const States states) {
 
     if(states & State::Textures)
         _state->texture->reset();
+    #ifndef MAGNUM_TARGET_GLES2
+    if(states & State::TransformFeedback)
+        _state->transformFeedback->reset();
+    #endif
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
