@@ -50,6 +50,7 @@
 #include "Magnum/Texture.h"
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/TextureArray.h"
+#include "Magnum/TransformFeedback.h"
 #endif
 
 #ifdef CORRADE_TARGET_NACL
@@ -579,6 +580,29 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
         _l(Sampler::maxMaxAnisotropy())
     }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(EXT::transform_feedback)
+        #endif
+
+        _l(TransformFeedback::maxInterleavedComponents())
+        _l(TransformFeedback::maxSeparateAttributes())
+        _l(TransformFeedback::maxSeparateComponents())
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::transform_feedback3>()) {
+        _h(ARB::transform_feedback3)
+
+        _l(TransformFeedback::maxBuffers())
+    }
+    #endif
 
     if(c->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         _h(KHR::debug)
