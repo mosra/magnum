@@ -38,6 +38,7 @@ namespace Magnum { namespace Math {
 
 /** @todo Denormals to zero */
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Class Constants used only statically */
 
 template<class> class Complex;
@@ -81,6 +82,7 @@ template<class> class Range3D;
 namespace Geometry {
     template<class> class Rectangle;
 }
+#endif
 #endif
 
 }}

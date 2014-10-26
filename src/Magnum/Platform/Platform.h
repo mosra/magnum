@@ -31,9 +31,11 @@
 
 namespace Magnum { namespace Platform {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<class> class BasicScreen;
 template<class> class BasicScreenedApplication;
 class Context;
+#endif
 
 }}
 

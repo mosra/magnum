@@ -34,6 +34,7 @@
 
 namespace Magnum { namespace Text {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractFont;
 class AbstractFontConverter;
 class AbstractLayouter;
@@ -50,6 +51,7 @@ typedef Renderer<3> Renderer3D;
 #ifdef MAGNUM_BUILD_DEPRECATED
 typedef Renderer<2> TextRenderer2D;
 typedef Renderer<3> TextRenderer3D;
+#endif
 #endif
 
 }}

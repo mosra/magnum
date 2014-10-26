@@ -33,6 +33,7 @@
 
 namespace Magnum { namespace Shapes {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt> class AbstractShape;
 typedef AbstractShape<2> AbstractShape2D;
 typedef AbstractShape<3> AbstractShape3D;
@@ -88,6 +89,7 @@ class Plane;
 template<UnsignedInt> class Point;
 typedef Point<2> Point2D;
 typedef Point<3> Point3D;
+#endif
 
 }}
 

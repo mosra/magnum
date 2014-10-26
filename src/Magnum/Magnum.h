@@ -45,10 +45,9 @@ typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 namespace Magnum {
 
 namespace Math {
-    template<class T> struct Constants;
-
-    /** @todoc Remove `ifndef` when Doxygen is able to handle operator"" */
     #ifndef DOXYGEN_GENERATING_OUTPUT
+    template<class> struct Constants;
+
     #ifndef MAGNUM_TARGET_GLES
     constexpr Rad<Double> operator "" _rad(long double);
     constexpr Deg<Double> operator "" _deg(long double);
@@ -441,6 +440,7 @@ using Math::operator "" _radf;
 
 /* Forward declarations for all types in root namespace */
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 /* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
    FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;
@@ -559,6 +559,7 @@ enum class TextureFormat: GLenum;
 class Timeline;
 
 enum class Version: Int;
+#endif
 
 }
 

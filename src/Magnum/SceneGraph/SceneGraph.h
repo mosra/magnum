@@ -33,6 +33,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 enum class AspectRatioPolicy: UnsignedByte;
 
 template<UnsignedInt, class> class AbstractCamera;
@@ -152,6 +153,7 @@ typedef BasicTranslationTransformation3D<Float> TranslationTransformation3D;
 namespace Implementation {
     template<class> struct Transformation;
 }
+#endif
 
 }}
 

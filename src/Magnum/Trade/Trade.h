@@ -33,6 +33,7 @@
 
 namespace Magnum { namespace Trade {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractImageConverter;
 class AbstractImporter;
 class AbstractMaterialData;
@@ -53,6 +54,7 @@ class ObjectData3D;
 class PhongMaterialData;
 class TextureData;
 class SceneData;
+#endif
 
 }}
 

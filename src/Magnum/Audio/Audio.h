@@ -31,11 +31,13 @@
 
 namespace Magnum { namespace Audio {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractImporter;
 class Buffer;
 class Context;
 class Source;
 /* Renderer used only statically */
+#endif
 
 }}
 
