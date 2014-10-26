@@ -35,12 +35,12 @@ its documentation for more information about usage with CMake.
 
 @section types-builtin Builtin types
 
-%Magnum provides typedefs for builtin integral and floating-point arithmetic
+Magnum provides typedefs for builtin integral and floating-point arithmetic
 types to ensure portability (e.g. @ref Int is *always* 32bit), maintain
 consistency and reduce confusion (e.g. `std::int32_t`, `int` and `GLint` all
 refer to the same type).
 
-| %Magnum type       | Size           | Equivalent GLSL type |
+| Magnum type        | Size           | Equivalent GLSL type |
 | ------------------ | -------------- | -------------------- |
 | @ref UnsignedByte  | 8bit unsigned  |                      |
 | @ref Byte          | 8bit signed    |                      |
@@ -65,14 +65,14 @@ underlying type.
 
 @section types-matrix Matrix/vector types
 
-| %Magnum vector type                            | Equivalent GLSL type      |
+| Magnum vector type                             | Equivalent GLSL type      |
 | ---------------------------------------------- | ------------------------- |
 | @ref Vector2, @ref Vector3, @ref Vector4       | `vec2`, `vec3`, `vec4`    |
 | @ref Vector2ui, @ref Vector3ui, @ref Vector4ui | `uvec2`, `uvec3`, `uvec4` |
 | @ref Vector2i, @ref Vector3i, @ref Vector4i    | `ivec2`, `ivec3`, `ivec4` |
 | @ref Vector2d, @ref Vector3d, @ref Vector4d    | `dvec2`, `dvec3`, `dvec4` |
 
-| %Magnum matrix type                                              | Equivalent GLSL type                 |
+| Magnum matrix type                                               | Equivalent GLSL type                 |
 | ---------------------------------------------------------------- | ------------------------------------ |
 | @ref Matrix2x2 or @ref Matrix2x2d                                | `mat2`/`mat2x2` or `dmat2`/`dmat2x2` |
 | @ref Matrix3 / @ref Matrix3x3 or @ref Matrix3d / @ref Matrix3x3d | `mat3`/`mat3x3` or `dmat3`/`dmat3x3` |
@@ -103,7 +103,7 @@ to the internal data array.
 
 @section types-special Special types
 
-%Magnum has special type for strongly-typed representation of angles, namely
+Magnum has special type for strongly-typed representation of angles, namely
 the @ref Deg and @ref Rad classes (or @ref Degd and @ref Radd with @ref Double
 as underlying type). Their only purpose is to avoid common degree-vs-radian
 bugs (i.e. entering degree value where radians should be) and make the

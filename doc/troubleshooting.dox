@@ -30,13 +30,13 @@ namespace Magnum {
 
 @section troubleshooting-building Building issues
 
-If your project suddenly stops building after %Magnum upgrade, check these
+If your project suddenly stops building after Magnum upgrade, check these
 things:
 
 -   If the building fails on CMake step, be sure that you have up-to-date
     `FindCorrade.cmake`, `FindMagnum.cmake` and other CMake modules in your
     project (`FindSDL2.cmake`). They are contained in `modules/` directory of
-    %Magnum sources (and sources of other projects) also are installed into
+    Magnum sources (and sources of other projects) also are installed into
     `share/cmake/Magnum`.
 -   In some cases when the changes done to build system are too drastic,
     recreating the build dir or clearing CMake cache is needed, but this is

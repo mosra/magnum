@@ -25,12 +25,12 @@
 
 namespace Magnum {
 /** @page plugins Loading and using plugins
-@brief Extending %Magnum with additional functionality
+@brief Extending Magnum with additional functionality
 
 -   Previous page: @ref transformations
 -   Next page: @ref scenegraph
 
-The base %Magnum library contains math support, scene graph implementation and
+The base Magnum library contains math support, scene graph implementation and
 is able to interact with graphics and audio hardware. However, the base library
 doesn't provide any functions for dealing with specific file formats, as there
 are simply too many formats to have them included directly in the library.
@@ -52,7 +52,7 @@ might not be available on all platforms.
 
 @section plugins-types Plugin interfaces
 
-%Magnum contains these plugin interfaces:
+Magnum contains these plugin interfaces:
 
 -   @ref Trade::AbstractImporter -- importers for general 2D and 3D scene,
     mesh, material, texture and image data. See `*Importer` classes in
@@ -81,7 +81,7 @@ for given plugin interface, for example @ref Trade::AbstractImporter. You must
 set particular plugin directory, from which the manager will load and
 instantiate the plugins. To save you from hardcoding the value into your
 application source, the plugin directory is provided as `MAGNUM_PLUGINS_DIR`
-CMake variable. The default is set to %Magnum install location, but you can
+CMake variable. The default is set to Magnum install location, but you can
 change it through CMake to anything else. The `MAGNUM_PLUGINS_IMPORTER_DIR`,
 `MAGNUM_PLUGINS_IMAGECONVERTER_DIR`, `MAGNUM_PLUGINS_FONT_DIR`,
 `MAGNUM_PLUGINS_FONTCONVERTER_DIR`, `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`
@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 @section plugins-develop Developing your own plugins
 
 See class documentation of particular plugin interfaces for more information
-about subclassing. The %Corrade's @ref plugin-management "plugin management tutorial"
+about subclassing. The Corrade's @ref plugin-management "plugin management tutorial"
 contains more information about plugin compilation and registering.
 
 If you want to develop a plugin which depends on another, you need to find the

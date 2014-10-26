@@ -42,7 +42,7 @@ grouped together using various operations.
 
 @section shapes-collection Available shapes
 
-%Magnum provides a set of simple shapes for collision detection, similarly to
+Magnum provides a set of simple shapes for collision detection, similarly to
 what is found in many other collision detection libraries. Additionally some
 shapes are provided in inverted form -- e.g. inverted box detects collisions on
 outside instead of inside, which might be useful for example to create bounds
@@ -55,7 +55,7 @@ around platformer game level.
 - @ref Shapes::LineSegment "Shapes::LineSegment*D" -- @copybrief Shapes::LineSegment
 
 Because of numerical instability it's not possible to detect collisions of
-line and point. %Collision of two lines can be detected only in 2D.
+line and point. Collision of two lines can be detected only in 2D.
 
 @subsection shapes-2D Two-dimensional shapes
 
@@ -76,7 +76,7 @@ is least efficient.
 
 @section shapes-composition Creating shape compositions
 
-%Shapes can be composed together using one of three available logical
+Shapes can be composed together using one of three available logical
 operations: AND, OR and NOT. These operations are mapped to `&&`, `||` and `!`
 operators, so for example creating negation of logical OR of line segment and
 point is simple as this:
@@ -110,7 +110,7 @@ Shapes::Composition3D composition = simplified && (sphere || box);
 
 @section shapes-collisions Detecting shape collisions
 
-%Shape pairs which have collision occurence detection implemented can be tested
+Shape pairs which have collision occurence detection implemented can be tested
 for collision using the `%` operator. The operator returns boolean describing
 whether the collision happened or not. Example:
 @code
@@ -137,7 +137,7 @@ if(c) {
 
 @section shapes-scenegraph Integration with scene graph
 
-%Shape can be attached to object in the scene using @ref Shapes::Shape feature.
+Shape can be attached to object in the scene using @ref Shapes::Shape feature.
 In conjunction with @ref Shapes::ShapeGroup you can use
 @ref Shapes::Shape::collides() and @ref Shapes::Shape::collision() similarly to
 the `%` and `/` operators above. Please note that the shape group caches the

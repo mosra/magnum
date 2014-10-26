@@ -25,7 +25,7 @@
 
 namespace Magnum {
 /** @page getting-started Getting started
-@brief Get started with %Magnum in matter of minutes.
+@brief Get started with Magnum in matter of minutes.
 
 @tableofcontents
 
@@ -42,7 +42,7 @@ parameter.
 @section getting-started-bootstrap Download bootstrap project
 
 Setting up a new project can be pretty gruesome and nobody likes repeating the
-same process every time. %Magnum provides "bootstrap" project structures for
+same process every time. Magnum provides "bootstrap" project structures for
 many use cases, helping you get up and running in no time.
 
 The [bootstrap repository](https://github.com/mosra/magnum-bootstrap) is
@@ -67,7 +67,7 @@ so the compatibility mode gets properly detected and used.
 
 @section getting-started-review Review project structure
 
-The base project consists of just six files in two subfolders. %Magnum uses
+The base project consists of just six files in two subfolders. Magnum uses
 CMake build system, see @ref cmake for more information.
 
     modules/FindCorrade.cmake
@@ -94,7 +94,7 @@ add_subdirectory(src)
 Directory `modules/` contains CMake modules for finding the needed
 dependencies. Unlike modules for finding e.g. OpenGL, which are part of
 standard CMake installation, these aren't part of it and thus must be
-distributed with the project. These files are just verbatim copied from %Magnum
+distributed with the project. These files are just verbatim copied from Magnum
 repository.
 
 Directory `src/` contains the actual project. To keep things simple, the
@@ -130,7 +130,7 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 
 The application essentially does nothing, just clears screen framebuffer to
 default (dark gray) color and then does buffer swap to actually display it on
-the screen. `CMakeLists.txt` finds %Magnum, sets up compiler flags, creates the
+the screen. `CMakeLists.txt` finds Magnum, sets up compiler flags, creates the
 executable and links it to all needed libraries:
 @code
 find_package(Magnum REQUIRED Sdl2Application)
@@ -176,7 +176,7 @@ everything is ready to be built.
 
 If CMake isn't able to find the dependencies on Windows, you might want to look
 at @ref building-windows. If CMake complains about `Sdl2Application` missing,
-you forgot to enable `WITH_SDL2APPLICATION` when building %Magnum,
+you forgot to enable `WITH_SDL2APPLICATION` when building Magnum,
 @ref getting-started-download "go back and fix it".
 
 @image html getting-started.png

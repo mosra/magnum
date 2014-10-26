@@ -39,7 +39,7 @@ information about building and usage with CMake.
 
 @section debug-tools-renderers Debug renderers
 
-%Debug renderers provide a way to visualize objects and object features in
+Debug renderers provide a way to visualize objects and object features in
 @ref scenegraph "scene graph" without the need to mess around with meshes and
 shaders. They are implemented as object features, so you can attach any number
 of them to any object.

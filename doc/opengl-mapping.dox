@@ -26,7 +26,7 @@
 namespace Magnum {
 
 /** @page opengl-mapping OpenGL command mapping
-@brief List of OpenGL commands corresponding to particular %Magnum API.
+@brief List of OpenGL commands corresponding to particular Magnum API.
 
 @tableofcontents
 

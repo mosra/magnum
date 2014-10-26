@@ -37,7 +37,7 @@ with CMake.
 
 @tableofcontents
 
-%Magnum provides classes for transformations in both 2D and 3D. Each class is
+Magnum provides classes for transformations in both 2D and 3D. Each class is
 suited for different purposes, but their usage is nearly the same to make your
 life simpler. This page will explain the basic operation and differences
 between various representations.
@@ -99,7 +99,7 @@ can be created by calling @ref Matrix4::rotation(), @ref Quaternion::rotation()
 or @ref DualQuaternion::rotation(). The axis must be always of unit length to
 avoid redundant normalization. Shortcuts @ref Vector3::xAxis(),
 @ref Vector3::yAxis() and @ref Vector3::zAxis() are provided for convenience.
-%Matrix representation has also @ref Matrix4::rotationX(),
+Matrix representation has also @ref Matrix4::rotationX(),
 @ref Matrix4::rotationY() and @ref Matrix4::rotationZ() which are faster than
 using the generic function for rotation around primary axes. Examples:
 @code
@@ -197,7 +197,7 @@ auto b = Matrix4::translation(Vector3::yAxis(5.0f))*
 
 Inverse transformation can be computed using @ref Matrix3::inverted(),
 @ref Matrix4::inverted(), @ref Complex::inverted(), @ref Quaternion::inverted(),
-@ref DualComplex::inverted() or @ref DualQuaternion::inverted(). %Matrix
+@ref DualComplex::inverted() or @ref DualQuaternion::inverted(). Matrix
 inversion is quite costly, so if your transformation involves only translation
 and rotation, you can use faster alternatives @ref Matrix3::invertedRigid() and
 @ref Matrix4::invertedRigid(). If you are sure that the (dual) complex number
@@ -209,7 +209,7 @@ because it doesn't need to renormalize the result.
 @section transformations-transforming Transforming vectors and points
 
 Transformations can be used directly for transforming vectors and points.
-%Vector transformation does not involve translation, in 2D can be done using
+Vector transformation does not involve translation, in 2D can be done using
 @ref Matrix3::transformVector() and @ref Complex::transformVector(), in 3D
 using @ref Matrix4::transformVector() and @ref Quaternion::transformVector().
 For transformation with normalized quaternion you can use faster alternative
@@ -255,7 +255,7 @@ parts:
 Matrix3 c = Matrix3::from(rotation, {1.0f, 3.0f});
 @endcode
 
-%Complex numbers and quaternions are far better in this regard and they allow
+Complex numbers and quaternions are far better in this regard and they allow
 you to extract rotation angle using @ref Complex::angle() or
 @ref Quaternion::angle() or rotation axis in 3D using @ref Quaternion::axis().
 Their dual versions allow to extract both rotation and translation part using

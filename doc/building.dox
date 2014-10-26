@@ -26,7 +26,7 @@
 namespace Magnum {
 
 /** @page building Downloading and building
-@brief Guide how to download and build %Magnum on different platforms.
+@brief Guide how to download and build Magnum on different platforms.
 
 @tableofcontents
 
@@ -149,16 +149,16 @@ Libraries and static plugins built in `Debug` configuration (e.g. with
 both debug and release libraries installed alongside each other. *Dynamic*
 plugins in `Debug` configuration are installed to `magnum-d` subdirectory
 instead of `magnum`. Headers and other files are the same for both. The library
-and plugin distinction is handled semi-automatically when using %Magnum in
+and plugin distinction is handled semi-automatically when using Magnum in
 depending projects, see @ref cmake for more information.
 
-%Magnum by default does not install `FindMagnum.cmake`, as you should bundle
+Magnum by default does not install `FindMagnum.cmake`, as you should bundle
 the module with your code instead of depending on it being in system location.
 You can install it by enabling `WITH_FIND_MODULE`.
 
 The library is constantly evolving and thus some APIs are deprecated and then
 later removed in favor of better ones. To preserve backwards compatibility,
-%Magnum is by default built with all deprecated APIs. However, to make your
+Magnum is by default built with all deprecated APIs. However, to make your
 code more robust and future-proof, it's recommended to build the library with
 `BUILD_DEPRECATED` disabled.
 
@@ -184,7 +184,7 @@ parameters you can specify which parts will be built and which not:
 -   `WITH_AUDIO` - @ref Audio library. Depends on **OpenAL** library, not built
     by default.
 -   `WITH_DEBUGTOOLS` - @ref DebugTools library. Enables also building of
-    %MeshTools, %Primitives, %SceneGraph, %Shaders and %Shapes libraries.
+    MeshTools, Primitives, SceneGraph, Shaders and Shapes libraries.
 -   `WITH_MESHTOOLS` - @ref MeshTools library. Enabled automatically if
     `WITH_DEBUGTOOLS` is enabled.
 -   `WITH_PRIMITIVES` - @ref Primitives library. Enabled automatically if
@@ -193,9 +193,9 @@ parameters you can specify which parts will be built and which not:
     `WITH_DEBUGTOOLS` or `WITH_SHAPES` is enabled.
 -   `WITH_SHADERS` - @ref Shaders library. Enabled automatically if
     `WITH_DEBUGTOOLS` is enabled.
--   `WITH_SHAPES` - @ref Shapes library. Enables also building of %SceneGraph
+-   `WITH_SHAPES` - @ref Shapes library. Enables also building of SceneGraph
     library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
--   `WITH_TEXT` - @ref Text library. Enables also building of %TextureTools
+-   `WITH_TEXT` - @ref Text library. Enables also building of TextureTools
     library.
 -   `WITH_TEXTURETOOLS` - @ref TextureTools library. Enabled automatically if
     `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
@@ -231,12 +231,12 @@ on Linux, Mac OS X and Windows, also disabled by default:
     information about the engine and OpenGL capabilities.
 -   `WITH_DISTANCEFIELDCONVERTER` - @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Enables also building of %TextureTools library.
+    Enables also building of TextureTools library.
 -   `WITH_FONTCONVERTER` - @ref magnum-fontconverter "magnum-fontconverter"
     executable for converting fonts to raster ones. Enables also building of
-    %Text library.
+    Text library.
 
-%Magnum also contains a set of dependency-less plugins for importing essential
+Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
 default.
@@ -287,9 +287,9 @@ be build by running
 
 in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
-if it doesn't exist yet. If %Corrade with generated documentation is placed in
+if it doesn't exist yet. If Corrade with generated documentation is placed in
 `corrade` directory next to `magnum`, the documentation will be crosslinked
-with %Corrade's one. If related projects (`magnum-plugins`, `magnum-integration`
+with Corrade's one. If related projects (`magnum-plugins`, `magnum-integration`
 and `magnum-examples`, see below) are places along these, their documentation
 will be also included in generated output.
 
@@ -338,7 +338,7 @@ features, for example), modify the last entry in `debian/rules`.
 @section building-crosscompiling Crosscompiling
 
 For crosscompiling you need to have *both* target and native version of
-%Corrade installed, because %Corrade needs to run `corrade-rc` utility on the
+Corrade installed, because Corrade needs to run `corrade-rc` utility on the
 host system as part of the build process. If native version of `corrade-rc` is
 not found on the system, crosscompilation will fail.
 

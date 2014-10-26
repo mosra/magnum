@@ -50,7 +50,7 @@ following:
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
 @todo Add @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @extension{NV,depth_buffer_float} for non-linear depth buffer
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.30                                   | done
 @extension{ARB,map_buffer_range}            | done
@@ -76,7 +76,7 @@ GLSL 1.30                                   | done
 
 @subsection opengl-support-31 OpenGL 3.1
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.40                                   | done
 @extension{ARB,texture_rectangle}           | done
@@ -89,7 +89,7 @@ GLSL 1.40                                   | done
 
 @subsection opengl-support-32 OpenGL 3.2
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.50                                   | done
 @extension{ARB,geometry_shader4}            | missing layered attachments
@@ -104,7 +104,7 @@ GLSL 1.50                                   | done
 
 @subsection opengl-support-33 OpenGL 3.3
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 3.30                                   | done
 @extension{ARB,instanced_arrays}            | done
@@ -120,7 +120,7 @@ GLSL 3.30                                   | done
 
 @subsection opengl-support-40 OpenGL 4.0
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.00                                   | done
 @extension{ARB,draw_buffers_blend}          | |
@@ -139,7 +139,7 @@ GLSL 4.00                                   | done
 
 @subsection opengl-support-41 OpenGL 4.1
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.10                                   | done
 @extension{ARB,ES2_compatibility}           | only float depth clear
@@ -151,7 +151,7 @@ GLSL 4.10                                   | done
 
 @subsection opengl-support-42 OpenGL 4.2
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.20                                   | done
 @extension{ARB,texture_compression_bptc}    | done
@@ -169,7 +169,7 @@ GLSL 4.20                                   | done
 
 @subsection opengl-support-43 OpenGL 4.3
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.30                                   | done
 @extension{ARB,arrays_of_arrays}            | done (shading language only)
@@ -200,7 +200,7 @@ GLSL 4.30                                   | done
 @todo Also fallback to @extension{AMD,query_buffer_object}
 @todo @extension{AMD,pinned_memory} "fallback" for @extension{ARB,buffer_storage}
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.40                                   | done
 @def_gl{MAX_VERTEX_ATTRIB_STRIDE}           | |
@@ -215,7 +215,7 @@ GLSL 4.40                                   | done
 
 @subsection opengl-support-45 OpenGL 4.5
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.50                                   | done
 @extension{ARB,ES3_1_compatibility}         | |
@@ -232,7 +232,7 @@ GLSL 4.50                                   | done
 
 @subsection opengl-support-extensions ARB / Khronos OpenGL extensions
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @extension{ARB,robustness}                  | done
 @extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} (also in ES) | |
@@ -255,7 +255,7 @@ GLSL 4.50                                   | done
 @todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature
 @todo @extension{AMD,performance_monitor}, @extension{INTEL,performance_query}
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @extension{AMD,vertex_shader_layer}         | done (shading language only)
 @extension{AMD,shader_trinary_minmax}       | done (shading language only)
@@ -286,7 +286,7 @@ supported. ESSL 3.10 is supported.
 
 @subsection opengl-support-es30-extensions OpenGL ES 2.0 extensions to match ES 3.0 functionality
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{ANGLE,framebuffer_blit}       | done
 @es_extension{ANGLE,framebuffer_multisample} | done
@@ -340,7 +340,7 @@ Only extensions not already listed in above tables are included here.
 @todo Support also IMG_multisampled_render_to_texture? It has different enum
     values (!)
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{APPLE,texture_format_BGRA8888} | done
 @es_extension{CHROMIUM,map_sub}             | only buffer mapping
@@ -366,7 +366,7 @@ Only extensions not already listed in above tables are included here.
 @section opengl-unsupported Unsupported OpenGL features
 
 Some functionality, which is either soon-to-be deprecated or isn't proven to
-add any performance gains, is not supported in %Magnum. See also
+add any performance gains, is not supported in Magnum. See also
 @ref opengl-deprecated.
 
 @subsection opengl-unsupported-features Unsupported features
@@ -376,7 +376,7 @@ add any performance gains, is not supported in %Magnum. See also
     not supported. The only exception are features that are needed for some
     OpenGL ES 2.0 implementations (such as luminance texture formats).
 -   State queries (various `glIs*()`, `glGet*()` functions) are not supported.
-    %Magnum API is designed to prevent the need for majority of them, many of
+    Magnum API is designed to prevent the need for majority of them, many of
     them are tracked internally to avoid redundant state changes and in many
     cases it is easier to set the state to some value rather than query it and
     then decide on the result. For detailed state introspection please use
