@@ -74,13 +74,14 @@ carBumpTexture.setStorage(5, TextureFormat::RGB8)
     .generateMipmap();
 @endcode
 
-Method chaining is not used on non-configuring functions, such as Framebuffer::clear()
-or Mesh::draw(), as these won't be commonly used in conjunction with other
-functions anyway.
+Method chaining is not used on non-configuring functions, such as
+@ref Framebuffer::clear() or @ref Mesh::draw(), as these won't be commonly used
+in conjunction with other functions anyway.
 
-Method chaining is also used in SceneGraph and other libraries and in some cases
-it allows you to just "configure and forget" without even saving the created
-object to some variable, for example when adding static object to an scene:
+Method chaining is also used in @ref SceneGraph and other libraries and in some
+cases it allows you to just "configure and forget" without even saving the
+created object to some variable, for example when adding static object to an
+scene:
 @code
 Scene3D scene;
 

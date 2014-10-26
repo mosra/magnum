@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum { namespace Math {
+namespace Magnum {
 /** @page transformations 2D and 3D transformations
 @brief Introduction to essential operations on vectors and points.
 
@@ -45,47 +45,49 @@ between various representations.
 @section transformations-representation Representing transformations
 
 The first and most straightforward way to represent transformations is to use
-homogeneous transformation matrix, i.e. Matrix3 for 2D and Matrix4 for 3D. The
-matrices are able to represent all possible types of transformations -- rotation,
-translation, scaling, reflection etc. and also projective transformation, thus
-they are used at the very core of graphics pipeline and are supported natively
-in OpenGL.
+homogeneous transformation matrix, i.e. @ref Matrix3 for 2D and @ref Matrix4
+for 3D. The matrices are able to represent all possible types of
+transformations -- rotation, translation, scaling, reflection etc. and also
+projective transformation, thus they are used at the very core of graphics
+pipeline and are supported natively in OpenGL.
 
-On the other hand, matrices need 9 or 16 floats to represent the transformation,
-which has implications on both memory usage and performance (relatively slow
-matrix multiplication). It is also relatively hard to extract transformation
-properties (such as rotation angle/axis) from them, interpolate between them or
-compute inverse transformation. They suffer badly from so-called floating-point
-drift -- e.g. after a few combined rotations the transformation won't be pure
-rotation anymore, but will involve also a bit of scaling, shearing and whatnot.
+On the other hand, matrices need 9 or 16 floats to represent the
+transformation, which has implications on both memory usage and performance
+(relatively slow matrix multiplication). It is also relatively hard to extract
+transformation properties (such as rotation angle/axis) from them, interpolate
+between them or compute inverse transformation. They suffer badly from
+so-called floating-point drift -- e.g. after a few combined rotations the
+transformation won't be pure rotation anymore, but will involve also a bit of
+scaling, shearing and whatnot.
 
-However, you can trade some transformation features for improved performance and
-better behavior -- for just a rotation you can use Complex in 2D and Quaternion
-in 3D, or DualComplex and DualQuaternion if you want also translation. It is not
-possible to represent scaling, reflection or other transformations with them,
-but they occupy only 2 or 4 floats (4 or 8 floats in dual versions), can be
-easily inverted and interpolated and have many other awesome properties. However,
-they are not magic so they also suffer slightly from floating-point drift, but
-not too much and the drift can be accounted for more easily than with matrices.
+However, you can trade some transformation features for improved performance
+and better behavior -- for just a rotation you can use @ref Complex in 2D and
+@ref Quaternion in 3D, or @ref DualComplex and @ref DualQuaternion if you want
+also translation. It is not possible to represent scaling, reflection or other
+transformations with them, but they occupy only 2 or 4 floats (4 or 8 floats in
+dual versions), can be easily inverted and interpolated and have many other
+awesome properties. However, they are not magic so they also suffer slightly
+from floating-point drift, but not too much and the drift can be accounted for
+more easily than with matrices.
 
 @section transformations-types Transformation types
 
-Transformation matrices and (dual) complex numbers or quaternions have completely
-different internals, but they share the same API to achieve the same things,
-greatly simplifying their usage. In many cases it is even possible to hot-swap
-the transformation class type without changing any function calls.
+Transformation matrices and (dual) complex numbers or quaternions have
+completely different internals, but they share the same API to achieve the same
+things, greatly simplifying their usage. In many cases it is even possible to
+hot-swap the transformation class type without changing any function calls.
 
 @subsection transformations-default Default (identity) transformation
 
-Default-constructed Matrix3, Matrix4, Complex, Quaternion, DualComplex and
-DualQuaternion represent identity transformation, so you don't need to worry
-about them in initialization.
+Default-constructed @ref Matrix3, @ref Matrix4, @ref Complex, @ref Quaternion,
+@ref DualComplex and @ref DualQuaternion represent identity transformation, so
+you don't need to worry about them in initialization.
 
 @subsection transformations-rotation Rotation
 
-2D rotation is represented solely by its angle in counterclockwise direction and
-rotation transformation can be created by calling Matrix3::rotation(),
-Complex::rotation() or DualComplex::rotation(), for example:
+2D rotation is represented solely by its angle in counterclockwise direction
+and rotation transformation can be created by calling @ref Matrix3::rotation(),
+@ref Complex::rotation() or @ref DualComplex::rotation(), for example:
 @code
 auto a = Matrix3::rotation(23.0_degf);
 auto b = Complex::rotation(Rad(Constants::pi()/2));
@@ -93,13 +95,13 @@ auto c = DualComplex::rotation(-1.57_radf);
 @endcode
 
 3D rotation is represented by angle and (three-dimensional) axis. The rotation
-can be created by calling Matrix4::rotation(), Quaternion::rotation() or
-DualQuaternion::rotation(). The axis must be always of unit length to avoid
-redundant normalization. Shortcuts Vector3::xAxis(), Vector3::yAxis() and
-Vector3::zAxis() are provided for convenience. %Matrix representation has also
-Matrix4::rotationX(), Matrix4::rotationY() and Matrix4::rotationZ() which are
-faster than using the generic function for rotation around primary axes.
-Examples:
+can be created by calling @ref Matrix4::rotation(), @ref Quaternion::rotation()
+or @ref DualQuaternion::rotation(). The axis must be always of unit length to
+avoid redundant normalization. Shortcuts @ref Vector3::xAxis(),
+@ref Vector3::yAxis() and @ref Vector3::zAxis() are provided for convenience.
+%Matrix representation has also @ref Matrix4::rotationX(),
+@ref Matrix4::rotationY() and @ref Matrix4::rotationZ() which are faster than
+using the generic function for rotation around primary axes. Examples:
 @code
 auto a = Quaternion::rotation(60.0_degf, Vector3::xAxis());
 auto b = DualQuaternion::rotation(-1.0_degf, Vector3(1.0f, 0.5f, 3.0f).normalized());
@@ -114,16 +116,17 @@ then translating back. Read below for more information.
 @subsection transformations-translation Translation
 
 2D translation is defined by two-dimensional vector and can be created with
-Matrix3::translation() or DualComplex::translation(). You can use Vector2::xAxis()
-or Vector2::yAxis() to translate only along given axis. Examples:
+@ref Matrix3::translation() or @ref DualComplex::translation(). You can use
+@ref Vector2::xAxis() or @ref Vector2::yAxis() to translate only along given
+axis. Examples:
 @code
 auto a = Matrix3::translation(Vector2::xAxis(-5.0f));
 auto b = DualComplex::translation({-1.0f, 0.5f});
 @endcode
 
 3D translation is defined by three-dimensional vector and can be created with
-Matrix4::translation() or DualQuaternion::translation(). You can use
-Vector3::xAxis() and friends also here. Examples:
+@ref Matrix4::translation() or @ref DualQuaternion::translation(). You can use
+@ref Vector3::xAxis() and friends also here. Examples:
 @code
 auto a = Matrix4::translation(vector);
 auto b = DualQuaternion::translation(Vector3::zAxis(1.3f));
@@ -132,11 +135,11 @@ auto b = DualQuaternion::translation(Vector3::zAxis(1.3f));
 @subsection transformations-scaling Scaling and reflection
 
 Scaling is defined by two- or three-dimensional vector and is represented by
-matrices. You can create it with Matrix3::scaling() or Matrix4::scaling(). You
-can use Vector3::xScale(), Vector3::yScale(), Vector3::zScale() or their 2D
-counterparts to scale along one axis and leave the rest unchanged or call
-explicit one-parameter vector constructor to scale uniformly on all axes.
-Examples:
+matrices. You can create it with @ref Matrix3::scaling() or @ref Matrix4::scaling().
+You can use @ref Vector3::xScale(), @ref Vector3::yScale(), @ref Vector3::zScale()
+or their 2D counterparts to scale along one axis and leave the rest unchanged
+or call explicit one-parameter vector constructor to scale uniformly on all
+axes. Examples:
 @code
 auto a = Matrix3::scaling(Vector2::xScale(2.0f));
 auto b = Matrix4::scaling({2.0f, -2.0f, 1.5f});
@@ -145,8 +148,9 @@ auto c = Matrix4::scaling(Vector3(10.0f));
 
 Reflections are defined by normal along which to reflect (i.e., two- or
 three-dimensional vector of unit length) and they are also represented by
-matrices. Reflection is created with Matrix3::reflection() or Matrix4::reflection().
-You can use Vector3::xAxis() and friends also here. Examples:
+matrices. Reflection is created with @ref Matrix3::reflection() or
+@ref Matrix4::reflection(). You can use @ref Vector3::xAxis() and friends also
+here. Examples:
 @code
 auto a = Matrix3::reflection(Vector2::yAxis());
 auto b = Matrix4::reflection(axis.normalized());
@@ -161,15 +165,15 @@ operations more expensive, so it's not implemented.
 
 @subsection transformations-projective Projective transformations
 
-Projective transformations eploit the full potential of transformation matrices.
-In 2D there is only one projection type, which can be created with Matrix3::projection()
-and it is defined by area which will be projected into unit rectangle. In 3D
-there is orthographic projection, created with Matrix4::orthographicProjection()
-and defined by volume to project into unit cube, and perspective projection.
-Perspective projection is created with Matrix4::perspectiveProjection() and is
-defined either by field-of-view, aspect ratio and distance to near and far plane
-of view frustum or by size of near plane, its distance and distance to far
-plane. Some examples:
+Projective transformations eploit the full potential of transformation
+matrices. In 2D there is only one projection type, which can be created with
+@ref Matrix3::projection() and it is defined by area which will be projected
+into unit rectangle. In 3D there is orthographic projection, created with
+@ref Matrix4::orthographicProjection() and defined by volume to project into
+unit cube, and perspective projection. Perspective projection is created with
+@ref Matrix4::perspectiveProjection() and is defined either by field-of-view,
+aspect ratio and distance to near and far plane of view frustum or by size of
+near plane, its distance and distance to far plane. Some examples:
 @code
 auto a = Matrix3::projection({4.0f, 3.0f});
 auto b = Matrix4::orthographicProjection({4.0f, 3.0f, 100.0f});
@@ -191,33 +195,34 @@ auto b = Matrix4::translation(Vector3::yAxis(5.0f))*
          Matrix4::rotationY(25.0_degf);
 @endcode
 
-Inverse transformation can be computed using Matrix3::inverted(), Matrix4::inverted(),
-Complex::inverted(), Quaternion::inverted(), DualComplex::inverted() or
-DualQuaternion::inverted(). %Matrix inversion is quite costly, so if your
-transformation involves only translation and rotation, you can use faster
-alternatives Matrix3::invertedRigid() and Matrix4::invertedRigid(). If you are
-sure that the (dual) complex number or (dual) quaternion is of unit length, you
-can use Complex::invertedNormalized(), Quaternion::invertedNormalized(),
-DualComplex::invertedNormalized() or DualQuaternion::invertedNormalized() which
-is a little bit faster, because it doesn't need to renormalize the result.
+Inverse transformation can be computed using @ref Matrix3::inverted(),
+@ref Matrix4::inverted(), @ref Complex::inverted(), @ref Quaternion::inverted(),
+@ref DualComplex::inverted() or @ref DualQuaternion::inverted(). %Matrix
+inversion is quite costly, so if your transformation involves only translation
+and rotation, you can use faster alternatives @ref Matrix3::invertedRigid() and
+@ref Matrix4::invertedRigid(). If you are sure that the (dual) complex number
+or (dual) quaternion is of unit length, you can use @ref Complex::invertedNormalized(),
+@ref Quaternion::invertedNormalized(), @ref DualComplex::invertedNormalized()
+or @ref DualQuaternion::invertedNormalized() which is a little bit faster,
+because it doesn't need to renormalize the result.
 
 @section transformations-transforming Transforming vectors and points
 
-Transformations can be used directly for transforming vectors and points. %Vector
-transformation does not involve translation, in 2D can be done using
-Matrix3::transformVector() and Complex::transformVector(), in 3D using
-Matrix4::transformVector() and Quaternion::transformVector(). For transformation
-with normalized quaternion you can use faster alternative Quaternion::transformVectorNormalized().
-Example:
+Transformations can be used directly for transforming vectors and points.
+%Vector transformation does not involve translation, in 2D can be done using
+@ref Matrix3::transformVector() and @ref Complex::transformVector(), in 3D
+using @ref Matrix4::transformVector() and @ref Quaternion::transformVector().
+For transformation with normalized quaternion you can use faster alternative
+@ref Quaternion::transformVectorNormalized(). Example:
 @code
 auto transformation = Matrix3::rotation(-30.0_degf)*Matrix3::scaling(Vector2(3.0f));
 Vector2 transformed = transformation.transformVector({1.5f, -7.9f});
 @endcode
 
 Point transformation involves also translation, in 2D is done with
-Matrix3::transformPoint() and DualComplex::transformPoint(), in 3D with
-Matrix4::transformPoint() and DualQuaternion::transformPoint(). Also here you
-can use faster alternative Quaternion::transformPointNormalized():
+@ref Matrix3::transformPoint() and @ref DualComplex::transformPoint(), in 3D
+with @ref Matrix4::transformPoint() and @ref DualQuaternion::transformPoint().
+Also here you can use faster alternative @ref DualQuaternion::transformPointNormalized():
 @code
 auto transformation = DualQuaternion::rotation(-30.0_degf, Vector3::xAxis())*
                       DualQuaternion::translation(Vector3::yAxis(3.0f));
@@ -239,22 +244,25 @@ Matrix3 b;
 auto rotation = b.rotation();
 Float xTranslation = b.translation().x();
 @endcode
-Extracting scaling and rotation from arbitrary transformation matrices is harder
-and can be done using Algorithms::svd(). Extracting rotation angle (and axis in
-3D) from rotation part is possible using by converting it to complex number or
-quaternion, see below.
+Extracting scaling and rotation from arbitrary transformation matrices is
+harder and can be done using @ref Math::Algorithms::svd(). Extracting rotation
+angle (and axis in 3D) from rotation part is possible using by converting it to
+complex number or quaternion, see below.
 
-You can also recreate transformation matrix from rotation and translation parts:
+You can also recreate transformation matrix from rotation and translation
+parts:
 @code
 Matrix3 c = Matrix3::from(rotation, {1.0f, 3.0f});
 @endcode
 
 %Complex numbers and quaternions are far better in this regard and they allow
-you to extract rotation angle using Complex::angle() or Quaternion::angle() or
-rotation axis in 3D using Quaternion::axis(). Their dual versions allow to
-extract both rotation and translation part using DualComplex::rotation() const,
-DualQuaternion::rotation() const, DualComplex::translation() const and
-DualQuaternion::translation() const.
+you to extract rotation angle using @ref Complex::angle() or
+@ref Quaternion::angle() or rotation axis in 3D using @ref Quaternion::axis().
+Their dual versions allow to extract both rotation and translation part using
+@link DualComplex::rotation() const @endlink, @link DualQuaternion::rotation() const @endlink,
+@link DualComplex::translation() const @endlink and
+@link DualQuaternion::translation() const @endlink.
+@todoc Remove workaround when Doxygen can handle const
 @code
 DualComplex a;
 Rad rotationAngle = a.rotation().angle();
@@ -264,9 +272,10 @@ Quaternion b;
 Vector3 rotationAxis = b.axis();
 @endcode
 
-You can convert Complex and Quaternion to rotation matrix using Complex::toMatrix()
-and Quaternion::toMatrix() or their dual version to rotation and translation
-matrix using DualComplex::toMatrix() and DualQuaternion::toMatrix():
+You can convert Complex and Quaternion to rotation matrix using
+@ref Complex::toMatrix() and @ref Quaternion::toMatrix() or their dual version
+to rotation and  translation matrix using @ref DualComplex::toMatrix() and
+@ref DualQuaternion::toMatrix():
 @code
 Quaternion a;
 auto rotation = Matrix4::from(a.toMatrix(), {});
@@ -276,9 +285,9 @@ Matrix3 transformation = b.toMatrix();
 @endcode
 
 Conversion the other way around is possible only from rotation matrices using
-Complex::fromMatrix() or Quaternion::fromMatrix() and from rotation and
-translation matrices using DualComplex::fromMatrix() and
-DualQuaternion::fromMatrix():
+@ref Complex::fromMatrix() or @ref Quaternion::fromMatrix() and from rotation
+and translation matrices using @ref DualComplex::fromMatrix() and
+@ref DualQuaternion::fromMatrix():
 @code
 Matrix3 rotation;
 auto a = Complex::fromMatrix(rotation.rotationScaling());
@@ -300,19 +309,20 @@ accumulate rounding errors and behave strangely. For transformation matrices
 this can't always be fixed, because they can represent any transformation (and
 thus no algorithm can't tell if the transformation is in expected form or not).
 If you restrict yourselves (e.g. only uniform scaling and no skew), the matrix
-can be reorthogonalized using Algorithms::gramSchmidtOrthogonalize() (or
-Algorithms::gramSchmidtOrthonormalize(), if you don't have any scaling). You can
-also use Algorithms::svd() to more precisely (but way more slowly) account for
-the drift. Example:
+can be reorthogonalized using @ref Math::Algorithms::gramSchmidtOrthogonalize()
+(or @ref Math::Algorithms::gramSchmidtOrthonormalize(), if you don't have any
+scaling). You can also use @ref Math::Algorithms::svd() to more precisely (but
+way more slowly) account for the drift. Example:
 @code
 Matrix4 transformation;
 Math::Algorithms::gramSchmidtOrthonormalizeInPlace(transformation);
 @endcode
 
 For quaternions and complex number this problem can be solved far more easily
-using Complex::normalized(), Quaternion::normalized(), DualComplex::normalized()
-and DualQuaternion::normalized(). Transformation quaternions and complex numbers
-are always of unit length, thus normalizing them reduces the drift.
+using @ref Complex::normalized(), @ref Quaternion::normalized(),
+@ref DualComplex::normalized() and @ref DualQuaternion::normalized().
+Transformation quaternions and complex numbers are always of unit length, thus
+normalizing them reduces the drift.
 @code
 DualQuaternion transformation;
 transformation = transformation.normalized();
@@ -321,4 +331,4 @@ transformation = transformation.normalized();
 -   Previous page: @ref matrix-vector
 -   Next page: @ref plugins
 */
-}}
+}
