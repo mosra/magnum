@@ -95,7 +95,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Floating-point red and green channel.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 For texture data only, extension @es_extension{EXT,texture_rg}
      *      in OpenGL ES 2.0
      * @requires_es_extension For framebuffer reading, extension @es_extension{EXT,texture_rg}.
@@ -137,7 +137,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Floating-point BGRA.
-     * @requires_es_extension %Extension @es_extension{EXT,read_format_bgra}
+     * @requires_es_extension Extension @es_extension{EXT,read_format_bgra}
      *      for framebuffer reading, extension @es_extension{APPLE,texture_format_BGRA8888}
      *      or @es_extension{EXT,texture_format_BGRA8888} for texture data.
      */
@@ -150,7 +150,7 @@ enum class ColorFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Integer red channel.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only floating-point image data are available in OpenGL
      *      ES 2.0.
      */
@@ -159,7 +159,7 @@ enum class ColorFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Integer green channel.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gl Only @ref Magnum::ColorFormat::RedInteger "ColorFormat::RedInteger"
      *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
@@ -168,7 +168,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Integer blue channel.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gl Only @ref Magnum::ColorFormat::RedInteger "ColorFormat::RedInteger"
      *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
@@ -178,7 +178,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Integer red and green channel.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
      * @requires_gles30 For texture data only, only floating-point image data
      *      are available in OpenGL ES 2.0.
@@ -187,7 +187,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Integer RGB.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES.
      * @requires_gles30 For texture data only, only floating-point image data
      *      are available in OpenGL ES 2.0.
@@ -196,7 +196,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Integer RGBA.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only floating-point image data are available in OpenGL
      *      ES 2.0.
      */
@@ -205,7 +205,7 @@ enum class ColorFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Integer BGR.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gl Only @ref Magnum::ColorFormat::RGBInteger "ColorFormat::RGBInteger"
      *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
@@ -214,7 +214,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Integer BGRA.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gl Only @ref Magnum::ColorFormat::RGBAInteger "ColorFormat::RGBAInteger"
      *      is available in OpenGL ES 3.0, only floating-point image data are
      *      available in OpenGL ES 2.0.
@@ -234,9 +234,9 @@ enum class ColorFormat: GLenum {
 
     /**
      * Stencil index.
-     * @requires_gl44 %Extension @extension{ARB,texture_stencil8} for texture
+     * @requires_gl44 Extension @extension{ARB,texture_stencil8} for texture
      *      data, otherwise for framebuffer reading only.
-     * @requires_es_extension %Extension @es_extension2{NV,read_stencil,GL_NV_read_depth_stencil},
+     * @requires_es_extension Extension @es_extension2{NV,read_stencil,GL_NV_read_depth_stencil},
      *      for framebuffer reading only.
      * @todo Where to get GL_STENCIL_INDEX in ES?
      */
@@ -248,7 +248,7 @@ enum class ColorFormat: GLenum {
 
     /**
      * Depth and stencil.
-     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+     * @requires_gl30 Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}
      *      in OpenGL ES 2.0
      * @requires_es_extension For framebuffer reading only, extension
@@ -331,7 +331,7 @@ enum class ColorType: GLenum {
 
     /**
      * Each component half float.
-     * @requires_gl30 %Extension @extension{ARB,half_float_pixel}
+     * @requires_gl30 Extension @extension{ARB,half_float_pixel}
      * @requires_gles30 For texture data only, extension
      *      @es_extension2{OES,texture_half_float,OES_texture_float} in OpenGL
      *      ES 2.0
@@ -451,7 +451,7 @@ enum class ColorType: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * BGR, unsigned int, red and green 11bit float, blue 10bit float.
-     * @requires_gl30 %Extension @extension{EXT,packed_float}
+     * @requires_gl30 Extension @extension{EXT,packed_float}
      * @requires_gles30 Floating-point types are not available in OpenGL ES
      *      2.0.
      */
@@ -459,7 +459,7 @@ enum class ColorType: GLenum {
 
     /**
      * BGR, unsigned int, each component 9bit + 5bit exponent.
-     * @requires_gl30 %Extension @extension{EXT,texture_shared_exponent}
+     * @requires_gl30 Extension @extension{EXT,texture_shared_exponent}
      * @requires_gles30 Only 8bit and 16bit types are available in OpenGL ES
      *      2.0.
      */
@@ -468,7 +468,7 @@ enum class ColorType: GLenum {
 
     /**
      * Unsigned int, depth component 24bit, stencil index 8bit.
-     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+     * @requires_gl30 Extension @extension{ARB,framebuffer_object}
      * @requires_gles30 For texture data only, extension @es_extension{OES,packed_depth_stencil}
      *      in OpenGL ES 2.0
      */
@@ -482,7 +482,7 @@ enum class ColorType: GLenum {
     /**
      * Float + unsigned int, depth component 32bit float, 24bit gap, stencil
      * index 8bit.
-     * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
+     * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
      * @requires_gles30 For texture data only, only
      *      @ref Magnum::ColorType::UnsignedInt248 "ColorType::UnsignedInt248"
      *      is available in OpenGL ES 2.0.

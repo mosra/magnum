@@ -45,7 +45,7 @@ extensions are available only on @ref MAGNUM_TARGET_GLES "OpenGL ES builds".
 
 Each struct has the same public methods as Extension class (requiredVersion(),
 coreVersion() and string(), but these structs are better suited for
-compile-time decisions rather than %Extension instances. See
+compile-time decisions rather than Extension instances. See
 @ref Context::isExtensionSupported() for example usage.
 
 This namespace is built by default. To use it, you need to add `${MAGNUM_INCLUDE_DIRS}`

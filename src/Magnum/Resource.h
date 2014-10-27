@@ -38,7 +38,7 @@
 namespace Magnum {
 
 /**
-@brief %Resource state
+@brief Resource state
 
 @see @ref Resource::state(), @ref ResourceManager::state()
 */
@@ -106,7 +106,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Resource reference
+@brief Resource reference
 
 See @ref ResourceManager for more information.
 */
@@ -149,11 +149,11 @@ class Resource {
         /** @brief Move assignment */
         Resource<T, U>& operator=(Resource<T, U>&& other);
 
-        /** @brief %Resource key */
+        /** @brief Resource key */
         ResourceKey key() const { return _key; }
 
         /**
-         * @brief %Resource state
+         * @brief Resource state
          *
          * @see @ref Resource::operator bool() "operator bool()", @ref ResourceManager::state()
          * @todoc Remove workaround when Doxygen can handle unscoped conversion operators

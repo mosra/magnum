@@ -66,7 +66,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Query label
+         * @brief Query label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -115,10 +115,10 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @attention @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
          *      result type is not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
-         * @requires_gl33 %Extension @extension{ARB,timer_query} for result
+         * @requires_gl33 Extension @extension{ARB,timer_query} for result
          *      type @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
          *      "Long"
-         * @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
+         * @requires_es_extension Extension @es_extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
          *      @ref Magnum::Long "Long".
          */

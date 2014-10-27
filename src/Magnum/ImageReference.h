@@ -36,7 +36,7 @@
 namespace Magnum {
 
 /**
-@brief %Image reference
+@brief Image reference
 
 Adds information about dimensions, color components and component type to some
 data in memory.
@@ -52,14 +52,14 @@ Interchangeable with @ref Image, @ref BufferImage or @ref Trade::ImageData.
 */
 template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
+         * @param size              Image size
+         * @param data              Image data
          */
         constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const unsigned char*>(data)) {}
 
@@ -67,14 +67,14 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
+         * @param size              Image size
          *
          * Data pointer is set to `nullptr`, call @ref setData() to fill the
          * image with data.
          */
         constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
-        /** @brief %Image size */
+        /** @brief Image size */
         constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
@@ -92,7 +92,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
 
         /**
          * @brief Set image data
-         * @param data              %Image data
+         * @param data              Image data
          *
          * Dimensions, color compnents and data type remains the same as
          * passed in constructor. The data are not copied nor deleted on

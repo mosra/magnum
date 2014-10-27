@@ -51,8 +51,8 @@ enum class TextureFormat: GLenum {
      * allowed in unemulated @ref Texture::setStorage() "*Texture::setStorage()"
      * calls, in that case use @ref TextureFormat::R8 "TextureFormat::R8"
      * instead.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 %Extension @es_extension{EXT,texture_rg} in OpenGL ES
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gles30 Extension @es_extension{EXT,texture_rg} in OpenGL ES
      *      2.0
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::R8 "TextureFormat::R8".
@@ -65,8 +65,8 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, normalized unsigned byte.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 %Extension @es_extension{EXT,texture_rg} and
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gles30 Extension @es_extension{EXT,texture_rg} and
      *      @es_extension{EXT,texture_storage} in OpenGL ES 2.0. For texture
      *      storage only, for image specification use
      *      @ref Magnum::TextureFormat::Red "TextureFormat::Red" instead.
@@ -82,8 +82,8 @@ enum class TextureFormat: GLenum {
      * implementation-dependent. Not allowed in unemulated
      * @ref Texture::setStorage() "*Texture::setStorage()" calls, in that case
      * use @ref TextureFormat::RG8 "TextureFormat::RG8" instead.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 %Extension @es_extension{EXT,texture_rg} in OpenGL ES
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gles30 Extension @es_extension{EXT,texture_rg} in OpenGL ES
      *      2.0
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::RG8 "TextureFormat::RG8".
@@ -96,8 +96,8 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each normalized unsigned byte.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
-     * @requires_gles30 %Extension @es_extension{EXT,texture_rg} and
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gles30 Extension @es_extension{EXT,texture_rg} and
      *      @es_extension{EXT,texture_storage} in OpenGL ES 2.0. For texture
      *      storage only, for image specification use
      *      @ref Magnum::TextureFormat::RG "TextureFormat::RG" instead.
@@ -119,7 +119,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component normalized unsigned byte.
-     * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
+     * @requires_gles30 Extension @es_extension{OES,required_internalformat}
      *      (for image specification) or @es_extension{EXT,texture_storage}
      *      (for texture storage) in OpenGL ES 2.0
      */
@@ -140,7 +140,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component normalized unsigned byte.
-     * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
+     * @requires_gles30 Extension @es_extension{OES,required_internalformat}
      *      (for image specification) or @es_extension{EXT,texture_storage}
      *      (for texture storage) in OpenGL ES 2.0
      */
@@ -153,28 +153,28 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, normalized signed byte.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      */
     R8Snorm = GL_R8_SNORM,
 
     /**
      * Red and green component, each normalized signed byte.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      */
     RG8Snorm = GL_RG8_SNORM,
 
     /**
      * RGB, each component normalized signed byte.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      */
     RGB8Snorm = GL_RGB8_SNORM,
 
     /**
      * RGBA, each component normalized signed byte.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      */
     RGBA8Snorm = GL_RGBA8_SNORM,
@@ -183,7 +183,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Red component, normalized unsigned short.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES.
      */
@@ -191,7 +191,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each normalized unsigned short.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES.
      */
@@ -213,7 +213,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, normalized signed short.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES.
      */
@@ -221,7 +221,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each normalized signed short.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES.
      */
@@ -229,7 +229,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component normalized signed short.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES.
      */
@@ -237,7 +237,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component normalized signed short.
-     * @requires_gl31 %Extension @extension{EXT,texture_snorm}
+     * @requires_gl31 Extension @extension{EXT,texture_snorm}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES.
      */
@@ -247,7 +247,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, non-normalized unsigned byte.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -255,7 +255,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned byte.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -263,7 +263,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned byte.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -271,7 +271,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned byte.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -279,7 +279,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized signed byte.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -287,7 +287,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed byte.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -295,7 +295,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed byte.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -303,7 +303,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed byte.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -311,7 +311,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized unsigned short.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -319,7 +319,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned short.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -327,7 +327,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned short.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -335,7 +335,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned short.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -343,7 +343,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized signed short.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -351,7 +351,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed short.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -359,7 +359,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed short.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -367,7 +367,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed short.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -375,7 +375,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized unsigned int.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -383,7 +383,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned int.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -391,7 +391,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned int.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -399,7 +399,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned int.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -407,7 +407,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized signed int.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -415,7 +415,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed int.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -423,7 +423,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed int.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -431,7 +431,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed int.
-     * @requires_gl30 %Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -439,7 +439,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, half float.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -447,7 +447,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each half float.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -455,7 +455,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component half float.
-     * @requires_gl30 %Extension @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -463,7 +463,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component half float.
-     * @requires_gl30 %Extension @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -471,7 +471,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, float.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -479,7 +479,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each float.
-     * @requires_gl30 %Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -487,7 +487,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component float.
-     * @requires_gl30 %Extension @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -495,7 +495,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component float.
-     * @requires_gl30 %Extension @extension{ARB,texture_float}
+     * @requires_gl30 Extension @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -551,7 +551,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, normalized unsigned, red and blue component 5bit, green 6bit.
-     * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
+     * @requires_gles30 Extension @es_extension{OES,required_internalformat}
      *      (for image specification) or @es_extension{EXT,texture_storage}
      *      (for texture storage) in OpenGL ES 2.0
      */
@@ -560,7 +560,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES3
     /**
      * RGB, each component normalized unsigned 10bit.
-     * @requires_es_extension %Extension @es_extension{EXT,texture_type_2_10_10_10_REV}
+     * @requires_es_extension Extension @es_extension{EXT,texture_type_2_10_10_10_REV}
      *      and either @es_extension{OES,required_internalformat} (for image
      *      specification) or @es_extension{EXT,texture_storage} (for texture
      *      storage) in OpenGL ES 2.0. Included for compatibility reasons only,
@@ -585,7 +585,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * RGB, float, red and green component 11bit, blue 10bit.
-     * @requires_gl30 %Extension @extension{EXT,packed_float}
+     * @requires_gl30 Extension @extension{EXT,packed_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -593,7 +593,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, unsigned with exponent, each RGB component 9bit, exponent 5bit.
-     * @requires_gl30 %Extension @extension{EXT,texture_shared_exponent}
+     * @requires_gl30 Extension @extension{EXT,texture_shared_exponent}
      * @requires_gles30 Use @ref Magnum::TextureFormat::RGB "TextureFormat::RGB"
      *      in OpenGL ES 2.0 instead.
      */
@@ -604,7 +604,7 @@ enum class TextureFormat: GLenum {
      * sRGB, normalized unsigned, size implementation-dependent. Not allowed in
      * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
      * that case use @ref TextureFormat::SRGB8 "TextureFormat::SRGB8" instead.
-     * @requires_es_extension %Extension @es_extension{EXT,sRGB}
+     * @requires_es_extension Extension @es_extension{EXT,sRGB}
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, i.e. @ref Magnum::TextureFormat::SRGB8 "TextureFormat::SRGB8".
      * @todo is this allowed in core?
@@ -634,7 +634,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, normalized unsigned, each component 4bit.
-     * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
+     * @requires_gles30 Extension @es_extension{OES,required_internalformat}
      *      (for image specification) or @es_extension{EXT,texture_storage}
      *      (for texture storage) in OpenGL ES 2.0
      */
@@ -642,7 +642,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, normalized unsigned, each RGB component 5bit, alpha 1bit.
-     * @requires_gles30 %Extension @es_extension{OES,required_internalformat}
+     * @requires_gles30 Extension @es_extension{OES,required_internalformat}
      *      (for image specification) or @es_extension{EXT,texture_storage}
      *      (for texture storage) in OpenGL ES 2.0
      */
@@ -650,7 +650,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, normalized unsigned, each RGB component 10bit, alpha 2bit.
-     * @requires_gles30 %Extension @es_extension{EXT,texture_type_2_10_10_10_REV}
+     * @requires_gles30 Extension @es_extension{EXT,texture_type_2_10_10_10_REV}
      *      and either @es_extension{OES,required_internalformat} (for image
      *      specification) or @es_extension{EXT,texture_storage} (for texture
      *      storage) in OpenGL ES 2.0
@@ -664,7 +664,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * RGBA, non-normalized unsigned, each RGB component 10bit, alpha 2bit.
-     * @requires_gl33 %Extension @extension{ARB,texture_rgb10_a2ui}
+     * @requires_gl33 Extension @extension{ARB,texture_rgb10_a2ui}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      */
@@ -683,7 +683,7 @@ enum class TextureFormat: GLenum {
      * sRGBA, normalized unsigned, size implementation-dependent. Not allowed in
      * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
      * that case use @ref TextureFormat::SRGB8Alpha8 "TextureFormat::SRGB8Alpha8" instead.
-     * @requires_es_extension %Extension @es_extension{EXT,sRGB}
+     * @requires_es_extension Extension @es_extension{EXT,sRGB}
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, i.e. @ref Magnum::TextureFormat::SRGB8Alpha8 "TextureFormat::SRGB8Alpha8".
      * @todo is this allowed in core?
@@ -707,7 +707,7 @@ enum class TextureFormat: GLenum {
     /**
      * Compressed red channel, normalized unsigned. **Not available on
      * multisample textures.**
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
      * @requires_gl Generic texture compression is not available in OpenGL ES.
      */
     CompressedRed = GL_COMPRESSED_RED,
@@ -715,7 +715,7 @@ enum class TextureFormat: GLenum {
     /**
      * Compressed red and green channel, normalized unsigned. **Not available
      * on multisample textures.**
-     * @requires_gl30 %Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
      * @requires_gl Generic texture compression is not available in OpenGL ES.
      */
     CompressedRG = GL_COMPRESSED_RG,
@@ -737,7 +737,7 @@ enum class TextureFormat: GLenum {
     /**
      * RGTC compressed red channel, normalized unsigned. **Not available on
      * multisample textures.**
-     * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedRedRgtc1 = GL_COMPRESSED_RED_RGTC1,
@@ -745,7 +745,7 @@ enum class TextureFormat: GLenum {
     /**
      * RGTC compressed red and green channel, normalized unsigned. **Not
      * available on multisample textures.**
-     * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedRGRgtc2 = GL_COMPRESSED_RG_RGTC2,
@@ -753,7 +753,7 @@ enum class TextureFormat: GLenum {
     /**
      * RGTC compressed red channel, normalized signed. **Not available on
      * multisample textures.**
-     * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedSignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
@@ -761,7 +761,7 @@ enum class TextureFormat: GLenum {
     /**
      * RGTC compressed red and green channel, normalized signed. **Not
      * available on multisample textures.**
-     * @requires_gl30 %Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES.
      */
     CompressedSignedRGRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
@@ -769,7 +769,7 @@ enum class TextureFormat: GLenum {
     /**
      * BPTC compressed RGB, unsigned float. **Not available on multisample
      * textures.**
-     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */
     CompressedRGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
@@ -777,7 +777,7 @@ enum class TextureFormat: GLenum {
     /**
      * BPTC compressed RGB, signed float. **Not available on multisample
      * textures.**
-     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */
     CompressedRGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
@@ -785,7 +785,7 @@ enum class TextureFormat: GLenum {
     /**
      * BPTC compressed RGBA, normalized unsigned. **Not available on
      * multisample textures.**
-     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */
     CompressedRGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
@@ -793,7 +793,7 @@ enum class TextureFormat: GLenum {
     /**
      * BPTC compressed sRGBA, normalized unsigned. **Not available on
      * multisample textures.**
-     * @requires_gl42 %Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES.
      */
     CompressedSRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
@@ -804,7 +804,7 @@ enum class TextureFormat: GLenum {
      * textures. Not allowed in unemulated @ref Texture::setStorage()
      * "*Texture::setStorage()" calls, in that case use e.g.
      * @ref TextureFormat::DepthComponent24 "TextureFormat::DepthComponent24" instead.
-     * @requires_gles30 %Extension @es_extension{OES,depth_texture} or
+     * @requires_gles30 Extension @es_extension{OES,depth_texture} or
      *      @es_extension{ANGLE,depth_texture} in OpenGL ES 2.0
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref Magnum::TextureFormat::DepthComponent24 "TextureFormat::DepthComponent24".
@@ -813,7 +813,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Depth component, 16bit. Not supported in 3D textures.
-     * @requires_gles30 %Extension @es_extension{OES,depth_texture} or
+     * @requires_gles30 Extension @es_extension{OES,depth_texture} or
      *      @es_extension{ANGLE,depth_texture} and either
      *      @es_extension{OES,required_internalformat} (for image
      *      specification) or @es_extension{EXT,texture_storage} (for texture
@@ -823,7 +823,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Depth component, 24bit. Not supported in 3D textures.
-     * @requires_gles30 %Extension @es_extension{OES,required_internalformat},
+     * @requires_gles30 Extension @es_extension{OES,required_internalformat},
      *      @es_extension{OES,depth_texture} and @es_extension{OES,depth24} in
      *      OpenGL ES 2.0
      */
@@ -835,7 +835,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Depth component, 32bit. Not supported in 3D textures.
-     * @requires_es_extension %Extension @es_extension{OES,depth_texture} or
+     * @requires_es_extension Extension @es_extension{OES,depth_texture} or
      *      @es_extension{ANGLE,depth_texture} and @es_extension{OES,depth32}
      *      and @es_extension{OES,required_internalformat} (for image
      *      specification) or @es_extension{EXT,texture_storage} (for texture
@@ -850,7 +850,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Depth component, 32bit float. Not supported in 3D textures.
-     * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
+     * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
      * @requires_gles30 Only integral depth textures are available in OpenGL ES
      *      2.0.
      */
@@ -860,7 +860,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Stencil index, 8bit. Not supported in 3D textures.
-     * @requires_gl44 %Extension @extension{ARB,texture_stencil8}
+     * @requires_gl44 Extension @extension{ARB,texture_stencil8}
      * @requires_gl Only available as renderbuffer format in OpenGL ES.
      */
     StencilIndex8 = GL_STENCIL_INDEX8,
@@ -873,7 +873,7 @@ enum class TextureFormat: GLenum {
      * use e.g. @ref TextureFormat::Depth24Stencil8 "TextureFormat::Depth24Stencil8"
      * instead.
      * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
-     * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} or
+     * @requires_gles30 Extension @es_extension{OES,packed_depth_stencil} or
      *      @es_extension{ANGLE,depth_texture} in OpenGL ES 2.0
      * @deprecated_gl Prefer to use exactly specified version of this format,
      *      e.g. @ref Magnum::TextureFormat::Depth24Stencil8 "TextureFormat::Depth24Stencil8".
@@ -887,8 +887,8 @@ enum class TextureFormat: GLenum {
     /**
      * 24bit depth and 8bit stencil component. Not supported in 3D textures.
      * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
-     * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
-     * @requires_gles30 %Extension @es_extension{OES,packed_depth_stencil} or
+     * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+     * @requires_gles30 Extension @es_extension{OES,packed_depth_stencil} or
      *      @es_extension{ANGLE,depth_texture} and either
      *      @es_extension{OES,required_internalformat} (for image
      *      specification) or @es_extension{EXT,texture_storage} (for texture
@@ -905,7 +905,7 @@ enum class TextureFormat: GLenum {
      * 32bit float depth component and 8bit stencil component. Not supported in
      * 3D textures.
      * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
-     * @requires_gl30 %Extension @extension{ARB,depth_buffer_float}
+     * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
      * @requires_gles30 Only integral depth textures are available in OpenGL ES
      *      2.0.
      */

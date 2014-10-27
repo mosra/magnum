@@ -87,7 +87,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Status
          *
          * @see @ref checkStatus()
-         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         enum class Status: GLenum {
             /** The framebuffer is complete */
@@ -95,7 +95,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * The default framebuffer does not exist.
-             * @requires_gles30 %Extension @es_extension{OES,surfaceless_context}
+             * @requires_gles30 Extension @es_extension{OES,surfaceless_context}
              *      in OpenGL ES 2.0
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -173,7 +173,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Read attachment
          *
          * @see @ref mapForRead()
-         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0
          */
         enum class ReadAttachment: GLenum {
@@ -223,7 +223,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * Read from front buffer.
-             * @requires_es_extension %Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+             * @requires_es_extension Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
              */
             Front = GL_FRONT
 
@@ -244,8 +244,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Invalidation attachment
          *
          * @see @ref invalidate()
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         * @requires_gl43 Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 Extension @es_extension{EXT,discard_framebuffer}
          *      in OpenGL ES 2.0
          */
         enum class InvalidationAttachment: GLenum {
@@ -320,7 +320,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * operation.
          * @see @fn_gl{BindFramebuffer}, @fn_gl{CheckFramebufferStatus} or
          *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access}
-         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         Status checkStatus(FramebufferTarget target);
 
@@ -330,7 +330,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @return Reference to self (for method chaining)
          *
          * @p attachments is list of shader outputs mapped to buffer
-         * attachments. %Shader outputs which are not listed are not used, you
+         * attachments. Shader outputs which are not listed are not used, you
          * can achieve the same by passing @ref DrawAttachment::None as
          * attachment. Example usage:
          * @code
@@ -351,7 +351,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         /**
          * @brief Map shader output to buffer attachment
-         * @param attachment        %Buffer attachment
+         * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
          * Similar to above function, can be used in cases when shader has
@@ -371,7 +371,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         /**
          * @brief Map given attachment for reading
-         * @param attachment        %Buffer attachment
+         * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
          * If @extension{EXT,direct_state_access} is not available and the
@@ -379,7 +379,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * operation.
          * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer} or
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
-         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0
          */
         DefaultFramebuffer& mapForRead(ReadAttachment attachment);
@@ -401,7 +401,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         /**
          * @brief Invalidate framebuffer rectangle
          * @param attachments       Attachments to invalidate
-         * @param rectangle         %Rectangle to invalidate
+         * @param rectangle         Rectangle to invalidate
          *
          * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
          * 4.3) or OpenGL ES 3.0 is not available, this function does nothing.

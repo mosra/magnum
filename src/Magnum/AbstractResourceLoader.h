@@ -132,7 +132,7 @@ template<class T> class AbstractResourceLoader {
         std::size_t loadedCount() const { return _loadedCount; }
 
         /**
-         * @brief %Resource name corresponding to given key
+         * @brief Resource name corresponding to given key
          *
          * If no such resource exists or the resource name is not available,
          * returns empty string.

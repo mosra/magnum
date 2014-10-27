@@ -37,7 +37,7 @@
 namespace Magnum {
 
 /**
-@brief %Timeline
+@brief Timeline
 
 Keeps track of time delta between frames and allows FPS limiting. Can be used
 as source for animation speed computations.

@@ -94,7 +94,7 @@ class MAGNUM_EXPORT DebugMessage {
             WindowSystem = GL_DEBUG_SOURCE_WINDOW_SYSTEM_KHR,
             #endif
 
-            /** %Shader compiler */
+            /** Shader compiler */
             #ifndef MAGNUM_TARGET_GLES
             ShaderCompiler = GL_DEBUG_SOURCE_SHADER_COMPILER,
             #else
@@ -355,7 +355,7 @@ class MAGNUM_EXPORT DebugMessage {
          *      DebugMessage::Type::Marker, 1337, DebugMessage::Severity::Notification, "Hello from OpenGL command stream!");
          * @endcode
          *
-         * > %DebugMessage::Source::Application %DebugMessage::Type::Marker -1 %DebugMessage::Severity::Notification\n
+         * > DebugMessage::Source::Application DebugMessage::Type::Marker -1 DebugMessage::Severity::Notification\n
          * > &nbsp;&nbsp;&nbsp;&nbsp;Hello from OpenGL command stream!
          */
         static void setDefaultCallback();

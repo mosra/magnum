@@ -86,7 +86,7 @@ shaders.
 @see @ref MultisampleTexture2D, @ref MultisampleTexture2DArray, @ref Texture,
     @ref TextureArray, @ref CubeMapTexture, @ref CubeMapTextureArray,
     @ref RectangleTexture, @ref BufferTexture
-@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
     older.
 @requires_gl 2D array multisample textures are not available in OpenGL ES, only
@@ -94,7 +94,7 @@ shaders.
  */
 template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTexture {
     public:
-        static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
+        static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
 
         /**
          * @brief Max supported multisample texture size
@@ -123,7 +123,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
 
         /**
-         * @brief %Image size
+         * @brief Image size
          *
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
@@ -141,7 +141,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @brief Set storage
          * @param samples           Sample count
          * @param internalFormat    Internal format
-         * @param size              %Texture size
+         * @param size              Texture size
          * @param sampleLocations   Whether to use fixed sample locations
          * @return Reference to self (for method chaining)
          *
@@ -201,7 +201,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
 /**
 @brief Two-dimensional multisample texture
 
-@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
     older.
 */
@@ -211,7 +211,7 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 /**
 @brief Two-dimensional multisample texture array
 
-@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gl Only @ref Magnum::MultisampleTexture2D "MultisampleTexture2D" is
     available in OpenGL ES.
 */

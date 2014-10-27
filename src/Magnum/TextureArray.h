@@ -48,7 +48,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Texture array
+@brief Texture array
 
 Template class for one- and two-dimensional texture arrays. See also
 @ref AbstractTexture documentation for more information.
@@ -87,14 +87,14 @@ documentation for more information about usage in shaders.
 @see @ref Texture1DArray, @ref Texture2DArray, @ref Texture,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
     @ref BufferTexture, @ref MultisampleTexture
-@requires_gl30 %Extension @extension{EXT,texture_array}
-@requires_gles30 %Array textures are not available in OpenGL ES 2.0.
+@requires_gl30 Extension @extension{EXT,texture_array}
+@requires_gles30 Array textures are not available in OpenGL ES 2.0.
 @requires_gl 1D array textures are not available in OpenGL ES, only 2D ones.
 @todo Fix this when @es_extension{NV,texture_array} is in ES2 extension headers
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
     public:
-        static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
+        static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
 
         /**
          * @brief Max supported texture array size
@@ -217,7 +217,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
          *      @es_extension{NV,shadow_samplers_array}
          */
         TextureArray<dimensions>& setCompareMode(Sampler::CompareMode mode) {
@@ -230,7 +230,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareFunction() for more information.
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
          *      @es_extension{NV,shadow_samplers_array}
          */
         TextureArray<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
@@ -402,7 +402,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 /**
 @brief One-dimensional texture array
 
-@requires_gl30 %Extension @extension{EXT,texture_array}
+@requires_gl30 Extension @extension{EXT,texture_array}
 @requires_gl Only @ref Magnum::Texture2DArray "Texture2DArray" is available in
     OpenGL ES.
 */
@@ -412,8 +412,8 @@ typedef TextureArray<1> Texture1DArray;
 /**
 @brief Two-dimensional texture array
 
-@requires_gl30 %Extension @extension{EXT,texture_array}
-@requires_gles30 %Array textures are not available in OpenGL ES 2.0.
+@requires_gl30 Extension @extension{EXT,texture_array}
+@requires_gles30 Array textures are not available in OpenGL ES 2.0.
 */
 typedef TextureArray<2> Texture2DArray;
 

@@ -40,19 +40,19 @@
 namespace Magnum {
 
 /**
-@brief %Shader
+@brief Shader
 
 See @ref AbstractShaderProgram for usage information.
 
 ## Performance optimizations
 
-%Shader limits and implementation-defined values (such as @ref maxUniformComponents())
+Shader limits and implementation-defined values (such as @ref maxUniformComponents())
 are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
  */
 class MAGNUM_EXPORT Shader: public AbstractObject {
     public:
         /**
-         * @brief %Shader type
+         * @brief Shader type
          *
          * @see @ref Shader(Version, Type),
          *      @ref maxAtomicCounterBuffers(),
@@ -70,21 +70,21 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Tessellation control shader
-             * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+             * @requires_gl40 Extension @extension{ARB,tessellation_shader}
              * @requires_gl Tessellation shaders are not available in OpenGL ES.
              */
             TessellationControl = GL_TESS_CONTROL_SHADER,
 
             /**
              * Tessellation evaluation shader
-             * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+             * @requires_gl40 Extension @extension{ARB,tessellation_shader}
              * @requires_gl Tessellation shaders are not available in OpenGL ES.
              */
             TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
 
             /**
              * Geometry shader
-             * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+             * @requires_gl32 Extension @extension{ARB,geometry_shader4}
              * @requires_gl Geometry shaders are not available in OpenGL ES.
              */
             Geometry = GL_GEOMETRY_SHADER,
@@ -93,7 +93,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Compute shader
-             * @requires_gl43 %Extension @extension{ARB,compute_shader}
+             * @requires_gl43 Extension @extension{ARB,compute_shader}
              * @requires_gles31 Compute shaders are not available in OpenGL ES
              *      3.0 and older
              */
@@ -455,7 +455,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         /**
          * @brief Constructor
          * @param version   Target version
-         * @param type      %Shader type
+         * @param type      Shader type
          *
          * Creates empty OpenGL shader and adds @c \#version directive
          * corresponding to @p version parameter at the beginning. If
@@ -489,7 +489,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Shader label
+         * @brief Shader label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -521,10 +521,10 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
             return setLabelInternal(label);
         }
 
-        /** @brief %Shader type */
+        /** @brief Shader type */
         Type type() const { return _type; }
 
-        /** @brief %Shader sources */
+        /** @brief Shader sources */
         std::vector<std::string> sources() const;
 
         /**

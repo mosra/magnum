@@ -65,7 +65,7 @@ documentation for more information about usage in shaders.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref BufferTexture, @ref MultisampleTexture
-@requires_gl31 %Extension @extension{ARB,texture_rectangle}
+@requires_gl31 Extension @extension{ARB,texture_rectangle}
 @requires_gl Rectangle textures are not available in OpenGL ES.
  */
 class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
@@ -117,7 +117,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
-         * @brief %Image size
+         * @brief Image size
          *
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
@@ -203,7 +203,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *      @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_SRGB_DECODE_EXT}
-         * @requires_extension %Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
          */
         RectangleTexture& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
@@ -257,7 +257,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         /**
          * @brief Set storage
          * @param internalFormat    Internal format
-         * @param size              %Texture size
+         * @param size              Texture size
          * @return Reference to self (for method chaining)
          *
          * Specifies entire structure of a texture at once, removing the need
@@ -284,9 +284,9 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
 
         /**
          * @brief Read texture to image
-         * @param image             %Image where to put the data
+         * @param image             Image where to put the data
          *
-         * %Image parameters like format and type of pixel data are taken from
+         * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
          * @ref imageSize().
          *
@@ -309,8 +309,8 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
 
         /**
          * @brief Read given mip level of texture to buffer image
-         * @param image             %Buffer image where to put the data
-         * @param usage             %Buffer usage
+         * @param image             Buffer image where to put the data
+         * @param usage             Buffer usage
          *
          * See @ref image(Image2D&) for more information.
          */

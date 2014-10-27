@@ -39,7 +39,7 @@
 namespace Magnum {
 
 /**
- * @brief %Mesh primitive type
+ * @brief Mesh primitive type
  *
  * @see @ref Mesh::primitive(), @ref Mesh::setPrimitive()
  */
@@ -65,14 +65,14 @@ enum class MeshPrimitive: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Line strip with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
 
     /**
      * Lines with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     LinesAdjacency = GL_LINES_ADJACENCY,
@@ -96,21 +96,21 @@ enum class MeshPrimitive: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Triangle strip with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
 
     /**
      * Triangles with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
 
     /**
      * Patches.
-     * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+     * @requires_gl40 Extension @extension{ARB,tessellation_shader}
      * @requires_gl Tessellation shaders are not available in OpenGL ES.
      */
     Patches = GL_PATCHES
@@ -120,10 +120,10 @@ enum class MeshPrimitive: GLenum {
 namespace Implementation { struct MeshState; }
 
 /**
-@brief %Mesh
+@brief Mesh
 
 @anchor Mesh-configuration
-## %Mesh configuration
+## Mesh configuration
 
 You have to specify at least primitive and vertex/index count using
 @ref setPrimitive() and @ref setCount(). Then fill your vertex buffers with
@@ -322,7 +322,7 @@ If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
 used instead of binding the buffers and specifying vertex attribute pointers
 in each @ref draw() call. The engine tracks currently bound VAO and currently
 active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
-@fn_gl{UseProgram}. %Mesh limits and implementation-defined values (such as
+@fn_gl{UseProgram}. Mesh limits and implementation-defined values (such as
 @ref maxVertexAttributes()) are cached, so repeated queries don't result in
 repeated @fn_gl{Get} calls.
 
@@ -359,7 +359,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
             /**
              * Unsigned int
-             * @requires_gles30 %Extension @es_extension{OES,element_index_uint}
+             * @requires_gles30 Extension @es_extension{OES,element_index_uint}
              *      in OpenGL ES 2.0
              */
             UnsignedInt = GL_UNSIGNED_INT
@@ -465,7 +465,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Mesh label
+         * @brief Mesh label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -552,7 +552,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Default is `0`.
          * @see @ref setCount(), @ref setBaseInstance()
-         * @requires_gl32 %Extension @extension{ARB,draw_elements_base_vertex}
+         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
          *      OpenGL ES.
@@ -607,8 +607,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * Default is `1`.
          * @see @ref setBaseInstance(), @ref setCount(),
          *      @ref addVertexBufferInstanced()
-         * @requires_gl31 %Extension @extension{ARB,draw_instanced}
-         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         * @requires_gl31 Extension @extension{ARB,draw_instanced}
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
          */
@@ -627,7 +627,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * Default is `0`.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
-         * @requires_gl42 %Extension @extension{ARB,base_instance}
+         * @requires_gl42 Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES.
          */
         Mesh& setBaseInstance(UnsignedInt baseInstance) {
@@ -730,8 +730,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access}
-         * @requires_gl33 %Extension @extension{ARB,instanced_arrays}
-         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         * @requires_gl33 Extension @extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension{EXT,instanced_arrays} or
          *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0.
          */
@@ -784,7 +784,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @brief Draw the mesh
-         * @param shader    %Shader to use for drawing
+         * @param shader    Shader to use for drawing
          *
          * Expects that the shader is compatible with this mesh and is fully
          * set up. If vertex/index count or instance count is `0`, no draw

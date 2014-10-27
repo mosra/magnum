@@ -88,8 +88,8 @@ class MAGNUM_EXPORT Renderer {
              * Debug output
              * @see @ref DebugMessage, @ref DebugMessage::setEnabled(),
              *      @ref Feature::DebugOutputSynchronous
-             * @requires_gl43 %Extension @extension{KHR,debug}
-             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             * @requires_gl43 Extension @extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension{KHR,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutput = GL_DEBUG_OUTPUT,
@@ -101,8 +101,8 @@ class MAGNUM_EXPORT Renderer {
              * Synchronous debug output. Has effect only if
              * @ref Feature::DebugOutput is enabled.
              * @see @ref DebugMessage
-             * @requires_gl43 %Extension @extension{KHR,debug}
-             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             * @requires_gl43 Extension @extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension{KHR,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutputSynchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS,
@@ -113,7 +113,7 @@ class MAGNUM_EXPORT Renderer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
-             * @requires_gl32 %Extension @extension{ARB,depth_clamp}
+             * @requires_gl32 Extension @extension{ARB,depth_clamp}
              * @requires_gl Depth clamping is not available in OpenGL ES.
              */
             DepthClamp = GL_DEPTH_CLAMP,
@@ -137,7 +137,7 @@ class MAGNUM_EXPORT Renderer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * sRGB encoding of the default framebuffer
-             * @requires_gl30 %Extension @extension{ARB,framebuffer_sRGB}
+             * @requires_gl30 Extension @extension{ARB,framebuffer_sRGB}
              * @requires_gl sRGB encoding of the default framebuffer is
              *      implementation-defined in OpenGL ES.
              */
@@ -205,7 +205,7 @@ class MAGNUM_EXPORT Renderer {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Discard primitives before rasterization.
-             * @requires_gl30 %Extension @extension{EXT,transform_feedback}
+             * @requires_gl30 Extension @extension{EXT,transform_feedback}
              * @requires_gles30 Transform feedback is not available in OpenGL
              *      ES 2.0.
              */
@@ -222,7 +222,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Seamless cube map texture.
              * @see @ref CubeMapTexture, @ref CubeMapTextureArray
-             * @requires_gl32 %Extension @extension{ARB,seamless_cube_map}
+             * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
              * @requires_gl Not available in OpenGL ES 2.0, always enabled in
              *      OpenGL ES 3.0.
              */
@@ -272,7 +272,7 @@ class MAGNUM_EXPORT Renderer {
         enum class Hint: GLenum {
             /**
              * Accuracy of derivative calculation in fragment shader.
-             * @requires_gles30 %Extension @es_extension{OES,standard_derivatives}
+             * @requires_gles30 Extension @es_extension{OES,standard_derivatives}
              *      in OpenGL ES 2.0
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -363,7 +363,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set front-facing polygon winding
          *
-         * Initial value is `FrontFace::%CounterClockWise`.
+         * Initial value is `FrontFace::CounterClockWise`.
          * @see @ref setFaceCullingMode(), @fn_gl{FrontFace}
          */
         static void setFrontFace(FrontFace mode);
@@ -383,7 +383,7 @@ class MAGNUM_EXPORT Renderer {
          * @brief Provoking vertex
          *
          * @see @ref setProvokingVertex()
-         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
+         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like
          *      @ref Magnum::Renderer::ProvokingVertex "ProvokingVertex::LastVertexConvention".
          * @requires_gl OpenGL ES behaves always like
@@ -402,7 +402,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is @ref ProvokingVertex::LastVertexConvention.
          * @see @fn_gl{ProvokingVertex}
-         * @requires_gl32 %Extension @extension{ARB,provoking_vertex}. Older
+         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
          * @requires_gl OpenGL ES behaves always like the default.
          */
@@ -691,14 +691,14 @@ class MAGNUM_EXPORT Renderer {
             ,
             /**
              * `min(source, destination)`
-             * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
+             * @requires_gles30 Extension @es_extension2{EXT,blend_minmax,blend_minmax}
              *      in OpenGL ES 2.0
              */
             Min = GL_MIN,
 
             /**
              * `max(source, destination)`
-             * @requires_gles30 %Extension @es_extension2{EXT,blend_minmax,blend_minmax}
+             * @requires_gles30 Extension @es_extension2{EXT,blend_minmax,blend_minmax}
              *      in OpenGL ES 2.0
              */
             Max = GL_MAX
@@ -753,7 +753,7 @@ class MAGNUM_EXPORT Renderer {
              * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */
@@ -770,7 +770,7 @@ class MAGNUM_EXPORT Renderer {
              * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */
@@ -792,7 +792,7 @@ class MAGNUM_EXPORT Renderer {
              * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */
@@ -809,7 +809,7 @@ class MAGNUM_EXPORT Renderer {
              * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES.
              */
@@ -971,7 +971,7 @@ class MAGNUM_EXPORT Renderer {
             /**
              * The framebuffer object is not complete.
              * @see AbstractFramebuffer::checkStatus()
-             * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+             * @requires_gl30 Extension @extension{ARB,framebuffer_object}
              */
             InvalidFramebufferOperation = GL_INVALID_FRAMEBUFFER_OPERATION,
 
@@ -980,8 +980,8 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Given operation would cause an internal stack to underflow.
-             * @requires_gl43 %Extension @extension{KHR,debug}
-             * @requires_es_extension %Extension @es_extension2{KHR,debug,debug}
+             * @requires_gl43 Extension @extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             StackUnderflow = GL_STACK_UNDERFLOW,
@@ -991,8 +991,8 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Given operation would cause an internal stack to overflow.
-             * @requires_gl43 %Extension @extension{KHR,debug}
-             * @requires_es_extension %Extension @es_extension2{KHR,debug,debug}
+             * @requires_gl43 Extension @extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             StackOverflow = GL_STACK_OVERFLOW
@@ -1015,8 +1015,8 @@ class MAGNUM_EXPORT Renderer {
          * @brief Graphics reset notification strategy
          *
          * @see @ref resetNotificationStrategy()
-         * @requires_extension %Extension @extension{ARB,robustness}
-         * @requires_es_extension %Extension @es_extension{EXT,robustness}
+         * @requires_extension Extension @extension{ARB,robustness}
+         * @requires_es_extension Extension @es_extension{EXT,robustness}
          */
         enum class ResetNotificationStrategy: GLint {
             /**
@@ -1063,8 +1063,8 @@ class MAGNUM_EXPORT Renderer {
          * @brief Graphics reset status
          *
          * @see @ref resetNotificationStrategy(), @ref graphicsResetStatus()
-         * @requires_extension %Extension @extension{ARB,robustness}
-         * @requires_es_extension %Extension @es_extension{EXT,robustness}
+         * @requires_extension Extension @extension{ARB,robustness}
+         * @requires_es_extension Extension @es_extension{EXT,robustness}
          */
         enum class GraphicsResetStatus: GLenum {
             /** No reset occured since last call. */

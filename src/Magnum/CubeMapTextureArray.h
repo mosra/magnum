@@ -79,7 +79,7 @@ the six sides of the cube map, fourth part is layer in the array. See
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTexture,
     @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
     @ref MultisampleTexture
-@requires_gl40 %Extension @extension{ARB,texture_cube_map_array}
+@requires_gl40 Extension @extension{ARB,texture_cube_map_array}
 @requires_gl Cube map texture arrays are not available in OpenGL ES.
 */
 class CubeMapTextureArray: public AbstractTexture {
@@ -272,7 +272,7 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief %Image size in given mip level
+         * @brief Image size in given mip level
          * @param level             Mip level
          *
          * See @ref Texture::imageSize() for more information.
@@ -296,7 +296,7 @@ class CubeMapTextureArray: public AbstractTexture {
         /**
          * @brief Read given mip level of texture to image
          * @param level             Mip level
-         * @param image             %Image where to put the data
+         * @param image             Image where to put the data
          *
          * See @ref Texture::image(Int, Image&) for more information.
          */
@@ -307,8 +307,8 @@ class CubeMapTextureArray: public AbstractTexture {
         /**
          * @brief Read given mip level of texture to buffer image
          * @param level             Mip level
-         * @param image             %Buffer image where to put the data
-         * @param usage             %Buffer usage
+         * @param image             Buffer image where to put the data
+         * @param usage             Buffer usage
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.

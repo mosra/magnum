@@ -104,7 +104,7 @@ enum class BufferTextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned int.
-     * @requires_gl40 %Extension @extension{ARB,texture_buffer_object_rgb32}
+     * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
      */
     RGB32UI = GL_RGB32UI,
 
@@ -119,7 +119,7 @@ enum class BufferTextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed int.
-     * @requires_gl40 %Extension @extension{ARB,texture_buffer_object_rgb32}
+     * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
      */
     RGB32I = GL_RGB32I,
 
@@ -143,7 +143,7 @@ enum class BufferTextureFormat: GLenum {
 
     /**
      * RGB, each component float.
-     * @requires_gl40 %Extension @extension{ARB,texture_buffer_object_rgb32}
+     * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
      */
     RGB32F = GL_RGB32F,
 
@@ -152,14 +152,14 @@ enum class BufferTextureFormat: GLenum {
 };
 
 /**
-@brief %Buffer texture
+@brief Buffer texture
 
 This texture is, unlike classic textures such as @ref Texture used as simple
 data source, without any unnecessary interpolation and wrapping methods.
 
 ## Usage
 
-%Texture data are stored in buffer and after binding the buffer to the texture
+Texture data are stored in buffer and after binding the buffer to the texture
 using @ref setBuffer(), you can fill the buffer at any time using data setting
 functions in Buffer itself.
 
@@ -195,7 +195,7 @@ and respective function documentation for more information.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
-@requires_gl31 %Extension @extension{ARB,texture_buffer_object}
+@requires_gl31 Extension @extension{ARB,texture_buffer_object}
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
 class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
@@ -236,7 +236,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
         /**
          * @brief Set texture buffer
          * @param internalFormat    Internal format
-         * @param buffer            %Buffer with data
+         * @param buffer            Buffer with data
          * @return Reference to self (for method chaining)
          *
          * Binds given buffer to this texture. The buffer itself can be then
@@ -251,7 +251,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
         /**
          * @brief Set texture buffer
          * @param internalFormat    Internal format
-         * @param buffer            %Buffer
+         * @param buffer            Buffer
          * @param offset            Offset
          * @param size              Data size
          * @return Reference to self (for method chaining)
@@ -262,7 +262,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexBufferRange} or
          *      @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
-         * @requires_gl43 %Extension @extension{ARB,texture_buffer_range}
+         * @requires_gl43 Extension @extension{ARB,texture_buffer_range}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 

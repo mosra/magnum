@@ -34,7 +34,7 @@
 namespace Magnum {
 
 /**
-@brief %Image
+@brief Image
 
 Stores image data on client memory. Interchangeable with @ref ImageReference,
 @ref BufferImage or @ref Trade::ImageData.
@@ -42,14 +42,14 @@ Stores image data on client memory. Interchangeable with @ref ImageReference,
 */
 template<UnsignedInt dimensions> class Image: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
+         * @param size              Image size
+         * @param data              Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
@@ -94,7 +94,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         /*implicit*/ operator ImageReference<dimensions>() const && = delete;
         #endif
 
-        /** @brief %Image size */
+        /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**
@@ -126,8 +126,8 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * @brief Set image data
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
+         * @param size              Image size
+         * @param data              Image data
          *
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.

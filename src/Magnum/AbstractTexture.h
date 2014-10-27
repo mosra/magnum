@@ -69,8 +69,8 @@ documentation for details.
 
 The engine tracks currently bound textures in all available texture units to
 avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
-%Texture configuration functions use dedicated highest available texture unit
-to not affect active bindings in user units. %Texture limits and
+Texture configuration functions use dedicated highest available texture unit
+to not affect active bindings in user units. Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
 repeated queries don't result in repeated @fn_gl{Get} calls.
 
@@ -147,7 +147,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_LOD_BIAS}
-         * @requires_gles30 %Texture LOD bias doesn't have
+         * @requires_gles30 Texture LOD bias doesn't have
          *      implementation-defined range in OpenGL ES 2.0.
          */
         static Float maxLodBias();
@@ -256,7 +256,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         AbstractTexture& operator=(AbstractTexture&& other) noexcept;
 
         /**
-         * @brief %Texture label
+         * @brief Texture label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither

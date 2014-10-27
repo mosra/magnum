@@ -68,7 +68,7 @@ class MAGNUM_EXPORT Extension {
         /** @brief Version in which this extension was adopted to core */
         constexpr Version coreVersion() const { return _coreVersion; }
 
-        /** @brief %Extension string */
+        /** @brief Extension string */
         constexpr const char* string() const { return _string; }
 
     private:
@@ -83,7 +83,7 @@ class MAGNUM_EXPORT Extension {
 };
 
 /**
-@brief %Magnum context
+@brief Magnum context
 
 Provides access to version and extension information. Instance available
 through @ref Context::current() is automatically created during construction of
@@ -98,15 +98,15 @@ class MAGNUM_EXPORT Context {
 
     public:
         /**
-         * @brief %Context flag
+         * @brief Context flag
          *
          * @see @ref Flags, @ref flags(), @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
         enum class Flag: GLint {
             /**
              * Debug context
-             * @requires_gl43 %Extension @es_extension{KHR,debug}
-             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             * @requires_gl43 Extension @es_extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension{KHR,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
@@ -117,8 +117,8 @@ class MAGNUM_EXPORT Context {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Context with robust access
-             * @requires_extension %Extension @extension{ARB,robustness}
-             * @requires_es_extension %Extension @es_extension{EXT,robustness}
+             * @requires_extension Extension @extension{ARB,robustness}
+             * @requires_es_extension Extension @es_extension{EXT,robustness}
              * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
              */
@@ -135,7 +135,7 @@ class MAGNUM_EXPORT Context {
         };
 
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @see @ref flags()
          */
@@ -263,7 +263,7 @@ class MAGNUM_EXPORT Context {
         }
 
         /**
-         * @brief %Renderer string
+         * @brief Renderer string
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
@@ -309,11 +309,11 @@ class MAGNUM_EXPORT Context {
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
         /**
-         * @brief %Extension strings
+         * @brief Extension strings
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. Note that this function returns list of all extensions
-         * reported by the driver (even those not supported by %Magnum), see
+         * reported by the driver (even those not supported by Magnum), see
          * @ref supportedExtensions(), @ref Extension::extensions() or
          * @ref isExtensionSupported() for alternatives.
          * @see @fn_gl{Get} with @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString}
@@ -321,7 +321,7 @@ class MAGNUM_EXPORT Context {
          */
         std::vector<std::string> extensionStrings() const;
 
-        /** @brief %Context flags */
+        /** @brief Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -365,7 +365,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Whether given extension is supported
          *
-         * %Extensions usable with this function are listed in @ref Extensions
+         * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
          * @code
          * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {

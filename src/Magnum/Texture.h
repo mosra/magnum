@@ -57,7 +57,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Texture
+@brief Texture
 
 Template class for one- to three-dimensional textures. See also
 @ref AbstractTexture documentation for more information.
@@ -96,17 +96,17 @@ in shaders.
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
     @ref BufferTexture, @ref MultisampleTexture
-@requires_gles30 %Extension @es_extension{OES,texture_3D} for 3D textures in
+@requires_gles30 Extension @es_extension{OES,texture_3D} for 3D textures in
     OpenGL ES 2.0
 @requires_gl 1D textures are not available in OpenGL ES, only 2D and 3D ones.
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
-        static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
+        static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief %Texture target
+         * @brief Texture target
          *
          * @deprecated Use dedicated classes instead, see documentation of
          *      particular enum value for more information.
@@ -178,7 +178,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          */
         explicit CORRADE_DEPRECATED("use the parameterless constructor or dedicated TextureArray, MultisampleTexture, RectangleTexture classes instead") Texture(Target target): AbstractTexture(GLenum(target)) {}
 
-        /** @brief %Texture target
+        /** @brief Texture target
          * @deprecated Use dedicated @ref Magnum::Texture "Texture",
          *      @ref Magnum::TextureArray "TextureArray",
          *      @ref Magnum::MultisampleTexture "MultisampleTexture",
@@ -190,7 +190,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief %Image size in given mip level
+         * @brief Image size in given mip level
          *
          * The result is not cached in any way. If
          * @extension{EXT,direct_state_access} is not available, the texture
@@ -199,7 +199,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
          *      @def_gl{TEXTURE_DEPTH}
-         * @requires_gles31 %Texture image size queries are not available in
+         * @requires_gles31 Texture image size queries are not available in
          *      OpenGL ES 3.0 and older.
          */
         VectorTypeFor<dimensions, Int> imageSize(Int level) {
@@ -239,7 +239,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_MAX_LEVEL}
-         * @requires_gles30 %Extension @es_extension{APPLE,texture_max_level},
+         * @requires_gles30 Extension @es_extension{APPLE,texture_max_level},
          *      otherwise the max level is always set to largest possible value
          *      in OpenGL ES 2.0.
          */
@@ -304,7 +304,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MIN_LOD}
-         * @requires_gles30 %Texture LOD parameters are not available in OpenGL
+         * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
          */
         Texture<dimensions>& setMinLod(Float lod) {
@@ -324,7 +324,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_MAX_LOD}
-         * @requires_gles30 %Texture LOD parameters are not available in OpenGL
+         * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
          */
         Texture<dimensions>& setMaxLod(Float lod) {
@@ -346,7 +346,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_LOD_BIAS}
-         * @requires_gl %Texture LOD bias can be specified only directly in
+         * @requires_gl Texture LOD bias can be specified only directly in
          *      fragment shader in OpenGL ES.
          */
         Texture<dimensions>& setLodBias(Float bias) {
@@ -387,7 +387,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
+         * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
          */
         Texture<dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
@@ -406,7 +406,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gl Border is available only for float textures in OpenGL
          *      ES.
          */
@@ -416,7 +416,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl30 %Extension @extension{EXT,texture_integer}
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gl Border is available only for float textures in OpenGL
          *      ES.
          */
@@ -456,7 +456,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_SRGB_DECODE_EXT}
-         * @requires_extension %Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
          * @requires_es_extension OpenGL ES 3.0 or extension
          *      @es_extension{EXT,sRGB} and
          *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
@@ -486,8 +486,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @def_gl{TEXTURE_SWIZZLE_RGBA} (or @def_gl{TEXTURE_SWIZZLE_R},
          *      @def_gl{TEXTURE_SWIZZLE_G}, @def_gl{TEXTURE_SWIZZLE_B} and
          *      @def_gl{TEXTURE_SWIZZLE_A} separately in OpenGL ES)
-         * @requires_gl33 %Extension @extension{ARB,texture_swizzle}
-         * @requires_gles30 %Texture swizzle is not available in OpenGL ES 2.0.
+         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
+         * @requires_gles30 Texture swizzle is not available in OpenGL ES 2.0.
          */
         template<char r, char g, char b, char a> Texture<dimensions>& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
@@ -507,7 +507,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_COMPARE_MODE}
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers}
          */
         Texture<dimensions>& setCompareMode(Sampler::CompareMode mode) {
             AbstractTexture::setCompareMode(mode);
@@ -528,7 +528,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
          *      @def_gl{TEXTURE_COMPARE_FUNC}
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers}
          */
         Texture<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
             AbstractTexture::setCompareFunction(function);
@@ -548,7 +548,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexParameter}
          *      or @fn_gl_extension{TextureParameter,EXT,direct_state_access}
          *      with @def_gl{DEPTH_STENCIL_TEXTURE_MODE}
-         * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
+         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
          */
@@ -599,9 +599,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /**
          * @brief Read given mip level of texture to image
          * @param level             Mip level
-         * @param image             %Image where to put the data
+         * @param image             Image where to put the data
          *
-         * %Image parameters like format and type of pixel data are taken from
+         * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
          * @ref imageSize().
          *
@@ -617,7 +617,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or @def_gl{TEXTURE_DEPTH},
          *      then @fn_gl{GetTexImage}, @fn_gl_extension{GetTextureImage,EXT,direct_state_access}
          *      or @fn_gl_extension{GetnTexImage,ARB,robustness}
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
          */
         void image(Int level, Image<dimensions>& image) {
             AbstractTexture::image<dimensions>(_target, level, image);
@@ -626,11 +626,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /**
          * @brief Read given mip level of texture to buffer image
          * @param level             Mip level
-         * @param image             %Buffer image where to put the data
-         * @param usage             %Buffer usage
+         * @param image             Buffer image where to put the data
+         * @param usage             Buffer usage
          *
          * See @ref image(Int, Image&) for more information.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
@@ -727,7 +727,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @ref setMinificationFilter(), @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl{GenerateMipmap} or
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access}
-         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         Texture<dimensions>& generateMipmap() {
             AbstractTexture::generateMipmap();
@@ -786,7 +786,7 @@ typedef Texture<2> Texture2D;
 /**
 @brief Three-dimensional texture
 
-@requires_gles30 %Extension @es_extension{OES,texture_3D} in OpenGL ES 2.0
+@requires_gles30 Extension @es_extension{OES,texture_3D} in OpenGL ES 2.0
 */
 typedef Texture<3> Texture3D;
 

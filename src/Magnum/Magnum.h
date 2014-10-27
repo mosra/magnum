@@ -70,7 +70,7 @@ using Corrade::Utility::Error;
 @brief Build with deprecated API included
 
 Defined if the library contains deprecated API (which will be removed in the
-future). To preserve backward compatibility, %Magnum is by default built with
+future). To preserve backward compatibility, Magnum is by default built with
 deprecated API included.
 @see @ref building, @ref cmake
 */

@@ -48,7 +48,7 @@ namespace Implementation { struct ShaderProgramState; }
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
--   <strong>%Attribute definitions</strong> with location and type for
+-   **Attribute definitions** with location and type for
     configuring meshes, for example:
 @code
 typedef Attribute<0, Vector3> Position;
@@ -99,7 +99,7 @@ MyShader& setNormalMatrix(const Matrix3x3& matrix) {
     return *this;
 }
 @endcode
--   <strong>%Texture setting functions</strong> in which you bind the textures
+-   **Texture setting functions** in which you bind the textures
     to particular texture units using @ref Texture::bind() "*Texture::bind()"
     and equivalents, for example:
 @code
@@ -179,11 +179,11 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 @endcode
 
 @see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
-@requires_gl30 %Extension @extension{EXT,gpu_shader4} for using
+@requires_gl30 Extension @extension{EXT,gpu_shader4} for using
     @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()".
-@requires_gl33 %Extension @extension{ARB,blend_func_extended} for using
+@requires_gl33 Extension @extension{ARB,blend_func_extended} for using
     @ref Magnum::AbstractShaderProgram::bindFragmentDataLocationIndexed() "bindFragmentDataLocationIndexed()".
-@requires_gl33 %Extension @extension{ARB,explicit_attrib_location} for
+@requires_gl33 Extension @extension{ARB,explicit_attrib_location} for
     explicit attribute location instead of using
     @ref Magnum::AbstractShaderProgram::bindAttributeLocation() "bindAttributeLocation()",
     @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()"
@@ -227,7 +227,7 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 @endcode
 
 @see @ref maxUniformLocations()
-@requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
+@requires_gl43 Extension @extension{ARB,explicit_uniform_location} for
     explicit uniform location instead of using
     @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()".
 @requires_gles31 Explicit uniform location is not supported in OpenGL ES 3.0
@@ -260,7 +260,7 @@ setUniform(uniformLocation("specularTexture"), 1);
 @endcode
 
 @see @ref Shader::maxTextureImageUnits()
-@requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
+@requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
     texture binding unit instead of using
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
 @requires_gles31 Explicit texture binding unit is not supported in OpenGL ES
@@ -304,11 +304,11 @@ setTransformFeedbackOutputs({
 @see @ref TransformFeedback::maxInterleavedComponents(),
     @ref TransformFeedback::maxSeparateAttributes(),
     @ref TransformFeedback::maxSeparateComponents()
-@requires_gl40 %Extension @extension{ARB,transform_feedback3} for using
+@requires_gl40 Extension @extension{ARB,transform_feedback3} for using
     `gl_NextBuffer` or `gl_SkipComponents#` names in
     @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
     function
-@requires_gl44 %Extension @extension{ARB,enhanced_layouts} for explicit
+@requires_gl44 Extension @extension{ARB,enhanced_layouts} for explicit
     transform feedback output specification instead of using
     @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
 @requires_gl Explicit transform feedback output specification is not available
@@ -317,7 +317,7 @@ setTransformFeedbackOutputs({
 @anchor AbstractShaderProgram-rendering-workflow
 ## Rendering workflow
 
-Basic workflow with %AbstractShaderProgram subclasses is: instance shader
+Basic workflow with AbstractShaderProgram subclasses is: instance shader
 class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
 for more information) and map shader outputs to framebuffer attachments if
 needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
@@ -333,13 +333,13 @@ mesh.draw(shader);
 @endcode
 
 @anchor AbstractShaderProgram-types
-## Mapping between GLSL and %Magnum types
+## Mapping between GLSL and Magnum types
 
 See @ref types for more information, only types with GLSL equivalent can be used
 (and their super- or subclasses with the same size and underlying type). See
 also @ref Attribute::DataType enum for additional type options.
 
-@requires_gl30 %Extension @extension{EXT,gpu_shader4} is required when using
+@requires_gl30 Extension @extension{EXT,gpu_shader4} is required when using
     integer attributes (i.e. @ref Magnum::UnsignedInt "UnsignedInt",
     @ref Magnum::Int "Int", @ref Magnum::Vector2ui "Vector2ui",
     @ref Magnum::Vector2i "Vector2i", @ref Magnum::Vector3ui "Vector3ui",
@@ -347,7 +347,7 @@ also @ref Attribute::DataType enum for additional type options.
     @ref Magnum::Vector4i "Vector4i") or unsigned integer uniforms (i.e.
     @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Vector2ui "Vector2ui",
     @ref Magnum::Vector3ui "Vector3ui" and @ref Magnum::Vector4ui "Vector4ui").
-@requires_gl40 %Extension @extension{ARB,gpu_shader_fp64} is required when
+@requires_gl40 Extension @extension{ARB,gpu_shader_fp64} is required when
     using double uniforms (i.e. @ref Magnum::Double "Double",
     @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
     @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
@@ -355,7 +355,7 @@ also @ref Attribute::DataType enum for additional type options.
     @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
     @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
     @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
-@requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} is required when
+@requires_gl41 Extension @extension{ARB,vertex_attrib_64bit} is required when
     using double attributes (i.e. @ref Magnum::Double "Double",
     @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
     @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
@@ -374,7 +374,7 @@ also @ref Attribute::DataType enum for additional type options.
 @anchor AbstractShaderProgram-performance-optimization
 ## Performance optimizations
 
-%Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
+Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1),
@@ -400,10 +400,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
     public:
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief %Buffer mode for transform feedback
+         * @brief Buffer mode for transform feedback
          *
          * @see @ref setTransformFeedbackOutputs()
-         * @requires_gl30 %Extension @extension{EXT,transform_feedback}
+         * @requires_gl30 Extension @extension{EXT,transform_feedback}
          * @requires_gles30 Transform feedback is not available in OpenGL ES
          *      2.0
          */
@@ -541,7 +541,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} (part of
          * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
-         * @requires_gles30 %Texture lookup with offset is not available in
+         * @requires_gles30 Texture lookup with offset is not available in
          *      OpenGL ES 2.0
          */
         static Int minTexelOffset();
@@ -553,7 +553,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} (part of
          * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
-         * @requires_gles30 %Texture lookup with offset is not available in
+         * @requires_gles30 Texture lookup with offset is not available in
          *      OpenGL ES 2.0
          */
         static Int maxTexelOffset();
@@ -591,7 +591,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Shader program label
+         * @brief Shader program label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -663,7 +663,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Initially disabled.
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
-         * @requires_gl41 %Extension @extension{ARB,get_program_binary}
+         * @requires_gl41 Extension @extension{ARB,get_program_binary}
          * @requires_gles30 Always allowed in OpenGL ES 2.0.
          */
         void setRetrievableBinary(bool enabled) {
@@ -676,8 +676,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Initially disabled.
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
-         * @requires_gl41 %Extension @extension{ARB,separate_shader_objects}
-         * @requires_es_extension %Extension @es_extension{EXT,separate_shader_objects}
+         * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
+         * @requires_es_extension Extension @es_extension{EXT,separate_shader_objects}
          */
         void setSeparable(bool enabled) {
             /** @todo Remove when extension wrangler is available for ES */
@@ -707,7 +707,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Bind attribute to given location
          * @param location      Location
-         * @param name          %Attribute name
+         * @param name          Attribute name
          *
          * Binds attribute to location which is used later for binding vertex
          * buffers.
@@ -741,7 +741,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
+         * @requires_gl33 Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES.
          */
@@ -766,7 +766,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0
          *      and `gl_FragData[n]` provided by @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          *      in OpenGL ES 2.0.
@@ -786,7 +786,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Specify shader outputs to be recorded in transform feedback
          * @param outputs       Names of output variables
-         * @param bufferMode    %Buffer mode
+         * @param bufferMode    Buffer mode
          *
          * Binds given output variables from vertex, geometry or tessellation
          * shader to transform feedback buffer binding points. If
@@ -803,8 +803,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      outputs explicitly in the shader instead of using this
          *      function. See @ref AbstractShaderProgram-transform-feedback "class documentation"
          *      for more information.
-         * @requires_gl30 %Extension @extension{EXT,transform_feedback}
-         * @requires_gl40 %Extension @extension{ARB,transform_feedback3} for
+         * @requires_gl30 Extension @extension{EXT,transform_feedback}
+         * @requires_gl40 Extension @extension{ARB,transform_feedback3} for
          *      using `gl_NextBuffer` or `gl_SkipComponents#` names in
          *      @p outputs array
          * @requires_gles30 Transform feedback is not available in OpenGL ES
@@ -908,7 +908,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         void setUniform(Int location, UnsignedInt count, const UnsignedInt* values);
@@ -920,7 +920,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         void setUniform(Int location, UnsignedInt count, const Double* values);
@@ -950,7 +950,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values);

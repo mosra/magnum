@@ -37,7 +37,7 @@
 namespace Magnum {
 
 /**
-@brief %Array
+@brief Array
 @tparam dimensions  Dimension count
 @tparam T           Data type
 

@@ -36,7 +36,7 @@
 namespace Magnum {
 
 /**
-@brief %Resource data state
+@brief Resource data state
 
 @see @ref ResourceManager::set(), @ref ResourceState
 */
@@ -70,7 +70,7 @@ enum class ResourceDataState: UnsignedByte {
 };
 
 /**
-@brief %Resource policy
+@brief Resource policy
 
 @see @ref ResourceManager::set(), @ref ResourceManager::free()
  */
@@ -158,7 +158,7 @@ template<class T> class ResourceManagerData {
 }
 
 /**
-@brief %Resource manager
+@brief Resource manager
 
 Provides storage for arbitrary set of types, accessible globally using
 @ref instance().
@@ -184,7 +184,7 @@ can be deleted by calling @ref free() if nothing references them anymore, and
 reference counted resources, which are deleted as soon as the last reference
 to them is removed.
 
-%Resource state and policy is configured when setting the resource data in
+Resource state and policy is configured when setting the resource data in
 @ref set() and can be changed each time the data are updated, although already
 final resources cannot obviously be set as mutable again.
 
@@ -282,7 +282,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         }
 
         /**
-         * @brief %Resource state
+         * @brief Resource state
          *
          * @see @ref set(), @ref Resource::state()
          */

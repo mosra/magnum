@@ -55,7 +55,7 @@ if(!q.resultAvailable()) {
 // ...or block until the result is available
 UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
-@requires_gl30 %Extension @extension{EXT,transform_feedback}
+@requires_gl30 Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
 
 @see @ref SampleQuery, @ref TimeQuery, @ref TransformFeedback

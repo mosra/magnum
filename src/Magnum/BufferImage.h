@@ -40,7 +40,7 @@ namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
-@brief %Buffer image
+@brief Buffer image
 
 Stores image data in GPU memory. Interchangeable with @ref Image,
 @ref ImageReference or @ref Trade::ImageData.
@@ -49,15 +49,15 @@ Stores image data in GPU memory. Interchangeable with @ref Image,
 */
 template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
-         * @param usage             %Image buffer usage
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
@@ -88,7 +88,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
         /** @brief Move assignment */
         BufferImage<dimensions>& operator=(BufferImage<dimensions>&& other) noexcept;
 
-        /** @brief %Image size */
+        /** @brief Image size */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
@@ -96,16 +96,16 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
             return AbstractImage::dataSize<dimensions>(size);
         }
 
-        /** @brief %Image buffer */
+        /** @brief Image buffer */
         Buffer& buffer() { return _buffer; }
 
         /**
          * @brief Set image data
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
-         * @param usage             %Image buffer usage
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.

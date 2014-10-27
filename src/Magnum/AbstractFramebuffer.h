@@ -60,8 +60,8 @@ typedef Containers::EnumSet<FramebufferClear,
 @brief Mask for framebuffer blitting
 
 @see @ref AbstractFramebuffer, @ref FramebufferBlitMask
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
-@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
 enum class FramebufferBlit: GLbitfield {
@@ -91,19 +91,19 @@ enum class FramebufferBlit: GLbitfield {
 @brief Mask for framebuffer blitting
 
 @see @ref AbstractFramebuffer::blit()
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
-@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
 typedef Containers::EnumSet<FramebufferBlit,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferBlitMask;
 
 /**
-@brief %Framebuffer blit filtering
+@brief Framebuffer blit filtering
 
 @see @ref AbstractFramebuffer::blit()
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
-@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
 enum class FramebufferBlitFilter: GLenum {
@@ -115,12 +115,12 @@ enum class FramebufferBlitFilter: GLenum {
 @brief Target for binding framebuffer
 
 @see @ref DefaultFramebuffer::bind(), @ref Framebuffer::bind()
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
 */
 enum class FramebufferTarget: GLenum {
     /**
      * For reading only.
-     * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
+     * @requires_gles30 Extension @es_extension{APPLE,framebuffer_multisample},
      *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
      *      in OpenGL ES 2.0
      */
@@ -132,7 +132,7 @@ enum class FramebufferTarget: GLenum {
 
     /**
      * For drawing only.
-     * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
+     * @requires_gles30 Extension @es_extension{APPLE,framebuffer_multisample},
      *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
      *      in OpenGL ES 2.0
      */
@@ -157,7 +157,7 @@ See @ref DefaultFramebuffer and @ref Framebuffer for more information.
 
 The engine tracks currently bound framebuffer and current viewport to avoid
 unnecessary calls to @fn_gl{BindFramebuffer} and @fn_gl{Viewport} when
-switching framebuffers. %Framebuffer limits and implementation-defined values
+switching framebuffers. Framebuffer limits and implementation-defined values
 (such as @ref maxViewportSize()) are cached, so repeated queries don't result
 in repeated @fn_gl{Get} calls.
 
@@ -221,7 +221,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * and @ref Framebuffer::mapForDraw() for specifying particular buffers
          * for blitting operation.
          * @see @fn_gl{BlitFramebuffer}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+         * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
          *      exists for ES)
@@ -240,7 +240,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * pixel-by-pixel, no interpolation is needed and thus
          * @ref FramebufferBlitFilter::Nearest filtering is used by default.
          * @see @fn_gl{BlitFramebuffer}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+         * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& rectangle, FramebufferBlitMask mask) {
@@ -291,10 +291,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         /**
          * @brief Read block of pixels from framebuffer to image
          * @param offset            Offset in the framebuffer
-         * @param size              %Image size
-         * @param image             %Image where to put the data
+         * @param size              Image size
+         * @param image             Image where to put the data
          *
-         * %Image parameters like format and type of pixel data are taken from
+         * Image parameters like format and type of pixel data are taken from
          * given image.
          *
          * If @extension{ARB,robustness} is available, the operation is
@@ -308,9 +308,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         /**
          * @brief Read block of pixels from framebuffer to buffer image
          * @param offset            Offset in the framebuffer
-         * @param size              %Image size
-         * @param image             %Buffer image where to put the data
-         * @param usage             %Buffer usage
+         * @param size              Image size
+         * @param image             Buffer image where to put the data
+         * @param usage             Buffer usage
          *
          * See @ref read(const Vector2i&, const Vector2i&, Image2D&) for more
          * information.

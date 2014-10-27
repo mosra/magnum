@@ -131,7 +131,7 @@ template<UnsignedInt location, class T> class Attribute {
              * Four components with BGRA ordering. Only for four-component
              * float vector type. Must be used along with @ref DataType::UnsignedByte
              * and @ref DataOption::Normalized.
-             * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
+             * @requires_gl32 Extension @extension{ARB,vertex_array_bgra}
              * @requires_gl Only RGBA component ordering is supported in OpenGL
              *      ES.
              */
@@ -159,8 +159,8 @@ template<UnsignedInt location, class T> class Attribute {
 
             /**
              * Half float. Only for float attribute types.
-             * @requires_gl30 %Extension @extension{ARB,half_float_vertex}
-             * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
+             * @requires_gl30 Extension @extension{ARB,half_float_vertex}
+             * @requires_gles30 Extension @es_extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
              */
             HalfFloat = GL_HALF_FLOAT,
@@ -178,7 +178,7 @@ template<UnsignedInt location, class T> class Attribute {
             /**
              * Unsigned 10.11.11 packed float. Only for three-component float
              * vector attribute type.
-             * @requires_gl44 %Extension @extension{ARB,vertex_type_10f_11f_11f_rev}
+             * @requires_gl44 Extension @extension{ARB,vertex_type_10f_11f_11f_rev}
              * @requires_gl Packed float attributes are not available in OpenGL
              *      ES.
              */
@@ -192,7 +192,7 @@ template<UnsignedInt location, class T> class Attribute {
              * Unsigned 2.10.10.10 packed integer. Only for four-component
              * float vector attribute type.
              * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
-             * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+             * @requires_gl33 Extension @extension{ARB,vertex_type_2_10_10_10_rev}
              * @requires_gles30 Packed attributes are not available in OpenGL
              *      ES 2.0
              */
@@ -201,7 +201,7 @@ template<UnsignedInt location, class T> class Attribute {
             /**
              * Signed 2.10.10.10 packed integer. Only for four-component float
              * vector attribute type.
-             * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+             * @requires_gl33 Extension @extension{ARB,vertex_type_2_10_10_10_rev}
              * @requires_gles30 Packed attributes are not available in OpenGL
              *      ES 2.0
              */

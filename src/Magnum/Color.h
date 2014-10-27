@@ -161,7 +161,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Red color
          *
-         * Convenience alternative to e.g. `%Color3(red, 0.0f, 0.0f)`. With
+         * Convenience alternative to e.g. `Color3(red, 0.0f, 0.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::xAxis().
          * @see @ref green(), @ref blue(), @ref cyan()
          */
@@ -172,7 +172,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Green color
          *
-         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * Convenience alternative to e.g. `Color3(0.0f, green, 0.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::yAxis().
          * @see @ref red(), @ref blue(), @ref magenta()
          */
@@ -183,7 +183,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Blue color
          *
-         * Convenience alternative to e.g. `%Color3(0.0f, 0.0f, blue)`. With
+         * Convenience alternative to e.g. `Color3(0.0f, 0.0f, blue)`. With
          * floating-point underlying type equivalent to @ref Vector3::zAxis().
          * @see @ref red(), @ref green(), @ref yellow()
          */
@@ -194,7 +194,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Cyan color
          *
-         * Convenience alternative to e.g. `%Color3(red, 1.0f, 1.0f)`. With
+         * Convenience alternative to e.g. `Color3(red, 1.0f, 1.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::xScale().
          * @see @ref magenta(), @ref yellow(), @ref red()
          */
@@ -205,7 +205,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Magenta color
          *
-         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * Convenience alternative to e.g. `Color3(0.0f, green, 0.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::yScale().
          * @see @ref cyan(), @ref yellow(), @ref green()
          */
@@ -216,7 +216,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Yellow color
          *
-         * Convenience alternative to `%Color3(0.0f, 0.0f, yellow)`. With
+         * Convenience alternative to `Color3(0.0f, 0.0f, yellow)`. With
          * floating-point underlying type equivalent to @ref Vector3::zScale().
          * @see @ref cyan(), @ref magenta(), @ref red()
          */
@@ -364,7 +364,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Red color
          *
-         * Convenience alternative to e.g. `%Color4(red, 0.0f, 0.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(red, 0.0f, 0.0f, alpha)`.
          * @see @ref green(), @ref blue(), @ref cyan()
          */
         constexpr static BasicColor4<T> red(T red = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
@@ -374,7 +374,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Green color
          *
-         * Convenience alternative to e.g. `%Color4(0.0f, green, 0.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(0.0f, green, 0.0f, alpha)`.
          * @see @ref red(), @ref blue(), @ref magenta()
          */
         constexpr static BasicColor4<T> green(T green = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
@@ -384,7 +384,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Blue color
          *
-         * Convenience alternative to e.g. `%Color4(0.0f, 0.0f, blue, alpha)`.
+         * Convenience alternative to e.g. `Color4(0.0f, 0.0f, blue, alpha)`.
          * @see @ref red(), @ref green(), @ref yellow()
          */
         constexpr static BasicColor4<T> blue(T blue = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
@@ -394,7 +394,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Cyan color
          *
-         * Convenience alternative to e.g. `%Color4(red, 1.0f, 1.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(red, 1.0f, 1.0f, alpha)`.
          * @see @ref magenta(), @ref yellow(), @ref red()
          */
         constexpr static BasicColor4<T> cyan(T red = T(0), T alpha = Implementation::fullChannel<T>()) {
@@ -404,7 +404,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Magenta color
          *
-         * Convenience alternative to e.g. `%Color4(1.0f, green, 1.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(1.0f, green, 1.0f, alpha)`.
          * @see @ref cyan(), @ref yellow(), @ref green()
          */
         constexpr static BasicColor4<T> magenta(T green = T(0), T alpha = Implementation::fullChannel<T>()) {
@@ -414,7 +414,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Yellow color
          *
-         * Convenience alternative to e.g. `%Color4(1.0f, 1.0f, blue, alpha)`.
+         * Convenience alternative to e.g. `Color4(1.0f, 1.0f, blue, alpha)`.
          * @see @ref cyan(), @ref magenta(), @ref red()
          */
         constexpr static BasicColor4<T> yellow(T blue = T(0), T alpha = Implementation::fullChannel<T>()) {

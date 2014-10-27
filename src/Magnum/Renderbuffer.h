@@ -39,7 +39,7 @@ namespace Magnum {
 namespace Implementation { struct FramebufferState; }
 
 /**
-@brief %Renderbuffer
+@brief Renderbuffer
 
 Attachable to framebuffer as render target, see @ref Framebuffer documentation
 for more information.
@@ -47,7 +47,7 @@ for more information.
 ## Performance optimizations
 
 The engine tracks currently bound renderbuffer to avoid unnecessary calls to
-@fn_gl{BindRenderbuffer} in @ref setStorage(). %Renderbuffer limits and
+@fn_gl{BindRenderbuffer} in @ref setStorage(). Renderbuffer limits and
 implementation-defined values (such as @ref maxSize()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
@@ -55,7 +55,7 @@ If extension @extension{EXT,direct_state_access} is available, function
 @ref setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindRenderbuffer}.
 See its documentation for more information.
 
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
 */
 class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
     friend struct Implementation::FramebufferState;
@@ -116,7 +116,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Renderbuffer label
+         * @brief Renderbuffer label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -151,7 +151,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         /**
          * @brief Set renderbuffer storage
          * @param internalFormat    Internal format
-         * @param size              %Renderbuffer size
+         * @param size              Renderbuffer size
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
@@ -165,14 +165,14 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @brief Set multisample renderbuffer storage
          * @param samples           Sample count
          * @param internalFormat    Internal format
-         * @param size              %Renderbuffer size
+         * @param size              Renderbuffer size
          *
          * If @extension{EXT,direct_state_access} is not available and the
          * framebufferbuffer is not currently bound, it is bound before the
          * operation.
          * @see @ref maxSize(), @ref maxSamples(), @fn_gl{BindRenderbuffer},
          *      @fn_gl{RenderbufferStorageMultisample} or @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_multisample}
+         * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_multisample}
          *      or @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
          * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}

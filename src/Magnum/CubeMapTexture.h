@@ -38,7 +38,7 @@ namespace Magnum {
 /**
 @brief Cube map texture
 
-%Texture used mainly for environment maps. It consists of 6 square textures
+Texture used mainly for environment maps. It consists of 6 square textures
 generating 6 faces of the cube as following. Note that all images must be
 turned upside down (+Y is top):
 
@@ -210,7 +210,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
          *      @es_extension{NV,shadow_samplers_cube}
          */
         CubeMapTexture& setCompareMode(Sampler::CompareMode mode) {
@@ -223,7 +223,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareFunction() for more information.
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers} and
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
          *      @es_extension{NV,shadow_samplers_cube}
          */
         CubeMapTexture& setCompareFunction(Sampler::CompareFunction function) {
@@ -241,12 +241,12 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief %Image size in given mip level
+         * @brief Image size in given mip level
          * @param coordinate        Coordinate
          * @param level             Mip level
          *
          * See @ref Texture::imageSize() for more information.
-         * @requires_gles31 %Texture image size queries are not available in
+         * @requires_gles31 Texture image size queries are not available in
          *      OpenGL ES 3.0 and older.
          */
         Vector2i imageSize(Coordinate coordinate, Int level) {
@@ -270,10 +270,10 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level of texture to image
          * @param coordinate        Coordinate
          * @param level             Mip level
-         * @param image             %Image where to put the data
+         * @param image             Image where to put the data
          *
          * See @ref Texture::image(Int, Image&) for more information.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
          */
         void image(Coordinate coordinate, Int level, Image2D& image) {
             AbstractTexture::image<2>(GLenum(coordinate), level, image);
@@ -283,12 +283,12 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level of texture to buffer image
          * @param coordinate        Coordinate
          * @param level             Mip level
-         * @param image             %Buffer image where to put the data
-         * @param usage             %Buffer usage
+         * @param image             Buffer image where to put the data
+         * @param usage             Buffer usage
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
-         * @requires_gl %Texture image queries are not available in OpenGL ES.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
          */
         void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage) {
             AbstractTexture::image<2>(GLenum(coordinate), level, image, usage);

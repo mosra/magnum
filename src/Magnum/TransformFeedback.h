@@ -44,7 +44,7 @@ namespace Implementation { struct TransformFeedbackState; }
 @brief Transform feedback
 
 @see @ref PrimitiveQuery
-@requires_gl40 %Extension @extension{ARB,transform_feedback2}
+@requires_gl40 Extension @extension{ARB,transform_feedback2}
 @requires_gles30 Transform feedback is not available in OpenGL ES 2.0
 @todo @extension{AMD,transform_feedback3_lines_triangles}?
 */
@@ -169,7 +169,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Buffer label
+         * @brief Buffer label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
