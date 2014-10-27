@@ -48,7 +48,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         /** @brief Underlying transformation type */
         typedef Math::DualComplex<T> DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         Math::DualComplex<T> transformation() const { return _transformation; }
 
         /**

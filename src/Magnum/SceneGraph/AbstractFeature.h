@@ -176,7 +176,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
     public:
         /**
          * @brief Constructor
-         * @param object    %Object holding this feature
+         * @param object    Object holding this feature
          */
         explicit AbstractFeature(AbstractObject<dimensions, T>& object);
 
@@ -189,7 +189,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
 
         virtual ~AbstractFeature() = 0;
 
-        /** @brief %Object holding this feature */
+        /** @brief Object holding this feature */
         AbstractObject<dimensions, T>& object() {
             return *Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>::list();
         }
@@ -295,7 +295,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
 /**
 @brief Base feature for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractFeature<2, T></tt>. See
+Convenience alternative to `AbstractFeature<2, T>`. See
 @ref AbstractFeature for more information.
 @see @ref AbstractFeature2D, @ref AbstractBasicFeature3D
 */
@@ -311,7 +311,7 @@ typedef AbstractBasicFeature2D<Float> AbstractFeature2D;
 /**
 @brief Base feature for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractFeature<3, T></tt>. See
+Convenience alternative to `AbstractFeature<3, T>`. See
 @ref AbstractFeature for more information.
 @see @ref AbstractFeature3D, @ref AbstractBasicFeature2D
 */

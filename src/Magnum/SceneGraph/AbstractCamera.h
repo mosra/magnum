@@ -137,7 +137,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
     protected:
         /**
          * @brief Constructor
-         * @param object        %Object holding the camera
+         * @param object        Object holding the camera
          */
         explicit AbstractCamera(AbstractObject<dimensions, T>& object);
 
@@ -167,7 +167,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
 /**
 @brief Base camera for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See
+Convenience alternative to `AbstractCamera<2, T>`. See
 @ref AbstractCamera for more information.
 @see @ref AbstractCamera2D, @ref AbstractBasicCamera3D
 */
@@ -183,7 +183,7 @@ typedef AbstractBasicCamera2D<Float> AbstractCamera2D;
 /**
 @brief Base camera for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See
+Convenience alternative to `AbstractCamera<3, T>`. See
 @ref AbstractCamera for more information.
 @see @ref AbstractCamera3D, @ref AbstractBasicCamera2D
 */

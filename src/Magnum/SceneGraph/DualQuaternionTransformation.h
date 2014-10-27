@@ -48,7 +48,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         /** @brief Underlying transformation type */
         typedef Math::DualQuaternion<T> DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         Math::DualQuaternion<T> transformation() const { return _transformation; }
 
         /**

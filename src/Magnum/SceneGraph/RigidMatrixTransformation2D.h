@@ -51,7 +51,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         /** @brief Underlying transformation type */
         typedef Math::Matrix3<T> DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         Math::Matrix3<T> transformation() const { return _transformation; }
 
         /**

@@ -85,7 +85,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%AbstractTranslation<2, T, TranslationType></tt>.
+Convenience alternative to `AbstractTranslation<2, T, TranslationType>`.
 See @ref AbstractTranslation for more information.
 @see @ref AbstractTranslation2D, @ref AbstractBasicTranslation3D
 */
@@ -106,7 +106,7 @@ typedef AbstractBasicTranslation2D<Float> AbstractTranslation2D;
 /**
 @brief Base transformation for three-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%AbstractTranslation<3, T, TranslationType></tt>.
+Convenience alternative to `AbstractTranslation<3, T, TranslationType>`.
 See @ref AbstractTranslation for more information.
 @see @ref AbstractTranslation3D, @ref AbstractBasicTranslation2D
 */

@@ -34,7 +34,7 @@
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief %Scene
+@brief Scene
 
 Basically @ref Object which cannot have parent or non-default transformation.
 See @ref scenegraph for introduction.

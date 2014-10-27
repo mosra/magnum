@@ -118,8 +118,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         }
 
         /**
-         * @brief %Scene
-         * @return %Scene or `nullptr`, if the object is not part of any scene.
+         * @brief Scene
+         * @return Scene or `nullptr`, if the object is not part of any scene.
          */
         AbstractObject<dimensions, T>* scene() { return doScene(); }
 
@@ -270,7 +270,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 /**
 @brief Base object for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<2, T></tt>. See
+Convenience alternative to `AbstractObject<2, T>`. See
 @ref AbstractObject for more information.
 @see @ref AbstractObject2D, @ref AbstractBasicObject3D
 */
@@ -286,7 +286,7 @@ typedef AbstractBasicObject2D<Float> AbstractObject2D;
 /**
 @brief Base object for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<3, T></tt>. See
+Convenience alternative to `AbstractObject<3, T>`. See
 @ref AbstractObject for more information.
 @see @ref AbstractObject3D, @ref AbstractBasicObject2D
 */

@@ -63,7 +63,7 @@ template<class T> class BasicCamera2D: public AbstractBasicCamera2D<T> {
     public:
         /**
          * @brief Constructor
-         * @param object    %Object holding this feature
+         * @param object    Object holding this feature
          *
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see @ref setProjection()

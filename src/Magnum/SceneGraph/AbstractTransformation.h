@@ -101,7 +101,7 @@ enum class TransformationType: UnsignedByte {
 /**
 @brief Base transformation for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractTransformation<2, T></tt>. See
+Convenience alternative to `AbstractTransformation<2, T>`. See
 @ref AbstractTransformation for more information.
 @see @ref AbstractTransformation2D, @ref AbstractBasicTransformation3D
 */
@@ -117,7 +117,7 @@ typedef AbstractBasicTransformation2D<Float> AbstractTransformation2D;
 /**
 @brief Base transformation for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractTransformation<3, T></tt>. See
+Convenience alternative to `AbstractTransformation<3, T>`. See
 @ref AbstractTransformation for more information.
 @see @ref AbstractTransformation3D, @ref AbstractBasicTransformation2D
 */

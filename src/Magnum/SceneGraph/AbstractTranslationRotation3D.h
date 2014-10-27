@@ -68,7 +68,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, %Vector3::xAxis())`, see subclasses for more
+         * `rotate(angle, Vector3::xAxis())`, see subclasses for more
          * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -83,7 +83,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, %Vector3::yAxis())`, see subclasses for more
+         * `rotate(angle, Vector3::yAxis())`, see subclasses for more
          * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
@@ -98,7 +98,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
-         * `rotate(angle, %Vector3::zAxis())`, see subclasses for more
+         * `rotate(angle, Vector3::zAxis())`, see subclasses for more
          * information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {

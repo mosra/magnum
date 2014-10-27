@@ -50,7 +50,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Object
+@brief Object
 
 Base of scene graph. Contains specific transformation implementation, takes
 care of parent/children relationship and contains features. See @ref scenegraph

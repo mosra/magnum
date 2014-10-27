@@ -60,9 +60,9 @@ enum class AnimationState: UnsignedByte {
 Debug MAGNUM_SCENEGRAPH_EXPORT operator<<(Debug debug, AnimationState value);
 
 /**
-@brief %Animable
+@brief Animable
 
-Adds animation feature to object. Each %Animable is part of some
+Adds animation feature to object. Each Animable is part of some
 @ref AnimableGroup, which takes care of running the animations.
 
 ## Usage
@@ -147,7 +147,7 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
     public:
         /**
          * @brief Constructor
-         * @param object    %Object this animable belongs to
+         * @param object    Object this animable belongs to
          * @param group     Group this animable belongs to
          *
          * Creates stopped non-repeating animation with infinite duration,
@@ -337,32 +337,32 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
 };
 
 /**
-@brief %Animable for two-dimensional scenes
+@brief Animable for two-dimensional scenes
 
-Convenience alternative to <tt>%Animable<2, T></tt>. See @ref Animable for more
+Convenience alternative to `Animable<2, T>`. See @ref Animable for more
 information.
 @see @ref Animable2D, @ref BasicAnimable3D
 */
 template<class T> using BasicAnimable2D = Animable<2, T>;
 
 /**
-@brief %Animable for two-dimensional float scenes
+@brief Animable for two-dimensional float scenes
 
 @see @ref Animable3D
 */
 typedef BasicAnimable2D<Float> Animable2D;
 
 /**
-@brief %Animable for three-dimensional scenes
+@brief Animable for three-dimensional scenes
 
-Convenience alternative to <tt>%Animable<3, T></tt>. See @ref Animable for more
+Convenience alternative to `Animable<3, T>`. See @ref Animable for more
 information.
 @see @ref Animable3D, @ref BasicAnimable2D
 */
 template<class T> using BasicAnimable3D = Animable<3, T>;
 
 /**
-@brief %Animable for three-dimensional float scenes
+@brief Animable for three-dimensional float scenes
 
 @see @ref Animable2D
 */

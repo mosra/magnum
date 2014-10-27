@@ -62,7 +62,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         /** @brief Underlying transformation type */
         typedef VectorTypeFor<dimensions, TranslationType> DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         VectorTypeFor<dimensions, TranslationType> transformation() const { return _transformation; }
 
         /**
@@ -129,7 +129,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%TranslationTransformation<2, T, TranslationType></tt>.
+Convenience alternative to `TranslationTransformation<2, T, TranslationType>`.
 See @ref TranslationTransformation for more information.
 @see @ref TranslationTransformation2D, @ref BasicTranslationTransformation3D
 */
@@ -150,7 +150,7 @@ typedef BasicTranslationTransformation2D<Float> TranslationTransformation2D;
 /**
 @brief Base transformation for three-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%TranslationTransformation<3, T, TranslationType></tt>.
+Convenience alternative to `TranslationTransformation<3, T, TranslationType>`.
 See @ref TranslationTransformation for more information.
 @see @ref TranslationTransformation3D, @ref BasicTranslationTransformation2D
 */

@@ -46,7 +46,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         /** @brief Underlying transformation type */
         typedef Math::Matrix4<T> DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         Math::Matrix4<T> transformation() const { return _transformation; }
 
         /**

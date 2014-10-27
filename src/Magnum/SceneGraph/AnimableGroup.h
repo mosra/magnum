@@ -73,32 +73,32 @@ template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGro
 };
 
 /**
-@brief %Animable group for two-dimensional scenes
+@brief Animable group for two-dimensional scenes
 
-Convenience alternative to <tt>%AnimableGroup<2, T></tt>. See Animable for
+Convenience alternative to `AnimableGroup<2, T>`. See Animable for
 more information.
 @see @ref AnimableGroup2D, @ref BasicAnimableGroup3D
 */
 template<class T> using BasicAnimableGroup2D = AnimableGroup<2, T>;
 
 /**
-@brief %Animable group for two-dimensional float scenes
+@brief Animable group for two-dimensional float scenes
 
 @see @ref AnimableGroup3D
 */
 typedef BasicAnimableGroup2D<Float> AnimableGroup2D;
 
 /**
-@brief %Animable group for three-dimensional scenes
+@brief Animable group for three-dimensional scenes
 
-Convenience alternative to <tt>%AnimableGroup<3, T></tt>. See Animable for
+Convenience alternative to `AnimableGroup<3, T>`. See Animable for
 more information.
 @see @ref AnimableGroup3D, @ref BasicAnimableGroup2D
 */
 template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
 
 /**
-@brief %Animable group for three-dimensional float scenes
+@brief Animable group for three-dimensional float scenes
 
 @see @ref AnimableGroup2D
 */

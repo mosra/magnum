@@ -34,9 +34,9 @@
 namespace Magnum { namespace SceneGraph {
 
 /**
-@brief %Drawable
+@brief Drawable
 
-Adds drawing function to the object. Each %Drawable is part of some
+Adds drawing function to the object. Each Drawable is part of some
 @ref DrawableGroup and the whole group is drawn with particular camera using
 @ref AbstractCamera::draw().
 
@@ -134,7 +134,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
     public:
         /**
          * @brief Constructor
-         * @param object    %Object this drawable belongs to
+         * @param object    Object this drawable belongs to
          * @param drawables Group this drawable belongs to
          *
          * Adds the feature to the object and also to the group, if specified.
@@ -158,7 +158,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
 
         /**
          * @brief Draw the object using given camera
-         * @param transformationMatrix      %Object transformation relative
+         * @param transformationMatrix      Object transformation relative
          *      to camera
          * @param camera                    Camera
          *
@@ -169,32 +169,32 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
 };
 
 /**
-@brief %Drawable for two-dimensional scenes
+@brief Drawable for two-dimensional scenes
 
-Convenience alternative to <tt>%Drawable<2, T></tt>. See @ref Drawable for more
+Convenience alternative to `Drawable<2, T>`. See @ref Drawable for more
 information.
 @see @ref Drawable2D, @ref BasicDrawable3D
 */
 template<class T> using BasicDrawable2D = Drawable<2, T>;
 
 /**
-@brief %Drawable for two-dimensional float scenes
+@brief Drawable for two-dimensional float scenes
 
 @see @ref Drawable3D
 */
 typedef BasicDrawable2D<Float> Drawable2D;
 
 /**
-@brief %Drawable for three-dimensional scenes
+@brief Drawable for three-dimensional scenes
 
-Convenience alternative to <tt>%Drawable<3, T></tt>. See @ref Drawable for more
+Convenience alternative to `Drawable<3, T>`. See @ref Drawable for more
 information.
 @see @ref Drawable3D, @ref BasicDrawable3D
 */
 template<class T> using BasicDrawable3D = Drawable<3, T>;
 
 /**
-@brief %Drawable for three-dimensional float scenes
+@brief Drawable for three-dimensional float scenes
 
 @see @ref Drawable2D
 */
@@ -212,7 +212,7 @@ template<UnsignedInt dimensions, class T> using DrawableGroup = FeatureGroup<dim
 /**
 @brief Group of drawables for two-dimensional scenes
 
-Convenience alternative to <tt>%DrawableGroup<2, T></tt>. See @ref Drawable for
+Convenience alternative to `DrawableGroup<2, T>`. See @ref Drawable for
 more information.
 @see @ref DrawableGroup2D, @ref BasicDrawableGroup3D
 */
@@ -228,7 +228,7 @@ typedef BasicDrawableGroup2D<Float> DrawableGroup2D;
 /**
 @brief Group of drawables for three-dimensional scenes
 
-Convenience alternative to <tt>%DrawableGroup<3, T></tt>. See @ref Drawable for
+Convenience alternative to `DrawableGroup<3, T>`. See @ref Drawable for
 more information.
 @see @ref DrawableGroup3D, @ref BasicDrawableGroup2D
 */

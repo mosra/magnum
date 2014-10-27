@@ -68,7 +68,7 @@ template<class T> class BasicCamera3D: public AbstractBasicCamera3D<T> {
     public:
         /**
          * @brief Constructor
-         * @param object    %Object holding this feature
+         * @param object    Object holding this feature
          */
         explicit BasicCamera3D(AbstractBasicObject3D<T>& object);
 

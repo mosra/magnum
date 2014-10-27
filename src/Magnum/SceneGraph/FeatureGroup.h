@@ -116,7 +116,7 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
 /**
 @brief Base feature group for two-dimensional scenes
 
-Convenience alternative to <tt>%FeatureGroup<2, Feature, T></tt>. See
+Convenience alternative to `FeatureGroup<2, Feature, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup2D, @ref BasicFeatureGroup3D
 */
@@ -125,7 +125,7 @@ template<class Feature, class T> using BasicFeatureGroup2D = FeatureGroup<2, Fea
 /**
 @brief Base feature group for two-dimensional float scenes
 
-Convenience alternative to <tt>%BasicFeatureGroup2D<Feature, Float></tt>. See
+Convenience alternative to `BasicFeatureGroup2D<Feature, Float>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup3D
 */
@@ -134,7 +134,7 @@ template<class Feature> using FeatureGroup2D = BasicFeatureGroup2D<Feature, Floa
 /**
 @brief Base feature group for three-dimensional scenes
 
-Convenience alternative to <tt>%FeatureGroup<3, Feature, T></tt>. See
+Convenience alternative to `FeatureGroup<3, Feature, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup3D, @ref BasicFeatureGroup2D
 */
@@ -143,7 +143,7 @@ template<class Feature, class T> using BasicFeatureGroup3D = FeatureGroup<3, Fea
 /**
 @brief Base feature group for three-dimensional float scenes
 
-Convenience alternative to <tt>%BasicFeatureGroup3D<Feature, Float></tt>. See
+Convenience alternative to `BasicFeatureGroup3D<Feature, Float>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup2D
 */

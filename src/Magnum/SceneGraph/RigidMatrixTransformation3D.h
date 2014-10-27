@@ -50,7 +50,7 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         /** @brief Underlying transformation type */
         typedef Math::Matrix4<T> DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         Math::Matrix4<T> transformation() const { return _transformation; }
 
         /**

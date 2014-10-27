@@ -73,7 +73,7 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
     public:
         /**
          * @brief Constructor
-         * @param object    %Object this feature belongs to
+         * @param object    Object this feature belongs to
          * @param group     Group this feature belongs to
          *
          * Adds the feature to the object and to group, if specified.
@@ -110,7 +110,7 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
 /**
 @brief Base grouped feature for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractGroupedFeature<2, Derived, T></tt>. See
+Convenience alternative to `AbstractGroupedFeature<2, Derived, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature2D, @ref AbstractBasicGroupedFeature3D
 */
@@ -119,7 +119,7 @@ template<class Derived, class T> using AbstractBasicGroupedFeature2D = AbstractG
 /**
 @brief Base grouped feature for two-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractBasicGroupedFeature2D<Derived, Float></tt>.
+Convenience alternative to `AbstractBasicGroupedFeature2D<Derived, Float>`.
 See @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature3D
 */
@@ -128,7 +128,7 @@ template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFea
 /**
 @brief Base grouped feature for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractGroupedFeature<3, Derived, T></tt>. See
+Convenience alternative to `AbstractGroupedFeature<3, Derived, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature3D, @ref AbstractBasicGroupedFeature2D
 */
@@ -137,7 +137,7 @@ template<class Derived, class T> using AbstractBasicGroupedFeature3D = AbstractG
 /**
 @brief Base grouped feature for three-dimensional float scenes
 
-Convenience alternative to <tt>%AbstractBasicGroupedFeature3D<Derived, Float></tt>.
+Convenience alternative to `AbstractBasicGroupedFeature3D<Derived, Float>`.
 See @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature2D
 */
