@@ -34,7 +34,7 @@
 namespace Magnum { namespace Shapes {
 
 /**
-@brief %Line segment, defined by starting and ending point
+@brief Line segment, defined by starting and ending point
 
 See @ref shapes for brief introduction.
 @see @ref LineSegment2D, @ref LineSegment3D

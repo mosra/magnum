@@ -82,7 +82,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AxisAlignedBox {
             _max = max;
         }
 
-        /** @brief %Collision occurence with point */
+        /** @brief Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
     private:

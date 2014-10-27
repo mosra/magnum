@@ -36,7 +36,7 @@
 namespace Magnum { namespace Shapes {
 
 /**
-@brief %Point
+@brief Point
 
 See @ref shapes for brief introduction.
 @see @ref Point2D, @ref Point3D

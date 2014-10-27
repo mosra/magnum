@@ -58,7 +58,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
             Dimensions = dimensions /**< Dimension count */
         };
 
-        /** @brief %Shape type */
+        /** @brief Shape type */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Type {
             Point,          /**< Point */
@@ -83,14 +83,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
         explicit AbstractShape(SceneGraph::AbstractObject<dimensions, Float>& object, ShapeGroup<dimensions>* group = nullptr);
 
         /**
-         * @brief %Shape group containing this shape
+         * @brief Shape group containing this shape
          *
          * If the shape doesn't belong to any group, returns `nullptr`.
          */
         ShapeGroup<dimensions>* group();
         const ShapeGroup<dimensions>* group() const; /**< @overload */
 
-        /** @brief %Shape type */
+        /** @brief Shape type */
         Type type() const;
 
         /**
@@ -101,7 +101,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
         bool collides(const AbstractShape<dimensions>& other) const;
 
         /**
-         * @brief %Collision with other shape
+         * @brief Collision with other shape
          *
          * Default implementation returns empty collision.
          */

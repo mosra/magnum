@@ -42,7 +42,7 @@ namespace Implementation {
 /**
 @brief Object shape
 
-Adds shape for collision detection to object. Each %Shape is part of
+Adds shape for collision detection to object. Each Shape is part of
 some @ref ShapeGroup, which essentially maintains a set of objects which can
 collide with each other. See @ref shapes for brief introduction.
 
@@ -73,7 +73,7 @@ template<class T> class Shape: public AbstractShape<T::Dimensions> {
         /**
          * @brief Constructor
          * @param object    Object holding this feature
-         * @param shape     %Shape
+         * @param shape     Shape
          * @param group     Group this shape belongs to
          */
         explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {

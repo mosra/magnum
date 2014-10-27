@@ -36,7 +36,7 @@
 namespace Magnum { namespace Shapes {
 
 /**
-@brief %Collision data
+@brief Collision data
 
 Contains information about collision between objects A and B, described by
 contact position, separation normal and separation distance.
@@ -80,7 +80,7 @@ template<UnsignedInt dimensions> class Collision {
          */
         operator bool() const { return _separationDistance > 0.0f; }
 
-        /** @brief %Collision position */
+        /** @brief Collision position */
         VectorTypeFor<dimensions, Float> position() const {
             return _position;
         }

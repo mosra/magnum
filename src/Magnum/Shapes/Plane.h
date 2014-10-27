@@ -77,10 +77,10 @@ class MAGNUM_SHAPES_EXPORT Plane {
             _normal = normal;
         }
 
-        /** @brief %Collision occurence with line */
+        /** @brief Collision occurence with line */
         bool operator%(const Line3D& other) const;
 
-        /** @brief %Collision occurence with line segment */
+        /** @brief Collision occurence with line segment */
         bool operator%(const LineSegment3D& other) const;
 
     private:

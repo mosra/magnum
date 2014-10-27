@@ -37,7 +37,7 @@
 namespace Magnum { namespace Shapes {
 
 /**
-@brief %Capsule defined by cylinder start and end point and radius
+@brief Capsule defined by cylinder start and end point and radius
 
 Unlike other elements the capsule expects uniform scaling. See @ref shapes for
 brief introduction.
@@ -90,10 +90,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Capsule {
         /** @brief Set radius */
         void setRadius(Float radius) { _radius = radius; }
 
-        /** @brief %Collision occurence with point */
+        /** @brief Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
-        /** @brief %Collision occurence with sphere */
+        /** @brief Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:
