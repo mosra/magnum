@@ -61,7 +61,7 @@ class MAGNUM_MESHTOOLS_EXPORT Tipsify {
 }
 
 /**
-@brief %Tipsify the mesh
+@brief Tipsify the mesh
 @param[in,out] indices  Indices array to operate on
 @param[in] vertexCount  Vertex count
 @param[in] cacheSize    Post-transform vertex cache size

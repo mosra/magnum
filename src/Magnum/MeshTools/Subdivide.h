@@ -61,7 +61,7 @@ template<class Vertex, class Interpolator> class Subdivide {
 }
 
 /**
-@brief %Subdivide the mesh
+@brief Subdivide the mesh
 @tparam Vertex          Vertex data type
 @tparam Interpolator    See `interpolator` function parameter
 @param[in,out] indices  Index array to operate on

@@ -95,7 +95,7 @@ template<class T, class ...U> void writeInterleaved(std::size_t stride, char* st
 }
 
 /**
-@brief %Interleave vertex attributes
+@brief Interleave vertex attributes
 
 This function takes list of attribute arrays and returns them interleaved, so
 data for each attribute are in continuous place in memory.
@@ -157,7 +157,7 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
 }
 
 /**
-@brief %Interleave vertex attributes into existing buffer
+@brief Interleave vertex attributes into existing buffer
 
 Unlike @ref interleave() this function interleaves the data into existing
 buffer and leaves gaps untouched instead of zero-initializing them. This
@@ -180,7 +180,7 @@ template<class T, class ...U> void interleaveInto(Containers::ArrayReference<cha
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief %Interleave vertex attributes, write them to array buffer and configure the mesh
+@brief Interleave vertex attributes, write them to array buffer and configure the mesh
 @param mesh         Output mesh
 @param buffer       Output vertex buffer
 @param usage        Vertex buffer usage

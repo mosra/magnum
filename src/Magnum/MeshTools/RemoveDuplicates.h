@@ -56,7 +56,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Remove duplicate floating-point vector data from given array
+@brief Remove duplicate floating-point vector data from given array
 @param[in,out] data Input data array
 @param[out] epsilon Epsilon value, vertices nearer than this distance will be
     melt together

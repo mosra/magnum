@@ -147,7 +147,7 @@ template<class T, class ...U> inline void writeCombinedArrays(UnsignedInt stride
 /**
 @brief Combine indexed arrays
 @param[in,out] indexedArrays Index and attribute arrays
-@return %Array with resulting indices
+@return Array with resulting indices
 
 Creates new combined index array and reorders original attribute arrays so they
 can be indexed with the new single index array.
