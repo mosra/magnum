@@ -34,7 +34,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Image data
+@brief Image data
 
 Access to image data provided by @ref AbstractImporter subclasses.
 Interchangeable with @ref Image, @ref ImageReference or @ref BufferImage.
@@ -42,14 +42,14 @@ Interchangeable with @ref Image, @ref ImageReference or @ref BufferImage.
 */
 template<UnsignedInt dimensions> class ImageData: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
+         * @param size              Image size
+         * @param data              Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
@@ -84,7 +84,7 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         /*implicit*/ operator ImageReference<dimensions>() const && = delete;
         #endif
 
-        /** @brief %Image size */
+        /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */

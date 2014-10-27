@@ -38,7 +38,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Scene data
+@brief Scene data
 */
 class MAGNUM_EXPORT SceneData {
     public:

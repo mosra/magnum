@@ -125,7 +125,7 @@ class MAGNUM_EXPORT MeshData3D {
 
         /**
          * @brief 2D texture coordinates
-         * @param id    %Texture coordinate array ID
+         * @param id    Texture coordinate array ID
          *
          * @see @ref textureCoords2DArrayCount()
          */

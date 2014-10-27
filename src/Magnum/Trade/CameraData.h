@@ -34,7 +34,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Camera data
+@brief Camera data
 */
 class MAGNUM_EXPORT CameraData {};
 

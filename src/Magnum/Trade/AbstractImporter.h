@@ -145,11 +145,11 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          */
         Int defaultScene();
 
-        /** @brief %Scene count */
+        /** @brief Scene count */
         UnsignedInt sceneCount() const;
 
         /**
-         * @brief %Scene ID for given name
+         * @brief Scene ID for given name
          *
          * If no scene for given name exists, returns `-1`.
          * @see @ref sceneName()
@@ -157,26 +157,26 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         Int sceneForName(const std::string& name);
 
         /**
-         * @brief %Scene name
-         * @param id        %Scene ID, from range [0, @ref sceneCount()).
+         * @brief Scene name
+         * @param id        Scene ID, from range [0, @ref sceneCount()).
          *
          * @see @ref sceneForName()
          */
         std::string sceneName(UnsignedInt id);
 
         /**
-         * @brief %Scene
-         * @param id        %Scene ID, from range [0, @ref sceneCount()).
+         * @brief Scene
+         * @param id        Scene ID, from range [0, @ref sceneCount()).
          *
          * Returns given scene or `std::nullopt` if import failed.
          */
         std::optional<SceneData> scene(UnsignedInt id);
 
-        /** @brief %Light count */
+        /** @brief Light count */
         UnsignedInt lightCount() const;
 
         /**
-         * @brief %Light ID for given name
+         * @brief Light ID for given name
          *
          * If no light for given name exists, returns `-1`.
          * @see @ref lightName()
@@ -184,16 +184,16 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         Int lightForName(const std::string& name);
 
         /**
-         * @brief %Light name
-         * @param id        %Light ID, from range [0, @ref lightCount()).
+         * @brief Light name
+         * @param id        Light ID, from range [0, @ref lightCount()).
          *
          * @see @ref lightForName()
          */
         std::string lightName(UnsignedInt id);
 
         /**
-         * @brief %Light
-         * @param id        %Light ID, from range [0, @ref lightCount()).
+         * @brief Light
+         * @param id        Light ID, from range [0, @ref lightCount()).
          *
          * Returns given light or `std::nullopt` if importing failed.
          */
@@ -293,7 +293,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Two-dimensional mesh name
-         * @param id        %Mesh ID, from range [0, @ref mesh2DCount()).
+         * @param id        Mesh ID, from range [0, @ref mesh2DCount()).
          *
          * @see @ref mesh2DForName()
          */
@@ -301,7 +301,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Two-dimensional mesh
-         * @param id        %Mesh ID, from range [0, @ref mesh2DCount()).
+         * @param id        Mesh ID, from range [0, @ref mesh2DCount()).
          *
          * Returns given mesh or `std::nullopt` if importing failed.
          */
@@ -320,7 +320,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Three-dimensional mesh name
-         * @param id        %Mesh ID, from range [0, @ref mesh3DCount()).
+         * @param id        Mesh ID, from range [0, @ref mesh3DCount()).
          *
          * @see @ref mesh3DForName()
          */
@@ -328,7 +328,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Three-dimensional mesh
-         * @param id        %Mesh ID, from range [0, @ref mesh3DCount()).
+         * @param id        Mesh ID, from range [0, @ref mesh3DCount()).
          *
          * Returns given mesh or `std::nullopt` if importing failed.
          */
@@ -361,11 +361,11 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          */
         std::unique_ptr<AbstractMaterialData> material(UnsignedInt id);
 
-        /** @brief %Texture count */
+        /** @brief Texture count */
         UnsignedInt textureCount() const;
 
         /**
-         * @brief %Texture ID for given name
+         * @brief Texture ID for given name
          *
          * If no texture for given name exists, returns `-1`.
          * @see @ref textureName()
@@ -373,16 +373,16 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         Int textureForName(const std::string& name);
 
         /**
-         * @brief %Texture name
-         * @param id        %Texture ID, from range [0, @ref textureCount()).
+         * @brief Texture name
+         * @param id        Texture ID, from range [0, @ref textureCount()).
          *
          * @see @ref textureForName()
          */
         std::string textureName(UnsignedInt id);
 
         /**
-         * @brief %Texture
-         * @param id        %Texture ID, from range [0, @ref textureCount()).
+         * @brief Texture
+         * @param id        Texture ID, from range [0, @ref textureCount()).
          *
          * Returns given texture or `std::nullopt` if importing failed.
          */
@@ -401,7 +401,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief One-dimensional image name
-         * @param id        %Image ID, from range [0, @ref image1DCount()).
+         * @param id        Image ID, from range [0, @ref image1DCount()).
          *
          * @see @ref image1DForName()
          */
@@ -409,7 +409,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief One-dimensional image
-         * @param id        %Image ID, from range [0, @ref image1DCount()).
+         * @param id        Image ID, from range [0, @ref image1DCount()).
          *
          * Returns given image or `std::nullopt` if importing failed.
          */
@@ -428,7 +428,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Two-dimensional image name
-         * @param id        %Image ID, from range [0, @ref image2DCount()).
+         * @param id        Image ID, from range [0, @ref image2DCount()).
          *
          * @see @ref image2DForName()
          */
@@ -436,7 +436,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Two-dimensional image
-         * @param id        %Image ID, from range [0, @ref image2DCount()).
+         * @param id        Image ID, from range [0, @ref image2DCount()).
          *
          * Returns given image or `std::nullopt` if importing failed.
          */
@@ -455,7 +455,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Three-dimensional image name
-         * @param id        %Image ID, from range [0, @ref image3DCount()).
+         * @param id        Image ID, from range [0, @ref image3DCount()).
          *
          * @see @ref image3DForName()
          */
@@ -463,7 +463,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /**
          * @brief Three-dimensional image
-         * @param id        %Image ID, from range [0, @ref image3DCount()).
+         * @param id        Image ID, from range [0, @ref image3DCount()).
          *
          * Returns given image or `std::nullopt` if importing failed.
          */
