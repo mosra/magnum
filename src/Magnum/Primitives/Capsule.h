@@ -37,7 +37,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D capsule primitive
 
-%Cylinder of radius `1` along Y axis with hemispheres instead of caps.
+Cylinder of radius `1` along Y axis with hemispheres instead of caps.
 */
 class MAGNUM_PRIMITIVES_EXPORT Capsule2D {
     public:
@@ -57,7 +57,7 @@ class MAGNUM_PRIMITIVES_EXPORT Capsule2D {
 /**
 @brief 3D capsule primitive
 
-%Cylinder of radius `1` along Y axis with hemispheres instead of caps.
+Cylinder of radius `1` along Y axis with hemispheres instead of caps.
 */
 class MAGNUM_PRIMITIVES_EXPORT Capsule3D {
     public:

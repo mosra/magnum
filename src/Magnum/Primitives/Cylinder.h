@@ -40,12 +40,12 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 3D cylinder primitive
 
-%Cylinder along Y axis of radius `1`.
+Cylinder along Y axis of radius `1`.
 */
 class MAGNUM_PRIMITIVES_EXPORT Cylinder {
     public:
         /**
-         * @brief %Flag
+         * @brief Flag
          *
          * @see @ref Flags, @ref solid(), @ref wireframe()
          */
@@ -55,7 +55,7 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
         };
 
         /**
-         * @brief %Flags
+         * @brief Flags
          *
          * @see @ref solid(), @ref wireframe()
          */

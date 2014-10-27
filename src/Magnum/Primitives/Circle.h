@@ -37,7 +37,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D circle primitive
 
-%Circle with radius `1`.
+Circle with radius `1`.
 */
 class MAGNUM_PRIMITIVES_EXPORT Circle {
     public:
