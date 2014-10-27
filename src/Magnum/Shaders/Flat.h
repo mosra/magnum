@@ -44,7 +44,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Flat shader
+@brief Flat shader
 
 Draws whole mesh with given unshaded color or texture. For colored mesh you
 need to provide @ref Position attribute in your triangle mesh and call at least
@@ -65,7 +65,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         typedef typename Generic<dimensions>::Position Position;
 
         /**
-         * @brief %Texture coordinates
+         * @brief Texture coordinates
          *
          * Used only if @ref Flag::Textured is set.
          */
@@ -84,7 +84,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
-         * @brief %Flag
+         * @brief Flag
          *
          * @see @ref Flags, @ref flags()
          */
@@ -93,7 +93,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         };
 
         /**
-         * @brief %Flags
+         * @brief Flags
          *
          * @see @ref flags()
          */
@@ -105,11 +105,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
 
         /**
          * @brief Constructor
-         * @param flags     %Flags
+         * @param flags     Flags
          */
         explicit Flat(Flags flags = Flags());
 
-        /** @brief %Flags */
+        /** @brief Flags */
         Flags flags() const { return _flags; }
 
         /**

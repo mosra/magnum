@@ -43,13 +43,13 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
         /** @brief Vertex position */
         typedef typename Generic<dimensions>::Position Position;
 
-        /** @brief %Texture coordinates */
+        /** @brief Texture coordinates */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
             /**
-             * %Vector texture binding unit
+             * Vector texture binding unit
              * @deprecated Use @ref Magnum::Shaders::AbstractVector::setVectorTexture() "setVectorTexture()" instead.
              */
             VectorTextureLayer = 16

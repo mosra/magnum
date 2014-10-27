@@ -38,7 +38,7 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Mesh visualization shader
+@brief Mesh visualization shader
 
 Uses geometry shader to visualize wireframe. You need to provide @ref Position
 attribute in your triangle mesh and call at least @ref setTransformationProjectionMatrix()
@@ -51,7 +51,7 @@ either using geometry shaders or with help of additional vertex information.
 
 If you have geometry shaders available, you don't need to do anything else.
 
-@requires_gl32 %Extension @extension{ARB,geometry_shader4} for wireframe
+@requires_gl32 Extension @extension{ARB,geometry_shader4} for wireframe
     rendering using geometry shaders.
 
 If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
@@ -60,7 +60,7 @@ meshes (see @ref MeshTools::duplicate() for possible solution). Additionaly, if
 you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also
 @ref VertexIndex attribute.
 
-@requires_es_extension %Extension @extension{OES,standard_derivatives} for
+@requires_es_extension Extension @extension{OES,standard_derivatives} for
     wireframe rendering.
 
 @todo Understand and add support wireframe width/smoothness without GS
@@ -81,7 +81,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
         typedef Attribute<3, Float> VertexIndex;
 
         /**
-         * @brief %Flag
+         * @brief Flag
          *
          * @see @ref Flags, @ref MeshVisualizer()
          */
@@ -105,12 +105,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
             NoGeometryShader = 1 << 1
         };
 
-        /** @brief %Flags */
+        /** @brief Flags */
         typedef Containers::EnumSet<Flag> Flags;
 
         /**
          * @brief Constructor
-         * @param flags     %Flags
+         * @param flags     Flags
          */
         explicit MeshVisualizer(Flags flags = Flags());
 

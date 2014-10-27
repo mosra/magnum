@@ -39,7 +39,7 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Vector shader
+@brief Vector shader
 
 Renders vector art in plain grayscale form. See also @ref DistanceFieldVector
 for more advanced effects. For rendering unchanged texture you can use the

@@ -37,7 +37,7 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Phong shader
+@brief Phong shader
 
 Uses ambient, diffuse and specular color or texture. For colored mesh you need
 to provide @ref Position and @ref Normal attributes in your triangle mesh and
@@ -55,7 +55,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         typedef Generic3D::Normal Normal;       /**< @brief Normal direction */
 
         /**
-         * @brief %Texture coordinates
+         * @brief Texture coordinates
          *
          * Used only if one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
          * or @ref Flag::SpecularTexture is set.
@@ -91,7 +91,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         #endif
 
         /**
-         * @brief %Flag
+         * @brief Flag
          *
          * @see @ref Flags, @ref flags()
          */
@@ -102,7 +102,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         };
 
         /**
-         * @brief %Flags
+         * @brief Flags
          *
          * @see @ref flags()
          */
@@ -110,11 +110,11 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
 
         /**
          * @brief Constructor
-         * @param flags     %Flags
+         * @param flags     Flags
          */
         explicit Phong(Flags flags = Flags());
 
-        /** @brief %Flags */
+        /** @brief Flags */
         Flags flags() const { return _flags; }
 
         /**
