@@ -42,11 +42,11 @@ Expects filename prefix, creates two files, `prefix.conf` and `prefix.tga`. See
 This plugin is available only on desktop OpenGL, as it uses @ref Texture::image()
 to read back the generated data. It depends on
 @ref Trade::TgaImageConverter "TgaImageConverter" plugin and is built if
-`WITH_MAGNUMFONTCONVERTER` is enabled when building %Magnum. To use dynamic
-plugin, you need to load `%MagnumFontConverter` plugin from
+`WITH_MAGNUMFONTCONVERTER` is enabled when building Magnum. To use dynamic
+plugin, you need to load `MagnumFontConverter` plugin from
 `MAGNUM_PLUGINS_FONTCONVERTER_DIR`. To use static plugin or use this as a
-dependency of another plugin, you need to request `%MagnumFontConverter`
-component of `%Magnum` package in CMake and link to
+dependency of another plugin, you need to request `MagnumFontConverter`
+component of `Magnum` package in CMake and link to
 `${MAGNUM_MAGNUMFONTCONVERTER_LIBRARIES}`. See @ref building, @ref cmake and
 @ref plugins for more information.
 */

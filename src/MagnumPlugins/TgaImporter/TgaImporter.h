@@ -49,10 +49,10 @@ namespace Magnum { namespace Trade {
 
 Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
 
-This plugin is built if `WITH_TGAIMPORTER` is enabled when building %Magnum. To
-use dynamic plugin, you need to load `%TgaImporter` plugin from
+This plugin is built if `WITH_TGAIMPORTER` is enabled when building Magnum. To
+use dynamic plugin, you need to load `TgaImporter` plugin from
 `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin or use this as a dependency
-of another plugin, you need to request `%TgaImporter` component of `%Magnum`
+of another plugin, you need to request `TgaImporter` component of `Magnum`
 package in CMake and link to `${MAGNUM_TGAIMPORTER_LIBRARIES}`. See
 @ref building, @ref cmake and @ref plugins for more information.
 

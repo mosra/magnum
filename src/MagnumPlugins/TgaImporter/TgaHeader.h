@@ -43,12 +43,12 @@ struct TgaHeader {
     UnsignedShort   colorMapStart;  /**< @brief First color map entry */
     UnsignedShort   colorMapLength; /**< @brief Number of colors */
     UnsignedByte    colorMapBpp;    /**< @brief Bits per palette entry */
-    UnsignedShort   beginX;         /**< @brief %Image x origin */
-    UnsignedShort   beginY;         /**< @brief %Image y origin */
-    UnsignedShort   width;          /**< @brief %Image width */
-    UnsignedShort   height;         /**< @brief %Image height */
+    UnsignedShort   beginX;         /**< @brief Image x origin */
+    UnsignedShort   beginY;         /**< @brief Image y origin */
+    UnsignedShort   width;          /**< @brief Image width */
+    UnsignedShort   height;         /**< @brief Image height */
     UnsignedByte    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
-    UnsignedByte    descriptor;     /**< @brief %Image descriptor */
+    UnsignedByte    descriptor;     /**< @brief Image descriptor */
 };
 #pragma pack()
 
