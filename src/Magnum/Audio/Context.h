@@ -71,7 +71,7 @@ class MAGNUM_AUDIO_EXPORT Context {
         std::string vendorString() const { return alGetString(AL_VENDOR); }
 
         /**
-         * @brief %Renderer string
+         * @brief Renderer string
          *
          * @see @ref vendorString(), @fn_al{GetString} with @def_al{RENDERER}
          */

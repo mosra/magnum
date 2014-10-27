@@ -42,7 +42,7 @@
 namespace Magnum { namespace Audio {
 
 /**
-@brief %Source
+@brief Source
 
 Manages positional audio source.
 @todo Expose convenient API for buffer queuing
@@ -327,7 +327,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         /** @{ @name Buffer management */
 
         /**
-         * @brief %Source type
+         * @brief Source type
          *
          * @see @ref type()
          */
@@ -338,7 +338,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         };
 
         /**
-         * @brief %Source type
+         * @brief Source type
          *
          * @see @ref setBuffer(), @fn_al{GetSourcei} with @def_al{SOURCE_TYPE}
          */
@@ -346,7 +346,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Attach buffer
-         * @param buffer        %Buffer to attach or `nullptr`
+         * @param buffer        Buffer to attach or `nullptr`
          * @return Reference to self (for method chaining)
          *
          * If an buffer is attached, changes source type to @ref Type::Static,
@@ -361,7 +361,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         /** @{ @name State management */
 
         /**
-         * @brief %Source state
+         * @brief Source state
          *
          * @see @ref state(), @ref play(), @ref pause(), @ref stop(),
          *      @ref rewind()
