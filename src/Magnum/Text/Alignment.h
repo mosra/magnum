@@ -50,77 +50,77 @@ namespace Implementation {
 }
 
 /**
-@brief %Text rendering alignment
+@brief Text rendering alignment
 
 @see @ref Renderer::render(), @ref Renderer::Renderer()
 */
 enum class Alignment: UnsignedByte {
-    /** %Text start and line is at origin */
+    /** Text start and line is at origin */
     LineLeft = Implementation::AlignmentLine|Implementation::AlignmentLeft,
 
     /**
-     * %Text center and line is at origin
+     * Text center and line is at origin
      *
      * @see @ref Alignment::LineCenterIntegral
      */
     LineCenter = Implementation::AlignmentLine|Implementation::AlignmentCenter,
 
-    /** %Text end and line is at origin */
+    /** Text end and line is at origin */
     LineRight = Implementation::AlignmentLine|Implementation::AlignmentRight,
 
     /**
-     * %Text start and vertical middle is at origin
+     * Text start and vertical middle is at origin
      *
      * @see @ref Alignment::MiddleLeftIntegral
      */
     MiddleLeft = Implementation::AlignmentMiddle|Implementation::AlignmentLeft,
 
     /**
-     * %Text center and vertical middle is at origin
+     * Text center and vertical middle is at origin
      *
      * @see @ref Alignment::MiddleRightIntegral
      */
     MiddleCenter = Implementation::AlignmentMiddle|Implementation::AlignmentCenter,
 
     /**
-     * %Text end and vertical middle is at origin
+     * Text end and vertical middle is at origin
      *
      * @see @ref Alignment::MiddleRightIntegral
      */
     MiddleRight = Implementation::AlignmentMiddle|Implementation::AlignmentRight,
 
-    /** %Text start and top is at origin */
+    /** Text start and top is at origin */
     TopLeft = Implementation::AlignmentTop|Implementation::AlignmentLeft,
 
-    /** %Text center and top is at origin */
+    /** Text center and top is at origin */
     TopCenter = Implementation::AlignmentTop|Implementation::AlignmentCenter,
 
-    /** %Text end and top is at origin */
+    /** Text end and top is at origin */
     TopRight = Implementation::AlignmentTop|Implementation::AlignmentRight,
 
     /**
-     * %Text center and line is at origin and alignment offset is integral
+     * Text center and line is at origin and alignment offset is integral
      *
      * @see @ref Alignment::LineCenter
      */
     LineCenterIntegral = Implementation::AlignmentLine|Implementation::AlignmentCenter|Implementation::AlignmentIntegral,
 
     /**
-     * %Text start and vertical middle is at origin and alignment offset is integral
+     * Text start and vertical middle is at origin and alignment offset is integral
      *
      * @see @ref Alignment::MiddleLeft
      */
     MiddleLeftIntegral = Implementation::AlignmentMiddle|Implementation::AlignmentLeft|Implementation::AlignmentIntegral,
 
     /**
-     * %Text center and vertical middle is at origin and alignment offset is integral
+     * Text center and vertical middle is at origin and alignment offset is integral
      *
      * @see @ref Alignment::MiddleCenter
      */
     MiddleCenterIntegral = Implementation::AlignmentMiddle|Implementation::AlignmentCenter|Implementation::AlignmentIntegral,
 
     /**
-     * %Text end and vertical middle is at origin and alignment offset is integral
+     * Text end and vertical middle is at origin and alignment offset is integral
      *
      * @see @ref Alignment::MiddleRight
      */

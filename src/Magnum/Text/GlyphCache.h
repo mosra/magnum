@@ -45,7 +45,7 @@ Contains font glyphs prerendered into texture atlas.
 
 ## Usage
 
-Create %GlyphCache object with sufficient size and then call
+Create GlyphCache object with sufficient size and then call
 @ref AbstractFont::createGlyphCache() to fill it with glyphs.
 @code
 Text::AbstractFont* font;

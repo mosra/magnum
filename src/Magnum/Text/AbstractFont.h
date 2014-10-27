@@ -217,7 +217,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Layout the text using font's own layouter
          * @param cache     Glyph cache
          * @param size      Font size
-         * @param text      %Text to layout
+         * @param text      Text to layout
          *
          * Note that the layouters support rendering of single-line text only.
          * See @ref Renderer class for more advanced text layouting.

@@ -62,7 +62,7 @@ Arguments:
 -   `--font FONT` -- font plugin
 -   `--converter CONVERTER` -- font converter plugin
 -   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
-    %Magnum install location)
+    Magnum install location)
 -   `--characters CHARACTERS` -- characters to include in the output (default:
     `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!:;,.&nbsp;`)
 -   `--font-size N` -- input font size (default: `128`)
