@@ -53,7 +53,7 @@ extern template class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager<AbstractShaderPro
 namespace DebugTools {
 
 /**
-@brief %Resource manager for debug tools
+@brief Resource manager for debug tools
 
 Stores various data used by debug renderers. See @ref debug-tools for more
 information.
