@@ -67,7 +67,7 @@ Arguments:
 -   `--importer IMPORTER` -- image importer plugin (default: @ref Trade::TgaImporter "TgaImporter")
 -   `--converter CONVERTER` -- image converter plugin (default: @ref Trade::TgaImageConverter "TgaImageConverter")
 -   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
-    %Magnum install location)
+    Magnum install location)
 -   `--output-size "X Y"` -- size of output image
 -   `--radius N` -- distance field computation radius
 
