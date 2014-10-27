@@ -210,8 +210,6 @@ void TransformFeedbackGLTest::attachRange() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    shader.use();
-
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
     mesh.draw(shader);
