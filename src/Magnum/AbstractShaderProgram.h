@@ -394,6 +394,7 @@ comes in handy.
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
     friend class Mesh;
     friend class MeshView;
+    friend class TransformFeedback;
     friend struct Implementation::ShaderProgramState;
 
     public:
