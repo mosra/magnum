@@ -73,7 +73,7 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `%WindowlessGlxApplication` component, add
+In CMake you need to request `WindowlessGlxApplication` component, add
 `${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
@@ -164,7 +164,7 @@ class WindowlessGlxApplication {
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 @see @ref WindowlessGlxApplication(), @ref createContext(),
     @ref tryCreateContext()

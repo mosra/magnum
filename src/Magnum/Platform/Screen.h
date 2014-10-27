@@ -134,7 +134,7 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
          */
         void setPropagatedEvents(PropagatedEvents events) { _propagatedEvents = events; }
 
-        /** @brief %Application holding this screen */
+        /** @brief Application holding this screen */
         template<class T = BasicScreenedApplication<Application>> T* application() {
             return static_cast<T*>(Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list());
         }

@@ -117,8 +117,8 @@ You can then open `MyApplication` through your webserver in Chrome (e.g.
 ## General usage
 
 For CMake you need to copy `FindOpenGLES2.cmake` from `modules/` directory in
-%Magnum source to `modules/` dir in your project (so it is able to find OpenGL
-ES). Request `%NaClApplication` component, add
+Magnum source to `modules/` dir in your project (so it is able to find OpenGL
+ES). Request `NaClApplication` component, add
 `${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
@@ -395,7 +395,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref NaClApplication(), @ref createContext(), @ref tryCreateContext()
@@ -469,7 +469,7 @@ propagated to the browser.
 class NaClApplication::InputEvent {
     public:
         /**
-         * @brief %Modifier
+         * @brief Modifier
          *
          * @see @ref Modifiers, @ref modifiers()
          * @todo AltGr + PP_INPUTEVENT_MODIFIER_ISKEYPAD, PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT

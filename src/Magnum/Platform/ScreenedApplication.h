@@ -97,7 +97,7 @@ template<class Application> class BasicScreenedApplication: public Application, 
         /**
          * @brief Default constructor
          * @param arguments     Application arguments
-         * @param configuration %Configuration
+         * @param configuration Configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref Sdl2Application::Configuration "Configuration" for more

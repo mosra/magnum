@@ -68,7 +68,7 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `%WindowlessWglApplication` component, add
+In CMake you need to request `WindowlessWglApplication` component, add
 `${MAGNUM_WINDOWLESSWGLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSWGLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
@@ -166,7 +166,7 @@ class WindowlessWglApplication {
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 @see @ref WindowlessWglApplication(), @ref createContext(),
     @ref tryCreateContext()

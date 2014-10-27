@@ -69,7 +69,7 @@ more information.
 
 ## General Usage
 
-In CMake you need to request `%WindowlessNaClApplication` component, add
+In CMake you need to request `WindowlessNaClApplication` component, add
 `${MAGNUM_WINDOWLESSNACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSNACLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
@@ -181,7 +181,7 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 @see @ref WindowlessNaClApplication(), @ref createContext(),
     @ref tryCreateContext()

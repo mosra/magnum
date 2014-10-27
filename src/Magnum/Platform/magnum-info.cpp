@@ -68,7 +68,7 @@
 namespace Magnum {
 
 /** @page magnum-info Magnum Info
-@brief Displays information about %Magnum engine and OpenGL capabilities
+@brief Displays information about Magnum engine and OpenGL capabilities
 
 @section magnum-info-usage Usage
 

@@ -52,7 +52,7 @@ more information.
 
 ## General usage
 
-In CMake you need to request `%GlxApplication` component, add
+In CMake you need to request `GlxApplication` component, add
 `${MAGNUM_GLXAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_GLXAPPLICATION_LIBRARIES}`. If no other application is requested, you
 can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
@@ -79,7 +79,7 @@ class GlxApplication: public AbstractXApplication {
         /**
          * @brief Default constructor
          * @param arguments     Application arguments
-         * @param configuration %Configuration
+         * @param configuration Configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref AbstractXApplication::Configuration "Configuration" for

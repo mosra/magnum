@@ -195,7 +195,7 @@ class AbstractXApplication {
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Double-buffered OpenGL context.
 @see @ref GlxApplication::GlxApplication(), @ref XEglApplication::XEglApplication(),
@@ -255,7 +255,7 @@ class AbstractXApplication::Configuration {
 class AbstractXApplication::InputEvent {
     public:
         /**
-         * @brief %Modifier
+         * @brief Modifier
          *
          * @see @ref Modifiers, @ref modifiers()
          */

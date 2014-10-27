@@ -74,7 +74,7 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `%GlutApplication` component, add
+In CMake you need to request `GlutApplication` component, add
 `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
@@ -273,7 +273,7 @@ class GlutApplication {
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Double-buffered RGBA window with depth and stencil buffers.
 @see @ref GlutApplication(), @ref createContext(), @ref tryCreateContext()
@@ -281,7 +281,7 @@ Double-buffered RGBA window with depth and stencil buffers.
 class GlutApplication::Configuration {
     public:
         /**
-         * @brief %Context flag
+         * @brief Context flag
          *
          * @see @ref Flags, @ref setFlags()
          */
@@ -290,7 +290,7 @@ class GlutApplication::Configuration {
         };
 
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @see @ref setFlags()
          */
@@ -331,7 +331,7 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        /** @brief %Context flags */
+        /** @brief Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -345,7 +345,7 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        /** @brief %Context version */
+        /** @brief Context version */
         Version version() const { return _version; }
 
         /**

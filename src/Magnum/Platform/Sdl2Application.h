@@ -112,9 +112,9 @@ e.g. `http://localhost/emscripten/MyApplication.html`).
 ## General usage
 
 For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
-%Magnum source to `modules/` dir in your project (so it is able to find SDL2).
+Magnum source to `modules/` dir in your project (so it is able to find SDL2).
 In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
-`%Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
+`Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
@@ -194,7 +194,7 @@ class Sdl2Application {
         /**
          * @brief Default constructor
          * @param arguments     Application arguments
-         * @param configuration %Configuration
+         * @param configuration Configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref Configuration for more information. The program exits if
@@ -416,7 +416,7 @@ class Sdl2Application {
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Centered non-resizable window with double-buffered OpenGL context and 24bit
 depth buffer.
@@ -426,7 +426,7 @@ class Sdl2Application::Configuration {
     public:
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
-         * @brief %Context flag
+         * @brief Context flag
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref Flags, @ref setFlags()
@@ -443,7 +443,7 @@ class Sdl2Application::Configuration {
         };
 
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref setFlags()
@@ -543,7 +543,7 @@ class Sdl2Application::Configuration {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
@@ -562,7 +562,7 @@ class Sdl2Application::Configuration {
         }
 
         /**
-         * @brief %Context version
+         * @brief Context version
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
@@ -631,7 +631,7 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 class Sdl2Application::InputEvent {
     public:
         /**
-         * @brief %Modifier
+         * @brief Modifier
          *
          * @see @ref Modifiers, @ref KeyEvent::modifiers(),
          *      @ref MouseEvent::modifiers(), @ref MouseMoveEvent::modifiers()
