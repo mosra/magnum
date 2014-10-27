@@ -49,15 +49,15 @@ namespace Magnum { namespace Trade {
 Detects file type based on file extension, loads corresponding plugin and then
 tries to open the file with it. Supported formats:
 
--   BMP (`*.bmp`), loaded with any plugin that provides `%BmpImporter`
--   GIF (`*.gif`), loaded with any plugin that provides `%GifImporter`
--   HDR (`*.hdr`), loaded with any plugin that provides `%HdrImporter`
+-   BMP (`*.bmp`), loaded with any plugin that provides `BmpImporter`
+-   GIF (`*.gif`), loaded with any plugin that provides `GifImporter`
+-   HDR (`*.hdr`), loaded with any plugin that provides `HdrImporter`
 -   JPEG (`*.jpg`, `*.jpeg`), loaded with @ref JpegImporter or any other plugin
     that provides it
--   PIC (`*.pic`), loaded with any plugin that provides `%PicImporter`
+-   PIC (`*.pic`), loaded with any plugin that provides `PicImporter`
 -   PNG (`*.png`), loaded with @ref PngImporter or any other plugin that
     provides it
--   PSD (`*.psd`), loaded with any plugin that provides `%PsdImporter`
+-   PSD (`*.psd`), loaded with any plugin that provides `PsdImporter`
 -   TGA (`*.tga`), loaded with @ref TgaImporter or any other plugin that
     provides it
 
