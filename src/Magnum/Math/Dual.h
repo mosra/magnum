@@ -37,7 +37,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief %Dual number
+@brief Dual number
 @tparam T   Underlying data type
 */
 template<class T> class Dual {
@@ -76,7 +76,7 @@ template<class T> class Dual {
         /** @brief Real part */
         constexpr T real() const { return _real; }
 
-        /** @brief %Dual part */
+        /** @brief Dual part */
         constexpr T dual() const { return _dual; }
 
         /**

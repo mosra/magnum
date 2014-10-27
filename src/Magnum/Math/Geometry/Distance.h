@@ -40,7 +40,7 @@ class Distance {
         Distance() = delete;
 
         /**
-         * @brief %Distance of line and point in 2D
+         * @brief Distance of line and point in 2D
          * @param a         First point of the line
          * @param b         Second point of the line
          * @param point     Point
@@ -58,7 +58,7 @@ class Distance {
         }
 
         /**
-         * @brief %Distance of line and point in 2D, squared
+         * @brief Distance of line and point in 2D, squared
          * @param a         First point of the line
          * @param b         Second point of the line
          * @param point     Point
@@ -74,7 +74,7 @@ class Distance {
         }
 
         /**
-         * @brief %Distance of line and point in 3D
+         * @brief Distance of line and point in 3D
          * @param a         First point of the line
          * @param b         Second point of the line
          * @param point     Point
@@ -92,7 +92,7 @@ class Distance {
         }
 
         /**
-         * @brief %Distance of line and point in 3D, squared
+         * @brief Distance of line and point in 3D, squared
          *
          * More efficient than @ref linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
          * for comparing distance with other values, because it doesn't
@@ -103,7 +103,7 @@ class Distance {
         }
 
         /**
-         * @brief %Dístance of point from line segment in 2D
+         * @brief Dístance of point from line segment in 2D
          * @param a         Starting point of the line
          * @param b         Ending point of the line
          * @param point     Point
@@ -131,7 +131,7 @@ class Distance {
         template<class T> static T lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point);
 
         /**
-         * @brief %Distance of point from line segment in 2D, squared
+         * @brief Distance of point from line segment in 2D, squared
          *
          * More efficient than @ref lineSegmentPoint() for comparing distance
          * with other values, because it doesn't compute the square root.
@@ -139,7 +139,7 @@ class Distance {
         template<class T> static T lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point);
 
         /**
-         * @brief %Dístance of point from line segment in 3D
+         * @brief Dístance of point from line segment in 3D
          * @param a         Starting point of the line
          * @param b         Ending point of the line
          * @param point     Point
@@ -154,7 +154,7 @@ class Distance {
         }
 
         /**
-         * @brief %Distance of point from line segment in 3D, squared
+         * @brief Distance of point from line segment in 3D, squared
          *
          * More efficient than
          * @ref lineSegmentPoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)

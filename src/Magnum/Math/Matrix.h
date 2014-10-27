@@ -39,7 +39,7 @@ namespace Implementation {
 
 /**
 @brief Square matrix
-@tparam size    %Matrix size
+@tparam size    Matrix size
 @tparam T       Data type
 
 See @ref matrix-vector for brief introduction.
@@ -49,7 +49,7 @@ See @ref matrix-vector for brief introduction.
  */
 template<std::size_t size, class T> class Matrix: public RectangularMatrix<size, size, T> {
     public:
-        const static std::size_t Size = size; /**< @brief %Matrix size */
+        const static std::size_t Size = size; /**< @brief Matrix size */
 
         /** @brief Pass to constructor to create zero-filled matrix */
         enum ZeroType { Zero };
@@ -57,7 +57,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Zero-filled matrix constructor
          *
-         * Use this constructor by calling `%Matrix m(Matrix::Zero);`.
+         * Use this constructor by calling `Matrix m(Matrix::Zero);`.
          */
         constexpr explicit Matrix(ZeroType) {}
 
@@ -68,13 +68,13 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @brief Default constructor
          *
          * You can also explicitly call this constructor with
-         * `%Matrix m(Matrix::Identity);`. Optional parameter @p value allows
+         * `Matrix m(Matrix::Identity);`. Optional parameter @p value allows
          * you to specify value on diagonal.
          */
         constexpr /*implicit*/ Matrix(IdentityType = Identity, T value = T(1)): RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)) {}
 
         /**
-         * @brief %Matrix from column vectors
+         * @brief Matrix from column vectors
          * @param first First column vector
          * @param next  Next column vectors
          */
@@ -121,7 +121,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          */
         T trace() const { return RectangularMatrix<size, size, T>::diagonal().sum(); }
 
-        /** @brief %Matrix without given column and row */
+        /** @brief Matrix without given column and row */
         Matrix<size-1, T> ij(std::size_t skipCol, std::size_t skipRow) const;
 
         /**
@@ -184,7 +184,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 /**
 @brief 2x2 matrix
 
-Convenience alternative to <tt>%Matrix<2, T></tt>. See @ref Matrix for more
+Convenience alternative to `Matrix<2, T>`. See @ref Matrix for more
 information.
 @see @ref Magnum::Matrix2x2, @ref Magnum::Matrix2x2d
 */
@@ -193,7 +193,7 @@ template<class T> using Matrix2x2 = Matrix<2, T>;
 /**
 @brief 3x3 matrix
 
-Convenience alternative to <tt>%Matrix<3, T></tt>. See @ref Matrix for more
+Convenience alternative to `Matrix<3, T>`. See @ref Matrix for more
 information. Note that this is different from @ref Matrix3, which contains
 additional functions for transformations in 2D.
 @see @ref Magnum::Matrix3x3, @ref Magnum::Matrix3x3d
@@ -203,7 +203,7 @@ template<class T> using Matrix3x3 = Matrix<3, T>;
 /**
 @brief 4x4 matrix
 
-Convenience alternative to <tt>%Matrix<4, T></tt>. See @ref Matrix for more
+Convenience alternative to `Matrix<4, T>`. See @ref Matrix for more
 information. Note that this is different from @ref Matrix4, which contains
 additional functions for transformations in 3D.
 @see @ref Magnum::Matrix4x4, @ref Magnum::Matrix4x4d

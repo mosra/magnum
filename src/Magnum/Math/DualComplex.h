@@ -36,7 +36,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief %Dual complex number
+@brief Dual complex number
 @tparam T   Underlying data type
 
 Represents 2D rotation and translation. See @ref transformations for brief
@@ -227,7 +227,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief %Complex number length squared
+         * @brief Complex number length squared
          *
          * Should be used instead of length() for comparing complex number
          * length with other values, because it doesn't compute the square root. @f[
@@ -240,7 +240,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief %Dual quaternion length
+         * @brief Dual quaternion length
          *
          * See lengthSquared() which is faster for comparing length with other
          * values. @f[

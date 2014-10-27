@@ -132,12 +132,12 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief Default constructor
          *
          * Creates identity matrix. You can also explicitly call this
-         * constructor with `%Matrix3 m(Matrix3::Identity);`. Optional
+         * constructor with `Matrix3 m(Matrix3::Identity);`. Optional
          * parameter @p value allows you to specify value on diagonal.
          */
         constexpr /*implicit*/ Matrix3(typename Matrix3x3<T>::IdentityType = (Matrix3x3<T>::Identity), T value = T(1)): Matrix3x3<T>(Matrix3x3<T>::Identity, value) {}
 
-        /** @brief %Matrix from column vectors */
+        /** @brief Matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix3x3<T>(first, second, third) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */

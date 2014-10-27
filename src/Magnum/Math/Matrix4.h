@@ -102,7 +102,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D rotation around X axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `%Matrix4::rotation(angle, %Vector3::xAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationY(),
          *      @ref rotationZ(), @link rotation() const @endlink,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
@@ -114,7 +114,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D rotation around Y axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `%Matrix4::rotation(angle, %Vector3::yAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
          *      @ref rotationZ(), @link rotation() const @endlink,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
@@ -126,7 +126,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D rotation matrix around Z axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `%Matrix4::rotation(angle, %Vector3::zAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
          *      @ref rotationY(), @link rotation() const @endlink,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
@@ -201,12 +201,12 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief Default constructor
          *
          * Creates identity matrix. You can also explicitly call this
-         * constructor with `%Matrix4 m(Matrix4::Identity);`. Optional
+         * constructor with `Matrix4 m(Matrix4::Identity);`. Optional
          * parameter @p value allows you to specify value on diagonal.
          */
         constexpr /*implicit*/ Matrix4(typename Matrix4x4<T>::IdentityType = (Matrix4x4<T>::Identity), T value = T(1)): Matrix4x4<T>(Matrix4x4<T>::Identity, value) {}
 
-        /** @brief %Matrix from column vectors */
+        /** @brief Matrix from column vectors */
         constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix4x4<T>(first, second, third, fourth) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */

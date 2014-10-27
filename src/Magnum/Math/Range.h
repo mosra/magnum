@@ -62,7 +62,7 @@ template<UnsignedInt dimensions, class T> class Range {
         /**
          * Create range from minimal coordinates and size
          * @param min   Minimal coordinates
-         * @param size  %Range size
+         * @param size  Range size
          */
         static Range<dimensions, T> fromSize(const VectorType& min, const VectorType& size) {
             return {min, min+size};
@@ -129,7 +129,7 @@ template<UnsignedInt dimensions, class T> class Range {
         constexpr const VectorType max() const { return _max; } /**< @overload */
 
         /**
-         * @brief %Range size
+         * @brief Range size
          *
          * @see @ref min(), @ref max(), @ref Range2D::sizeX(),
          *      @ref Range2D::sizeY(), @ref Range3D::sizeX(),
@@ -138,7 +138,7 @@ template<UnsignedInt dimensions, class T> class Range {
         VectorType size() const { return _max - _min; }
 
         /**
-         * @brief %Range center
+         * @brief Range center
          *
          * @see @ref Range2D::centerX(), @ref Range2D::centerY(),
          *      @ref Range3D::centerX(), @ref Range3D::centerY(),
@@ -195,7 +195,7 @@ template<UnsignedInt dimensions, class T> class Range {
 /**
 @brief One-dimensional range
 
-Convenience alternative to <tt>%Range<1, T></tt>. See @ref Range for more
+Convenience alternative to `Range<1, T>`. See @ref Range for more
 information.
 */
 template<class T> using Range1D = Range<1, T>;
@@ -263,7 +263,7 @@ template<class T> class Range2D: public Range<2, T> {
         constexpr T top() const { return Range<2, T>::max().y(); } /**< @overload */
 
         /**
-         * @brief %Range width
+         * @brief Range width
          *
          * @see @ref size()
          */
@@ -272,7 +272,7 @@ template<class T> class Range2D: public Range<2, T> {
         }
 
         /**
-         * @brief %Range height
+         * @brief Range height
          *
          * @see @ref size()
          */
@@ -281,7 +281,7 @@ template<class T> class Range2D: public Range<2, T> {
         }
 
         /**
-         * @brief %Range center on X axis
+         * @brief Range center on X axis
          *
          * @see @ref center()
          */
@@ -290,7 +290,7 @@ template<class T> class Range2D: public Range<2, T> {
         }
 
         /**
-         * @brief %Range center on Y axis
+         * @brief Range center on Y axis
          *
          * @see @ref center()
          */
@@ -392,7 +392,7 @@ template<class T> class Range3D: public Range<3, T> {
         constexpr T front() const { return Range<3, T>::max().z(); } /**< @overload */
 
         /**
-         * @brief %Range width
+         * @brief Range width
          *
          * @see @ref size()
          */
@@ -401,7 +401,7 @@ template<class T> class Range3D: public Range<3, T> {
         }
 
         /**
-         * @brief %Range height
+         * @brief Range height
          *
          * @see @ref size()
          */
@@ -410,7 +410,7 @@ template<class T> class Range3D: public Range<3, T> {
         }
 
         /**
-         * @brief %Range depth
+         * @brief Range depth
          *
          * @see @ref size()
          */
@@ -420,7 +420,7 @@ template<class T> class Range3D: public Range<3, T> {
 
         /**
          *
-         * @brief %Range center on X axis
+         * @brief Range center on X axis
          *
          * @see @ref center()
          */
@@ -429,7 +429,7 @@ template<class T> class Range3D: public Range<3, T> {
         }
 
         /**
-         * @brief %Range center on Y axis
+         * @brief Range center on Y axis
          *
          * @see @ref center()
          */
@@ -438,7 +438,7 @@ template<class T> class Range3D: public Range<3, T> {
         }
 
         /**
-         * @brief %Range center on Z axis
+         * @brief Range center on Z axis
          *
          * @see @ref center()
          */

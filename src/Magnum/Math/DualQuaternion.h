@@ -36,7 +36,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief %Dual quaternion
+@brief Dual quaternion
 @tparam T   Underlying data type
 
 Represents 3D rotation and translation. See @ref transformations for brief
@@ -226,7 +226,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
-         * @brief %Dual quaternion length squared
+         * @brief Dual quaternion length squared
          *
          * Should be used instead of @ref length() for comparing dual
          * quaternion length with other values, because it doesn't compute the
@@ -239,7 +239,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
-         * @brief %Dual quaternion length
+         * @brief Dual quaternion length
          *
          * See @ref lengthSquared() which is faster for comparing length with other
          * values. @f[

@@ -40,7 +40,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief %Quaternion
+@brief Quaternion
 @tparam T   Underlying data type
 
 Represents 3D rotation. See @ref transformations for brief introduction.
@@ -169,7 +169,7 @@ template<class T> class Quaternion {
         /**
          * @brief Whether the quaternion is normalized
          *
-         * %Quaternion is normalized if it has unit length: @f[
+         * Quaternion is normalized if it has unit length: @f[
          *      |q \cdot q - 1| < 2 \epsilon + \epsilon^2 \cong 2 \epsilon
          * @f]
          * @see @ref dot(), @ref normalized()
@@ -178,10 +178,10 @@ template<class T> class Quaternion {
             return Implementation::isNormalizedSquared(dot());
         }
 
-        /** @brief %Vector part */
+        /** @brief Vector part */
         constexpr Vector3<T> vector() const { return _vector; }
 
-        /** @brief %Scalar part */
+        /** @brief Scalar part */
         constexpr T scalar() const { return _scalar; }
 
         /**
@@ -335,7 +335,7 @@ template<class T> class Quaternion {
         T dot() const { return dot(*this, *this); }
 
         /**
-         * @brief %Quaternion length
+         * @brief Quaternion length
          *
          * See also @link dot() const @endlink which is faster for comparing
          * length with other values. @f[

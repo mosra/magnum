@@ -35,7 +35,7 @@ namespace Magnum { namespace Math { namespace Algorithms {
 
 /**
 @brief In-place Gram-Schmidt matrix orthogonalization
-@param[in,out] matrix   %Matrix to perform orthogonalization on
+@param[in,out] matrix   Matrix to perform orthogonalization on
 */
 template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthogonalizeInPlace(RectangularMatrix<cols, rows, T>& matrix) {
     static_assert(cols <= rows, "Unsupported matrix aspect ratio");
@@ -58,7 +58,7 @@ template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, ro
 
 /**
 @brief In-place Gram-Schmidt matrix orthonormalization
-@param[in,out] matrix   %Matrix to perform orthonormalization on
+@param[in,out] matrix   Matrix to perform orthonormalization on
 */
 template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthonormalizeInPlace(RectangularMatrix<cols, rows, T>& matrix) {
     static_assert(cols <= rows, "Unsupported matrix aspect ratio");

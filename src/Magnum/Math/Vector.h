@@ -47,8 +47,8 @@ namespace Implementation {
 }
 
 /**
-@brief %Vector
-@tparam size    %Vector size
+@brief Vector
+@tparam size    Vector size
 @tparam T       Underlying data type
 
 See @ref matrix-vector for brief introduction.
@@ -61,10 +61,10 @@ template<std::size_t size, class T> class Vector {
 
     public:
         typedef T Type;                         /**< @brief Underlying data type */
-        const static std::size_t Size = size;   /**< @brief %Vector size */
+        const static std::size_t Size = size;   /**< @brief Vector size */
 
         /**
-         * @brief %Vector from array
+         * @brief Vector from array
          * @return Reference to the data as if it was Vector, thus doesn't
          *      perform any copying.
          *
@@ -404,7 +404,7 @@ template<std::size_t size, class T> class Vector {
         T dot() const { return dot(*this, *this); }
 
         /**
-         * @brief %Vector length
+         * @brief Vector length
          *
          * See also @ref dot() const which is faster for comparing length with
          * other values. @f[
@@ -450,7 +450,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief %Vector projected onto line
+         * @brief Vector projected onto line
          *
          * Returns vector projected onto @p line. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
@@ -462,7 +462,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief %Vector projected onto normalized line
+         * @brief Vector projected onto normalized line
          *
          * Slightly faster alternative to @ref projected(), expects @p line to
          * be normalized. @f[

@@ -59,8 +59,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
     public:
         typedef T Type;                         /**< @brief Underlying data type */
-        const static std::size_t Cols = cols;   /**< @brief %Matrix column count */
-        const static std::size_t Rows = rows;   /**< @brief %Matrix row count */
+        const static std::size_t Cols = cols;   /**< @brief Matrix column count */
+        const static std::size_t Rows = rows;   /**< @brief Matrix row count */
 
         /**
          * @brief Size of matrix diagonal
@@ -70,7 +70,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         const static std::size_t DiagonalSize = (cols < rows ? cols : rows);
 
         /**
-         * @brief %Matrix from array
+         * @brief Matrix from array
          * @return Reference to the data as if it was matrix, thus doesn't
          *      perform any copying.
          *
@@ -157,7 +157,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
         /**
-         * @brief %Matrix column
+         * @brief Matrix column
          *
          * Particular elements can be accessed using @ref Vector::operator[](),
          * e.g.:
@@ -172,7 +172,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /**< @overload */
 
         /**
-         * @brief %Matrix row
+         * @brief Matrix row
          *
          * Consider using @ref transposed() when accessing rows frequently, as
          * this is slower than accessing columns due to the way the matrix is
@@ -367,54 +367,54 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 };
 
 /**
-@brief %Matrix with 2 columns and 3 rows
+@brief Matrix with 2 columns and 3 rows
 
-Convenience alternative to <tt>%RectangularMatrix<2, 3, T></tt>. See
+Convenience alternative to `RectangularMatrix<2, 3, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix2x3, @ref Magnum::Matrix2x3d
 */
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
 
 /**
-@brief %Matrix with 3 columns and 2 rows
+@brief Matrix with 3 columns and 2 rows
 
-Convenience alternative to <tt>%RectangularMatrix<3, 2, T></tt>. See
+Convenience alternative to `RectangularMatrix<3, 2, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d
 */
 template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 
 /**
-@brief %Matrix with 2 columns and 4 rows
+@brief Matrix with 2 columns and 4 rows
 
-Convenience alternative to <tt>%RectangularMatrix<2, 4, T></tt>. See
+Convenience alternative to `RectangularMatrix<2, 4, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix2x4, @ref Magnum::Matrix2x4d
 */
 template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
 
 /**
-@brief %Matrix with 4 columns and 2 rows
+@brief Matrix with 4 columns and 2 rows
 
-Convenience alternative to <tt>%RectangularMatrix<4, 2, T></tt>. See
+Convenience alternative to `RectangularMatrix<4, 2, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d
 */
 template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 
 /**
-@brief %Matrix with 3 columns and 4 rows
+@brief Matrix with 3 columns and 4 rows
 
-Convenience alternative to <tt>%RectangularMatrix<3, 4, T></tt>. See
+Convenience alternative to `RectangularMatrix<3, 4, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix3x4, @ref Magnum::Matrix3x4d
 */
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
 
 /**
-@brief %Matrix with 4 columns and 3 rows
+@brief Matrix with 4 columns and 3 rows
 
-Convenience alternative to <tt>%RectangularMatrix<4, 3, T></tt>. See
+Convenience alternative to `RectangularMatrix<4, 3, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix4x3, @ref Magnum::Matrix4x3d
 */

@@ -39,14 +39,14 @@ class Intersection {
         Intersection() = delete;
 
         /**
-         * @brief %Intersection of two line segments in 2D
+         * @brief Intersection of two line segments in 2D
          * @param p             Starting point of first line segment
          * @param r             Direction of first line segment
          * @param q             Starting point of second line segment
          * @param s             Direction of second line segment
-         * @return %Intersection point positions `t`, `u` on both lines, NaN if
+         * @return Intersection point positions `t`, `u` on both lines, NaN if
          *      the lines are collinear or infinity if they are parallel.
-         *      %Intersection point can be then computed with `p + t*r` or
+         *      Intersection point can be then computed with `p + t*r` or
          *      `q + u*s`. If `t` is in range @f$ [ 0 ; 1 ] @f$, the
          *      intersection is inside the line segment defined by `p` and
          *      `p + r`, if `u` is in range @f$ [ 0 ; 1 ] @f$, the intersection
@@ -78,14 +78,14 @@ class Intersection {
         }
 
         /**
-         * @brief %Intersection of line segment and line in 2D
+         * @brief Intersection of line segment and line in 2D
          * @param p             Starting point of first line segment
          * @param r             Direction of first line segment
          * @param q             Starting point of second line
          * @param s             Direction of second line
-         * @return %Intersection point position `t` on first line, NaN if the
+         * @return Intersection point position `t` on first line, NaN if the
          *      lines are collinear or infinity if they are parallel.
-         *      %Intersection point can be then with `p + t*r`. If returned
+         *      Intersection point can be then with `p + t*r`. If returned
          *      value is in range @f$ [ 0 ; 1 ] @f$, the intersection is inside
          *      the line segment defined by `p` and `p + r`.
          *
@@ -96,14 +96,14 @@ class Intersection {
         }
 
         /**
-         * @brief %Intersection of a plane and line
+         * @brief Intersection of a plane and line
          * @param planePosition Plane position
          * @param planeNormal   Plane normal
          * @param p             Starting point of the line
          * @param r             Direction of the line
-         * @return %Intersection point position `t` on the line, NaN if the
+         * @return Intersection point position `t` on the line, NaN if the
          *      line lies on the plane or infinity if the intersection doesn't
-         *      exist. %Intersection point can be then computed from with
+         *      exist. Intersection point can be then computed from with
          *      `p + t*r`. If returned value is in range @f$ [ 0 ; 1 ] @f$, the
          *      intersection is inside the line segment defined by `p` and `r`.
          *

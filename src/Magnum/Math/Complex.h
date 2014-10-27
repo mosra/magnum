@@ -47,7 +47,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Complex number
+@brief Complex number
 @tparam T   Data type
 
 Represents 2D rotation. See @ref transformations for brief introduction.
@@ -336,7 +336,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief %Complex number length
+         * @brief Complex number length
          *
          * See also @ref dot() const which is faster for comparing length with
          * other values. @f[
