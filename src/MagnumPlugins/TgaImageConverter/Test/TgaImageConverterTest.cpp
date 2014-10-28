@@ -78,7 +78,7 @@ void TgaImageConverterTest::wrongFormat() {
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image format ColorFormat::RG\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format ColorFormat::RG\n");
 }
 
 void TgaImageConverterTest::wrongType() {
@@ -89,7 +89,7 @@ void TgaImageConverterTest::wrongType() {
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image type ColorType::Float\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type ColorType::Float\n");
 }
 
 void TgaImageConverterTest::data() {

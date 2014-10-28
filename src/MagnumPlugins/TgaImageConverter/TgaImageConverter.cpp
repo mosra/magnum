@@ -59,12 +59,12 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
        image.format() != ColorFormat::Red)
     #endif
     {
-        Error() << "Trade::TgaImageConverter::convertToData(): unsupported image format" << image.format();
+        Error() << "Trade::TgaImageConverter::exportToData(): unsupported color format" << image.format();
         return nullptr;
     }
 
     if(image.type() != ColorType::UnsignedByte) {
-        Error() << "Trade::TgaImageConverter::convertToData(): unsupported image type" << image.type();
+        Error() << "Trade::TgaImageConverter::exportToData(): unsupported color type" << image.type();
         return nullptr;
     }
 
