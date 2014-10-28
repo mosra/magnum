@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum { namespace Platform {
+namespace Magnum {
 /** @page platform Platform support
 @brief Integration into windowing toolkits and creation of windowless contexts.
 
@@ -48,9 +48,9 @@ Windowed applications provide a window and keyboard and mouse handling. The
 de-facto standard and most widely used toolkit is SDL2, which is implemented in
 @ref Platform::Sdl2Application. As said above, the usage is similar for all
 toolkits, you must provide one-argument constructor and implement at least
-@ref Sdl2Application::drawEvent() "drawEvent()" function. The class can be then
-used directly in `main()`, but for convenience and portability it's better to
-use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
+@ref Platform::Sdl2Application::drawEvent() "drawEvent()" function. The class
+can be then used directly in `main()`, but for convenience and portability it's
+better to use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
 
 To simplify the porting, the library provides `Platform::Application` typedef
 and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
@@ -103,8 +103,8 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 By default the application doesn't respond to window size changes in any way,
 as the window has fixed size in most cases. To respond to size change for
 example by resizing the default framebuffer, you need to reimplement
-@ref Sdl2Application::viewportEvent() "viewportEvent()" function and pass the
-new size to the framebuffer:
+@ref Platform::Sdl2Application::viewportEvent() "viewportEvent()" function and
+pass the new size to the framebuffer:
 @code
 class MyApplication: public Platform::Application {
     // ...
@@ -130,7 +130,7 @@ Windows. To make things simple, as an example we will use only
 @ref Platform::WindowlessGlxApplication, see link for bootstrap application
 below for fully portable example.
 
-You need to implement just @ref WindowlessGlxApplication::exec() "exec()"
+You need to implement just @ref Platform::WindowlessGlxApplication::exec() "exec()"
 function. The class can be then used directly in `main()`, but again, for
 convenience and portability it's better to use
 @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN() macro.
@@ -211,8 +211,9 @@ target_link_libraries(myapplication
 
 By default the application is created with some reasonable defaults (e.g.
 window size 800x600 pixels). If you want something else, you can pass
-@ref Sdl2Application::Configuration "Configuration" instance to application
-constructor. Using method chaining it can be done conveniently like this:
+@ref Platform::Sdl2Application::Configuration "Configuration" instance to
+application constructor. Using method chaining it can be done conveniently like
+this:
 @code
 MyApplication::MyApplication(int& argc, char** argv):
     Platform::Application(argc, argv, Configuration()
@@ -225,8 +226,8 @@ MyApplication::MyApplication(int& argc, char** argv):
 
 However, sometimes you would need to configure the application based on some
 configuration file or system introspection. In that case you can pass `nullptr`
-instead of @ref Sdl2Application::Configuration "Configuration" instance and
-then specify it later with @ref Sdl2Application::createContext() "createContext()":
+instead of @ref Platform::Sdl2Application::Configuration "Configuration"
+instance and then specify it later with @ref Platform::Sdl2Application::createContext() "createContext()":
 @code
 MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
     // ...
@@ -239,9 +240,9 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc
 }
 @endcode
 
-If the context creation in constructor or @ref Sdl2Application::createContext() "createContext()"
+If the context creation in constructor or @ref Platform::Sdl2Application::createContext() "createContext()"
 fails, the application exits. However, it is also possible to negotiate the
-context using @ref Sdl2Application::tryCreateContext() "tryCreateContext()".
+context using @ref Platform::Sdl2Application::tryCreateContext() "tryCreateContext()".
 The only difference is that this function returns `false` instead of exiting.
 You can for example try enabling MSAA and if the context creation fails, fall
 back to no-AA rendering:
@@ -319,4 +320,4 @@ target_link_libraries(myapplication
 
 -   Next page: @ref types
 */
-}}
+}

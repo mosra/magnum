@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum { namespace SceneGraph {
+namespace Magnum {
 /** @page scenegraph Using scene graph
 @brief Overview of scene management capabilities.
 
@@ -59,9 +59,8 @@ Transformation handles object position, rotation etc. and its basic property
 is dimension count (2D or 3D) and underlying floating-point type.
 
 @note All classes in @ref SceneGraph are templated on underlying type. However,
-    in most cases @ref Magnum::Float "Float" is used and thus nearly all
-    classes have convenience aliases so you don't have to explicitly specify
-    it.
+    in most cases @ref Float "Float" is used and thus nearly all classes have
+    convenience aliases so you don't have to explicitly specify it.
 
 Scene graph has implementation of transformations in both 2D and 3D, using
 either matrices or combination of position and rotation. Each implementation
@@ -77,19 +76,20 @@ needs, see source of other transformation classes for more information.
 @section scenegraph-hierarchy Scene hierarchy
 
 Scene hierarchy is skeleton part of scene graph. In the root there is
-@ref Scene and its children are @ref Object instances. The hierarchy has some
-transformation type, identical for all objects (because for example having part
-of the tree in 2D and part in 3D just wouldn't make sense). Common usage is to
-typedef Scene and Object with desired transformation type to save unnecessary
-typing later:
+@ref SceneGraph::Scene and its children are @ref SceneGraph::Object instances.
+The hierarchy has some transformation type, identical for all objects (because
+for example having part of the tree in 2D and part in 3D just wouldn't make
+sense). Common usage is to typedef Scene and Object with desired transformation
+type to save unnecessary typing later:
 @code
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 @endcode
 
 Then you can start building the hierarchy by *parenting* one object to another.
-Parent object can be either passed in constructor or using @ref Object::setParent().
-Scene is always root object, so it naturally cannot have parent object.
+Parent object can be either passed in constructor or using
+@ref SceneGraph::Object::setParent(). Scene is always root object, so it
+naturally cannot have parent object.
 @code
 Scene3D scene;
 
@@ -97,10 +97,11 @@ auto first = new Object3D(&scene);
 auto second = new Object3D(first);
 @endcode
 
-Object children can be accessed using @ref Object::firstChild() and
-@ref Object::lastChild(), then you can traverse siblings (objects with the same
-parent) with @ref Object::previousSibling() and @ref Object::nextSibling(). For
-example all children of an object can be traversed the following way:
+Object children can be accessed using @ref SceneGraph::Object::firstChild() and
+@ref SceneGraph::Object::lastChild(), then you can traverse siblings (objects
+with the same parent) with @ref SceneGraph::Object::previousSibling() and
+@ref SceneGraph::Object::nextSibling(). For example all children of an object
+can be traversed the following way:
 @code
 Object3D* o;
 for(Object3D* child = o->firstChild(); child; child = child->nextSibling()) {
@@ -138,10 +139,11 @@ Object3D* o;
 new MyFeature(o);
 @endcode
 
-Features of an object can be accessed using @ref Object::firstFeature() and
-@ref Object::lastFeature(), then you can traverse the features using
-@ref AbstractFeature::previousFeature() and @ref AbstractFeature::nextFeature(),
-similarly to traversing object children:
+Features of an object can be accessed using @ref SceneGraph::Object::firstFeature()
+and @ref SceneGraph::Object::lastFeature(), then you can traverse the features
+using @ref SceneGraph::AbstractFeature::previousFeature() and
+@ref SceneGraph::AbstractFeature::nextFeature(), similarly to traversing object
+children:
 @code
 Object3D* o;
 for(Object3D::FeatureType feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
@@ -150,14 +152,14 @@ for(Object3D::FeatureType feature = o->firstFeature(); feature; feature = featur
 @endcode
 
 Some features are passive, some active. Passive features can be just added to
-an object like above, without any additional work (for example collision shape).
-Active features require the user to implement some virtual function (for
-example to draw the object on screen or perform animation step). To make things
-convenient, features can be added directly to object itself using multiple
-inheritance, so you can conveniently add all the active features you want and
-implement needed functions in your own @ref Object subclass without having to
-subclass each feature individually (and making the code overly verbose).
-Simplified example:
+an object like above, without any additional work (for example collision
+shape). Active features require the user to implement some virtual function
+(for example to draw the object on screen or perform animation step). To make
+things convenient, features can be added directly to object itself using
+multiple inheritance, so you can conveniently add all the active features you
+want and implement needed functions in your own @ref SceneGraph::Object
+subclass without having to subclass each feature individually (and making the
+code overly verbose). Simplified example:
 @code
 class Bomb: public Object3D, SceneGraph::Drawable3D, SceneGraph::Animable3D {
     public:
@@ -190,21 +192,22 @@ objects etc. To avoid computing the transformations from scratch every time,
 the feature can cache them.
 
 The cached data stay until the object is marked as dirty - that is by changing
-transformation, changing parent or explicitly calling @ref Object::setDirty().
+transformation, changing parent or explicitly calling @ref SceneGraph::Object::setDirty().
 If the object is marked as dirty, all its children are marked as dirty too and
-@ref AbstractFeature::markDirty() is called on every feature. Calling
-@ref Object::setClean() cleans the dirty object and all its dirty parents.
-The function goes through all object features and calls @ref AbstractFeature::clean()
-or @ref AbstractFeature::cleanInverted() depending on which caching is enabled
-on given feature. If the object is already clean, @ref Object::setClean() does
-nothing.
+@ref SceneGraph::AbstractFeature::markDirty() is called on every feature.
+Calling @ref SceneGraph::Object::setClean() cleans the dirty object and all its
+dirty parents. The function goes through all object features and calls
+@ref SceneGraph::AbstractFeature::clean() or
+@ref SceneGraph::AbstractFeature::cleanInverted() depending on which caching is
+enabled on given feature. If the object is already clean,
+@ref SceneGraph::Object::setClean() does nothing.
 
-Most probably you will need caching in @ref Object itself -- which doesn't
-support it on its own -- however you can take advantage of multiple inheritance
-and implement it using @ref AbstractFeature. In order to have caching, you must
-enable it first, because by default the caching is disabled. You can enable it
-using @ref AbstractFeature::setCachedTransformations() and then implement
-corresponding cleaning function(s):
+Most probably you will need caching in @ref SceneGraph::Object itself -- which
+doesn't support it on its own -- however you can take advantage of multiple
+inheritance and implement it using @ref SceneGraph::AbstractFeature. In order
+to have caching, you must enable it first, because by default the caching is
+disabled. You can enable it using @ref SceneGraph::AbstractFeature::setCachedTransformations()
+and then implement corresponding cleaning function(s):
 @code
 class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
     public:
@@ -223,9 +226,9 @@ class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
 @endcode
 
 When you need to use the cached value, you can explicitly request the cleanup
-by calling @ref Object::setClean(). @ref Camera3D "Camera", for example, calls
-it automatically before it starts rendering, as it needs its own inverse
-transformation to properly draw the objects.
+by calling @ref SceneGraph::Object::setClean(). @ref SceneGraph::Camera3D "Camera",
+for example, calls it automatically before it starts rendering, as it needs its
+own inverse transformation to properly draw the objects.
 
 See @ref SceneGraph-AbstractFeature-subclassing-caching for more information.
 
@@ -308,4 +311,4 @@ program didn't already crash) destructor of MyFeature is called (again).
 -   Previous page: @ref plugins
 -   Next page: @ref shapes
 */
-}}
+}

@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum { namespace Shapes {
+namespace Magnum {
 /** @page shapes Collision detection
 @brief Collection of simple shapes for high performance collision detection.
 
@@ -124,9 +124,9 @@ As this is useful for e.g. menu handling and simple particle systems, for
 serious physics you often need more information like contact point, separation
 normal and penetration depth. For shape pairs which have implemented this
 detailed collision detection you can use the `/` operator, which returns
-@ref Collision object. Note that unlike with the `%` operator mentioned above,
-this operation is not commutative. See @ref Collision class documentation for
-more information about the returned data. Example:
+@ref Shapes::Collision object. Note that unlike with the `%` operator mentioned
+above, this operation is not commutative. See @ref Shapes::Collision class
+documentation for more information about the returned data. Example:
 @code
 const Shapes::Collision3D c = point/sphere;
 if(c) {
@@ -173,4 +173,4 @@ debugging purposes. See also @ref scenegraph for introduction.
 -   Next page: @ref debug-tools
 
 */
-}}}
+}
