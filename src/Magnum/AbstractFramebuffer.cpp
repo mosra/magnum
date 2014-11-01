@@ -138,9 +138,9 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
     glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
     return FramebufferTarget::Read;
     #else
-    if(state->readTarget == FramebufferTarget::ReadDraw) state.drawBinding = _id;
+    if(state.readTarget == FramebufferTarget::ReadDraw) state.drawBinding = _id;
     glBindFramebuffer(GLenum(state.readTarget), _id);
-    return state->readTarget;
+    return state.readTarget;
     #endif
 }
 
