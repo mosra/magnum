@@ -109,7 +109,8 @@ cmake .. \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/clang-${sanitizer}sanitizer-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/clang-${sanitizer}sanitizer-${compatibility}-${gl} \
     -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/clang-${sanitizer}sanitizer-${compatibility}/lib;${JENKINS_HOME}/filesystem/clang-${sanitizer}sanitizer-${compatibility}-${gl}/lib" \
-    -DCMAKE_CXX_FLAGS="-std=c++11" \
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DCMAKE_CXX_FLAGS="-std=c++11 -fsanitize=${sanitizer}" \
     -DBUILD_TESTS=ON \
     -DBUILD_GL_TESTS=${windowless_flag} \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \
@@ -140,6 +141,15 @@ ninja install
     </hudson.tasks.Shell>
   </builders>
   <publishers>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>Magnum-ClangSanitizer-GLTests</childProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+        <completeBuild>true</completeBuild>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
     <hudson.plugins.textfinder.TextFinderPublisher plugin="text-finder@1.9">
       <regexp>Errors while running CTest</regexp>
       <succeedIfFound>false</succeedIfFound>
