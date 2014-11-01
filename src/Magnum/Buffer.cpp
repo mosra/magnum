@@ -236,7 +236,7 @@ void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
 
     /* Bind the buffer otherwise, which will also finally create it */
     bound = id;
-    buffer->_created = true;
+    if(buffer) buffer->_created = true;
     glBindBuffer(GLenum(target), id);
 }
 
