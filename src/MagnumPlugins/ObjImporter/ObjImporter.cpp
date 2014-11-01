@@ -80,6 +80,10 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
     }
 
     if(data.size() == size+1) {
+        /* This should be obvious from the first if, but add this just to make
+           Clang Analyzer happy */
+        CORRADE_INTERNAL_ASSERT(extra);
+
         #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
         *extra = std::stof(data.back());
         #else
