@@ -99,18 +99,18 @@ void AbstractFramebuffer::bind(FramebufferTarget target) {
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
 
     /* If already bound, done, otherwise update tracked state */
     if(target == FramebufferTarget::Read) {
-        if(state->readBinding == _id) return;
-        state->readBinding = _id;
+        if(state.readBinding == _id) return;
+        state.readBinding = _id;
     } else if(target == FramebufferTarget::Draw) {
-        if(state->drawBinding == _id) return;
-        state->drawBinding = _id;
+        if(state.drawBinding == _id) return;
+        state.drawBinding = _id;
     } else if(target == FramebufferTarget::ReadDraw) {
-        if(state->readBinding == _id && state->drawBinding == _id) return;
-        state->readBinding = state->drawBinding = _id;
+        if(state.readBinding == _id && state.drawBinding == _id) return;
+        state.readBinding = state.drawBinding = _id;
     } else CORRADE_ASSERT_UNREACHABLE();
 
     /* Binding the framebuffer finally creates it */
@@ -119,18 +119,18 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
 
     /* Return target to which the framebuffer is already bound */
-    if(state->readBinding == _id && state->drawBinding == _id)
+    if(state.readBinding == _id && state.drawBinding == _id)
         return FramebufferTarget::ReadDraw;
-    if(state->readBinding == _id)
+    if(state.readBinding == _id)
         return FramebufferTarget::Read;
-    if(state->drawBinding == _id)
+    if(state.drawBinding == _id)
         return FramebufferTarget::Draw;
 
     /* Or bind it, if not already */
-    state->readBinding = _id;
+    state.readBinding = _id;
 
     /* Binding the framebuffer finally creates it */
     _created = true;
@@ -138,8 +138,8 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
     glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
     return FramebufferTarget::Read;
     #else
-    if(state->readTarget == FramebufferTarget::ReadDraw) state->drawBinding = _id;
-    glBindFramebuffer(GLenum(state->readTarget), _id);
+    if(state->readTarget == FramebufferTarget::ReadDraw) state.drawBinding = _id;
+    glBindFramebuffer(GLenum(state.readTarget), _id);
     return state->readTarget;
     #endif
 }
@@ -191,18 +191,18 @@ AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle)
 }
 
 void AbstractFramebuffer::setViewportInternal() {
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
 
     /* We are using empty viewport to indicate disengaged state */
     CORRADE_INTERNAL_ASSERT(_viewport != Range2Di{});
-    CORRADE_INTERNAL_ASSERT(state->drawBinding == _id);
+    CORRADE_INTERNAL_ASSERT(state.drawBinding == _id);
 
     /* Already up-to-date, nothing to do */
-    if(state->viewport == _viewport)
+    if(state.viewport == _viewport)
         return;
 
     /* Update the state and viewport */
-    state->viewport = _viewport;
+    state.viewport = _viewport;
     glViewport(_viewport.left(), _viewport.bottom(), _viewport.sizeX(), _viewport.sizeY());
 }
 

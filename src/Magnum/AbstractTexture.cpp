@@ -116,25 +116,25 @@ Int AbstractTexture::maxIntegerSamples() {
 #endif
 
 void AbstractTexture::unbind(const Int textureUnit) {
-    Implementation::TextureState* const textureState = Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current()->state().texture;
 
     /* If given texture unit is already unbound, nothing to do */
-    if(textureState->bindings[textureUnit].second == 0) return;
+    if(textureState.bindings[textureUnit].second == 0) return;
 
     /* Unbind the texture, reset state tracker */
     Context::current()->state().texture->unbindImplementation(textureUnit);
-    textureState->bindings[textureUnit] = {};
+    textureState.bindings[textureUnit] = {};
 }
 
 void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
-    Implementation::TextureState* const textureState = Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current()->state().texture;
 
     /* Activate given texture unit if not already active, update state tracker */
-    if(textureState->currentTextureUnit != textureUnit)
-        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = textureUnit));
+    if(textureState.currentTextureUnit != textureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = textureUnit));
 
-    CORRADE_INTERNAL_ASSERT(textureState->bindings[textureUnit].first != 0);
-    glBindTexture(textureState->bindings[textureUnit].first, 0);
+    CORRADE_INTERNAL_ASSERT(textureState.bindings[textureUnit].first != 0);
+    glBindTexture(textureState.bindings[textureUnit].first, 0);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -144,10 +144,10 @@ void AbstractTexture::unbindImplementationMulti(const GLint textureUnit) {
 }
 
 void AbstractTexture::unbindImplementationDSAEXT(const GLint textureUnit) {
-    Implementation::TextureState* const textureState = Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current()->state().texture;
 
-    CORRADE_INTERNAL_ASSERT(textureState->bindings[textureUnit].first != 0);
-    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, textureState->bindings[textureUnit].first, 0);
+    CORRADE_INTERNAL_ASSERT(textureState.bindings[textureUnit].first != 0);
+    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, textureState.bindings[textureUnit].first, 0);
 }
 #endif
 
@@ -170,7 +170,7 @@ void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, c
 #ifndef MAGNUM_TARGET_GLES
 /** @todoc const Containers::ArrayReference makes Doxygen grumpy */
 void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures) {
-    Implementation::TextureState* const textureState = Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current()->state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */
     Containers::Array<GLuint> ids{textures ? textures.size() : 0};
@@ -183,9 +183,9 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Cont
             ids[i] = id;
         }
 
-        if(textureState->bindings[firstTextureUnit + i].second != id) {
+        if(textureState.bindings[firstTextureUnit + i].second != id) {
             different = true;
-            textureState->bindings[firstTextureUnit + i].second = id;
+            textureState.bindings[firstTextureUnit + i].second = id;
         }
     }
 
@@ -246,22 +246,22 @@ AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayRefere
 }
 
 void AbstractTexture::bind(Int textureUnit) {
-    Implementation::TextureState* const textureState = Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current()->state().texture;
 
     /* If already bound in given texture unit, nothing to do */
-    if(textureState->bindings[textureUnit].second == _id) return;
+    if(textureState.bindings[textureUnit].second == _id) return;
 
     /* Update state tracker, bind the texture to the unit */
-    textureState->bindings[textureUnit] = {_target, _id};
-    (this->*Context::current()->state().texture->bindImplementation)(textureUnit);
+    textureState.bindings[textureUnit] = {_target, _id};
+    (this->*textureState.bindImplementation)(textureUnit);
 }
 
 void AbstractTexture::bindImplementationDefault(GLint textureUnit) {
-    Implementation::TextureState* const textureState = Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current()->state().texture;
 
     /* Activate given texture unit if not already active, update state tracker */
-    if(textureState->currentTextureUnit != textureUnit)
-        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = textureUnit));
+    if(textureState.currentTextureUnit != textureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = textureUnit));
 
     /* Binding the texture finally creates it */
     _created = true;
@@ -412,21 +412,21 @@ void AbstractTexture::bindInternal() {
        functions need to have the texture bound in *currently active* unit,
        so we would need to call glActiveTexture() afterwards anyway. */
 
-    Implementation::TextureState* const textureState = Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current()->state().texture;
 
     /* If the texture is already bound in current unit, nothing to do */
-    if(textureState->bindings[textureState->currentTextureUnit].second == _id)
+    if(textureState.bindings[textureState.currentTextureUnit].second == _id)
         return;
 
     /* Set internal unit as active if not already, update state tracker */
-    CORRADE_INTERNAL_ASSERT(textureState->maxTextureUnits > 1);
-    const GLint internalTextureUnit = textureState->maxTextureUnits-1;
-    if(textureState->currentTextureUnit != internalTextureUnit)
-        glActiveTexture(GL_TEXTURE0 + (textureState->currentTextureUnit = internalTextureUnit));
+    CORRADE_INTERNAL_ASSERT(textureState.maxTextureUnits > 1);
+    const GLint internalTextureUnit = textureState.maxTextureUnits-1;
+    if(textureState.currentTextureUnit != internalTextureUnit)
+        glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = internalTextureUnit));
 
     /* Bind the texture to internal unit if not already, update state tracker */
-    if(textureState->bindings[internalTextureUnit].second == _id) return;
-    textureState->bindings[internalTextureUnit] = {_target, _id};
+    if(textureState.bindings[internalTextureUnit].second == _id) return;
+    textureState.bindings[internalTextureUnit] = {_target, _id};
 
     /* Binding the texture finally creates it */
     _created = true;

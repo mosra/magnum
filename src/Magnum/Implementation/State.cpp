@@ -55,17 +55,17 @@ State::State(Context& context) {
     extensions.reserve(8);
     #endif
 
-    buffer = new BufferState(context, extensions);
-    debug = new DebugState(context, extensions);
-    framebuffer = new FramebufferState(context, extensions);
-    mesh = new MeshState(context, extensions);
-    query = new QueryState(context, extensions);
-    renderer = new RendererState(context, extensions);
-    shader = new ShaderState;
-    shaderProgram = new ShaderProgramState(context, extensions);
-    texture = new TextureState(context, extensions);
+    buffer.reset(new BufferState{context, extensions});
+    debug.reset(new DebugState{context, extensions});
+    framebuffer.reset(new FramebufferState{context, extensions});
+    mesh.reset(new MeshState{context, extensions});
+    query.reset(new QueryState{context, extensions});
+    renderer.reset(new RendererState{context, extensions});
+    shader.reset(new ShaderState);
+    shaderProgram.reset(new ShaderProgramState{context, extensions});
+    texture.reset(new TextureState{context, extensions});
     #ifndef MAGNUM_TARGET_GLES2
-    transformFeedback = new TransformFeedbackState(context, extensions);
+    transformFeedback.reset(new TransformFeedbackState{context, extensions});
     #endif
 
     /* Sort the features and remove duplicates */
@@ -76,15 +76,6 @@ State::State(Context& context) {
     for(const auto& ext: extensions) Debug() << "   " << ext;
 }
 
-State::~State() {
-    delete texture;
-    delete shaderProgram;
-    delete shader;
-    delete renderer;
-    delete mesh;
-    delete framebuffer;
-    delete debug;
-    delete buffer;
-}
+State::~State() = default;
 
 }}

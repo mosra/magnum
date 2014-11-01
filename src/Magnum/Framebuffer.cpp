@@ -102,12 +102,12 @@ Framebuffer::~Framebuffer() {
     if(!_id) return;
 
     /* If bound, remove itself from state */
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
-    if(state->readBinding == _id) state->readBinding = 0;
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    if(state.readBinding == _id) state.readBinding = 0;
 
     /* For draw binding reset also viewport */
-    if(state->drawBinding == _id) {
-        state->drawBinding = 0;
+    if(state.drawBinding == _id) {
+        state.drawBinding = 0;
 
         /**
          * @todo Less ugly solution (need to call setViewportInternal() to
