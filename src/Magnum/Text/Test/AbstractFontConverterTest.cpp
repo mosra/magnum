@@ -64,6 +64,13 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
               &AbstractFontConverterTest::importGlyphCacheFromFile});
 }
 
+namespace {
+    /* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
+    unsigned char nullData;
+    AbstractFont& nullFont = *reinterpret_cast<AbstractFont*>(nullData);
+    GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(nullData);
+}
+
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
@@ -99,7 +106,7 @@ void AbstractFontConverterTest::convertGlyphs() {
     std::vector<char32_t> characters;
     #endif
     GlyphExporter exporter(characters);
-    exporter.exportFontToSingleData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "abC01a0 ");
+    exporter.exportFontToSingleData(nullFont, nullGlyphCache, "abC01a0 ");
     #ifndef __MINGW32__
     CORRADE_COMPARE(characters, U" 01Cab");
     #else
@@ -127,7 +134,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
 
     /* doExportFontToData() should call doExportFontToSingleData() */
     SingleDataExporter exporter;
-    auto ret = exporter.exportFontToData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "font.out", {});
+    auto ret = exporter.exportFontToData(nullFont, nullGlyphCache, "font.out", {});
     CORRADE_COMPARE(ret.size(), 1);
     CORRADE_COMPARE(ret[0].first, "font.out");
     CORRADE_COMPARE(ret[0].second.size(), 1);
@@ -165,7 +172,7 @@ void AbstractFontConverterTest::exportFontToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    bool exported = exporter.exportFontToFile(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"), {});
+    bool exported = exporter.exportFontToFile(nullFont, nullGlyphCache, Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"), {});
     CORRADE_VERIFY(exported);
     CORRADE_COMPARE_AS(Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"),
                        "\xf0", TestSuite::Compare::FileToString);
@@ -187,7 +194,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
 
     /* doExportGlyphCacheToData() should call doExportGlyphCacheToSingleData() */
     SingleDataExporter exporter;
-    auto ret = exporter.exportGlyphCacheToData(*static_cast<GlyphCache*>(nullptr), "font.out");
+    auto ret = exporter.exportGlyphCacheToData(nullGlyphCache, "font.out");
     CORRADE_COMPARE(ret.size(), 1);
     CORRADE_COMPARE(ret[0].first, "font.out");
     CORRADE_COMPARE(ret[0].second.size(), 1);
@@ -220,7 +227,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
 
     /* doExportGlyphCacheToFile() should call doExportGlyphCacheToData() */
     DataExporter exporter;
-    bool exported = exporter.exportGlyphCacheToFile(*static_cast<GlyphCache*>(nullptr), Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"));
+    bool exported = exporter.exportGlyphCacheToFile(nullGlyphCache, Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"));
     CORRADE_VERIFY(exported);
     CORRADE_COMPARE_AS(Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"),
                        "\xf0", TestSuite::Compare::FileToString);

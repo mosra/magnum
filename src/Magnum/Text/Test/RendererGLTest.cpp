@@ -82,6 +82,10 @@ class TestFont: public Text::AbstractFont {
     }
 };
 
+/* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
+unsigned char glyphCacheData;
+GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(&glyphCacheData);
+
 }
 
 void RendererGLTest::renderData() {
@@ -90,7 +94,7 @@ void RendererGLTest::renderData() {
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
     Range2D bounds;
-    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractRenderer::render(font, *static_cast<GlyphCache*>(nullptr), 0.25f, "abc", Alignment::MiddleRightIntegral);
+    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractRenderer::render(font, nullGlyphCache, 0.25f, "abc", Alignment::MiddleRightIntegral);
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
     CORRADE_COMPARE(positions.size(), 12);
@@ -172,7 +176,7 @@ void RendererGLTest::renderMesh() {
     Mesh mesh;
     Buffer vertexBuffer, indexBuffer;
     Range2D bounds;
-    std::tie(mesh, bounds) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+    std::tie(mesh, bounds) = Text::Renderer3D::render(font, nullGlyphCache,
         0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -224,7 +228,7 @@ void RendererGLTest::renderMeshIndexType() {
        texture coordinates, each float is four bytes; six indices per glyph. */
 
     /* 8-bit indices (exactly 256 vertices) */
-    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     Containers::Array<UnsignedByte> indicesByte = indexBuffer.data<UnsignedByte>();
@@ -237,7 +241,7 @@ void RendererGLTest::renderMeshIndexType() {
     }));
 
     /* 16-bit indices (260 vertices) */
-    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, *static_cast<GlyphCache*>(nullptr),
+    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
     Containers::Array<UnsignedShort> indicesShort = indexBuffer.data<UnsignedShort>();
@@ -266,7 +270,7 @@ void RendererGLTest::mutableText() {
     #endif
 
     TestFont font;
-    Text::Renderer2D renderer(font, *static_cast<GlyphCache*>(nullptr), 0.25f);
+    Text::Renderer2D renderer(font, nullGlyphCache, 0.25f);
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
     CORRADE_COMPARE(renderer.rectangle(), Range2D());
@@ -359,7 +363,7 @@ void RendererGLTest::multiline() {
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
     std::tie(positions, textureCoordinates, indices, rectangle) = Text::Renderer2D::render(font,
-        *static_cast<GlyphCache*>(nullptr), 2.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
+        nullGlyphCache, 2.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
 
     /* We're rendering text at 2.0f size and the font is scaled to 0.3f, so the
        line advance should be 0.75f*2.0f/0.5f = 3.0f */
