@@ -178,7 +178,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,clear_buffer_object),
         _extension(GL,ARB,compute_shader),
         _extension(GL,ARB,copy_image),
-        _extension(GL,KHR,debug),
         _extension(GL,ARB,explicit_uniform_location),
         _extension(GL,ARB,fragment_layer_viewport),
         _extension(GL,ARB,framebuffer_no_attachments),
@@ -194,7 +193,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_query_levels),
         _extension(GL,ARB,texture_storage_multisample),
         _extension(GL,ARB,texture_view),
-        _extension(GL,ARB,vertex_attrib_binding)};
+        _extension(GL,ARB,vertex_attrib_binding),
+        _extension(GL,KHR,debug)};
     static const std::vector<Extension> extensions440{
         _extension(GL,ARB,buffer_storage),
         _extension(GL,ARB,clear_texture),
