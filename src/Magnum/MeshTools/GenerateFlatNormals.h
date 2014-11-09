@@ -39,7 +39,7 @@ namespace Magnum { namespace MeshTools {
 
 /**
 @brief Generate flat normals
-@param indices      Array of triangle face indexes
+@param indices      Array of triangle face indices
 @param positions    Array of vertex positions
 @return Normal indices and vectors
 
