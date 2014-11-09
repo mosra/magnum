@@ -68,14 +68,35 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
 
         /**
          * @brief Transform object
-         * @param transformation    Transformation
-         * @param type              Transformation type
          * @return Reference to self (for method chaining)
+         *
+         * @see @ref transformLocal()
          */
-        Object<BasicMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type = TransformationType::Global) {
-            return setTransformation(type == TransformationType::Global ?
-                transformation*_transformation : _transformation*transformation);
+        Object<BasicMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation) {
+            return setTransformation(transformation*_transformation);
         }
+
+        /**
+         * @brief Transform object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        Object<BasicMatrixTransformation2D<T>>& transformLocal(const Math::Matrix3<T>& transformation) {
+            return setTransformation(_transformation*transformation);
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transform()
+         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation2D::transform() "transform()"
+         *      or @ref Magnum::SceneGraph::MatrixTransformation2D::transformLocal() "transformLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type) {
+            return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
+        }
+        #endif
 
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
         Object<BasicMatrixTransformation2D<T>>& resetTransformation() {
@@ -83,41 +104,146 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @copydoc AbstractTranslationRotationScaling2D::translate()
+         * Translate object
+         * @return Reference to self (for method chaining)
+         *
          * Same as calling @ref transform() with @ref Math::Matrix3::translation().
+         * @see @ref translateLocal(), @ref Math::Vector2::xAxis(),
+         *      @ref Math::Vector2::yAxis()
          */
-        Object<BasicMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            return transform(Math::Matrix3<T>::translation(vector), type);
+        Object<BasicMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector) {
+            return transform(Math::Matrix3<T>::translation(vector));
         }
 
         /**
-         * @copydoc AbstractTranslationRotationScaling2D::rotate()
+         * @brief Translate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. Same as calling @ref transformLocal() with
+         * @ref Math::Matrix3::translation().
+         */
+        Object<BasicMatrixTransformation2D<T>>& translateLocal(const Math::Vector2<T>& vector) {
+            return transformLocal(Math::Matrix3<T>::translation(vector));
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief translate()
+         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation2D::translate() "translate()"
+         *      or @ref Magnum::SceneGraph::MatrixTransformation2D::translateLocal() "translateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
+            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
+        }
+        #endif
+
+        /**
+         * @brief Rotate object
+         * @param angle     Angle (counterclockwise)
+         * @return Reference to self (for method chaining)
+         *
          * Same as calling @ref transform() with @ref Math::Matrix3::rotation().
+         * @see @ref rotateLocal()
          */
-        Object<BasicMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            return transform(Math::Matrix3<T>::rotation(angle), type);
+        Object<BasicMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle) {
+            return transform(Math::Matrix3<T>::rotation(angle));
         }
 
         /**
-         * @copydoc AbstractTranslationRotationScaling2D::scale()
-         * Same as calling @ref transform() with @ref Math::Matrix3::scaling().
+         * @brief Rotate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. Same as calling @ref transformLocal() with
+         * @ref Math::Matrix3::rotation().
          */
-        Object<BasicMatrixTransformation2D<T>>& scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            return transform(Math::Matrix3<T>::scaling(vector), type);
+        Object<BasicMatrixTransformation2D<T>>& rotateLocal(Math::Rad<T> angle) {
+            return transformLocal(Math::Matrix3<T>::rotation(angle));
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rotate()
+         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation2D::rotate() "rotate()"
+         *      or @ref Magnum::SceneGraph::MatrixTransformation2D::rotateLocal() "rotateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type) {
+            return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);
+        }
+        #endif
+
+        /**
+         * @brief Scale object
+         * @return Reference to self (for method chaining)
+         *
+         * Same as calling @ref transform() with @ref Math::Matrix3::scaling().
+         * @see @ref scaleLocal(), @ref Math::Vector2::xScale(),
+         *      @ref Math::Vector2::yScale()
+         */
+        Object<BasicMatrixTransformation2D<T>>& scale(const Math::Vector2<T>& vector) {
+            return transform(Math::Matrix3<T>::scaling(vector));
+        }
+
+        /**
+         * @brief Scale object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. Same as calling @ref transformLocal() with
+         * @ref Math::Matrix3::scaling().
+         */
+        Object<BasicMatrixTransformation2D<T>>& scaleLocal(const Math::Vector2<T>& vector) {
+            return transformLocal(Math::Matrix3<T>::scaling(vector));
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief scale()
+         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation2D::scale() "scale()"
+         *      or @ref Magnum::SceneGraph::MatrixTransformation2D::scaleLocal() "scaleLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use scale() or scaleLocal() instead") Object<BasicMatrixTransformation2D<T>>& scale(const Math::Vector2<T>& vector, TransformationType type) {
+            return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);
+        }
+        #endif
 
         /**
          * @brief Reflect object
          * @param normal    Normal of the line through which to reflect
          *      (normalized)
-         * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::Matrix3::reflection().
+         * @see @ref reflectLocal(), @ref Math::Vector2::xAxis(),
+         *      @ref Math::Vector2::yAxis()
          */
-        Object<BasicMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type = TransformationType::Global) {
-            return transform(Math::Matrix3<T>::reflection(normal), type);
+        Object<BasicMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal) {
+            return transform(Math::Matrix3<T>::reflection(normal));
         }
+
+        /**
+         * @brief Reflect object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. Same as calling @ref transformLocal() with
+         * @ref Math::Matrix3::reflection().
+         */
+        Object<BasicMatrixTransformation2D<T>>& reflectLocal(const Math::Vector2<T>& normal) {
+            return transformLocal(Math::Matrix3<T>::reflection(normal));
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief reflect()
+         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation2D::reflect() "reflect()"
+         *      or @ref Magnum::SceneGraph::MatrixTransformation2D::reflectLocal() "reflectLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use reflect() or reflectLocal() instead") Object<BasicMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type) {
+            return type == TransformationType::Global ? reflect(normal) : reflectLocal(normal);
+        }
+        #endif
 
     protected:
         /* Allow construction only from Object */
@@ -126,17 +252,14 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
     private:
         void doResetTransformation() override final { resetTransformation(); }
 
-        void doTranslate(const Math::Vector2<T>& vector, TransformationType type) override final {
-            translate(vector, type);
-        }
+        void doTranslate(const Math::Vector2<T>& vector) override final { translate(vector); }
+        void doTranslateLocal(const Math::Vector2<T>& vector) override final { translateLocal(vector); }
 
-        void doRotate(Math::Rad<T> angle, TransformationType type) override final {
-            rotate(angle, type);
-        }
+        void doRotate(Math::Rad<T> angle) override final { rotate(angle); }
+        void doRotateLocal(Math::Rad<T> angle) override final { rotateLocal(angle); }
 
-        void doScale(const Math::Vector2<T>& vector, TransformationType type) override final {
-            scale(vector, type);
-        }
+        void doScale(const Math::Vector2<T>& vector) override final { scale(vector); }
+        void doScaleLocal(const Math::Vector2<T>& vector) override final { scaleLocal(vector); }
 
         Math::Matrix3<T> _transformation;
 };

@@ -57,18 +57,47 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
 
         /**
          * @brief Translate object
-         * @param vector    Translation vector
-         * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see @ref Math::Vector2::xAxis(), @ref Math::Vector2::yAxis(),
-         *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
-         *      @ref Math::Vector3::zAxis()
+         * @see @ref translateLocal(), @ref Math::Vector2::xAxis(),
+         *      @ref Math::Vector2::yAxis(), @ref Math::Vector3::xAxis(),
+         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis()
          */
-        AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type = TransformationType::Global) {
-            doTranslate(vector, type);
+        AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector) {
+            doTranslate(vector);
             return *this;
         }
+
+        /**
+         * @brief Translate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        AbstractTranslation<dimensions, T, TranslationType>& translateLocal(const VectorTypeFor<dimensions, TranslationType>& vector) {
+            doTranslateLocal(vector);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief translate()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslation::translate() "translate()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslation::translateLocal() "translateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) {
+            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
+        }
+        #endif
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslation<dimensions, T, TranslationType>& resetTransformation() {
+            AbstractTransformation<dimensions, T>::resetTransformation();
+            return *this;
+        }
+        #endif
 
     protected:
         ~AbstractTranslation() = default;
@@ -79,7 +108,10 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
     private:
     #endif
         /** @brief Polymorphic implementation for @ref translate() */
-        virtual void doTranslate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) = 0;
+        virtual void doTranslate(const VectorTypeFor<dimensions, TranslationType>& vector) = 0;
+
+        /** @brief Polymorphic implementation for @ref translateLocal() */
+        virtual void doTranslateLocal(const VectorTypeFor<dimensions, TranslationType>& vector) = 0;
 };
 
 /**

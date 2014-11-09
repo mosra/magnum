@@ -49,62 +49,159 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * @brief Rotate object
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
-         * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see @ref rotateX(), @ref rotateY(), @ref rotateZ(),
-         *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
-         *      @ref Math::Vector3::zAxis()
+         * @see @ref rotateLocal(), @ref rotateX(), @ref rotateY(),
+         *      @ref rotateZ(), @ref Math::Vector3::xAxis(),
+         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis()
          */
-        AbstractBasicTranslationRotation3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
-            doRotate(angle, normalizedAxis, type);
+        AbstractBasicTranslationRotation3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
+            doRotate(angle, normalizedAxis);
             return *this;
         }
 
         /**
+         * @brief Rotate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        AbstractBasicTranslationRotation3D<T>& rotateLocal(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
+            doRotateLocal(angle, normalizedAxis);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rotate()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotate() "rotate()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateLocal() "rotateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotation3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
+            return type == TransformationType::Global ? rotate(angle, normalizedAxis) : rotateLocal(angle, normalizedAxis);
+        }
+        #endif
+
+        /**
          * @brief Rotate object around X axis
          * @param angle             Angle (counterclockwise)
-         * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
          * `rotate(angle, Vector3::xAxis())`, see subclasses for more
          * information.
+         * @see @ref rotateXLocal()
          */
-        AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            doRotateX(angle, type);
+        AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle) {
+            doRotateX(angle);
             return *this;
         }
 
         /**
+         * @brief Rotate object around X axis as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. In some implementations faster than calling
+         * `rotateLocal(angle, Vector3::xAxis())`, see subclasses for more
+         * information.
+         */
+        AbstractBasicTranslationRotation3D<T>& rotateXLocal(Math::Rad<T> angle) {
+            doRotateXLocal(angle);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rotateX()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateX() "rotateX()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateXLocal() "rotateXLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type) {
+            return type == TransformationType::Global ? rotateX(angle) : rotateXLocal(angle);
+        }
+        #endif
+
+        /**
          * @brief Rotate object around Y axis
          * @param angle             Angle (counterclockwise)
-         * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
          * `rotate(angle, Vector3::yAxis())`, see subclasses for more
          * information.
+         * @see @ref rotateYLocal()
          */
-        AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            doRotateX(angle, type);
+        AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle) {
+            doRotateY(angle);
             return *this;
         }
 
         /**
+         * @brief Rotate object around Y axis as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. In some implementations faster than calling
+         * `rotateLocal(angle, Vector3::yAxis())`, see subclasses for more
+         * information.
+         */
+        AbstractBasicTranslationRotation3D<T>& rotateYLocal(Math::Rad<T> angle) {
+            doRotateY(angle);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief roateY()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateY() "rotateY()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateYLocal() "rotateYLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type) {
+            return type == TransformationType::Global ? rotateY(angle) : rotateYLocal(angle);
+        }
+        #endif
+
+        /**
          * @brief Rotate object around Z axis
          * @param angle             Angle (counterclockwise)
-         * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
          * In some implementations faster than calling
          * `rotate(angle, Vector3::zAxis())`, see subclasses for more
          * information.
+         * @see @ref rotateZLocal()
          */
-        AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            doRotateZ(angle, type);
+        AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle) {
+            doRotateZ(angle);
             return *this;
         }
+
+        /**
+         * @brief Rotate object around Z axis as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. In some implementations faster than calling
+         * `rotateLocal(angle, Vector3::zAxis())`, see subclasses for more
+         * information.
+         */
+        AbstractBasicTranslationRotation3D<T>& rotateZLocal(Math::Rad<T> angle) {
+            doRotateZLocal(angle);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rotateZ()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateZ() "rotateZ()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateZLocal() "rotateZLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type) {
+            return type == TransformationType::Global ? rotateZ(angle) : rotateZLocal();
+        }
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -112,6 +209,20 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
             AbstractBasicTranslation3D<T>::resetTransformation();
             return *this;
         }
+        AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector3<T>& vector) {
+            AbstractBasicTranslation3D<T>::translate(vector);
+            return *this;
+        }
+        AbstractBasicTranslationRotation3D<T>& translateLocal(const Math::Vector3<T>& vector) {
+            AbstractBasicTranslation3D<T>::translateLocal(vector);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
+            AbstractBasicTranslation3D<T>::translate(vector, type);
+            return *this;
+        }
+        #endif
         #endif
 
     protected:
@@ -123,7 +234,10 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
     private:
     #endif
         /** @brief Polymorphic implementation for @ref rotate() */
-        virtual void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) = 0;
+        virtual void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) = 0;
+
+        /** @brief Polymorphic implementation for @ref rotateLocal() */
+        virtual void doRotateLocal(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) = 0;
 
         /**
          * @brief Polymorphic implementation for @ref rotateX()
@@ -131,8 +245,18 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * Default implementation calls @ref rotate() with
          * @ref Math::Vector3::xAxis().
          */
-        virtual void doRotateX(Math::Rad<T> angle, TransformationType type) {
-            rotate(angle, Math::Vector3<T>::xAxis(), type);
+        virtual void doRotateX(Math::Rad<T> angle) {
+            rotate(angle, Math::Vector3<T>::xAxis());
+        }
+
+        /**
+         * @brief Polymorphic implementation for @ref rotateXLocal()
+         *
+         * Default implementation calls @ref rotateLocal() with
+         * @ref Math::Vector3::xAxis().
+         */
+        virtual void doRotateXLocal(Math::Rad<T> angle) {
+            rotateLocal(angle, Math::Vector3<T>::xAxis());
         }
 
         /**
@@ -141,8 +265,18 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * Default implementation calls @ref rotate() with
          * @ref Math::Vector3::yAxis().
          */
-        virtual void doRotateY(Math::Rad<T> angle, TransformationType type) {
-            rotate(angle, Math::Vector3<T>::yAxis(), type);
+        virtual void doRotateY(Math::Rad<T> angle) {
+            rotate(angle, Math::Vector3<T>::yAxis());
+        }
+
+        /**
+         * @brief Polymorphic implementation for @ref rotateYLocal()
+         *
+         * Default implementation calls @ref rotateLocal() with
+         * @ref Math::Vector3::yAxis().
+         */
+        virtual void doRotateYLocal(Math::Rad<T> angle) {
+            rotateLocal(angle, Math::Vector3<T>::yAxis());
         }
 
         /**
@@ -151,8 +285,18 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * Default implementation calls @ref rotate() with
          * @ref Math::Vector3::zAxis().
          */
-        virtual void doRotateZ(Math::Rad<T> angle, TransformationType type) {
-            rotate(angle, Math::Vector3<T>::zAxis(), type);
+        virtual void doRotateZ(Math::Rad<T> angle) {
+            rotate(angle, Math::Vector3<T>::zAxis());
+        }
+
+        /**
+         * @brief Polymorphic implementation for @ref rotateZLocal()
+         *
+         * Default implementation calls @ref rotateLocal() with
+         * @ref Math::Vector3::zAxis().
+         */
+        virtual void doRotateZLocal(Math::Rad<T> angle) {
+            rotateLocal(angle, Math::Vector3<T>::zAxis());
         }
 };
 

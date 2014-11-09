@@ -136,7 +136,7 @@ void DualComplexTransformationTest::transform() {
     } {
         Object2D o;
         o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.transform(DualComplex::translation({1.0f, -0.3f}), TransformationType::Local);
+        o.transformLocal(DualComplex::translation({1.0f, -0.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
@@ -150,7 +150,7 @@ void DualComplexTransformationTest::translate() {
     } {
         Object2D o;
         o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.translate({1.0f, -0.3f}, TransformationType::Local);
+        o.translateLocal({1.0f, -0.3f});
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
@@ -164,7 +164,7 @@ void DualComplexTransformationTest::rotate() {
     } {
         Object2D o;
         o.setTransformation(DualComplex::translation({1.0f, -0.3f}));
-        o.rotate(Deg(17.0f), TransformationType::Local);
+        o.rotateLocal(Deg(17.0f));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     }
 }

@@ -64,7 +64,9 @@ template<class T> using AbstractBasicObject3D = AbstractObject<3, T>;
 typedef AbstractBasicObject2D<Float> AbstractObject2D;
 typedef AbstractBasicObject3D<Float> AbstractObject3D;
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 enum class TransformationType: UnsignedByte;
+#endif
 
 template<UnsignedInt, class> class AbstractTransformation;
 template<class T> using AbstractBasicTransformation2D = AbstractTransformation<2, T>;

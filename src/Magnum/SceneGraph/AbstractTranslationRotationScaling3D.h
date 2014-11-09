@@ -46,17 +46,38 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
 
         /**
          * @brief Scale object
-         * @param vector    Scaling vector
-         * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see @ref Math::Vector3::xScale(), @ref Math::Vector3::yScale(),
-         *      @ref Math::Vector3::zScale()
+         * @see @ref scaleLocal(), @ref Math::Vector3::xScale(),
+         *      @ref Math::Vector3::yScale(), @ref Math::Vector3::zScale()
          */
-        AbstractBasicTranslationRotationScaling3D<T>& scale(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
-            doScale(vector, type);
+        AbstractBasicTranslationRotationScaling3D<T>& scale(const Math::Vector3<T>& vector) {
+            doScale(vector);
             return *this;
         }
+
+        /**
+         * @brief Scale object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        AbstractBasicTranslationRotationScaling3D<T>& scaleLocal(const Math::Vector3<T>& vector) {
+            doScaleLocal(vector);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief scale()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotationScaling3D::scale() "scale()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslationRotationScaling3D::scaleLocal() "scaleLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use scale() or scaleLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& scale(const Math::Vector3<T>& vector, TransformationType type) {
+            return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);
+        }
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -64,26 +85,76 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
             AbstractBasicTranslationRotation3D<T>::resetTransformation();
             return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling3D<T>& translate(const Math::Vector3<T>& vector) {
+            AbstractBasicTranslationRotation3D<T>::translate(vector);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling3D<T>& translateLocal(const Math::Vector3<T>& vector) {
+            AbstractBasicTranslationRotation3D<T>::translateLocal(vector);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type) {
             AbstractBasicTranslationRotation3D<T>::translate(vector, type);
             return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
+        #endif
+        AbstractBasicTranslationRotationScaling3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
+            AbstractBasicTranslationRotation3D<T>::rotate(angle, normalizedAxis);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling3D<T>& rotateLocal(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
+            AbstractBasicTranslationRotation3D<T>::rotateLocal(angle, normalizedAxis);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
             AbstractBasicTranslationRotation3D<T>::rotate(angle, normalizedAxis, type);
             return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        #endif
+        AbstractBasicTranslationRotationScaling3D<T>& rotateX(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation3D<T>::rotateX(angle);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling3D<T>& rotateXLocal(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation3D<T>::rotateXLocal(angle);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotateX(Math::Rad<T> angle, TransformationType type) {
             AbstractBasicTranslationRotation3D<T>::rotateX(angle, type);
             return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        #endif
+        AbstractBasicTranslationRotationScaling3D<T>& rotateY(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation3D<T>::rotateY(angle);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling3D<T>& rotateYLocal(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation3D<T>::rotateYLocal(angle);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotateY(Math::Rad<T> angle, TransformationType type) {
             AbstractBasicTranslationRotation3D<T>::rotateY(angle, type);
             return *this;
         }
-        AbstractBasicTranslationRotationScaling3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        #endif
+        AbstractBasicTranslationRotationScaling3D<T>& rotateZ(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation3D<T>::rotateZ(angle);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling3D<T>& rotateZLocal(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation3D<T>::rotateZLocal(angle);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type) {
             AbstractBasicTranslationRotation3D<T>::rotateZ(angle, type);
             return *this;
         }
+        #endif
         #endif
 
     protected:
@@ -95,7 +166,10 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
     private:
     #endif
         /** @brief Polymorphic implementation for @ref scale() */
-        virtual void doScale(const Math::Vector3<T>& vector, TransformationType type) = 0;
+        virtual void doScale(const Math::Vector3<T>& vector) = 0;
+
+        /** @brief Polymorphic implementation for @ref scaleLocal() */
+        virtual void doScaleLocal(const Math::Vector3<T>& vector) = 0;
 };
 
 /**

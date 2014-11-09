@@ -142,7 +142,7 @@ void DualQuaternionTransformationTest::transform() {
     } {
         Object3D o;
         o.setTransformation(DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis()));
-        o.transform(DualQuaternion::translation({1.0f, -0.3f, 2.3f}), TransformationType::Local);
+        o.transformLocal(DualQuaternion::translation({1.0f, -0.3f, 2.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
     }
 }
@@ -156,7 +156,7 @@ void DualQuaternionTransformationTest::translate() {
     } {
         Object3D o;
         o.setTransformation(DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis()));
-        o.translate({1.0f, -0.3f, 2.3f}, TransformationType::Local);
+        o.translateLocal({1.0f, -0.3f, 2.3f});
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
     }
 }
@@ -178,10 +178,10 @@ void DualQuaternionTransformationTest::rotate() {
     } {
         Object3D o;
         o.transform(DualQuaternion::translation({1.0f, -0.3f, 2.3f}));
-        o.rotateX(Deg(17.0f), TransformationType::Local)
-            .rotateY(Deg(25.0f), TransformationType::Local)
-            .rotateZ(Deg(-23.0f), TransformationType::Local)
-            .rotate(Deg(96.0f), Vector3(1.0f/Constants::sqrt3()), TransformationType::Local);
+        o.rotateXLocal(Deg(17.0f))
+            .rotateYLocal(Deg(25.0f))
+            .rotateZLocal(Deg(-23.0f))
+            .rotateLocal(Deg(96.0f), Vector3(1.0f/Constants::sqrt3()));
         CORRADE_COMPARE(o.transformationMatrix(),
             Matrix4::translation({1.0f, -0.3f, 2.3f})*
             Matrix4::rotationX(Deg(17.0f))*

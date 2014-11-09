@@ -46,16 +46,38 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
 
         /**
          * @brief Scale object
-         * @param vector    Scaling vector
-         * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see @ref Math::Vector2::xScale(), @ref Math::Vector2::yScale()
+         * @see @ref scaleLocal(), @ref Math::Vector2::xScale(),
+         *      @ref Math::Vector2::yScale()
          */
-        AbstractBasicTranslationRotationScaling2D<T>& scale(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            doScale(vector, type);
+        AbstractBasicTranslationRotationScaling2D<T>& scale(const Math::Vector2<T>& vector) {
+            doScale(vector);
             return *this;
         }
+
+        /**
+         * @brief Scale object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        AbstractBasicTranslationRotationScaling2D<T>& scaleLocal(const Math::Vector2<T>& vector) {
+            doScaleLocal(vector);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief scale()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotationScaling2D::scale() "scale()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslationRotationScaling2D::scaleLocal() "scaleLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use scale() or scaleLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& scale(const Math::Vector2<T>& vector, TransformationType type) {
+            return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);
+        }
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -63,14 +85,34 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
             AbstractBasicTranslationRotation2D<T>::resetTransformation();
             return *this;
         }
-        AbstractBasicTranslationRotationScaling2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
+        AbstractBasicTranslationRotationScaling2D<T>& translate(const Math::Vector2<T>& vector) {
+            AbstractBasicTranslationRotation2D<T>::translate(vector);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling2D<T>& translateLocal(const Math::Vector2<T>& vector) {
+            AbstractBasicTranslationRotation2D<T>::translateLocal(vector);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
             AbstractBasicTranslationRotation2D<T>::translate(vector, type);
             return *this;
         }
-        AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        #endif
+        AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation2D<T>::rotate(angle);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling2D<T>& rotateLocal(Math::Rad<T> angle) {
+            AbstractBasicTranslationRotation2D<T>::rotateLocal(angle);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
             AbstractBasicTranslationRotation2D<T>::rotate(angle, type);
             return *this;
         }
+        #endif
         #endif
 
     protected:
@@ -82,7 +124,10 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
     private:
     #endif
         /** @brief Polymorphic implementation for @ref scale() */
-        virtual void doScale(const Math::Vector2<T>& vector, TransformationType type) = 0;
+        virtual void doScale(const Math::Vector2<T>& vector) = 0;
+
+        /** @brief Polymorphic implementation for @ref scaleLocal() */
+        virtual void doScaleLocal(const Math::Vector2<T>& vector) = 0;
 };
 
 /**

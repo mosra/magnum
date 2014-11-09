@@ -47,13 +47,37 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         /**
          * @brief Rotate object
          * @param angle     Angle (counterclockwise)
-         * @param type      Transformation type
          * @return Reference to self (for method chaining)
+         *
+         * @see @ref rotateLocal()
          */
-        AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            doRotate(angle, type);
+        AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle) {
+            doRotate(angle);
             return *this;
         }
+
+        /**
+         * @brief Rotate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        AbstractBasicTranslationRotation2D<T>& rotateLocal(Math::Rad<T> angle) {
+            doRotateLocal(angle);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rotate()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation2D::rotate() "rotate()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation2D::rotateLocal() "rotateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
+            return type == TransformationType::Global ? rotate(angle, type) : rotateLocal(angle, type);
+        }
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -61,6 +85,20 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
             AbstractBasicTranslation2D<T>::resetTransformation();
             return *this;
         }
+        AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector) {
+            AbstractBasicTranslation2D<T>::translate(vector);
+            return *this;
+        }
+        AbstractBasicTranslationRotation2D<T>& translateLocal(const Math::Vector2<T>& vector) {
+            AbstractBasicTranslation2D<T>::translateLocal(vector);
+            return *this;
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
+            AbstractBasicTranslation2D<T>::translate(vector, type);
+            return *this;
+        }
+        #endif
         #endif
 
     protected:
@@ -72,7 +110,10 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
     private:
     #endif
         /** @brief Polymorphic implementation for @ref rotate() */
-        virtual void doRotate(Math::Rad<T> angle, TransformationType type) = 0;
+        virtual void doRotate(Math::Rad<T> angle) = 0;
+
+        /** @brief Polymorphic implementation for @ref rotateLocal() */
+        virtual void doRotateLocal(Math::Rad<T> angle) = 0;
 };
 
 /**

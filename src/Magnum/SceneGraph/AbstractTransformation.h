@@ -29,6 +29,8 @@
  * @brief Class @ref Magnum::SceneGraph::AbstractTransformation, alias @ref Magnum::SceneGraph::AbstractBasicTransformation2D, @ref Magnum::SceneGraph::AbstractBasicTransformation3D, typedef @ref Magnum::SceneGraph::AbstractTransformation2D, @ref Magnum::SceneGraph::AbstractTransformation3D, enum @ref Magnum::SceneGraph::TransformationType
  */
 
+#include <Corrade/Utility/Macros.h>
+
 #include "Magnum/SceneGraph/SceneGraph.h"
 #include "Magnum/SceneGraph/visibility.h"
 
@@ -85,18 +87,20 @@ template<UnsignedInt dimensions, class T> class AbstractTransformation {
         virtual void doResetTransformation() = 0;
 };
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Transformation type
-
-@todo Get rid of this in favor of separate function for each type (less branching)
+@deprecated Use `*Transformation*::*()` and `*Transformation::*Local*()`
+    overloads instead.
 */
-enum class TransformationType: UnsignedByte {
+enum class TransformationType: UnsignedByte CORRADE_DEPRECATED("use *() and *Local() overloads instead") {
     /** Global transformation, applied after all other transformations. */
     Global = 0x00,
 
     /** Local transformation, applied before all other transformations. */
     Local = 0x01
 };
+#endif
 
 /**
 @brief Base transformation for two-dimensional scenes

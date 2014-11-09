@@ -84,40 +84,111 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
 
         /**
          * @brief Transform object
-         * @param transformation    Transformation
-         * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
          * Expects that the dual complex number is normalized.
-         * @see @ref Math::DualComplex::isNormalized()
+         * @see @ref transformLocal(), @ref Math::DualComplex::isNormalized()
          */
-        Object<BasicDualComplexTransformation<T>>& transform(const Math::DualComplex<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicDualComplexTransformation<T>>& transform(const Math::DualComplex<T>& transformation) {
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized",
                 static_cast<Object<BasicDualComplexTransformation<T>>&>(*this));
-            return transformInternal(transformation, type);
+            return transformInternal(transformation);
         }
 
         /**
-         * @copydoc AbstractTranslationRotationScaling2D::translate()
-         * Same as calling @ref transform() with @ref Math::DualComplex::translation().
+         * @brief Transform object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
          */
-        Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector, TransformationType type = TransformationType::Global) {
-            return transformInternal(Math::DualComplex<T>::translation(vector), type);
+        Object<BasicDualComplexTransformation<T>>& transformLocal(const Math::DualComplex<T>& transformation) {
+            CORRADE_ASSERT(transformation.isNormalized(),
+                "SceneGraph::DualComplexTransformation::transformLocal(): the dual complex number is not normalized",
+                static_cast<Object<BasicDualComplexTransformation<T>>&>(*this));
+            return transformLocalInternal(transformation);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transform()
+         * @deprecated Use @ref Magnum::SceneGraph::DualComplexTransformation::transform() "transform()"
+         *      or @ref Magnum::SceneGraph::DualComplexTransformation::transformLocal() "transformLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualComplexTransformation<T>>& transform(const Math::DualComplex<T>& transformation, TransformationType type) {
+            return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
+        }
+        #endif
+
+        /**
+         * @brief Translate object
+         * @return Reference to self (for method chaining)
+         *
+         * Same as calling @ref transform() with @ref Math::DualComplex::translation().
+         * @see @ref translateLocal(), @ref Math::Vector2::xAxis(),
+         *      @ref Math::Vector2::yAxis()
+         */
+        Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector) {
+            return transformInternal(Math::DualComplex<T>::translation(vector));
+        }
+
+        /**
+         * @brief Translate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others. Same as calling @ref transformLocal() with
+         * @ref Math::DualComplex::translation().
+         */
+        Object<BasicDualComplexTransformation<T>>& translateLocal(const Math::Vector2<T>& vector) {
+            return transformLocalInternal(Math::DualComplex<T>::translation(vector));
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief translate()
+         * @deprecated Use @ref Magnum::SceneGraph::DualComplexTransformation::translate() "translate()"
+         *      or @ref Magnum::SceneGraph::DualComplexTransformation::translateLocal() "translateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
+            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
+        }
+        #endif
 
         /**
          * @brief Rotate object
          * @param angle     Angle (counterclockwise)
-         * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::DualComplex::rotation().
-         * @see @ref normalizeRotation()
+         * @see @ref rotateLocal(), @ref normalizeRotation()
          */
-        Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
-            return transformInternal(Math::DualComplex<T>::rotation(angle), type);
+        Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle) {
+            return transformInternal(Math::DualComplex<T>::rotation(angle));
         }
+
+        /**
+         * @brief Rotate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        Object<BasicDualComplexTransformation<T>>& rotateLocal(Math::Rad<T> angle) {
+            return transformLocalInternal(Math::DualComplex<T>::rotation(angle));
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rotate()
+         * @deprecated Use @ref Magnum::SceneGraph::DualComplexTransformation::rotate() "rotate()"
+         *      or @ref Magnum::SceneGraph::DualComplexTransformation::rotateLocal() "rotateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle, TransformationType type) {
+            return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);
+        }
+        #endif
 
     protected:
         /* Allow construction only from Object */
@@ -126,13 +197,15 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
     private:
         void doResetTransformation() override final { resetTransformation(); }
 
-        void doTranslate(const Math::Vector2<T>& vector, TransformationType type) override final {
-            translate(vector, type);
+        void doTranslate(const Math::Vector2<T>& vector) override final {
+            translate(vector);
+        }
+        void doTranslateLocal(const Math::Vector2<T>& vector) override final {
+            translateLocal(vector);
         }
 
-        void doRotate(Math::Rad<T> angle, TransformationType type) override final {
-            rotate(angle, type);
-        }
+        void doRotate(Math::Rad<T> angle) override final { rotate(angle); }
+        void doRotateLocal(Math::Rad<T> angle) override final { rotateLocal(angle); }
 
         /* No assertions fired, for internal use */
         Object<BasicDualComplexTransformation<T>>& setTransformationInternal(const Math::DualComplex<T>& transformation) {
@@ -148,9 +221,11 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         }
 
         /* No assertions fired, for internal use */
-        Object<BasicDualComplexTransformation<T>>& transformInternal(const Math::DualComplex<T>& transformation, TransformationType type) {
-            return setTransformationInternal(type == TransformationType::Global ?
-                transformation*_transformation : _transformation*transformation);
+        Object<BasicDualComplexTransformation<T>>& transformInternal(const Math::DualComplex<T>& transformation) {
+            return setTransformationInternal(transformation*_transformation);
+        }
+        Object<BasicDualComplexTransformation<T>>& transformLocalInternal(const Math::DualComplex<T>& transformation) {
+            return setTransformationInternal(_transformation*transformation);
         }
 
         Math::DualComplex<T> _transformation;
