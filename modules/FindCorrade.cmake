@@ -14,6 +14,7 @@
 #  CORRADE_TESTSUITE_LIBRARIES      - TestSuite library and dependent
 #   libraries
 #  CORRADE_RC_EXECUTABLE            - Resource compiler executable
+#  CORRADE_LIB_SUFFIX_MODULE        - Path to CorradeLibSuffix.cmake module
 # The package is found if either debug or release version of each library is
 # found. If both debug and release libraries are found, proper version is
 # chosen based on actual build configuration of the project (i.e. Debug build
@@ -26,9 +27,9 @@
 # single-configuration build systems (such as Makefiles) this information is
 # not needed and thus the variable is not defined in any case.
 #
-# Corrade configures the compiler to use C++11 standard. Additionally you can
-# use CORRADE_CXX_FLAGS to enable additional pedantic set of warnings and
-# enable hidden visibility by default.
+# Corrade configures the compiler to use C++11 standard (if it is not already
+# configured to do so). Additionally you can use CORRADE_CXX_FLAGS to enable
+# additional pedantic set of warnings and enable hidden visibility by default.
 #
 # Features of found Corrade library are exposed in these variables:
 #  CORRADE_GCC47_COMPATIBILITY  - Defined if compiled with compatibility
@@ -51,7 +52,7 @@
 #
 # If CORRADE_BUILD_DEPRECATED is defined, the CORRADE_INCLUDE_DIR variable also
 # contains path directly to Corrade directory (i.e. for includes without
-# `Corrade/` prefix).
+# Corrade/ prefix).
 #
 # Corrade provides these macros and functions:
 #
@@ -111,6 +112,8 @@
 #  CORRADE_*_LIBRARY_DEBUG          - Debug version of given library, if found
 #  CORRADE_*_LIBRARY_RELEASE        - Release version of given library, if
 #                                     found
+#  CORRADE_USE_MODULE               - Path to UseCorrade.cmake module (included
+#                                     automatically)
 #
 
 #
@@ -174,12 +177,6 @@ find_path(_CORRADE_MODULE_DIR
     NAMES UseCorrade.cmake CorradeLibSuffix.cmake
     PATH_SUFFIXES share/cmake/Corrade)
 
-# If not found, try system module dir
-find_path(_CORRADE_MODULE_DIR
-    NAMES UseCorrade.cmake CorradeLibSuffix.cmake
-    PATHS ${CMAKE_ROOT}/Modules
-    NO_CMAKE_FIND_ROOT_PATH)
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Corrade DEFAULT_MSG
     CORRADE_UTILITY_LIBRARY
@@ -194,59 +191,33 @@ if(NOT CORRADE_FOUND)
     return()
 endif()
 
-# Configuration
+# Read flags from fonfiguration
 file(READ ${_CORRADE_INCLUDE_DIR}/Corrade/configure.h _corradeConfigure)
-
-# Compatibility?
-string(FIND "${_corradeConfigure}" "#define CORRADE_GCC47_COMPATIBILITY" _GCC47_COMPATIBILITY)
-if(NOT _GCC47_COMPATIBILITY EQUAL -1)
-    set(CORRADE_GCC47_COMPATIBILITY 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_BUILD_DEPRECATED" _BUILD_DEPRECATED)
-if(NOT _BUILD_DEPRECATED EQUAL -1)
-    set(CORRADE_BUILD_DEPRECATED 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_BUILD_STATIC" _BUILD_STATIC)
-if(NOT _BUILD_STATIC EQUAL -1)
-    set(CORRADE_BUILD_STATIC 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_UNIX" _TARGET_UNIX)
-if(NOT _TARGET_UNIX EQUAL -1)
-    set(CORRADE_TARGET_UNIX 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_APPLE" _TARGET_APPLE)
-if(NOT _TARGET_APPLE EQUAL -1)
-    set(CORRADE_TARGET_APPLE 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_WINDOWS" _TARGET_WINDOWS)
-if(NOT _TARGET_WINDOWS EQUAL -1)
-    set(CORRADE_TARGET_WINDOWS 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL" _TARGET_NACL)
-if(NOT _TARGET_NACL EQUAL -1)
-    set(CORRADE_TARGET_NACL 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL_NEWLIB" _TARGET_NACL_NEWLIB)
-if(NOT _TARGET_NACL_NEWLIB EQUAL -1)
-    set(CORRADE_TARGET_NACL_NEWLIB 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL_GLIBC" _TARGET_NACL_GLIBC)
-if(NOT _TARGET_NACL_GLIBC EQUAL -1)
-    set(CORRADE_TARGET_NACL_GLIBC 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_EMSCRIPTEN" _TARGET_EMSCRIPTEN)
-if(NOT _TARGET_EMSCRIPTEN EQUAL -1)
-    set(CORRADE_TARGET_EMSCRIPTEN 1)
-endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_ANDROID" _TARGET_ANDROID)
-if(NOT _TARGET_ANDROID EQUAL -1)
-    set(CORRADE_TARGET_ANDROID 1)
-endif()
+set(_corradeFlags
+    GCC47_COMPATIBILITY
+    BUILD_DEPRECATED
+    BUILD_STATIC
+    TARGET_UNIX
+    TARGET_APPLE
+    TARGET_WINDOWS
+    TARGET_NACL
+    TARGET_NACL_NEWLIB
+    TARGET_NACL_GLIBC
+    TARGET_EMSCRIPTEN
+    TARGET_ANDROID)
+foreach(_corradeFlag ${_corradeFlags})
+    string(FIND "${_corradeConfigure}" "#define CORRADE_${_corradeFlag}" _corrade_${_corradeFlag})
+    if(NOT _corrade_${_corradeFlag} EQUAL -1)
+        set(CORRADE_${_corradeFlag} 1)
+    endif()
+endforeach()
 
 set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
 set(CORRADE_INTERCONNECT_LIBRARIES ${CORRADE_INTERCONNECT_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
+set(CORRADE_USE_MODULE ${_CORRADE_MODULE_DIR}/UseCorrade.cmake)
+set(CORRADE_LIB_SUFFIX_MODULE ${_CORRADE_MODULE_DIR}/CorradeLibSuffix.cmake)
 
 # At least static build needs this
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_NACL_GLIBC)
@@ -268,10 +239,5 @@ else()
     set(CORRADE_INCLUDE_DIR ${_CORRADE_INCLUDE_DIR})
 endif()
 
-# Include our module dir, if we have any
-if(NOT "${_CORRADE_MODULE_DIR}" STREQUAL "${CMAKE_ROOT}/Modules")
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${_CORRADE_MODULE_DIR}")
-endif()
-
 # Finalize the finding process
-include(UseCorrade)
+include(${CORRADE_USE_MODULE})
