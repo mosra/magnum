@@ -152,10 +152,6 @@ instead of `magnum`. Headers and other files are the same for both. The library
 and plugin distinction is handled semi-automatically when using Magnum in
 depending projects, see @ref cmake for more information.
 
-Magnum by default does not install `FindMagnum.cmake`, as you should bundle
-the module with your code instead of depending on it being in system location.
-You can install it by enabling `WITH_FIND_MODULE`.
-
 The library is constantly evolving and thus some APIs are deprecated and then
 later removed in favor of better ones. To preserve backwards compatibility,
 Magnum is by default built with all deprecated APIs. However, to make your
