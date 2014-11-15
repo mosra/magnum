@@ -197,35 +197,20 @@ endif()
 
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
-
-string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_DEPRECATED" _BUILD_DEPRECATED)
-if(NOT _BUILD_DEPRECATED EQUAL -1)
-    set(MAGNUM_BUILD_DEPRECATED 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_STATIC" _BUILD_STATIC)
-if(NOT _BUILD_STATIC EQUAL -1)
-    set(MAGNUM_BUILD_STATIC 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES" _TARGET_GLES)
-if(NOT _TARGET_GLES EQUAL -1)
-    set(MAGNUM_TARGET_GLES 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES2" _TARGET_GLES2)
-if(NOT _TARGET_GLES2 EQUAL -1)
-    set(MAGNUM_TARGET_GLES2 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES3" _TARGET_GLES3)
-if(NOT _TARGET_GLES3 EQUAL -1)
-    set(MAGNUM_TARGET_GLES3 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
-if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
-    set(MAGNUM_TARGET_DESKTOP_GLES 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_WEBGL" _TARGET_WEBGL)
-if(NOT _TARGET_WEBGL EQUAL -1)
-    set(MAGNUM_TARGET_WEBGL 1)
-endif()
+set(_magnumFlags
+    BUILD_DEPRECATED
+    BUILD_STATIC
+    TARGET_GLES
+    TARGET_GLES2
+    TARGET_GLES3
+    TARGET_DESKTOP_GLES
+    TARGET_WEBGL)
+foreach(_magnumFlag ${_magnumFlags})
+    string(FIND "${_magnumConfigure}" "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
+    if(NOT _magnum_${_magnumFlag} EQUAL -1)
+        set(MAGNUM_${_magnumFlag} 1)
+    endif()
+endforeach()
 
 # Dependent libraries and includes
 set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
