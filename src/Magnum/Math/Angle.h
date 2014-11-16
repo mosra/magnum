@@ -157,7 +157,6 @@ Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
 @requires_gl Only single-precision types are available in OpenGL ES.
-@todoc Remove workarounds (2) when Doxygen can handle operator""
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
 #endif
@@ -171,7 +170,6 @@ Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
 Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
-@todoc Remove workarounds (2) when Doxygen can handle operator""
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
 
@@ -213,7 +211,6 @@ template<class T> class Rad: public Unit<Rad, T> {
 See @link operator""_rad() @endlink for more information.
 @see @link operator""_radf() @endlink, @link operator""_deg() @endlink
 @requires_gl Only single-precision types are available in OpenGL ES.
-@todoc Remove workarounds (3) when Doxygen can handle operator""
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
 #endif
@@ -223,7 +220,6 @@ constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(v
 
 See @link operator""_degf() @endlink for more information.
 @see @link operator""_rad() @endlink, @link operator""_degf() @endlink
-@todoc Remove workarounds (3) when Doxygen can handle operator""
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 
