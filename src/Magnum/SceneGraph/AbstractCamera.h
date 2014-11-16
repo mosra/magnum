@@ -62,9 +62,9 @@ instead.
 ## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref AbstractCamera.hpp implementation file to avoid linker errors. See
-also relevant sections in @ref SceneGraph-Camera2D-explicit-specializations "Camera2D"
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type) you have to use @ref AbstractCamera.hpp implementation file to avoid
+linker errors. See also relevant sections in @ref SceneGraph-Camera2D-explicit-specializations "Camera2D"
 and @ref SceneGraph-Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 

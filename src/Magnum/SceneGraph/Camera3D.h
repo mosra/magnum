@@ -54,9 +54,9 @@ camera.setPerspective({}, 0.001f, 100.0f)
 ## Explicit template specializations
 
 The following specialization is explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref Camera3D.hpp implementation file to avoid linker errors. See also
-relevant section in @ref SceneGraph-AbstractCamera-explicit-specializations "AbstractCamera"
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type) you have to use @ref Camera3D.hpp implementation file to avoid linker
+errors. See also relevant section in @ref SceneGraph-AbstractCamera-explicit-specializations "AbstractCamera"
 class documentation or @ref compilation-speedup-hpp for more information.
 
 -   @ref Camera3D

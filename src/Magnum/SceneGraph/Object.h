@@ -76,9 +76,9 @@ for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
 ## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type or special
-transformation class) you have to use @ref Object.hpp implementation file to
-avoid linker errors. See also relevant sections in
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type or special transformation class) you have to use @ref Object.hpp
+implementation file to avoid linker errors. See also relevant sections in
 @ref SceneGraph-AbstractObject-explicit-specializations "AbstractObject" and
 @ref SceneGraph-AbstractTransformation-explicit-specializations "AbstractTransformation"
 class documentation or @ref compilation-speedup-hpp for more information.

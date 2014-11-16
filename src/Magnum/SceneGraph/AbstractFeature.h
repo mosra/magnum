@@ -154,9 +154,9 @@ which is automatically extracted from the reference in our constructor.
 ## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref AbstractFeature.hpp implementation file to avoid linker errors. See
-also @ref compilation-speedup-hpp for more information.
+library. For other specializations (e.g. using @ref Magnum::Double "Double" type)
+you have to use @ref AbstractFeature.hpp implementation file to avoid linker
+errors. See also @ref compilation-speedup-hpp for more information.
 
 -   @ref AbstractFeature2D
 -   @ref AbstractFeature3D
