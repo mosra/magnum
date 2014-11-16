@@ -325,7 +325,10 @@ template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<si
 @brief Clamp value
 
 Values smaller than @p min are set to @p min, values larger than @p max are
-set to @p max.
+set to @p max. Equivalent to:
+@code
+Math::min(Math::max(value, min), max)
+@endcode
 @see @ref min(), @ref max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -425,10 +428,10 @@ value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$
     explicit, e.g.:
 @code
 // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
-Float a = normalize<Float>('\xFF');
+Float a = Math::normalize<Float>('\xFF');
 
 // b = 1.0f
-Float b = normalize<Float, UnsignedByte>('\xFF');
+Float b = Math::normalize<Float, UnsignedByte>('\xFF');
 @endcode
 
 @see @ref denormalize()
