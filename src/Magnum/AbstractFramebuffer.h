@@ -53,8 +53,12 @@ enum class FramebufferClear: GLbitfield {
 
 @see @ref AbstractFramebuffer::clear()
 */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 typedef Containers::EnumSet<FramebufferClear,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferClearMask;
+#else
+typedef Containers::EnumSet<FramebufferClear> FramebufferClearMask;
+#endif
 
 /**
 @brief Mask for framebuffer blitting
@@ -95,8 +99,12 @@ enum class FramebufferBlit: GLbitfield {
 @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 typedef Containers::EnumSet<FramebufferBlit,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferBlitMask;
+#else
+typedef Containers::EnumSet<FramebufferBlit> FramebufferBlitMask;
+#endif
 
 /**
 @brief Framebuffer blit filtering
