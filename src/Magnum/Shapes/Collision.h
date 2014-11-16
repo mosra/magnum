@@ -97,8 +97,7 @@ template<UnsignedInt dimensions> class Collision {
         /**
          * @brief Separation distance
          *
-         * @see @ref separationNormal(), @ref Collision::operator bool() "operator bool()"
-         * @todoc Remove workaround when Doxygen can handle unscoped conversion operators
+         * @see @ref separationNormal(), @ref operator bool()
          */
         Float separationDistance() const {
             return _separationDistance;

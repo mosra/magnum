@@ -49,10 +49,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D translation matrix
          * @param vector    Translation vector
          *
-         * @see @link translation() const @endlink, @ref DualComplex::translation(),
+         * @see @ref translation() const, @ref DualComplex::translation(),
          *      @ref Matrix4::translation(const Vector3<T>&),
          *      @ref Vector2::xAxis(), @ref Vector2::yAxis()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         constexpr static Matrix3<T> translation(const Vector2<T>& vector) {
             return {{      T(1),       T(0), T(0)},
@@ -78,10 +77,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D rotation matrix
          * @param angle     Rotation angle (counterclockwise)
          *
-         * @see @link rotation() const @endlink, @ref Complex::rotation(),
+         * @see @ref rotation() const, @ref Complex::rotation(),
          *      @ref DualComplex::rotation(),
          *      @ref Matrix4::rotation(Rad, const Vector3<T>&)
-         * @todoc Remove workaround when Doxygen can handle const
          */
         static Matrix3<T> rotation(Rad<T> angle);
 
@@ -116,8 +114,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @param translation       Translation part (first two elements of
          *      third column)
          *
-         * @see @ref rotationScaling(), @link translation() const @endlink
-         * @todoc Remove workaround when Doxygen can handle const
+         * @see @ref rotationScaling(), @ref translation() const
          */
         constexpr static Matrix3<T> from(const Matrix2x2<T>& rotationScaling, const Vector2<T>& translation) {
             return {{rotationScaling[0], T(0)},
@@ -165,10 +162,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *
          * Upper-left 2x2 part of the matrix.
          * @see @ref from(const Matrix2x2<T>&, const Vector2<T>&),
-         *      @link rotation() const @endlink, @ref rotationNormalized(),
+         *      @ref rotation() const, @ref rotationNormalized(),
          *      @ref uniformScaling(), @ref rotation(Rad<T>),
          *      @ref Matrix4::rotationScaling()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         constexpr Matrix2x2<T> rotationScaling() const {
             return {(*this)[0].xy(),
@@ -180,10 +176,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *
          * Similar to @ref rotationScaling(), but additionally checks that the
          * base vectors are normalized.
-         * @see @link rotation() const @endlink, @ref uniformScaling(),
+         * @see @ref rotation() const, @ref uniformScaling(),
          *      @ref Matrix4::rotationNormalized()
          * @todo assert also orthogonality or this is good enough?
-         * @todoc Remove workaround when Doxygen can handle const
          */
         Matrix2x2<T> rotationNormalized() const {
             CORRADE_ASSERT((*this)[0].xy().isNormalized() && (*this)[1].xy().isNormalized(),
@@ -199,8 +194,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * scaling.
          * @see @ref rotationNormalized(), @ref rotationScaling(),
          *      @ref uniformScaling(), @ref rotation(Rad<T>),
-         *      @link Matrix4::rotation() const @endlink
-         * @todoc Remove workaround when Doxygen can handle const
+         *      @ref Matrix4::rotation() const
          */
         Matrix2x2<T> rotation() const {
             CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xy().dot(), (*this)[1].xy().dot()),
@@ -216,10 +210,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Expects that the scaling is the same in all axes. Faster alternative
          * to @ref uniformScaling(), because it doesn't compute the square
          * root.
-         * @see @ref rotationScaling(), @link rotation() const @endlink,
+         * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
          *      @ref Matrix4::uniformScaling()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         T uniformScalingSquared() const {
             const T scalingSquared = (*this)[0].xy().dot();
@@ -234,10 +227,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Length of vectors in upper-left 2x2 part of the matrix. Expects that
          * the scaling is the same in all axes. Use faster alternative
          * @ref uniformScalingSquared() where possible.
-         * @see @ref rotationScaling(), @link rotation() const @endlink,
+         * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
          *      @ref Matrix4::uniformScaling()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
@@ -280,9 +272,8 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
          * @ref ij()
          * @see @ref isRigidTransformation(), @ref invertedOrthogonal(),
-         *      @ref rotationScaling(), @link translation() const @endlink,
+         *      @ref rotationScaling(), @ref translation() const,
          *      @ref Matrix4::invertedRigid()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         Matrix3<T> invertedRigid() const;
 

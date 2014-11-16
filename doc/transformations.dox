@@ -259,10 +259,8 @@ Complex numbers and quaternions are far better in this regard and they allow
 you to extract rotation angle using @ref Complex::angle() or
 @ref Quaternion::angle() or rotation axis in 3D using @ref Quaternion::axis().
 Their dual versions allow to extract both rotation and translation part using
-@link DualComplex::rotation() const @endlink, @link DualQuaternion::rotation() const @endlink,
-@link DualComplex::translation() const @endlink and
-@link DualQuaternion::translation() const @endlink.
-@todoc Remove workaround when Doxygen can handle const
+@ref DualComplex::rotation() const, @ref DualQuaternion::rotation() const,
+@ref DualComplex::translation() const and @ref DualQuaternion::translation() const.
 @code
 DualComplex a;
 Rad rotationAngle = a.rotation().angle();

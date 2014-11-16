@@ -90,11 +90,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * Expects that the rotation axis is normalized. If possible, use
          * faster alternatives like @ref rotationX(), @ref rotationY() and
          * @ref rotationZ().
-         * @see @link rotation() const @endlink, @ref Quaternion::rotation(),
+         * @see @ref rotation() const, @ref Quaternion::rotation(),
          *      @ref DualQuaternion::rotation(), @ref Matrix3::rotation(Rad),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
          *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
@@ -104,9 +103,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationY(),
-         *      @ref rotationZ(), @link rotation() const @endlink,
+         *      @ref rotationZ(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
-         * @todoc Remove workaround when Doxygen can handle const
          */
         static Matrix4<T> rotationX(Rad<T> angle);
 
@@ -116,9 +114,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
-         *      @ref rotationZ(), @link rotation() const @endlink,
+         *      @ref rotationZ(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
-         * @todoc Remove workaround when Doxygen can handle const
          */
         static Matrix4<T> rotationY(Rad<T> angle);
 
@@ -128,9 +125,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
-         *      @ref rotationY(), @link rotation() const @endlink,
+         *      @ref rotationY(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
-         * @todoc Remove workaround when Doxygen can handle const
          */
         static Matrix4<T> rotationZ(Rad<T> angle);
 
@@ -184,8 +180,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param translation       Translation part (first three elements of
          *      fourth column)
          *
-         * @see @ref rotationScaling(), @link translation() const @endlink
-         * @todoc Remove workaround when Doxygen can handle const
+         * @see @ref rotationScaling(), @ref translation() const
          */
         constexpr static Matrix4<T> from(const Matrix3x3<T>& rotationScaling, const Vector3<T>& translation) {
             return {{rotationScaling[0], T(0)},
@@ -234,11 +229,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Upper-left 3x3 part of the matrix.
          * @see @ref from(const Matrix3x3<T>&, const Vector3<T>&),
-         *      @link rotation() const @endlink, @ref rotationNormalized(),
+         *      @ref rotation() const, @ref rotationNormalized(),
          *      @ref uniformScaling(), @ref rotation(Rad, const Vector3<T>&),
-         *      @link Matrix3::rotationScaling() const @endlink
-         * @todoc Remove workaround when Doxygen can handle const
-         * @todoc Remove workaround when Doxygen can handle const
+         *      @ref Matrix3::rotationScaling() const
          */
         constexpr Matrix3x3<T> rotationScaling() const {
             return {(*this)[0].xyz(),
@@ -251,10 +244,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Similar to @ref rotationScaling(), but additionally checks that the
          * base vectors are normalized.
-         * @see @link rotation() const @endlink, @ref uniformScaling(),
+         * @see @ref rotation() const, @ref uniformScaling(),
          *      @ref Matrix3::rotationNormalized()
          * @todo assert also orthogonality or this is good enough?
-         * @todoc Remove workaround when Doxygen can handle const
          */
         Matrix3x3<T> rotationNormalized() const {
             CORRADE_ASSERT((*this)[0].xyz().isNormalized() && (*this)[1].xyz().isNormalized() && (*this)[2].xyz().isNormalized(),
@@ -271,8 +263,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * scaling.
          * @see @ref rotationNormalized(), @ref rotationScaling(),
          *      @ref uniformScaling(), @ref rotation(Rad, const Vector3<T>&),
-         *      @link Matrix3::rotation() const @endlink
-         * @todoc Remove workaround when Doxygen can handle const
+         *      @ref Matrix3::rotation() const
          */
         Matrix3x3<T> rotation() const;
 
@@ -283,10 +274,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * Expects that the scaling is the same in all axes. Faster alternative
          * to @ref uniformScaling(), because it doesn't compute the square
          * root.
-         * @see @ref rotationScaling(), @link rotation() const @endlink,
+         * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector3<T>&),
          *      @ref Matrix3::uniformScaling()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         T uniformScalingSquared() const;
 
@@ -296,10 +286,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * Length of vectors in upper-left 3x3 part of the matrix. Expects that
          * the scaling is the same in all axes. Use faster alternative
          * @ref uniformScalingSquared() where possible.
-         * @see @ref rotationScaling(), @link rotation() const @endlink,
+         * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector3<T>&),
          *      @ref Matrix3::uniformScaling()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
@@ -353,9 +342,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
          * @ref ij()
          * @see @ref isRigidTransformation(), @ref invertedOrthogonal(),
-         *      @ref rotationScaling(), @link translation() const @endlink,
+         *      @ref rotationScaling(), @ref translation() const,
          *      @ref Matrix3::invertedRigid()
-         * @todoc Remove workaround when Doxygen can handle const
          */
         Matrix4<T> invertedRigid() const;
 

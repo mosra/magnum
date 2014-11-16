@@ -87,9 +87,7 @@ template<std::size_t size, class T> class Vector {
          * antiparallel. @f[
          *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
          * @f]
-         * @see @link dot() const @endlink, @ref operator-(),
-         *      @ref Vector2::perpendicular()
-         * @todoc Remove workaround when Doxygen can handle const
+         * @see @ref dot() const, @ref operator-(), @ref Vector2::perpendicular()
          */
         static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
             return (a*b).sum();
@@ -469,8 +467,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
-         * @see @link dot() const @endlink
-         * @todoc Remove workaround when Doxygen can handle const
+         * @see @ref dot() const
          */
         Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 
