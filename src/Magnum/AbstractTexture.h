@@ -467,21 +467,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
-        void MAGNUM_LOCAL imageImplementationDSAEXT(GLenum target, GLint level, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
-        #endif
-
-        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL imageImplementationDSAEXT(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
-        #endif
-
-        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL imageImplementationDSAEXT(GLenum target, GLint level, TextureFormat internalFormat, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSAEXT(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif

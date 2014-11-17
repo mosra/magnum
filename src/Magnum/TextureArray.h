@@ -309,16 +309,16 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * For better performance when generating mipmaps using
-         * @ref generateMipmap() or calling @ref setImage() more than once use
-         * @ref setStorage() and @ref setSubImage() instead.
-         *
-         * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some texture unit before the operation.
+         * On platforms that support it prefer to use @ref setStorage() and
+         * @ref setSubImage() instead, as it avoids unnecessary reallocations
+         * and has better performance characteristics. This call also has no
+         * equivalent in @extension{ARB,direct_state_access}, thus the texture
+         * needs to be bound to some texture unit before the operation.
          * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
-         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}
+         *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D}
+         * @deprecated_gl Prefer to use @ref Magnum::TextureArray::setStorage() "setStorage()"
+         *      and @ref Magnum::TextureArray::setSubImage() "setSubImage()"
+         *      instead.
          */
         TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions+1>& image) {
             DataHelper<dimensions+1>::setImage(*this, _target, level, internalFormat, image);
@@ -348,9 +348,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * If @extension{EXT,direct_state_access} is not available, the
          * texture is bound to some texture unit before the operation.
-         * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
-         *      or @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
+         * @see @ref setStorage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D} or
+         *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
          */
         TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageReference<dimensions+1>& image) {

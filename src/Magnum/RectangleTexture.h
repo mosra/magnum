@@ -325,14 +325,16 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *      @ref Trade::ImageData2D
          * @return Reference to self (for method chaining)
          *
-         * For better performance when calling @ref setImage() more than once
-         * use @ref setStorage() and @ref setSubImage() instead.
-         *
-         * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some texture unit before the operation.
+         * On platforms that support it prefer to use @ref setStorage() and
+         * @ref setSubImage() instead, as it avoids unnecessary reallocations
+         * and has better performance characteristics. This call also has no
+         * equivalent in @extension{ARB,direct_state_access}, thus the texture
+         * needs to be bound to some texture unit before the operation.
          * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexImage2D} or
-         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}
+         *      @fn_gl{TexImage2D}
+         * @deprecated_gl Prefer to use @ref Magnum::RectangleTexture::setStorage() "setStorage()"
+         *      and @ref Magnum::RectangleTexture::setSubImage() "setSubImage()"
+         *      instead.
          */
         RectangleTexture& setImage(TextureFormat internalFormat, const ImageReference2D& image) {
             DataHelper<2>::setImage(*this, _target, 0, internalFormat, image);

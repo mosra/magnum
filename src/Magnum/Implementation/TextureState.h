@@ -69,10 +69,7 @@ struct TextureState {
     #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*storage3DMultisampleImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&, GLboolean);
     void(AbstractTexture::*getImageImplementation)(GLenum, GLint, ColorFormat, ColorType, std::size_t, GLvoid*);
-    void(AbstractTexture::*image1DImplementation)(GLenum, GLint, TextureFormat, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
     #endif
-    void(AbstractTexture::*image2DImplementation)(GLenum, GLint, TextureFormat, const Vector2i&, ColorFormat, ColorType, const GLvoid*);
-    void(AbstractTexture::*image3DImplementation)(GLenum, GLint, TextureFormat, const Vector3i&, ColorFormat, ColorType, const GLvoid*);
     #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*subImage1DImplementation)(GLenum, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
     #endif

@@ -306,6 +306,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
+         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTexture::setStorage() "setStorage()"
+         *      and @ref Magnum::CubeMapTexture::setSubImage() "setSubImage()"
+         *      instead.
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
             DataHelper<2>::setImage(*this, GLenum(coordinate), level, internalFormat, image);

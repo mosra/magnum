@@ -107,9 +107,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSAEXT;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSAEXT;
         getImageImplementation = &AbstractTexture::getImageImplementationDSAEXT;
-        image1DImplementation = &AbstractTexture::imageImplementationDSAEXT;
-        image2DImplementation = &AbstractTexture::imageImplementationDSAEXT;
-        image3DImplementation = &AbstractTexture::imageImplementationDSAEXT;
         subImage1DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
         subImage2DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
         subImage3DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
@@ -135,10 +132,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         mipmapImplementation = &AbstractTexture::mipmapImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES
         getImageImplementation = &AbstractTexture::getImageImplementationDefault;
-        image1DImplementation = &AbstractTexture::imageImplementationDefault;
         #endif
-        image2DImplementation = &AbstractTexture::imageImplementationDefault;
-        image3DImplementation = &AbstractTexture::imageImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES
         subImage1DImplementation = &AbstractTexture::subImageImplementationDefault;
         #endif

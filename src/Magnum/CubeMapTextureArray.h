@@ -332,6 +332,9 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
+         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTextureArray::setStorage() "setStorage()"
+         *      and @ref Magnum::CubeMapTextureArray::setSubImage() "setSubImage()"
+         *      instead.
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
             DataHelper<3>::setImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);

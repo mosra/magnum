@@ -40,7 +40,7 @@ namespace Magnum {
 
 Note that some formats can be used only for framebuffer reading (using
 @ref AbstractFramebuffer::read()) and some only for texture data (using
-@ref Texture::setImage() and others), the limitations are mentioned in
+@ref Texture::setSubImage() and others), the limitations are mentioned in
 documentation of each particular value.
 
 In most cases you may want to use @ref ColorFormat::Red (for grayscale images),
@@ -266,7 +266,7 @@ enum class ColorFormat: GLenum {
 
 Note that some formats can be used only for framebuffer reading (using
 @ref AbstractFramebuffer::read()) and some only for texture data (using
-@ref Texture::setImage() and others), the limitations are mentioned in
+@ref Texture::setSubImage() and others), the limitations are mentioned in
 documentation of each particular value.
 
 In most cases you may want to use @ref ColorType::UnsignedByte along with

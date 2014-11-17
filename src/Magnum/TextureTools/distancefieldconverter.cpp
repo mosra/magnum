@@ -149,7 +149,8 @@ int DistanceFieldConverter::exec() {
     input.setMinificationFilter(Sampler::Filter::Linear)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setImage(0, internalFormat, *image);
+        .setStorage(1, internalFormat, image->size())
+        .setSubImage(0, {}, *image);
 
     /* Output texture */
     Texture2D output;
