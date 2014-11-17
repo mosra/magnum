@@ -144,21 +144,32 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
     #endif
 }
 
-void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
-    source.bindInternal(FramebufferTarget::Read);
-    destination.bindInternal(FramebufferTarget::Draw);
-    #ifndef MAGNUM_TARGET_GLES2
-    glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
-    #else
-    Context::current()->state().framebuffer->blitImplementation(sourceRectangle, destinationRectangle, mask, filter);
-    #endif
+void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+    Context::current()->state().framebuffer->blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);
 }
 
-#ifdef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::blitImplementationANGLE(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::blitImplementationDefault(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
+    glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::blitImplementationDSA(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+    glBlitNamedFramebuffer(source._id, destination._id, sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+#endif
+
+#else
+void AbstractFramebuffer::blitImplementationANGLE(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferANGLE(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
+    static_cast<void>(source);
+    static_cast<void>(destination);
     static_cast<void>(sourceRectangle);
     static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
@@ -167,10 +178,14 @@ void AbstractFramebuffer::blitImplementationANGLE(const Range2Di& sourceRectangl
     #endif
 }
 
-void AbstractFramebuffer::blitImplementationNV(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+void AbstractFramebuffer::blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
+    static_cast<void>(source);
+    static_cast<void>(destination);
     static_cast<void>(sourceRectangle);
     static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
@@ -256,12 +271,24 @@ void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, c
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::invalidateImplementationDSA(const GLsizei count, const GLenum* const attachments) {
+    glInvalidateNamedFramebufferData(_id, count, attachments);
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&) {}
 
 void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
     glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::invalidateImplementationDSA(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
+    glInvalidateNamedFramebufferSubData(_id, count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
+}
+#endif
 #endif
 
 GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
@@ -270,6 +297,10 @@ GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTa
 }
 
 #ifndef MAGNUM_TARGET_GLES
+GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
+    return glCheckNamedFramebufferStatus(_id, GLenum(target));
+}
+
 GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTarget target) {
     _created = true;
     return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
@@ -295,6 +326,10 @@ void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const 
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::drawBuffersImplementationDSA(const GLsizei count, const GLenum* const buffers) {
+    glNamedFramebufferDrawBuffers(_id, count, buffers);
+}
+
 void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers) {
     _created = true;
     glFramebufferDrawBuffersEXT(_id, count, buffers);
@@ -321,6 +356,10 @@ void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::drawBufferImplementationDSA(const GLenum buffer) {
+    glNamedFramebufferDrawBuffer(_id, buffer);
+}
+
 void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
     _created = true;
     glFramebufferDrawBufferEXT(_id, buffer);
@@ -345,6 +384,10 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::readBufferImplementationDSA(const GLenum buffer) {
+    glFramebufferReadBufferEXT(_id, buffer);
+}
+
 void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
     _created = true;
     glFramebufferReadBufferEXT(_id, buffer);

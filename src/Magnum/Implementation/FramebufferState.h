@@ -37,9 +37,7 @@ struct FramebufferState {
 
     void reset();
 
-    #ifdef MAGNUM_TARGET_GLES2
-    void(*blitImplementation)(const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
-    #endif
+    void(*blitImplementation)(AbstractFramebuffer&, AbstractFramebuffer&, const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
     GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
     void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
     void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);

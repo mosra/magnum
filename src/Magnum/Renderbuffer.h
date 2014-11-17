@@ -51,9 +51,11 @@ The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 implementation-defined values (such as @ref maxSize()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
-If extension @extension{EXT,direct_state_access} is available, function
-@ref setStorage() uses DSA to avoid unnecessary calls to @fn_gl{BindRenderbuffer}.
-See its documentation for more information.
+If not on OpenGL ES and either @extension{ARB,direct_state_access} (part of
+OpenGL 4.5) or @extension{EXT,direct_state_access} is available, functions
+@ref setStorage() and @ref setStorageMultisample() use DSA to avoid unnecessary
+calls to @fn_gl{BindRenderbuffer}. See their respective documentation for more
+information.
 
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 */
@@ -153,11 +155,12 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @ref maxSize(), @fn_gl{BindRenderbuffer}, @fn_gl{RenderbufferStorage}
-         *      or @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access}
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the renderbuffer is bound before the operation (if not already).
+         * @see @ref maxSize(), @fn_gl2{NamedRenderbufferStorage,RenderbufferStorage},
+         *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access},
+         *      eventually @fn_gl{BindRenderbuffer} and @fn_gl{RenderbufferStorage}
          */
         void setStorage(RenderbufferFormat internalFormat, const Vector2i& size);
 
@@ -167,11 +170,13 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebufferbuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @ref maxSize(), @ref maxSamples(), @fn_gl{BindRenderbuffer},
-         *      @fn_gl{RenderbufferStorageMultisample} or @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access}
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the renderbuffer is bound before the operation (if not already).
+         * @see @ref maxSize(), @ref maxSamples(),
+         *      @fn_gl2{NamedRenderbufferStorageMultisample,RenderbufferStorageMultisample},
+         *      @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access},
+         *      eventually @fn_gl{BindRenderbuffer} and @fn_gl{RenderbufferStorageMultisample}
          * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_multisample}
          *      or @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
@@ -191,12 +196,14 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
 
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageImplementationDSAEXT(RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
         #else

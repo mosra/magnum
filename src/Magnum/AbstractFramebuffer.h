@@ -169,6 +169,10 @@ switching framebuffers. Framebuffer limits and implementation-defined values
 (such as @ref maxViewportSize()) are cached, so repeated queries don't result
 in repeated @fn_gl{Get} calls.
 
+If extension @extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+available, @ref blit() function uses DSA to avoid unnecessary call to
+@fn_gl{BindFramebuffer}. See its documentation for more information.
+
 If @extension{ARB,robustness} is available, @ref read() operations are
 protected from buffer overflow.
 */
@@ -222,13 +226,15 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param mask              Which buffers to perform blit operation on
          * @param filter            Interpolation filter
          *
-         * Binds @p source framebuffer to @ref FramebufferTarget::Read and
-         * @p destination framebuffer to @ref FramebufferTarget::Draw and
-         * performs blitting operation. See @ref DefaultFramebuffer::mapForRead(),
-         * @ref Framebuffer::mapForRead(), @ref DefaultFramebuffer::mapForDraw()
-         * and @ref Framebuffer::mapForDraw() for specifying particular buffers
-         * for blitting operation.
-         * @see @fn_gl{BlitFramebuffer}
+         * See @ref DefaultFramebuffer::mapForRead(), @ref Framebuffer::mapForRead(),
+         * @ref DefaultFramebuffer::mapForDraw() and @ref Framebuffer::mapForDraw()
+         * for specifying particular buffers for blitting operation. If
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, @p source framebuffer is bound to @ref FramebufferTarget::Read
+         * and @p destination framebuffer to @ref FramebufferTarget::Draw
+         * before the operation (if not already).
+         * @see @fn_gl2{BlitNamedFramebuffer,BlitFramebuffer}, eventually
+         *      @fn_gl{BlitFramebuffer}
          * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
@@ -238,18 +244,11 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Copy block of pixels
-         * @param source            Source framebuffer
-         * @param destination       Destination framebuffer
-         * @param rectangle         Source and destination rectangle
-         * @param mask              Which buffers to perform blit operation on
          *
-         * Convenience alternative to above function when source rectangle is
-         * the same as destination rectangle. As the image is copied
+         * Convenience alternative to the above function when source rectangle
+         * is the same as destination rectangle. As the image is copied
          * pixel-by-pixel, no interpolation is needed and thus
          * @ref FramebufferBlitFilter::Nearest filtering is used by default.
-         * @see @fn_gl{BlitFramebuffer}
-         * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-         *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& rectangle, FramebufferBlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
@@ -348,28 +347,37 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         Range2Di _viewport;
 
     private:
-        #ifdef MAGNUM_TARGET_GLES2
-        static void MAGNUM_LOCAL blitImplementationANGLE(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
-        static void MAGNUM_LOCAL blitImplementationNV(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #ifndef MAGNUM_TARGET_GLES2
+        static void MAGNUM_LOCAL blitImplementationDefault(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL blitImplementationDSA(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #endif
+        #else
+        static void MAGNUM_LOCAL blitImplementationANGLE(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        static void MAGNUM_LOCAL blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
         #endif
 
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
         #ifndef MAGNUM_TARGET_GLES
+        GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
         GLenum MAGNUM_LOCAL checkStatusImplementationDSAEXT(FramebufferTarget target);
         #endif
 
         void MAGNUM_LOCAL drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers);
         void MAGNUM_LOCAL drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers);
         #endif
 
         void MAGNUM_LOCAL drawBufferImplementationDefault(GLenum buffer);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL drawBufferImplementationDSA(GLenum buffer);
         void MAGNUM_LOCAL drawBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
         void MAGNUM_LOCAL readBufferImplementationDefault(GLenum buffer);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
         void MAGNUM_LOCAL readBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
@@ -378,10 +386,16 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateImplementationDSA(GLsizei count, const GLenum* attachments);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateImplementationDSA(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #endif
         #endif
 };
 

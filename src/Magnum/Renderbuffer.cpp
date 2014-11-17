@@ -138,6 +138,10 @@ void Renderbuffer::storageImplementationDefault(RenderbufferFormat internalForma
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Renderbuffer::storageImplementationDSA(const RenderbufferFormat internalFormat, const Vector2i& size) {
+    glNamedRenderbufferStorage(_id, GLenum(internalFormat), size.x(), size.y());
+}
+
 void Renderbuffer::storageImplementationDSAEXT(RenderbufferFormat internalFormat, const Vector2i& size) {
     _created = true;
     glNamedRenderbufferStorageEXT(_id, GLenum(internalFormat), size.x(), size.y());
@@ -176,6 +180,10 @@ void Renderbuffer::storageMultisampleImplementationNV(const GLsizei samples, con
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+void Renderbuffer::storageMultisampleImplementationDSA(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    glNamedRenderbufferStorageMultisample(_id, samples, GLenum(internalFormat), size.x(), size.y());
+}
+
 void Renderbuffer::storageMultisampleImplementationDSAEXT(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size) {
     _created = true;
     glNamedRenderbufferStorageMultisampleEXT(_id, samples, GLenum(internalFormat), size.x(), size.y());

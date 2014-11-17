@@ -54,7 +54,22 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        /* Extension added above */
+
+        checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
+        drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
+        drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
+        readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
+
+        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
+        texture1DImplementation = &Framebuffer::texture1DImplementationDSA;
+        texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
+        textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
+
+        renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSAEXT;
@@ -131,7 +146,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* Multisample renderbuffer storage implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        /* Extension added above */
+
+        renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSA;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension added above */
 
         renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSAEXT;
@@ -158,8 +178,15 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
         extensions.push_back(Extensions::GL::ARB::invalidate_subdata::string());
 
-        invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
-        invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+            /* Extension added above */
+            invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDSA;
+            invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDSA;
+        } else {
+            invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+            invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
+        }
+
     } else {
         invalidateImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
         invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationNoOp;
@@ -181,8 +208,16 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
     #endif
 
+    /* Blit implementation on desktop GL */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        /* Extension added above */
+        blitImplementation = &AbstractFramebuffer::blitImplementationDSA;
+
+    } else blitImplementation = &AbstractFramebuffer::blitImplementationDefault;
+
     /* Blit implementation on ES2 */
-    #ifdef MAGNUM_TARGET_GLES2
+    #elif defined(MAGNUM_TARGET_GLES2)
     if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>()) {
         extensions.push_back(Extensions::GL::ANGLE::framebuffer_blit::string());
         blitImplementation = &AbstractFramebuffer::blitImplementationANGLE;
@@ -192,6 +227,10 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         blitImplementation = &AbstractFramebuffer::blitImplementationNV;
 
     } else blitImplementation = nullptr;
+
+    /* Always available on ES3 */
+    #else
+    blitImplementation = &AbstractFramebuffer::blitImplementationDefault;
     #endif
 }
 

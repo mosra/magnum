@@ -267,6 +267,10 @@ void Framebuffer::renderbufferImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Framebuffer::renderbufferImplementationDSA(const BufferAttachment attachment, Renderbuffer& renderbuffer) {
+    glNamedFramebufferRenderbuffer(_id, GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
+}
+
 void Framebuffer::renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer) {
     _created = true;
     glNamedFramebufferRenderbufferEXT(_id, GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
@@ -274,6 +278,10 @@ void Framebuffer::renderbufferImplementationDSAEXT(BufferAttachment attachment, 
 
 void Framebuffer::texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
     glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
+}
+
+void Framebuffer::texture1DImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel) {
+    glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
 }
 
 void Framebuffer::texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
@@ -287,6 +295,10 @@ void Framebuffer::texture2DImplementationDefault(BufferAttachment attachment, GL
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Framebuffer::texture2DImplementationDSA(const BufferAttachment attachment, GLenum, const GLuint textureId, const GLint mipLevel) {
+    glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
+}
+
 void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
     _created = true;
     glNamedFramebufferTexture2DEXT(_id, GLenum(attachment), textureTarget, textureId, mipLevel);
@@ -308,6 +320,10 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Framebuffer::textureLayerImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel, const GLint layer) {
+    glNamedFramebufferTextureLayer(_id, GLenum(attachment), textureId, mipLevel, layer);
+}
+
 void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
     _created = true;
     glNamedFramebufferTextureLayerEXT(_id, GLenum(attachment), textureId, mipLevel, layer);
