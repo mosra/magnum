@@ -442,32 +442,32 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Invalidate framebuffer
          * @param attachments       Attachments to invalidate
          *
-         * The framebuffer is bound to some target before the operation, if
-         * not already.
+         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
+         * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
+         * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
+         * The framebuffer is bound to some target before the operation, if not
+         * already.
          * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
-         * @requires_gl43 Extension @extension{ARB,invalidate_subdata}. Use
-         *      @ref Magnum::Framebuffer::clear() "clear()" instead where the
-         *      extension is not supported.
-         * @requires_gles30 Extension @es_extension{EXT,discard_framebuffer}
-         *      in OpenGL ES 2.0. Use @ref Magnum::Framebuffer::clear() "clear()"
-         *      instead where the extension is not supported.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Invalidate framebuffer rectangle
          * @param attachments       Attachments to invalidate
          * @param rectangle         Rectangle to invalidate
          *
          * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
-         * 4.3) or OpenGL ES 3.0 is not available, this function does nothing.
-         * The framebuffer is bound to some target before the operation, if not
-         * already.
+         * 4.3) is not available, this function does nothing. The framebuffer
+         * is bound to some target before the operation, if not already.
          * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
-         *      @fn_gl{InvalidateFramebuffer}
+         *      @fn_gl{InvalidateSubFramebuffer}
+         * @requires_gles30 Use @ref Magnum::Framebuffer::invalidate(std::initializer_list<InvalidationAttachment>) "invalidate(std::initializer_list<InvalidationAttachment>)"
+         *      in OpenGL ES 2.0 instead.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
+        #endif
 
         /**
          * @brief Attach renderbuffer to given buffer
@@ -475,13 +475,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @param renderbuffer      Renderbuffer
          * @return Reference to self (for method chaining)
          *
-         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
-         * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
-         * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
-         * The framebuffer is bound to some target before the operation, if not
-         * already.
-         * @see @fn_gl{InvalidateSubFramebuffer} or @fn_gles_extension{DiscardSubFramebuffer,EXT,discard_framebuffer}
-         *      on OpenGL ES 2.0
+         * If @extension{EXT,direct_state_access} is not available and the
+         * framebufferbuffer is not currently bound, it is bound before the
+         * operation.
+         * @see @fn_gl{BindFramebuffer}, @fn_gl{FramebufferRenderbuffer} or
+         *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access}
          */
         Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer& renderbuffer);
 
@@ -683,11 +681,6 @@ inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
     std::swap(_created, other._created);
     return *this;
 }
-
-#ifdef MAGNUM_TARGET_GLES2
-/* No-op implementation on ES2 */
-inline void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment>, const Range2Di&) {}
-#endif
 
 }
 
