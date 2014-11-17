@@ -43,6 +43,18 @@ namespace Implementation { struct TransformFeedbackState; }
 /**
 @brief Transform feedback
 
+## Performance optimizations
+
+The engine tracks currently bound transform feedback to avoid unnecessary calls
+to @fn_gl{BindTransformFeedback}. Transform feedback limits and
+implementation-defined values (such as @ref maxSeparateComponents()) are
+cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
+
+If extension @extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+available, functions @ref attachBuffer() and @ref attachBuffers() use DSA to
+avoid unnecessary call to @fn_gl{BindTransformFeedback}. See their respective
+documentation for more information.
+
 @see @ref PrimitiveQuery
 @requires_gl40 Extension @extension{ARB,transform_feedback2}
 @requires_gles30 Transform feedback is not available in OpenGL ES 2.0
