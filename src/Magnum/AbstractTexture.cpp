@@ -952,7 +952,7 @@ void AbstractTexture::storageImplementationFallback(const GLenum target, const G
     } else if(target == GL_TEXTURE_1D_ARRAY) {
         for(GLsizei level = 0; level != levels; ++level)
             DataHelper<2>::setImage(*this, target, level, internalFormat,
-                ImageReference2D{format, type, Math::max(Vector2i(1), size >> level)});
+                ImageReference2D{format, type, Vector2i{Math::max(1, size.x() >> level), size.y()}});
     #endif
 
     /* No other targets are available */
@@ -1004,7 +1004,7 @@ void AbstractTexture::storageImplementationFallback(GLenum target, GLsizei level
     #endif
         for(GLsizei level = 0; level != levels; ++level)
             DataHelper<3>::setImage(*this, target, level, internalFormat,
-                ImageReference3D{format, type, Math::max(Vector3i(1), size >> level)});
+                ImageReference3D{format, type, Vector3i{Math::max(Vector2i{1}, size.xy() >> level), size.z()}});
     #endif
 
     /* No other targets are available */
