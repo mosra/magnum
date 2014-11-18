@@ -122,10 +122,6 @@ functions do nothing.
 @todo `GL_NUM_COMPRESSED_TEXTURE_FORMATS` when compressed textures are implemented
 @todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
 @todo Query for immutable levels (@extension{ARB,ES3_compatibility})
-@bug If using @extension{ARB,multi_bind} and the texture is bound right after
-    construction, the @fn_gl{BindTextures} call will fail with
-    Renderer::Error::InvalidOperation, because the texture doesn't yet have
-    associated target
 */
 class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend struct Implementation::TextureState;
