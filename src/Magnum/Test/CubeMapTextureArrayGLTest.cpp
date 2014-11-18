@@ -425,6 +425,8 @@ void CubeMapTextureArrayGLTest::subImageBuffer() {
 void CubeMapTextureArrayGLTest::generateMipmap() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
 
     CubeMapTextureArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
