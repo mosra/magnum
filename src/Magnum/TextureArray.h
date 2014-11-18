@@ -118,107 +118,179 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          */
         explicit TextureArray(): AbstractTexture(Implementation::textureArrayTarget<dimensions>()) {}
 
-        #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::setBaseLevel() */
+        /**
+         * @copybrief Texture::setBaseLevel()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBaseLevel() for more information.
+         */
         TextureArray<dimensions>& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
             return *this;
         }
-        #endif
 
-        /** @copydoc Texture::setMaxLevel() */
+        /**
+         * @copybrief Texture::setMaxLevel()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxLevel() for more information.
+         */
         TextureArray<dimensions>& setMaxLevel(Int level) {
             AbstractTexture::setMaxLevel(level);
             return *this;
         }
 
-        /** @copydoc Texture::setMinificationFilter() */
+        /**
+         * @copybrief Texture::setMinificationFilter()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMinificationFilter() for more information.
+         */
         TextureArray<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;
         }
 
-        /** @copydoc Texture::setMagnificationFilter() */
+        /**
+         * @copybrief Texture::setMagnificationFilter()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMagnificationFilter() for more information.
+         */
         TextureArray<dimensions>& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::setMinLod() */
+        /**
+         * @copybrief Texture::setMinLod()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMinLod() for more information.
+         */
         TextureArray<dimensions>& setMinLod(Float lod) {
             AbstractTexture::setMinLod(lod);
             return *this;
         }
 
-        /** @copydoc Texture::setMaxLod() */
+        /**
+         * @copybrief Texture::setMaxLod()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxLod() for more information.
+         */
         TextureArray<dimensions>& setMaxLod(Float lod) {
             AbstractTexture::setMaxLod(lod);
             return *this;
         }
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setLodBias() */
+        /**
+         * @copybrief Texture::setLodBias()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setLodBias() for more information.
+         * @requires_gl Texture LOD bias can be specified only directly in
+         *      fragment shader in OpenGL ES.
+         */
         TextureArray<dimensions>& setLodBias(Float bias) {
             AbstractTexture::setLodBias(bias);
             return *this;
         }
         #endif
 
-        /** @copydoc Texture::setWrapping() */
+        /**
+         * @copybrief Texture::setWrapping()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setWrapping() for more information.
+         */
         TextureArray<dimensions>& setWrapping(const Array<dimensions+1, Sampler::Wrapping>& wrapping) {
             DataHelper<dimensions+1>::setWrapping(*this, wrapping);
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor(const Color4&) */
+        /**
+         * @copybrief Texture::setBorderColor(const Color4&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Color4&) for more
+         * information.
+         * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
+         */
         TextureArray<dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setBorderColor(const Vector4ui&) */
+        /**
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Vector4ui&) for more
+         * information.
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl Border is available only for float textures in OpenGL
+         *      ES.
+         */
         TextureArray<dimensions>& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor(const Vector4i&) */
+        /** @overload
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl Border is available only for float textures in OpenGL
+         *      ES.
+         */
         TextureArray<dimensions>& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
         #endif
 
-        /** @copydoc Texture::setMaxAnisotropy() */
+        /**
+         * @copybrief Texture::setMaxAnisotropy()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxAnisotropy() for more information.
+         */
         TextureArray<dimensions>& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
 
-        /** @copydoc Texture::setSRGBDecode() */
+        /**
+         * @copybrief Texture::setSRGBDecode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setSRGBDecode() for more information.
+         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_es_extension Extension @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         */
         TextureArray<dimensions>& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::setSwizzle() */
+        /**
+         * @copybrief Texture::setSwizzle()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setSwizzle() for more information.
+         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
+         */
         template<char r, char g, char b, char a> TextureArray<dimensions>& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
             return *this;
         }
-        #endif
 
         /**
          * @copybrief Texture::setCompareMode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
-         *      @es_extension{NV,shadow_samplers_array}
          */
         TextureArray<dimensions>& setCompareMode(Sampler::CompareMode mode) {
             AbstractTexture::setCompareMode(mode);
@@ -230,113 +302,107 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareFunction() for more information.
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
-         *      @es_extension{NV,shadow_samplers_array}
          */
         TextureArray<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
             AbstractTexture::setCompareFunction(function);
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
+         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
+         * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
+         *      and older.
          */
         TextureArray<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::imageSize() */
-        VectorTypeFor<dimensions+1, Int> imageSize(Int level) {
-            return DataHelper<dimensions+1>::imageSize(*this, _target, level);
-        }
-        #endif
 
         /**
-         * @brief Set storage
-         * @param levels            Mip level count
-         * @param internalFormat    Internal format
-         * @param size              Size of largest mip level
+         * @copybrief Texture::setStorage()
          * @return Reference to self (for method chaining)
          *
-         * Specifies entire structure of a texture at once, removing the need
-         * for additional consistency checks and memory reallocations when
-         * updating the data later. After calling this function the texture
-         * is immutable and calling @ref setStorage() or @ref setImage() is not
-         * allowed.
-         *
-         * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation. If
-         * @extension{ARB,texture_storage} (part of OpenGL 4.2) or OpenGL ES
-         * 3.0 is not available, the feature is emulated with sequence of
-         * @ref setImage() calls.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexStorage2D}/@fn_gl{TexStorage3D} or
-         *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
-         *      eventually @fn_gl{TexImage2D}/@fn_gl{TexImage3D} or
-         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureImage3D,EXT,direct_state_access}.
+         * See @ref Texture::setStorage() for more information.
+         * @see @ref maxSize()
          */
         TextureArray<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const VectorTypeFor<dimensions+1, Int>& size) {
-            DataHelper<dimensions+1>::setStorage(*this, _target, levels, internalFormat, size);
+            DataHelper<dimensions+1>::setStorage(*this, levels, internalFormat, size);
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::image(Int, Image<dimensions>&) */
-        void image(Int level, Image<dimensions+1>& image) {
-            AbstractTexture::image<dimensions+1>(_target, level, image);
+        /**
+         * @copybrief Texture::imageSize()
+         *
+         * See @ref Texture::imageSize() for more information.
+         * @requires_gles31 Texture image size queries are not available in
+         *      OpenGL ES 3.0 and older.
+         */
+        VectorTypeFor<dimensions+1, Int> imageSize(Int level) {
+            return DataHelper<dimensions+1>::imageSize(*this, level);
         }
 
-        /** @copydoc Texture::imate(Int, BufferImage<dimensions>&, BufferUsage) */
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copybrief Texture::image(Int, Image&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::image(Int, Image&) for more information.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         */
+        void image(Int level, Image<dimensions+1>& image) {
+            AbstractTexture::image<dimensions+1>(level, image);
+        }
+
+        /**
+         * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
+         * information.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         */
         void image(Int level, BufferImage<dimensions+1>& image, BufferUsage usage) {
-            AbstractTexture::image<dimensions+1>(_target, level, image, usage);
+            AbstractTexture::image<dimensions+1>(level, image, usage);
         }
         #endif
 
         /**
-         * @brief Set image data
-         * @param level             Mip level
-         * @param internalFormat    Internal format
-         * @param image             @ref Image, @ref ImageReference or
-         *      @ref Trade::ImageData of the same dimension count
+         * @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
-         * On platforms that support it prefer to use @ref setStorage() and
-         * @ref setSubImage() instead, as it avoids unnecessary reallocations
-         * and has better performance characteristics. This call also has no
-         * equivalent in @extension{ARB,direct_state_access}, thus the texture
-         * needs to be bound to some texture unit before the operation.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexImage2D}/@fn_gl{TexImage3D}
+         * See @ref Texture::setImage() for more information.
+         * @see @ref maxSize()
          * @deprecated_gl Prefer to use @ref Magnum::TextureArray::setStorage() "setStorage()"
          *      and @ref Magnum::TextureArray::setSubImage() "setSubImage()"
          *      instead.
          */
         TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions+1>& image) {
-            DataHelper<dimensions+1>::setImage(*this, _target, level, internalFormat, image);
+            DataHelper<dimensions+1>::setImage(*this, level, internalFormat, image);
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
-        /** @overload */
+        /** @overload
+         * @deprecated_gl Prefer to use @ref Magnum::TextureArray::setStorage() "setStorage()"
+         *      and @ref Magnum::TextureArray::setSubImage() "setSubImage()"
+         *      instead.
+         */
         TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions+1>& image) {
-            DataHelper<dimensions+1>::setImage(*this, _target, level, internalFormat, image);
+            DataHelper<dimensions+1>::setImage(*this, level, internalFormat, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @deprecated_gl Prefer to use @ref Magnum::TextureArray::setStorage() "setStorage()"
+         *      and @ref Magnum::TextureArray::setSubImage() "setSubImage()"
+         *      instead.
+         */
         TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions+1>&& image) {
             return setImage(level, internalFormat, image);
         }
-        #endif
 
         /**
          * @brief Set image subdata
@@ -346,22 +412,24 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some texture unit before the operation.
-         * @see @ref setStorage(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         *      and @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D} or
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the texture is bound before the operation (if not already).
+         * @see @ref setStorage(), @fn_gl2{TextureSubImage2D,TexSubImage2D}/
+         *      @fn_gl2{TextureSubImage3D,TexSubImage3D},
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access}
+         *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
          */
         TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageReference<dimensions+1>& image) {
-            DataHelper<dimensions+1>::setSubImage(*this, _target, level, offset, image);
+            DataHelper<dimensions+1>::setSubImage(*this, level, offset, image);
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
         /** @overload */
         TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, BufferImage<dimensions+1>& image) {
-            DataHelper<dimensions+1>::setSubImage(*this, _target, level, offset, image);
+            DataHelper<dimensions+1>::setSubImage(*this, level, offset, image);
             return *this;
         }
 
@@ -369,18 +437,33 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, BufferImage<dimensions+1>&& image) {
             return setSubImage(level, offset, image);
         }
-        #endif
 
-        /** @copydoc Texture::generateMipmap() */
+        /**
+         * @copybrief Texture::generateMipmap()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::generateMipmap() for more information.
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+         */
         TextureArray<dimensions>& generateMipmap() {
             AbstractTexture::generateMipmap();
             return *this;
         }
 
-        /** @copydoc Texture::invalidateImage() */
+        /**
+         * @copybrief Texture::invalidateImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::invalidateImage() for more information.
+         */
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
-        /** @copydoc Texture::invalidateSubImage() */
+        /**
+         * @copybrief Texture::invalidateSubImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::invalidateSubImage() for more information.
+         */
         void invalidateSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const VectorTypeFor<dimensions+1, Int>& size) {
             DataHelper<dimensions+1>::invalidateSubImage(*this, level, offset, size);
         }

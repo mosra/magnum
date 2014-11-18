@@ -74,22 +74,31 @@ to not affect active bindings in user units. Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
 repeated queries don't result in repeated @fn_gl{Get} calls.
 
-If extension @extension{ARB,multi_bind} is available, @ref bind() uses
-@fn_gl{BindTextures} to avoid unnecessary calls to @fn_gl{ActiveTexture}.
-Otherwise, if extension @extension{EXT,direct_state_access} is available,
-@ref bind() uses @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
-function.
+If on desktop GL and @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+is available, @ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}.
+Otherwise, if @extension{ARB,multi_bind} (part of OpenGL 4.4) is available,
+@ref bind(Int) and @ref unbind() uses @fn_gl{BindTextures}. Lastly, if
+@extension{EXT,direct_state_access} is available, @fn_gl_extension{BindNamedTexture,EXT,direct_state_access}
+function is used to avoid unnecessary calls to @fn_gl{ActiveTexture}.
 
-In addition, if extension @extension{EXT,direct_state_access} is available,
-also all texture configuration and data updating functions use DSA functions
-to avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
-See respective function documentation for more information.
+In addition, if either @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+or @extension{EXT,direct_state_access} is available, also all texture
+configuration and data updating functions use DSA functions to avoid
+unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
+respective function documentation for more information.
 
-If extension @extension{ARB,robustness} is available, image reading operations
-(such as @ref Texture::image()) are protected from buffer overflow. However, if
-both @extension{EXT,direct_state_access} and @extension{ARB,robustness} are
-available, the DSA version is used, because it is better for performance and
-there isn't any function combining both features.
+If @extension{ARB,multi_bind} (part of OpenGL 4.5) is available,
+@ref bind(Int, std::initializer_list<AbstractTexture*>) and @ref unbind(Int, std::size_t)
+use @fn_gl{BindTextures} to avoid unnecessary calls to @fn_gl{ActiveTexture}.
+Otherwise the feature is emulated with sequence of @ref bind(Int)/@ref unbind(Int)
+calls.
+
+If either @extension{ARB,direct_state_access} or @extension{ARB,robustness} is
+available, image reading operations (such as @ref Texture::image()) are
+protected from buffer overflow. However, if @extension{ARB,direct_state_access}
+is not available and both @extension{EXT,direct_state_access} and
+@extension{ARB,robustness} are available, the robust version is preferred over
+DSA.
 
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
@@ -125,6 +134,7 @@ functions do nothing.
 */
 class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend struct Implementation::TextureState;
+    friend class CubeMapTexture;
 
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -187,15 +197,17 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Unbind any texture from given texture unit
          *
-         * If @extension{ARB,multi_bind} (part of OpenGL 4.4) or
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * unit is made active before binding the texture.
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5), @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
+         * @extension{EXT,direct_state_access} is available, the texture unit
+         * is made active before unbinding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
          * @see @ref bind(), @ref Shader::maxCombinedTextureImageUnits(),
-         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture}, @fn_gl{BindTextures}
-         *      or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         *      @fn_gl{BindTextureUnit}, @fn_gl{BindTextures},
+         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture} and @fn_gl{BindTexture}
          */
         static void unbind(Int textureUnit);
 
@@ -208,9 +220,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures},
-         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
-         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures}
          */
         static void unbind(Int firstTextureUnit, std::size_t count);
 
@@ -225,9 +235,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures},
-         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} or
-         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures}
          */
         static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
 
@@ -290,16 +298,18 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Bind texture to given texture unit
          *
-         * If @extension{ARB,multi_bind} (part of OpenGL 4.4) or
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * unit is made active before binding the texture.
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5), @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
+         * @extension{EXT,direct_state_access} is available, the texture unit
+         * is made active before binding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
          * @see @ref bind(Int, std::initializer_list<AbstractTexture*>),
          *      @ref unbind(), @ref Shader::maxCombinedTextureImageUnits(),
-         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture}, @fn_gl{BindTextures}
-         *      or @fn_gl_extension{BindMultiTexture,EXT,direct_state_access}
+         *      @fn_gl{BindTextureUnit}, @fn_gl{BindTextures},
+         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture} and @fn_gl{BindTexture}
          */
         void bind(Int textureUnit);
 
@@ -357,8 +367,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void generateMipmap();
 
         #ifndef MAGNUM_TARGET_GLES
-        template<UnsignedInt dimensions> void image(GLenum target, GLint level, Image<dimensions>& image);
-        template<UnsignedInt dimensions> void image(GLenum target, GLint level, BufferImage<dimensions>& image, BufferUsage usage);
+        template<UnsignedInt dimensions> void image(GLint level, Image<dimensions>& image);
+        template<UnsignedInt dimensions> void image(GLint level, BufferImage<dimensions>& image, BufferUsage usage);
         #endif
 
         GLenum _target;
@@ -367,6 +377,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static void MAGNUM_LOCAL unbindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL unbindImplementationMulti(GLint textureUnit);
+        static void MAGNUM_LOCAL unbindImplementationDSA(GLint textureUnit);
         static void MAGNUM_LOCAL unbindImplementationDSAEXT(GLint textureUnit);
         #endif
 
@@ -385,6 +396,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL bindImplementationMulti(GLint textureUnit);
+        void MAGNUM_LOCAL bindImplementationDSA(GLint textureUnit);
         void MAGNUM_LOCAL bindImplementationDSAEXT(GLint textureUnit);
         #endif
 
@@ -399,11 +411,17 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLint* values);
         #endif
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
         void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, GLint value);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
         void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, GLfloat value);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLint* values);
         void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, const GLint* values);
+        void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
         void MAGNUM_LOCAL parameterImplementationDSAEXT(GLenum parameter, const GLfloat* values);
+        void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLuint* values);
         void MAGNUM_LOCAL parameterIImplementationDSAEXT(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterIImplementationDSA(GLenum parameter, const GLint* values);
         void MAGNUM_LOCAL parameterIImplementationDSAEXT(GLenum parameter, const GLint* values);
         #endif
 
@@ -411,70 +429,81 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
 
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLint level, GLenum parameter, GLint* values);
         #endif
         #endif
 
         void MAGNUM_LOCAL mipmapImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL mipmapImplementationDSA();
         void MAGNUM_LOCAL mipmapImplementationDSAEXT();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
-        void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
-        void MAGNUM_LOCAL storageImplementationDSAEXT(GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        void MAGNUM_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        void MAGNUM_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        void MAGNUM_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         #endif
 
-        void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
-        void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageImplementationDSAEXT(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
 
-        void MAGNUM_LOCAL storageImplementationFallback(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
-        void MAGNUM_LOCAL storageImplementationDefault(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        void MAGNUM_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        void MAGNUM_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageImplementationDSAEXT(GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        void MAGNUM_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
-        void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
-        void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL getImageImplementationDefault(GLenum target, GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_LOCAL getImageImplementationDSAEXT(GLenum target, GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_LOCAL getImageImplementationRobustness(GLenum target, GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDefault(GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSA(GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSAEXT(GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationRobustness(GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         #endif
 
-        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLenum target, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
-        void MAGNUM_LOCAL subImageImplementationDefault(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLenum target, GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        #endif
+
+        void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL invalidateImageImplementationNoOp(GLint level);
@@ -503,17 +532,17 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
     };
     #endif
 
-    static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLenum target, GLint level);
+    static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLint level);
 
     static void setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping);
 
-    static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+    static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
 
-    static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference1D& image);
-    static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage1D& image);
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageReference1D& image);
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage1D& image);
 
-    static void setSubImage(AbstractTexture& texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, const ImageReference1D& image);
-    static void setSubImage(AbstractTexture& texture, GLenum target, GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const ImageReference1D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image);
 
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size);
 };
@@ -531,25 +560,31 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    static Vector2i imageSize(AbstractTexture& texture, GLenum target, GLint level);
+    static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
     static void setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping);
 
-    static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+    static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
 
     #ifndef MAGNUM_TARGET_GLES2
-    static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedSampleLocations);
+    static void setStorageMultisample(AbstractTexture& texture, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedSampleLocations);
     #endif
 
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageReference2D& image) {
+        setImage(texture, texture._target, level, internalFormat, image);
+    }
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference2D& image);
     #ifndef MAGNUM_TARGET_GLES2
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage2D& image) {
+        setImage(texture, texture._target, level, internalFormat, image);
+    }
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage2D& image);
     #endif
 
-    static void setSubImage(AbstractTexture& texture, GLenum target, GLint level, const Vector2i& offset, const ImageReference2D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const ImageReference2D& image);
     #ifndef MAGNUM_TARGET_GLES2
-    static void setSubImage(AbstractTexture& texture, GLenum target, GLint level, const Vector2i& offset, BufferImage2D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, BufferImage2D& image);
     #endif
 
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const Vector2i& size);
@@ -570,25 +605,25 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    static Vector3i imageSize(AbstractTexture& texture, GLenum target, GLint level);
+    static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
     static void setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping);
 
-    static void setStorage(AbstractTexture& texture, GLenum target, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+    static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
 
     #ifndef MAGNUM_TARGET_GLES
-    static void setStorageMultisample(AbstractTexture& texture, GLenum target, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedSampleLocations);
+    static void setStorageMultisample(AbstractTexture& texture, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedSampleLocations);
     #endif
 
-    static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference3D& image);
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageReference3D& image);
     #ifndef MAGNUM_TARGET_GLES2
-    static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage3D& image);
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage3D& image);
     #endif
 
-    static void setSubImage(AbstractTexture& texture, GLenum target, GLint level, const Vector3i& offset, const ImageReference3D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const ImageReference3D& image);
     #ifndef MAGNUM_TARGET_GLES2
-    static void setSubImage(AbstractTexture& texture, GLenum target, GLint level, const Vector3i& offset, BufferImage3D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, BufferImage3D& image);
     #endif
 
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const Vector3i& size);

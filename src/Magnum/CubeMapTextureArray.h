@@ -128,13 +128,23 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
-        /** @copydoc Texture::setMinificationFilter() */
+        /**
+         * @copybrief Texture::setMinificationFilter()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMinificationFilter() for more information.
+         */
         CubeMapTextureArray& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;
         }
 
-        /** @copydoc Texture::setMagnificationFilter() */
+        /**
+         * @copybrief Texture::setMagnificationFilter()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMagnificationFilter() for more information.
+         */
         CubeMapTextureArray& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
@@ -173,7 +183,12 @@ class CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
 
-        /** @copydoc Texture::setWrapping() */
+        /**
+         * @copybrief Texture::setWrapping()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setWrapping() for more information.
+         */
         CubeMapTextureArray& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(*this, wrapping);
             return *this;
@@ -197,31 +212,39 @@ class CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
          */
         CubeMapTextureArray& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /**
-         * @copybrief Texture::setBorderColor(const Vector4ui&)
-         * @return Reference to self (for method chaining)
-         *
-         * See @ref Texture::setBorderColor(const Vector4i&) for more
-         * information.
+        /** @overload
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
          */
         CubeMapTextureArray& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc Texture::setMaxAnisotropy() */
+        /**
+         * @copybrief Texture::setMaxAnisotropy()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxAnisotropy() for more information.
+         */
         CubeMapTextureArray& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
 
-        /** @copydoc RectangleTexture::setSRGBDecode() */
+        /**
+         * @copybrief Texture::setSRGBDecode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setSRGBDecode() for more information.
+         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
+         */
         CubeMapTextureArray& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
             return *this;
@@ -232,6 +255,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSwizzle() for more information.
+         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
          */
         template<char r, char g, char b, char a> CubeMapTextureArray& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
@@ -265,6 +289,7 @@ class CubeMapTextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
+         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          */
         CubeMapTextureArray& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
@@ -272,57 +297,49 @@ class CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
-         * @brief Image size in given mip level
-         * @param level             Mip level
+         * @copybrief Texture::setStorage()
+         * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::imageSize() for more information.
-         */
-        Vector3i imageSize(Int level) {
-            return DataHelper<3>::imageSize(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level);
-        }
-
-        /**
-         * @brief Set storage
+         * Z coordinate of @p size must be multiple of 6.
          *
-         * Z coordinate of @p size must be multiple of 6. See
-         * @ref Texture::setStorage() for more information.
+         * See @ref Texture::setStorage() for more information.
          * @see @ref maxSize()
          */
         CubeMapTextureArray& setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
-            DataHelper<3>::setStorage(*this, _target, levels, internalFormat, size);
+            DataHelper<3>::setStorage(*this, levels, internalFormat, size);
             return *this;
         }
 
         /**
-         * @brief Read given mip level of texture to image
-         * @param level             Mip level
-         * @param image             Image where to put the data
+         * @copybrief Texture::imageSize()
+         *
+         * See @ref Texture::imageSize() for more information.
+         */
+        Vector3i imageSize(Int level) {
+            return DataHelper<3>::imageSize(*this, level);
+        }
+
+        /**
+         * @copybrief Texture::image(Int, Image&)
          *
          * See @ref Texture::image(Int, Image&) for more information.
          */
         void image(Int level, Image3D& image) {
-            AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_ARRAY, level, image);
+            AbstractTexture::image<3>(level, image);
         }
 
         /**
-         * @brief Read given mip level of texture to buffer image
-         * @param level             Mip level
-         * @param image             Buffer image where to put the data
-         * @param usage             Buffer usage
+         * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
          */
         void image(Int level, BufferImage3D& image, BufferUsage usage) {
-            AbstractTexture::image<3>(GL_TEXTURE_CUBE_MAP_ARRAY, level, image, usage);
+            AbstractTexture::image<3>(level, image, usage);
         }
 
         /**
-         * @brief Set image data
-         * @param level             Mip level
-         * @param internalFormat    Internal format
-         * @param image             @ref Image3D, @ref ImageReference3D or
-         *      @ref Trade::ImageData3D
+         * @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
          * Sets texture image data from three-dimensional image for all cube
@@ -337,27 +354,31 @@ class CubeMapTextureArray: public AbstractTexture {
          *      instead.
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
-            DataHelper<3>::setImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
+            DataHelper<3>::setImage(*this, level, internalFormat, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTextureArray::setStorage() "setStorage()"
+         *      and @ref Magnum::CubeMapTextureArray::setSubImage() "setSubImage()"
+         *      instead.
+         */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, BufferImage3D& image) {
-            DataHelper<3>::setImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, internalFormat, image);
+            DataHelper<3>::setImage(*this, level, internalFormat, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTextureArray::setStorage() "setStorage()"
+         *      and @ref Magnum::CubeMapTextureArray::setSubImage() "setSubImage()"
+         *      instead.
+         */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, BufferImage3D&& image) {
             return setImage(level, internalFormat, image);
         }
 
         /**
-         * @brief Set texture image 3D subdata
-         * @param level         Mip level
-         * @param offset        Offset where to put data in the texture
-         * @param image         @ref Image3D, @ref ImageReference3D or
-         *      @ref Trade::ImageData3D
+         * @copybrief Texture::setSubImage()
          * @return Reference to self (for method chaining)
          *
          * Z coordinate is equivalent to layer * 6 + number of texture face,
@@ -366,13 +387,13 @@ class CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::setSubImage() for more information.
          */
         CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image) {
-            DataHelper<3>::setSubImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
+            DataHelper<3>::setSubImage(*this, level, offset, image);
             return *this;
         }
 
         /** @overload */
         CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, BufferImage3D& image) {
-            DataHelper<3>::setSubImage(*this, GL_TEXTURE_CUBE_MAP_ARRAY, level, offset, image);
+            DataHelper<3>::setSubImage(*this, level, offset, image);
             return *this;
         }
 
@@ -381,20 +402,27 @@ class CubeMapTextureArray: public AbstractTexture {
             return setSubImage(level, offset, image);
         }
 
-        /** @copydoc Texture::generateMipmap() */
+        /**
+         * @copybrief Texture::generateMipmap()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::generateMipmap() for more information.
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+         */
         CubeMapTextureArray& generateMipmap() {
             AbstractTexture::generateMipmap();
             return *this;
         }
 
-        /** @copydoc Texture::invalidateImage() */
+        /**
+         * @copybrief Texture::invalidateImage()
+         *
+         * See @ref Texture::invalidateImage() for more information.
+         */
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
         /**
-         * @brief Invalidate texture subimage
-         * @param level             Mip level
-         * @param offset            Offset into the texture
-         * @param size              Size of invalidated data
+         * @copybrief Texture::invalidateSubImage()
          *
          * Z coordinate is equivalent to layer * 6 + number of texture face,
          * i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z).

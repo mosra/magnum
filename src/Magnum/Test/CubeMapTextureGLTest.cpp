@@ -265,48 +265,13 @@ void CubeMapTextureGLTest::storage() {
         CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing");
     #endif
 
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 0), Vector2i(32));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 0), Vector2i(32));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 0), Vector2i(32));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeY, 0), Vector2i(32));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveZ, 0), Vector2i(32));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeZ, 0), Vector2i(32));
-
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 1), Vector2i(16));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 1), Vector2i(16));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 1), Vector2i(16));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeY, 1), Vector2i(16));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveZ, 1), Vector2i(16));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeZ, 1), Vector2i(16));
-
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 2), Vector2i(8));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 2), Vector2i(8));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 2), Vector2i(8));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeY, 2), Vector2i(8));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveZ, 2), Vector2i(8));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeZ, 2), Vector2i(8));
-
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 3), Vector2i(4));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 3), Vector2i(4));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 3), Vector2i(4));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeY, 3), Vector2i(4));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveZ, 3), Vector2i(4));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeZ, 3), Vector2i(4));
-
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 4), Vector2i(2));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 4), Vector2i(2));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 4), Vector2i(2));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeY, 4), Vector2i(2));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveZ, 4), Vector2i(2));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeZ, 4), Vector2i(2));
-
+    CORRADE_COMPARE(texture.imageSize(0), Vector2i(32));
+    CORRADE_COMPARE(texture.imageSize(1), Vector2i(16));
+    CORRADE_COMPARE(texture.imageSize(2), Vector2i(8));
+    CORRADE_COMPARE(texture.imageSize(3), Vector2i(4));
+    CORRADE_COMPARE(texture.imageSize(4), Vector2i(2));
     /* Not available */
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 5), Vector2i(0));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeX, 5), Vector2i(0));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveY, 5), Vector2i(0));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeY, 5), Vector2i(0));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveZ, 5), Vector2i(0));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::NegativeZ, 5), Vector2i(0));
+    CORRADE_COMPARE(texture.imageSize(5), Vector2i(0));
 
     MAGNUM_VERIFY_NO_ERROR();
     #endif
@@ -445,8 +410,8 @@ void CubeMapTextureGLTest::generateMipmap() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 0), Vector2i(32));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 1), Vector2i( 0));
+    CORRADE_COMPARE(texture.imageSize(0), Vector2i(32));
+    CORRADE_COMPARE(texture.imageSize(1), Vector2i( 0));
     #endif
 
     texture.generateMipmap();
@@ -455,12 +420,12 @@ void CubeMapTextureGLTest::generateMipmap() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 0), Vector2i(32));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 1), Vector2i(16));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 2), Vector2i( 8));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 3), Vector2i( 4));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 4), Vector2i( 2));
-    CORRADE_COMPARE(texture.imageSize(CubeMapTexture::Coordinate::PositiveX, 5), Vector2i( 1));
+    CORRADE_COMPARE(texture.imageSize(0), Vector2i(32));
+    CORRADE_COMPARE(texture.imageSize(1), Vector2i(16));
+    CORRADE_COMPARE(texture.imageSize(2), Vector2i( 8));
+    CORRADE_COMPARE(texture.imageSize(3), Vector2i( 4));
+    CORRADE_COMPARE(texture.imageSize(4), Vector2i( 2));
+    CORRADE_COMPARE(texture.imageSize(5), Vector2i( 1));
 
     MAGNUM_VERIFY_NO_ERROR();
     #endif

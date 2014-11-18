@@ -28,8 +28,7 @@
 #include <string>
 #include <vector>
 
-#include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
+#include "Magnum/CubeMapTexture.h"
 
 namespace Magnum { namespace Implementation {
 
@@ -55,26 +54,26 @@ struct TextureState {
     #endif
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
+    void(AbstractTexture::*getLevelParameterivImplementation)(GLint, GLenum, GLint*);
     #endif
     void(AbstractTexture::*mipmapImplementation)();
     #ifndef MAGNUM_TARGET_GLES
-    void(AbstractTexture::*storage1DImplementation)(GLenum, GLsizei, TextureFormat, const Math::Vector<1, GLsizei>&);
+    void(AbstractTexture::*storage1DImplementation)(GLsizei, TextureFormat, const Math::Vector<1, GLsizei>&);
     #endif
-    void(AbstractTexture::*storage2DImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&);
-    void(AbstractTexture::*storage3DImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&);
+    void(AbstractTexture::*storage2DImplementation)(GLsizei, TextureFormat, const Vector2i&);
+    void(AbstractTexture::*storage3DImplementation)(GLsizei, TextureFormat, const Vector3i&);
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractTexture::*storage2DMultisampleImplementation)(GLenum, GLsizei, TextureFormat, const Vector2i&, GLboolean);
+    void(AbstractTexture::*storage2DMultisampleImplementation)(GLsizei, TextureFormat, const Vector2i&, GLboolean);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    void(AbstractTexture::*storage3DMultisampleImplementation)(GLenum, GLsizei, TextureFormat, const Vector3i&, GLboolean);
-    void(AbstractTexture::*getImageImplementation)(GLenum, GLint, ColorFormat, ColorType, std::size_t, GLvoid*);
+    void(AbstractTexture::*storage3DMultisampleImplementation)(GLsizei, TextureFormat, const Vector3i&, GLboolean);
+    void(AbstractTexture::*getImageImplementation)(GLint, ColorFormat, ColorType, std::size_t, GLvoid*);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    void(AbstractTexture::*subImage1DImplementation)(GLenum, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
+    void(AbstractTexture::*subImage1DImplementation)(GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
     #endif
-    void(AbstractTexture::*subImage2DImplementation)(GLenum, GLint, const Vector2i&, const Vector2i&, ColorFormat, ColorType, const GLvoid*);
-    void(AbstractTexture::*subImage3DImplementation)(GLenum, GLint, const Vector3i&, const Vector3i&, ColorFormat, ColorType, const GLvoid*);
+    void(AbstractTexture::*subImage2DImplementation)(GLint, const Vector2i&, const Vector2i&, ColorFormat, ColorType, const GLvoid*);
+    void(AbstractTexture::*subImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, ColorFormat, ColorType, const GLvoid*);
     void(AbstractTexture::*invalidateImageImplementation)(GLint);
     void(AbstractTexture::*invalidateSubImageImplementation)(GLint, const Vector3i&, const Vector3i&);
 
@@ -82,6 +81,14 @@ struct TextureState {
     void(BufferTexture::*setBufferImplementation)(BufferTextureFormat, Buffer&);
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    Vector2i(CubeMapTexture::*getCubeImageSizeImplementation)(Int);
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void(CubeMapTexture::*getCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
+    #endif
+    void(CubeMapTexture::*cubeSubImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, const Vector2i&, ColorFormat, ColorType, const GLvoid*);
 
     GLint maxSize,
         max3DSize,

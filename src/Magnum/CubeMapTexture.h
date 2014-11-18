@@ -80,6 +80,8 @@ which intersects one of the six sides of the cube map. See
     @ref MultisampleTexture
 */
 class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
+    friend struct Implementation::TextureState;
+
     public:
         /** @brief Cube map coordinate */
         enum class Coordinate: GLenum {
@@ -112,39 +114,77 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
         #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::setBaseLevel() */
+        /**
+         * @copybrief Texture::setBaseLevel()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBaseLevel() for more information.
+         * @requires_gles30 Base level is always `0` in OpenGL ES 2.0.
+         */
         CubeMapTexture& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
             return *this;
         }
         #endif
 
-        /** @copydoc Texture::setMaxLevel() */
+        /**
+         * @copybrief Texture::setMaxLevel()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxLevel() for more information.
+         * @requires_gles30 Extension @es_extension{APPLE,texture_max_level},
+         *      otherwise the max level is always set to largest possible value
+         *      in OpenGL ES 2.0.
+         */
         CubeMapTexture& setMaxLevel(Int level) {
             AbstractTexture::setMaxLevel(level);
             return *this;
         }
 
-        /** @copydoc Texture::setMinificationFilter() */
+        /**
+         * @copybrief Texture::setMinificationFilter()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMinificationFilter() for more information.
+         */
         CubeMapTexture& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;
         }
 
-        /** @copydoc Texture::setMagnificationFilter() */
+        /**
+         * @copybrief Texture::setMagnificationFilter()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMagnificationFilter() for more information.
+         */
         CubeMapTexture& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::setMinLod() */
+        /**
+         * @copybrief Texture::setMinLod()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMinLod() for more information.
+         * @requires_gles30 Texture LOD parameters are not available in OpenGL
+         *      ES 2.0.
+         */
         CubeMapTexture& setMinLod(Float lod) {
             AbstractTexture::setMinLod(lod);
             return *this;
         }
 
-        /** @copydoc Texture::setMaxLod() */
+        /**
+         * @copybrief Texture::setMaxLod()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxLod() for more information.
+         * @requires_gles30 Texture LOD parameters are not available in OpenGL
+         *      ES 2.0.
+         */
         CubeMapTexture& setMaxLod(Float lod) {
             AbstractTexture::setMaxLod(lod);
             return *this;
@@ -152,53 +192,106 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setLodBias() */
+        /**
+         * @copybrief Texture::setLodBias()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setLodBias() for more information.
+         * @requires_gl Texture LOD bias can be specified only directly in
+         *      fragment shader in OpenGL ES.
+         */
         CubeMapTexture& setLodBias(Float bias) {
             AbstractTexture::setLodBias(bias);
             return *this;
         }
         #endif
 
-        /** @copydoc Texture::setWrapping() */
+        /**
+         * @copybrief Texture::setWrapping()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setWrapping() for more information.
+         */
         CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
             DataHelper<3>::setWrapping(*this, wrapping);
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor(const Color4&) */
+        /**
+         * @copybrief Texture::setBorderColor(const Color4&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Color4&) for more
+         * information.
+         * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
+         */
         CubeMapTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        /** @copydoc Texture::setBorderColor(const Vector4ui&) */
+        /**
+         * @copybrief Texture::setBorderColor(const Vector4ui&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setBorderColor(const Vector4ui&) for more
+         * information.
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl Border is available only for float textures in OpenGL
+         *      ES.
+         */
         CubeMapTexture& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc Texture::setBorderColor(const Vector4i&) */
+        /** @overload
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl Border is available only for float textures in OpenGL
+         *      ES.
+         */
         CubeMapTexture& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
         #endif
 
-        /** @copydoc Texture::setMaxAnisotropy() */
+        /**
+         * @copybrief Texture::setMaxAnisotropy()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxAnisotropy() for more information.
+         */
         CubeMapTexture& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
 
-        /** @copydoc Texture::setSRGBDecode() */
+        /**
+         * @copybrief Texture::setSRGBDecode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setSRGBDecode() for more information.
+         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_es_extension OpenGL ES 3.0 or extension
+         *      @es_extension{EXT,sRGB} and
+         *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         */
         CubeMapTexture& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
             return *this;
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::setSwizzle() */
+        /**
+         * @copybrief Texture::setSwizzle()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setSwizzle() for more information.
+         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
+         * @requires_gles30 Texture swizzle is not available in OpenGL ES 2.0.
+         */
         template<char r, char g, char b, char a> CubeMapTexture& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
             return *this;
@@ -232,76 +325,79 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        /** @copydoc Texture::setDepthStencilMode() */
+        /**
+         * @copybrief Texture::setDepthStencilMode()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setDepthStencilMode() for more information.
+         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
+         * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
+         *      and older.
+         */
         CubeMapTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief Image size in given mip level
-         * @param coordinate        Coordinate
-         * @param level             Mip level
-         *
-         * See @ref Texture::imageSize() for more information.
-         * @requires_gles31 Texture image size queries are not available in
-         *      OpenGL ES 3.0 and older.
-         */
-        Vector2i imageSize(Coordinate coordinate, Int level) {
-            return DataHelper<2>::imageSize(*this, GLenum(coordinate), level);
-        }
-        #endif
-
-        /**
-         * @brief Set storage
+         * @copybrief Texture::setStorage()
+         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setStorage() for more information.
          * @see @ref maxSize()
          */
         CubeMapTexture& setStorage(Int levels, TextureFormat internalFormat, const Vector2i& size) {
-            DataHelper<2>::setStorage(*this, _target, levels, internalFormat, size);
+            DataHelper<2>::setStorage(*this, levels, internalFormat, size);
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @copybrief Texture::imageSize()
+         *
+         * If on OpenGL ES or @extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) is not available, it is assumed that faces have the same
+         * size and just the size of @ref Coordinate::PositiveX face is
+         * queried. See @ref Texture::imageSize() for more information.
+         * @requires_gles31 Texture image size queries are not available in
+         *      OpenGL ES 3.0 and older.
+         */
+        Vector2i imageSize(Int level);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief imageSize()
+         * @deprecated Use @ref Magnum::CubeMapTexture::imageSize(Int) "imageSize(Int)"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use imageSize(Int) instead") Vector2i imageSize(Coordinate, Int level) {
+            return imageSize(level);
+        }
+        #endif
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Read given mip level of texture to image
-         * @param coordinate        Coordinate
-         * @param level             Mip level
-         * @param image             Image where to put the data
+         * @copybrief Texture::image(Int, Image&)
          *
          * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
          */
-        void image(Coordinate coordinate, Int level, Image2D& image) {
-            AbstractTexture::image<2>(GLenum(coordinate), level, image);
-        }
+        void image(Coordinate coordinate, Int level, Image2D& image);
 
         /**
-         * @brief Read given mip level of texture to buffer image
-         * @param coordinate        Coordinate
-         * @param level             Mip level
-         * @param image             Buffer image where to put the data
-         * @param usage             Buffer usage
+         * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
          */
-        void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage) {
-            AbstractTexture::image<2>(GLenum(coordinate), level, image, usage);
-        }
+        void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage);
         #endif
 
         /**
-         * @brief Set image data
-         * @param coordinate        Coordinate
-         * @param level             Mip level
-         * @param internalFormat    Internal format
-         * @param image             @ref Image2D, @ref ImageReference2D or
-         *      @ref Trade::ImageData2D
+         * @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setImage() for more information.
@@ -316,62 +412,75 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        /** @overload */
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTexture::setStorage() "setStorage()"
+         *      and @ref Magnum::CubeMapTexture::setSubImage() "setSubImage()"
+         *      instead.
+         */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
             DataHelper<2>::setImage(*this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTexture::setStorage() "setStorage()"
+         *      and @ref Magnum::CubeMapTexture::setSubImage() "setSubImage()"
+         *      instead.
+         */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D&& image) {
             return setImage(coordinate, level, internalFormat, image);
         }
         #endif
 
         /**
-         * @brief Set image subdata
-         * @param coordinate        Coordinate
-         * @param level             Mip level
-         * @param offset            Offset where to put data in the texture
-         * @param image             @ref Image2D, @ref ImageReference2D or
-         *      @ref Trade::ImageData2D
+         * @copybrief Texture::setSubImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSubImage() for more information.
          */
-        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image) {
-            DataHelper<2>::setSubImage(*this, GLenum(coordinate), level, offset, image);
-            return *this;
-        }
+        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image);
 
         #ifndef MAGNUM_TARGET_GLES2
-        /** @overload */
-        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image) {
-            DataHelper<2>::setSubImage(*this, GLenum(coordinate), level, offset, image);
-            return *this;
-        }
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         */
+        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image);
 
-        /** @overload */
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D&& image) {
-            DataHelper<2>::setSubImage(*this, GLenum(coordinate), level, offset, image);
-            return *this;
+            return setSubImage(coordinate, level, offset, image);
         }
         #endif
 
-        /** @copydoc Texture::generateMipmap() */
+        /**
+         * @copybrief Texture::generateMipmap()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::generateMipmap() for more information.
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+         */
         CubeMapTexture& generateMipmap() {
             AbstractTexture::generateMipmap();
             return *this;
         }
 
-        /** @copydoc Texture::invalidateImage() */
+        /**
+         * @copybrief Texture::invalidateImage()
+         *
+         * See @ref Texture::invalidateImage() for more information.
+         */
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
         /**
-         * @brief Invalidate texture subimage
-         * @param level             Mip level
-         * @param offset            Offset into the texture
-         * @param size              Size of invalidated data
+         * @copybrief Texture::invalidateSubImage()
          *
          * Z coordinate is equivalent to number of texture face, i.e.
          * @ref Coordinate::PositiveX is `0` and so on, in the same order as in
@@ -393,6 +502,26 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             AbstractTexture::setLabel<size>(label);
             return *this;
         }
+        #endif
+
+    private:
+        Vector2i MAGNUM_LOCAL getImageSizeImplementationDefault(Int level);
+        #ifndef MAGNUM_TARGET_GLES
+        Vector2i MAGNUM_LOCAL getImageSizeImplementationDSA(Int level);
+        Vector2i MAGNUM_LOCAL getImageSizeImplementationDSAEXT(Int level);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL getImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationRobustness(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        #endif
+
+        void MAGNUM_LOCAL subImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL subImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 };
 

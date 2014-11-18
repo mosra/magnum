@@ -154,7 +154,7 @@ enum class BufferTextureFormat: GLenum {
 /**
 @brief Buffer texture
 
-This texture is, unlike classic textures such as @ref Texture used as simple
+This texture is, unlike classic textures such as @ref Texture, used as simple
 data source, without any unnecessary interpolation and wrapping methods.
 
 ## Usage
@@ -187,7 +187,8 @@ documentation for more information about usage in shaders.
 
 ## Performance optimizations
 
-If extension @extension{EXT,direct_state_access} is available, @ref setBuffer()
+If on desktop GL and either @extension{ARB,direct_state_access} (part of OpenGL
+4.5) or @extension{EXT,direct_state_access} is available, @ref setBuffer()
 functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @fn_gl{BindTexture}. See
 @ref AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
@@ -241,10 +242,14 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          *
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using @ref Buffer "Buffer"'s
-         * own data setting functions.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexBuffer} or
-         *      @fn_gl_extension{TextureBuffer,EXT,direct_state_access}
+         * own data setting functions. If neither @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref maxSize(), @fn_gl2{TextureBuffer,TexBuffer},
+         *      @fn_gl_extension{TextureBuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexBuffer}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
 
@@ -258,10 +263,14 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          *
          * Binds range of given buffer to this texture. The buffer itself can
          * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
-         * own data setting functions.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexBufferRange} or
-         *      @fn_gl_extension{TextureBufferRange,EXT,direct_state_access}
+         * own data setting functions. If neither @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref maxSize(), @fn_gl2{TextureBufferRange,TexBufferRange},
+         *      @fn_gl_extension{TextureBufferRange,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{TexBufferRange}
          * @requires_gl43 Extension @extension{ARB,texture_buffer_range}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
@@ -280,9 +289,11 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
 
     private:
         void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
+        void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
         void MAGNUM_LOCAL setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer);
 
         void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         void MAGNUM_LOCAL setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 };
 

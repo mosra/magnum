@@ -123,21 +123,6 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
 
         /**
-         * @brief Image size
-         *
-         * The result is not cached in any way. If
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
-         *      @def_gl{TEXTURE_DEPTH}
-         */
-        VectorTypeFor<dimensions, Int> imageSize() {
-            return DataHelper<dimensions>::imageSize(*this, _target, 0);
-        }
-
-        /**
          * @brief Set storage
          * @param samples           Sample count
          * @param internalFormat    Internal format
@@ -148,19 +133,20 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * After calling this function the texture is immutable and calling
          * @ref setStorage() again is not allowed.
          *
-         * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation. If
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the texture is bound before the operation (if not already). If
          * @extension{ARB,texture_storage_multisample} (part of OpenGL 4.3) is
-         * not available, the feature is emulated using plain
-         * @extension{ARB,texture_storage} functionality (which unfortunately
-         * doesn't have any DSA alternative, so the texture must be bound
-         * to some texture unit before).
+         * not available, the texture is bound and the feature is emulated
+         * using plain @extension{ARB,texture_multisample} functionality.
          * @see @ref maxSize(), @ref maxColorSamples(), @ref maxDepthSamples(),
-         *      @ref maxIntegerSamples(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         *      and @fn_gl{TexStorage2DMultisample}/@fn_gl{TexStorage3DMultisample}
-         *      or @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureStorage3DMultisample,EXT,direct_state_access}
-         *      eventually @fn_gl{TexImage2DMultisample}/@fn_gl{TexImage3DMultisample}
+         *      @ref maxIntegerSamples(), @fn_gl2{TextureStorage2DMultisample,TexStorage2DMultisample} /
+         *      @fn_gl2{TextureStorage3DMultisample,TexStorage3DMultisample},
+         *      @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access} /
+         *      @fn_gl_extension{TextureStorage3DMultisample,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexStorage2DMultisample} / @fn_gl{TexStorage3DMultisample}
+         *      or @fn_gl{TexImage2DMultisample} / @fn_gl{TexImage3DMultisample}
          * @todoc Remove the workaround when it stops breaking Doxygen layout so badly
          */
         /* The default parameter value was chosen based on discussion in
@@ -173,14 +159,35 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
             NotFixed
             #endif
         ) {
-            DataHelper<dimensions>::setStorageMultisample(*this, _target, samples, internalFormat, size, GLboolean(sampleLocations));
+            DataHelper<dimensions>::setStorageMultisample(*this, samples, internalFormat, size, GLboolean(sampleLocations));
             return *this;
         }
 
-        /** @copydoc RectangleTexture::invalidateImage() */
+        /**
+         * @brief Texture image size
+         *
+         * See @ref Texture::imageSize() for more information.
+         * @requires_gles31 Texture image size queries are not available in
+         *      OpenGL ES 3.0 and older.
+         */
+        VectorTypeFor<dimensions, Int> imageSize() {
+            return DataHelper<dimensions>::imageSize(*this, 0);
+        }
+
+        /**
+         * @copybrief Texture::invalidateImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::invalidateImage() for more information.
+         */
         void invalidateImage() { AbstractTexture::invalidateImage(0); }
 
-        /** @copydoc RectangleTexture::invalidateSubImage() */
+        /**
+         * @copybrief Texture::invalidateSubImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::invalidateSubImage() for more information.
+         */
         void invalidateSubImage(const VectorTypeFor<dimensions, Int>& offset, const VectorTypeFor<dimensions, Int>& size) {
             DataHelper<dimensions>::invalidateSubImage(*this, 0, offset, size);
         }
