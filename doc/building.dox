@@ -362,11 +362,13 @@ You will need MinGW32 versions of the compiler and all dependent libraries
 
 Then create build directory and run cmake and build command in it. You may need
 to modify the `basic-mingw32.cmake` file and `CMAKE_INSTALL_PREFIX` to suit
-your distribution filesystem hierarchy.
+your distribution filesystem hierarchy and specify path where Corrade is
+installed in `CMAKE_PREFIX_PATH`.
 
     mkdir build-win && cd build-win
     cmake .. \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
+        -DCMAKE_PREFIX_PATH=/usr/i486-mingw32 \
         -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32
     cmake --build .
 
@@ -390,13 +392,15 @@ Then create build directories for x86-32 and x86-64 and run cmake and build
 command in them. The toolchains need access to the platform file, so be sure to
 properly set **absolute** path to `modules/` directory containing
 `Platform/NaCl.cmake`. Also adapt `CMAKE_INSTALL_PREFIX` to the same value as
-in `NACL_PREFIX` in toolchain file.
+in `NACL_PREFIX` in toolchain file and specify path where Corrade is installed
+in `CMAKE_PREFIX_PATH`.
 
     mkdir build-nacl-x86-32 && cd build-nacl-x86-32
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/usr/nacl \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON \
         -DLIB_SUFFIX=/32
@@ -407,6 +411,7 @@ in `NACL_PREFIX` in toolchain file.
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/usr/nacl \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON
     cmake --build .
@@ -439,7 +444,8 @@ Also set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
+        -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+        -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
         -DWITH_SDL2APPLICATION=ON
     cmake --build .
 
@@ -466,7 +472,8 @@ where NDK is installed. Default is `/opt/android-ndk`. Adapt also
 Then create build directory and run cmake and build command in it. The
 toolchain needs access to its platform file, so be sure to properly set **absolute**
 path to `modules/` directory containing `Platform/Android.cmake`. Also set
-`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT`.
+`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT` and specify
+path where Corrade is installed in `CMAKE_PREFIX_PATH`.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. Decision
@@ -478,6 +485,7 @@ between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-arm/usr \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
         -DTARGET_GLES=ON -DTARGET_GLES2=ON
     cmake --build .
@@ -487,6 +495,7 @@ between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-x86/usr \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-x86/usr \
         -DTARGET_GLES=ON -DTARGET_GLES2=ON
     cmake --build .
