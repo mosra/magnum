@@ -7,7 +7,7 @@ arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('android-arm-corrade')
-makedepends=('cmake' 'ninja' 'android-ndk')
+makedepends=('cmake' 'ninja' 'android-ndk' 'corrade')
 options=('!strip' '!buildflags' 'staticlibs')
 
 build() {
