@@ -425,9 +425,9 @@ You will need [Emscripten](https://github.com/kripken/emscripten/wiki/Tutorial)
 installed and configured.
 
 Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in `generic/Emscripten.cmake`
-to path where Emscripten is installed. Default is `/usr/emscripten`. Emscripten
-supports dynamic libraries only to simplify porting and they are generally
-slower, thus `BUILD_STATIC` is implicitly enabled.
+to path where Emscripten is installed. Default is `/usr/lib/emscripten`.
+Emscripten supports dynamic libraries only to simplify porting and they are
+generally slower, thus `BUILD_STATIC` is implicitly enabled.
 
 Then create build directory and run cmake and build command in it. The
 toolchain needs access to its platform file, so be sure to properly set
