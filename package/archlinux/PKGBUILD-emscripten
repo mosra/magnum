@@ -7,7 +7,7 @@ arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('emscripten-corrade')
-makedepends=('cmake' 'ninja' 'emscripten-git')
+makedepends=('cmake' 'ninja' 'emscripten')
 options=('!strip' '!buildflags' 'staticlibs')
 
 build() {
