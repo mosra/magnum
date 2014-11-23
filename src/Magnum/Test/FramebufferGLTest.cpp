@@ -87,7 +87,9 @@ class FramebufferGLTest: public AbstractOpenGLTester {
 
         void clear();
         void invalidate();
+        #ifndef MAGNUM_TARGET_GLES2
         void invalidateSub();
+        #endif
         void read();
         #ifndef MAGNUM_TARGET_GLES2
         void readBuffer();
@@ -135,7 +137,9 @@ FramebufferGLTest::FramebufferGLTest() {
 
               &FramebufferGLTest::clear,
               &FramebufferGLTest::invalidate,
+              #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::invalidateSub,
+              #endif
               &FramebufferGLTest::read,
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::readBuffer,
@@ -710,6 +714,7 @@ void FramebufferGLTest::invalidate() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::invalidateSub() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -717,11 +722,7 @@ void FramebufferGLTest::invalidateSub() {
     #endif
 
     Renderbuffer color;
-    #ifndef MAGNUM_TARGET_GLES2
     color.setStorage(RenderbufferFormat::RGBA8, Vector2i(128));
-    #else
-    color.setStorage(RenderbufferFormat::RGBA4, Vector2i(128));
-    #endif
 
     Renderbuffer depth;
     depth.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
@@ -738,6 +739,7 @@ void FramebufferGLTest::invalidateSub() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 void FramebufferGLTest::read() {
     #ifndef MAGNUM_TARGET_GLES
