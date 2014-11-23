@@ -116,7 +116,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          *      or @ref Magnum::SceneGraph::DualQuaternionTransformation::transformLocal() "transformLocal()"
          *      instead.
          */
-        Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type) {
+        CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type) {
             return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
         }
         #endif
