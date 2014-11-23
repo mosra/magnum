@@ -28,8 +28,7 @@
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/Trade/ImageData.h"
-#include <Trade/MeshData3D.h>
-
+#include "Magnum/Trade/MeshData3D.h"
 #include "MagnumPlugins/AnySceneImporter/AnySceneImporter.h"
 
 #include "configure.h"
