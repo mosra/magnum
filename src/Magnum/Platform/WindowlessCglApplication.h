@@ -37,6 +37,7 @@
 #include <OpenGL/CGLCurrent.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 
