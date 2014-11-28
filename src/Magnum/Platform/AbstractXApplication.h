@@ -43,11 +43,7 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
-namespace Magnum {
-
-class Context;
-
-namespace Platform {
+namespace Magnum { namespace Platform {
 
 namespace Implementation {
     template<class, class, class, class> class AbstractContextHandler;

@@ -39,11 +39,7 @@
 #include "Magnum/OpenGL.h"
 #include <GL/freeglut.h>
 
-namespace Magnum {
-
-class Context;
-
-namespace Platform {
+namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
 @brief GLUT application

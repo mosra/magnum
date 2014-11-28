@@ -42,11 +42,7 @@
 #include <SDL.h>
 #include <SDL_scancode.h>
 
-namespace Magnum {
-
-class Context;
-
-namespace Platform {
+namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
 @brief SDL2 application
