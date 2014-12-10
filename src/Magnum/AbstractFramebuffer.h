@@ -177,7 +177,7 @@ If @extension{ARB,robustness} is available, @ref read() operations are
 protected from buffer overflow.
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
-    friend struct Implementation::FramebufferState;
+    friend Implementation::FramebufferState;
 
     public:
         /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@extension{ARB,ES2_compatibility}). */

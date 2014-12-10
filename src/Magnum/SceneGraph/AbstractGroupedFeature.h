@@ -68,7 +68,7 @@ errors. See also @ref compilation-speedup-hpp for more information.
     @ref AbstractGroupedFeature3D, @ref FeatureGroup
 */
 template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFeature: public AbstractFeature<dimensions, T> {
-    friend class FeatureGroup<dimensions, Derived, T>;
+    friend FeatureGroup<dimensions, Derived, T>;
 
     public:
         /**

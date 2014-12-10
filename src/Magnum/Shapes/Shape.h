@@ -67,7 +67,7 @@ Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
     @ref DebugTools::ShapeRenderer
 */
 template<class T> class Shape: public AbstractShape<T::Dimensions> {
-    friend struct Implementation::ShapeHelper<T>;
+    friend Implementation::ShapeHelper<T>;
 
     public:
         /**

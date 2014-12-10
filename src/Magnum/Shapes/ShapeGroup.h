@@ -44,7 +44,7 @@ See @ref Shape for more information. See @ref shapes for brief introduction.
 @see @ref scenegraph, @ref ShapeGroup2D, @ref ShapeGroup3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::FeatureGroup<dimensions, AbstractShape<dimensions>, Float> {
-    friend class AbstractShape<dimensions>;
+    friend AbstractShape<dimensions>;
 
     public:
         /**

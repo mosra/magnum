@@ -60,7 +60,7 @@ information.
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 */
 class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
-    friend struct Implementation::FramebufferState;
+    friend Implementation::FramebufferState;
 
     public:
         /**

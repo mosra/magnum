@@ -56,7 +56,7 @@ See also @ref Extensions namespace, which contain compile-time information
 about OpenGL extensions.
 */
 class MAGNUM_EXPORT Extension {
-    friend class Context;
+    friend Context;
 
     public:
         /** @brief All extensions for given OpenGL version */
@@ -94,7 +94,7 @@ using @ref Platform::Context subclass, see @ref platform documentation for more
 information.
 */
 class MAGNUM_EXPORT Context {
-    friend class Platform::Context;
+    friend Platform::Context;
 
     public:
         /**

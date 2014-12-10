@@ -133,8 +133,8 @@ functions do nothing.
 @todo Query for immutable levels (@extension{ARB,ES3_compatibility})
 */
 class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
-    friend struct Implementation::TextureState;
-    friend class CubeMapTexture;
+    friend Implementation::TextureState;
+    friend CubeMapTexture;
 
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED

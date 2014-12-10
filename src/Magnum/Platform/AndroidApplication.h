@@ -418,7 +418,7 @@ class AndroidApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class AndroidApplication::MouseEvent: public InputEvent {
-    friend class AndroidApplication;
+    friend AndroidApplication;
 
     public:
         /**
@@ -490,7 +490,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class AndroidApplication::MouseMoveEvent: public InputEvent {
-    friend class AndroidApplication;
+    friend AndroidApplication;
 
     public:
         /**

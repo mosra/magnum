@@ -57,7 +57,7 @@ You must ensure that the original mesh remains available for whole view
 lifetime.
 */
 class MAGNUM_EXPORT MeshView {
-    friend struct Implementation::MeshState;
+    friend Implementation::MeshState;
 
     public:
         /**

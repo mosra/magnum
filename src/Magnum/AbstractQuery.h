@@ -47,7 +47,7 @@ more information.
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
-    friend struct Implementation::QueryState;
+    friend Implementation::QueryState;
 
     public:
         /** @brief Copying is not allowed */

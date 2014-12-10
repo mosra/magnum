@@ -67,7 +67,7 @@ Result of logical operations on shapes. See @ref shapes for brief introduction.
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
     friend Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(Composition<dimensions>&, std::size_t);
     friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const Composition<dimensions>&, std::size_t);
-    friend struct Implementation::ShapeHelper<Composition<dimensions>>;
+    friend Implementation::ShapeHelper<Composition<dimensions>>;
 
     public:
         enum: UnsignedInt {

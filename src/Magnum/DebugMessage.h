@@ -71,7 +71,7 @@ With default callback the messages will be printed on standard output:
         Hello from OpenGL command stream!
 */
 class MAGNUM_EXPORT DebugMessage {
-    friend struct Implementation::DebugState;
+    friend Implementation::DebugState;
 
     public:
         /**

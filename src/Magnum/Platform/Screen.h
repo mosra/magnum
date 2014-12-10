@@ -67,9 +67,9 @@ The following specialization are explicitly compiled into each particular
 -   @ref XEglApplication "BasicScreen<XEglApplication>"
 */
 template<class Application> class BasicScreen: private Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>> {
-    friend class Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
-    friend class Containers::LinkedList<BasicScreen<Application>>;
-    friend class BasicScreenedApplication<Application>;
+    friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
+    friend Containers::LinkedList<BasicScreen<Application>>;
+    friend BasicScreenedApplication<Application>;
 
     public:
         #ifdef DOXYGEN_GENERATING_OUTPUT

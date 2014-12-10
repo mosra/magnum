@@ -61,7 +61,7 @@ documentation for more information.
 @todo @extension{AMD,transform_feedback3_lines_triangles}?
 */
 class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
-    friend struct Implementation::TransformFeedbackState;
+    friend Implementation::TransformFeedbackState;
 
     public:
         /**

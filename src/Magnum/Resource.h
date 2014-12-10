@@ -116,7 +116,7 @@ template<class T, class U = T>
 template<class T, class U>
 #endif
 class Resource {
-    friend class Implementation::ResourceManagerData<T>;
+    friend Implementation::ResourceManagerData<T>;
 
     public:
         /**

@@ -62,7 +62,7 @@ See @ref AbstractGroupedFeature for more information.
     @ref FeatureGroup2D, @ref FeatureGroup3D
 */
 template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: public AbstractFeatureGroup<dimensions, T> {
-    friend class AbstractGroupedFeature<dimensions, Feature, T>;
+    friend AbstractGroupedFeature<dimensions, Feature, T>;
 
     public:
         explicit FeatureGroup() = default;

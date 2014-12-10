@@ -334,7 +334,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
-    friend class AbstractXApplication;
+    friend AbstractXApplication;
 
     public:
         /**
@@ -434,7 +434,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
-    friend class AbstractXApplication;
+    friend AbstractXApplication;
 
     public:
         /**
@@ -469,7 +469,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
-    friend class AbstractXApplication;
+    friend AbstractXApplication;
 
     public:
         /** @brief Position */

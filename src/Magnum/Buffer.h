@@ -209,7 +209,7 @@ by OpenGL in order to preserve the data. If running on OpenGL ES or extension
 functions do nothing.
  */
 class MAGNUM_EXPORT Buffer: public AbstractObject {
-    friend struct Implementation::BufferState;
+    friend Implementation::BufferState;
 
     public:
         /**

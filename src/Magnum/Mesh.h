@@ -336,8 +336,8 @@ drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @ref draw() for more information.
  */
 class MAGNUM_EXPORT Mesh: public AbstractObject {
-    friend class MeshView;
-    friend struct Implementation::MeshState;
+    friend MeshView;
+    friend Implementation::MeshState;
 
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED

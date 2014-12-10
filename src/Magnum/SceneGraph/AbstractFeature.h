@@ -169,9 +169,9 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
     : private Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
     #endif
 {
-    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
-    template<class Transformation> friend class Object;
+    friend Containers::LinkedList<AbstractFeature<dimensions, T>>;
+    friend Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    template<class> friend class Object;
 
     public:
         /**

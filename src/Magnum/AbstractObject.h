@@ -44,7 +44,7 @@ namespace Implementation { struct DebugState; }
 @brief Base for all OpenGL objects
 */
 class MAGNUM_EXPORT AbstractObject {
-    friend struct Implementation::DebugState;
+    friend Implementation::DebugState;
 
     public:
         /**

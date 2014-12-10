@@ -80,7 +80,7 @@ which intersects one of the six sides of the cube map. See
     @ref MultisampleTexture
 */
 class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
-    friend struct Implementation::TextureState;
+    friend Implementation::TextureState;
 
     public:
         /** @brief Cube map coordinate */

@@ -101,7 +101,7 @@ Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
     buffers), should that be allowed?
 */
 template<class T> class AbstractResourceLoader {
-    friend class Implementation::ResourceManagerData<T>;
+    friend Implementation::ResourceManagerData<T>;
 
     public:
         explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}

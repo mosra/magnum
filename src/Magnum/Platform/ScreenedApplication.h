@@ -89,9 +89,9 @@ The following specialization are explicitly compiled into each particular
 -   @ref XEglApplication "BasicScreenedApplication<XEglApplication>"
 */
 template<class Application> class BasicScreenedApplication: public Application, private Containers::LinkedList<BasicScreen<Application>> {
-    friend class Containers::LinkedList<BasicScreen<Application>>;
-    friend class Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
-    friend class BasicScreen<Application>;
+    friend Containers::LinkedList<BasicScreen<Application>>;
+    friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
+    friend BasicScreen<Application>;
 
     public:
         /**

@@ -142,7 +142,7 @@ errors. See also @ref compilation-speedup-hpp for more information.
     @ref Animable2D, @ref Animable3D, @ref AnimableGroup
 */
 template<UnsignedInt dimensions, class T> class Animable: public AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T> {
-    friend class AnimableGroup<dimensions, T>;
+    friend AnimableGroup<dimensions, T>;
 
     public:
         /**

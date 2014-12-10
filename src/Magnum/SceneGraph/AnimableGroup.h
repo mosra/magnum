@@ -42,7 +42,7 @@ See @ref Animable for more information.
     @ref AnimableGroup2D, @ref AnimableGroup3D
 */
 template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGroup<dimensions, Animable<dimensions, T>, T> {
-    friend class Animable<dimensions, T>;
+    friend Animable<dimensions, T>;
 
     public:
         /**
