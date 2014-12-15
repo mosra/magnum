@@ -406,7 +406,15 @@ void Mesh::attributePointerImplementationDSAEXT(const GenericAttribute& attribut
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
-    if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+    if(attribute.divisor) {
+		if (glVertexArrayVertexAttribDivisorEXT) {
+			glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+		}
+		else {
+			glVertexArrayVertexAttribBindingEXT(_id, attribute.location, attribute.location);
+			glVertexArrayVertexBindingDivisorEXT(_id, attribute.location, attribute.divisor);
+		}
+	}
 }
 #endif
 
