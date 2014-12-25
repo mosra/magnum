@@ -161,7 +161,7 @@ template<class T> struct TypeTraitsFloatingPoint {
 /* Adapted from http://floating-point-gui.de/errors/comparison/ */
 template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) {
     /* Shortcut for binary equality (also infinites) */
-    if (a == b) return true;
+    if(a == b) return true;
 
     const T absA = std::abs(a);
     const T absB = std::abs(b);
@@ -169,7 +169,7 @@ template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) 
 
     /* One of the numbers is zero or both are extremely close to it, relative
        error is meaningless */
-    if (a == T{} || b == T{} || difference < TypeTraits<T>::epsilon())
+    if(a == T{} || b == T{} || difference < TypeTraits<T>::epsilon())
         return difference < TypeTraits<T>::epsilon();
 
     /* Relative error */
