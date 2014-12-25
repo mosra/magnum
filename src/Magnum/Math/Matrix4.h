@@ -134,7 +134,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D reflection matrix
          * @param normal    Normal of the plane through which to reflect
          *
-         * Expects that the normal is normalized.
+         * Expects that the normal is normalized. Reflection along axes can be
+         * done in a slightly simpler way also using @ref scaling(), e.g.
+         * `Matrix4::reflection(Vector3::yAxis())` is equivalent to
+         * `Matrix4::scaling(Vector3::yScale(-1.0f))`.
          * @see @ref Matrix3::reflection(), @ref Vector::isNormalized()
          */
         static Matrix4<T> reflection(const Vector3<T>& normal);

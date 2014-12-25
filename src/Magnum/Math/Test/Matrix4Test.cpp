@@ -79,6 +79,7 @@ class Matrix4Test: public Corrade::TestSuite::Tester {
         void rotationY();
         void rotationZ();
         void reflection();
+        void reflectionIsScaling();
         void orthographicProjection();
         void perspectiveProjection();
         void perspectiveProjectionFov();
@@ -120,6 +121,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::rotationY,
               &Matrix4Test::rotationZ,
               &Matrix4Test::reflection,
+              &Matrix4Test::reflectionIsScaling,
               &Matrix4Test::orthographicProjection,
               &Matrix4Test::perspectiveProjection,
               &Matrix4Test::perspectiveProjectionFov,
@@ -315,6 +317,10 @@ void Matrix4Test::reflection() {
     CORRADE_COMPARE(actual*actual, Matrix4());
     CORRADE_COMPARE(actual.transformVector(normal), -normal);
     CORRADE_COMPARE(actual, expected);
+}
+
+void Matrix4Test::reflectionIsScaling() {
+    CORRADE_COMPARE(Matrix4::reflection(Vector3::yAxis()), Matrix4::scaling(Vector3::yScale(-1.0f)));
 }
 
 void Matrix4Test::orthographicProjection() {

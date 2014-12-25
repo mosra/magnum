@@ -87,7 +87,10 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D reflection matrix
          * @param normal    Normal of the line through which to reflect
          *
-         * Expects that the normal is normalized.
+         * Expects that the normal is normalized. Reflection along axes can be
+         * done in a slightly simpler way also using @ref scaling(), e.g.
+         * `Matrix3::reflection(Vector2::yAxis())` is equivalent to
+         * `Matrix3::scaling(Vector2::yScale(-1.0f))`.
          * @see @ref Matrix4::reflection(), @ref Vector::isNormalized()
          */
         static Matrix3<T> reflection(const Vector2<T>& normal) {
