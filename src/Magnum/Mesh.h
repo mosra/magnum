@@ -981,7 +981,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
         #endif
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL vertexAttribDivisorImplementationVAO(GLuint index, GLuint divisor);
+        void MAGNUM_LOCAL vertexAttribDivisorImplementationDSAEXT(GLuint index, GLuint divisor);
+        #elif defined(MAGNUM_TARGET_GLES2)
         void MAGNUM_LOCAL vertexAttribDivisorImplementationANGLE(GLuint index, GLuint divisor);
         void MAGNUM_LOCAL vertexAttribDivisorImplementationEXT(GLuint index, GLuint divisor);
         void MAGNUM_LOCAL vertexAttribDivisorImplementationNV(GLuint index, GLuint divisor);

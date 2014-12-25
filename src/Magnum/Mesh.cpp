@@ -406,7 +406,8 @@ void Mesh::attributePointerImplementationDSAEXT(const GenericAttribute& attribut
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
-    if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+    if(attribute.divisor)
+        (this->*Context::current()->state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
 #endif
 
@@ -442,7 +443,8 @@ void Mesh::attributePointerImplementationDSAEXT(const IntegerAttribute& attribut
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
-    if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+    if(attribute.divisor)
+        (this->*Context::current()->state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
 #endif
 
@@ -472,7 +474,8 @@ void Mesh::attributePointerImplementationDSAEXT(const LongAttribute& attribute) 
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
-    if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+    if(attribute.divisor)
+        (this->*Context::current()->state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
 
 void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
@@ -483,7 +486,15 @@ void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
 }
 #endif
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::vertexAttribDivisorImplementationVAO(const GLuint index, const GLuint divisor) {
+    bindVAO();
+    glVertexAttribDivisor(index, divisor);
+}
+void Mesh::vertexAttribDivisorImplementationDSAEXT(const GLuint index, const GLuint divisor) {
+    glVertexArrayVertexAttribDivisorEXT(_id, index, divisor);
+}
+#elif defined(MAGNUM_TARGET_GLES2)
 void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLuint divisor) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glVertexAttribDivisorANGLE(index, divisor);
@@ -493,7 +504,6 @@ void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLui
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
-
 void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint divisor) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glVertexAttribDivisorEXT(index, divisor);
@@ -503,7 +513,6 @@ void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
-
 void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint divisor) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glVertexAttribDivisorNV(index, divisor);
