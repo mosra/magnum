@@ -39,6 +39,9 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
         void max();
         void maxList();
         void minmax();
+        void clamp();
+        void nanPropagation();
+
         void sign();
         void abs();
 
@@ -48,7 +51,6 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
 
         void sqrt();
         void sqrtInverted();
-        void clamp();
         void lerp();
         void lerpInverted();
         void fma();
@@ -71,6 +73,7 @@ class FunctionsTest: public Corrade::TestSuite::Tester {
 typedef Math::Constants<Float> Constants;
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
+typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector3<UnsignedByte> Vector3ub;
 typedef Math::Vector3<Byte> Vector3b;
@@ -82,6 +85,9 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::max,
               &FunctionsTest::maxList,
               &FunctionsTest::minmax,
+              &FunctionsTest::clamp,
+              &FunctionsTest::nanPropagation,
+
               &FunctionsTest::sign,
               &FunctionsTest::abs,
 
@@ -91,7 +97,6 @@ FunctionsTest::FunctionsTest() {
 
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
-              &FunctionsTest::clamp,
               &FunctionsTest::lerp,
               &FunctionsTest::lerpInverted,
               &FunctionsTest::fma,
@@ -147,6 +152,30 @@ void FunctionsTest::minmax() {
     CORRADE_COMPARE_AS(Math::minmax(b, a), expectedVector, std::pair<Vector3, Vector3>);
 }
 
+void FunctionsTest::clamp() {
+    CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
+    CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
+    CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
+
+    CORRADE_COMPARE(Math::clamp(Vector3(0.5f, -1.6f, 9.5f), -1.0f, 5.0f), Vector3(0.5f, -1.0f, 5.0f));
+}
+
+void FunctionsTest::nanPropagation() {
+    constexpr const Float NaN = std::numeric_limits<float>::quiet_NaN();
+
+    CORRADE_COMPARE(Math::min(NaN, 5.0f), NaN);
+    CORRADE_COMPARE(Math::min(Vector2{NaN, 6.0f}, Vector2{5.0f})[0], NaN);
+    CORRADE_COMPARE(Math::min(Vector2{NaN, 6.0f}, Vector2{5.0f})[1], 5.0f);
+
+    CORRADE_COMPARE(Math::max(NaN, 5.0f), NaN);
+    CORRADE_COMPARE(Math::max(Vector2{NaN, 4.0f}, Vector2{5.0f})[0], NaN);
+    CORRADE_COMPARE(Math::max(Vector2{NaN, 4.0f}, Vector2{5.0f})[1], 5.0f);
+
+    CORRADE_COMPARE(Math::clamp(NaN, 2.0f, 6.0f), NaN);
+    CORRADE_COMPARE(Math::clamp(Vector2{NaN, 1.0f}, 2.0f, 6.0f)[0], NaN);
+    CORRADE_COMPARE(Math::clamp(Vector2{NaN, 1.0f}, 2.0f, 6.0f)[1], 2.0f);
+}
+
 void FunctionsTest::sign() {
     CORRADE_COMPARE(Math::sign(3516), 1);
     CORRADE_COMPARE(Math::sign(0.0f), 0.0f);
@@ -192,14 +221,6 @@ void FunctionsTest::sqrt() {
 void FunctionsTest::sqrtInverted() {
     CORRADE_COMPARE(Math::sqrtInverted(16.0f), 0.25f);
     CORRADE_COMPARE(Math::sqrtInverted(Vector3(1.0f, 4.0f, 16.0f)), Vector3(1.0f, 0.5f, 0.25f));
-}
-
-void FunctionsTest::clamp() {
-    CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
-    CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
-    CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
-
-    CORRADE_COMPARE(Math::clamp(Vector3(0.5f, -1.6f, 9.5f), -1.0f, 5.0f), Vector3(0.5f, -1.0f, 5.0f));
 }
 
 void FunctionsTest::lerp() {

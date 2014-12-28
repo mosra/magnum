@@ -125,18 +125,19 @@ perform the operations component-wise.
 /**
 @brief Minimum
 
+<em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref max(), @ref minmax(), @ref clamp(), @ref Vector::min()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline T min(T a, T b);
+template<class T> inline T min(T value, T min);
 #else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T a, T b) {
-    return std::min(a, b);
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T value, T min) {
+    return std::min(value, min);
 }
-template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& a, const Vector<size, T>& b) {
+template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, const Vector<size, T>& min) {
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::min(a[i], b[i]);
+        out[i] = std::min(value[i], min[i]);
     return out;
 }
 #endif
@@ -152,18 +153,19 @@ template<class T> inline T min(std::initializer_list<T> list) {
 /**
 @brief Maximum
 
+<em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref min(), @ref minmax(), @ref clamp(), @ref Vector::max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline T max(const T& a, const T& b);
+template<class T> inline T max(T value, T max);
 #else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T a, T b) {
-    return std::max(a, b);
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T value, T max) {
+    return std::max(value, max);
 }
-template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& a, const Vector<size, T>& b) {
+template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& value, const Vector<size, T>& max) {
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::max(a[i], b[i]);
+        out[i] = std::max(value[i], max[i]);
     return out;
 }
 #endif
@@ -191,6 +193,31 @@ template<std::size_t size, class T> std::pair<Vector<size, T>, Vector<size, T>> 
     std::pair<Vector<size, T>, Vector<size, T>> out{a, b};
     for(std::size_t i = 0; i != size; ++i)
         if(out.first[i] > out.second[i]) std::swap(out.first[i], out.second[i]);
+    return out;
+}
+#endif
+
+/**
+@brief Clamp value
+
+Values smaller than @p min are set to @p min, values larger than @p max are
+set to @p max. Equivalent to:
+@code
+Math::min(Math::max(value, min), max)
+@endcode
+<em>NaN</em>s passed in @p value parameter are propagated.
+@see @ref min(), @ref max()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T, class U> inline T clamp(const T& value, U min, U max);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type clamp(T value, T min, T max) {
+    return std::min(std::max(value, min), max);
+}
+template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = clamp(value[i], min, max);
     return out;
 }
 #endif
@@ -318,30 +345,6 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
 }
 template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<size, T>& a) {
     return Vector<size, T>(T(1))/sqrt(a);
-}
-#endif
-
-/**
-@brief Clamp value
-
-Values smaller than @p min are set to @p min, values larger than @p max are
-set to @p max. Equivalent to:
-@code
-Math::min(Math::max(value, min), max)
-@endcode
-@see @ref min(), @ref max()
-*/
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T, class U> inline T clamp(const T& value, U min, U max);
-#else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type clamp(T value, T min, T max) {
-    return std::min(std::max(value, min), max);
-}
-template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
-    Vector<size, T> out;
-    for(std::size_t i = 0; i != size; ++i)
-        out[i] = clamp(value[i], min, max);
-    return out;
 }
 #endif
 
