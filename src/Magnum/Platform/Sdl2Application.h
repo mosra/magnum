@@ -247,6 +247,11 @@ class Sdl2Application {
          * Must be called if and only if the context wasn't created by the
          * constructor itself. The program exits if the context cannot be
          * created, see @ref tryCreateContext() for an alternative.
+         *
+         * On desktop GL, if version is not specified in @p configuration, the
+         * application first tries to create core context (OpenGL 3.2+ on OS X,
+         * OpenGL 3.0+ elsewhere) and if that fails, falls back to
+         * compatibility OpenGL 2.1 context.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());

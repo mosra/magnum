@@ -111,7 +111,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Set context version, if requested */
+    /* Set context version, if user-specified */
     if(configuration.version() != Version::None) {
         Int major, minor;
         std::tie(major, minor) = version(configuration.version());
@@ -124,10 +124,25 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #else
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
-    }
 
-    #ifdef MAGNUM_TARGET_GLES
-    else {
+    /* Request usable version otherwise */
+    } else {
+        #ifndef MAGNUM_TARGET_GLES
+        /* First try to create core context. This is needed mainly on OS X and
+           Mesa, as support for recent OpenGL versions isn't implemented in
+           compatibility contexts (which are the default). At least GL 3.2 is
+           needed on OSX, at least GL 3.0 is needed on Mesa. Bite the bullet
+           and try 3.0 also elsewhere. */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        #ifdef CORRADE_TARGET_APPLE
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        #else
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        #endif
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+        #else
+        /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         #elif defined(MAGNUM_TARGET_GLES2)
@@ -137,20 +152,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+        #endif
     }
-
-    /* On OS X we need to create 3.2 context, as the default (2.1) contains
-       compatibility features which are not implemented for newer GL versions
-       in Apple's GL drivers, thus we would be forever stuck on 2.1 without the
-       new features. In practice SDL fails to create 2.1 context on recent OS X
-       versions. */
-    #elif defined(CORRADE_TARGET_APPLE)
-    else {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    }
-    #endif
 
     /* Create window */
     if(!(window = SDL_CreateWindow(configuration.title().data(),
@@ -162,9 +165,13 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         return false;
     }
 
-    /* Fall back to GL 2.1, if 3.2 context creation fails on OS X */
-    #ifdef CORRADE_TARGET_APPLE
-    if(!(context = SDL_GL_CreateContext(window))){
+    /* Create context */
+    context = SDL_GL_CreateContext(window);
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Fall back to (forward compatible) GL 2.1, if core context creation fails
+       and if version is not user-specified */
+    if(configuration.version() == Version::None && !context) {
         Warning() << "Platform::Sdl2Application::tryCreateContext(): cannot create core context:" << SDL_GetError() << "(falling back to compatibility context)";
         SDL_DestroyWindow(window);
 
@@ -180,22 +187,16 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
             Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
             return false;
         }
-
-        if(!(context = SDL_GL_CreateContext(window))){
-            Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create compatibility context:" << SDL_GetError();
-            SDL_DestroyWindow(window);
-            window = nullptr;
-            return false;
-        }
     }
-    #else
-    if(!(context = SDL_GL_CreateContext(window))) {
+    #endif
+
+    /* Cannot create context (or fallback compatibility context on desktop) */
+    if(!context) {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
         SDL_DestroyWindow(window);
         window = nullptr;
         return false;
     }
-    #endif
 
     #else
     /* Emscripten-specific initialization */
