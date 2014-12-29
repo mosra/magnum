@@ -106,7 +106,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     /* Flags: if not hidden, set as shown */
     Uint32 windowFlags(configuration.windowFlags());
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden)) windowFlags |= SDL_WINDOW_SHOWN;
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+        windowFlags |= SDL_WINDOW_SHOWN;
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -151,6 +152,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     }
     #endif
 
+    /* Create window */
     if(!(window = SDL_CreateWindow(configuration.title().data(),
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         configuration.size().x(), configuration.size().y(),
@@ -194,7 +196,9 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         return false;
     }
     #endif
+
     #else
+    /* Emscripten-specific initialization */
     context = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
     #endif
 
