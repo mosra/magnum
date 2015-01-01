@@ -314,8 +314,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          */
         Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(isNormalized(),
-                           "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized",
-                           Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
+                           "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized", {});
             return ((*this)*DualQuaternion<T>(vector)*conjugated()).dual().vector();
         }
 

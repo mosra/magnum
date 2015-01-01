@@ -505,19 +505,19 @@ template<class T> Quaternion<T> quaternionFromMatrix(const Matrix3x3<T>& m) {
 
 template<class T> inline Rad<T> Quaternion<T>::angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Quaternion::angle(): quaternions must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+        "Math::Quaternion::angle(): quaternions must be normalized", {});
     return Rad<T>(angleInternal(normalizedA, normalizedB));
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, const T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Quaternion::lerp(): quaternions must be normalized", Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+        "Math::Quaternion::lerp(): quaternions must be normalized", {});
     return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, const T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Quaternion::slerp(): quaternions must be normalized", Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+        "Math::Quaternion::slerp(): quaternions must be normalized", {});
     const T a = angleInternal(normalizedA, normalizedB);
     return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
 }
@@ -534,8 +534,7 @@ template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix3x3
 }
 
 template<class T> inline Rad<T> Quaternion<T>::angle() const {
-    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::angle(): quaternion must be normalized",
-        Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::angle(): quaternion must be normalized", {});
     return Rad<T>(T(2)*std::acos(_scalar));
 }
 
@@ -564,14 +563,12 @@ template<class T> inline Quaternion<T> Quaternion<T>::operator*(const Quaternion
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::invertedNormalized() const {
-    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized",
-        Quaternion<T>({}, std::numeric_limits<T>::quiet_NaN()));
+    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized", {});
     return conjugated();
 }
 
 template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(const Vector3< T >& vector) const {
-    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized",
-        Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
+    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized", {});
     return ((*this)*Quaternion<T>(vector)*conjugated()).vector();
 }
 

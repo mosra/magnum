@@ -283,8 +283,7 @@ void DualQuaternionTest::transformPointNormalized() {
 
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
-    Vector3 notTransformed = (a*Dual(2)).transformPointNormalized(v);
-    CORRADE_VERIFY(notTransformed != notTransformed);
+    (a*Dual(2)).transformPointNormalized(v);
     CORRADE_COMPARE(o.str(), "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized\n");
 
     Vector3 transformedA = a.transformPointNormalized(v);

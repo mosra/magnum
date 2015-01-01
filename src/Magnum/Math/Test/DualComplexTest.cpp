@@ -192,8 +192,7 @@ void DualComplexTest::invertedNormalized() {
 
     std::ostringstream o;
     Error::setOutput(&o);
-    DualComplex notInverted = DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
-    CORRADE_VERIFY(notInverted != notInverted);
+    DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
     DualComplex inverted = a.invertedNormalized();

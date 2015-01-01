@@ -221,9 +221,7 @@ void QuaternionTest::invertedNormalized() {
 
     std::ostringstream o;
     Error::setOutput(&o);
-    Quaternion notInverted = a.invertedNormalized();
-    CORRADE_COMPARE(notInverted.vector(), Vector3());
-    CORRADE_COMPARE(notInverted.scalar(), std::numeric_limits<Float>::quiet_NaN());
+    a.invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized\n");
 
     Quaternion aNormalized = a.normalized();
@@ -263,18 +261,16 @@ void QuaternionTest::rotation() {
 void QuaternionTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    auto angle = Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
-    CORRADE_VERIFY(angle != angle);
+    Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
     CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
 
     o.str({});
-    angle = Quaternion::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
-    CORRADE_VERIFY(angle != angle);
+    Quaternion::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
     CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
 
     /* Verify also that the angle is the same as angle between 4D vectors */
-    angle = Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(),
-                              Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
+    Rad angle = Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(),
+                                  Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
     CORRADE_COMPARE(angle, Vector4::angle(Vector4(1.0f, 2.0f, -3.0f, -4.0f).normalized(),
                                           Vector4(4.0f, -3.0f, 2.0f, -1.0f).normalized()));
     CORRADE_COMPARE(angle, Rad(1.704528f));
@@ -313,15 +309,11 @@ void QuaternionTest::lerp() {
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
 
-    Quaternion notLerpA = Quaternion::lerp(a*3.0f, b, 0.35f);
-    CORRADE_COMPARE(notLerpA.vector(), Vector3());
-    CORRADE_COMPARE(notLerpA.scalar(), std::numeric_limits<Float>::quiet_NaN());
+    Quaternion::lerp(a*3.0f, b, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::lerp(): quaternions must be normalized\n");
 
     o.str({});
-    Quaternion notLerpB = Quaternion::lerp(a, b*-3.0f, 0.35f);
-    CORRADE_COMPARE(notLerpB.vector(), Vector3());
-    CORRADE_COMPARE(notLerpB.scalar(), std::numeric_limits<Float>::quiet_NaN());
+    Quaternion::lerp(a, b*-3.0f, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::lerp(): quaternions must be normalized\n");
 
     Quaternion lerp = Quaternion::lerp(a, b, 0.35f);
@@ -335,15 +327,11 @@ void QuaternionTest::slerp() {
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
 
-    Quaternion notSlerpA = Quaternion::slerp(a*3.0f, b, 0.35f);
-    CORRADE_COMPARE(notSlerpA.vector(), Vector3());
-    CORRADE_COMPARE(notSlerpA.scalar(), std::numeric_limits<Float>::quiet_NaN());
+    Quaternion::slerp(a*3.0f, b, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::slerp(): quaternions must be normalized\n");
 
     o.str({});
-    Quaternion notSlerpB = Quaternion::slerp(a, b*-3.0f, 0.35f);
-    CORRADE_COMPARE(notSlerpB.vector(), Vector3());
-    CORRADE_COMPARE(notSlerpB.scalar(), std::numeric_limits<Float>::quiet_NaN());
+    Quaternion::slerp(a, b*-3.0f, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::slerp(): quaternions must be normalized\n");
 
     Quaternion slerp = Quaternion::slerp(a, b, 0.35f);
@@ -367,8 +355,7 @@ void QuaternionTest::transformVectorNormalized() {
 
     std::ostringstream o;
     Error::setOutput(&o);
-    Vector3 notRotated = (a*2).transformVectorNormalized(v);
-    CORRADE_VERIFY(notRotated != notRotated);
+    (a*2).transformVectorNormalized(v);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized\n");
 
     Vector3 rotated = a.transformVectorNormalized(v);

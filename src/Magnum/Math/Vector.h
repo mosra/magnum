@@ -30,7 +30,6 @@
  */
 
 #include <cmath>
-#include <limits>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/ConfigurationValue.h>
@@ -1199,7 +1198,7 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 
 template<std::size_t size, class T> inline Rad<T> Vector<size, T>::angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+        "Math::Vector::angle(): vectors must be normalized", {});
     return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
 }
 
@@ -1249,8 +1248,7 @@ template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::oper
 }
 
 template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
-    CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized",
-        (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
+    CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", {});
     return line*dot(*this, line);
 }
 

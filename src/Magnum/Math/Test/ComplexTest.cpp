@@ -229,8 +229,7 @@ void ComplexTest::invertedNormalized() {
     Complex a(-0.6f, 0.8f);
     Complex b(-0.6f, -0.8f);
 
-    Complex notInverted = (a*2).invertedNormalized();
-    CORRADE_VERIFY(notInverted != notInverted);
+    (a*2).invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
     Complex inverted = a.invertedNormalized();
@@ -242,18 +241,16 @@ void ComplexTest::invertedNormalized() {
 void ComplexTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    auto angle = Complex::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
-    CORRADE_VERIFY(angle != angle);
+    Complex::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
     CORRADE_COMPARE(o.str(), "Math::Complex::angle(): complex numbers must be normalized\n");
 
     o.str({});
-    angle = Complex::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
-    CORRADE_VERIFY(angle != angle);
+    Complex::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
     CORRADE_COMPARE(o.str(), "Math::Complex::angle(): complex numbers must be normalized\n");
 
     /* Verify also that the angle is the same as angle between 2D vectors */
-    angle = Complex::angle(Complex( 1.5f, -2.0f).normalized(),
-                           Complex(-4.0f,  3.5f).normalized());
+    Rad angle = Complex::angle(Complex( 1.5f, -2.0f).normalized(),
+                               Complex(-4.0f,  3.5f).normalized());
     CORRADE_COMPARE(angle, Vector2::angle(Vector2( 1.5f, -2.0f).normalized(),
                                           Vector2(-4.0f,  3.5f).normalized()));
     CORRADE_COMPARE(angle, Rad(2.933128f));

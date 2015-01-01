@@ -410,11 +410,10 @@ void VectorTest::projectedOntoNormalized() {
 
     Vector3 vector(1.0f, 2.0f, 3.0f);
     Vector3 line(1.0f, -1.0f, 0.5f);
-    Vector3 projected = vector.projectedOntoNormalized(line);
-    CORRADE_VERIFY(projected != projected);
+    vector.projectedOntoNormalized(line);
     CORRADE_COMPARE(o.str(), "Math::Vector::projectedOntoNormalized(): line must be normalized\n");
 
-    projected = vector.projectedOntoNormalized(line.normalized());
+    Vector3 projected = vector.projectedOntoNormalized(line.normalized());
     CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
     CORRADE_COMPARE(projected.normalized(), line.normalized());
     CORRADE_COMPARE(projected, vector.projected(line));
@@ -423,13 +422,11 @@ void VectorTest::projectedOntoNormalized() {
 void VectorTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    auto angle = Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
-    CORRADE_VERIFY(angle != angle);
+    Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
 
     o.str({});
-    angle = Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
-    CORRADE_VERIFY(angle != angle);
+    Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
     CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
 
     CORRADE_COMPARE(Vector3::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),

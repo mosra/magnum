@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Math::Complex
  */
 
-#include <limits>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -80,7 +79,7 @@ template<class T> class Complex {
          */
         static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
             CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                           "Math::Complex::angle(): complex numbers must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
+                           "Math::Complex::angle(): complex numbers must be normalized", {});
             return Rad<T>(std::acos(normalizedA._real*normalizedB._real + normalizedA._imaginary*normalizedB._imaginary));
         }
 
@@ -394,8 +393,7 @@ template<class T> class Complex {
          */
         Complex<T> invertedNormalized() const {
             CORRADE_ASSERT(isNormalized(),
-                           "Math::Complex::invertedNormalized(): complex number must be normalized",
-                           Complex<T>(std::numeric_limits<T>::quiet_NaN(), {}));
+                           "Math::Complex::invertedNormalized(): complex number must be normalized", {});
             return conjugated();
         }
 
