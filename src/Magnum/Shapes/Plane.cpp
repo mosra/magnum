@@ -25,8 +25,6 @@
 
 #include "Plane.h"
 
-#include <limits>
-
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Geometry/Intersection.h"
 #include "Magnum/Shapes/LineSegment.h"
@@ -45,7 +43,7 @@ Plane Plane::transformed(const Matrix4& matrix) const {
 
 bool Plane::operator%(const Line3D& other) const {
     Float t = Intersection::planeLine(_position, _normal, other.a(), other.b()-other.a());
-    return t != t || (t != std::numeric_limits<Float>::infinity() && t != -std::numeric_limits<Float>::infinity());
+    return t != t || (t != Constants::inf() && t != -Constants::inf());
 }
 
 bool Plane::operator%(const LineSegment3D& other) const {

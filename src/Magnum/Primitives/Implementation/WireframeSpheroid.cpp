@@ -45,7 +45,7 @@ void WireframeSpheroid::bottomHemisphere(const Float endY, const UnsignedInt rin
         _indices.insert(_indices.end(), {0, i+1});
 
     /* Hemisphere vertices and indices */
-    const Rad ringAngleIncrement(Constants::pi()/(2*rings));
+    const Rad ringAngleIncrement(Constants::piHalf()/rings);
     for(UnsignedInt j = 0; j != rings-1; ++j) {
         const Rad angle = Float(j+1)*ringAngleIncrement;
 
@@ -66,7 +66,7 @@ void WireframeSpheroid::topHemisphere(const Float startY, const UnsignedInt ring
         _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4*_segments+i, UnsignedInt(_positions.size())+i});
 
     /* Hemisphere vertices and indices */
-    const Rad ringAngleIncrement(Constants::pi()/(2*rings));
+    const Rad ringAngleIncrement(Constants::piHalf()/rings);
     for(UnsignedInt j = 0; j != rings-1; ++j) {
         const Rad angle = Float(j+1)*ringAngleIncrement;
 
@@ -90,10 +90,10 @@ void WireframeSpheroid::topHemisphere(const Float startY, const UnsignedInt ring
 
 void WireframeSpheroid::ring(const Float y) {
     /* Ring vertices and indices */
-    const Rad segmentAngleIncrement(Constants::pi()/(2*_segments));
+    const Rad segmentAngleIncrement(Constants::piHalf()/_segments);
     for(UnsignedInt j = 0; j != _segments; ++j) {
         for(UnsignedInt i = 0; i != 4; ++i) {
-            const Rad segmentAngle = Rad(Float(i)*Constants::pi()/2) + Float(j)*segmentAngleIncrement;
+            const Rad segmentAngle = Rad(Float(i)*Constants::piHalf()) + Float(j)*segmentAngleIncrement;
             if(j != 0) _indices.insert(_indices.end(), {UnsignedInt(_positions.size()-4), UnsignedInt(_positions.size())});
             _positions.emplace_back(Math::sin(segmentAngle), y, Math::cos(segmentAngle));
         }

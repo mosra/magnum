@@ -47,7 +47,7 @@ Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, Textu
     sphere.capVertex(-1.0f, -1.0f, 0.0f);
 
     /* Vertex rings */
-    sphere.hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::pi())/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    sphere.hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::piHalf())+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Top cap vertex */
     sphere.capVertex(1.0f, 1.0f, 1.0f);

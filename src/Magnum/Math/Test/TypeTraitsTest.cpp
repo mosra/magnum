@@ -23,10 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/TypeTraits.h"
+#include "Magnum/Math/Constants.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -118,8 +118,8 @@ void TypeTraitsTest::equalsFloatingPointInfinity() {
 }
 
 template<class T> void TypeTraitsTest::_equalsFloatingPointInfinity() {
-    CORRADE_VERIFY(TypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
-                                         std::numeric_limits<T>::infinity()));
+    CORRADE_VERIFY(TypeTraits<T>::equals(Constants<T>::inf(),
+                                         Constants<T>::inf()));
 }
 
 void TypeTraitsTest::equalsFloatingPointNaN() {
@@ -130,8 +130,8 @@ void TypeTraitsTest::equalsFloatingPointNaN() {
 }
 
 template<class T> void TypeTraitsTest::_equalsFloatingPointNaN() {
-    CORRADE_VERIFY(!TypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
-                                          std::numeric_limits<T>::quiet_NaN()));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
+                                          Constants<T>::nan()));
 }
 
 }}}

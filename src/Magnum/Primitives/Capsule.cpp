@@ -40,7 +40,7 @@ Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt 
 
     std::vector<Vector2> positions;
     positions.reserve(hemisphereRings*4+2+(cylinderRings-1)*2);
-    const Rad angleIncrement(Constants::pi()/(2.0f*hemisphereRings));
+    const Rad angleIncrement(Constants::piHalf()/hemisphereRings);
     const Float cylinderIncrement = 2.0f*halfLength/cylinderRings;
 
     /* Bottom cap vertex */
@@ -99,13 +99,13 @@ Trade::MeshData3D Capsule3D::solid(UnsignedInt hemisphereRings, UnsignedInt cyli
 
     Float height = 2.0f+2.0f*halfLength;
     Float hemisphereTextureCoordsVIncrement = 1.0f/(hemisphereRings*height);
-    Rad hemisphereRingAngleIncrement(Constants::pi()/(2*hemisphereRings));
+    Rad hemisphereRingAngleIncrement(Constants::piHalf()/hemisphereRings);
 
     /* Bottom cap vertex */
     capsule.capVertex(-height/2, -1.0f, 0.0f);
 
     /* Rings of bottom hemisphere */
-    capsule.hemisphereVertexRings(hemisphereRings-1, -halfLength, -Rad(Constants::pi())/2+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
+    capsule.hemisphereVertexRings(hemisphereRings-1, -halfLength, -Rad(Constants::piHalf())+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Rings of cylinder */
     capsule.cylinderVertexRings(cylinderRings+1, -halfLength, 2.0f*halfLength/cylinderRings, 1.0f/height, 2.0f*halfLength/(cylinderRings*height));

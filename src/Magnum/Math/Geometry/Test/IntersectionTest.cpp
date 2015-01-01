@@ -23,7 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Geometry/Intersection.h"
@@ -40,6 +39,7 @@ class IntersectionTest: public Corrade::TestSuite::Tester {
 
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Constants<Float> Constants;
 
 IntersectionTest::IntersectionTest() {
     addTests({&IntersectionTest::planeLine,
@@ -60,11 +60,11 @@ void IntersectionTest::planeLine() {
 
     /* Line lies on the plane */
     CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
-        {1.0f, 0.5f, 0.5f}, {-1.0f, 0.5f, 0.0f}), std::numeric_limits<Float>::quiet_NaN());
+        {1.0f, 0.5f, 0.5f}, {-1.0f, 0.5f, 0.0f}), Constants::nan());
 
     /* Line is parallel to the plane */
     CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
-        {1.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}), -std::numeric_limits<Float>::infinity());
+        {1.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}), -Constants::inf());
 }
 
 void IntersectionTest::lineLine() {
@@ -86,17 +86,16 @@ void IntersectionTest::lineLine() {
     /* Collinear lines */
     const auto tu = Intersection::lineSegmentLineSegment(p, r,
         {0.0f, 1.0f}, {-1.0f, -2.0f});
-    CORRADE_COMPARE(tu.first, -std::numeric_limits<Float>::quiet_NaN());
-    CORRADE_COMPARE(tu.second, -std::numeric_limits<Float>::quiet_NaN());
+    CORRADE_COMPARE(tu.first, -Constants::nan());
+    CORRADE_COMPARE(tu.second, -Constants::nan());
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
-        {0.0f, 1.0f}, {-1.0f, -2.0f}), -std::numeric_limits<Float>::quiet_NaN());
+        {0.0f, 1.0f}, {-1.0f, -2.0f}), -Constants::nan());
 
     /* Parallel lines */
     CORRADE_COMPARE(Intersection::lineSegmentLineSegment(p, r,
-        {0.0f, 0.0f}, {1.0f, 2.0f}), std::make_pair(std::numeric_limits<Float>::infinity(),
-                                                    std::numeric_limits<Float>::infinity()));
+        {0.0f, 0.0f}, {1.0f, 2.0f}), std::make_pair(Constants::inf(), Constants::inf()));
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
-        {0.0f, 0.0f}, {1.0f, 2.0f}), std::numeric_limits<Float>::infinity());
+        {0.0f, 0.0f}, {1.0f, 2.0f}), Constants::inf());
 }
 
 }}}}
