@@ -46,11 +46,20 @@ Provides minimal interface for features, not depending on object transformation
 implementation. This class is not directly instantiatable, use @ref Object
 subclass instead. See also @ref scenegraph for more information.
 
-Uses @ref Corrade::Containers::LinkedList for storing features. Traversing
-through the list is done like in the following code. It is also possible to go
-in reverse order using @ref lastFeature() and @ref AbstractFeature::previousFeature().
+Uses @ref Corrade::Containers::LinkedList for efficient feature management.
+Traversing through the feature list can be done using range-based for:
 @code
-for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
+AbstractObject3D object;
+for(AbstractFeature3D& feature: object.features()) {
+    // ...
+}
+@endcode
+
+Or, if you need more flexibility, like in the following code. It is also
+possible to go in reverse order using @ref Corrade::Containers::LinkedList::last()
+and @ref AbstractFeature::previousFeature().
+@code
+for(AbstractFeature3D* feature = object.features().first(); feature; feature = feature->nextFeature()) {
     // ...
 }
 @endcode
@@ -92,30 +101,51 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         explicit AbstractObject();
         virtual ~AbstractObject();
 
-        /** @brief Whether this object has features */
-        bool hasFeatures() const {
-            return !Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
-        }
-
-        /** @brief First object feature or `nullptr`, if this object has no features */
-        FeatureType* firstFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
-        }
-
-        /** @overload */
-        const FeatureType* firstFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
-        }
-
-        /** @brief Last object feature or `nullptr`, if this object has no features */
-        FeatureType* lastFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+        /**
+         * @brief Object features
+         *
+         * @see @ref AbstractFeature::object(),
+         *      @ref AbstractFeature::previousFeature(),
+         *      @ref AbstractFeature::nextFeature()
+         */
+        Containers::LinkedList<AbstractFeature<dimensions, T>>& features() {
+            return static_cast<Containers::LinkedList<AbstractFeature<dimensions, T>>&>(*this);
         }
 
         /** @overload */
-        const FeatureType* lastFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+        const Containers::LinkedList<AbstractFeature<dimensions, T>>& features() const {
+            return static_cast<const Containers::LinkedList<AbstractFeature<dimensions, T>>&>(*this);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Whether this object has features
+         * @deprecated Use `features().isEmpty()` instead.
+         */
+        CORRADE_DEPRECATED("use features().isEmpty() instead") bool hasFeatures() const { return !features().isEmpty(); }
+
+        /**
+         * @brief First object feature or `nullptr`, if this object has no features
+         * @deprecated Use `features().first()` instead.
+         */
+        CORRADE_DEPRECATED("use features().first() instead") FeatureType* firstFeature() { return features().first(); }
+
+        /** @overload
+         * @deprecated Use `features().first()` instead.
+         */
+        CORRADE_DEPRECATED("use features().first() instead") const FeatureType* firstFeature() const { return features().first(); }
+
+        /**
+         * @brief Last object feature or `nullptr`, if this object has no features
+         * @deprecated Use `features().last()` instead.`
+         */
+        CORRADE_DEPRECATED("use features().last() instead") FeatureType* lastFeature() { return features().last(); }
+
+        /** @overload
+         * @deprecated Use `features().last()` instead.
+         */
+        CORRADE_DEPRECATED("use features().last() instead") const FeatureType* lastFeature() const { return features().last(); }
+        #endif
 
         /**
          * @brief Scene

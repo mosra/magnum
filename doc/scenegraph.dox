@@ -89,24 +89,13 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 Then you can start building the hierarchy by *parenting* one object to another.
 Parent object can be either passed in constructor or using
 @ref SceneGraph::Object::setParent(). Scene is always root object, so it
-naturally cannot have parent object.
+naturally cannot have parent object. List of object children can be accessed
+through @ref SceneGraph::Object::children().
 @code
 Scene3D scene;
 
 auto first = new Object3D(&scene);
 auto second = new Object3D(first);
-@endcode
-
-Object children can be accessed using @ref SceneGraph::Object::firstChild() and
-@ref SceneGraph::Object::lastChild(), then you can traverse siblings (objects
-with the same parent) with @ref SceneGraph::Object::previousSibling() and
-@ref SceneGraph::Object::nextSibling(). For example all children of an object
-can be traversed the following way:
-@code
-Object3D* o;
-for(Object3D* child = o->firstChild(); child; child = child->nextSibling()) {
-    // ...
-}
 @endcode
 
 The hierarchy takes care of memory management - when an object is destroyed,
@@ -133,22 +122,11 @@ have to add a *feature* to it.
 
 Each feature takes reference to holder object in constructor, so adding a
 feature to an object might look just like this, as in some cases you don't even
-need to keep the pointer to it:
+need to keep the pointer to it. List of object features is accessible through
+@ref SceneGraph::Object::features().
 @code
 Object3D* o;
 new MyFeature(o);
-@endcode
-
-Features of an object can be accessed using @ref SceneGraph::Object::firstFeature()
-and @ref SceneGraph::Object::lastFeature(), then you can traverse the features
-using @ref SceneGraph::AbstractFeature::previousFeature() and
-@ref SceneGraph::AbstractFeature::nextFeature(), similarly to traversing object
-children:
-@code
-Object3D* o;
-for(Object3D::FeatureType feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
-    // ...
-}
 @endcode
 
 Some features are passive, some active. Passive features can be just added to

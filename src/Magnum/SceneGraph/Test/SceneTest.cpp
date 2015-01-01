@@ -62,8 +62,8 @@ void SceneTest::parent() {
     Object3D object;
     scenePointer->setParent(&object);
     CORRADE_VERIFY(scene.parent() == nullptr);
-    CORRADE_VERIFY(!scene.hasChildren());
-    CORRADE_VERIFY(!object.hasChildren());
+    CORRADE_VERIFY(scene.children().isEmpty());
+    CORRADE_VERIFY(object.children().isEmpty());
 }
 
 }}}

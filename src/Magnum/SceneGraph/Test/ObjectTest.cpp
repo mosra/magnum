@@ -46,6 +46,9 @@ class ObjectTest: public TestSuite::Tester {
         void setClean();
         void setCleanListHierarchy();
         void setCleanListBulk();
+
+        void rangeBasedForChildren();
+        void rangeBasedForFeatures();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
@@ -76,7 +79,10 @@ ObjectTest::ObjectTest() {
               &ObjectTest::transformationsDuplicate,
               &ObjectTest::setClean,
               &ObjectTest::setCleanListHierarchy,
-              &ObjectTest::setCleanListBulk});
+              &ObjectTest::setCleanListBulk,
+
+              &ObjectTest::rangeBasedForChildren,
+              &ObjectTest::rangeBasedForFeatures});
 }
 
 void ObjectTest::parenting() {
@@ -87,9 +93,9 @@ void ObjectTest::parenting() {
 
     CORRADE_VERIFY(childOne->parent() == &root);
     CORRADE_VERIFY(childTwo->parent() == &root);
-    CORRADE_VERIFY(root.firstChild() == childOne);
-    CORRADE_VERIFY(root.lastChild() == childTwo);
-    CORRADE_VERIFY(root.firstChild()->nextSibling() == root.lastChild());
+    CORRADE_VERIFY(root.children().first() == childOne);
+    CORRADE_VERIFY(root.children().last() == childTwo);
+    CORRADE_VERIFY(root.children().first()->nextSibling() == root.children().last());
 
     /* A object cannot be parent of itself */
     childOne->setParent(childOne);
@@ -101,12 +107,12 @@ void ObjectTest::parenting() {
 
     /* Reparent to another */
     childTwo->setParent(childOne);
-    CORRADE_VERIFY(root.firstChild() == childOne && root.firstChild()->nextSibling() == nullptr);
-    CORRADE_VERIFY(childOne->firstChild() == childTwo && childOne->firstChild()->nextSibling() == nullptr);
+    CORRADE_VERIFY(root.children().first() == childOne && root.children().first()->nextSibling() == nullptr);
+    CORRADE_VERIFY(childOne->children().first() == childTwo && childOne->children().first()->nextSibling() == nullptr);
 
     /* Delete child */
     delete childTwo;
-    CORRADE_VERIFY(!childOne->hasChildren());
+    CORRADE_VERIFY(childOne->children().isEmpty());
 }
 
 void ObjectTest::scene() {
@@ -453,6 +459,32 @@ void ObjectTest::setCleanListBulk() {
 
     /* Verify that right transformation was passed */
     CORRADE_COMPARE(d.cleanedAbsoluteTransformation, Matrix4::translation(Vector3::zAxis(3.0f))*Matrix4::scaling(Vector3(-2.0f)));
+}
+
+void ObjectTest::rangeBasedForChildren() {
+    Scene3D scene;
+    Object3D a(&scene);
+    Object3D b(&scene);
+    Object3D c(&scene);
+
+    std::vector<Object3D*> objects;
+    for(auto&& i: scene.children()) objects.push_back(&i);
+    CORRADE_COMPARE(objects, (std::vector<Object3D*>{&a, &b, &c}));
+}
+
+void ObjectTest::rangeBasedForFeatures() {
+    struct Feature: AbstractFeature3D {
+        Feature(AbstractObject3D& object): AbstractFeature3D{object} {}
+    };
+
+    Object3D object;
+    Feature a(object);
+    Feature b(object);
+    Feature c(object);
+
+    std::vector<AbstractFeature3D*> features;
+    for(auto&& i: object.features()) features.push_back(&i);
+    CORRADE_COMPARE(features, (std::vector<AbstractFeature3D*>{&a, &b, &c}));
 }
 
 }}}

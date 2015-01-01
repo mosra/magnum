@@ -63,11 +63,20 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 @endcode
 
-Uses @ref Corrade::Containers::LinkedList for parent/children relationship.
-Traversing through the list is done like in the following code. It is also
-possible to go in reverse order using @ref lastChild() and @ref previousSibling().
+Uses @ref Corrade::Containers::LinkedList for efficient hierarchy management.
+Traversing through the list of child objects can be done using range-based for:
 @code
-for(Object* child = o->firstChild(); child; child = child->nextSibling()) {
+Object3D o;
+for(AbstractFeature3D& feature: o.features()) {
+    // ...
+}
+@endcode
+
+Or, if you need more flexibility, like in the following code. It is also
+possible to go in reverse order using @ref Corrade::Containers::LinkedList::last()
+and @ref previousSibling().
+@code
+for(Object3D* child = o->children().first(); child; child = child->nextSibling()) {
     // ...
 }
 @endcode
@@ -175,30 +184,49 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
 
-        /** @brief Whether this object has children */
-        bool hasChildren() const {
-            return !Containers::LinkedList<Object<Transformation>>::isEmpty();
-        }
-
-        /** @brief First child object or `nullptr`, if this object has no children */
-        Object<Transformation>* firstChild() {
-            return Containers::LinkedList<Object<Transformation>>::first();
-        }
-
-        /** @overload */
-        const Object<Transformation>* firstChild() const {
-            return Containers::LinkedList<Object<Transformation>>::first();
-        }
-
-        /** @brief Last child object or `nullptr`, if this object has no children */
-        Object<Transformation>* lastChild() {
-            return Containers::LinkedList<Object<Transformation>>::last();
+        /**
+         * @brief Child objects
+         *
+         * @see @ref parent(), @ref previousSibling(), @ref nextSibling()
+         */
+        Containers::LinkedList<Object<Transformation>>& children() {
+            return static_cast<Containers::LinkedList<Object<Transformation>>&>(*this);
         }
 
         /** @overload */
-        const Object<Transformation>* lastChild() const {
-            return Containers::LinkedList<Object<Transformation>>::last();
+        const Containers::LinkedList<Object<Transformation>>& children() const {
+            return static_cast<const Containers::LinkedList<Object<Transformation>>&>(*this);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Whether this object has children
+         * @deprecated Use `children().isEmpty()` instead.
+         */
+        CORRADE_DEPRECATED("use children().isEmpty()") bool hasChildren() const { return !children().isEmpty(); }
+
+        /**
+         * @brief First child object or `nullptr`, if this object has no children
+         * @deprecated Use `children().first()` instead.
+         */
+        CORRADE_DEPRECATED("use children().first()") Object<Transformation>* firstChild() { return children().first(); }
+
+        /** @overload
+         * @deprecated Use `children.first()` instead.
+         */
+        CORRADE_DEPRECATED("use children().first()") const Object<Transformation>* firstChild() const { return children().first(); }
+
+        /**
+         * @brief Last child object or `nullptr`, if this object has no children
+         * @deprecated Use `children().last()` instead.
+         */
+        CORRADE_DEPRECATED("use children().last()") Object<Transformation>* lastChild() { return children().last(); }
+
+        /** @overload
+         * @deprecated Use `children().last()` instead.
+         */
+        CORRADE_DEPRECATED("use children().last()") const Object<Transformation>* lastChild() const { return children().last(); }
+        #endif
 
         /**
          * @brief Set parent object
