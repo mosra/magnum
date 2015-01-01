@@ -90,7 +90,7 @@ and rotation transformation can be created by calling @ref Matrix3::rotation(),
 @ref Complex::rotation() or @ref DualComplex::rotation(), for example:
 @code
 auto a = Matrix3::rotation(23.0_degf);
-auto b = Complex::rotation(Rad(Constants::pi()/2));
+auto b = Complex::rotation(Rad(Constants::piHalf()));
 auto c = DualComplex::rotation(-1.57_radf);
 @endcode
 

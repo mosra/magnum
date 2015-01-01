@@ -50,8 +50,13 @@ void ConstantsTest::constantsFloat() {
     CORRADE_COMPARE(Math::pow<2>(b), 3.0f);
 
     constexpr Float c = Constants<Float>::pi();
+    constexpr Float d = Constants<Float>::piHalf();
     constexpr Float e = Constants<Float>::tau();
+    CORRADE_COMPARE(0.5f*c, d);
     CORRADE_COMPARE(2.0f*c, e);
+
+    constexpr Float f = Constants<Float>::e();
+    CORRADE_COMPARE(std::log(f), 1.0f);
 }
 
 void ConstantsTest::constantsDouble() {
@@ -62,8 +67,13 @@ void ConstantsTest::constantsDouble() {
     CORRADE_COMPARE(Math::pow<2>(b), 3.0);
 
     constexpr Double c = Constants<Double>::pi();
+    constexpr Double d = Constants<Double>::piHalf();
     constexpr Double e = Constants<Double>::tau();
+    CORRADE_COMPARE(0.5*c, d);
     CORRADE_COMPARE(2.0*c, e);
+
+    constexpr Double f = Constants<Double>::e();
+    CORRADE_COMPARE(std::log(f), 1.0);
     #else
     CORRADE_SKIP("Double precision is not supported when targeting OpenGL ES.");
     #endif
