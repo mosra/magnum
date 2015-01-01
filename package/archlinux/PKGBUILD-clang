@@ -8,20 +8,22 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal' 'freeglut' 'sdl2')
 makedepends=('cmake' 'clang' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    if [ ! -d "$startdir/build-clang" ] ; then
-        mkdir "$startdir/build-clang"
-        cd "$startdir/build-clang"
+    if [ ! -d "$_rootdir/build-clang" ] ; then
+        mkdir "$_rootdir/build-clang"
+        cd "$_rootdir/build-clang"
 
         cmake .. \
             -DCMAKE_CXX_COMPILER=clang++ \
             -G Ninja
     fi
 
-    cd "$startdir/build-clang"
+    cd "$_rootdir/build-clang"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -48,11 +50,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-clang"
+    cd "$_rootdir/build-clang"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-clang"
+    cd "$_rootdir/build-clang"
     DESTDIR="$pkgdir/" ninja install
 }

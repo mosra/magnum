@@ -8,12 +8,14 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal')
 makedepends=('cmake' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    mkdir -p "$startdir/build-es3desktop"
-    cd "$startdir/build-es3desktop"
+    mkdir -p "$_rootdir/build-es3desktop"
+    cd "$_rootdir/build-es3desktop"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -40,11 +42,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-es3desktop"
+    cd "$_rootdir/build-es3desktop"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-es3desktop"
+    cd "$_rootdir/build-es3desktop"
     DESTDIR="$pkgdir/" ninja install
 }

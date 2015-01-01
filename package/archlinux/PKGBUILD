@@ -8,12 +8,14 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal' 'freeglut' 'sdl2')
 makedepends=('cmake' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    mkdir -p "$startdir/build"
-    cd "$startdir/build"
+    mkdir -p "$_rootdir/build"
+    cd "$_rootdir/build"
 
     # Disable optimization (saves A LOT of compilation time)
     newcxxflags=$(echo $CXXFLAGS | sed s/-O.//g | sed s/-D_FORTIFY_SOURCE=.//g)
@@ -45,11 +47,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build"
+    cd "$_rootdir/build"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build"
+    cd "$_rootdir/build"
     DESTDIR="$pkgdir/" ninja install
 }

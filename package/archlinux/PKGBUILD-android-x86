@@ -8,22 +8,24 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('android-x86-corrade')
 makedepends=('cmake' 'ninja' 'android-ndk 'corrade'')
-options=('!strip' '!buildflags' 'staticlibs')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
 
 build() {
-    if [ ! -d "$startdir/build-android-x86" ] ; then
-        mkdir "$startdir/build-android-x86"
-        cd "$startdir/build-android-x86"
+    if [ ! -d "$_rootdir/build-android-x86" ] ; then
+        mkdir "$_rootdir/build-android-x86"
+        cd "$_rootdir/build-android-x86"
 
         cmake .. \
-            -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Android-x86.cmake" \
+            -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Android-x86.cmake" \
             -DTARGET_GLES=ON \
             -DTARGET_GLES2=ON \
             -G Ninja
     fi
 
-    cd "$startdir/build-android-x86"
+    cd "$_rootdir/build-android-x86"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
@@ -38,6 +40,6 @@ build() {
 }
 
 package() {
-    cd "$startdir/build-android-x86"
+    cd "$_rootdir/build-android-x86"
     DESTDIR="$pkgdir/" ninja install/strip
 }

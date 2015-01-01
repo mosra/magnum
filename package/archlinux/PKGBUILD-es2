@@ -8,12 +8,14 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal')
 makedepends=('cmake' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    mkdir -p "$startdir/build-es2"
-    cd "$startdir/build-es2"
+    mkdir -p "$_rootdir/build-es2"
+    cd "$_rootdir/build-es2"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -34,11 +36,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-es2"
+    cd "$_rootdir/build-es2"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-es2"
+    cd "$_rootdir/build-es2"
     DESTDIR="$pkgdir/" ninja install
 }

@@ -8,16 +8,18 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('nacl-corrade')
 makedepends=('nacl-sdk' 'cmake' 'corrade' 'ninja')
-options=('!buildflags' '!strip' 'staticlibs')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
 
 build() {
     # Build 32bit
-    mkdir -p "$startdir/build-nacl-glibc-x86-32"
-    cd "$startdir/build-nacl-glibc-x86-32"
+    mkdir -p "$_rootdir/build-nacl-glibc-x86-32"
+    cd "$_rootdir/build-nacl-glibc-x86-32"
 
     cmake .. \
-        -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/NaCl-glibc-x86-32.cmake" \
+        -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/NaCl-glibc-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_MAGNUMINFO=OFF \
@@ -33,12 +35,12 @@ build() {
     ninja
 
     # Build 64bit
-    mkdir -p "$startdir/build-nacl-glibc-x86-64"
-    cd "$startdir/build-nacl-glibc-x86-64"
+    mkdir -p "$_rootdir/build-nacl-glibc-x86-64"
+    cd "$_rootdir/build-nacl-glibc-x86-64"
 
     cmake .. \
-        -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/NaCl-glibc-x86-64.cmake" \
+        -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/NaCl-glibc-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_MAGNUMINFO=OFF \
@@ -55,11 +57,11 @@ build() {
 
 package() {
     # Install 32bit
-    cd "$startdir/build-nacl-glibc-x86-32"
+    cd "$_rootdir/build-nacl-glibc-x86-32"
     DESTDIR="$pkgdir/" ninja install/strip
 
     # Install 64bit (the headers will be overwritten, but they are (and should
     # be) the same for both versions
-    cd "$startdir/build-nacl-glibc-x86-64"
+    cd "$_rootdir/build-nacl-glibc-x86-64"
     DESTDIR="$pkgdir/" ninja install/strip
 }

@@ -8,20 +8,22 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal' 'freeglut' 'sdl2')
 makedepends=('cmake' 'ninja' 'gcc47')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    if [ ! -d "$startdir/build-gcc47" ] ; then
-        mkdir "$startdir/build-gcc47"
-        cd "$startdir/build-gcc47"
+    if [ ! -d "$_rootdir/build-gcc47" ] ; then
+        mkdir "$_rootdir/build-gcc47"
+        cd "$_rootdir/build-gcc47"
 
         cmake .. \
             -DCMAKE_CXX_COMPILER=g++-4.7 \
             -G Ninja
     fi
 
-    cd "$startdir/build-gcc47"
+    cd "$_rootdir/build-gcc47"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -48,11 +50,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-gcc47"
+    cd "$_rootdir/build-gcc47"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-gcc47"
+    cd "$_rootdir/build-gcc47"
     DESTDIR="$pkgdir/" ninja install
 }

@@ -8,22 +8,24 @@ url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('android-arm-corrade')
 makedepends=('cmake' 'ninja' 'android-ndk' 'corrade')
-options=('!strip' '!buildflags' 'staticlibs')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
 
 build() {
-    if [ ! -d "$startdir/build-android-arm" ] ; then
-        mkdir "$startdir/build-android-arm"
-        cd "$startdir/build-android-arm"
+    if [ ! -d "$_rootdir/build-android-arm" ] ; then
+        mkdir "$_rootdir/build-android-arm"
+        cd "$_rootdir/build-android-arm"
 
         cmake .. \
-            -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Android-ARM.cmake" \
+            -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Android-ARM.cmake" \
             -DTARGET_GLES=ON \
             -DTARGET_GLES2=ON \
             -G Ninja
     fi
 
-    cd "$startdir/build-android-arm"
+    cd "$_rootdir/build-android-arm"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
@@ -38,6 +40,6 @@ build() {
 }
 
 package() {
-    cd "$startdir/build-android-arm"
+    cd "$_rootdir/build-android-arm"
     DESTDIR="$pkgdir/" ninja install/strip
 }

@@ -308,10 +308,7 @@ build. The package is also in AUR under the same name.
 There are also a few development PKGBUILDs in `package/archlinux`, which allow
 you to build and install the package directly from source tree without
 downloading anything. The native PKGBUILDs also contain `check()` function
-which will run all unit tests before packaging. You need to build them from
-project root:
-
-    makepkg -p package/archlinux/<file>
+which will run all unit tests before packaging.
 
 @subsection building-packages-gentoo Gentoo ebuilds
 
