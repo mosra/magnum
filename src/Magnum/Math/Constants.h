@@ -29,6 +29,13 @@
  * @brief Class @ref Magnum::Math::Constants
  */
 
+#include <cmath>
+
+#include "Magnum/configure.h"
+#ifndef MAGNUM_TARGET_GLES
+#include <limits>
+#endif
+
 #include "Magnum/Types.h"
 
 namespace Magnum { namespace Math {
@@ -37,6 +44,7 @@ namespace Magnum { namespace Math {
 @brief Numeric constants
 
 @see @ref Magnum::Constants, @ref Magnum::Constantsd
+@todo Invent a way to generate double NaN/infinity without including whole limits header
 */
 template<class T> struct Constants {
     Constants() = delete;
@@ -68,6 +76,9 @@ template<class T> struct Constants {
     static constexpr T e();     /**< @brief Euler's number */
     static constexpr T sqrt2(); /**< @brief Square root of 2 */
     static constexpr T sqrt3(); /**< @brief Square root of 3 */
+
+    static constexpr T nan();   /**< @brief Quiet NaN */
+    static constexpr T inf();   /**< @brief Positive infinity */
     #endif
 };
 
@@ -82,6 +93,9 @@ template<> struct Constants<Double> {
     static constexpr Double e()         { return 2.718281828459045; }
     static constexpr Double sqrt2()     { return 1.414213562373095; }
     static constexpr Double sqrt3()     { return 1.732050807568877; }
+
+    static constexpr Double nan()   { return std::numeric_limits<Double>::quiet_NaN(); }
+    static constexpr Double inf()   { return std::numeric_limits<Double>::infinity(); }
 };
 #endif
 template<> struct Constants<Float> {
@@ -93,6 +107,9 @@ template<> struct Constants<Float> {
     static constexpr Float e()          { return 2.718281828f; }
     static constexpr Float sqrt2()      { return 1.414213562f; }
     static constexpr Float sqrt3()      { return 1.732050808f; }
+
+    static constexpr Float nan()    { return NAN; }
+    static constexpr Float inf()    { return INFINITY; }
 };
 #endif
 

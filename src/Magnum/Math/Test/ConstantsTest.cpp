@@ -34,49 +34,55 @@ class ConstantsTest: public Corrade::TestSuite::Tester {
     public:
         ConstantsTest();
 
-        void constantsFloat();
-        void constantsDouble();
+        void constants();
+        void specials();
+
+    private:
+        template<class> void _constants();
+        template<class> void _specials();
 };
 
 ConstantsTest::ConstantsTest() {
-    addTests({&ConstantsTest::constantsFloat,
-              &ConstantsTest::constantsDouble});
+    addTests({&ConstantsTest::constants,
+              &ConstantsTest::specials});
 }
 
-void ConstantsTest::constantsFloat() {
-    constexpr Float a = Constants<Float>::sqrt2();
-    constexpr Float b = Constants<Float>::sqrt3();
-    CORRADE_COMPARE(Math::pow<2>(a), 2.0f);
-    CORRADE_COMPARE(Math::pow<2>(b), 3.0f);
-
-    constexpr Float c = Constants<Float>::pi();
-    constexpr Float d = Constants<Float>::piHalf();
-    constexpr Float e = Constants<Float>::tau();
-    CORRADE_COMPARE(0.5f*c, d);
-    CORRADE_COMPARE(2.0f*c, e);
-
-    constexpr Float f = Constants<Float>::e();
-    CORRADE_COMPARE(std::log(f), 1.0f);
-}
-
-void ConstantsTest::constantsDouble() {
+void ConstantsTest::constants() {
+    _constants<Float>();
     #ifndef MAGNUM_TARGET_GLES
-    constexpr Double a = Constants<Double>::sqrt2();
-    constexpr Double b = Constants<Double>::sqrt3();
-    CORRADE_COMPARE(Math::pow<2>(a), 2.0);
-    CORRADE_COMPARE(Math::pow<2>(b), 3.0);
-
-    constexpr Double c = Constants<Double>::pi();
-    constexpr Double d = Constants<Double>::piHalf();
-    constexpr Double e = Constants<Double>::tau();
-    CORRADE_COMPARE(0.5*c, d);
-    CORRADE_COMPARE(2.0*c, e);
-
-    constexpr Double f = Constants<Double>::e();
-    CORRADE_COMPARE(std::log(f), 1.0);
-    #else
-    CORRADE_SKIP("Double precision is not supported when targeting OpenGL ES.");
+    _constants<Double>();
     #endif
+}
+
+void ConstantsTest::specials() {
+    _specials<Float>();
+    #ifndef MAGNUM_TARGET_GLES
+    _specials<Double>();
+    #endif
+}
+
+template<class T> void ConstantsTest::_constants() {
+    constexpr T a = Constants<T>::sqrt2();
+    constexpr T b = Constants<T>::sqrt3();
+    CORRADE_COMPARE(Math::pow<2>(a), T(2));
+    CORRADE_COMPARE(Math::pow<2>(b), T(3));
+
+    constexpr T c = Constants<T>::pi();
+    constexpr T d = Constants<T>::piHalf();
+    constexpr T e = Constants<T>::tau();
+    CORRADE_COMPARE(T(0.5)*c, d);
+    CORRADE_COMPARE(T(2.0)*c, e);
+
+    constexpr T f = Constants<T>::e();
+    CORRADE_COMPARE(std::log(f), T(1));
+}
+
+template<class T> void ConstantsTest::_specials() {
+    constexpr T g = Constants<T>::nan();
+    CORRADE_VERIFY(g != g);
+
+    constexpr T h = Constants<T>::inf() - Constants<T>::inf();
+    CORRADE_VERIFY(h != h);
 }
 
 }}}
