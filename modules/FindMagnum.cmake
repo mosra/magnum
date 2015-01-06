@@ -335,7 +335,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     endif()
 
     # Applications
-    if(${component} MATCHES .+Application)
+    if(${component} MATCHES ".+Application")
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
 
         # Android application dependencies
@@ -400,7 +400,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
 
     # Context libraries
-    elseif(${component} MATCHES .+Context)
+    elseif(${component} MATCHES ".+Context")
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
 
@@ -437,6 +437,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             unset(MAGNUM_${_COMPONENT}_LIBRARY)
         endif()
 
+    # No special setup for DebugTools library
+
     # Mesh tools library
     elseif(${component} STREQUAL MeshTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
@@ -445,13 +447,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     elseif(${component} STREQUAL Primitives)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
 
+    # No special setup for SceneGraph library
+    # No special setup for Shaders library
+    # No special setup for Shapes library
+    # No special setup for Text library
+
     # TextureTools library
     elseif(${component} STREQUAL TextureTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
     endif()
 
-    # The plugins don't have any dependencies, nothing additional to do for
-    # them
+    # No special setup for plugins
 
     # Try to find the includes
     if(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
@@ -476,7 +482,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
         # Global aliases for Windowless*Application and *Application
         # components. If already set, unset them to avoid ambiguity.
-        if(${component} MATCHES Windowless.+Application)
+        if(${component} MATCHES "Windowless.+Application")
             if(NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
                 set(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
                 set(MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
@@ -484,7 +490,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES)
                 unset(MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
             endif()
-        elseif(${component} MATCHES .+Application)
+        elseif(${component} MATCHES ".+Application")
             if(NOT DEFINED MAGNUM_APPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_APPLICATION_INCLUDE_DIRS)
                 set(MAGNUM_APPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
                 set(MAGNUM_APPLICATION_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
@@ -496,7 +502,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
         # Global aliases for *Context components. If already set, unset them to
         # avoid ambiguity.
-        if(${component} MATCHES .+Context)
+        if(${component} MATCHES ".+Context")
             if(NOT DEFINED MAGNUM_CONTEXT_LIBRARIES AND NOT DEFINED MAGNUM_CONTEXT_INCLUDE_DIRS)
                 set(MAGNUM_CONTEXT_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
                 set(MAGNUM_CONTEXT_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
