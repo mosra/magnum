@@ -85,14 +85,13 @@ OpenGL ES libraries). Additional dependencies are specified by the components.
 The optional components are:
 
 -   `Audio` -- @ref Audio library
--   `DebugTools` -- @ref DebugTools library (depends on `MeshTools`,
-    `Primitives`, `SceneGraph`, `Shaders` and `Shapes` components)
+-   `DebugTools` -- @ref DebugTools library
 -   `MeshTools` -- @ref MeshTools library
 -   `Primitives` -- @ref Primitives library
 -   `SceneGraph` -- @ref SceneGraph library
 -   `Shaders` -- @ref Shaders library
--   `Shapes` -- @ref Shapes library (depends on `SceneGraph` component)
--   `Text` -- @ref Text library (depends on `TextureTools` component)
+-   `Shapes` -- @ref Shapes library
+-   `Text` -- @ref Text library
 -   `TextureTools` -- @ref TextureTools library
 
 Platform namespace is split into more components:
@@ -126,17 +125,14 @@ loads them dynamically. However, if they are built as static (see
 executable and then explicitly imported. Also if you are going to use them as
 dependencies, you need to find the dependency and then link to it.
 
--   `MagnumFont` -- @ref Text::MagnumFont "MagnumFont" plugin (depends on
-    `Text` component and `TgaImporter` plugin)
+-   `MagnumFont` -- @ref Text::MagnumFont "MagnumFont" plugin
 -   `MagnumFontConverter` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
-    plugin (depends on `Text` component and `TgaImageConverter` plugin)
--   `ObjImporter` -- @ref Trade::ObjImporter "ObjImporter" plugin (depends on
-    `MeshTools` component)
+    plugin
+-   `ObjImporter` -- @ref Trade::ObjImporter "ObjImporter" plugin
 -   `TgaImageConverter` -- @ref Trade::TgaImageConverter "TgaImageConverter"
     plugin
 -   `TgaImporter` -- @ref Trade::TgaImporter "TgaImporter" plugin
 -   `WavAudioImporter` -- @ref Audio::WavImporter "WavAudioImporter" plugin
-    (depends on `Audio` component)
 
 Note that [each namespace](namespaces.html), all @ref Platform libraries and
 each plugin class contain more detailed information about dependencies,
