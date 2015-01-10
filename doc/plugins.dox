@@ -129,12 +129,12 @@ lifetime of all plugin instances created from it.
 // ...
 
 {
-    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded)) {
-        Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    std::unique_ptr<Trade::AbstractImporter> tgaImporter = manager.loadAndInstantiate("TgaImporter");
+    if(!tgaImporter) {
+        Error() << "Cannot load importer plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
-    std::unique_ptr<Trade::AbstractImporter> tgaImporter = manager.instance("TgaImporter");
 
     // Use the plugin...
 
