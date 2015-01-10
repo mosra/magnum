@@ -790,7 +790,7 @@ void FramebufferGLTest::read() {
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
     Image2D colorImage(ColorFormat::RGBA, ColorType::UnsignedByte);
-    framebuffer.read({16, 8}, {8, 16}, colorImage);
+    framebuffer.read({{16, 8}, {8, 16}}, colorImage);
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -805,7 +805,7 @@ void FramebufferGLTest::read() {
         #endif
 
         Image2D depthImage(ColorFormat::DepthComponent, ColorType::UnsignedShort);
-        framebuffer.read({}, Vector2i(1), depthImage);
+        framebuffer.read({{}, Vector2i{1}}, depthImage);
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
@@ -820,7 +820,7 @@ void FramebufferGLTest::read() {
         #endif
 
         Image2D stencilImage(ColorFormat::StencilIndex, ColorType::UnsignedByte);
-        framebuffer.read({}, Vector2i(1), stencilImage);
+        framebuffer.read({{}, Vector2i{1}}, stencilImage);
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
@@ -835,7 +835,7 @@ void FramebufferGLTest::read() {
         #endif
 
         Image2D depthStencilImage(ColorFormat::DepthStencil, ColorType::UnsignedInt248);
-        framebuffer.read({}, Vector2i(1), depthStencilImage);
+        framebuffer.read({{}, Vector2i{1}}, depthStencilImage);
 
         MAGNUM_VERIFY_NO_ERROR();
         /** @todo This will probably fail on different systems */
@@ -870,7 +870,7 @@ void FramebufferGLTest::readBuffer() {
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
     BufferImage2D colorImage(ColorFormat::RGBA, ColorType::UnsignedByte);
-    framebuffer.read({16, 8}, {8, 16}, colorImage, BufferUsage::StaticRead);
+    framebuffer.read({{16, 8}, {8, 16}}, colorImage, BufferUsage::StaticRead);
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -918,14 +918,14 @@ void FramebufferGLTest::blit() {
 
     /* The framebuffer should be black before */
     Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    b.read({}, Vector2i(1), image);
+    b.read({{}, Vector2i{1}}, image);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub());
 
     /* And have given color after */
     Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::Color);
-    b.read({}, Vector2i(1), image);
+    b.read({{}, Vector2i{1}}, image);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));

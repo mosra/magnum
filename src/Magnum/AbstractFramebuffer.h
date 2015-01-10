@@ -297,8 +297,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Read block of pixels from framebuffer to image
-         * @param offset            Offset in the framebuffer
-         * @param size              Image size
+         * @param rectangle         Framebuffer rectangle to read
          * @param image             Image where to put the data
          *
          * Image parameters like format and type of pixel data are taken from
@@ -309,13 +308,22 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels} or
          *      @fn_gl_extension{ReadnPixels,ARB,robustness}
          */
-        void read(const Vector2i& offset, const Vector2i& size, Image2D& image);
+        void read(const Range2Di& rectangle, Image2D& image);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief read(const Range2Di&, Image2D&)
+         * @deprecated Use @ref read(const Range2Di&, Image2D&) instead.
+         */
+        CORRADE_DEPRECATED("use read(const Range2Di&, Image2D& instead) instead") void read(const Vector2i& offset, const Vector2i& size, Image2D& image) {
+            read({offset, size}, image);
+        }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Read block of pixels from framebuffer to buffer image
-         * @param offset            Offset in the framebuffer
-         * @param size              Image size
+         * @param rectangle         Framebuffer rectangle to read
          * @param image             Buffer image where to put the data
          * @param usage             Buffer usage
          *
@@ -325,7 +333,18 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage);
+        void read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief read(const Range2Di&, BufferImage2D&, BufferUsage)
+         * @deprecated Use @ref read(const Range2Di&, BufferImage2D&, BufferUsage)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use read(const Range2Di&, BufferImage2D&, BufferUsage) instead") void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
+            read({offset, size}, image, usage);
+        }
+        #endif
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -381,8 +400,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL readBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
-        static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationDefault(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationRobustness(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
 
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);

@@ -59,7 +59,7 @@ struct FramebufferState {
     void(Renderbuffer::*renderbufferStorageImplementation)(RenderbufferFormat, const Vector2i&);
     void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
 
-    void(*readImplementation)(const Vector2i&, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
+    void(*readImplementation)(const Range2Di&, ColorFormat, ColorType, std::size_t, GLvoid*);
 
     FramebufferTarget readTarget, drawTarget;
 

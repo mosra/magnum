@@ -230,30 +230,28 @@ void AbstractFramebuffer::clear(FramebufferClearMask mask) {
     glClear(GLbitfield(mask));
 }
 
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D& image) {
-    const Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
-
+void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
     #else
     bindInternal(state.readTarget);
     #endif
-    const std::size_t dataSize = image.dataSize(size);
+    const std::size_t dataSize = image.dataSize(rectangle.size());
     char* const data = new char[dataSize];
-    (state.readImplementation)(offset, size, image.format(), image.type(), dataSize, data);
-    image.setData(image.format(), image.type(), size, data);
+    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, data);
+    image.setData(image.format(), image.type(), rectangle.size(), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
+void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage) {
     bindInternal(FramebufferTarget::Read);
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
-    if(image.size() != size)
-        image.setData(image.format(), image.type(), size, nullptr, usage);
+    if(image.size() != rectangle.size())
+        image.setData(image.format(), image.type(), rectangle.size(), nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    (Context::current()->state().framebuffer->readImplementation)(offset, size, image.format(), image.type(), image.dataSize(size), nullptr);
+    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), image.dataSize(rectangle.size()), nullptr);
 }
 #endif
 
@@ -394,15 +392,15 @@ void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
 }
 #endif
 
-void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
+void AbstractFramebuffer::readImplementationDefault(const Range2Di& rectangle, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
+    glReadPixels(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), data);
 }
 
-void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     #ifndef MAGNUM_TARGET_GLES
-    glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), dataSize, data);
+    glReadnPixelsARB(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), dataSize, data);
+    glReadnPixelsEXT(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #else
     static_cast<void>(offset);
     static_cast<void>(size);
