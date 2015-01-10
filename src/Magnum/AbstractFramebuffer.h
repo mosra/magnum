@@ -310,6 +310,15 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          */
         void read(const Range2Di& rectangle, Image2D& image);
 
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image2D read(const Range2Di& rectangle, Image2D&& image);
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief read(const Range2Di&, Image2D&)
@@ -334,6 +343,15 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage);
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticDraw);
+         * @endcode
+         */
+        BufferImage2D read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

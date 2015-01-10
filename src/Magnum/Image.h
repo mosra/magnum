@@ -64,7 +64,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Dimensions are set to zero and data pointer to `nullptr`, call
          * @ref setData() to fill the image with data.
          */
-        explicit Image(ColorFormat format, ColorType type): AbstractImage(format, type), _data(nullptr) {}
+        /*implicit*/ Image(ColorFormat format, ColorType type): AbstractImage(format, type), _data(nullptr) {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&) = delete;

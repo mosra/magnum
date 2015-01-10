@@ -242,6 +242,11 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     image.setData(image.format(), image.type(), rectangle.size(), data);
 }
 
+Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {
+    read(rectangle, image);
+    return std::move(image);
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage) {
     bindInternal(FramebufferTarget::Read);
@@ -252,6 +257,11 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, 
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), image.dataSize(rectangle.size()), nullptr);
+}
+
+BufferImage2D AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage) {
+    read(rectangle, image, usage);
+    return std::move(image);
 }
 #endif
 

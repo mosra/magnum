@@ -74,7 +74,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          * Size is zero and buffer are empty, call @ref setData() to fill the
          * image with data.
          */
-        explicit BufferImage(ColorFormat format, ColorType type);
+        /*implicit*/ BufferImage(ColorFormat format, ColorType type);
 
         /** @brief Copying is not allowed */
         BufferImage(const BufferImage<dimensions>&) = delete;
