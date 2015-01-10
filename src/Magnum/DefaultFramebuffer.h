@@ -432,6 +432,10 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             AbstractFramebuffer::setViewport(rectangle);
             return *this;
         }
+        DefaultFramebuffer& clear(FramebufferClearMask mask) {
+            AbstractFramebuffer::clear(mask);
+            return *this;
+        }
         #endif
 
     private:

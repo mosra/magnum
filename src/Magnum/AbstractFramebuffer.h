@@ -284,6 +284,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         /**
          * @brief Clear specified buffers in framebuffer
          * @param mask              Which buffers to clear
+         * @return Reference to self (for method chaining)
          *
          * To improve performance you can also use
          * @ref DefaultFramebuffer::invalidate() / @ref Framebuffer::invalidate()
@@ -293,7 +294,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      @ref Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Clear}
          */
-        void clear(FramebufferClearMask mask);
+        AbstractFramebuffer& clear(FramebufferClearMask mask);
 
         /**
          * @brief Read block of pixels from framebuffer to image

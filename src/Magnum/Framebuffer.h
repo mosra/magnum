@@ -650,6 +650,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
             AbstractFramebuffer::setViewport(rectangle);
             return *this;
         }
+        Framebuffer& clear(FramebufferClearMask mask) {
+            AbstractFramebuffer::clear(mask);
+            return *this;
+        }
         #endif
 
     private:

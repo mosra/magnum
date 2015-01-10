@@ -221,13 +221,15 @@ void AbstractFramebuffer::setViewportInternal() {
     glViewport(_viewport.left(), _viewport.bottom(), _viewport.sizeX(), _viewport.sizeY());
 }
 
-void AbstractFramebuffer::clear(FramebufferClearMask mask) {
+AbstractFramebuffer& AbstractFramebuffer::clear(FramebufferClearMask mask) {
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
     #else
     bindInternal(Context::current()->state().framebuffer->drawTarget);
     #endif
     glClear(GLbitfield(mask));
+
+    return *this;
 }
 
 void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
