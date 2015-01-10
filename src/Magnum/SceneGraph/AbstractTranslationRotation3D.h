@@ -153,7 +153,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief roateY()
+         * @copybrief rotateY()
          * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateY() "rotateY()"
          *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateYLocal() "rotateYLocal()"
          *      instead.

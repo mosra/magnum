@@ -46,13 +46,13 @@ template<class T> class CORRADE_DEPRECATED("use Math::Range2D instead") Rectangl
         /** @copydoc Range2D() */
         constexpr Rectangle() = default;
 
-        /** @copydoc Range2D(const VectorType&, const VectorType&) */
+        /** @copydoc Range2D(const Vector2<T>&, const Vector2<T>&) */
         constexpr Rectangle(const Vector2<T>& min, const Vector2<T>& max): Range2D<T>(min, max) {}
 
-        /** @copydoc Range2D(const Range&) */
+        /** @copydoc Range2D(const Range<2, T>&) */
         constexpr Rectangle(const Range<2, T>& other): Range2D<T>(other) {}
 
-        /** @copydoc Range2D(const Range<dimensions, U>&) */
+        /** @copydoc Range2D(const Range2D<U>&) */
         template<class U> constexpr explicit Rectangle(const Range2D<U>& other): Range2D<T>(other) {}
 
         /** @copydoc Range2D::sizeX() */

@@ -145,7 +145,7 @@ template<class T> class Array2D: public Array<2, T> {
          */
         constexpr /*implicit*/ Array2D(T x, T y): Array<2, T>(x, y) {}
 
-        /** @copydoc Array::Array(U) */
+        /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array2D(T value): Array<2, T>(value, value) {}
 
         /** @brief Copy constructor */
@@ -174,7 +174,7 @@ template<class T> class Array3D: public Array<3, T> {
          */
         constexpr /*implicit*/ Array3D(T x, T y, T z): Array<3, T>(x, y, z) {}
 
-        /** @copydoc Array::Array(U) */
+        /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array3D(T value): Array<3, T>(value, value, value) {}
 
         /** @brief Copy constructor */
