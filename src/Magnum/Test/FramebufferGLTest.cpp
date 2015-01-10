@@ -789,7 +789,7 @@ void FramebufferGLTest::read() {
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    Image2D colorImage = framebuffer.read({{16, 8}, {8, 16}}, {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}), {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
@@ -865,7 +865,7 @@ void FramebufferGLTest::readBuffer() {
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    BufferImage2D colorImage = framebuffer.read({{16, 8}, {8, 16}}, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
     MAGNUM_VERIFY_NO_ERROR();
