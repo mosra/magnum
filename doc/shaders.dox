@@ -1,0 +1,136 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page shaders Builtin shaders
+@brief Overview and basic usage of builtin shaders.
+
+-   Previous page: @ref plugins
+-   Next page: @ref scenegraph
+
+@tableofcontents
+
+Magnum contains a set of general-purpose shaders for easy prototyping, UI
+rendering and data visualization/debugging in both 2D and 3D scenes. The
+following shaders are available, see documentation of each class for sample
+output and example setup:
+
+-   @ref Shaders::Flat "Shaders::Flat*D" -- flat shading using single color or
+    texture
+-   @ref Shaders::Vector "Shaders::Vector*D" -- colored vector graphics
+-   @ref Shaders::DistanceFieldVector "Shaders::DistanceFieldVector*D" --
+    colored and outlined vector graphics
+-   @ref Shaders::VertexColor "Shaders::VertexColor*D" -- vertex-colored meshes
+-   @ref Shaders::Phong -- Phong shading using colors or textures, 3D only
+-   @ref Shaders::MeshVisualizer -- wireframe visualization, 3D only
+
+All the builtin shaders can be used on unextended OpenGL 2.1 and OpenGL ES 2.0
+/ WebGL 1.0, but they try to use the most recent technology available to have
+them as efficient as possible on every configuration.
+
+@section shaders-usage Usage
+
+Shader usage is divided into two parts: configuring vertex attributes in the
+mesh and configuring the shader itself.
+
+Each shader expects some set of vertex attributes, thus when adding vertex
+buffer into the mesh, you need to specify which shader attributes are on which
+position in the buffer. See @ref Mesh::addVertexBuffer() for details and usage
+examples. Example mesh configuration for @ref Shaders::Phong shader:
+@code
+struct Vertex {
+    Vector3 position;
+    Vector3 normal;
+    Vector2 textureCoordinates;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::Phong::Position{},
+    Shaders::Phong::Normal{},
+    Shaders::Phong::TextureCoordinates{});
+@endcode
+
+Each shader then has its own set of configuration functions. Some configuration
+is static, specified commonly as flags in constructor, directly affecting
+compiled shader code. Other configuration is specified through uniforms and
+various binding points, commonly exposed through various setters. Example
+configuration and rendering using @ref Shaders::Phong "Shaders::Phong":
+@code
+Matrix4 transformationMatrix, projectionMatrix;
+Texture2D diffuseTexture, specularTexture;
+
+Shaders::Phong shader{Shaders::Phong::DiffuseTexture};
+shader.setDiffuseTexture(diffuseTexture)
+    .setLightPosition({5.0f, 5.0f, 7.0f})
+    .setTransformationMatrix(transformationMatrix)
+    .setNormalMatrix(transformationMatrix.rotation())
+    .setProjectionMatrix(projectionMatrix);
+
+mesh.draw(shader);
+@endcode
+
+@section shaders-generic Generic vertex attributes
+
+Many shaders share the same vertex attribute definitions, such as positions,
+normals, texture coordinates etc. It's thus possible to configure the mesh
+for *generic* shader and then render it with any compatible shader. Definition
+of generic attributes is available in @ref Shaders::Generic class.
+Configuration of the above mesh using generic attributes could then look like
+this:
+@code
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::Generic3D::Position{},
+    Shaders::Generic3D::Normal{},
+    Shaders::Generic3D::TextureCoordinates{});
+@endcode
+Note that in this particular case both configurations are equivalent, because
+@ref Shaders::Phong also uses generic vertex attribute definitions.
+
+Then you can render the mesh using @ref Shaders::Phong shader like above, or
+use for example @ref Shaders::Flat3D or even @ref Shaders::MeshVisualizer with
+the same mesh reconfiguration. The unused attributes will be simply ignored.
+@code
+Shaders::MeshVisualizer visualizerShader{Shaders::MeshVisualizer::Wireframe};
+visualizerShader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+    .setWireframeColor(Color3{0.95f})
+    .setViewportSize(defaultFramebuffer.viewport().size())
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(visualizerShader);
+@endcode
+
+The @ref MeshTools::compile() utility configures meshes using generic vertex
+attribute definitions to make them usable with any shader.
+
+-   Previous page: @ref plugins
+-   Next page: @ref scenegraph
+
+*/
+}

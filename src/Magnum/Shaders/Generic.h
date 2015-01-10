@@ -37,27 +37,10 @@ namespace Magnum { namespace Shaders {
 @brief Generic shader definition
 
 Definitions common for majority of shaders in @ref Shaders namespace, allowing
-mesh configured for the generic shader to be used with any of them.
+mesh configured for the generic shader to be used with any of them. See
+@ref shaders-generic for more information.
 
-Example usage (configuring the mesh for generic shader, then using it with
-@ref Shaders::Phong):
-@code
-Mesh mesh;
-Buffer vertexBuffer;
-
-// ...
-
-mesh.addVertexBuffer(vertexBuffer, 0,
-    Shaders::Generic3D::Position(),
-    Shaders::Generic3D::Normal(),
-    Shaders::Generic3D::TextureCoordinates());
-
-Shaders::Phong phong;
-// ...
-mesh.draw(phong);
-@endcode
-
-@see @ref Generic2D, @ref Generic3D
+@see @ref shaders, @ref Generic2D, @ref Generic3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt> struct Generic;
@@ -66,17 +49,21 @@ template<UnsignedInt dimensions> struct Generic {
     /**
      * @brief Vertex position
      *
-     * Defined as @ref Vector2 in 2D and @ref Vector3 in 3D.
+     * @ref Vector2 in 2D and @ref Vector3 in 3D.
      */
     typedef Attribute<0, T> Position;
 
-    /** @brief 2D texture coordinates */
+    /**
+     * @brief 2D texture coordinates
+     *
+     * @ref Vector2.
+     */
     typedef Attribute<1, Vector2> TextureCoordinates;
 
     /**
      * @brief Vertex normal
      *
-     * Defined only in 3D.
+     * @ref Vector3, defined only in 3D.
      */
     typedef Attribute<2, Vector3> Normal;
 };

@@ -57,17 +57,88 @@ The texture will be multiplied with the color (which is white by default, thus
 it doesn't change texture color).
 
 For coloring the texture based on intensity you can use the @ref Vector shader.
-@see @ref Flat2D, @ref Flat3D
+
+@image html shaders-flat.png
+@image latex shaders-flat.png
+
+## Example usage
+
+### Colored mesh
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector3 position;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0, Shaders::Flat3D::Position{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
+Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+
+Shaders::Flat3D shader;
+shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(shader);
+@endcode
+
+### Textured mesh
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector3 position;
+    Vector2 textureCoordinates;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::Flat3D::Position{},
+    Shaders::Flat3D::TextureCoordinates{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix4 transformationMatrix, projectionMatrix;
+Texture2D texture;
+
+Shaders::Flat3D shader{Shaders::Flat3D::Textured};
+shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
+    .setTexture(texture);
+
+mesh.draw(shader);
+@endcode
+
+@see @ref shaders, @ref Flat2D, @ref Flat3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
     public:
-        /** @brief Vertex position */
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector2 in 2D,
+         * @ref Vector3 in 3D.
+         */
         typedef typename Generic<dimensions>::Position Position;
 
         /**
-         * @brief Texture coordinates
+         * @brief 2D texture coordinates
          *
-         * Used only if @ref Flag::Textured is set.
+         * @ref shaders-generic "Generic attribute", @ref Vector2. Used only if
+         * @ref Flag::Textured is set.
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 

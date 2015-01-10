@@ -36,14 +36,24 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Base for vector shaders
 
-@see @ref AbstractVector2D, @ref AbstractVector3D
+See @ref DistanceFieldVector and @ref Vector for more information.
+@see @ref shaders, @ref AbstractVector2D, @ref AbstractVector3D
 */
 template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
     public:
-        /** @brief Vertex position */
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector2 in 2D,
+         * @ref Vector3 in 3D.
+         */
         typedef typename Generic<dimensions>::Position Position;
 
-        /** @brief Texture coordinates */
+        /**
+         * @brief 2D texture coordinates
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector2.
+         */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
         #ifdef MAGNUM_BUILD_DEPRECATED

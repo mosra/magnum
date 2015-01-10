@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="256"
+   height="256"
+   id="svg2"
+   inkscape:label="Pozadí"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="vector.svg"
+   inkscape:export-filename="/home/mosra/Code/magnum/doc/generated/vector-src.png"
+   inkscape:export-xdpi="360"
+   inkscape:export-ydpi="360">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="-237.32667"
+     inkscape:cy="-18.708048"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-page="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1032"
+     inkscape:window-x="0"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata6">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Vrstva 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-796.36218)">
+    <path
+       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 0 0 L 0 256 L 256 256 L 256 0 L 0 0 z M 46.6875 46.6875 L 209.3125 46.6875 L 209.3125 209.3125 L 46.6875 209.3125 L 46.6875 46.6875 z M 135.125 66.25 C 134.53123 66.246321 133.92211 66.267756 133.3125 66.28125 C 128.81077 66.38089 123.86475 66.93425 118.5 67.96875 C 112.50196 69.12551 106.69229 70.52905 101.03125 72.125 C 95.370175 73.72119 86.598411 76.61946 74.71875 80.84375 L 80.03125 108.4375 L 88.03125 106.875 L 89.9375 91.78125 C 97.554333 85.94102 104.75392 82.37554 111.5625 81.0625 C 122.82897 78.89002 129.81157 84.68966 132.46875 98.46875 L 135.65625 115.09375 L 120.90625 118.3125 C 106.86533 121.35644 96.799574 124.78386 90.71875 128.5625 C 84.622264 132.26023 80.328739 137.04676 77.84375 142.90625 C 75.343124 148.6848 74.936953 155.87706 76.59375 164.46875 C 80.970188 187.16391 94.944487 196.23592 118.53125 191.6875 C 123.71865 190.68722 128.70615 188.887 133.5 186.28125 C 138.30937 183.75653 143.44361 179.73379 148.9375 174.21875 L 153.34375 182.4375 L 195.40625 174.34375 L 193.84375 166.3125 L 181.84375 165.59375 L 167.53125 91.3125 C 164.33251 74.72501 153.53187 66.364045 135.125 66.25 z M 137.75 125.9375 L 145.625 166.78125 C 139.68766 170.86859 133.98036 173.46843 128.46875 174.53125 C 124.57809 175.28152 121.08804 174.27327 118.03125 171.5 C 114.97438 168.72676 112.79727 163.85839 111.46875 156.96875 C 109.82755 148.45813 110.11058 142.01291 112.375 137.625 C 114.7204 133.22158 119.79398 130.12166 127.59375 128.28125 L 137.75 125.9375 z "
+       transform="translate(0,796.36218)"
+       id="rect3786" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot2984"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(0,852.36218)"><flowRegion
+         id="flowRegion2986"><rect
+           id="rect2988"
+           width="109.28571"
+           height="93.214287"
+           x="46.42857"
+           y="64.285713" /></flowRegion><flowPara
+         id="flowPara2990"></flowPara></flowRoot>  </g>
+</svg>

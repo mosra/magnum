@@ -23,18 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum {
-/** @page features Feature overview
-@brief Fundamental principles and design goals.
-
--   @subpage platform -- @copybrief platform
--   @subpage types -- @copybrief types
--   @subpage matrix-vector -- @copybrief matrix-vector
--   @subpage transformations -- @copybrief transformations
--   @subpage plugins -- @copybrief plugins
--   @subpage shaders -- @copybrief shaders
--   @subpage scenegraph -- @copybrief scenegraph
--   @subpage shapes -- @copybrief shapes
--   @subpage debug-tools -- @copybrief debug-tools
-*/
-}
+#ifdef CORRADE_IS_DEBUG_BUILD
+#define MAGNUM_PLUGINS_IMAGECONVERTER_DIR "${MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_DIR}"
+#define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}"
+#else
+#define MAGNUM_PLUGINS_IMAGECONVERTER_DIR "${MAGNUM_PLUGINS_IMAGECONVERTER_DIR}"
+#define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DIR}"
+#endif
