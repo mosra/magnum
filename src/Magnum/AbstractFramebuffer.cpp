@@ -93,9 +93,12 @@ void AbstractFramebuffer::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
-void AbstractFramebuffer::bind(FramebufferTarget target) {
+void AbstractFramebuffer::bind(const FramebufferTarget target) {
     bindInternal(target);
-    setViewportInternal();
+
+    /* Ensure the viewport is set if the user is going to draw */
+    if(target == FramebufferTarget::Draw || target == FramebufferTarget::ReadDraw)
+        setViewportInternal();
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
