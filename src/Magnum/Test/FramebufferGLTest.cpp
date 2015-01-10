@@ -789,11 +789,10 @@ void FramebufferGLTest::read() {
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    Image2D colorImage(ColorFormat::RGBA, ColorType::UnsignedByte);
-    framebuffer.read({{16, 8}, {8, 16}}, colorImage);
-    CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
+    Image2D colorImage = framebuffer.read({{16, 8}, {8, 16}}, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
     CORRADE_COMPARE(colorImage.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
 
     #ifdef MAGNUM_TARGET_GLES
@@ -804,8 +803,7 @@ void FramebufferGLTest::read() {
         Debug() << "Using" << Extensions::GL::NV::read_depth::string();
         #endif
 
-        Image2D depthImage(ColorFormat::DepthComponent, ColorType::UnsignedShort);
-        framebuffer.read({{}, Vector2i{1}}, depthImage);
+        Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {ColorFormat::DepthComponent, ColorType::UnsignedShort});
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
@@ -819,8 +817,7 @@ void FramebufferGLTest::read() {
         Debug() << "Using" << Extensions::GL::NV::read_stencil::string();
         #endif
 
-        Image2D stencilImage(ColorFormat::StencilIndex, ColorType::UnsignedByte);
-        framebuffer.read({{}, Vector2i{1}}, stencilImage);
+        Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {ColorFormat::StencilIndex, ColorType::UnsignedByte});
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
@@ -834,8 +831,7 @@ void FramebufferGLTest::read() {
         Debug() << "Using" << Extensions::GL::NV::read_depth_stencil::string();
         #endif
 
-        Image2D depthStencilImage(ColorFormat::DepthStencil, ColorType::UnsignedInt248);
-        framebuffer.read({{}, Vector2i{1}}, depthStencilImage);
+        Image2D depthStencilImage = framebuffer.read({{}, Vector2i{1}}, {ColorFormat::DepthStencil, ColorType::UnsignedInt248});
 
         MAGNUM_VERIFY_NO_ERROR();
         /** @todo This will probably fail on different systems */
@@ -869,8 +865,7 @@ void FramebufferGLTest::readBuffer() {
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    BufferImage2D colorImage(ColorFormat::RGBA, ColorType::UnsignedByte);
-    framebuffer.read({{16, 8}, {8, 16}}, colorImage, BufferUsage::StaticRead);
+    BufferImage2D colorImage = framebuffer.read({{16, 8}, {8, 16}}, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -917,18 +912,17 @@ void FramebufferGLTest::blit() {
     b.clear(FramebufferClear::Color);
 
     /* The framebuffer should be black before */
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    b.read({{}, Vector2i{1}}, image);
+    Image2D imageBefore = b.read({{}, Vector2i{1}}, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub());
+    CORRADE_COMPARE(imageBefore.data<Color4ub>()[0], Color4ub());
 
     /* And have given color after */
     Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::Color);
-    b.read({{}, Vector2i{1}}, image);
+    Image2D imageAfter = b.read({{}, Vector2i{1}}, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
+    CORRADE_COMPARE(imageAfter.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
 }
 
 }}
