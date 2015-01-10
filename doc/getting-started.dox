@@ -196,7 +196,7 @@ First include the needed headers:
 And in the constructor (which is currently empty) change the clear color and
 print something to debug output:
 @code
-Renderer::setClearColor({0.07f, 0.44f, 0.73f});
+Renderer::setClearColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f));
 
 Debug() << "Hello! This application is running on" << Context::current()->version()
         << "using" << Context::current()->rendererString();
@@ -205,7 +205,7 @@ Debug() << "Hello! This application is running on" << Context::current()->versio
 After rebuilding and starting the application, the clear color changes to
 blueish one and something like this would be printed to the console:
 
-> Hello! This application is running on OpenGL 3.3 using Geforce GT 330M
+> Hello! This application is running on OpenGL 4.5 using GeForce GT 740M
 
 @image html getting-started-blue.png
 @image latex getting-started-blue.png

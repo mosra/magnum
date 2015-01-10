@@ -31,7 +31,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/../../modules/")
 find_package(Magnum REQUIRED
     MeshTools
     Primitives
-    Shaders)
+    Shaders
+    Sdl2Application)
 
 if(CORRADE_TARGET_APPLE)
     find_package(Magnum REQUIRED WindowlessCglApplication)
@@ -49,7 +50,13 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS}
+    ${MAGNUM_APPLICATION_INCLUDE_DIRS}
     ${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS})
+
+add_executable(hello hello.cpp)
+target_link_libraries(hello
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
 
 add_executable(shaders shaders.cpp)
 target_link_libraries(shaders
