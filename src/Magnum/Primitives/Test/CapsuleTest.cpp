@@ -23,9 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* Less precision */
-#define FLOAT_EQUALITY_PRECISION 1.0e-5
-
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
