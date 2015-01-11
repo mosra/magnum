@@ -54,8 +54,10 @@ tries to open the file with it. Supported formats:
 -   JPEG (`*.jpg`, `*.jpeg`), loaded with @ref JpegImporter or any other plugin
     that provides it
 -   PIC (`*.pic`), loaded with any plugin that provides `PicImporter`
+-   PGM (`*.pgm`), loaded with any plugin that provides `PgmImporter`
 -   PNG (`*.png`), loaded with @ref PngImporter or any other plugin that
     provides it
+-   PPM (`*.ppm`), loaded with any plugin that provides `PpmImporter`
 -   PSD (`*.psd`), loaded with any plugin that provides `PsdImporter`
 -   TGA (`*.tga`), loaded with @ref TgaImporter or any other plugin that
     provides it

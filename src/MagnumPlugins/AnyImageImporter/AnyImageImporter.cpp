@@ -60,10 +60,14 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         plugin = "HdrImporter";
     else if(Utility::String::endsWith(filename, ".jpg") || Utility::String::endsWith(filename, ".jpeg"))
         plugin = "JpegImporter";
+    else if(Utility::String::endsWith(filename, ".pgm"))
+        plugin = "PgmImporter";
     else if(Utility::String::endsWith(filename, ".pic"))
         plugin = "PicImporter";
     else if(Utility::String::endsWith(filename, ".png"))
         plugin = "PngImporter";
+    else if(Utility::String::endsWith(filename, ".ppm"))
+        plugin = "PpmImporter";
     else if(Utility::String::endsWith(filename, ".psd"))
         plugin = "PsdImporter";
     else if(Utility::String::endsWith(filename, ".tga"))
