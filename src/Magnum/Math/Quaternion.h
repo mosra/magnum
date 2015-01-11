@@ -401,7 +401,14 @@ template<class T> class Quaternion {
          * @brief Rotate vector with normalized quaternion
          *
          * Faster alternative to @ref transformVector(), expects that the
-         * quaternion is normalized. @f[
+         * quaternion is normalized. Done using the following equation: @f[
+         *      \begin{array}{rcl}
+         *          \boldsymbol t & = & 2 (\boldsymbol q_V \times \boldsymbol v) \\
+         *          \boldsymbol v' & = & \boldsymbol v + q_S \boldsymbol t + \boldsymbol q_V \times \boldsymbol t
+         *      \end{array}
+         * @f]
+         * Which is equivalent to the common equation (source:
+         * https://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/): @f[
          *      v' = qvq^{-1} = qvq^* = q [\boldsymbol v, 0] q^*
          * @f]
          * @see @ref isNormalized(), @ref Quaternion(const Vector3<T>&),
@@ -567,9 +574,10 @@ template<class T> inline Quaternion<T> Quaternion<T>::invertedNormalized() const
     return conjugated();
 }
 
-template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(const Vector3< T >& vector) const {
+template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(const Vector3<T>& vector) const {
     CORRADE_ASSERT(isNormalized(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized", {});
-    return ((*this)*Quaternion<T>(vector)*conjugated()).vector();
+    const Vector3<T> t = T(2)*Vector3<T>::cross(_vector, vector);
+    return vector + _scalar*t + Vector3<T>::cross(_vector, t);
 }
 
 }}
