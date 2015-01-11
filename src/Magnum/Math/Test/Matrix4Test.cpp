@@ -79,6 +79,9 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void rotationZ();
     void reflection();
     void reflectionIsScaling();
+    void shearingXY();
+    void shearingXZ();
+    void shearingYZ();
     void orthographicProjection();
     void perspectiveProjection();
     void perspectiveProjectionFov();
@@ -122,6 +125,9 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::rotationZ,
               &Matrix4Test::reflection,
               &Matrix4Test::reflectionIsScaling,
+              &Matrix4Test::shearingXY,
+              &Matrix4Test::shearingXZ,
+              &Matrix4Test::shearingYZ,
               &Matrix4Test::orthographicProjection,
               &Matrix4Test::perspectiveProjection,
               &Matrix4Test::perspectiveProjectionFov,
@@ -321,6 +327,33 @@ void Matrix4Test::reflection() {
 
 void Matrix4Test::reflectionIsScaling() {
     CORRADE_COMPARE(Matrix4::reflection(Vector3::yAxis()), Matrix4::scaling(Vector3::yScale(-1.0f)));
+}
+
+void Matrix4Test::shearingXY() {
+    constexpr Matrix4 a = Matrix4::shearingXY(3.0f, -5.0f);
+    CORRADE_COMPARE(a, Matrix4({1.0f,  0.0f, 0.0f, 0.0f},
+                               {0.0f,  1.0f, 0.0f, 0.0f},
+                               {3.0f, -5.0f, 1.0f, 0.0f},
+                               {0.0f,  0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector3(1.0f)), Vector3(4.0f, -4.0f, 1.0f));
+}
+
+void Matrix4Test::shearingXZ() {
+    constexpr Matrix4 a = Matrix4::shearingXZ(3.0f, -5.0f);
+    CORRADE_COMPARE(a, Matrix4({1.0f, 0.0f,  0.0f, 0.0f},
+                               {3.0f, 1.0f, -5.0f, 0.0f},
+                               {0.0f, 0.0f,  1.0f, 0.0f},
+                               {0.0f, 0.0f,  0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector3(1.0f)), Vector3(4.0f, 1.0f, -4.0f));
+}
+
+void Matrix4Test::shearingYZ() {
+    constexpr Matrix4 a = Matrix4::shearingYZ(3.0f, -5.0f);
+    CORRADE_COMPARE(a, Matrix4({1.0f, 3.0f, -5.0f, 0.0f},
+                               {0.0f, 1.0f,  0.0f, 0.0f},
+                               {0.0f, 0.0f,  1.0f, 0.0f},
+                               {0.0f, 0.0f,  0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector3(1.0f)), Vector3(1.0f, 4.0f, -4.0f));
 }
 
 void Matrix4Test::orthographicProjection() {

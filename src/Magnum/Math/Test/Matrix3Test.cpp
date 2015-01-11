@@ -74,6 +74,8 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void rotation();
     void reflection();
     void reflectionIsScaling();
+    void shearingX();
+    void shearingY();
     void projection();
     void fromParts();
     void rotationScalingPart();
@@ -111,6 +113,8 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::rotation,
               &Matrix3Test::reflection,
               &Matrix3Test::reflectionIsScaling,
+              &Matrix3Test::shearingX,
+              &Matrix3Test::shearingY,
               &Matrix3Test::projection,
               &Matrix3Test::fromParts,
               &Matrix3Test::rotationScalingPart,
@@ -257,6 +261,22 @@ void Matrix3Test::reflection() {
 
 void Matrix3Test::reflectionIsScaling() {
     CORRADE_COMPARE(Matrix3::reflection(Vector2::yAxis()), Matrix3::scaling(Vector2::yScale(-1.0f)));
+}
+
+void Matrix3Test::shearingX() {
+    constexpr Matrix3 a = Matrix3::shearingX(3.0f);
+    CORRADE_COMPARE(a, Matrix3({1.0f, 0.0f, 0.0f},
+                               {3.0f, 1.0f, 0.0f},
+                               {0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector2(1.0f)), Vector2(4.0f, 1.0f));
+}
+
+void Matrix3Test::shearingY() {
+    constexpr Matrix3 a = Matrix3::shearingY(3.0f);
+    CORRADE_COMPARE(a, Matrix3({1.0f, 3.0f, 0.0f},
+                               {0.0f, 1.0f, 0.0f},
+                               {0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector2(1.0f)), Vector2(1.0f, 4.0f));
 }
 
 void Matrix3Test::projection() {

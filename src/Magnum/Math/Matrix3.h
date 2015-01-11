@@ -100,6 +100,34 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         }
 
         /**
+         * @brief 2D shearing matrix along X axis
+         * @param amount    Shearing amount
+         *
+         * Y axis remains unchanged.
+         * @see @ref shearingY(), @ref Matrix4::shearingXY(),
+         *      @ref Matrix4::shearingXZ(), @ref Matrix4::shearingYZ()
+         */
+        constexpr static Matrix3<T> shearingX(T amount) {
+            return {{  T(1), T(0), T(0)},
+                    {amount, T(1), T(0)},
+                    {  T(0), T(0), T(1)}};
+        }
+
+        /**
+         * @brief 2D shearing matrix along Y axis
+         * @param amount    Shearing amount
+         *
+         * X axis remains unchanged.
+         * @see @ref shearingX(), @ref Matrix4::shearingXY(),
+         *      @ref Matrix4::shearingXZ(), @ref Matrix4::shearingYZ()
+         */
+        constexpr static Matrix3<T> shearingY(T amount) {
+            return {{T(1), amount, T(0)},
+                    {T(0),   T(1), T(0)},
+                    {T(0),   T(0), T(1)}};
+        }
+
+        /**
          * @brief 2D projection matrix
          * @param size      Size of the view
          *

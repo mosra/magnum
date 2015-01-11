@@ -143,6 +143,54 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> reflection(const Vector3<T>& normal);
 
         /**
+         * @brief 3D shearing along XY plane
+         * @param amountX   Amount of shearing along X axis
+         * @param amountY   Amount of shearing along Y axis
+         *
+         * Z axis remains unchanged.
+         * @see @ref shearingXZ(), @ref shearingYZ(), @ref Matrix3::shearingX(),
+         *      @ref Matrix3::shearingY()
+         */
+        constexpr static Matrix4<T> shearingXY(T amountX, T amountY) {
+            return {{    (1),    T(0), T(0), T(0)},
+                    {    (0),    T(1), T(0), T(0)},
+                    {amountX, amountY, T(1), T(0)},
+                    {    (0),    T(0), T(0), T(1)}};
+        }
+
+        /**
+         * @brief 3D shearing along XZ plane
+         * @param amountX   Amount of shearing along X axis
+         * @param amountZ   Amount of shearing along Z axis
+         *
+         * Y axis remains unchanged.
+         * @see @ref shearingXY(), @ref shearingYZ(), @ref Matrix3::shearingX(),
+         *      @ref Matrix3::shearingY()
+         */
+        constexpr static Matrix4<T> shearingXZ(T amountX, T amountZ) {
+            return {{   T(1), T(0),    T(0), T(0)},
+                    {amountX, T(1), amountZ, T(0)},
+                    {   T(0), T(0),    T(1), T(0)},
+                    {   T(0), T(0),    T(0), T(1)}};
+        }
+
+        /**
+         * @brief 3D shearing along YZ plane
+         * @param amountY   Amount of shearing along Y axis
+         * @param amountZ   Amount of shearing along Z axis
+         *
+         * X axis remains unchanged.
+         * @see @ref shearingXY(), @ref shearingXZ(), @ref Matrix3::shearingX(),
+         *      @ref Matrix3::shearingY()
+         */
+        constexpr static Matrix4<T> shearingYZ(T amountY, T amountZ) {
+            return {{T(1), amountY, amountZ, T(0)},
+                    {T(0),    T(1),    T(0), T(0)},
+                    {T(0),    T(0),    T(1), T(0)},
+                    {T(0),    T(0),    T(0), T(1)}};
+        }
+
+        /**
          * @brief 3D orthographic projection matrix
          * @param size      Size of the view
          * @param near      Near clipping plane
