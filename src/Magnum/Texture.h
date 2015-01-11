@@ -41,10 +41,10 @@ namespace Magnum {
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum textureTarget();
     #ifndef MAGNUM_TARGET_GLES
-    template<> inline constexpr GLenum textureTarget<1>() { return GL_TEXTURE_1D; }
+    template<> constexpr GLenum textureTarget<1>() { return GL_TEXTURE_1D; }
     #endif
-    template<> inline constexpr GLenum textureTarget<2>() { return GL_TEXTURE_2D; }
-    template<> inline constexpr GLenum textureTarget<3>() {
+    template<> constexpr GLenum textureTarget<2>() { return GL_TEXTURE_2D; }
+    template<> constexpr GLenum textureTarget<3>() {
         #ifndef MAGNUM_TARGET_GLES2
         return GL_TEXTURE_3D;
         #else

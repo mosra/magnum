@@ -125,10 +125,10 @@ template<class T> inline typename BasicColor3<T>::HSV toHSV(typename std::enable
 }
 
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
-template<class T> inline constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
+template<class T> constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
 }
-template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
+template<class T> constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
     return std::numeric_limits<T>::max();
 }
 

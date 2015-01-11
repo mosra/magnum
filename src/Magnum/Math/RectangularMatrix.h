@@ -583,15 +583,15 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 #endif
 
 namespace Implementation {
-    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> inline constexpr Vector<rows, T> diagonalMatrixColumn2(Implementation::Sequence<sequence...>, const T& number) {
+    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> constexpr Vector<rows, T> diagonalMatrixColumn2(Implementation::Sequence<sequence...>, const T& number) {
         return {(sequence == i ? number : T(0))...};
     }
-    template<std::size_t rows, std::size_t i, class T> inline constexpr Vector<rows, T> diagonalMatrixColumn(const T& number) {
+    template<std::size_t rows, std::size_t i, class T> constexpr Vector<rows, T> diagonalMatrixColumn(const T& number) {
         return diagonalMatrixColumn2<rows, i, T>(typename Implementation::GenerateSequence<rows>::Type(), number);
     }
 }
 
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
 
 template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> RectangularMatrix<cols, rows, T>::row(std::size_t row) const {
     Vector<cols, T> out;
@@ -632,10 +632,10 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<r
     return out;
 }
 
-template<std::size_t cols, std::size_t rows, class T> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
+template<std::size_t cols, std::size_t rows, class T> constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
     return {(*this)[sequence][sequence]...};
 }
 #endif

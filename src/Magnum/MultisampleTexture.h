@@ -40,9 +40,9 @@ namespace Magnum {
 
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum multisampleTextureTarget();
-    template<> inline constexpr GLenum multisampleTextureTarget<2>() { return GL_TEXTURE_2D_MULTISAMPLE; }
+    template<> constexpr GLenum multisampleTextureTarget<2>() { return GL_TEXTURE_2D_MULTISAMPLE; }
     #ifndef MAGNUM_TARGET_GLES
-    template<> inline constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
+    template<> constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
     #endif
 
     template<UnsignedInt dimensions> VectorTypeFor<dimensions, Int> maxMultisampleTextureSize();

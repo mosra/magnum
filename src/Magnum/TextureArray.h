@@ -42,9 +42,9 @@ namespace Magnum {
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum textureArrayTarget();
     #ifndef MAGNUM_TARGET_GLES
-    template<> inline constexpr GLenum textureArrayTarget<1>() { return GL_TEXTURE_1D_ARRAY; }
+    template<> constexpr GLenum textureArrayTarget<1>() { return GL_TEXTURE_1D_ARRAY; }
     #endif
-    template<> inline constexpr GLenum textureArrayTarget<2>() { return GL_TEXTURE_2D_ARRAY; }
+    template<> constexpr GLenum textureArrayTarget<2>() { return GL_TEXTURE_2D_ARRAY; }
 }
 
 /**
