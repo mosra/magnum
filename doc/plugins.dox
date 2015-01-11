@@ -98,10 +98,11 @@ to these:
 
 In case you are using multi-configuration build system (such as Visual Studio
 or XCode), CMake cannot provide separate plugin directory for debug and release
-build and you have to do it on your own in preprocessing step using
-@ref corrade-cmake "CORRADE_IS_DEBUG_BUILD" variable. This will ensure that you
-use debug plugin directory for debug build on multi-configuration build sytems
-and fall back to autodetection for the rest:
+build and you have to select between `MAGNUM_PLUGINS_*_DIR` and
+`MAGNUM_PLUGINS_*_DEBUG_DIR` based on @ref corrade-cmake "CORRADE_IS_DEBUG_BUILD"
+preprocessor variable. This will ensure that you use debug plugin directory for
+debug build on multi-configuration build sytems and fall back to autodetection
+for the rest:
 @code
 #ifdef CORRADE_IS_DEBUG_BUILD
 #define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}"
@@ -109,6 +110,11 @@ and fall back to autodetection for the rest:
 #define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DIR}"
 #endif
 @endcode
+
+However, if you want to use only one (debug/release) plugin version for both
+debug and release configurations of the application, you need to edit
+`MAGNUM_PLUGINS_DIR` or `MAGNUM_PLUGINS_DEBUG_DIR` using CMake and point them
+to directory containing desired plugin version.
 
 Then process the file in your `CMakeLists.txt`. The result
 (`${MAGNUM_PLUGINS_IMPORTER_DIR}` / `${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}` gets
