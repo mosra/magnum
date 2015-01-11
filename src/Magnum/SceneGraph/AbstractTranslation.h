@@ -38,13 +38,15 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
+See @ref scenegraph-features-transformation for more information.
+
 By default the translation is stored with the same underlying type as resulting
 transformation matrix, but it's possible to store translation in e.g. integral
 coordinates while having floating-point transformation matrix.
 
-@see @ref AbstractBasicTranslation2D, @ref AbstractBasicTranslation3D,
-    @ref AbstractTranslation2D, @ref AbstractTranslation3D, @ref scenegraph,
-    @ref TranslationTransformation
+@see @ref scenegraph, @ref AbstractBasicTranslation2D,
+    @ref AbstractBasicTranslation3D, @ref AbstractTranslation2D,
+    @ref AbstractTranslation3D, @ref TranslationTransformation
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T, class TranslationType = T>

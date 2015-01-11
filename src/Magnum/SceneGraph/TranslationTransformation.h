@@ -44,13 +44,9 @@ the translation is stored with the same underlying type as resulting
 transformation matrix, but it's possible to store translation in e.g. integral
 coordinates while having floating-point transformation matrix.
 
-Note that translation is commutative, so all @ref TransformationType parameters
-have no effect and are included only for compatibility with other
-transformation implementations.
-
-@see @ref BasicTranslationTransformation2D, @ref BasicTranslationTransformation3D,
-    @ref TranslationTransformation2D, @ref TranslationTransformation3D,
-    @ref scenegraph
+@see @ref scenegraph, @ref BasicTranslationTransformation2D,
+    @ref BasicTranslationTransformation3D, @ref TranslationTransformation2D,
+    @ref TranslationTransformation3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T, class TranslationType = T>

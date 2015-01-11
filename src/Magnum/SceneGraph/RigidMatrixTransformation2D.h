@@ -43,7 +43,7 @@ Unlike @ref BasicMatrixTransformation2D this class allows only rotation,
 reflection and translation (no scaling or setting arbitrary transformations).
 This allows to use @ref Math::Matrix3::invertedRigid() for faster computation
 of inverse transformations.
-@see @ref RigidMatrixTransformation2D, @ref scenegraph,
+@see @ref scenegraph, @ref RigidMatrixTransformation2D,
     @ref BasicRigidMatrixTransformation3D
 */
 template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTranslationRotation2D<T> {

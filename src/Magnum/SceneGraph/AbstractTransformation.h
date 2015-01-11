@@ -39,7 +39,8 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for transformations
 
-Provides transformation implementation for @ref Object instances.
+Provides transformation implementation for @ref Object instances. See
+@ref scenegraph-features-transformation for more information.
 
 @anchor SceneGraph-AbstractTransformation-explicit-specializations
 ## Explicit template specializations

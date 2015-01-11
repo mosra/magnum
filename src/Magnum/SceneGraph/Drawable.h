@@ -36,62 +36,94 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Drawable
 
-Adds drawing function to the object. Each Drawable is part of some
-@ref DrawableGroup and the whole group is drawn with particular camera using
-@ref AbstractCamera::draw().
+Adds drawing functionality to the object. Each Drawable is part of some
+@ref DrawableGroup and the whole group can be drawn with particular camera
+using @ref AbstractCamera::draw().
 
 ## Usage
 
 First thing is to add @ref Drawable feature to some object and implement
-@ref draw(). You can do it conveniently using multiple inheritance (see
-@ref scenegraph-features for introduction). Example:
+@ref draw() function. You can do it conveniently using multiple inheritance
+(see @ref scenegraph-features for introduction). Example drawable object that
+draws blue sphere:
 @code
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class DrawableObject: public Object3D, SceneGraph::Drawable3D {
+class RedCube: public Object3D, SceneGraph::Drawable3D {
     public:
-        DrawableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
-            // ...
+        RedCube(Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D{parent}, SceneGraph::Drawable3D{*this, group} {
+            std::tie(_mesh, _vertices, _indices) = MeshTools::compile(Primitives::UVSPhere::solid(16, 32));
         }
 
+    private:
         void draw(const Matrix4& transformationMatrix, AbstractCamera3D& camera) override {
-            // ...
+            _shader.setDiffuseColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+                .setLightPosition({5.0f, 5.0f, 7.0f})
+                .setTransformationMatrix(transformationMatrix)
+                .setNormalMatrix(transformationMatrix.rotation())
+                .setProjectionMatrix(camera.projectionMatrix());
+            _mesh.draw(_shader);
         }
+
+        Mesh _mesh;
+        std::unique_ptr<Buffer> _vertices, _indices;
+        Shaders::Phong _shader;
 }
 @endcode
 
-Then you add these objects to your scene and some drawable group and transform
-them as you like. You can also use @ref DrawableGroup::add() and
-@ref DrawableGroup::remove().
+The @p transformationMatrix parameter in @ref draw() function contains
+transformation of the object (to which the drawable is attached) relative to
+@p camera. The camera contains projection matrix. Some shaders (like the
+@ref Shaders::Phong used in the example) have separate functions for setting
+transformation and projection matrix, but some (such as @ref Shaders::Flat)
+have single function to set composite transformation and projection matrix. In
+that case you need to combine the two matrices manually like in the following
+code. Some shaders have additional requirements for various transformation
+matrices, see their respective documentation for details.
+@code
+Shaders::Flat3D shader;
+shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix);
+@endcode
+
+There is no way to just draw all the drawables in the scene, you need to create
+some drawable group and add the drawable objects to both the scene and the
+group. You can also use @ref DrawableGroup::add() and
+@ref DrawableGroup::remove() instead of passing the group in the constructor.
 @code
 Scene3D scene;
 SceneGraph::DrawableGroup3D drawables;
 
-(new DrawableObject(&scene, &drawables))
+(new RedCube(&scene, &drawables))
     ->translate(Vector3::yAxis(-0.3f))
     .rotateX(30.0_degf);
-(new AnotherDrawableObject(&scene, &drawables))
-    ->translate(Vector3::zAxis(0.5f));
+
 // ...
 @endcode
 
 The last thing you need is camera attached to some object (thus using its
-transformation) and with it you can perform drawing in your draw event
+transformation). Using the camera and the drawable group you can perform
+drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation. See @ref Camera2D and @ref Camera3D documentation for more
 information.
 @code
-Camera3D camera(&cameraObject);
+auto cameraObject = new Object3D(&scene);
+cameraObject->translate(Vector3::zAxis(5.0f));
+auto camera = new SceneGraph::Camera3D(&cameraObject);
+camera->setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f);
+
+// ...
 
 void MyApplication::drawEvent() {
-    camera.draw(drawables);
+    camera->draw(drawables);
+
+    // ...
 
     swapBuffers();
-    // ...
 }
 @endcode
 
-## Using drawable groups to improve performance
+## Using multiple drawable groups to improve performance
 
 You can organize your drawables to multiple groups to minimize OpenGL state
 changes -- for example put all objects using the same shader, the same light
@@ -158,9 +190,8 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
 
         /**
          * @brief Draw the object using given camera
-         * @param transformationMatrix      Object transformation relative
-         *      to camera
-         * @param camera                    Camera
+         * @param transformationMatrix  Object transformation relative to camera
+         * @param camera                Camera
          *
          * Projection matrix can be retrieved from
          * @ref SceneGraph::AbstractCamera::projectionMatrix() "AbstractCamera::projectionMatrix()".

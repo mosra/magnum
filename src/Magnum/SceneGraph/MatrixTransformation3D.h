@@ -39,7 +39,8 @@ namespace Magnum { namespace SceneGraph {
 @brief Three-dimensional transformation implemented using matrices
 
 Uses @ref Math::Matrix4 as underlying transformation type.
-@see @ref MatrixTransformation3D, @ref scenegraph, @ref BasicRigidMatrixTransformation3D, @ref BasicMatrixTransformation2D
+@see @ref scenegraph, @ref MatrixTransformation3D,
+    @ref BasicRigidMatrixTransformation3D, @ref BasicMatrixTransformation2D
 */
 template<class T> class BasicMatrixTransformation3D: public AbstractBasicTranslationRotationScaling3D<T> {
     public:

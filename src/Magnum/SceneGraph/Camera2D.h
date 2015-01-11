@@ -36,11 +36,11 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera for two-dimensional scenes
 
-See Drawable documentation for introduction. The camera by default displays
-OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect ratio
-correction. Common setup example:
+See @ref Drawable documentation for complete introduction. The camera by
+default displays OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do
+any aspect ratio correction. Common setup example:
 @code
-SceneGraph::Camera2D camera(&cameraObject);
+SceneGraph::Camera2D camera{&cameraObject};
 camera.setProjection({4.0f/3.0f, 1.0f})
       .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode

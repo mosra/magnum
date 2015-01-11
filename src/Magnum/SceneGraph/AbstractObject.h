@@ -212,7 +212,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @{ @name Transformation caching
          *
-         * See @ref scenegraph-caching for more information.
+         * See @ref scenegraph-features-caching for more information.
          */
 
         /**
@@ -251,7 +251,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * Returns `true` if transformation of the object or any parent has
          * changed since last call to @ref setClean(), `false` otherwise. All
          * objects are dirty by default.
-         * @see @ref scenegraph-caching
+         * @see @ref scenegraph-features-caching
          */
         bool isDirty() const { return doIsDirty(); }
 
@@ -262,7 +262,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * recursively calls @ref setDirty() on every child object which is not
          * already dirty. If the object is already marked as dirty, the
          * function does nothing.
-         * @see @ref scenegraph-caching, @ref setClean(), @ref isDirty()
+         * @see @ref scenegraph-features-caching, @ref setClean(),
+         *      @ref isDirty()
          */
         void setDirty() { doSetDirty(); }
 
@@ -277,7 +278,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * See also @ref setClean(const std::vector<AbstractObject<dimensions, T>*>&),
          * which cleans given set of objects more efficiently than when calling
          * @ref setClean() on each object individually.
-         * @see @ref scenegraph-caching, @ref setDirty(), @ref isDirty()
+         * @see @ref scenegraph-features-caching, @ref setDirty(),
+         *      @ref isDirty()
          */
         void setClean() { doSetClean(); }
 

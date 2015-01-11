@@ -224,7 +224,7 @@ void AbstractFramebuffer::setViewportInternal() {
     glViewport(_viewport.left(), _viewport.bottom(), _viewport.sizeX(), _viewport.sizeY());
 }
 
-AbstractFramebuffer& AbstractFramebuffer::clear(FramebufferClearMask mask) {
+AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask) {
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
     #else

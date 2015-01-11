@@ -40,7 +40,7 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Which transformation to cache in given feature
 
-@see @ref scenegraph-caching, @ref CachedTransformations,
+@see @ref scenegraph-features-caching, @ref CachedTransformations,
     @ref AbstractFeature::setCachedTransformations(), @ref AbstractFeature::clean(),
     @ref AbstractFeature::cleanInverted()
 @todo Provide also simpler representations from which could benefit
@@ -68,7 +68,7 @@ enum class CachedTransformation: UnsignedByte {
 /**
 @brief Which transformations to cache in this feature
 
-@see @ref scenegraph-caching, @ref AbstractFeature::setCachedTransformations(),
+@see @ref scenegraph-features-caching, @ref AbstractFeature::setCachedTransformations(),
     @ref AbstractFeature::clean(), @ref AbstractFeature::cleanInverted()
 */
 typedef Containers::EnumSet<CachedTransformation> CachedTransformations;
@@ -90,12 +90,11 @@ Feature is templated on dimension count and underlying transformation type, so
 it can be used only on object having transformation with the same dimension
 count and type.
 
-@anchor SceneGraph-AbstractFeature-subclassing-caching
 ### Caching transformations in features
 
 Features can cache absolute transformation of the object instead of computing
 it from scratch every time to achieve better performance. See
-@ref scenegraph-caching for introduction.
+@ref scenegraph-features-caching for introduction.
 
 In order to have caching, you must enable it first, because by default the
 caching is disabled. You can enable it using @ref setCachedTransformations()
@@ -104,17 +103,16 @@ and then implement corresponding cleaning function(s) -- either @ref clean(),
 @code
 class CachingFeature: public SceneGraph::AbstractFeature3D {
     public:
-        CachingFeature(SceneGraph::AbstractObject3D& object): SceneGraph::AbstractFeature3D(object) {
+        explicit CachingFeature(SceneGraph::AbstractObject3D& object): SceneGraph::AbstractFeature3D{object} {
             setCachedTransformations(CachedTransformation::Absolute);
         }
 
-    protected:
+    private:
         void clean(const Matrix4& absoluteTransformationMatrix) override {
-            absolutePosition = absoluteTransformationMatrix.translation();
+            _absolutePosition = absoluteTransformationMatrix.translation();
         }
 
-    private:
-        Vector3 absolutePosition;
+        Vector3 _absolutePosition;
 };
 @endcode
 
@@ -123,33 +121,22 @@ Before using the cached value explicitly request object cleaning by calling
 
 ### Accessing object transformation
 
-Features has by default access only to @ref AbstractObject, which is base of
-@ref Object not depending on any particular transformation implementation. This
-has the advantage that features doesn't have to be implemented for all possible
-transformation implementations, thus preventing code duplication. However it
-is impossible to transform the object using only pointer to @ref AbstractObject.
-
-The transformations have interfaces for common functionality, so the feature
-can use that interface instead of being specialized for all relevant
-transformation implementations. Using small trick we are able to get pointer
-to both @ref AbstractObject and needed transformation from one constructor
-parameter:
+The feature has by default only access to @ref AbstractObject, which doesn't
+know about any used transformation. By using small template trick in the
+constructor it is possible to gain access to transformation interface in the
+constructor:
 @code
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
-        template<class T> TransformingFeature(SceneGraph::Object<T>& object):
-            SceneGraph::AbstractFeature3D(object), transformation(object) {}
+        template<class T> explicit TransformingFeature(SceneGraph::Object<T>& object):
+            SceneGraph::AbstractFeature3D{object}, _transformation{object} {}
 
     private:
-        SceneGraph::AbstractTranslationRotation3D& transformation;
+        SceneGraph::AbstractTranslationRotation3D& _transformation;
 };
 @endcode
-If we take for example @ref Object "Object<MatrixTransformation3D>", it is
-derived from @ref AbstractObject "AbstractObject3D" and
-@ref BasicMatrixTransformation3D "MatrixTransformation3D", which is derived
-from @ref AbstractBasicTranslationRotationScaling3D "AbstractTranslationRotationScaling3D",
-which is derived from @ref AbstractBasicTranslationRotation3D "AbstractTranslationRotation3D",
-which is automatically extracted from the reference in our constructor.
+
+See @ref scenegraph-features-transformation for more detailed information.
 
 ## Explicit template specializations
 
@@ -222,13 +209,14 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         /**
          * @{ @name Transformation caching
          *
-         * See @ref scenegraph-caching for more information.
+         * See @ref scenegraph-features-caching for more information.
          */
 
         /**
          * @brief Which transformations are cached
          *
-         * @see @ref scenegraph-caching, @ref clean(), @ref cleanInverted()
+         * @see @ref scenegraph-features-caching, @ref clean(),
+         *      @ref cleanInverted()
          */
         CachedTransformations cachedTransformations() const {
             return _cachedTransformations;
@@ -243,7 +231,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          * transformation.
          *
          * Nothing is enabled by default.
-         * @see @ref scenegraph-caching
+         * @see @ref scenegraph-features-caching
          */
         void setCachedTransformations(CachedTransformations transformations) {
             _cachedTransformations = transformations;
@@ -257,7 +245,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          * done in @ref clean() and @ref cleanInverted().
          *
          * Default implementation does nothing.
-         * @see @ref scenegraph-caching
+         * @see @ref scenegraph-features-caching
          */
         virtual void markDirty();
 
@@ -269,7 +257,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          * to recalculate data based on absolute object transformation.
          *
          * Default implementation does nothing.
-         * @see @ref scenegraph-caching, @ref cleanInverted()
+         * @see @ref scenegraph-features-caching, @ref cleanInverted()
          */
         virtual void clean(const MatrixTypeFor<dimensions, T>& absoluteTransformationMatrix);
 
@@ -282,7 +270,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          * transformation.
          *
          * Default implementation does nothing.
-         * @see @ref scenegraph-caching, @ref clean()
+         * @see @ref scenegraph-features-caching, @ref clean()
          */
         virtual void cleanInverted(const MatrixTypeFor<dimensions, T>& invertedAbsoluteTransformationMatrix);
 

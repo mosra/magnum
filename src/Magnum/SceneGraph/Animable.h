@@ -78,22 +78,25 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class AnimableObject: public Object3D, SceneGraph::Animable3D {
     public:
-        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Animable3D(*this, group) {
+        AnimableObject(Object3D* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D{parent}, SceneGraph::Animable3D{*this, group} {
             setDuration(10.0f);
             // ...
         }
 
+    private:
         void animationStep(Float time, Float delta) override {
             rotateX(15.0_degf*delta); // rotate at 15 degrees per second
         }
 }
 @endcode
 
-Then add the object to your scene and some animation group. You can also use
-@ref AnimableGroup::add() and @ref AnimableGroup::remove() instead of passing
-the group in the constructor. The animation is initially in stopped state and
-without repeat, see @ref setState(), @ref setRepeated() and
-@ref setRepeatCount() for more information.
+Similarly to @ref Drawable feature, there is no way to just animate all the
+objects in the scene. You need to create animable group and use it to control
+given set of animations. You can also use @ref AnimableGroup::add() and
+@ref AnimableGroup::remove() instead of passing the group in the constructor.
+The animation is initially in stopped state and without repeat, see
+@ref setState(), @ref setRepeated() and @ref setRepeatCount() for more
+information.
 @code
 Scene3D scene;
 SceneGraph::AnimableGroup3D animables;
@@ -120,13 +123,13 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-## Using animable groups to improve performance
+## Using multiple animable groups to improve performance
 
 @ref AnimableGroup is optimized for case when no animation is running -- it
 just puts itself to rest and waits until some animation changes its state to
 @ref AnimationState::Running again. If you put animations which are not
-pernamently running to separate group, they will not be always traversed when
-calling @ref AnimableGroup::step(), saving precious frame time.
+pernamently running into separate group, they will not be traversed every time
+the @ref AnimableGroup::step() gets called, saving precious frame time.
 
 ## Explicit template specializations
 

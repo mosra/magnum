@@ -40,7 +40,7 @@ namespace Magnum { namespace SceneGraph {
 
 This class allows only rigid transformation (i.e. only rotation and
 translation). Uses @ref Math::DualQuaternion as underlying transformation type.
-@see @ref DualQuaternionTransformation @ref scenegraph,
+@see @ref scenegraph, @ref DualQuaternionTransformation,
     @ref BasicDualComplexTransformation
 */
 template<class T> class BasicDualQuaternionTransformation: public AbstractBasicTranslationRotation3D<T> {

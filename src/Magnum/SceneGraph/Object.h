@@ -335,7 +335,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @{ @name Transformation caching
          *
-         * See @ref scenegraph-caching for more information.
+         * See @ref scenegraph-features-caching for more information.
          */
 
         /**
@@ -381,7 +381,8 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          * See also @ref setClean(std::vector<std::reference_wrapper<Object<Transformation>>>),
          * which cleans given set of objects more efficiently than when calling
          * @ref setClean() on each object individually.
-         * @see @ref scenegraph-caching, @ref setDirty(), @ref isDirty()
+         * @see @ref scenegraph-features-caching, @ref setDirty(),
+         *      @ref isDirty()
          */
         /* note: doc verbatim copied from AbstractObject::setClean() */
         void setClean();
