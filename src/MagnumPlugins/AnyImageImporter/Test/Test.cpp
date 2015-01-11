@@ -35,15 +35,14 @@
 
 namespace Magnum { namespace Trade { namespace Test {
 
-class AnyImageImporterTest: public TestSuite::Tester {
-    public:
-        explicit AnyImageImporterTest();
+struct AnyImageImporterTest: TestSuite::Tester {
+    explicit AnyImageImporterTest();
 
-        void tga();
-        void jpeg();
-        void png();
+    void tga();
+    void jpeg();
+    void png();
 
-        void unknown();
+    void unknown();
 
     private:
         PluginManager::Manager<AbstractImporter> _manager;
