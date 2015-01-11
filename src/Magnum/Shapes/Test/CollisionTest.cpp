@@ -30,12 +30,11 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class CollisionTest: public TestSuite::Tester {
-    public:
-        explicit CollisionTest();
+struct CollisionTest: TestSuite::Tester {
+    explicit CollisionTest();
 
-        void boolConversion();
-        void flipped();
+    void boolConversion();
+    void flipped();
 };
 
 CollisionTest::CollisionTest() {

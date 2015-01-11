@@ -31,16 +31,15 @@
 
 namespace Magnum { namespace Test {
 
-class MeshTest: public TestSuite::Tester {
-    public:
-        MeshTest();
+struct MeshTest: TestSuite::Tester {
+    explicit MeshTest();
 
-        void indexSize();
+    void indexSize();
 
-        void debugPrimitive();
-        void debugIndexType();
-        void configurationPrimitive();
-        void configurationIndexType();
+    void debugPrimitive();
+    void debugIndexType();
+    void configurationPrimitive();
+    void configurationIndexType();
 };
 
 MeshTest::MeshTest() {

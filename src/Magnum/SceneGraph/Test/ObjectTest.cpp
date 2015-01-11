@@ -31,24 +31,23 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class ObjectTest: public TestSuite::Tester {
-    public:
-        ObjectTest();
+struct ObjectTest: TestSuite::Tester {
+    explicit ObjectTest();
 
-        void parenting();
-        void scene();
-        void setParentKeepTransformation();
-        void absoluteTransformation();
-        void transformations();
-        void transformationsRelative();
-        void transformationsOrphan();
-        void transformationsDuplicate();
-        void setClean();
-        void setCleanListHierarchy();
-        void setCleanListBulk();
+    void parenting();
+    void scene();
+    void setParentKeepTransformation();
+    void absoluteTransformation();
+    void transformations();
+    void transformationsRelative();
+    void transformationsOrphan();
+    void transformationsDuplicate();
+    void setClean();
+    void setCleanListHierarchy();
+    void setCleanListBulk();
 
-        void rangeBasedForChildren();
-        void rangeBasedForFeatures();
+    void rangeBasedForChildren();
+    void rangeBasedForFeatures();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;

@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Test {
 
-class ShaderTest: public TestSuite::Tester {
-    public:
-        explicit ShaderTest();
+struct ShaderTest: TestSuite::Tester {
+    explicit ShaderTest();
 
-        void debugType();
+    void debugType();
 };
 
 ShaderTest::ShaderTest() {

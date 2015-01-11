@@ -29,16 +29,15 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class RendererGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit RendererGLTest();
+struct RendererGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit RendererGLTest();
 
-        void renderData();
-        void renderMesh();
-        void renderMeshIndexType();
-        void mutableText();
+    void renderData();
+    void renderMesh();
+    void renderMeshIndexType();
+    void mutableText();
 
-        void multiline();
+    void multiline();
 };
 
 RendererGLTest::RendererGLTest() {

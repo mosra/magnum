@@ -30,13 +30,12 @@
 
 namespace Magnum { namespace Test {
 
-class RendererTest: public TestSuite::Tester {
-    public:
-        explicit RendererTest();
+struct RendererTest: TestSuite::Tester {
+    explicit RendererTest();
 
-        void debugError();
-        void debugResetNotificationStrategy();
-        void debugGraphicsResetStatus();
+    void debugError();
+    void debugResetNotificationStrategy();
+    void debugGraphicsResetStatus();
 };
 
 RendererTest::RendererTest() {

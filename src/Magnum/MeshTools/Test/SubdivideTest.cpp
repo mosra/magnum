@@ -31,12 +31,11 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class SubdivideTest: public TestSuite::Tester {
-    public:
-        SubdivideTest();
+struct SubdivideTest: TestSuite::Tester {
+    explicit SubdivideTest();
 
-        void wrongIndexCount();
-        void subdivide();
+    void wrongIndexCount();
+    void subdivide();
 };
 
 namespace {

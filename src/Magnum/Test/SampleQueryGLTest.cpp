@@ -38,14 +38,13 @@
 
 namespace Magnum { namespace Test {
 
-class SampleQueryGLTest: public AbstractOpenGLTester {
-    public:
-        explicit SampleQueryGLTest();
+struct SampleQueryGLTest: AbstractOpenGLTester {
+    explicit SampleQueryGLTest();
 
-        void querySamplesPassed();
-        #ifndef MAGNUM_TARGET_GLES
-        void conditionalRender();
-        #endif
+    void querySamplesPassed();
+    #ifndef MAGNUM_TARGET_GLES
+    void conditionalRender();
+    #endif
 };
 
 SampleQueryGLTest::SampleQueryGLTest() {

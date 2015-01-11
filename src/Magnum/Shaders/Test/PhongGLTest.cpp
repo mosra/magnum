@@ -32,18 +32,17 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class PhongGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit PhongGLTest();
+struct PhongGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit PhongGLTest();
 
-        void compile();
-        void compileAmbientTexture();
-        void compileDiffuseTexture();
-        void compileSpecularTexture();
-        void compileAmbientDiffuseTexture();
-        void compileAmbientSpecularTexture();
-        void compileDiffuseSpecularTexture();
-        void compileAmbientDiffuseSpecularTexture();
+    void compile();
+    void compileAmbientTexture();
+    void compileDiffuseTexture();
+    void compileSpecularTexture();
+    void compileAmbientDiffuseTexture();
+    void compileAmbientSpecularTexture();
+    void compileDiffuseSpecularTexture();
+    void compileAmbientDiffuseSpecularTexture();
 };
 
 PhongGLTest::PhongGLTest() {

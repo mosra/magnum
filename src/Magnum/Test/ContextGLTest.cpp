@@ -29,14 +29,13 @@
 
 namespace Magnum { namespace Test {
 
-class ContextGLTest: public AbstractOpenGLTester {
-    public:
-        explicit ContextGLTest();
+struct ContextGLTest: AbstractOpenGLTester {
+    explicit ContextGLTest();
 
-        void isVersionSupported();
-        void supportedVersion();
-        void isExtensionSupported();
-        void isExtensionDisabled();
+    void isVersionSupported();
+    void supportedVersion();
+    void isExtensionSupported();
+    void isExtensionDisabled();
 };
 
 ContextGLTest::ContextGLTest() {

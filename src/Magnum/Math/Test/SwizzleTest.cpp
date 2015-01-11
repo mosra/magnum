@@ -29,14 +29,13 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class SwizzleTest: public Corrade::TestSuite::Tester {
-    public:
-        SwizzleTest();
+struct SwizzleTest: Corrade::TestSuite::Tester {
+    explicit SwizzleTest();
 
-        void components();
-        void constants();
-        void rgba();
-        void sizes();
+    void components();
+    void constants();
+    void rgba();
+    void sizes();
 };
 
 typedef Vector<4, Int> Vector4i;

@@ -35,34 +35,33 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class RangeTest: public Corrade::TestSuite::Tester {
-    public:
-        RangeTest();
+struct RangeTest: Corrade::TestSuite::Tester {
+    explicit RangeTest();
 
-        void construct();
-        void constructDefault();
-        void constructFromSize();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructFromSize();
+    void constructConversion();
+    void constructCopy();
 
-        void access();
-        void compare();
-        void size();
-        void center();
+    void access();
+    void compare();
+    void size();
+    void center();
 
-        void translated();
-        void padded();
-        void scaled();
+    void translated();
+    void padded();
+    void scaled();
 
-        void subclassTypes();
-        void subclass();
+    void subclassTypes();
+    void subclass();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        void deprecated();
-        #endif
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void deprecated();
+    #endif
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Range1D<Float> Range1D;

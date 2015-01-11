@@ -34,12 +34,11 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class AbstractFontTest: public TestSuite::Tester {
-    public:
-        explicit AbstractFontTest();
+struct AbstractFontTest: TestSuite::Tester {
+    explicit AbstractFontTest();
 
-        void openSingleData();
-        void openFile();
+    void openSingleData();
+    void openFile();
 };
 
 AbstractFontTest::AbstractFontTest() {

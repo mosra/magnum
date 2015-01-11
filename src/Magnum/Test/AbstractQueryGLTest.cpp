@@ -28,15 +28,14 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractQueryGLTest: public AbstractOpenGLTester {
-    public:
-        explicit AbstractQueryGLTest();
+struct AbstractQueryGLTest: AbstractOpenGLTester {
+    explicit AbstractQueryGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 };
 
 AbstractQueryGLTest::AbstractQueryGLTest() {

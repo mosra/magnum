@@ -30,44 +30,43 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class FunctionsTest: public Corrade::TestSuite::Tester {
-    public:
-        FunctionsTest();
+struct FunctionsTest: Corrade::TestSuite::Tester {
+    explicit FunctionsTest();
 
-        void min();
-        void minList();
-        void max();
-        void maxList();
-        void minmax();
-        void clamp();
-        void nanPropagation();
+    void min();
+    void minList();
+    void max();
+    void maxList();
+    void minmax();
+    void clamp();
+    void nanPropagation();
 
-        void sign();
-        void abs();
+    void sign();
+    void abs();
 
-        void floor();
-        void round();
-        void ceil();
+    void floor();
+    void round();
+    void ceil();
 
-        void sqrt();
-        void sqrtInverted();
-        void lerp();
-        void lerpInverted();
-        void fma();
-        void normalizeUnsigned();
-        void normalizeSigned();
-        void denormalizeUnsigned();
-        void denormalizeSigned();
-        void renormalizeUnsinged();
-        void renormalizeSinged();
+    void sqrt();
+    void sqrtInverted();
+    void lerp();
+    void lerpInverted();
+    void fma();
+    void normalizeUnsigned();
+    void normalizeSigned();
+    void denormalizeUnsigned();
+    void denormalizeSigned();
+    void renormalizeUnsinged();
+    void renormalizeSinged();
 
-        void normalizeTypeDeduction();
+    void normalizeTypeDeduction();
 
-        void pow();
-        void log();
-        void log2();
-        void trigonometric();
-        void trigonometricWithBase();
+    void pow();
+    void log();
+    void log2();
+    void trigonometric();
+    void trigonometricWithBase();
 };
 
 typedef Math::Constants<Float> Constants;

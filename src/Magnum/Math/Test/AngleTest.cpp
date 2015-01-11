@@ -30,16 +30,15 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class AngleTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit AngleTest();
+struct AngleTest: Corrade::TestSuite::Tester {
+    explicit AngleTest();
 
-        void construct();
-        void literals();
-        void conversion();
+    void construct();
+    void literals();
+    void conversion();
 
-        void debugDeg();
-        void debugRad();
+    void debugDeg();
+    void debugRad();
 };
 
 typedef Math::Deg<Float> Deg;

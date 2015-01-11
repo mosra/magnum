@@ -30,13 +30,12 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class GlyphCacheGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit GlyphCacheGLTest();
+struct GlyphCacheGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit GlyphCacheGLTest();
 
-        void initialize();
-        void access();
-        void reserve();
+    void initialize();
+    void access();
+    void reserve();
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {

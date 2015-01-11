@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class IntersectionTest: public Corrade::TestSuite::Tester {
-    public:
-        IntersectionTest();
+struct IntersectionTest: Corrade::TestSuite::Tester {
+    explicit IntersectionTest();
 
-        void planeLine();
-        void lineLine();
+    void planeLine();
+    void lineLine();
 };
 
 typedef Math::Vector2<Float> Vector2;

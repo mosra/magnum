@@ -32,18 +32,17 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class AnimableTest: public TestSuite::Tester {
-    public:
-        AnimableTest();
+struct AnimableTest: TestSuite::Tester {
+    explicit AnimableTest();
 
-        void state();
-        void step();
-        void duration();
-        void repeat();
-        void stop();
-        void pause();
+    void state();
+    void step();
+    void duration();
+    void repeat();
+    void stop();
+    void pause();
 
-        void debug();
+    void debug();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;

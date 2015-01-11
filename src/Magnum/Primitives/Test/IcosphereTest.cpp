@@ -31,11 +31,10 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class IcosphereTest: public TestSuite::Tester {
-    public:
-        explicit IcosphereTest();
+struct IcosphereTest: TestSuite::Tester {
+    explicit IcosphereTest();
 
-        void count();
+    void count();
 };
 
 IcosphereTest::IcosphereTest() {

@@ -34,13 +34,12 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class MeshVisualizerGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit MeshVisualizerGLTest();
+struct MeshVisualizerGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit MeshVisualizerGLTest();
 
-        void compile();
-        void compileWireframeGeometryShader();
-        void compileWireframeNoGeometryShader();
+    void compile();
+    void compileWireframeGeometryShader();
+    void compileWireframeNoGeometryShader();
 };
 
 MeshVisualizerGLTest::MeshVisualizerGLTest() {

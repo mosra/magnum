@@ -32,13 +32,12 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class UVSphereTest: public TestSuite::Tester {
-    public:
-        UVSphereTest();
+struct UVSphereTest: TestSuite::Tester {
+    explicit UVSphereTest();
 
-        void solidWithoutTextureCoords();
-        void solidWithTextureCoords();
-        void wireframe();
+    void solidWithoutTextureCoords();
+    void solidWithTextureCoords();
+    void wireframe();
 };
 
 UVSphereTest::UVSphereTest() {

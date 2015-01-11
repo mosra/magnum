@@ -34,20 +34,19 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class CompositionTest: public TestSuite::Tester {
-    public:
-        CompositionTest();
+struct CompositionTest: TestSuite::Tester {
+    explicit CompositionTest();
 
-        void negated();
-        void anded();
-        void ored();
-        void multipleUnary();
-        void hierarchy();
-        void empty();
+    void negated();
+    void anded();
+    void ored();
+    void multipleUnary();
+    void hierarchy();
+    void empty();
 
-        void copy();
-        void move();
-        void transformed();
+    void copy();
+    void move();
+    void transformed();
 };
 
 CompositionTest::CompositionTest() {

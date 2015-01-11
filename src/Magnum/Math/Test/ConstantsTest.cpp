@@ -30,12 +30,11 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class ConstantsTest: public Corrade::TestSuite::Tester {
-    public:
-        ConstantsTest();
+struct ConstantsTest: Corrade::TestSuite::Tester {
+    explicit ConstantsTest();
 
-        void constants();
-        void specials();
+    void constants();
+    void specials();
 
     private:
         template<class> void _constants();

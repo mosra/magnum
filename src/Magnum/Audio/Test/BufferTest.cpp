@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Audio { namespace Test {
 
-class BufferTest: public TestSuite::Tester {
-    public:
-        explicit BufferTest();
+struct BufferTest: TestSuite::Tester {
+    explicit BufferTest();
 
-        void debugFormat();
+    void debugFormat();
 };
 
 BufferTest::BufferTest() {

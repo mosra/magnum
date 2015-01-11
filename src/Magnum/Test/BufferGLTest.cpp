@@ -34,32 +34,31 @@
 
 namespace Magnum { namespace Test {
 
-class BufferGLTest: public AbstractOpenGLTester {
-    public:
-        explicit BufferGLTest();
+struct BufferGLTest: AbstractOpenGLTester {
+    explicit BufferGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        #ifndef MAGNUM_TARGET_GLES2
-        void bindBase();
-        void bindRange();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void bindBase();
+    void bindRange();
+    #endif
 
-        void data();
-        void map();
-        #ifdef MAGNUM_TARGET_GLES2
-        void mapSub();
-        #endif
-        void mapRange();
-        void mapRangeExplicitFlush();
-        #ifndef MAGNUM_TARGET_GLES2
-        void copy();
-        #endif
-        void invalidate();
+    void data();
+    void map();
+    #ifdef MAGNUM_TARGET_GLES2
+    void mapSub();
+    #endif
+    void mapRange();
+    void mapRangeExplicitFlush();
+    #ifndef MAGNUM_TARGET_GLES2
+    void copy();
+    #endif
+    void invalidate();
 };
 
 BufferGLTest::BufferGLTest() {

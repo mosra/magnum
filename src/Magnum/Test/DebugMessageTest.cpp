@@ -30,13 +30,12 @@
 
 namespace Magnum { namespace Test {
 
-class DebugMessageTest: public TestSuite::Tester {
-    public:
-        explicit DebugMessageTest();
+struct DebugMessageTest: TestSuite::Tester {
+    explicit DebugMessageTest();
 
-        void debugSource();
-        void debugType();
-        void debugSeverity();
+    void debugSource();
+    void debugType();
+    void debugSeverity();
 };
 
 DebugMessageTest::DebugMessageTest() {

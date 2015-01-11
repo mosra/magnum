@@ -35,26 +35,25 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractShaderProgramGLTest: public AbstractOpenGLTester {
-    public:
-        explicit AbstractShaderProgramGLTest();
+struct AbstractShaderProgramGLTest: AbstractOpenGLTester {
+    explicit AbstractShaderProgramGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void create();
-        void createMultipleOutputs();
-        #ifndef MAGNUM_TARGET_GLES
-        void createMultipleOutputsIndexed();
-        #endif
+    void create();
+    void createMultipleOutputs();
+    #ifndef MAGNUM_TARGET_GLES
+    void createMultipleOutputsIndexed();
+    #endif
 
-        void uniform();
-        void uniformVector();
-        void uniformMatrix();
-        void uniformArray();
+    void uniform();
+    void uniformVector();
+    void uniformMatrix();
+    void uniformArray();
 };
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {

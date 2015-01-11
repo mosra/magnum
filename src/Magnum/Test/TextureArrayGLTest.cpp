@@ -36,87 +36,86 @@
 
 namespace Magnum { namespace Test {
 
-class TextureArrayGLTest: public AbstractOpenGLTester {
-    public:
-        explicit TextureArrayGLTest();
+struct TextureArrayGLTest: AbstractOpenGLTester {
+    explicit TextureArrayGLTest();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void construct1D();
-        #endif
-        void construct2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void construct1D();
+    #endif
+    void construct2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void bind1D();
-        #endif
-        void bind2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void bind1D();
+    #endif
+    void bind2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void sampling1D();
-        #endif
-        void sampling2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void sampling1D();
+    #endif
+    void sampling2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void samplingSRGBDecode1D();
-        #endif
-        void samplingSRGBDecode2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void samplingSRGBDecode1D();
+    #endif
+    void samplingSRGBDecode2D();
 
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_GLES
-        void samplingSwizzle1D();
-        #endif
-        void samplingSwizzle2D();
-        #else
-        void samplingMaxLevel2D();
-        void samplingCompare2D();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    void samplingSwizzle1D();
+    #endif
+    void samplingSwizzle2D();
+    #else
+    void samplingMaxLevel2D();
+    void samplingCompare2D();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void samplingBorderInteger1D();
-        void samplingBorderInteger2D();
-        void samplingDepthStencilMode1D();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void samplingDepthStencilMode2D();
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        void samplingBorder2D();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void samplingBorderInteger1D();
+    void samplingBorderInteger2D();
+    void samplingDepthStencilMode1D();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void samplingDepthStencilMode2D();
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    void samplingBorder2D();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void storage1D();
-        #endif
-        void storage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void storage1D();
+    #endif
+    void storage2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void image1D();
-        void image1DBuffer();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void image2D();
-        void image2DBuffer();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void image1D();
+    void image1DBuffer();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void image2D();
+    void image2DBuffer();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void subImage1D();
-        void subImage1DBuffer();
-        #endif
-        void subImage2D();
-        void subImage2DBuffer();
+    #ifndef MAGNUM_TARGET_GLES
+    void subImage1D();
+    void subImage1DBuffer();
+    #endif
+    void subImage2D();
+    void subImage2DBuffer();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void generateMipmap1D();
-        #endif
-        void generateMipmap2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void generateMipmap1D();
+    #endif
+    void generateMipmap2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateImage1D();
-        #endif
-        void invalidateImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateImage1D();
+    #endif
+    void invalidateImage2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateSubImage1D();
-        #endif
-        void invalidateSubImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateSubImage1D();
+    #endif
+    void invalidateSubImage2D();
 };
 
 TextureArrayGLTest::TextureArrayGLTest() {

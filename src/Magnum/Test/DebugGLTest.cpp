@@ -36,17 +36,16 @@
 
 namespace Magnum { namespace Test {
 
-class DebugGLTest: public AbstractOpenGLTester {
-    public:
-        explicit DebugGLTest();
+struct DebugGLTest: AbstractOpenGLTester {
+    explicit DebugGLTest();
 
-        void insertMessageNoOp();
-        void insertMessage();
-        void insertMessageFallback();
+    void insertMessageNoOp();
+    void insertMessage();
+    void insertMessageFallback();
 
-        void setMessageEnabled();
+    void setMessageEnabled();
 
-        void deprecated();
+    void deprecated();
 };
 
 DebugGLTest::DebugGLTest() {

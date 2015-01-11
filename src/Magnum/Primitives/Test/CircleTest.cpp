@@ -31,12 +31,11 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class CircleTest: public TestSuite::Tester {
-    public:
-        explicit CircleTest();
+struct CircleTest: TestSuite::Tester {
+    explicit CircleTest();
 
-        void solid();
-        void wireframe();
+    void solid();
+    void wireframe();
 };
 
 CircleTest::CircleTest() {

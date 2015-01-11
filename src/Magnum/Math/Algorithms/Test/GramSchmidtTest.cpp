@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class GramSchmidtTest: public Corrade::TestSuite::Tester {
-    public:
-        GramSchmidtTest();
+struct GramSchmidtTest: Corrade::TestSuite::Tester {
+    explicit GramSchmidtTest();
 
-        void orthogonalize();
-        void orthonormalize();
+    void orthogonalize();
+    void orthonormalize();
 };
 
 typedef RectangularMatrix<3, 3, Float> Matrix3x3;

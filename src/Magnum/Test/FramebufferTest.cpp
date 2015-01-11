@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Test {
 
-class FramebufferTest: public TestSuite::Tester {
-    public:
-        explicit FramebufferTest();
+struct FramebufferTest: TestSuite::Tester {
+    explicit FramebufferTest();
 
-        void debugStatus();
+    void debugStatus();
 };
 
 FramebufferTest::FramebufferTest() {

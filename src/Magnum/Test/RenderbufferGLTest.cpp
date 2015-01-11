@@ -32,18 +32,17 @@
 
 namespace Magnum { namespace Test {
 
-class RenderbufferGLTest: public AbstractOpenGLTester {
-    public:
-        explicit RenderbufferGLTest();
+struct RenderbufferGLTest: AbstractOpenGLTester {
+    explicit RenderbufferGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void setStorage();
-        void setStorageMultisample();
+    void setStorage();
+    void setStorageMultisample();
 };
 
 RenderbufferGLTest::RenderbufferGLTest() {

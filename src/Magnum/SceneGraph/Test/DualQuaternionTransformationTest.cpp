@@ -34,21 +34,20 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<DualQuaternionTransformation> Object3D;
 typedef Scene<DualQuaternionTransformation> Scene3D;
 
-class DualQuaternionTransformationTest: public TestSuite::Tester {
-    public:
-        explicit DualQuaternionTransformationTest();
+struct DualQuaternionTransformationTest: TestSuite::Tester {
+    explicit DualQuaternionTransformationTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
-        void rotate();
-        void normalizeRotation();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
+    void rotate();
+    void normalizeRotation();
 };
 
 DualQuaternionTransformationTest::DualQuaternionTransformationTest() {

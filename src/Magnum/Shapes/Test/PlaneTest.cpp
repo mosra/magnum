@@ -32,13 +32,12 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class PlaneTest: public TestSuite::Tester {
-    public:
-        PlaneTest();
+struct PlaneTest: TestSuite::Tester {
+    explicit PlaneTest();
 
-        void transformed();
-        void collisionLine();
-        void collisionLineSegment();
+    void transformed();
+    void collisionLine();
+    void collisionLineSegment();
 };
 
 PlaneTest::PlaneTest() {

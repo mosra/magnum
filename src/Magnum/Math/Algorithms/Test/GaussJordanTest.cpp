@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class GaussJordanTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit GaussJordanTest();
+struct GaussJordanTest: Corrade::TestSuite::Tester {
+    explicit GaussJordanTest();
 
-        void singular();
-        void invert();
+    void singular();
+    void invert();
 };
 
 typedef RectangularMatrix<4, 4, Float> Matrix4x4;

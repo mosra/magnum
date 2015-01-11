@@ -31,13 +31,12 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CompressIndicesTest: public TestSuite::Tester {
-    public:
-        CompressIndicesTest();
+struct CompressIndicesTest: TestSuite::Tester {
+    explicit CompressIndicesTest();
 
-        void compressChar();
-        void compressShort();
-        void compressInt();
+    void compressChar();
+    void compressShort();
+    void compressInt();
 };
 
 CompressIndicesTest::CompressIndicesTest() {

@@ -32,14 +32,13 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class FlatGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit FlatGLTest();
+struct FlatGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit FlatGLTest();
 
-        void compile2D();
-        void compile3D();
-        void compile2DTextured();
-        void compile3DTextured();
+    void compile2D();
+    void compile3D();
+    void compile2DTextured();
+    void compile3DTextured();
 };
 
 FlatGLTest::FlatGLTest() {

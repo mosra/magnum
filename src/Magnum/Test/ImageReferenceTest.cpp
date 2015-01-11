@@ -30,12 +30,11 @@
 
 namespace Magnum { namespace Test {
 
-class ImageReferenceTest: public TestSuite::Tester {
-    public:
-        explicit ImageReferenceTest();
+struct ImageReferenceTest: TestSuite::Tester {
+    explicit ImageReferenceTest();
 
-        void construct();
-        void setData();
+    void construct();
+    void setData();
 };
 
 ImageReferenceTest::ImageReferenceTest() {

@@ -32,13 +32,12 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class CylinderTest: public TestSuite::Tester {
-    public:
-        CylinderTest();
+struct CylinderTest: TestSuite::Tester {
+    explicit CylinderTest();
 
-        void solidWithoutAnything();
-        void solidWithTextureCoordsAndCaps();
-        void wireframe();
+    void solidWithoutAnything();
+    void solidWithTextureCoordsAndCaps();
+    void wireframe();
 };
 
 CylinderTest::CylinderTest() {

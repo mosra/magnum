@@ -30,16 +30,15 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class TypeTraitsTest: public Corrade::TestSuite::Tester {
-    public:
-        TypeTraitsTest();
+struct TypeTraitsTest: Corrade::TestSuite::Tester {
+    explicit TypeTraitsTest();
 
-        void equalsIntegral();
-        void equalsFloatingPoint0();
-        void equalsFloatingPoint1();
-        void equalsFloatingPointLarge();
-        void equalsFloatingPointInfinity();
-        void equalsFloatingPointNaN();
+    void equalsIntegral();
+    void equalsFloatingPoint0();
+    void equalsFloatingPoint1();
+    void equalsFloatingPointLarge();
+    void equalsFloatingPointInfinity();
+    void equalsFloatingPointNaN();
 
     private:
         template<class> void _equalsIntegral();

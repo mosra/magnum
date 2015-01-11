@@ -28,12 +28,11 @@
 
 namespace Magnum { namespace Test {
 
-class TimeQueryGLTest: public AbstractOpenGLTester {
-    public:
-        explicit TimeQueryGLTest();
+struct TimeQueryGLTest: AbstractOpenGLTester {
+    explicit TimeQueryGLTest();
 
-        void queryTime();
-        void queryTimestamp();
+    void queryTime();
+    void queryTimestamp();
 };
 
 TimeQueryGLTest::TimeQueryGLTest() {

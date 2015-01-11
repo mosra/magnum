@@ -31,21 +31,20 @@
 
 namespace Magnum { namespace Test {
 
-class ResourceManagerTest: public TestSuite::Tester {
-    public:
-        ResourceManagerTest();
+struct ResourceManagerTest: TestSuite::Tester {
+    explicit ResourceManagerTest();
 
-        void state();
-        void stateFallback();
-        void stateDisallowed();
-        void basic();
-        void residentPolicy();
-        void referenceCountedPolicy();
-        void manualPolicy();
-        void defaults();
-        void clear();
-        void clearWhileReferenced();
-        void loader();
+    void state();
+    void stateFallback();
+    void stateDisallowed();
+    void basic();
+    void residentPolicy();
+    void referenceCountedPolicy();
+    void manualPolicy();
+    void defaults();
+    void clear();
+    void clearWhileReferenced();
+    void loader();
 };
 
 class Data {

@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class AbstractLayouterTest: public TestSuite::Tester {
-    public:
-        explicit AbstractLayouterTest();
+struct AbstractLayouterTest: TestSuite::Tester {
+    explicit AbstractLayouterTest();
 
-        void renderGlyph();
+    void renderGlyph();
 };
 
 AbstractLayouterTest::AbstractLayouterTest() {

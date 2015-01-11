@@ -30,18 +30,17 @@
 
 namespace Magnum { namespace Test {
 
-class SamplerTest: public TestSuite::Tester {
-    public:
-        explicit SamplerTest();
+struct SamplerTest: TestSuite::Tester {
+    explicit SamplerTest();
 
-        void debugFilter();
-        void debugMipmap();
-        void debugWrapping();
-        void debugCompareMode();
-        void debugCompareFunction();
-        #ifndef MAGNUM_TARGET_GLES
-        void debugDepthStencilMode();
-        #endif
+    void debugFilter();
+    void debugMipmap();
+    void debugWrapping();
+    void debugCompareMode();
+    void debugCompareFunction();
+    #ifndef MAGNUM_TARGET_GLES
+    void debugDepthStencilMode();
+    #endif
 };
 
 SamplerTest::SamplerTest() {

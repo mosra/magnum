@@ -33,15 +33,14 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class CapsuleTest: public TestSuite::Tester {
-    public:
-        CapsuleTest();
+struct CapsuleTest: TestSuite::Tester {
+    explicit CapsuleTest();
 
-        void wireframe2D();
+    void wireframe2D();
 
-        void solid3DWithoutTextureCoords();
-        void solid3DWithTextureCoords();
-        void wireframe3D();
+    void solid3DWithoutTextureCoords();
+    void solid3DWithTextureCoords();
+    void wireframe3D();
 };
 
 CapsuleTest::CapsuleTest() {

@@ -38,44 +38,43 @@
 
 namespace Magnum { namespace Test {
 
-class CubeMapTextureGLTest: public AbstractOpenGLTester {
-    public:
-        explicit CubeMapTextureGLTest();
+struct CubeMapTextureGLTest: AbstractOpenGLTester {
+    explicit CubeMapTextureGLTest();
 
-        void construct();
-        void bind();
+    void construct();
+    void bind();
 
-        void sampling();
-        void samplingSRGBDecode();
-        #ifndef MAGNUM_TARGET_GLES2
-        void samplingSwizzle();
-        #else
-        void samplingMaxLevel();
-        void samplingCompare();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void samplingBorderInteger();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void samplingDepthStencilMode();
-        #endif
+    void sampling();
+    void samplingSRGBDecode();
+    #ifndef MAGNUM_TARGET_GLES2
+    void samplingSwizzle();
+    #else
+    void samplingMaxLevel();
+    void samplingCompare();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void samplingBorderInteger();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void samplingDepthStencilMode();
+    #endif
 
-        void storage();
+    void storage();
 
-        void image();
-        #ifndef MAGNUM_TARGET_GLES2
-        void imageBuffer();
-        #endif
+    void image();
+    #ifndef MAGNUM_TARGET_GLES2
+    void imageBuffer();
+    #endif
 
-        void subImage();
-        #ifndef MAGNUM_TARGET_GLES2
-        void subImageBuffer();
-        #endif
+    void subImage();
+    #ifndef MAGNUM_TARGET_GLES2
+    void subImageBuffer();
+    #endif
 
-        void generateMipmap();
+    void generateMipmap();
 
-        void invalidateImage();
-        void invalidateSubImage();
+    void invalidateImage();
+    void invalidateSubImage();
 };
 
 CubeMapTextureGLTest::CubeMapTextureGLTest() {

@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Audio { namespace Test {
 
-class SourceTest: public TestSuite::Tester {
-    public:
-        explicit SourceTest();
+struct SourceTest: TestSuite::Tester {
+    explicit SourceTest();
 
-        void debugState();
+    void debugState();
 };
 
 SourceTest::SourceTest() {

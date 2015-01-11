@@ -33,22 +33,21 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<MatrixTransformation2D> Object2D;
 typedef Scene<MatrixTransformation2D> Scene2D;
 
-class MatrixTransformation2DTest: public TestSuite::Tester {
-    public:
-        explicit MatrixTransformation2DTest();
+struct MatrixTransformation2DTest: TestSuite::Tester {
+    explicit MatrixTransformation2DTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
-        void rotate();
-        void scale();
-        void reflect();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
+    void rotate();
+    void scale();
+    void reflect();
 };
 
 MatrixTransformation2DTest::MatrixTransformation2DTest() {

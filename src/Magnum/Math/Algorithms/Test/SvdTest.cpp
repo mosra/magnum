@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class SvdTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit SvdTest();
+struct SvdTest: Corrade::TestSuite::Tester {
+    explicit SvdTest();
 
-        void testDouble();
-        void testFloat();
+    void testDouble();
+    void testFloat();
 };
 
 #ifndef MAGNUM_TARGET_GLES

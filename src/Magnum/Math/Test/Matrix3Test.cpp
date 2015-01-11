@@ -56,37 +56,36 @@ template<> struct RectangularMatrixConverter<3, 3, float, Mat3> {
 
 namespace Test {
 
-class Matrix3Test: public Corrade::TestSuite::Tester {
-    public:
-        Matrix3Test();
+struct Matrix3Test: Corrade::TestSuite::Tester {
+    explicit Matrix3Test();
 
-        void construct();
-        void constructIdentity();
-        void constructZero();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructIdentity();
+    void constructZero();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void isRigidTransformation();
+    void isRigidTransformation();
 
-        void translation();
-        void scaling();
-        void rotation();
-        void reflection();
-        void reflectionIsScaling();
-        void projection();
-        void fromParts();
-        void rotationScalingPart();
-        void rotationNormalizedPart();
-        void rotationPart();
-        void uniformScalingPart();
-        void vectorParts();
-        void invertedRigid();
-        void transform();
+    void translation();
+    void scaling();
+    void rotation();
+    void reflection();
+    void reflectionIsScaling();
+    void projection();
+    void fromParts();
+    void rotationScalingPart();
+    void rotationNormalizedPart();
+    void rotationPart();
+    void uniformScalingPart();
+    void vectorParts();
+    void invertedRigid();
+    void transform();
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;

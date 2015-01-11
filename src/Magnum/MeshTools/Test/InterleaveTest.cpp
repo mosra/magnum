@@ -32,18 +32,17 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class InterleaveTest: public Corrade::TestSuite::Tester {
-    public:
-        InterleaveTest();
+struct InterleaveTest: Corrade::TestSuite::Tester {
+    explicit InterleaveTest();
 
-        void attributeCount();
-        void attributeCountGaps();
-        void stride();
-        void strideGaps();
-        void write();
-        void writeGaps();
+    void attributeCount();
+    void attributeCountGaps();
+    void stride();
+    void strideGaps();
+    void write();
+    void writeGaps();
 
-        void interleaveInto();
+    void interleaveInto();
 };
 
 InterleaveTest::InterleaveTest() {

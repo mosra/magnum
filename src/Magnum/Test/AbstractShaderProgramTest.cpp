@@ -29,28 +29,27 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractShaderProgramTest: public TestSuite::Tester {
-    public:
-        explicit AbstractShaderProgramTest();
+struct AbstractShaderProgramTest: TestSuite::Tester {
+    explicit AbstractShaderProgramTest();
 
-        void attributeScalar();
-        void attributeScalarInt();
-        void attributeScalarUnsignedInt();
-        void attributeScalarDouble();
+    void attributeScalar();
+    void attributeScalarInt();
+    void attributeScalarUnsignedInt();
+    void attributeScalarDouble();
 
-        void attributeVector();
-        void attributeVectorInt();
-        void attributeVectorUnsignedInt();
-        void attributeVectorDouble();
-        void attributeVector4();
-        void attributeVectorBGRA();
+    void attributeVector();
+    void attributeVectorInt();
+    void attributeVectorUnsignedInt();
+    void attributeVectorDouble();
+    void attributeVector4();
+    void attributeVectorBGRA();
 
-        void attributeMatrixNxN();
-        #ifndef MAGNUM_TARGET_GLES2
-        void attributeMatrixMxN();
-        #endif
-        void attributeMatrixNxNd();
-        void attributeMatrixMxNd();
+    void attributeMatrixNxN();
+    #ifndef MAGNUM_TARGET_GLES2
+    void attributeMatrixMxN();
+    #endif
+    void attributeMatrixNxNd();
+    void attributeMatrixMxNd();
 };
 
 AbstractShaderProgramTest::AbstractShaderProgramTest() {

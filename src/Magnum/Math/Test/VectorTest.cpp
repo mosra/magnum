@@ -51,57 +51,56 @@ template<> struct VectorConverter<3, float, Vec3> {
 
 namespace Test {
 
-class VectorTest: public Corrade::TestSuite::Tester {
-    public:
-        VectorTest();
+struct VectorTest: Corrade::TestSuite::Tester {
+    explicit VectorTest();
 
-        void construct();
-        void constructFromData();
-        void constructDefault();
-        void constructOneValue();
-        void constructOneComponent();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructFromData();
+    void constructDefault();
+    void constructOneValue();
+    void constructOneComponent();
+    void constructConversion();
+    void constructCopy();
 
-        void isZero();
-        void isNormalized();
+    void isZero();
+    void isNormalized();
 
-        void convert();
-        void data();
+    void convert();
+    void data();
 
-        void negative();
-        void addSubtract();
-        void multiplyDivide();
-        void multiplyDivideIntegral();
-        void multiplyDivideComponentWise();
-        void multiplyDivideComponentWiseIntegral();
-        void modulo();
-        void bitwise();
+    void negative();
+    void addSubtract();
+    void multiplyDivide();
+    void multiplyDivideIntegral();
+    void multiplyDivideComponentWise();
+    void multiplyDivideComponentWiseIntegral();
+    void modulo();
+    void bitwise();
 
-        void compare();
-        void compareComponentWise();
+    void compare();
+    void compareComponentWise();
 
-        void dot();
-        void dotSelf();
-        void length();
-        void lengthInverted();
-        void normalized();
-        void resized();
+    void dot();
+    void dotSelf();
+    void length();
+    void lengthInverted();
+    void normalized();
+    void resized();
 
-        void sum();
-        void product();
-        void min();
-        void max();
+    void sum();
+    void product();
+    void min();
+    void max();
 
-        void projected();
-        void projectedOntoNormalized();
-        void angle();
+    void projected();
+    void projectedOntoNormalized();
+    void angle();
 
-        void subclassTypes();
-        void subclass();
+    void subclassTypes();
+    void subclass();
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Rad<Float> Rad;

@@ -34,20 +34,19 @@
 
 namespace Magnum { namespace Test {
 
-class ShaderGLTest: public AbstractOpenGLTester {
-    public:
-        explicit ShaderGLTest();
+struct ShaderGLTest: AbstractOpenGLTester {
+    explicit ShaderGLTest();
 
-        void construct();
-        void constructNoVersion();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructNoVersion();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void addSource();
-        void addFile();
-        void compile();
+    void addSource();
+    void addFile();
+    void compile();
 };
 
 ShaderGLTest::ShaderGLTest() {

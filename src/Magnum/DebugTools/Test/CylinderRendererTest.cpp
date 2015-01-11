@@ -29,17 +29,16 @@
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
-class CylinderRendererTest: public TestSuite::Tester {
-    public:
-        explicit CylinderRendererTest();
+struct CylinderRendererTest: TestSuite::Tester {
+    explicit CylinderRendererTest();
 
-        void zeroLength2D();
-        void common2D();
+    void zeroLength2D();
+    void common2D();
 
-        void zeroLength3D();
-        void parallel3D();
-        void antiParallel3D();
-        void common3D();
+    void zeroLength3D();
+    void parallel3D();
+    void antiParallel3D();
+    void common3D();
 };
 
 CylinderRendererTest::CylinderRendererTest() {

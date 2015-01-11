@@ -30,12 +30,11 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class SceneTest: public TestSuite::Tester {
-    public:
-        SceneTest();
+struct SceneTest: TestSuite::Tester {
+    explicit SceneTest();
 
-        void transformation();
-        void parent();
+    void transformation();
+    void parent();
 };
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;

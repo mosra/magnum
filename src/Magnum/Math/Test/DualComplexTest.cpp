@@ -31,36 +31,35 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class DualComplexTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit DualComplexTest();
+struct DualComplexTest: Corrade::TestSuite::Tester {
+    explicit DualComplexTest();
 
-        void construct();
-        void constructDefault();
-        void constructFromVector();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructFromVector();
+    void constructCopy();
 
-        void isNormalized();
+    void isNormalized();
 
-        void multiply();
+    void multiply();
 
-        void lengthSquared();
-        void length();
-        void normalized();
+    void lengthSquared();
+    void length();
+    void normalized();
 
-        void complexConjugated();
-        void dualConjugated();
-        void conjugated();
-        void inverted();
-        void invertedNormalized();
+    void complexConjugated();
+    void dualConjugated();
+    void conjugated();
+    void inverted();
+    void invertedNormalized();
 
-        void rotation();
-        void translation();
-        void combinedTransformParts();
-        void matrix();
-        void transformPoint();
+    void rotation();
+    void translation();
+    void combinedTransformParts();
+    void matrix();
+    void transformPoint();
 
-        void debug();
+    void debug();
 };
 
 typedef Math::Deg<Float> Deg;

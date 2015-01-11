@@ -37,14 +37,13 @@
 
 namespace Magnum { namespace Test {
 
-class PrimitiveQueryGLTest: public AbstractOpenGLTester {
-    public:
-        explicit PrimitiveQueryGLTest();
+struct PrimitiveQueryGLTest: AbstractOpenGLTester {
+    explicit PrimitiveQueryGLTest();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void primitivesGenerated();
-        #endif
-        void transformFeedbackPrimitivesWritten();
+    #ifndef MAGNUM_TARGET_GLES
+    void primitivesGenerated();
+    #endif
+    void transformFeedbackPrimitivesWritten();
 };
 
 PrimitiveQueryGLTest::PrimitiveQueryGLTest() {

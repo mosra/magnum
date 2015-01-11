@@ -49,52 +49,51 @@
 
 namespace Magnum { namespace Test {
 
-class FramebufferGLTest: public AbstractOpenGLTester {
-    public:
-        explicit FramebufferGLTest();
+struct FramebufferGLTest: AbstractOpenGLTester {
+    explicit FramebufferGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void attachRenderbuffer();
-        void attachRenderbufferMultisample();
+    void attachRenderbuffer();
+    void attachRenderbufferMultisample();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void attachTexture1D();
-        #endif
-        void attachTexture2D();
-        void attachTexture3D();
-        #ifndef MAGNUM_TARGET_GLES
-        void attachTexture1DArray();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void attachTexture2DArray();
-        void attachTexture2DMultisample();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void attachTexture2DMultisampleArray();
-        void attachRectangleTexture();
-        #endif
-        void attachCubeMapTexture();
-        #ifndef MAGNUM_TARGET_GLES
-        void attachCubeMapTextureArray();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void attachTexture1D();
+    #endif
+    void attachTexture2D();
+    void attachTexture3D();
+    #ifndef MAGNUM_TARGET_GLES
+    void attachTexture1DArray();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void attachTexture2DArray();
+    void attachTexture2DMultisample();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void attachTexture2DMultisampleArray();
+    void attachRectangleTexture();
+    #endif
+    void attachCubeMapTexture();
+    #ifndef MAGNUM_TARGET_GLES
+    void attachCubeMapTextureArray();
+    #endif
 
-        void multipleColorOutputs();
+    void multipleColorOutputs();
 
-        void clear();
-        void invalidate();
-        #ifndef MAGNUM_TARGET_GLES2
-        void invalidateSub();
-        #endif
-        void read();
-        #ifndef MAGNUM_TARGET_GLES2
-        void readBuffer();
-        #endif
-        void blit();
+    void clear();
+    void invalidate();
+    #ifndef MAGNUM_TARGET_GLES2
+    void invalidateSub();
+    #endif
+    void read();
+    #ifndef MAGNUM_TARGET_GLES2
+    void readBuffer();
+    #endif
+    void blit();
 
     #ifdef MAGNUM_TARGET_GLES2
     private:

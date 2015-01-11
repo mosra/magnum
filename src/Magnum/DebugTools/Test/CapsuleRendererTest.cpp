@@ -29,17 +29,16 @@
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
-class CapsuleRendererTest: public TestSuite::Tester {
-    public:
-        explicit CapsuleRendererTest();
+struct CapsuleRendererTest: TestSuite::Tester {
+    explicit CapsuleRendererTest();
 
-        void zeroLength2D();
-        void common2D();
+    void zeroLength2D();
+    void common2D();
 
-        void zeroLength3D();
-        void parallel3D();
-        void antiParallel3D();
-        void common3D();
+    void zeroLength3D();
+    void parallel3D();
+    void antiParallel3D();
+    void common3D();
 };
 
 CapsuleRendererTest::CapsuleRendererTest() {

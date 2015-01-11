@@ -31,15 +31,14 @@
 
 namespace Magnum { namespace Test {
 
-class BufferImageTest: public AbstractOpenGLTester {
-    public:
-        explicit BufferImageTest();
+struct BufferImageTest: AbstractOpenGLTester {
+    explicit BufferImageTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void setData();
+    void setData();
 };
 
 BufferImageTest::BufferImageTest() {

@@ -35,18 +35,17 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class CameraTest: public TestSuite::Tester {
-    public:
-        CameraTest();
+struct CameraTest: TestSuite::Tester {
+    explicit CameraTest();
 
-        void fixAspectRatio();
-        void defaultProjection2D();
-        void defaultProjection3D();
-        void projectionSize2D();
-        void projectionSizeOrthographic();
-        void projectionSizePerspective();
-        void projectionSizeViewport();
-        void draw();
+    void fixAspectRatio();
+    void defaultProjection2D();
+    void defaultProjection3D();
+    void projectionSize2D();
+    void projectionSizeOrthographic();
+    void projectionSizePerspective();
+    void projectionSizeViewport();
+    void draw();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;

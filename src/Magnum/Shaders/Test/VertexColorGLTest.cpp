@@ -32,12 +32,11 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class VertexColorGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit VertexColorGLTest();
+struct VertexColorGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit VertexColorGLTest();
 
-        void compile2D();
-        void compile3D();
+    void compile2D();
+    void compile3D();
 };
 
 VertexColorGLTest::VertexColorGLTest() {

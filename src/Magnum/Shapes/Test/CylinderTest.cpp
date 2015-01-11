@@ -34,14 +34,13 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class CylinderTest: public TestSuite::Tester {
-    public:
-        CylinderTest();
+struct CylinderTest: TestSuite::Tester {
+    explicit CylinderTest();
 
-        void transformed();
-        void transformedAverageScaling();
-        void collisionPoint();
-        void collisionSphere();
+    void transformed();
+    void transformedAverageScaling();
+    void collisionPoint();
+    void collisionSphere();
 };
 
 CylinderTest::CylinderTest() {

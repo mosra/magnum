@@ -33,11 +33,10 @@
 
 namespace Magnum { namespace Audio { namespace Test {
 
-class AbstractImporterTest: public TestSuite::Tester {
-    public:
-        explicit AbstractImporterTest();
+struct AbstractImporterTest: TestSuite::Tester {
+    explicit AbstractImporterTest();
 
-        void openFile();
+    void openFile();
 };
 
 AbstractImporterTest::AbstractImporterTest() {

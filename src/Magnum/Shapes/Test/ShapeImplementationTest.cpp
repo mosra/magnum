@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class ShapeImplementationTest: public TestSuite::Tester {
-    public:
-        ShapeImplementationTest();
+struct ShapeImplementationTest: TestSuite::Tester {
+    explicit ShapeImplementationTest();
 
-        void debug();
+    void debug();
 };
 
 ShapeImplementationTest::ShapeImplementationTest() {

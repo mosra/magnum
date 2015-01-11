@@ -34,21 +34,20 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<DualComplexTransformation> Object2D;
 typedef Scene<DualComplexTransformation> Scene2D;
 
-class DualComplexTransformationTest: public TestSuite::Tester {
-    public:
-        explicit DualComplexTransformationTest();
+struct DualComplexTransformationTest: TestSuite::Tester {
+    explicit DualComplexTransformationTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
-        void rotate();
-        void normalizeRotation();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
+    void rotate();
+    void normalizeRotation();
 };
 
 DualComplexTransformationTest::DualComplexTransformationTest() {

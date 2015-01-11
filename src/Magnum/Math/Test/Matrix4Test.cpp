@@ -58,42 +58,41 @@ template<> struct RectangularMatrixConverter<4, 4, float, Mat4> {
 
 namespace Test {
 
-class Matrix4Test: public Corrade::TestSuite::Tester {
-    public:
-        Matrix4Test();
+struct Matrix4Test: Corrade::TestSuite::Tester {
+    explicit Matrix4Test();
 
-        void construct();
-        void constructIdentity();
-        void constructZero();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructIdentity();
+    void constructZero();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void isRigidTransformation();
+    void isRigidTransformation();
 
-        void translation();
-        void scaling();
-        void rotation();
-        void rotationX();
-        void rotationY();
-        void rotationZ();
-        void reflection();
-        void reflectionIsScaling();
-        void orthographicProjection();
-        void perspectiveProjection();
-        void perspectiveProjectionFov();
-        void fromParts();
-        void rotationScalingPart();
-        void rotationNormalizedPart();
-        void rotationPart();
-        void uniformScalingPart();
-        void vectorParts();
-        void invertedRigid();
-        void transform();
+    void translation();
+    void scaling();
+    void rotation();
+    void rotationX();
+    void rotationY();
+    void rotationZ();
+    void reflection();
+    void reflectionIsScaling();
+    void orthographicProjection();
+    void perspectiveProjection();
+    void perspectiveProjectionFov();
+    void fromParts();
+    void rotationScalingPart();
+    void rotationNormalizedPart();
+    void rotationPart();
+    void uniformScalingPart();
+    void vectorParts();
+    void invertedRigid();
+    void transform();
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;

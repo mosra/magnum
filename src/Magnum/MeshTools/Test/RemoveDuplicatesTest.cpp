@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class RemoveDuplicatesTest: public TestSuite::Tester {
-    public:
-        RemoveDuplicatesTest();
+struct RemoveDuplicatesTest: TestSuite::Tester {
+    explicit RemoveDuplicatesTest();
 
-        void removeDuplicates();
+    void removeDuplicates();
 };
 
 RemoveDuplicatesTest::RemoveDuplicatesTest() {

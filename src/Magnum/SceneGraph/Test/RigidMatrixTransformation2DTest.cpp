@@ -34,22 +34,21 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<RigidMatrixTransformation2D> Object2D;
 typedef Scene<RigidMatrixTransformation2D> Scene2D;
 
-class RigidMatrixTransformation2DTest: public TestSuite::Tester {
-    public:
-        explicit RigidMatrixTransformation2DTest();
+struct RigidMatrixTransformation2DTest: TestSuite::Tester {
+    explicit RigidMatrixTransformation2DTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
-        void rotate();
-        void reflect();
-        void normalizeRotation();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
+    void rotate();
+    void reflect();
+    void normalizeRotation();
 };
 
 RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {

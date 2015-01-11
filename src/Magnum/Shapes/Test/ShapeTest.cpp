@@ -36,15 +36,14 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class ShapeTest: public TestSuite::Tester {
-    public:
-        ShapeTest();
+struct ShapeTest: TestSuite::Tester {
+    explicit ShapeTest();
 
-        void clean();
-        void collides();
-        void collision();
-        void firstCollision();
-        void shapeGroup();
+    void clean();
+    void collides();
+    void collision();
+    void firstCollision();
+    void shapeGroup();
 };
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D> Scene2D;

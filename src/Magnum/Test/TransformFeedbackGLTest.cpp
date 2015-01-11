@@ -33,22 +33,21 @@
 
 namespace Magnum { namespace Test {
 
-class TransformFeedbackGLTest: public AbstractOpenGLTester {
-    public:
-        explicit TransformFeedbackGLTest();
+struct TransformFeedbackGLTest: AbstractOpenGLTester {
+    explicit TransformFeedbackGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void attachBase();
-        void attachRange();
-        void attachBases();
-        void attachRanges();
+    void attachBase();
+    void attachRange();
+    void attachBases();
+    void attachRanges();
 
-        void interleaved();
+    void interleaved();
 };
 
 TransformFeedbackGLTest::TransformFeedbackGLTest() {

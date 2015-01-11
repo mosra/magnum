@@ -31,14 +31,13 @@
 
 namespace Magnum { namespace TextureTools { namespace Test {
 
-class AtlasTest: public TestSuite::Tester {
-    public:
-        explicit AtlasTest();
+struct AtlasTest: TestSuite::Tester {
+    explicit AtlasTest();
 
-        void create();
-        void createPadding();
-        void createEmpty();
-        void createTooSmall();
+    void create();
+    void createPadding();
+    void createEmpty();
+    void createTooSmall();
 };
 
 AtlasTest::AtlasTest() {

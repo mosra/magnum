@@ -32,12 +32,11 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class VectorGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit VectorGLTest();
+struct VectorGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit VectorGLTest();
 
-        void compile2D();
-        void compile3D();
+    void compile2D();
+    void compile3D();
 };
 
 VectorGLTest::VectorGLTest() {

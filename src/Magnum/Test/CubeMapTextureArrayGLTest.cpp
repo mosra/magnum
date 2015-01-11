@@ -35,30 +35,29 @@
 
 namespace Magnum { namespace Test {
 
-class CubeMapTextureArrayGLTest: public AbstractOpenGLTester {
-    public:
-        explicit CubeMapTextureArrayGLTest();
+struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
+    explicit CubeMapTextureArrayGLTest();
 
-        void construct();
-        void bind();
+    void construct();
+    void bind();
 
-        void sampling();
-        void samplingSRGBDecode();
-        void samplingBorderInteger();
-        void samplingSwizzle();
-        void samplingDepthStencilMode();
+    void sampling();
+    void samplingSRGBDecode();
+    void samplingBorderInteger();
+    void samplingSwizzle();
+    void samplingDepthStencilMode();
 
-        void storage();
+    void storage();
 
-        void image();
-        void imageBuffer();
-        void subImage();
-        void subImageBuffer();
+    void image();
+    void imageBuffer();
+    void subImage();
+    void subImageBuffer();
 
-        void generateMipmap();
+    void generateMipmap();
 
-        void invalidateImage();
-        void invalidateSubImage();
+    void invalidateImage();
+    void invalidateSubImage();
 };
 
 CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {

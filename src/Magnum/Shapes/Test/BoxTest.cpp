@@ -31,11 +31,10 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class BoxTest: public TestSuite::Tester {
-    public:
-        BoxTest();
+struct BoxTest: TestSuite::Tester {
+    explicit BoxTest();
 
-        void transformed();
+    void transformed();
 };
 
 BoxTest::BoxTest() {

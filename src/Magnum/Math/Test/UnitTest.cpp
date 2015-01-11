@@ -29,18 +29,17 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class UnitTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit UnitTest();
+struct UnitTest: Corrade::TestSuite::Tester {
+    explicit UnitTest();
 
-        void construct();
-        void constructDefault();
-        void constructConversion();
-        void compare();
+    void construct();
+    void constructDefault();
+    void constructConversion();
+    void compare();
 
-        void negated();
-        void addSubtract();
-        void multiplyDivide();
+    void negated();
+    void addSubtract();
+    void multiplyDivide();
 };
 
 UnitTest::UnitTest() {

@@ -29,13 +29,12 @@
 
 namespace Magnum { namespace Test {
 
-class ArrayTest: public TestSuite::Tester {
-    public:
-        ArrayTest();
+struct ArrayTest: TestSuite::Tester {
+    explicit ArrayTest();
 
-        void construct();
-        void equality();
-        void access();
+    void construct();
+    void equality();
+    void access();
 };
 
 typedef Magnum::Array1D<Int> Array1D;

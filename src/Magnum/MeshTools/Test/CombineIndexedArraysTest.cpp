@@ -32,13 +32,12 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CombineIndexedArraysTest: public TestSuite::Tester {
-    public:
-        CombineIndexedArraysTest();
+struct CombineIndexedArraysTest: TestSuite::Tester {
+    explicit CombineIndexedArraysTest();
 
-        void wrongIndexCount();
-        void indexArrays();
-        void indexedArrays();
+    void wrongIndexCount();
+    void indexArrays();
+    void indexedArrays();
 };
 
 CombineIndexedArraysTest::CombineIndexedArraysTest() {

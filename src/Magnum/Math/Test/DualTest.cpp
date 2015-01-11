@@ -30,24 +30,23 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class DualTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit DualTest();
+struct DualTest: Corrade::TestSuite::Tester {
+    explicit DualTest();
 
-        void construct();
-        void constructDefault();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructCopy();
 
-        void compare();
+    void compare();
 
-        void addSubtract();
-        void negated();
-        void multiplyDivide();
+    void addSubtract();
+    void negated();
+    void multiplyDivide();
 
-        void conjugated();
-        void sqrt();
+    void conjugated();
+    void sqrt();
 
-        void debug();
+    void debug();
 };
 
 typedef Math::Dual<Float> Dual;

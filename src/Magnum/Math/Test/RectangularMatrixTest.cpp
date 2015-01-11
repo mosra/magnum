@@ -54,39 +54,38 @@ template<> struct RectangularMatrixConverter<2, 3, float, Mat2x3> {
 
 namespace Test {
 
-class RectangularMatrixTest: public Corrade::TestSuite::Tester {
-    public:
-        RectangularMatrixTest();
+struct RectangularMatrixTest: Corrade::TestSuite::Tester {
+    explicit RectangularMatrixTest();
 
-        void construct();
-        void constructDefault();
-        void constructConversion();
-        void constructFromData();
-        void constructFromDiagonal();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructConversion();
+    void constructFromData();
+    void constructFromDiagonal();
+    void constructCopy();
 
-        void convert();
-        void data();
-        void row();
+    void convert();
+    void data();
+    void row();
 
-        void compare();
+    void compare();
 
-        void negative();
-        void addSubtract();
-        void multiplyDivide();
-        void multiply();
-        void multiplyVector();
+    void negative();
+    void addSubtract();
+    void multiplyDivide();
+    void multiply();
+    void multiplyVector();
 
-        void transposed();
-        void diagonal();
+    void transposed();
+    void diagonal();
 
-        void vector();
+    void vector();
 
-        void subclassTypes();
-        void subclass();
+    void subclassTypes();
+    void subclass();
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef RectangularMatrix<4, 3, Float> Matrix4x3;

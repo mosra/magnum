@@ -32,15 +32,14 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractImageTest: public TestSuite::Tester {
-    public:
-        explicit AbstractImageTest();
+struct AbstractImageTest: TestSuite::Tester {
+    explicit AbstractImageTest();
 
-        void pixelSize();
-        void dataSize();
+    void pixelSize();
+    void dataSize();
 
-        void debugFormat();
-        void debugType();
+    void debugFormat();
+    void debugType();
 };
 
 AbstractImageTest::AbstractImageTest() {

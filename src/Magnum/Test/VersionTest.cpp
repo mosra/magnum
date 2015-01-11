@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Test {
 
-class VersionTest: public TestSuite::Tester {
-    public:
-        explicit VersionTest();
+struct VersionTest: TestSuite::Tester {
+    explicit VersionTest();
 
-        void fromNumber();
-        void toNumber();
+    void fromNumber();
+    void toNumber();
 };
 
 VersionTest::VersionTest() {

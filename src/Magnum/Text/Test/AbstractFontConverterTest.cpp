@@ -35,20 +35,19 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class AbstractFontConverterTest: public TestSuite::Tester {
-    public:
-        explicit AbstractFontConverterTest();
+struct AbstractFontConverterTest: TestSuite::Tester {
+    explicit AbstractFontConverterTest();
 
-        void convertGlyphs();
+    void convertGlyphs();
 
-        void exportFontToSingleData();
-        void exportFontToFile();
+    void exportFontToSingleData();
+    void exportFontToFile();
 
-        void exportGlyphCacheToSingleData();
-        void exportGlyphCacheToFile();
+    void exportGlyphCacheToSingleData();
+    void exportGlyphCacheToFile();
 
-        void importGlyphCacheFromSingleData();
-        void importGlyphCacheFromFile();
+    void importGlyphCacheFromSingleData();
+    void importGlyphCacheFromFile();
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {

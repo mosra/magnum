@@ -32,12 +32,11 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class DistanceFieldVectorGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit DistanceFieldVectorGLTest();
+struct DistanceFieldVectorGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit DistanceFieldVectorGLTest();
 
-        void compile2D();
-        void compile3D();
+    void compile2D();
+    void compile3D();
 };
 
 DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {

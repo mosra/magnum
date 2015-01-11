@@ -33,12 +33,11 @@
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
-class LineSegmentRendererTest: public TestSuite::Tester {
-    public:
-        explicit LineSegmentRendererTest();
+struct LineSegmentRendererTest: TestSuite::Tester {
+    explicit LineSegmentRendererTest();
 
-        void line2D();
-        void line3D();
+    void line2D();
+    void line3D();
 };
 
 LineSegmentRendererTest::LineSegmentRendererTest() {

@@ -32,15 +32,14 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class TransformTest: public TestSuite::Tester {
-    public:
-        explicit TransformTest();
+struct TransformTest: TestSuite::Tester {
+    explicit TransformTest();
 
-        void transformVectors2D();
-        void transformVectors3D();
+    void transformVectors2D();
+    void transformVectors3D();
 
-        void transformPoints2D();
-        void transformPoints3D();
+    void transformPoints2D();
+    void transformPoints3D();
 };
 
 TransformTest::TransformTest() {

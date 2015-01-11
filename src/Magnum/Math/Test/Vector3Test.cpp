@@ -51,28 +51,27 @@ template<> struct VectorConverter<3, float, Vec3> {
 
 namespace Test {
 
-class Vector3Test: public Corrade::TestSuite::Tester {
-    public:
-        Vector3Test();
+struct Vector3Test: Corrade::TestSuite::Tester {
+    explicit Vector3Test();
 
-        void construct();
-        void constructDefault();
-        void constructOneValue();
-        void constructParts();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructOneValue();
+    void constructParts();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void access();
-        void cross();
-        void axes();
-        void scales();
-        void twoComponent();
+    void access();
+    void cross();
+    void axes();
+    void scales();
+    void twoComponent();
 
-        void swizzleType();
-        void debug();
-        void configuration();
+    void swizzleType();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Vector3<Float> Vector3;

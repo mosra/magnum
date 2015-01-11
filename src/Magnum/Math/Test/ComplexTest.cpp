@@ -31,38 +31,37 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class ComplexTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit ComplexTest();
+struct ComplexTest: Corrade::TestSuite::Tester {
+    explicit ComplexTest();
 
-        void construct();
-        void constructDefault();
-        void constructFromVector();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructFromVector();
+    void constructCopy();
 
-        void compare();
-        void isNormalized();
+    void compare();
+    void isNormalized();
 
-        void addSubtract();
-        void negated();
-        void multiplyDivideScalar();
-        void multiply();
+    void addSubtract();
+    void negated();
+    void multiplyDivideScalar();
+    void multiply();
 
-        void dot();
-        void dotSelf();
-        void length();
-        void normalized();
+    void dot();
+    void dotSelf();
+    void length();
+    void normalized();
 
-        void conjugated();
-        void inverted();
-        void invertedNormalized();
+    void conjugated();
+    void inverted();
+    void invertedNormalized();
 
-        void angle();
-        void rotation();
-        void matrix();
-        void transformVector();
+    void angle();
+    void rotation();
+    void matrix();
+    void transformVector();
 
-        void debug();
+    void debug();
 };
 
 ComplexTest::ComplexTest() {

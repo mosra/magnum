@@ -32,12 +32,11 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class AxisAlignedBoxTest: public TestSuite::Tester {
-    public:
-        AxisAlignedBoxTest();
+struct AxisAlignedBoxTest: TestSuite::Tester {
+    explicit AxisAlignedBoxTest();
 
-        void transformed();
-        void collisionPoint();
+    void transformed();
+    void collisionPoint();
 };
 
 AxisAlignedBoxTest::AxisAlignedBoxTest() {

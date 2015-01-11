@@ -31,12 +31,11 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class GenerateFlatNormalsTest: public TestSuite::Tester {
-    public:
-        GenerateFlatNormalsTest();
+struct GenerateFlatNormalsTest: TestSuite::Tester {
+    explicit GenerateFlatNormalsTest();
 
-        void wrongIndexCount();
-        void generate();
+    void wrongIndexCount();
+    void generate();
 };
 
 GenerateFlatNormalsTest::GenerateFlatNormalsTest() {

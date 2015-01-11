@@ -31,13 +31,12 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class FlipNormalsTest: public TestSuite::Tester {
-    public:
-        FlipNormalsTest();
+struct FlipNormalsTest: TestSuite::Tester {
+    explicit FlipNormalsTest();
 
-        void wrongIndexCount();
-        void flipFaceWinding();
-        void flipNormals();
+    void wrongIndexCount();
+    void flipFaceWinding();
+    void flipNormals();
 };
 
 FlipNormalsTest::FlipNormalsTest() {

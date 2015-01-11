@@ -42,98 +42,97 @@ namespace Magnum { namespace Test {
 
 /* Tests also MeshView class. */
 
-class MeshGLTest: public AbstractOpenGLTester {
-    public:
-        explicit MeshGLTest();
+struct MeshGLTest: AbstractOpenGLTester {
+    explicit MeshGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferUnsignedInt();
-        void addVertexBufferInt();
-        #endif
-        void addVertexBufferFloat();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferDouble();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferVectorNui();
-        void addVertexBufferVectorNi();
-        #endif
-        void addVertexBufferVectorN();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferVectorNd();
-        #endif
-        void addVertexBufferMatrixNxN();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferMatrixNxNd();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferMatrixMxN();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferMatrixMxNd();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferUnsignedInt();
+    void addVertexBufferInt();
+    #endif
+    void addVertexBufferFloat();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferDouble();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferVectorNui();
+    void addVertexBufferVectorNi();
+    #endif
+    void addVertexBufferVectorN();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferVectorNd();
+    #endif
+    void addVertexBufferMatrixNxN();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferMatrixNxNd();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferMatrixMxN();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferMatrixMxNd();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferUnsignedIntWithUnsignedShort();
-        void addVertexBufferUnsignedIntWithShort();
-        void addVertexBufferIntWithUnsignedShort();
-        void addVertexBufferIntWithShort();
-        #endif
-        /* Other Float types omitted (covered by addVertexBufferNormalized()) */
-        void addVertexBufferFloatWithHalfFloat();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferFloatWithDouble();
-        void addVertexBufferVector3WithUnsignedInt10f11f11fRev();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferVector4WithUnsignedInt2101010Rev();
-        void addVertexBufferVector4WithInt2101010Rev();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferUnsignedIntWithUnsignedShort();
+    void addVertexBufferUnsignedIntWithShort();
+    void addVertexBufferIntWithUnsignedShort();
+    void addVertexBufferIntWithShort();
+    #endif
+    /* Other Float types omitted (covered by addVertexBufferNormalized()) */
+    void addVertexBufferFloatWithHalfFloat();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferFloatWithDouble();
+    void addVertexBufferVector3WithUnsignedInt10f11f11fRev();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferVector4WithUnsignedInt2101010Rev();
+    void addVertexBufferVector4WithInt2101010Rev();
+    #endif
 
-        void addVertexBufferLessVectorComponents();
-        void addVertexBufferNormalized();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferBGRA();
-        #endif
+    void addVertexBufferLessVectorComponents();
+    void addVertexBufferNormalized();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferBGRA();
+    #endif
 
-        void addVertexBufferMultiple();
-        void addVertexBufferMultipleGaps();
+    void addVertexBufferMultiple();
+    void addVertexBufferMultipleGaps();
 
-        void setIndexBuffer();
-        void setIndexBufferRange();
-        void setIndexBufferUnsignedInt();
+    void setIndexBuffer();
+    void setIndexBufferRange();
+    void setIndexBufferUnsignedInt();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void setBaseVertex();
-        #endif
-        void setInstanceCount();
-        void setInstanceCountIndexed();
-        #ifndef MAGNUM_TARGET_GLES
-        void setInstanceCountBaseInstance();
-        void setInstanceCountBaseInstanceIndexed();
-        void setInstanceCountBaseVertex();
-        void setInstanceCountBaseVertexBaseInstance();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void setBaseVertex();
+    #endif
+    void setInstanceCount();
+    void setInstanceCountIndexed();
+    #ifndef MAGNUM_TARGET_GLES
+    void setInstanceCountBaseInstance();
+    void setInstanceCountBaseInstanceIndexed();
+    void setInstanceCountBaseVertex();
+    void setInstanceCountBaseVertexBaseInstance();
+    #endif
 
-        void addVertexBufferInstancedFloat();
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferInstancedInteger();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferInstancedDouble();
-        #endif
+    void addVertexBufferInstancedFloat();
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferInstancedInteger();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferInstancedDouble();
+    #endif
 
-        void multiDraw();
-        void multiDrawIndexed();
-        #ifndef MAGNUM_TARGET_GLES
-        void multiDrawBaseVertex();
-        #endif
+    void multiDraw();
+    void multiDrawIndexed();
+    #ifndef MAGNUM_TARGET_GLES
+    void multiDrawBaseVertex();
+    #endif
 };
 
 MeshGLTest::MeshGLTest() {

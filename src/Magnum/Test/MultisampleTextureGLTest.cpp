@@ -32,34 +32,33 @@
 
 namespace Magnum { namespace Test {
 
-class MultisampleTextureGLTest: public AbstractOpenGLTester {
-    public:
-        explicit MultisampleTextureGLTest();
+struct MultisampleTextureGLTest: AbstractOpenGLTester {
+    explicit MultisampleTextureGLTest();
 
-        void construct2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void construct2DArray();
-        #endif
+    void construct2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void construct2DArray();
+    #endif
 
-        void bind2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void bind2DArray();
-        #endif
+    void bind2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void bind2DArray();
+    #endif
 
-        void storage2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void storage2DArray();
-        #endif
+    void storage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void storage2DArray();
+    #endif
 
-        void invalidateImage2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateImage2DArray();
-        #endif
+    void invalidateImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateImage2DArray();
+    #endif
 
-        void invalidateSubImage2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateSubImage2DArray();
-        #endif
+    void invalidateSubImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateSubImage2DArray();
+    #endif
 };
 
 MultisampleTextureGLTest::MultisampleTextureGLTest() {

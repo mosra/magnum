@@ -29,17 +29,16 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation { namespace Test {
 
-class ForceRendererTest: public TestSuite::Tester {
-    public:
-        explicit ForceRendererTest();
+struct ForceRendererTest: TestSuite::Tester {
+    explicit ForceRendererTest();
 
-        void zero2D();
-        void common2D();
+    void zero2D();
+    void common2D();
 
-        void zero3D();
-        void parallel3D();
-        void antiParallel3D();
-        void arbitrary3D();
+    void zero3D();
+    void parallel3D();
+    void antiParallel3D();
+    void arbitrary3D();
 };
 
 ForceRendererTest::ForceRendererTest() {

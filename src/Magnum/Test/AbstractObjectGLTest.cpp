@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractObjectGLTest: public AbstractOpenGLTester {
-    public:
-        explicit AbstractObjectGLTest();
+struct AbstractObjectGLTest: AbstractOpenGLTester {
+    explicit AbstractObjectGLTest();
 
-        void labelNoOp();
+    void labelNoOp();
 };
 
 AbstractObjectGLTest::AbstractObjectGLTest() {

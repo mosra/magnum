@@ -34,17 +34,16 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class SphereTest: public TestSuite::Tester {
-    public:
-        SphereTest();
+struct SphereTest: TestSuite::Tester {
+    explicit SphereTest();
 
-        void transformed();
-        void collisionPoint();
-        void collisionPointInverted();
-        void collisionLine();
-        void collisionLineSegment();
-        void collisionSphere();
-        void collisionSphereInverted();
+    void transformed();
+    void collisionPoint();
+    void collisionPointInverted();
+    void collisionLine();
+    void collisionLineSegment();
+    void collisionSphere();
+    void collisionSphereInverted();
 };
 
 SphereTest::SphereTest() {

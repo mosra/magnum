@@ -31,14 +31,13 @@
 
 namespace Magnum { namespace Test {
 
-class BufferTextureGLTest: public AbstractOpenGLTester {
-    public:
-        explicit BufferTextureGLTest();
+struct BufferTextureGLTest: AbstractOpenGLTester {
+    explicit BufferTextureGLTest();
 
-        void construct();
-        void bind();
-        void setBuffer();
-        void setBufferOffset();
+    void construct();
+    void bind();
+    void setBuffer();
+    void setBufferOffset();
 };
 
 BufferTextureGLTest::BufferTextureGLTest() {

@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Test {
 
-class ContextTest: public TestSuite::Tester {
-    public:
-        explicit ContextTest();
+struct ContextTest: TestSuite::Tester {
+    explicit ContextTest();
 
-        void debugFlag();
+    void debugFlag();
 };
 
 ContextTest::ContextTest() {

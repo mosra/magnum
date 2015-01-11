@@ -30,14 +30,13 @@
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class DistanceTest: public Corrade::TestSuite::Tester {
-    public:
-        DistanceTest();
+struct DistanceTest: Corrade::TestSuite::Tester {
+    explicit DistanceTest();
 
-        void linePoint2D();
-        void linePoint3D();
-        void lineSegmentPoint2D();
-        void lineSegmentPoint3D();
+    void linePoint2D();
+    void linePoint3D();
+    void lineSegmentPoint2D();
+    void lineSegmentPoint3D();
 };
 
 typedef Math::Vector2<Float> Vector2;
