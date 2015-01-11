@@ -47,12 +47,11 @@ struct ResourceManagerTest: TestSuite::Tester {
     void loader();
 };
 
-class Data {
-    public:
-        static std::size_t count;
+struct Data {
+    static std::size_t count;
 
-        Data() { ++count; }
-        ~Data() { --count; }
+    explicit Data() { ++count; }
+    ~Data() { --count; }
 };
 
 typedef Magnum::ResourceManager<Int, Data> ResourceManager;
