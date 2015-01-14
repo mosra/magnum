@@ -78,7 +78,8 @@ template<class Application> void BasicScreenedApplication<Application>::viewport
     /* Call viewport event after all other (because of framebuffer resizing) */
     globalViewportEvent(size);
 
-    for(BasicScreen<Application>& s: *this) s.viewportEvent(size);
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen())
+        s->viewportEvent(size);
 }
 
 template<class Application> void BasicScreenedApplication<Application>::drawEvent() {
