@@ -64,7 +64,12 @@ See @ref AbstractShaderProgram-subclassing for example usage in shaders and
 template<UnsignedInt location, class T> class Attribute {
     public:
         enum: UnsignedInt {
-            Location = location, /**< Location to which the attribute is bound */
+            /**
+             * Location to which the attribute is bound
+             *
+             * @see @ref AbstractShaderProgram::maxVertexAttributes()
+             */
+            Location = location,
 
             /**
              * Count of vectors in this type
