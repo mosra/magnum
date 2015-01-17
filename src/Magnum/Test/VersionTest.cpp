@@ -60,7 +60,11 @@ void VersionTest::toNumber() {
 }
 
 void VersionTest::compare() {
+    #ifndef MAGNUM_TARGET_GLES
     CORRADE_VERIFY(version(1, 1) < Version::GL210);
+    #else
+    CORRADE_VERIFY(version(1, 1) < Version::GLES200);
+    #endif
 }
 
 }}
