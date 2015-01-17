@@ -239,7 +239,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
     #else
-    bindInternal(state.readTarget);
+    bindInternal(Context::current()->state().framebuffer->readTarget);
     #endif
     const std::size_t dataSize = image.dataSize(rectangle.size());
     char* const data = new char[dataSize];
