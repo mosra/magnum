@@ -531,8 +531,8 @@ library with every combination of them. You can add/remove the axes in
 Magnum-GLTests depend on active X11 session, thus they should be run from
 Jenkins instance running on graphical user session.
 
-Clang Analyzer and *Sanitizer checks are also available. They both require
-**Clang**, Analyzer job additionally requires **clang-analyzer** tool.
+Clang Analyzer and *Sanitizer checks are also available. They both require **Clang**,
+Analyzer job additionally requires **clang-analyzer** tool.
 
     java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangAnalyzer < package/ci/jenkins-clang-analyzer.xml
     java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangSanitizer < package/ci/jenkins-clang-sanitizer.xml
