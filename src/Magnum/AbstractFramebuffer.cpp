@@ -417,8 +417,7 @@ void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glReadnPixelsEXT(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #else
-    static_cast<void>(offset);
-    static_cast<void>(size);
+    static_cast<void>(rectangle);
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(dataSize);
