@@ -38,8 +38,7 @@ namespace Magnum {
 
 Default framebuffer, i.e. the actual screen surface. It is automatically
 created when @ref Context is created and it is available through global
-variable @ref defaultFramebuffer. It is by default mapped to whole screen
-surface.
+variable @ref defaultFramebuffer.
 
 @anchor DefaultFramebuffer-usage
 ## Usage

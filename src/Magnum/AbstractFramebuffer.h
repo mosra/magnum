@@ -276,7 +276,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * Saves the viewport to be used at later time in @ref bind(). If the
          * framebuffer is currently bound, updates the viewport to given
-         * rectangle.
+         * rectangle. Initial value in @ref DefaultFramebuffer is set to cover
+         * whole window, in @ref Framebuffer the initial value is specified in
+         * constructor.
          * @see @ref maxViewportSize(), @fn_gl{Viewport}
          */
         AbstractFramebuffer& setViewport(const Range2Di& rectangle);

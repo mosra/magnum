@@ -483,6 +483,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set scissor rectangle
          *
+         * Initial value is set to cover whole window.
          * @see @ref Feature::ScissorTest, @fn_gl{Scissor}
          */
         static void setScissor(const Range2Di& rectangle);
