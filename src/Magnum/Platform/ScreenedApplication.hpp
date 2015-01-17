@@ -75,7 +75,7 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
 template<class Application> void BasicScreenedApplication<Application>::globalViewportEvent(const Vector2i&) {}
 
 template<class Application> void BasicScreenedApplication<Application>::viewportEvent(const Vector2i& size) {
-    /* Call viewport event after all other (because of framebuffer resizing) */
+    /* Call global event before all other (to resize framebuffer first) */
     globalViewportEvent(size);
 
     for(BasicScreen<Application>& s: *this) s.viewportEvent(size);
@@ -86,7 +86,7 @@ template<class Application> void BasicScreenedApplication<Application>::drawEven
     for(BasicScreen<Application>* s = screens().last(); s; s = s->nextNearerScreen())
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Draw) s->drawEvent();
 
-    /* Call global event after all other (because of buffer swapping) */
+    /* Call global event after all other (to swap buffers last) */
     globalDrawEvent();
 }
 
