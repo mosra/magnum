@@ -308,7 +308,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set clear color
          *
-         * Initial value is {0.125f, 0.125f, 0.125f, 1.0f}.
+         * Initial value is `{0.125f, 0.125f, 0.125f, 1.0f}`.
          * @see @fn_gl{ClearColor}
          */
         static void setClearColor(const Color4& color);
@@ -363,7 +363,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @brief Set front-facing polygon winding
          *
-         * Initial value is `FrontFace::CounterClockWise`.
+         * Initial value is @ref FrontFace::CounterClockWise.
          * @see @ref setFaceCullingMode(), @fn_gl{FrontFace}
          */
         static void setFrontFace(FrontFace mode);
@@ -673,7 +673,7 @@ class MAGNUM_EXPORT Renderer {
         /**
          * @{ @name Blending
          *
-         * You have to enable blending with setFeature() first.
+         * You have to enable blending with @ref enable() first.
          * @todo Blending for given draw buffer
          */
 
