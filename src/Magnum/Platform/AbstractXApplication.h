@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::AbstractXApplication
  */
 
+#include <memory>
 #include <Corrade/Containers/EnumSet.h>
 
 #include <X11/Xlib.h>
@@ -93,7 +94,7 @@ class AbstractXApplication {
         int exec();
 
         /** @brief Exit application main loop */
-        void exit() { flags |= Flag::Exit; }
+        void exit() { _flags |= Flag::Exit; }
 
     protected:
         /* Nobody will need to have (and delete) AbstractXApplication*, thus
@@ -118,7 +119,7 @@ class AbstractXApplication {
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
-        void redraw() { flags |= Flag::Redraw; }
+        void redraw() { _flags |= Flag::Redraw; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -174,18 +175,17 @@ class AbstractXApplication {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        Display* display;
-        Window window;
-        Atom deleteWindow;
+        Display* _display;
+        Window _window;
+        Atom _deleteWindow;
 
-        Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler;
-
-        Platform::Context* c;
+        std::unique_ptr<Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>> _contextHandler;
+        std::unique_ptr<Platform::Context> _context;
 
         /** @todo Get this from the created window */
-        Vector2i viewportSize;
+        Vector2i _viewportSize;
 
-        Flags flags;
+        Flags _flags;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
