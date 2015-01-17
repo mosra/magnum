@@ -31,18 +31,19 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Platform/Context.h"
+#include "Magnum/Version.h"
 
 namespace Magnum { namespace Platform {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments): WindowlessCglApplication(arguments, Configuration{}) {}
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments): WindowlessCglApplication{arguments, Configuration{}} {}
 #endif
 
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessCglApplication(arguments, nullptr) {
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessCglApplication{arguments, nullptr} {
     createContext(configuration);
 }
 
-WindowlessCglApplication::WindowlessCglApplication(const Arguments&, std::nullptr_t): c(nullptr) {}
+WindowlessCglApplication::WindowlessCglApplication(const Arguments&, std::nullptr_t) {}
 
 void WindowlessCglApplication::createContext() { createContext({}); }
 
@@ -51,77 +52,67 @@ void WindowlessCglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!c, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_context, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
 
     /* Check version */
-    int nPix = 0;
     GLint major, minor;
     CGLGetVersion(&major, &minor);
-    CGLError cglError;
-
-    if(major == 2 && minor < 1) {
+    if(version(major, minor) < Version::GL210) {
         Error() << "Platform::WindowlessCglApplication::tryCreateContext(): OpenGL version 2.1 or greater is required";
         return false;
     }
 
-
-    CGLPixelFormatAttribute pfAttributesGL_3_2[4] = {
+    int formatCount;
+    CGLPixelFormatAttribute attributes32[] = {
         kCGLPFAAccelerated,
         kCGLPFAOpenGLProfile,
-        (CGLPixelFormatAttribute) kCGLOGLPVersion_3_2_Core,
-        (CGLPixelFormatAttribute) 0
+        CGLPixelFormatAttribute(kCGLOGLPVersion_3_2_Core),
+        CGLPixelFormatAttribute(0)
     };
+    if(CGLChoosePixelFormat(attributes32, &_pixelFormat, &formatCount) != kCGLNoError) {
+        Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot choose pixel format for GL 3.2, falling back to 3.0";
 
-    cglError = CGLChoosePixelFormat(pfAttributesGL_3_2,&pixelFormat,&nPix);
-
-    if(cglError == kCGLBadPixelFormat) {
-        Error() << "Platform::WindowlessCglApplication::tryCreateContext(): OpenGL version 3.2 has failed trying GL version 3.0";
-
-        CGLPixelFormatAttribute pfAttributesGL3[4] = {
+        CGLPixelFormatAttribute attributes30[] = {
             kCGLPFAAccelerated,
             kCGLPFAOpenGLProfile,
-            (CGLPixelFormatAttribute) kCGLOGLPVersion_GL3_Core,
-            (CGLPixelFormatAttribute) 0
+            CGLPixelFormatAttribute(kCGLOGLPVersion_GL3_Core),
+            CGLPixelFormatAttribute(0)
         };
+        if(CGLChoosePixelFormat(attributes30, &_pixelFormat, &formatCount) != kCGLNoError) {
+            Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot choose pixel format for GL 3.0, falling back to 2.1";
 
-        cglError = CGLChoosePixelFormat(pfAttributesGL3,&pixelFormat,&nPix);
-
-        if(cglError == kCGLBadPixelFormat) {
-            Error() << "Platform::WindowlessCglApplication::tryCreateContext(): OpenGL version 3.0 has failed trying GL version Legacy";
-
-            CGLPixelFormatAttribute pfAttributesLegacy[4] = {
+            CGLPixelFormatAttribute attributes21[] = {
                 kCGLPFAAccelerated,
                 kCGLPFAOpenGLProfile,
-                (CGLPixelFormatAttribute) kCGLOGLPVersion_Legacy,
-                (CGLPixelFormatAttribute) 0
+                CGLPixelFormatAttribute(kCGLOGLPVersion_Legacy),
+                CGLPixelFormatAttribute(0)
             };
-
-            cglError = CGLChoosePixelFormat(pfAttributesLegacy,&pixelFormat,&nPix);
-
-            if(cglError == kCGLBadPixelFormat)
-            {
-                Error() << "Platform::WindowlessCglApplication::tryCreateContext(): Context could not be created";
+            if(CGLChoosePixelFormat(attributes21, &_pixelFormat, &formatCount) != kCGLNoError) {
+                Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot choose pixel format";
                 return false;
             }
         }
     }
 
-    cglError = CGLCreateContext(pixelFormat, NULL, &context);
-    if(cglError == kCGLBadContext) {
+    if(CGLCreateContext(_pixelFormat, nullptr, &_glContext) != kCGLNoError) {
         Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot create context";
         return false;
     }
 
-    cglError = CGLSetCurrentContext(context);
-    c = new Platform::Context;
+    if(CGLSetCurrentContext(_glContext) != kCGLNoError) {
+        Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot make context current";
+        return false;
+    }
+
+    _context.reset(new Platform::Context);
     return true;
 }
 
 WindowlessCglApplication::~WindowlessCglApplication() {
-    delete c;
+    _context.reset();
 
-    CGLDestroyContext(context);
-    CGLDestroyPixelFormat(pixelFormat);
+    CGLDestroyContext(_glContext);
+    CGLDestroyPixelFormat(_pixelFormat);
 }
 
 }}

@@ -31,6 +31,8 @@
  * @brief Class @ref Magnum::Platform::WindowlessCglApplication, macro @ref MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN()
  */
 
+#include <memory>
+
 #include "Magnum/OpenGL.h"
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLTypes.h>
@@ -151,10 +153,10 @@ class WindowlessCglApplication {
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        CGLContextObj context;
-        CGLPixelFormatObj pixelFormat;
+        CGLContextObj _glContext;
+        CGLPixelFormatObj _pixelFormat;
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**
