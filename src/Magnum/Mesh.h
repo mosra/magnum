@@ -323,7 +323,7 @@ used instead of binding the buffers and specifying vertex attribute pointers
 in each @ref draw() call. The engine tracks currently bound VAO and currently
 active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
 @fn_gl{UseProgram}. Mesh limits and implementation-defined values (such as
-@ref maxVertexAttributes()) are cached, so repeated queries don't result in
+@ref maxElementIndex()) are cached, so repeated queries don't result in
 repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} and VAOs are available,
@@ -365,15 +365,13 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             UnsignedInt = GL_UNSIGNED_INT
         };
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Max supported vertex attribute count
-         *
-         * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. This function is in fact alias to
-         * @ref AbstractShaderProgram::maxVertexAttributes().
-         * @see @ref addVertexBuffer()
+         * @copybrief AbstractShaderProgram::maxVertexAttributes()
+         * @deprecated Use @ref AbstractShaderProgram::maxVertexAttributes() instead.
          */
-        static Int maxVertexAttributes();
+        CORRADE_DEPRECATED("use AbstractShaderProgram::maxVertexAttributes() instead") static Int maxVertexAttributes();
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -697,8 +695,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      must be at most 255 bytes. This is not required anywhere else,
          *      but doing so may have performance benefits.
          *
-         * @see @ref addVertexBufferInstanced(), @ref maxVertexAttributes(),
-         *      @ref setPrimitive(), @ref setCount(), @fn_gl{BindVertexArray},
+         * @see @ref addVertexBufferInstanced(), @ref setPrimitive(),
+         *      @ref setCount(), @fn_gl{BindVertexArray},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
@@ -722,8 +720,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
          * available, the vertex array object is used to hold the parameters.
          *
-         * @see @ref maxVertexAttributes(), @ref setPrimitive(),
-         *      @ref setCount(), @ref setInstanceCount(), @ref setBaseInstance(),
+         * @see @ref setPrimitive(), @ref setCount(), @ref setInstanceCount(),
+         *      @ref setBaseInstance(),
          *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
          *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
          *      @fn_gl{VertexAttribDivisor} or
