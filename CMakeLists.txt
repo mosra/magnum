@@ -70,7 +70,7 @@ elseif(CORRADE_TARGET_APPLE)
 elseif(CORRADE_TARGET_UNIX)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-    cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
+    option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF)
     option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
 
 # Windows-specific application libraries
