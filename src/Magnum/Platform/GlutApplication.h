@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::GlutApplication, macro @ref MAGNUM_GLUTAPPLICATION_MAIN()
  */
 
+#include <memory>
 #include <string>
 
 #include "Magnum/Magnum.h"
@@ -246,7 +247,7 @@ class GlutApplication {
 
     private:
         static void staticViewportEvent(int x, int y) {
-            instance->viewportEvent({x, y});
+            _instance->viewportEvent({x, y});
         }
 
         static void staticKeyPressEvent(unsigned char key, int x, int y);
@@ -260,12 +261,12 @@ class GlutApplication {
         static void staticMouseMoveEvent(int x, int y);
 
         static void staticDrawEvent() {
-            instance->drawEvent();
+            _instance->drawEvent();
         }
 
-        static GlutApplication* instance;
+        static GlutApplication* _instance;
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**
