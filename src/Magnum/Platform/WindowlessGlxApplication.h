@@ -29,6 +29,8 @@
  * @brief Class @ref Magnum::Platform::WindowlessGlxApplication, macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
  */
 
+#include <memory>
+
 #include "Magnum/OpenGL.h"
 #include <GL/glx.h>
 #include <X11/Xlib.h>
@@ -156,11 +158,11 @@ class WindowlessGlxApplication {
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        Display* display;
-        GLXContext context;
-        GLXPbuffer pbuffer;
+        Display* _display;
+        GLXContext _glContext;
+        GLXPbuffer _pbuffer;
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**

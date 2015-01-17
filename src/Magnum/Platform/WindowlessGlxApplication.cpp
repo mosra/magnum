@@ -42,7 +42,7 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t): c(nullptr) {}
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t) {}
 
 void WindowlessGlxApplication::createContext() { createContext({}); }
 
@@ -51,13 +51,13 @@ void WindowlessGlxApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!c, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_context, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
 
-    display = XOpenDisplay(nullptr);
+    _display = XOpenDisplay(nullptr);
 
     /* Check version */
     int major, minor;
-    glXQueryVersion(display, &major, &minor);
+    glXQueryVersion(_display, &major, &minor);
     if(major == 1 && minor < 4) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): GLX version 1.4 or greater is required";
         return false;
@@ -66,7 +66,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
     /* Choose config */
     int configCount = 0;
     static const int fbAttributes[] = { None };
-    GLXFBConfig* configs = glXChooseFBConfig(display, DefaultScreen(display), fbAttributes, &configCount);
+    GLXFBConfig* configs = glXChooseFBConfig(_display, DefaultScreen(_display), fbAttributes, &configCount);
     if(!configCount) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): no supported framebuffer configuration found";
         return false;
@@ -89,8 +89,8 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
 
     /** @todo Use some extension wrangler for this, not GLEW, as it apparently needs context to create context, yo dawg wtf. */
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
-    context = glXCreateContextAttribsARB(display, configs[0], nullptr, True, contextAttributes);
-    if(!context) {
+    _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, contextAttributes);
+    if(!_glContext) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot create context";
         return false;
     }
@@ -101,25 +101,25 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         GLX_PBUFFER_HEIGHT, 32,
         None
     };
-    pbuffer = glXCreatePbuffer(display, configs[0], pbufferAttributes);
+    _pbuffer = glXCreatePbuffer(_display, configs[0], pbufferAttributes);
 
     XFree(configs);
 
     /* Set OpenGL context as current */
-    if(!glXMakeContextCurrent(display, pbuffer, pbuffer, context)) {
+    if(!glXMakeContextCurrent(_display, _pbuffer, _pbuffer, _glContext)) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot make context current";
         return false;
     }
 
-    c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
 WindowlessGlxApplication::~WindowlessGlxApplication() {
-    delete c;
+    _context.reset();
 
-    glXMakeCurrent(display, None, nullptr);
-    glXDestroyContext(display, context);
+    glXMakeCurrent(_display, None, nullptr);
+    glXDestroyContext(_display, _glContext);
 }
 
 }}
