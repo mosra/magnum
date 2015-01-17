@@ -34,11 +34,13 @@ struct VersionTest: TestSuite::Tester {
 
     void fromNumber();
     void toNumber();
+    void compare();
 };
 
 VersionTest::VersionTest() {
     addTests({&VersionTest::fromNumber,
-              &VersionTest::toNumber});
+              &VersionTest::toNumber,
+              &VersionTest::compare});
 }
 
 void VersionTest::fromNumber() {
@@ -55,6 +57,10 @@ void VersionTest::toNumber() {
     #else
     CORRADE_COMPARE(version(Version::GLES300), std::make_pair(3, 0));
     #endif
+}
+
+void VersionTest::compare() {
+    CORRADE_VERIFY(version(1, 1) < Version::GL210);
 }
 
 }}
