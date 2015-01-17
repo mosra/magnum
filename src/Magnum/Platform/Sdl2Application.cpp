@@ -56,9 +56,9 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 }
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
-Sdl2Application* Sdl2Application::instance = nullptr;
+Sdl2Application* Sdl2Application::_instance = nullptr;
 void Sdl2Application::staticMainLoop() {
-    instance->mainLoop();
+    _instance->mainLoop();
 }
 #endif
 
@@ -70,10 +70,10 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): context(nullptr), flags(Flag::Redraw) {
+Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): _glContext{nullptr}, _flags{Flag::Redraw} {
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_ASSERT(!instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
-    instance = this;
+    CORRADE_ASSERT(!_instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
+    _instance = this;
     #endif
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -89,7 +89,7 @@ void Sdl2Application::createContext(const Configuration& configuration) {
 }
 
 bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!context, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_glContext, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
 
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -156,7 +156,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     }
 
     /* Create window */
-    if(!(window = SDL_CreateWindow(configuration.title().data(),
+    if(!(_window = SDL_CreateWindow(configuration.title().data(),
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         configuration.size().x(), configuration.size().y(),
         SDL_WINDOW_OPENGL|windowFlags)))
@@ -166,20 +166,20 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     }
 
     /* Create context */
-    context = SDL_GL_CreateContext(window);
+    _glContext = SDL_GL_CreateContext(_window);
 
     #ifndef MAGNUM_TARGET_GLES
     /* Fall back to (forward compatible) GL 2.1, if core context creation fails
        and if version is not user-specified */
-    if(configuration.version() == Version::None && !context) {
+    if(configuration.version() == Version::None && !_glContext) {
         Warning() << "Platform::Sdl2Application::tryCreateContext(): cannot create core context:" << SDL_GetError() << "(falling back to compatibility context)";
-        SDL_DestroyWindow(window);
+        SDL_DestroyWindow(_window);
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-        if(!(window = SDL_CreateWindow(configuration.title().data(),
+        if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration.size().x(), configuration.size().y(),
             SDL_WINDOW_OPENGL|windowFlags)))
@@ -191,47 +191,47 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     #endif
 
     /* Cannot create context (or fallback compatibility context on desktop) */
-    if(!context) {
+    if(!_glContext) {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
-        SDL_DestroyWindow(window);
-        window = nullptr;
+        SDL_DestroyWindow(_window);
+        _window = nullptr;
         return false;
     }
 
     #else
     /* Emscripten-specific initialization */
-    context = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
+    _glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
     #endif
 
-    c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
 void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_GL_SwapWindow(window);
+    SDL_GL_SwapWindow(_window);
     #else
-    SDL_Flip(context);
+    SDL_Flip(_glContext);
     #endif
 }
 
 Sdl2Application::~Sdl2Application() {
-    delete c;
+    _context.reset();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_GL_DeleteContext(context);
-    SDL_DestroyWindow(window);
+    SDL_GL_DeleteContext(_glContext);
+    SDL_DestroyWindow(_window);
     #else
-    SDL_FreeSurface(context);
-    CORRADE_INTERNAL_ASSERT(instance == this);
-    instance = nullptr;
+    SDL_FreeSurface(_glContext);
+    CORRADE_INTERNAL_ASSERT(_instance == this);
+    _instance = nullptr;
     #endif
     SDL_Quit();
 }
 
 int Sdl2Application::exec() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    while(!(flags & Flag::Exit)) mainLoop();
+    while(!(_flags & Flag::Exit)) mainLoop();
     #else
     emscripten_set_main_loop(staticMainLoop, 0, true);
     #endif
@@ -240,7 +240,7 @@ int Sdl2Application::exec() {
 
 void Sdl2Application::exit() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    flags |= Flag::Exit;
+    _flags |= Flag::Exit;
     #else
     emscripten_cancel_main_loop();
     #endif
@@ -255,10 +255,10 @@ void Sdl2Application::mainLoop() {
                 switch(event.window.event) {
                     case SDL_WINDOWEVENT_RESIZED:
                         viewportEvent({event.window.data1, event.window.data2});
-                        flags |= Flag::Redraw;
+                        _flags |= Flag::Redraw;
                         break;
                     case SDL_WINDOWEVENT_EXPOSED:
-                        flags |= Flag::Redraw;
+                        _flags |= Flag::Redraw;
                         break;
                 } break;
 
@@ -288,7 +288,7 @@ void Sdl2Application::mainLoop() {
 
             case SDL_QUIT:
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
-                flags |= Flag::Exit;
+                _flags |= Flag::Exit;
                 #else
                 emscripten_cancel_main_loop();
                 #endif
@@ -296,8 +296,8 @@ void Sdl2Application::mainLoop() {
         }
     }
 
-    if(flags & Flag::Redraw) {
-        flags &= ~Flag::Redraw;
+    if(_flags & Flag::Redraw) {
+        _flags &= ~Flag::Redraw;
         drawEvent();
         return;
     }
@@ -310,7 +310,7 @@ void Sdl2Application::mainLoop() {
 void Sdl2Application::setMouseLocked(bool enabled) {
     /** @todo Implement this in Emscripten */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_SetWindowGrab(window, enabled ? SDL_TRUE : SDL_FALSE);
+    SDL_SetWindowGrab(_window, enabled ? SDL_TRUE : SDL_FALSE);
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
     #else
     CORRADE_ASSERT(false, "Sdl2Application::setMouseLocked(): not implemented", );

@@ -29,8 +29,9 @@
  * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
-#include <Corrade/Containers/EnumSet.h>
+#include <memory>
 #include <Corrade/Corrade.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"
@@ -285,7 +286,7 @@ class Sdl2Application {
          * in the next iteration. You can call it from @ref drawEvent() itself
          * to redraw immediately without waiting for user input.
          */
-        void redraw() { flags |= Flag::Redraw; }
+        void redraw() { _flags |= Flag::Redraw; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -396,22 +397,22 @@ class Sdl2Application {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         #ifdef CORRADE_TARGET_EMSCRIPTEN
-        static Sdl2Application* instance;
+        static Sdl2Application* _instance;
         static void staticMainLoop();
         #endif
 
         void mainLoop();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_Window* window;
-        SDL_GLContext context;
+        SDL_Window* _window;
+        SDL_GLContext _glContext;
         #else
-        SDL_Surface* context;
+        SDL_Surface* _glContext;
         #endif
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 
-        Flags flags;
+        Flags _flags;
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
