@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <cmath>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Constants.h"
@@ -77,10 +78,15 @@ template<class T> void ConstantsTest::_constants() {
 }
 
 template<class T> void ConstantsTest::_specials() {
-    constexpr T g = Constants<T>::nan();
-    CORRADE_VERIFY(g != g);
+    constexpr T a = Constants<T>::nan();
+    CORRADE_VERIFY(std::isnan(a));
+    CORRADE_VERIFY(a != a);
 
-    constexpr T h = Constants<T>::inf() - Constants<T>::inf();
+    constexpr T b = Constants<T>::inf();
+    CORRADE_VERIFY(std::isinf(b));
+
+    /* Clang complains that producing NaN is not constexpr */
+    T h = Constants<T>::inf() - Constants<T>::inf();
     CORRADE_VERIFY(h != h);
 }
 
