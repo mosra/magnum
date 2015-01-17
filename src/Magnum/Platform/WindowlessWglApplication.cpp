@@ -25,7 +25,6 @@
 
 #include "WindowlessWglApplication.h"
 
-#include <windows.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -64,7 +63,7 @@ WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window), _c(nullptr) {}
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window) {}
 
 void WindowlessWglApplication::createContext() { createContext({}); }
 
@@ -73,7 +72,7 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!_c, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_context, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     /* Get device context */
     _deviceContext = GetDC(_window);
@@ -114,12 +113,12 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    _c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
 WindowlessWglApplication::~WindowlessWglApplication() {
-    delete _c;
+    _context.reset();
 
     wglMakeCurrent(_deviceContext, nullptr);
     wglDeleteContext(_renderingContext);

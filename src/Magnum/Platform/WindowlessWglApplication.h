@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::WindowlessWglApplication, macro @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN()
  */
 
+#include <memory>
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define WIN32_LEAN_AND_MEAN 1
 #define VC_EXTRALEAN
@@ -162,7 +163,7 @@ class WindowlessWglApplication {
         HDC _deviceContext;
         HGLRC _renderingContext;
 
-        Platform::Context* _c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**
