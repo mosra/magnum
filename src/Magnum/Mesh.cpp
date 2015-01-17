@@ -27,9 +27,7 @@
 
 #include <Corrade/Utility/Debug.h>
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/AbstractShaderProgram.h"
-#endif
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
