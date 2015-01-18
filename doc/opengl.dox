@@ -46,22 +46,22 @@ extension is required, so if given hardware supports required extension, it
 doesn't need to have required OpenGL version too (e.g. @extension{ARB,vertex_array_object}
 is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 
-- @subpage requires-gl30
-- @subpage requires-gl31
-- @subpage requires-gl32
-- @subpage requires-gl33
-- @subpage requires-gl40
-- @subpage requires-gl41
-- @subpage requires-gl42
-- @subpage requires-gl43
-- @subpage requires-gl44
-- @subpage requires-gl45
-- @subpage requires-extension
-- @subpage requires-gl
-- @subpage requires-gles20
-- @subpage requires-gles30
-- @subpage requires-gles31
-- @subpage requires-es-extension
+-   @subpage requires-gl30
+-   @subpage requires-gl31
+-   @subpage requires-gl32
+-   @subpage requires-gl33
+-   @subpage requires-gl40
+-   @subpage requires-gl41
+-   @subpage requires-gl42
+-   @subpage requires-gl43
+-   @subpage requires-gl44
+-   @subpage requires-gl45
+-   @subpage requires-extension
+-   @subpage requires-gl
+-   @subpage requires-gles20
+-   @subpage requires-gles30
+-   @subpage requires-gles31
+-   @subpage requires-es-extension
 
 @see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
     @ref MAGNUM_TARGET_GLES2
