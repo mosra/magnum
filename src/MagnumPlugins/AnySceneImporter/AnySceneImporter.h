@@ -43,6 +43,8 @@ tries to open the file with it. Supported formats:
     that provides it
 -   OBJ (`*.obj`), loaded with @ref ObjImporter or any other plugin that
     provides it
+-   OpenGEX (`*.ogex`), loaded with @ref OpenGexImporter or any other plugin
+    that provides it
 -   Stanford (`*.ply`), loaded with @ref StanfordImporter or any other plugin
     that provides it
 

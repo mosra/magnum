@@ -65,6 +65,8 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
         plugin = "ColladaImporter";
     else if(Utility::String::endsWith(filename, ".obj"))
         plugin = "ObjImporter";
+    else if(Utility::String::endsWith(filename, ".ogex"))
+        plugin = "OpenGexImporter";
     else if(Utility::String::endsWith(filename, ".ply"))
         plugin = "StanfordImporter";
     else {
