@@ -61,10 +61,10 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
 
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".obj"))
-        plugin = "ObjImporter";
-    else if(Utility::String::endsWith(filename, ".dae"))
+    if(Utility::String::endsWith(filename, ".dae"))
         plugin = "ColladaImporter";
+    else if(Utility::String::endsWith(filename, ".obj"))
+        plugin = "ObjImporter";
     else if(Utility::String::endsWith(filename, ".ply"))
         plugin = "StanfordImporter";
     else {

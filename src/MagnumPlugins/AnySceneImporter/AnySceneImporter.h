@@ -39,10 +39,10 @@ namespace Magnum { namespace Trade {
 Detects file type based on file extension, loads corresponding plugin and then
 tries to open the file with it. Supported formats:
 
--   OBJ (`*.obj`), loaded with @ref ObjImporter or any other plugin that
-    provides it
 -   COLLADA (`*.dae`), loaded with @ref ColladaImporter or any other plugin
     that provides it
+-   OBJ (`*.obj`), loaded with @ref ObjImporter or any other plugin that
+    provides it
 -   Stanford (`*.ply`), loaded with @ref StanfordImporter or any other plugin
     that provides it
 
