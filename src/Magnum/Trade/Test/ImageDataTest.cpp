@@ -52,7 +52,7 @@ ImageDataTest::ImageDataTest() {
 }
 
 void ImageDataTest::construct() {
-    auto data = new unsigned char[3];
+    auto data = new char[3];
     Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
@@ -67,7 +67,7 @@ void ImageDataTest::constructCopy() {
 }
 
 void ImageDataTest::constructMove() {
-    auto data = new unsigned char[3];
+    auto data = new char[3];
     Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
     Trade::ImageData2D b(std::move(a));
 
@@ -79,7 +79,7 @@ void ImageDataTest::constructMove() {
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 
-    auto data2 = new unsigned char[3];
+    auto data2 = new char[3];
     Trade::ImageData2D c(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 6}, data2);
     c = std::move(b);
 
@@ -93,7 +93,7 @@ void ImageDataTest::constructMove() {
 }
 
 void ImageDataTest::toReference() {
-    auto data = new unsigned char[3];
+    auto data = new char[3];
     const Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
     ImageReference2D b = a;
 
@@ -113,9 +113,9 @@ void ImageDataTest::toReference() {
 }
 
 void ImageDataTest::release() {
-    unsigned char data[] = {'b', 'e', 'e', 'r'};
+    char data[] = {'b', 'e', 'e', 'r'};
     ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
-    const unsigned char* const pointer = a.release();
+    const char* const pointer = a.release();
 
     CORRADE_COMPARE(pointer, data);
     CORRADE_COMPARE(a.data(), nullptr);

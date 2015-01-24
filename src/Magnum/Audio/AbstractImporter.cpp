@@ -35,7 +35,7 @@ AbstractImporter::AbstractImporter() = default;
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractPlugin(manager, std::move(plugin)) {}
 
-bool AbstractImporter::openData(Containers::ArrayReference<const unsigned char> data) {
+bool AbstractImporter::openData(Containers::ArrayReference<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
         "Audio::AbstractImporter::openData(): feature not supported", nullptr);
 
@@ -44,7 +44,7 @@ bool AbstractImporter::openData(Containers::ArrayReference<const unsigned char> 
     return isOpened();
 }
 
-void AbstractImporter::doOpenData(Containers::ArrayReference<const unsigned char>) {
+void AbstractImporter::doOpenData(Containers::ArrayReference<const char>) {
     CORRADE_ASSERT(false, "Audio::AbstractImporter::openData(): feature advertised but not implemented", );
 }
 
@@ -83,7 +83,7 @@ UnsignedInt AbstractImporter::frequency() const {
     return doFrequency();
 }
 
-Containers::Array<unsigned char> AbstractImporter::data() {
+Containers::Array<char> AbstractImporter::data() {
     CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::data(): no file opened", nullptr);
     return doData();
 }

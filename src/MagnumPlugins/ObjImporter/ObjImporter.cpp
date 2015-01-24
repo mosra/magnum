@@ -132,10 +132,10 @@ void ObjImporter::doOpenFile(const std::string& filename) {
     parseMeshNames();
 }
 
-void ObjImporter::doOpenData(Containers::ArrayReference<const unsigned char> data) {
+void ObjImporter::doOpenData(Containers::ArrayReference<const char> data) {
     /* Open file in *text* mode (to avoid \r handling) */
     _file.reset(new File);
-    _file->in.reset(new std::istringstream{{reinterpret_cast<const char*>(data.begin()), data.size()}});
+    _file->in.reset(new std::istringstream{{data.begin(), data.size()}});
 
     parseMeshNames();
 }

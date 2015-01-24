@@ -32,7 +32,7 @@ template<UnsignedInt dimensions> void Image<dimensions>::setData(ColorFormat for
     _format = format;
     _type = type;
     _size = size;
-    _data = reinterpret_cast<unsigned char*>(data);
+    _data = reinterpret_cast<char*>(data);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

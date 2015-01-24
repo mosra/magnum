@@ -48,7 +48,7 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, st
 
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
-Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
+Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
     #ifndef MAGNUM_TARGET_GLES
     if(image.format() != ColorFormat::BGR &&
        image.format() != ColorFormat::BGRA &&
@@ -70,7 +70,7 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
 
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
-    auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image.size().product());
+    auto data = Containers::Array<char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image.size().product());
 
     /* Fill header */
     auto header = reinterpret_cast<TgaHeader*>(data.begin());

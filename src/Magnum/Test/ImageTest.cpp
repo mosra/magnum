@@ -53,7 +53,7 @@ ImageTest::ImageTest() {
 }
 
 void ImageTest::construct() {
-    auto data = new unsigned char[3];
+    auto data = new char[3];
     Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
@@ -68,7 +68,7 @@ void ImageTest::constructCopy() {
 }
 
 void ImageTest::constructMove() {
-    auto data = new unsigned char[3];
+    auto data = new char[3];
     Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
     Image2D b(std::move(a));
 
@@ -80,7 +80,7 @@ void ImageTest::constructMove() {
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 
-    auto data2 = new unsigned char[3];
+    auto data2 = new char[12*4*2];
     Image2D c(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 6}, data2);
     c = std::move(b);
 
@@ -94,19 +94,19 @@ void ImageTest::constructMove() {
 }
 
 void ImageTest::setData() {
-    auto data = new unsigned char[3];
+    auto data = new char[3];
     Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
-    auto data2 = new unsigned short[2*4];
+    auto data2 = new char[2*4];
     a.setData(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 1}, data2);
 
     CORRADE_COMPARE(a.format(), ColorFormat::RGBA);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(2, 1));
-    CORRADE_COMPARE(a.data(), reinterpret_cast<unsigned char*>(data2));
+    CORRADE_COMPARE(a.data(), data2);
 }
 
 void ImageTest::toReference() {
-    auto data = new unsigned char[3];
+    auto data = new char[3];
     const Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
     ImageReference2D b = a;
 
@@ -126,9 +126,9 @@ void ImageTest::toReference() {
 }
 
 void ImageTest::release() {
-    unsigned char data[] = {'c', 'a', 'f', 'e'};
+    char data[] = {'c', 'a', 'f', 'e'};
     Image2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
-    const unsigned char* const pointer = a.release();
+    const char* const pointer = a.release();
 
     CORRADE_COMPARE(pointer, data);
     CORRADE_COMPARE(a.data(), nullptr);

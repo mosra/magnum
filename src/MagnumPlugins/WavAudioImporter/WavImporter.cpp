@@ -43,7 +43,7 @@ auto WavImporter::doFeatures() const -> Features { return Feature::OpenData; }
 
 bool WavImporter::doIsOpened() const { return _data; }
 
-void WavImporter::doOpenData(Containers::ArrayReference<const unsigned char> data) {
+void WavImporter::doOpenData(Containers::ArrayReference<const char> data) {
     /* Check file size */
     if(data.size() < sizeof(WavHeader)) {
         Error() << "Audio::WavImporter::openData(): the file is too short:" << data.size() << "bytes";
@@ -111,7 +111,7 @@ void WavImporter::doOpenData(Containers::ArrayReference<const unsigned char> dat
     CORRADE_INTERNAL_ASSERT(!Utility::Endianness::isBigEndian());
 
     /* Copy the data */
-    _data = Containers::Array<unsigned char>(header.subChunk2Size);
+    _data = Containers::Array<char>(header.subChunk2Size);
     std::copy(data.begin()+sizeof(WavHeader), data.end(), _data.begin());
     return;
 }
@@ -122,8 +122,8 @@ Buffer::Format WavImporter::doFormat() const { return _format; }
 
 UnsignedInt WavImporter::doFrequency() const { return _frequency; }
 
-Containers::Array<unsigned char> WavImporter::doData() {
-    Containers::Array<unsigned char> copy(_data.size());
+Containers::Array<char> WavImporter::doData() {
+    Containers::Array<char> copy(_data.size());
     std::copy(_data.begin(), _data.end(), copy.begin());
     return copy;
 }

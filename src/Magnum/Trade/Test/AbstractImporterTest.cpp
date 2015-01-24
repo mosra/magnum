@@ -54,8 +54,8 @@ void AbstractImporterTest::openFile() {
             bool doIsOpened() const override { return opened; }
             void doClose() override {}
 
-            void doOpenData(Containers::ArrayReference<const unsigned char> data) override {
-                opened = (data.size() == 1 && data[0] == 0xa5);
+            void doOpenData(Containers::ArrayReference<const char> data) override {
+                opened = (data.size() == 1 && data[0] == '\xa5');
             }
 
             bool opened;

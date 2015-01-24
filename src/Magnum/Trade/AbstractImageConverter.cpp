@@ -46,14 +46,14 @@ Image2D* AbstractImageConverter::doExportToImage(const ImageReference2D&) const 
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", nullptr);
 }
 
-Containers::Array<unsigned char> AbstractImageConverter::exportToData(const ImageReference2D& image) const {
+Containers::Array<char> AbstractImageConverter::exportToData(const ImageReference2D& image) const {
     CORRADE_ASSERT(features() & Feature::ConvertData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
 
     return doExportToData(image);
 }
 
-Containers::Array<unsigned char> AbstractImageConverter::doExportToData(const ImageReference2D&) const {
+Containers::Array<char> AbstractImageConverter::doExportToData(const ImageReference2D&) const {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
 }
 

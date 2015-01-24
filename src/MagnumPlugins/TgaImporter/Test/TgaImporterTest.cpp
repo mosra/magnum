@@ -82,7 +82,7 @@ void TgaImporterTest::openNonexistent() {
 
 void TgaImporterTest::openShort() {
     TgaImporter importer;
-    const unsigned char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
@@ -93,7 +93,7 @@ void TgaImporterTest::openShort() {
 
 void TgaImporterTest::paletted() {
     TgaImporter importer;
-    const unsigned char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
@@ -104,7 +104,7 @@ void TgaImporterTest::paletted() {
 
 void TgaImporterTest::compressed() {
     TgaImporter importer;
-    const unsigned char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
@@ -115,7 +115,7 @@ void TgaImporterTest::compressed() {
 
 void TgaImporterTest::colorBits16() {
     TgaImporter importer;
-    const unsigned char data[] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
+    const char data[] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
@@ -126,14 +126,14 @@ void TgaImporterTest::colorBits16() {
 
 void TgaImporterTest::colorBits24() {
     TgaImporter importer;
-    const unsigned char data[] = {
+    const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         1, 2, 3, 2, 3, 4,
         3, 4, 5, 4, 5, 6,
         5, 6, 7, 6, 7, 8
     };
     #ifndef MAGNUM_TARGET_GLES
-    const char* pixels = reinterpret_cast<const char*>(data) + 18;
+    const char* pixels = data + 18;
     #else
     const char pixels[] = {
         3, 2, 1, 4, 3, 2,
@@ -152,19 +152,20 @@ void TgaImporterTest::colorBits24() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
+    CORRADE_COMPARE((std::string{image->data(), 2*3*3}),
+                    (std::string{pixels, 2*3*3}));
 }
 
 void TgaImporterTest::colorBits32() {
     TgaImporter importer;
-    const unsigned char data[] = {
+    const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
         1, 2, 3, 1, 2, 3, 4, 1,
         3, 4, 5, 1, 4, 5, 6, 1,
         5, 6, 7, 1, 6, 7, 8, 1
     };
     #ifndef MAGNUM_TARGET_GLES
-    const char* pixels = reinterpret_cast<const char*>(data) + 18;
+    const char* pixels = data + 18;
     #else
     const char pixels[] = {
         3, 2, 1, 1, 4, 3, 2, 1,
@@ -183,12 +184,13 @@ void TgaImporterTest::colorBits32() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3*3), std::string(pixels, 2*3*3));
+    CORRADE_COMPARE((std::string{image->data(), 2*3*3}),
+                    (std::string{pixels, 2*3*3}));
 }
 
 void TgaImporterTest::grayscaleBits8() {
     TgaImporter importer;
-    const unsigned char data[] = {
+    const char data[] = {
         0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
         1, 2,
         3, 4,
@@ -205,13 +207,13 @@ void TgaImporterTest::grayscaleBits8() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3),
-                    std::string(reinterpret_cast<const char*>(data) + 18, 2*3));
+    CORRADE_COMPARE((std::string{image->data(), 2*3}),
+                    (std::string{data + 18, 2*3}));
 }
 
 void TgaImporterTest::grayscaleBits16() {
     TgaImporter importer;
-    const unsigned char data[] = { 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
+    const char data[] = { 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
@@ -222,7 +224,7 @@ void TgaImporterTest::grayscaleBits16() {
 
 void TgaImporterTest::file() {
     TgaImporter importer;
-    const unsigned char data[] = {
+    const char data[] = {
         0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
         1, 2,
         3, 4,
@@ -239,8 +241,8 @@ void TgaImporterTest::file() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(image->data()), 2*3),
-                    std::string(reinterpret_cast<const char*>(data) + 18, 2*3));
+    CORRADE_COMPARE((std::string{image->data(), 2*3}),
+                    (std::string{data + 18, 2*3}));
 }
 
 }}}

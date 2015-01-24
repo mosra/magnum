@@ -60,7 +60,7 @@ void WavImporterTest::wrongSize() {
     Error::setOutput(&out);
 
     WavImporter importer;
-    CORRADE_VERIFY(!importer.openData(Containers::Array<unsigned char>(43)));
+    CORRADE_VERIFY(!importer.openData(Containers::Array<char>(43)));
     CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): the file is too short: 43 bytes\n");
 }
 
@@ -97,12 +97,12 @@ void WavImporterTest::mono16() {
 
     CORRADE_COMPARE(importer.format(), Buffer::Format::Mono16);
     CORRADE_COMPARE(importer.frequency(), 44000);
-    Containers::Array<unsigned char> data = importer.data();
+    Containers::Array<char> data = importer.data();
     CORRADE_COMPARE(data.size(), 4);
-    CORRADE_COMPARE(data[0], 0x1d);
-    CORRADE_COMPARE(data[1], 0x10);
-    CORRADE_COMPARE(data[2], 0x71);
-    CORRADE_COMPARE(data[3], 0xC5);
+    CORRADE_COMPARE(data[0], '\x1d');
+    CORRADE_COMPARE(data[1], '\x10');
+    CORRADE_COMPARE(data[2], '\x71');
+    CORRADE_COMPARE(data[3], '\xc5');
 }
 
 void WavImporterTest::stereo8() {
@@ -111,12 +111,12 @@ void WavImporterTest::stereo8() {
 
     CORRADE_COMPARE(importer.format(), Buffer::Format::Stereo8);
     CORRADE_COMPARE(importer.frequency(), 96000);
-    Containers::Array<unsigned char> data = importer.data();
+    Containers::Array<char> data = importer.data();
     CORRADE_COMPARE(data.size(), 4);
-    CORRADE_COMPARE(data[0], 0xde);
-    CORRADE_COMPARE(data[1], 0xfe);
-    CORRADE_COMPARE(data[2], 0xca);
-    CORRADE_COMPARE(data[3], 0x7e);
+    CORRADE_COMPARE(data[0], '\xde');
+    CORRADE_COMPARE(data[1], '\xfe');
+    CORRADE_COMPARE(data[2], '\xca');
+    CORRADE_COMPARE(data[3], '\x7e');
 }
 
 }}}

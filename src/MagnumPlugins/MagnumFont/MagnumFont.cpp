@@ -68,7 +68,7 @@ auto MagnumFont::doFeatures() const -> Features { return Feature::OpenData|Featu
 
 bool MagnumFont::doIsOpened() const { return _opened; }
 
-std::pair<Float, Float> MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, const Float) {
+std::pair<Float, Float> MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data, const Float) {
     /* We need just the configuration file and image file */
     if(data.size() != 2) {
         Error() << "Text::MagnumFont::openData(): wanted two files, got" << data.size();
@@ -76,7 +76,7 @@ std::pair<Float, Float> MagnumFont::doOpenData(const std::vector<std::pair<std::
     }
 
     /* Open the configuration file */
-    std::istringstream in({reinterpret_cast<const char*>(data[0].second.begin()), data[0].second.size()});
+    std::istringstream in({data[0].second.begin(), data[0].second.size()});
     Utility::Configuration conf(in, Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
         Error() << "Text::MagnumFont::openData(): cannot open file" << data[0].first;

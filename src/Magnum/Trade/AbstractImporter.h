@@ -116,7 +116,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          * `true` on success, `false` otherwise.
          * @see @ref features(), @ref openFile()
          */
-        bool openData(Containers::ArrayReference<const unsigned char> data);
+        bool openData(Containers::ArrayReference<const char> data);
 
         /**
          * @brief Open file
@@ -483,7 +483,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         virtual bool doIsOpened() const = 0;
 
         /** @brief Implementation for @ref openData() */
-        virtual void doOpenData(Containers::ArrayReference<const unsigned char> data);
+        virtual void doOpenData(Containers::ArrayReference<const char> data);
 
         /**
          * @brief Implementation for @ref openFile()

@@ -54,7 +54,7 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        explicit ImageData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): AbstractImage{format, type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
 
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
@@ -97,12 +97,12 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          *
          * @see @ref release()
          */
-        template<class T = unsigned char> T* data() {
+        template<class T = char> T* data() {
             return reinterpret_cast<T*>(_data);
         }
 
         /** @overload */
-        template<class T = unsigned char> const T* data() const {
+        template<class T = char> const T* data() const {
             return reinterpret_cast<const T*>(_data);
         }
 
@@ -113,11 +113,11 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          * to default. Deleting the returned array is then user responsibility.
          * @see @ref data()
          */
-        unsigned char* release();
+        char* release();
 
     private:
         Math::Vector<Dimensions, Int> _size;
-        unsigned char* _data;
+        char* _data;
 };
 
 /** @brief One-dimensional image */
@@ -151,9 +151,9 @@ const
     return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
 }
 
-template<UnsignedInt dimensions> inline unsigned char* ImageData<dimensions>::release() {
+template<UnsignedInt dimensions> inline char* ImageData<dimensions>::release() {
     /** @todo I need `std::exchange` NOW. */
-    unsigned char* const data = _data;
+    char* const data = _data;
     _size = {};
     _data = nullptr;
     return data;

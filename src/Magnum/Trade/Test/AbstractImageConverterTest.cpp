@@ -52,11 +52,8 @@ void AbstractImageConverterTest::exportToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData; }
 
-            Containers::Array<unsigned char> doExportToData(const ImageReference2D& image) const override {
-                Containers::Array<unsigned char> out(2);
-                out[0] = static_cast<unsigned char>(image.size().x());
-                out[1] = static_cast<unsigned char>(image.size().y());
-                return out;
+            Containers::Array<char> doExportToData(const ImageReference2D& image) const override {
+                return Containers::Array<char>::from(char(image.size().x()), char(image.size().y()));
             };
     };
 

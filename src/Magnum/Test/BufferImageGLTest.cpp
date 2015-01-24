@@ -50,11 +50,11 @@ BufferImageTest::BufferImageTest() {
 }
 
 void BufferImageTest::construct() {
-    const unsigned char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0 };
+    const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0 };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data<UnsignedByte>();
+    const auto imageData = a.buffer().data();
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -65,8 +65,8 @@ void BufferImageTest::construct() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
-                       std::vector<UnsignedByte>(data, data + 12),
+    CORRADE_COMPARE_AS(std::vector<char>(imageData.begin(), imageData.end()),
+                       std::vector<char>(data, data + 12),
                        TestSuite::Compare::Container);
     #endif
 }
@@ -77,7 +77,7 @@ void BufferImageTest::constructCopy() {
 }
 
 void BufferImageTest::constructMove() {
-    const unsigned char data[4] = { 'a', 'b', 'c', 'd' };
+    const char data[4] = { 'a', 'b', 'c', 'd' };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw);
     const Int id = a.buffer().id();
 
@@ -112,10 +112,10 @@ void BufferImageTest::constructMove() {
 }
 
 void BufferImageTest::setData() {
-    const unsigned char data[4] = { 'a', 'b', 'c', 'd' };
+    const char data[4] = { 'a', 'b', 'c', 'd' };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw);
 
-    const unsigned short data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    const UnsignedShort data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     a.setData(ColorFormat::RGBA, ColorType::UnsignedShort, {1, 2}, data2, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES

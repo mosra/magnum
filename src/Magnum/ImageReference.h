@@ -61,7 +61,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * @param size              Image size
          * @param data              Image data
          */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const unsigned char*>(data)) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const char*>(data)) {}
 
         /**
          * @brief Constructor
@@ -83,10 +83,10 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
         }
 
         /** @brief Pointer to raw data */
-        constexpr const unsigned char* data() const { return _data; }
+        constexpr const char* data() const { return _data; }
 
         /** @overload */
-        template<class T = unsigned char> const T* data() const {
+        template<class T = char> const T* data() const {
             return reinterpret_cast<const T*>(_data);
         }
 
@@ -99,12 +99,12 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * destruction.
          */
         void setData(const void* data) {
-            _data = reinterpret_cast<const unsigned char*>(data);
+            _data = reinterpret_cast<const char*>(data);
         }
 
     private:
         Math::Vector<Dimensions, Int> _size;
-        const unsigned char* _data;
+        const char* _data;
 };
 
 /** @brief One-dimensional image wrapper */

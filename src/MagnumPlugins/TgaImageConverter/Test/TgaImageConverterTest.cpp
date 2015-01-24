@@ -107,8 +107,8 @@ void TgaImageConverterTest::data() {
     CORRADE_COMPARE(converted->format(), ColorFormat::RGB);
     #endif
     CORRADE_COMPARE(converted->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
-                    std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
+    CORRADE_COMPARE((std::string{converted->data(), 2*3*3}),
+                    (std::string{original.data(), 2*3*3}));
 }
 
 }}}

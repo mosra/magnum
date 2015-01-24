@@ -56,8 +56,8 @@ class SingleDataFont: public Text::AbstractFont {
         bool doIsOpened() const override { return opened; }
         void doClose() override {}
 
-        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayReference<const unsigned char> data, Float) override {
-            opened = (data.size() == 1 && data[0] == 0xa5);
+        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayReference<const char> data, Float) override {
+            opened = (data.size() == 1 && data[0] == '\xa5');
             return {};
         }
 
@@ -77,7 +77,7 @@ class SingleDataFont: public Text::AbstractFont {
 void AbstractFontTest::openSingleData() {
     /* doOpenData() should call doOpenSingleData() */
     SingleDataFont font;
-    const unsigned char data[] = {0xa5};
+    const char data[] = {'\xa5'};
     CORRADE_VERIFY(!font.isOpened());
     font.openData({{{}, data}}, 3.0f);
     CORRADE_VERIFY(font.isOpened());

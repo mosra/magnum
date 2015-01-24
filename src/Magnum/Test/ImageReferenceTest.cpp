@@ -43,7 +43,7 @@ ImageReferenceTest::ImageReferenceTest() {
 }
 
 void ImageReferenceTest::construct() {
-    const unsigned char data[3] = {};
+    const char data[3] = {};
     ImageReference2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
@@ -53,15 +53,15 @@ void ImageReferenceTest::construct() {
 }
 
 void ImageReferenceTest::setData() {
-    const unsigned char data[3] = {};
+    const char data[3] = {};
     ImageReference2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
-    const unsigned char data2[8] = {};
+    const char data2[8] = {};
     a.setData(data2);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
-    CORRADE_COMPARE(a.data(), reinterpret_cast<const unsigned char*>(data2));
+    CORRADE_COMPARE(a.data(), data2);
 }
 
 }}

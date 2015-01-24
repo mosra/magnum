@@ -53,13 +53,13 @@ void AbstractImporterTest::openFile() {
             bool doIsOpened() const override { return opened; }
             void doClose() override {}
 
-            void doOpenData(Containers::ArrayReference<const unsigned char> data) override {
-                opened = (data.size() == 1 && data[0] == 0xa5);
+            void doOpenData(Containers::ArrayReference<const char> data) override {
+                opened = (data.size() == 1 && data[0] == '\xa5');
             }
 
             Buffer::Format doFormat() const override { return {}; }
             UnsignedInt doFrequency() const override { return {}; }
-            Corrade::Containers::Array<unsigned char> doData() override { return nullptr; }
+            Corrade::Containers::Array<char> doData() override { return nullptr; }
 
             bool opened;
     };

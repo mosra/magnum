@@ -39,7 +39,7 @@ AbstractFontConverter::AbstractFontConverter() = default;
 
 AbstractFontConverter::AbstractFontConverter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractPlugin(manager, std::move(plugin)) {}
 
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::exportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::string& characters) const {
+std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::exportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::string& characters) const {
     CORRADE_ASSERT(features() >= (Feature::ExportFont|Feature::ConvertData),
         "Text::AbstractFontConverter::exportFontToData(): feature not supported", {});
 
@@ -47,20 +47,20 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFo
 }
 
 #ifndef __MINGW32__
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
+std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
 #else
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
+std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
 #endif
 {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFontConverter::exportFontToData(): feature advertised but not implemented", {});
 
-    std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;
+    std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename, std::move(doExportFontToSingleData(font, cache, characters)));
     return std::move(out);
 }
 
-Containers::Array<unsigned char> AbstractFontConverter::exportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::string& characters) const {
+Containers::Array<char> AbstractFontConverter::exportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::string& characters) const {
     CORRADE_ASSERT(features() >= (Feature::ExportFont|Feature::ConvertData),
         "Text::AbstractFontConverter::exportFontToSingleData(): feature not supported", nullptr);
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
@@ -70,9 +70,9 @@ Containers::Array<unsigned char> AbstractFontConverter::exportFontToSingleData(A
 }
 
 #ifndef __MINGW32__
-Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const
+Containers::Array<char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const
 #else
-Containers::Array<unsigned char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const
+Containers::Array<char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const
 #endif
 {
     CORRADE_ASSERT(false,
@@ -105,23 +105,23 @@ bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& c
     return true;
 }
 
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::exportGlyphCacheToData(GlyphCache& cache, const std::string& filename) const {
+std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::exportGlyphCacheToData(GlyphCache& cache, const std::string& filename) const {
     CORRADE_ASSERT(features() >= (Feature::ExportGlyphCache|Feature::ConvertData),
         "Text::AbstractFontConverter::exportGlyphCacheToData(): feature not supported", {});
 
     return doExportGlyphCacheToData(cache, filename);
 }
 
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> AbstractFontConverter::doExportGlyphCacheToData(GlyphCache& cache, const std::string& filename) const {
+std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportGlyphCacheToData(GlyphCache& cache, const std::string& filename) const {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFontConverter::exportGlyphCacheToData(): feature advertised but not implemented", {});
 
-    std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;
+    std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename, std::move(doExportGlyphCacheToSingleData(cache)));
     return std::move(out);
 }
 
-Containers::Array<unsigned char> AbstractFontConverter::exportGlyphCacheToSingleData(GlyphCache& cache) const {
+Containers::Array<char> AbstractFontConverter::exportGlyphCacheToSingleData(GlyphCache& cache) const {
     CORRADE_ASSERT(features() >= (Feature::ExportGlyphCache|Feature::ConvertData),
         "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): feature not supported", nullptr);
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
@@ -130,7 +130,7 @@ Containers::Array<unsigned char> AbstractFontConverter::exportGlyphCacheToSingle
     return doExportGlyphCacheToSingleData(cache);
 }
 
-Containers::Array<unsigned char> AbstractFontConverter::doExportGlyphCacheToSingleData(GlyphCache&) const {
+Containers::Array<char> AbstractFontConverter::doExportGlyphCacheToSingleData(GlyphCache&) const {
     CORRADE_ASSERT(false,
         "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): feature advertised but not implemented", nullptr);
 }
@@ -156,7 +156,7 @@ bool AbstractFontConverter::doExportGlyphCacheToFile(GlyphCache& cache, const st
     return true;
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data) const {
     CORRADE_ASSERT(features() >= (Feature::ImportGlyphCache|Feature::ConvertData),
         "Text::AbstractFontConverter::importGlyphCacheFromData(): feature not supported", nullptr);
     CORRADE_ASSERT(!data.empty(),
@@ -165,7 +165,7 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromData(cons
     return doImportGlyphCacheFromData(data);
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data) const {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFontConverter::importGlyphCacheFromData(): feature advertised but not implemented", nullptr);
     CORRADE_ASSERT(data.size() == 1,
@@ -174,7 +174,7 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromData(co
     return doImportGlyphCacheFromSingleData(data[0].second);
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromSingleData(Containers::ArrayReference<const unsigned char> data) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromSingleData(Containers::ArrayReference<const char> data) const {
     CORRADE_ASSERT(features() >= (Feature::ImportGlyphCache|Feature::ConvertData),
         "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature not supported", nullptr);
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
@@ -183,7 +183,7 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromSingleDat
     return doImportGlyphCacheFromSingleData(data);
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromSingleData(Containers::ArrayReference<const unsigned char>) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromSingleData(Containers::ArrayReference<const char>) const {
     CORRADE_ASSERT(false,
         "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature advertised but not implemented", nullptr);
 }

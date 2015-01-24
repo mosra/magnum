@@ -120,7 +120,7 @@ class MagnumFont: public AbstractFont {
 
         bool doIsOpened() const override;
 
-        std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float) override;
+        std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data, Float) override;
 
         std::pair<Float, Float> doOpenFile(const std::string& filename, Float) override;
 

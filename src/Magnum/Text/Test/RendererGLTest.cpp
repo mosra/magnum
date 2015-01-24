@@ -82,7 +82,7 @@ class TestFont: public Text::AbstractFont {
 };
 
 /* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
-unsigned char glyphCacheData;
+char glyphCacheData;
 GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(&glyphCacheData);
 
 }
