@@ -391,8 +391,12 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayReference<const char> name) {
     GLint location = glGetUniformLocation(_id, name);
-    if(location == -1)
-        Warning() << "AbstractShaderProgram: location of uniform \'" + std::string{name, name.size()} + "\' cannot be retrieved!";
+    if(location == -1) {
+		std::string namestr = std::string{name, name.size()};
+		while (!namestr.empty() && namestr.back() == '\0') namestr.pop_back();
+        Warning() << "AbstractShaderProgram: location of uniform \'" + namestr + "\' cannot be retrieved!";
+	}
+		
     return location;
 }
 
