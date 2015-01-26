@@ -35,6 +35,30 @@
 
 namespace Magnum { namespace Text {
 
+namespace {
+
+#ifndef __MINGW32__
+std::u32string uniqueUnicode(const std::string& characters)
+#else
+std::vector<char32_t> uniqueUnicode(const std::string& characters)
+#endif
+{
+    /* Convert UTF-8 to UTF-32 */
+    #ifndef __MINGW32__
+    std::u32string result = Utility::Unicode::utf32(characters);
+    #else
+    std::vector<char32_t> result = Utility::Unicode::utf32(characters);
+    #endif
+
+    /* Remove duplicate glyphs */
+    std::sort(result.begin(), result.end());
+    result.erase(std::unique(result.begin(), result.end()), result.end());
+
+    return std::move(result);
+}
+
+}
+
 AbstractFontConverter::AbstractFontConverter() = default;
 
 AbstractFontConverter::AbstractFontConverter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractPlugin(manager, std::move(plugin)) {}
@@ -206,26 +230,6 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromFile(co
     }
 
     return doImportGlyphCacheFromSingleData(Utility::Directory::read(filename));
-}
-
-#ifndef __MINGW32__
-std::u32string AbstractFontConverter::uniqueUnicode(const std::string& characters)
-#else
-std::vector<char32_t> AbstractFontConverter::uniqueUnicode(const std::string& characters)
-#endif
-{
-    /* Convert UTF-8 to UTF-32 */
-    #ifndef __MINGW32__
-    std::u32string result = Utility::Unicode::utf32(characters);
-    #else
-    std::vector<char32_t> result = Utility::Unicode::utf32(characters);
-    #endif
-
-    /* Remove duplicate glyphs */
-    std::sort(result.begin(), result.end());
-    result.erase(std::unique(result.begin(), result.end()), result.end());
-
-    return std::move(result);
 }
 
 }}

@@ -350,13 +350,6 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * and calls @ref doImportGlyphCacheFromSingleData() with its contents.
          */
         virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromFile(const std::string& filename) const;
-
-    private:
-        #ifndef __MINGW32__
-        MAGNUM_TEXT_LOCAL static std::u32string uniqueUnicode(const std::string& characters);
-        #else
-        MAGNUM_TEXT_LOCAL static std::vector<char32_t> uniqueUnicode(const std::string& characters);
-        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFontConverter::Features)
