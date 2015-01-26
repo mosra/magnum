@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/AbstractShaderProgram.h"
@@ -50,6 +51,7 @@ struct AbstractShaderProgramGLTest: AbstractOpenGLTester {
     void createMultipleOutputsIndexed();
     #endif
 
+    void uniformLocationOptimizedOut();
     void uniform();
     void uniformVector();
     void uniformMatrix();
@@ -69,6 +71,7 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
               #endif
 
+              &AbstractShaderProgramGLTest::uniformLocationOptimizedOut,
               &AbstractShaderProgramGLTest::uniform,
               &AbstractShaderProgramGLTest::uniformVector,
               &AbstractShaderProgramGLTest::uniformMatrix,
@@ -265,6 +268,32 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     CORRADE_VERIFY(valid);
 }
 #endif
+
+void AbstractShaderProgramGLTest::uniformLocationOptimizedOut() {
+    MyPublicShader program;
+
+    #ifndef MAGNUM_TARGET_GLES
+    Shader vert(Version::GL210, Shader::Type::Vertex);
+    Shader frag(Version::GL210, Shader::Type::Fragment);
+    #else
+    Shader vert(Version::GLES200, Shader::Type::Vertex);
+    Shader frag(Version::GLES200, Shader::Type::Fragment);
+    #endif
+    vert.addSource("void main() { gl_Position = vec4(0.0); }");
+    frag.addSource("void main() { gl_FragColor = vec4(1.0); }");
+
+    CORRADE_VERIFY(Shader::compile({vert, frag}));
+    program.attachShaders({vert, frag});
+    CORRADE_VERIFY(program.link());
+
+    std::ostringstream out;
+    Warning::setOutput(&out);
+    program.uniformLocation("nonexistent");
+    program.uniformLocation(std::string{"another"});
+    CORRADE_COMPARE(out.str(),
+        "AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved!\n"
+        "AbstractShaderProgram: location of uniform 'another' cannot be retrieved!\n");
+}
 
 namespace {
     struct MyShader: AbstractShaderProgram {
