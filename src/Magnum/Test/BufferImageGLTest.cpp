@@ -31,8 +31,8 @@
 
 namespace Magnum { namespace Test {
 
-struct BufferImageTest: AbstractOpenGLTester {
-    explicit BufferImageTest();
+struct BufferImageGLTest: AbstractOpenGLTester {
+    explicit BufferImageGLTest();
 
     void construct();
     void constructCopy();
@@ -41,15 +41,15 @@ struct BufferImageTest: AbstractOpenGLTester {
     void setData();
 };
 
-BufferImageTest::BufferImageTest() {
-    addTests({&BufferImageTest::construct,
-              &BufferImageTest::constructCopy,
-              &BufferImageTest::constructMove,
+BufferImageGLTest::BufferImageGLTest() {
+    addTests({&BufferImageGLTest::construct,
+              &BufferImageGLTest::constructCopy,
+              &BufferImageGLTest::constructMove,
 
-              &BufferImageTest::setData});
+              &BufferImageGLTest::setData});
 }
 
-void BufferImageTest::construct() {
+void BufferImageGLTest::construct() {
     const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0 };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw);
 
@@ -71,12 +71,12 @@ void BufferImageTest::construct() {
     #endif
 }
 
-void BufferImageTest::constructCopy() {
+void BufferImageGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<BufferImage2D, const BufferImage2D&>{}));
     CORRADE_VERIFY(!(std::is_assignable<BufferImage2D, const BufferImage2D&>{}));
 }
 
-void BufferImageTest::constructMove() {
+void BufferImageGLTest::constructMove() {
     const char data[4] = { 'a', 'b', 'c', 'd' };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw);
     const Int id = a.buffer().id();
@@ -111,7 +111,7 @@ void BufferImageTest::constructMove() {
     CORRADE_COMPARE(c.buffer().id(), id);
 }
 
-void BufferImageTest::setData() {
+void BufferImageGLTest::setData() {
     const char data[4] = { 'a', 'b', 'c', 'd' };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw);
 
@@ -138,4 +138,4 @@ void BufferImageTest::setData() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferImageTest)
+CORRADE_TEST_MAIN(Magnum::Test::BufferImageGLTest)
