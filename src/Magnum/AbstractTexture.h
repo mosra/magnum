@@ -289,7 +289,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> AbstractTexture& setLabel(const char(&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /** @brief OpenGL texture ID */

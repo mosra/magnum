@@ -147,7 +147,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> Renderbuffer& setLabel(const char(&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /**

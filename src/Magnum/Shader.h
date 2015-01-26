@@ -518,7 +518,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> Shader& setLabel(const char(&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /** @brief Shader type */

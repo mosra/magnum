@@ -95,7 +95,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> AbstractQuery& setLabel(const char(&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /**

@@ -492,7 +492,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> Mesh& setLabelInternal(const char(&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /**

@@ -620,7 +620,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> AbstractShaderProgram& setLabel(const char (&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /**
@@ -723,7 +723,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> void bindAttributeLocation(UnsignedInt location, const char(&name)[size]) {
-            bindAttributeLocationInternal(location, name);
+            bindAttributeLocationInternal(location, {name, size - 1});
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -751,7 +751,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const char(&name)[size]) {
-            bindFragmentDataLocationIndexedInternal(location, index, name);
+            bindFragmentDataLocationIndexedInternal(location, index, {name, size - 1});
         }
 
         /**
@@ -778,7 +778,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /** @overload */
         template<std::size_t size> void bindFragmentDataLocation(UnsignedInt location, const char(&name)[size]) {
             /* Not using const char* parameter, because this way it avoids most accidents with non-zero-terminated strings */
-            bindFragmentDataLocationInternal(location, name);
+            bindFragmentDataLocationInternal(location, {name, size - 1});
         }
         #endif
 
@@ -841,7 +841,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> Int uniformLocation(const char(&name)[size]) {
-            return uniformLocationInternal(name);
+            return uniformLocationInternal({name, size - 1});
         }
 
         /**
