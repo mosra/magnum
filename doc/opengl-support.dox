@@ -265,7 +265,7 @@ Extension                                   | Status
 @extension{EXT,direct_state_access}         | done for implemented functionality
 @extension{EXT,texture_sRGB_decode} (also in ES) | done
 @extension{EXT,shader_integer_mix} (also in ES) | done (shading language only)
-@extension2{EXT,debug_label} (also in ES)   | missing pipeline, transform feedback and sampler label
+@extension2{EXT,debug_label} (also in ES)   | missing pipeline and sampler label
 @extension2{EXT,debug_marker} (also in ES)  | missing marker groups
 @extension{GREMEDY,string_marker}           | done
 

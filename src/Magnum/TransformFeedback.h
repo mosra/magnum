@@ -188,7 +188,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @extension{KHR,debug} nor @extension2{EXT,debug_label} desktop or ES
          * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} or @fn_gl_extension2{GetObjectLabel,EXT,debug_label}
-         *      with @def_gl{BUFFER_OBJECT_EXT}
+         *      with @def_gl{TRANSFORM_FEEDBACK}
          */
         std::string label();
 
