@@ -33,7 +33,7 @@ set(ObjImporter_HEADERS
 add_library(ObjImporterObjects OBJECT
     ${ObjImporter_SRCS}
     ${ObjImporter_HEADERS})
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(ObjImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 

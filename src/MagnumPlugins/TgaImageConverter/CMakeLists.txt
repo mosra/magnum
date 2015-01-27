@@ -33,8 +33,10 @@ set(TgaImageConverter_HEADERS
 add_library(TgaImageConverterObjects OBJECT
     ${TgaImageConverter_SRCS}
     ${TgaImageConverter_HEADERS})
-set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS")
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT BUILD_PLUGINS_STATIC)
+    set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS")
+endif()
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(TgaImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 

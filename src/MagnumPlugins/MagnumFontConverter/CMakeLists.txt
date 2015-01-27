@@ -31,7 +31,7 @@ set(MagnumFontConverter_HEADERS
 
 # Objects shared between plugin and test library
 add_library(MagnumFontConverterObjects OBJECT ${MagnumFontConverter_SRCS})
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 

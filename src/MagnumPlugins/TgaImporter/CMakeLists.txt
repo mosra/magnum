@@ -34,8 +34,10 @@ set(TgaImporter_HEADERS
 add_library(TgaImporterObjects OBJECT
     ${TgaImporter_SRCS}
     ${TgaImporter_HEADERS})
-set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS")
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT BUILD_PLUGINS_STATIC)
+    set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS")
+endif()
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(TgaImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -44,7 +46,7 @@ add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLU
     TgaImporter.conf
     $<TARGET_OBJECTS:TgaImporterObjects>
     pluginRegistration.cpp)
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(BUILD_STATIC_PIC)
     set_target_properties(TgaImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 

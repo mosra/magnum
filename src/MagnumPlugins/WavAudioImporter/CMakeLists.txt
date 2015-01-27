@@ -38,7 +38,7 @@ set(WavAudioImporter_HEADERS
 add_library(WavAudioImporterObjects OBJECT
     ${WavAudioImporter_SRCS}
     ${WavAudioImporter_HEADERS})
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
