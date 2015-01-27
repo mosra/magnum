@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_PLUGINS_STATIC)
+    set(MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(TgaImageConverter_SRCS
     TgaImageConverter.cpp)
 
@@ -52,6 +59,7 @@ endif()
 target_link_libraries(TgaImageConverter Magnum)
 
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter/configure.h)
 
 if(BUILD_TESTS)
     add_library(MagnumTgaImageConverterTestLib STATIC $<TARGET_OBJECTS:TgaImageConverterObjects>)
