@@ -29,3 +29,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_test(TgaImporterTest TgaImporterTest.cpp LIBRARIES MagnumTgaImporterTestLib)
+# On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
+# search for the symbols in some DLL even when they were linked statically.
+# However it apparently doesn't matter that they were dllexported when building
+# the static library. EH.
+if(WIN32)
+    set_target_properties(TgaImporterTest PROPERTIES COMPILE_FLAGS "-DMAGNUM_TGAIMPORTER_BUILD_STATIC")
+endif()

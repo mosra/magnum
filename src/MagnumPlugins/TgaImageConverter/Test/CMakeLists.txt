@@ -29,3 +29,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES MagnumTgaImageConverterTestLib MagnumTgaImporterTestLib)
+# On Win32 we need to avoid dllimporting TgaImporter and TgaImageConverterTest
+# symbols, because it would search for the symbols in some DLL even when they
+# were linked statically. However it apparently doesn't matter that they were
+# dllexported when building the static library. EH.
+if(WIN32)
+    set_target_properties(TgaImageConverterTest PROPERTIES COMPILE_FLAGS
+        "-DMAGNUM_TGAIMAGECONVERTER_BUILD_STATIC -DMAGNUM_TGAIMPORTER_BUILD_STATIC")
+endif()
