@@ -110,7 +110,7 @@ if(BUILD_DEPRECATED)
 endif()
 
 option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
-cmake_dependent_option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" OFF "BUILD_STATIC" OFF)
+option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" OFF)
 option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
 option(BUILD_TESTS "Build unit tests." OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code." OFF "BUILD_TESTS" OFF)
