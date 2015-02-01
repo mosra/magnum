@@ -177,7 +177,7 @@ GLSL 4.30                                   | done
 @extension{ARB,clear_buffer_object}         | |
 @extension{ARB,compute_shader}              | |
 @extension{ARB,copy_image}                  | |
-@extension{KHR,debug} (also in ES)          | missing log retrieval, sync, pipeline, transform feedback and sampler label and debug groups
+@extension{KHR,debug} (also in ES)          | missing log retrieval, sync, pipeline and sampler label
 @extension{ARB,explicit_uniform_location}   | done
 @extension{ARB,fragment_layer_viewport}     | done (shading language only)
 @extension{ARB,framebuffer_no_attachments}  | |
@@ -266,7 +266,7 @@ Extension                                   | Status
 @extension{EXT,texture_sRGB_decode} (also in ES) | done
 @extension{EXT,shader_integer_mix} (also in ES) | done (shading language only)
 @extension2{EXT,debug_label} (also in ES)   | missing pipeline and sampler label
-@extension2{EXT,debug_marker} (also in ES)  | missing marker groups
+@extension2{EXT,debug_marker} (also in ES)  | done
 @extension{GREMEDY,string_marker}           | done
 
 @subsection opengl-support-es20 OpenGL ES 2.0

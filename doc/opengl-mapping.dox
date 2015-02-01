@@ -110,8 +110,8 @@ OpenGL function                         | Matching API
 
 OpenGL function                         | Matching API
 --------------------------------------- | ------------
-@fn_gl{DebugMessageCallback}            | @ref DebugMessage::setCallback()
-@fn_gl{DebugMessageControl}             | @ref DebugMessage::setEnabled()
+@fn_gl{DebugMessageCallback}            | @ref DebugOutput::setCallback()
+@fn_gl{DebugMessageControl}             | @ref DebugOutput::setEnabled()
 @fn_gl{DebugMessageInsert}, \n @fn_gl_extension2{InsertEventMarker,EXT,debug_marker}, \n @fn_gl_extension{StringMarker,GREMEDY,string_marker} | @ref DebugMessage::insert()
 @fn_gl{DepthFunc}                       | @ref Renderer::setDepthFunction()
 @fn_gl{DepthMask}                       | @ref Renderer::setDepthMask()
@@ -277,7 +277,8 @@ OpenGL function                         | Matching API
 @fn_gl{ProgramBinary}                   | |
 @fn_gl{ProgramParameter}                | @ref AbstractShaderProgram::setRetrievableBinary(), \n @ref AbstractShaderProgram::setSeparable()
 @fn_gl{ProvokingVertex}                 | @ref Renderer::setProvokingVertex()
-@fn_gl{PushDebugGroup}, @fn_gl{PopDebugGroup} | |
+@fn_gl{PushDebugGroup}, \n @fn_gl_extension2{PushGroupMarker,EXT,debug_marker} | @ref DebugGroup::push()
+@fn_gl{PopDebugGroup}, \n @fn_gl_extension2{PopGroupMarker,EXT,debug_marker} | @ref DebugGroup::pop()
 
 @subsection opengl-mapping-functions-q Q
 
@@ -410,9 +411,9 @@ OpenGL function                         | Matching API
 @def_gl{MAX_COMPUTE_WORK_GROUP_COUNT}   | |
 @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS} | @ref AbstractShaderProgram::maxComputeWorkGroupInvocations()
 @def_gl{MAX_COMPUTE_WORK_GROUP_SIZE}    | |
-@def_gl{MAX_DEBUG_LOGGED_MESSAGES}      | @ref DebugMessage::maxLoggedMessages()
-@def_gl{MAX_DEBUG_MESSAGE_LENGTH}       | @ref DebugMessage::maxMessageLength()
-@def_gl{MAX_DEBUG_GROUP_STACK_DEPTH}    | |
+@def_gl{MAX_DEBUG_LOGGED_MESSAGES}      | @ref DebugOutput::maxLoggedMessages()
+@def_gl{MAX_DEBUG_MESSAGE_LENGTH}       | @ref DebugOutput::maxMessageLength()
+@def_gl{MAX_DEBUG_GROUP_STACK_DEPTH}    | @ref DebugGroup::maxStackDepth()
 @def_gl{MAX_CLIP_DISTANCES}             | |
 @def_gl{MAX_CULL_DISTANCES}             | |
 @def_gl{MAX_COMBINED_CLIP_AND_CULL_DISTANCES} | |

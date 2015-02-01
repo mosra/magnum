@@ -31,15 +31,23 @@
 
 namespace Magnum { namespace Implementation {
 
-DebugState::DebugState(Context& context, std::vector<std::string>& extensions): maxLabelLength(0), maxLoggedMessages(0), maxMessageLength(0), messageCallback(nullptr) {
+DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
+    maxLabelLength{0},
+    maxLoggedMessages{0},
+    maxMessageLength{0},
+    maxStackDepth{0},
+    messageCallback(nullptr)
+{
     if(context.isExtensionSupported<Extensions::GL::KHR::debug>()) {
         extensions.push_back(Extensions::GL::KHR::debug::string());
 
         getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
         labelImplementation = &AbstractObject::labelImplementationKhr;
+        controlImplementation = &DebugOutput::controlImplementationKhr;
+        callbackImplementation = &DebugOutput::callbackImplementationKhr;
         messageInsertImplementation = &DebugMessage::insertImplementationKhr;
-        messageControlImplementation = &DebugMessage::controlImplementationKhr;
-        messageCallbackImplementation = &DebugMessage::callbackImplementationKhr;
+        pushGroupImplementation = &DebugGroup::pushImplementationKhr;
+        popGroupImplementation = &DebugGroup::popImplementationKhr;
 
     } else {
         if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
@@ -64,8 +72,8 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions): 
         #endif
         } else messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
 
-        messageControlImplementation = &DebugMessage::controlImplementationNoOp;
-        messageCallbackImplementation = &DebugMessage::callbackImplementationNoOp;
+        controlImplementation = &DebugOutput::controlImplementationNoOp;
+        callbackImplementation = &DebugOutput::callbackImplementationNoOp;
     }
 }
 

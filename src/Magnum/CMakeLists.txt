@@ -39,7 +39,7 @@ set(Magnum_SRCS
     ColorFormat.cpp
     CubeMapTexture.cpp
     Context.cpp
-    DebugMessage.cpp
+    DebugOutput.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
@@ -96,7 +96,7 @@ set(Magnum_HEADERS
     ColorFormat.h
     Context.h
     CubeMapTexture.h
-    DebugMessage.h
+    DebugOutput.h
     DefaultFramebuffer.h
     DimensionTraits.h
     Extensions.h
@@ -142,6 +142,7 @@ set(Magnum_PRIVATE_HEADERS
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         DebugMarker.h
+        DebugMessage.h
         Query.h)
 endif()
 

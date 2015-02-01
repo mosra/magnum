@@ -26,42 +26,70 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/DebugMessage.h"
+#include "Magnum/DebugOutput.h"
 
 namespace Magnum { namespace Test {
 
-struct DebugMessageTest: TestSuite::Tester {
-    explicit DebugMessageTest();
+struct DebugOutputTest: TestSuite::Tester {
+    explicit DebugOutputTest();
 
     void debugSource();
     void debugType();
     void debugSeverity();
+
+    void debugMessageSource();
+    void debugMessageType();
+
+    void debugGroupSource();
 };
 
-DebugMessageTest::DebugMessageTest() {
-    addTests({&DebugMessageTest::debugSource,
-              &DebugMessageTest::debugType,
-              &DebugMessageTest::debugSeverity});
+DebugOutputTest::DebugOutputTest() {
+    addTests({&DebugOutputTest::debugSource,
+              &DebugOutputTest::debugType,
+              &DebugOutputTest::debugSeverity,
+
+              &DebugOutputTest::debugMessageSource,
+              &DebugOutputTest::debugMessageType,
+
+              &DebugOutputTest::debugGroupSource});
 }
 
-void DebugMessageTest::debugSource() {
+void DebugOutputTest::debugSource() {
     std::ostringstream o;
-    Debug(&o) << DebugMessage::Source::ShaderCompiler;
-    CORRADE_COMPARE(o.str(), "DebugMessage::Source::ShaderCompiler\n");
+    Debug(&o) << DebugOutput::Source::ShaderCompiler;
+    CORRADE_COMPARE(o.str(), "DebugOutput::Source::ShaderCompiler\n");
 }
 
-void DebugMessageTest::debugType() {
+void DebugOutputTest::debugType() {
+    std::ostringstream o;
+    Debug(&o) << DebugOutput::Type::PushGroup;
+    CORRADE_COMPARE(o.str(), "DebugOutput::Type::PushGroup\n");
+}
+
+void DebugOutputTest::debugSeverity() {
+    std::ostringstream o;
+    Debug(&o) << DebugOutput::Severity::Notification;
+    CORRADE_COMPARE(o.str(), "DebugOutput::Severity::Notification\n");
+}
+
+void DebugOutputTest::debugMessageSource() {
+    std::ostringstream o;
+    Debug(&o) << DebugMessage::Source::Application;
+    CORRADE_COMPARE(o.str(), "DebugMessage::Source::Application\n");
+}
+
+void DebugOutputTest::debugMessageType() {
     std::ostringstream o;
     Debug(&o) << DebugMessage::Type::DeprecatedBehavior;
     CORRADE_COMPARE(o.str(), "DebugMessage::Type::DeprecatedBehavior\n");
 }
 
-void DebugMessageTest::debugSeverity() {
+void DebugOutputTest::debugGroupSource() {
     std::ostringstream o;
-    Debug(&o) << DebugMessage::Severity::Notification;
-    CORRADE_COMPARE(o.str(), "DebugMessage::Severity::Notification\n");
+    Debug(&o) << DebugGroup::Source::ThirdParty;
+    CORRADE_COMPARE(o.str(), "DebugGroup::Source::ThirdParty\n");
 }
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::DebugMessageTest)
+CORRADE_TEST_MAIN(Magnum::Test::DebugOutputTest)

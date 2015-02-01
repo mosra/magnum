@@ -29,7 +29,7 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
-#include "Magnum/DebugMessage.h"
+#include "Magnum/DebugOutput.h"
 #include "Magnum/Renderer.h"
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
@@ -55,10 +55,10 @@ AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({z
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
-        DebugMessage::setDefaultCallback();
+        DebugOutput::setDefaultCallback();
 
         /* Disable "Buffer detailed info" message on NV (too spammy) */
-        DebugMessage::setEnabled(DebugMessage::Source::Api, DebugMessage::Type::Other, {131185}, false);
+        DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
     }
 }
 

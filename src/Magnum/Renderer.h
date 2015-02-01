@@ -85,9 +85,10 @@ class MAGNUM_EXPORT Renderer {
             Blending = GL_BLEND,
 
             /**
-             * Debug output
-             * @see @ref DebugMessage, @ref DebugMessage::setEnabled(),
-             *      @ref Feature::DebugOutputSynchronous
+             * Debug output. Disabled by default unless the GL context was
+             * created with debug output enabled.
+             * @see @ref DebugOutput, @ref Feature::DebugOutputSynchronous,
+             *      @ref Platform::Sdl2Application::Configuration::Flag::DebugOutput "Platform::*Application::Configuration::Flag::DebugOutput"
              * @requires_gl43 Extension @extension{KHR,debug}
              * @requires_es_extension Extension @es_extension{KHR,debug}
              */
@@ -981,6 +982,7 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Given operation would cause an internal stack to underflow.
+             * @see @ref DebugGroup
              * @requires_gl43 Extension @extension{KHR,debug}
              * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
              */
@@ -992,6 +994,7 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Given operation would cause an internal stack to overflow.
+             * @see @ref DebugGroup
              * @requires_gl43 Extension @extension{KHR,debug}
              * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
              */

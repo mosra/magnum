@@ -35,7 +35,7 @@
 #include "Magnum/BufferTexture.h"
 #endif
 #include "Magnum/Context.h"
-#include "Magnum/DebugMessage.h"
+#include "Magnum/DebugOutput.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
@@ -608,8 +608,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(KHR::debug)
 
         _l(AbstractObject::maxLabelLength())
-        _l(DebugMessage::maxLoggedMessages())
-        _l(DebugMessage::maxMessageLength())
+        _l(DebugOutput::maxLoggedMessages())
+        _l(DebugOutput::maxMessageLength())
     }
 
     #ifdef MAGNUM_TARGET_GLES2
