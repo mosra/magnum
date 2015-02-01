@@ -225,6 +225,15 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
+         * @brief Matrix oriented towards a specific point
+         * @param eye       Location to place the matrix
+         * @param target    Location towards which the matrix is oriented
+         * @param up        Vector as a guide of which way is up (should not be
+         *      the same direction as `target - eye`)
+         */
+        static Matrix4<T> lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up);
+
+        /**
          * @brief Create matrix from rotation/scaling part and translation part
          * @param rotationScaling   Rotation/scaling part (upper-left 3x3
          *      matrix)
@@ -526,6 +535,17 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
             {       T(0), xyScale.y(),                 T(0),  T(0)},
             {       T(0),        T(0),    (far+near)*zScale, T(-1)},
             {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up) {
+    const Vector3<T> backward = (eye - target).normalized();
+    const Vector3<T> right = Vector3<T>::cross(up, backward).normalized();
+    const Vector3<T> realUp = Vector3<T>::cross(backward, right);
+
+    return {{   right, T(0)},
+            {  realUp, T(0)},
+            {backward, T(0)},
+            {     eye, T(1)}};
 }
 
 template<class T> inline Matrix3x3<T> Matrix4<T>::rotation() const {

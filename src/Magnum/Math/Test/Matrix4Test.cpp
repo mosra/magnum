@@ -85,6 +85,8 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void orthographicProjection();
     void perspectiveProjection();
     void perspectiveProjectionFov();
+    void lookAt();
+
     void fromParts();
     void rotationScalingPart();
     void rotationNormalizedPart();
@@ -131,6 +133,8 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::orthographicProjection,
               &Matrix4Test::perspectiveProjection,
               &Matrix4Test::perspectiveProjectionFov,
+              &Matrix4Test::lookAt,
+
               &Matrix4Test::fromParts,
               &Matrix4Test::rotationScalingPart,
               &Matrix4Test::rotationNormalizedPart,
@@ -505,6 +509,44 @@ void Matrix4Test::transform() {
 
     CORRADE_COMPARE(a.transformVector(v), Vector3(2.0f, 1.0f, 5.5f));
     CORRADE_COMPARE(a.transformPoint(v), Vector3(3.0f, -4.0f, 9.0f));
+}
+
+void Matrix4Test::lookAt() {
+    Matrix4 a = Matrix4::lookAt({0.0f, 0.0f, 0.0f},
+                                {0.0f, 1.0f, 0.0f},
+                                {0.0f, 0.0f, 1.0f});
+    CORRADE_VERIFY(a.isRigidTransformation());
+    CORRADE_COMPARE(a, Matrix4({1.0f,  0.0f, 0.0f, 0.0f},
+                               {0.0f,  0.0f, 1.0f, 0.0f},
+                               {0.0f, -1.0f, 0.0f, 0.0f},
+                               {0.0f,  0.0f, 0.0f, 1.0f}));
+
+    Matrix4 b = Matrix4::lookAt({100.0f, 200.0f, 300.0f},
+                                {  0.0f,   0.0f,   0.0f},
+                                {  0.0f,   1.0f,   0.0f});
+    CORRADE_VERIFY(b.isRigidTransformation());
+    CORRADE_COMPARE(b, Matrix4({ 0.948683f,      0.0f, -0.316228f, 0.0f},
+                               {-0.169031f, 0.845154f, -0.507093f, 0.0f},
+                               { 0.267261f, 0.534522f,  0.801784f, 0.0f},
+                               {    100.0f,    200.0f,     300.0f, 1.0f}));
+
+    Matrix4 c = Matrix4::lookAt({3.0f, 0.0f, 0.0f},
+                                {0.0f, 4.0f, 5.0f},
+                                {0.0f, 0.0f, 1.0f});
+    CORRADE_VERIFY(c.isRigidTransformation());
+    CORRADE_COMPARE(c, Matrix4({     0.8f,       0.6f,       0.0f, 0.0f},
+                               {0.424264f, -0.565685f,  0.707107f, 0.0f},
+                               {0.424264f, -0.565685f, -0.707107f, 0.0f},
+                               {     3.0f,       0.0f,       0.0f, 1.0f}));
+
+    Matrix4 d = Matrix4::lookAt({ 0.0f, 3.0f,  0.0f},
+                                {-5.0f, 0.0f, -4.0f},
+                                { 0.0f, 1.0f,  0.0f});
+    CORRADE_VERIFY(d.isRigidTransformation());
+    CORRADE_COMPARE(d, Matrix4({ 0.624695f,      0.0f, -0.780869f, 0.0f},
+                               {-0.331295f, 0.905539f, -0.265036f, 0.0f},
+                               { 0.707107f, 0.424264f,  0.565685f, 0.0f},
+                               {      0.0f,      3.0f,       0.0f, 1.0f}));
 }
 
 void Matrix4Test::debug() {
