@@ -610,6 +610,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(AbstractObject::maxLabelLength())
         _l(DebugOutput::maxLoggedMessages())
         _l(DebugOutput::maxMessageLength())
+        _l(DebugGroup::maxStackDepth())
     }
 
     #ifdef MAGNUM_TARGET_GLES2
