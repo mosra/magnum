@@ -94,7 +94,7 @@ template<UnsignedInt dimensions, class T> class AbstractTransformation {
 @deprecated Use `*Transformation*::*()` and `*Transformation::*Local*()`
     overloads instead.
 */
-enum class CORRADE_DEPRECATED("use *() and *Local() overloads instead") TransformationType: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("use *() and *Local() overloads instead") TransformationType: UnsignedByte {
     /** Global transformation, applied after all other transformations. */
     Global = 0x00,
 
