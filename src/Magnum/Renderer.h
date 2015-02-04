@@ -88,7 +88,7 @@ class MAGNUM_EXPORT Renderer {
              * Debug output. Disabled by default unless the GL context was
              * created with debug output enabled.
              * @see @ref DebugOutput, @ref Feature::DebugOutputSynchronous,
-             *      @ref Platform::Sdl2Application::Configuration::Flag::DebugOutput "Platform::*Application::Configuration::Flag::DebugOutput"
+             *      @ref Platform::Sdl2Application::Configuration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
              * @requires_gl43 Extension @extension{KHR,debug}
              * @requires_es_extension Extension @es_extension{KHR,debug}
              */
