@@ -37,12 +37,9 @@ find_library(EGL_LIBRARY EGL)
 
 # Include dir
 find_path(EGL_INCLUDE_DIR
-    NAMES egl.h
-    PATH_SUFFIXES EGL
-)
+    NAMES EGL/egl.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("EGL" DEFAULT_MSG
     EGL_LIBRARY
-    EGL_INCLUDE_DIR
-)
+    EGL_INCLUDE_DIR)
