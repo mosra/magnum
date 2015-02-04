@@ -513,7 +513,7 @@ std::vector<std::string> Context::shadingLanguageVersionStrings() const {
     versions.reserve(versionCount);
     for(GLint i = 0; i != versionCount; ++i)
         versions.push_back(reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)));
-    return std::move(versions);
+    return versions;
     #else
     return {shadingLanguageVersionString()};
     #endif

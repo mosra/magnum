@@ -1326,7 +1326,7 @@ template<class T> Containers::Array<T> inline Buffer::data() {
 template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
     Containers::Array<T> data(size);
     if(size) subDataInternal(offset, size*sizeof(T), data);
-    return std::move(data);
+    return data;
 }
 #endif
 

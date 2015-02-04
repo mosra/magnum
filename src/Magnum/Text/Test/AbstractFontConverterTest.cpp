@@ -128,7 +128,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
             {
                 Containers::Array<char> data(1);
                 data[0] = '\xee';
-                return std::move(data);
+                return data;
             }
     };
 

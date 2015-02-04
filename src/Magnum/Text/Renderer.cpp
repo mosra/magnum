@@ -254,7 +254,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Range2D> Renderer<dimensions>:
             typename Shaders::AbstractVector<dimensions>::Position(
                 Shaders::AbstractVector<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
-    return std::move(r);
+    return r;
 }
 
 #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)

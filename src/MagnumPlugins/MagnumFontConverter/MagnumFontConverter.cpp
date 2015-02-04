@@ -111,7 +111,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename + ".conf", std::move(confData));
     out.emplace_back(filename + ".tga", std::move(tgaData));
-    return std::move(out);
+    return out;
 }
 
 }}

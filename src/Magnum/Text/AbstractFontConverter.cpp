@@ -54,7 +54,7 @@ std::vector<char32_t> uniqueUnicode(const std::string& characters)
     std::sort(result.begin(), result.end());
     result.erase(std::unique(result.begin(), result.end()), result.end());
 
-    return std::move(result);
+    return result;
 }
 
 }
@@ -81,7 +81,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename, std::move(doExportFontToSingleData(font, cache, characters)));
-    return std::move(out);
+    return out;
 }
 
 Containers::Array<char> AbstractFontConverter::exportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::string& characters) const {
@@ -142,7 +142,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename, std::move(doExportGlyphCacheToSingleData(cache)));
-    return std::move(out);
+    return out;
 }
 
 Containers::Array<char> AbstractFontConverter::exportGlyphCacheToSingleData(GlyphCache& cache) const {

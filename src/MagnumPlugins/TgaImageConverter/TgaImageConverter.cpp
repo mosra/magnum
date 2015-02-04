@@ -94,7 +94,7 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D
     }
     #endif
 
-    return std::move(data);
+    return data;
 }
 
 }}
