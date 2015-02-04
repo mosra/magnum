@@ -277,7 +277,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * The string is converted from UTF-8 to UTF-32, unique characters are
          * *not* removed.
-         * @note On Windows uses `std::vector<char32_t>` instead of
+         * @note On MinGW uses `std::vector<char32_t>` instead of
          *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
          *      for more information.
          */

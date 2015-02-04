@@ -272,7 +272,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * If the plugin doesn't have @ref Feature::MultiFile, default
          * implementation calls @ref doExportFontToSingleData().
-         * @note On Windows uses `std::vector<char32_t>` instead of
+         * @note On MinGW uses `std::vector<char32_t>` instead of
          *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
          *      for more information.
          */
@@ -285,7 +285,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Implementation for @ref exportFontToSingleData()
          *
-         * @note On Windows uses `std::vector<char32_t>` instead of
+         * @note On MinGW uses `std::vector<char32_t>` instead of
          *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
          *      for more information.
          */
@@ -301,7 +301,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If @ref Feature::ConvertData is supported, default implementation
          * calls @ref doExportFontToData() and saves the result to given
          * file(s).
-         * @note On Windows uses `std::vector<char32_t>` instead of
+         * @note On MinGW uses `std::vector<char32_t>` instead of
          *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
          *      for more information.
          */
