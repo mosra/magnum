@@ -93,6 +93,7 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void vectorParts();
     void invertedRigid();
     void transform();
+    void lookAt();
 
     void debug();
     void configuration();
@@ -139,6 +140,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::vectorParts,
               &Matrix4Test::invertedRigid,
               &Matrix4Test::transform,
+              &Matrix4Test::lookAt,
 
               &Matrix4Test::debug,
               &Matrix4Test::configuration});
@@ -505,6 +507,57 @@ void Matrix4Test::transform() {
 
     CORRADE_COMPARE(a.transformVector(v), Vector3(2.0f, 1.0f, 5.5f));
     CORRADE_COMPARE(a.transformPoint(v), Vector3(3.0f, -4.0f, 9.0f));
+}
+
+void Matrix4Test::lookAt() {
+	Matrix4 m;
+	m = Matrix4::lookAt(
+		{0.0f, 0.0f, 0.0f}, // eye
+		{0.0f, 1.0f, 0.0f}, // target
+		{0.0f, 0.0f, 1.0f} // up
+	);
+	CORRADE_VERIFY(m.isRigidTransformation());
+	CORRADE_COMPARE(m, Matrix4(
+		{1,0,0,0},
+		{0,0,1,0},
+		{0,-1,0,0},
+		{0,0,0,1}));
+		
+	m = Matrix4::lookAt(
+		{100.0f, 200.0f, 300.0f}, // eye
+		{0.0f, 0.0f, 0.0f}, // target
+		{0.0f, 1.0f, 0.0f} // up
+	);
+	CORRADE_VERIFY(m.isRigidTransformation());
+	CORRADE_COMPARE(m, Matrix4(
+		{0.948683f, 0, -0.316228f, 0},
+		{-0.169031f, 0.845154f, -0.507093f, 0},
+		{0.267261f, 0.534522f, 0.801784f, 0},
+		{100, 200, 300, 1}));
+	
+	m = Matrix4::lookAt(
+		{3.0f, 0.0f, 0.0f}, // eye
+		{0.0f, 4.0f, 5.0f}, // target
+		{0.0f, 0.0f, 1.0f} // up
+	);
+	CORRADE_VERIFY(m.isRigidTransformation());
+	CORRADE_COMPARE(m, Matrix4(
+		{0.8f, 0.6f, 0, 0},
+		{0.424264f, -0.565685f, 0.707107f, 0},
+		{0.424264f, -0.565685f, -0.707107f, 0},
+		{3, 0, 0, 1}));
+		
+	m = Matrix4::lookAt(
+		{0.0f, 3.0f, 0.0f}, // eye
+		{-5.0f, 0.0f, -4.0f}, // target
+		{0.0f, 1.0f, 0.0f} // up
+	);
+	CORRADE_VERIFY(m.isRigidTransformation());
+	CORRADE_COMPARE(m, Matrix4(
+		{0.624695f, 0.0f, -0.780869f, 0.0f},
+		{-0.331295f, 0.905539f, -0.265036f, 0.0f},
+		{0.707107f, 0.424264f, 0.565685f, 0.0f},
+		{0.0f, 3.0f, 0.0f, 1.0f}));
 }
 
 void Matrix4Test::debug() {
