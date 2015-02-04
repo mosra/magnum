@@ -142,7 +142,6 @@ set(Magnum_PRIVATE_HEADERS
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         DebugMarker.h
-        DebugMessage.h
         Query.h)
 endif()
 
