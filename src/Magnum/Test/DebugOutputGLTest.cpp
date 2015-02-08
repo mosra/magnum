@@ -118,12 +118,11 @@ void DebugOutputGLTest::message() {
     std::ostringstream out;
     Debug::setOutput(&out);
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
-        1337, DebugOutput::Severity::Notification, "Hello from OpenGL command stream!");
+        1337, DebugOutput::Severity::High, "Hello from OpenGL command stream!");
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(out.str(),
-        "DebugOutput::Source::Application DebugOutput::Type::Marker 1337 DebugOutput::Severity::Notification \n"
-        "    Hello from OpenGL command stream!\n");
+        "Debug output: high severity application marker (1337): Hello from OpenGL command stream!\n");
 }
 
 void DebugOutputGLTest::messageFallback() {
@@ -163,20 +162,16 @@ void DebugOutputGLTest::group() {
     {
         DebugGroup g1{DebugGroup::Source::Application, 42, "Automatic debug group"};
         DebugGroup g2;
-        g2.push(DebugGroup::Source::Application, 1337, "Manual debug group");
+        g2.push(DebugGroup::Source::ThirdParty, 1337, "Manual debug group");
         g2.pop();
     }
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(out.str(),
-        "DebugOutput::Source::Application DebugOutput::Type::PushGroup 42 DebugOutput::Severity::Notification \n"
-        "    Automatic debug group\n"
-        "DebugOutput::Source::Application DebugOutput::Type::PushGroup 1337 DebugOutput::Severity::Notification \n"
-        "    Manual debug group\n"
-        "DebugOutput::Source::Application DebugOutput::Type::PopGroup 1337 DebugOutput::Severity::Notification \n"
-        "    Manual debug group\n"
-        "DebugOutput::Source::Application DebugOutput::Type::PopGroup 42 DebugOutput::Severity::Notification \n"
-        "    Automatic debug group\n");
+        "Debug output: application debug group enter (42): Automatic debug group\n"
+        "Debug output: third party debug group enter (1337): Manual debug group\n"
+        "Debug output: third party debug group leave (1337): Manual debug group\n"
+        "Debug output: application debug group leave (42): Automatic debug group\n");
 }
 
 void DebugOutputGLTest::groupFallback() {

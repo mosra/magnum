@@ -95,13 +95,10 @@ DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131
 With default callback the group entering/leaving and the inserted message (and
 possibly also other messages) will be printed on standard output:
 
-> DebugOutput::Source::Application DebugOutput::Type::PushGroup 42 DebugOutput::Severity::Notification\n
-> &nbsp;&nbsp;&nbsp;&nbsp;Scene rendering\n
-> DebugOutput::Source::Application DebugOutput::Type::Marker 1337 DebugOutput::Severity::Notification\n
-> &nbsp;&nbsp;&nbsp;&nbsp;Rendering transparent mesh\n
+> Debug output: application debug group enter (42): Scene rendering\n
+> Debug output: application marker (1337): Rendering transparent mesh\n
 > ...\n
-> DebugOutput::Source::Application DebugOutput::Type::PopGroup 42 DebugOutput::Severity::Notification\n
-> &nbsp;&nbsp;&nbsp;&nbsp;Scene rendering
+> Debug output: application debug group leave (42): Scene rendering
 
 If only @extension2{EXT,debug_marker} or @extension{GREMEDY,string_marker} are
 supported, only user-inserted messages and debug groups are supported and they
@@ -383,15 +380,14 @@ class MAGNUM_EXPORT DebugOutput {
          * @brief Set default debug message callback
          *
          * See @ref setCallback() for more information. The message is printed
-         * to either @ref Corrade::Utility::Error "Error", @ref Corrade::Utility::Warning "Warning"
-         * or @ref Corrade::Utility::Debug "Debug" in the following format:
+         * to @ref Corrade::Utility::Debug "Debug" output in the following
+         * format:
          * @code
          * DebugMessage::insert(DebugMessage::Source::Application,
          *      DebugMessage::Type::Marker, 1337, DebugOutput::Severity::Notification, "Hello from OpenGL command stream!");
          * @endcode
          *
-         * > DebugOutput::Source::Application DebugOutput::Type::Marker 1337 DebugOutput::Severity::Notification\n
-         * > &nbsp;&nbsp;&nbsp;&nbsp;Hello from OpenGL command stream!
+         * > Debug output: application marker (1337): Hello from OpenGL command stream!
          */
         static void setDefaultCallback();
 
@@ -437,8 +433,7 @@ DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Mark
     1337, DebugOutput::Severity::Notification, "Hello from OpenGL command stream!");
 @endcode
 
-> DebugOutput::Source::Application DebugOutput::Type::Marker 1337 DebugOutput::Severity::Notification\n
-> &nbsp;&nbsp;&nbsp;&nbsp;Hello from OpenGL command stream!
+> Debug output: application marker (1337): Hello from OpenGL command stream!
 
 If only @extension2{EXT,debug_marker} or @extension{GREMEDY,string_marker} are
 available, the message can be seen only through graphics debugger.
@@ -728,10 +723,8 @@ available and the default debug output callback is enabled for these kinds of
 messages, the group entering and leaving will be printed on standard output in
 the following form:
 
-> DebugOutput::Source::Application DebugOutput::Type::PushGroup 42 DebugOutput::Severity::Notification\n
-> &nbsp;&nbsp;&nbsp;&nbsp;Scene rendering\n
-> DebugOutput::Source::Application DebugOutput::Type::PopGroup 42 DebugOutput::Severity::Notification\n
-> &nbsp;&nbsp;&nbsp;&nbsp;Scene rendering
+> Debug output: application debug group enter (42): Scene rendering\n
+> Debug output: application debug group leave (42): Scene rendering
 
 If only @extension2{EXT,debug_marker} is available, the group can be seen only
 through graphics debugger.

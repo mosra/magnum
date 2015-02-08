@@ -47,18 +47,59 @@ callbackWrapper(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei 
 #endif
 
 void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type type, const UnsignedInt id, const DebugOutput::Severity severity, const std::string& string, const void*) {
+    Debug output;
+    output << "Debug output:";
+
     switch(severity) {
         case DebugOutput::Severity::High:
-            Error() << source << type << id << severity << "\n   " << string;
-            break;
+            output << "high severity"; break;
 
         case DebugOutput::Severity::Medium:
-        case DebugOutput::Severity::Low:
-            Warning() << source << type << id << severity << "\n   " << string;
-            break;
+            output << "medium severity"; break;
 
-        default: Debug() << source << type << id << severity << "\n   " << string;
+        case DebugOutput::Severity::Low:
+            output << "low severity"; break;
+
+        case DebugOutput::Severity::Notification: ;
     }
+
+    switch(source) {
+        case DebugOutput::Source::Api:
+            output << "API"; break;
+        case DebugOutput::Source::WindowSystem:
+            output << "window system"; break;
+        case DebugOutput::Source::ShaderCompiler:
+            output << "shader compiler"; break;
+        case DebugOutput::Source::ThirdParty:
+            output << "third party"; break;
+        case DebugOutput::Source::Application:
+            output << "application"; break;
+
+        case DebugOutput::Source::Other: ;
+    }
+
+    switch(type) {
+        case DebugOutput::Type::Error:
+            output << "error"; break;
+        case DebugOutput::Type::DeprecatedBehavior:
+            output << "deprecated behavior note"; break;
+        case DebugOutput::Type::UndefinedBehavior:
+            output << "undefined behavior note"; break;
+        case DebugOutput::Type::Portability:
+            output << "portability note"; break;
+        case DebugOutput::Type::Performance:
+            output << "performance note"; break;
+        case DebugOutput::Type::Marker:
+            output << "marker"; break;
+        case DebugOutput::Type::PushGroup:
+            output << "debug group enter"; break;
+        case DebugOutput::Type::PopGroup:
+            output << "debug group leave"; break;
+
+        case DebugOutput::Type::Other: ;
+    }
+
+    output << '(' + std::to_string(id) + "):" << string;
 }
 
 }
