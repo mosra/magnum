@@ -56,6 +56,35 @@ Vector2i CubeMapTexture::imageSize(const Int level) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+void CubeMapTexture::image(const Int level, Image3D& image) {
+    const Vector3i size{imageSize(level), 6};
+    const std::size_t dataSize = image.dataSize(size);
+    char* data = new char[dataSize];
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), dataSize, data);
+    image.setData(image.format(), image.type(), size, data);
+}
+
+Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
+    this->image(level, image);
+    return std::move(image);
+}
+
+void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUsage usage) {
+    const Vector3i size{imageSize(level), 6};
+    const std::size_t dataSize = image.dataSize(size);
+    if(image.size() != size)
+        image.setData(image.format(), image.type(), size, nullptr, usage);
+
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);
+}
+
+BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, const BufferUsage usage) {
+    this->image(level, image, usage);
+    return std::move(image);
+}
+
 void CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D& image) {
     const Vector2i size = imageSize(level);
     const std::size_t dataSize = image.dataSize(size);
@@ -83,6 +112,18 @@ void CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferI
 BufferImage2D CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferImage2D&& image, const BufferUsage usage) {
     this->image(coordinate, level, image, usage);
     return std::move(image);
+}
+
+CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, const ImageReference3D& image) {
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), image.data());
+    return *this;
+}
+
+CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, BufferImage3D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), nullptr);
+    return *this;
 }
 #endif
 

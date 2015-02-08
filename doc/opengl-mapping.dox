@@ -209,7 +209,7 @@ OpenGL function                         | Matching API
 @fn_gl{GetTexImage}, \n `glGetnTexImage()`, \n @fn_gl_extension{GetnTexImage,ARB,robustness}, \n `glGetTextureImage()`, \n @fn_gl_extension{GetTextureImage,EXT,direct_state_access} | @ref Texture::image(), \n @ref TextureArray::image(), \n @ref CubeMapTexture::image(), \n @ref CubeMapTextureArray::image(), \n @ref RectangleTexture::image()
 @fn_gl{GetTexLevelParameter}, \n `glGetTextureLevelParameter()`, \n @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access} | @ref Texture::imageSize(), \n @ref TextureArray::imageSize(), \n @ref CubeMapTexture::imageSize(), \n @ref CubeMapTextureArray::imageSize(), \n @ref RectangleTexture::imageSize()
 @fn_gl{GetTexParameter}, \n `glGetTextureParameter()`, \n @fn_gl_extension{GetTextureParameter,EXT,direct_state_access} | |
-@fn_gl{GetTextureSubImage}              | |
+@fn_gl{GetTextureSubImage}              | @ref CubeMapTexture::image()
 @fn_gl{GetTransformFeedback}            | not queryable, @ref TransformFeedback::attachBuffer() and @ref TransformFeedback::attachBuffers() setters only
 @fn_gl{GetTransformFeedbackVarying}     | not queryable, @ref AbstractShaderProgram::setTransformFeedbackOutputs() setter only
 @fn_gl{GetUniform}, \n `glGetnUniform()`, \n @fn_gl_extension{GetnUniform,ARB,robustness} | not queryable, @ref AbstractShaderProgram::setUniform() setter only

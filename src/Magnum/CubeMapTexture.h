@@ -379,6 +379,47 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
+         * @brief Read given mip level of texture to image
+         *
+         * Image parameters like format and type of pixel data are taken from
+         * given image, image size is taken from the texture using
+         * @ref imageSize().
+         * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
+         *      @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT}, then
+         *      @fn_gl{GetTextureImage}
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         */
+        void image(Int level, Image3D& image);
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image3D image(Int level, Image3D&& image);
+
+        /**
+         * @brief Read given mip level of texture to buffer image
+         *
+         * See @ref image(Int, Image3D&) for more information.
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         */
+        void image(Int level, BufferImage3D& image, BufferUsage usage);
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage3D image(Int level, BufferImage3D&& image, BufferUsage usage);
+
+        /**
          * @brief Read given mip level and coordinate of texture to image
          *
          * Image parameters like format and type of pixel data are taken from
@@ -470,6 +511,39 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D&& image) {
             return setImage(coordinate, level, internalFormat, image);
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set image subdata
+         * @param level             Mip level
+         * @param offset            Offset where to put data in the texture
+         * @param image             @ref Image, @ref ImageReference or
+         *      @ref Trade::ImageData of the same dimension count
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref setStorage(), @fn_gl2{TextureSubImage3D,TexSubImage3D}
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl In OpenGL ES you need to set image for each face
+         *      separately.
+         */
+        CubeMapTexture& setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image);
+
+        /** @overload
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl In OpenGL ES you need to set image for each face
+         *      separately.
+         */
+        CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D& image);
+
+        /** @overload
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl In OpenGL ES you need to set image for each face
+         *      separately.
+         */
+        CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D&& image) {
+            return setSubImage(level, offset, image);
         }
         #endif
 
