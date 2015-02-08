@@ -55,6 +55,7 @@ struct Vector4Test: Corrade::TestSuite::Tester {
     explicit Vector4Test();
 
     void construct();
+    void constructPad();
     void constructDefault();
     void constructOneValue();
     void constructParts();
@@ -79,6 +80,7 @@ typedef Math::Vector2<Float> Vector2;
 
 Vector4Test::Vector4Test() {
     addTests({&Vector4Test::construct,
+              &Vector4Test::constructPad,
               &Vector4Test::constructDefault,
               &Vector4Test::constructOneValue,
               &Vector4Test::constructParts,
@@ -99,6 +101,16 @@ Vector4Test::Vector4Test() {
 void Vector4Test::construct() {
     constexpr Vector4 a = {1.0f, -2.5f, 3.0f, 4.1f};
     CORRADE_COMPARE(a, (Vector<4, Float>(1.0f, -2.5f, 3.0f, 4.1f)));
+}
+
+void Vector4Test::constructPad() {
+    constexpr Vector<2, Float> a{3.0f, -1.0f};
+    constexpr Vector4 b = Vector4::pad(a);
+    constexpr Vector4 c = Vector4::pad(a, 5.0f);
+    constexpr Vector4 d = Vector4::pad(a, 5.0f, 1.0f);
+    CORRADE_COMPARE(b, Vector4(3.0f, -1.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(c, Vector4(3.0f, -1.0f, 5.0f, 5.0f));
+    CORRADE_COMPARE(d, Vector4(3.0f, -1.0f, 5.0f, 1.0f));
 }
 
 void Vector4Test::constructDefault() {

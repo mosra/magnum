@@ -56,6 +56,7 @@ struct VectorTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructFromData();
+    void constructPad();
     void constructDefault();
     void constructOneValue();
     void constructOneComponent();
@@ -111,6 +112,7 @@ typedef Vector<4, Int> Vector4i;
 VectorTest::VectorTest() {
     addTests({&VectorTest::construct,
               &VectorTest::constructFromData,
+              &VectorTest::constructPad,
               &VectorTest::constructDefault,
               &VectorTest::constructOneValue,
               &VectorTest::constructOneComponent,
@@ -166,6 +168,18 @@ void VectorTest::construct() {
 void VectorTest::constructFromData() {
     Float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+}
+
+void VectorTest::constructPad() {
+    constexpr Vector<2, Float> a{1.0f, -1.0f};
+    constexpr Vector4 b = Vector4::pad(a);
+    constexpr Vector4 c = Vector4::pad(a, 5.0f);
+    CORRADE_COMPARE(b, Vector4(1.0f, -1.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(c, Vector4(1.0f, -1.0f, 5.0f, 5.0f));
+
+    constexpr Vector<5, Float> d{1.0f, -1.0f, 8.0f, 2.3f, -1.1f};
+    constexpr Vector4 e = Vector4::pad(d);
+    CORRADE_COMPARE(e, Vector4(1.0f, -1.0f, 8.0f, 2.3f));
 }
 
 void VectorTest::constructDefault() {
@@ -451,6 +465,9 @@ void VectorTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(Vec2::from(data)), Vec2&>::value));
     CORRADE_VERIFY((std::is_same<decltype(Vec2::from(cdata)), const Vec2&>::value));
 
+    Vector<1, Float> one;
+    CORRADE_VERIFY((std::is_same<decltype(Vec2::pad(one)), Vec2>::value));
+
     /* Const operators */
     const Vec2 c;
     const Vec2 c2;
@@ -517,6 +534,14 @@ void VectorTest::subclass() {
 
     const Float cdata[] = {1.0f, -2.0f};
     CORRADE_COMPARE(Vec2::from(cdata), Vec2(1.0f, -2.0f));
+
+    {
+        constexpr Vector<1, Float> a = 5.0f;
+        constexpr Vec2 b = Vec2::pad(a);
+        constexpr Vec2 c = Vec2::pad(a, -1.0f);
+        CORRADE_COMPARE(b, Vec2(5.0f, 0.0f));
+        CORRADE_COMPARE(c, Vec2(5.0f, -1.0f));
+    }
 
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) + Vec2(1.0f, -3.0f), Vec2(-1.0f, 2.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) - Vec2(1.0f, -3.0f), Vec2(-3.0f, 8.0f));

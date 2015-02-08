@@ -44,6 +44,21 @@ See @ref matrix-vector for brief introduction.
 */
 template<class T> class Vector4: public Vector<4, T> {
     public:
+        /**
+         * @brief Pad vector to four-component one
+         *
+         * If size of @p a is smaller than 4, it is padded from right with
+         * @p xyz for first three component and @p w for fourth component,
+         * otherwise it's cut.
+         * @see @ref pad(const Vector<otherSize, T>&, T)
+         */
+        template<std::size_t otherSize> constexpr static Vector4<T> pad(const Vector<otherSize, T>& a, T xyz, T w) {
+            return {0 < otherSize ? a[0] : xyz,
+                    1 < otherSize ? a[1] : xyz,
+                    2 < otherSize ? a[2] : xyz,
+                    3 < otherSize ? a[3] : w};
+        }
+
         /** @copydoc Vector::Vector() */
         constexpr /*implicit*/ Vector4() {}
 

@@ -79,6 +79,17 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
+         * @brief Pad vector
+         *
+         * If size of @p a is smaller than @ref Size, it is padded from right
+         * with @p value, otherwise it's cut.
+         * @see @ref Vector4::pad(const Vector<otherSize, T>&, T, T)
+         */
+        template<std::size_t otherSize> constexpr static Vector<size, T> pad(const Vector<otherSize, T>& a, T value = T(0)) {
+            return padInternal<otherSize>(typename Implementation::GenerateSequence<size>::Type(), a, value);
+        }
+
+        /**
          * @brief Dot product
          *
          * Returns `0` if two vectors are orthogonal, `1` if two *normalized*
@@ -504,6 +515,10 @@ template<std::size_t size, class T> class Vector {
 
         /* Implementation for Vector<size, T>::Vector(U) */
         template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
+
+        template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
+            return {sequence < otherSize ? a[sequence] : value...};
+        }
 
         T _data[size];
 };
@@ -1032,6 +1047,9 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }                                                                       \
     static const Type<T>& from(const T* data) {                             \
         return *reinterpret_cast<const Type<T>*>(data);                     \
+    }                                                                       \
+    template<std::size_t otherSize> constexpr static Type<T> pad(const Math::Vector<otherSize, T>& a, T value = T(0)) { \
+        return Math::Vector<size, T>::pad(a, value);                        \
     }                                                                       \
                                                                             \
     Type<T>& operator=(const Type<T>& other) {                              \
