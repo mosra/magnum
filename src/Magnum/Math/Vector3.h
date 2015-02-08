@@ -104,15 +104,20 @@ template<class T> class Vector3: public Vector<3, T> {
         /**
          * @brief Cross product
          *
-         * @f[
-         *      \boldsymbol a \times \boldsymbol b =
-         *      \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_y - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
+         * Done using the following equation: @f[
+         *      \boldsymbol a \times \boldsymbol b = \begin{pmatrix} c_y \\ c_z \\ c_x \end{pmatrix} ~~~~~
+         *      \boldsymbol c = \boldsymbol a \begin{pmatrix} b_y \\ b_z \\ b_x \end{pmatrix} -
+         *                      \boldsymbol b \begin{pmatrix} a_y \\ a_z \\ a_x \end{pmatrix}
+         * @f]
+         * Which is equivalent to the common one (source:
+         * https://twitter.com/sjb3d/status/563640846671953920): @f[
+         *      \boldsymbol a \times \boldsymbol b = \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_x - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
          * @f]
          * @see @ref Vector2::cross()
          */
         static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
-            return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
-                   swizzle<'z', 'x', 'y'>(a)*swizzle<'y', 'z', 'x'>(b);
+            return swizzle<'y', 'z', 'x'>(a*swizzle<'y', 'z', 'x'>(b) -
+                                          b*swizzle<'y', 'z', 'x'>(a));
         }
 
         /** @copydoc Vector::Vector() */
