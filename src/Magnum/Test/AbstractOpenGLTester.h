@@ -48,10 +48,10 @@ class AbstractOpenGLTester: public TestSuite::Tester, public Platform::Windowles
         int exec() override final { return TestSuite::Tester::exec(); }
 
     private:
-        static int zero;
+        static int _zero;
 };
 
-AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({zero, nullptr}) {
+AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({_zero, nullptr}) {
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
@@ -62,7 +62,7 @@ AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({z
     }
 }
 
-int AbstractOpenGLTester::zero = 0;
+int AbstractOpenGLTester::_zero = 0;
 
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 
