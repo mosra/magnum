@@ -379,9 +379,29 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copybrief Texture::image(Int, Image&)
+         * @brief Read given mip level and coordinate of texture to image
          *
-         * See @ref Texture::image(Int, Image&) for more information.
+         * Image parameters like format and type of pixel data are taken from
+         * given image, image size is taken from the texture using
+         * @ref imageSize().
+         *
+         * If neither @extension{ARB,get_texture_sub_image} (part of OpenGL
+         * 4.5) nor @extension{EXT,direct_state_access} is available, the
+         * texture is bound before the operation (if not already). If either
+         * @extension{ARB,get_texture_sub_image} or @extension{ARB,robustness}
+         * is available, the operation is protected from buffer overflow.
+         * However, if @extension{ARB,get_texture_sub_image} is not available
+         * and both @extension{EXT,direct_state_access} and
+         * @extension{ARB,robustness} are available, the robust operation is
+         * preferred over DSA.
+         * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
+         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
+         *      @def_gl{TEXTURE_HEIGHT}, then @fn_gl{GetTextureSubImage},
+         *      @fn_gl_extension{GetnTexImage,ARB,robustness},
+         *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
+         *      eventually @fn_gl{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES.
          */
         void image(Coordinate coordinate, Int level, Image2D& image);
@@ -396,10 +416,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         Image2D image(Coordinate coordinate, Int level, Image2D&& image);
 
         /**
-         * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
+         * @brief Read given mip level and coordinate of texture to buffer image
          *
-         * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
-         * information.
+         * See @ref image(Coordinate, Int, Image2D&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
          */
         void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage);

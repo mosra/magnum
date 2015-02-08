@@ -205,23 +205,31 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
         /* Extension name added above */
         getImageImplementation = &AbstractTexture::getImageImplementationDSA;
-        getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::GL::ARB::robustness>()) {
         extensions.push_back(Extensions::GL::ARB::robustness::string());
-
         getImageImplementation = &AbstractTexture::getImageImplementationRobustness;
-        getCubeImageImplementation = &CubeMapTexture::getImageImplementationRobustness;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension name added above */
         getImageImplementation = &AbstractTexture::getImageImplementationDSAEXT;
+
+    } else getImageImplementation = &AbstractTexture::getImageImplementationDefault;
+
+    /* Image retrieval implementation for cube map */
+    if(context.isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>()) {
+        extensions.push_back(Extensions::GL::ARB::get_texture_sub_image::string());
+        getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
+
+    } else if(context.isExtensionSupported<Extensions::GL::ARB::robustness>()) {
+        /* Extension name added above */
+        getCubeImageImplementation = &CubeMapTexture::getImageImplementationRobustness;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        /* Extension name added above */
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSAEXT;
 
-    } else {
-        getImageImplementation = &AbstractTexture::getImageImplementationDefault;
-        getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
-    }
+    } else getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
     #endif
 
     /* Texture storage implementation */

@@ -645,8 +645,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}, then
          *      @fn_gl2{GetTextureImage,GetTexImage},
-         *      @fn_gl_extension{GetnTexImage,ARB,robustness} or
+         *      @fn_gl_extension{GetnTexImage,ARB,robustness},
          *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
+         *      eventually @fn_gl{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES.
          */
         void image(Int level, Image<dimensions>& image) {
