@@ -351,7 +351,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticDraw);
+         * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage2D read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage);
