@@ -60,6 +60,7 @@ void CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D
     const Vector2i size = imageSize(level);
     const std::size_t dataSize = image.dataSize(size);
     char* data = new char[dataSize];
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), dataSize, data);
     image.setData(image.format(), image.type(), size, data);
 }

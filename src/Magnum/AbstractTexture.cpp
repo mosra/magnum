@@ -1233,6 +1233,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = image.dataSize(size);
     char* data = new char[dataSize];
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, data);
     image.setData(image.format(), image.type(), size, data);
 }
