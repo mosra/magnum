@@ -28,11 +28,18 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
+#include "Magnum/Image.h"
+#endif
+
 #include "Implementation/maxTextureSize.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum {
+
+namespace Implementation {
 
 template<UnsignedInt dimensions> VectorTypeFor<dimensions, Int> maxTextureSize() {
     return VectorTypeFor<dimensions, Int>{Implementation::maxTextureSideSize()};
@@ -51,4 +58,30 @@ template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>() {
     return {Vector2i(Implementation::maxTextureSideSize()), Implementation::max3DTextureDepth()};
 }
 
-}}
+}
+
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::image(const Int level, Image<dimensions>&& image) {
+    this->image(level, image);
+    return std::move(image);
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template MAGNUM_EXPORT Image<1> Texture<1>::image(Int, Image<1>&&);
+template MAGNUM_EXPORT Image<2> Texture<2>::image(Int, Image<2>&&);
+template MAGNUM_EXPORT Image<3> Texture<3>::image(Int, Image<3>&&);
+#endif
+
+template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::image(const Int level, BufferImage<dimensions>&& image, const BufferUsage usage) {
+    this->image(level, image, usage);
+    return std::move(image);
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template MAGNUM_EXPORT BufferImage<1> Texture<1>::image(Int, BufferImage<1>&&, BufferUsage);
+template MAGNUM_EXPORT BufferImage<2> Texture<2>::image(Int, BufferImage<2>&&, BufferUsage);
+template MAGNUM_EXPORT BufferImage<3> Texture<3>::image(Int, BufferImage<3>&&, BufferUsage);
+#endif
+#endif
+
+}

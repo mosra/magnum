@@ -65,6 +65,11 @@ void CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D
     image.setData(image.format(), image.type(), size, data);
 }
 
+Image2D CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D&& image) {
+    this->image(coordinate, level, image);
+    return std::move(image);
+}
+
 void CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
     const std::size_t dataSize = image.dataSize(size);
@@ -73,6 +78,11 @@ void CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferI
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), dataSize, nullptr);
+}
+
+BufferImage2D CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferImage2D&& image, const BufferUsage usage) {
+    this->image(coordinate, level, image, usage);
+    return std::move(image);
 }
 #endif
 

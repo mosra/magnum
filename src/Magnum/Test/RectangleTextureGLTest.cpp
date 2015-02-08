@@ -213,8 +213,7 @@ void RectangleTextureGLTest::image() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image);
+    Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -237,8 +236,7 @@ void RectangleTextureGLTest::imageBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -265,8 +263,7 @@ void RectangleTextureGLTest::subImage() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image);
+    Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -296,8 +293,7 @@ void RectangleTextureGLTest::subImageBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();

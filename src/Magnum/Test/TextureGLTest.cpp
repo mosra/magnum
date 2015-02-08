@@ -724,8 +724,7 @@ void TextureGLTest::image1D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image1D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image1D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -743,8 +742,7 @@ void TextureGLTest::image1DBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage1D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticDraw);
+    BufferImage1D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticDraw);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -768,8 +766,7 @@ void TextureGLTest::image2D() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -793,8 +790,7 @@ void TextureGLTest::image2DBuffer() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -828,8 +824,7 @@ void TextureGLTest::image3D() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -857,8 +852,7 @@ void TextureGLTest::image3DBuffer() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -883,8 +877,7 @@ void TextureGLTest::subImage1D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image1D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image1D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -906,8 +899,7 @@ void TextureGLTest::subImage1DBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage1D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage1D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -935,8 +927,7 @@ void TextureGLTest::subImage2D() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -967,8 +958,7 @@ void TextureGLTest::subImage2DBuffer() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1009,8 +999,7 @@ void TextureGLTest::subImage3D() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1060,8 +1049,7 @@ void TextureGLTest::subImage3DBuffer() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();

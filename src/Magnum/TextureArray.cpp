@@ -29,6 +29,11 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
+#include "Magnum/Image.h"
+#endif
+
 #include "Implementation/maxTextureSize.h"
 
 namespace Magnum {
@@ -48,6 +53,18 @@ template<UnsignedInt dimensions> VectorTypeFor<dimensions+1, Int> TextureArray<d
     return {typename VectorOrScalar<dimensions>::Type{Implementation::maxTextureSideSize()},
             Implementation::maxTextureArrayLayers()};
 }
+
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt dimensions> Image<dimensions+1> TextureArray<dimensions>::image(const Int level, Image<dimensions+1>&& image) {
+    this->image(level, image);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> BufferImage<dimensions+1> TextureArray<dimensions>::image(const Int level, BufferImage<dimensions+1>&& image, const BufferUsage usage) {
+    this->image(level, image, usage);
+    return std::move(image);
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 template class MAGNUM_EXPORT TextureArray<1>;

@@ -653,6 +653,15 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             AbstractTexture::image<dimensions>(level, image);
         }
 
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image<dimensions> image(Int level, Image<dimensions>&& image);
+
         /**
          * @brief Read given mip level of texture to buffer image
          * @param level             Mip level
@@ -667,6 +676,15 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         void image(Int level, BufferImage<dimensions>& image, BufferUsage usage) {
             AbstractTexture::image<dimensions>(level, image, usage);
         }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage<dimensions> image(Int level, BufferImage<dimensions>&& image, BufferUsage usage);
         #endif
 
         /**

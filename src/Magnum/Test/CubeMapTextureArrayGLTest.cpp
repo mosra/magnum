@@ -240,8 +240,7 @@ void CubeMapTextureArrayGLTest::image() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -279,8 +278,7 @@ void CubeMapTextureArrayGLTest::imageBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -316,8 +314,7 @@ void CubeMapTextureArrayGLTest::subImage() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -381,8 +378,7 @@ void CubeMapTextureArrayGLTest::subImageBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();

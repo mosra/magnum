@@ -289,8 +289,7 @@ void CubeMapTextureGLTest::image() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(CubeMapTexture::Coordinate::PositiveX, 0, image);
+    Image2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -314,13 +313,12 @@ void CubeMapTextureGLTest::imageBuffer() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(CubeMapTexture::Coordinate::PositiveX, 0, image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    const auto imageData = image.buffer().data<UnsignedByte>();
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
        std::vector<UnsignedByte>(data, data+16), TestSuite::Compare::Container);
     #endif
@@ -343,8 +341,7 @@ void CubeMapTextureGLTest::subImage() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(CubeMapTexture::Coordinate::PositiveX, 0, image);
+    Image2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -375,13 +372,12 @@ void CubeMapTextureGLTest::subImageBuffer() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(CubeMapTexture::Coordinate::PositiveX, 0, image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    const auto imageData = image.buffer().data<UnsignedByte>();
     CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()), (std::vector<UnsignedByte>{
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,

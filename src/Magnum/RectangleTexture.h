@@ -260,6 +260,15 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
             AbstractTexture::image<2>(0, image);
         }
 
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image2D image(Image2D&& image);
+
         /**
          * @brief Read texture to buffer image
          *
@@ -269,6 +278,15 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         void image(BufferImage2D& image, BufferUsage usage) {
             AbstractTexture::image<2>(0, image, usage);
         }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage2D image(BufferImage2D&& image, BufferUsage usage);
 
         /**
          * @copybrief Texture::setImage()

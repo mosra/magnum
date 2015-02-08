@@ -26,8 +26,10 @@
 #include "CubeMapTextureArray.h"
 
 #ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
 
 #include "Implementation/maxTextureSize.h"
 
@@ -39,6 +41,16 @@ Vector3i CubeMapTextureArray::maxSize() {
 
     return Vector3i{Vector2i{Implementation::maxCubeMapTextureSideSize()},
                              Implementation::maxTextureArrayLayers()};
+}
+
+Image3D CubeMapTextureArray::image(const Int level, Image3D&& image) {
+    this->image(level, image);
+    return std::move(image);
+}
+
+BufferImage3D CubeMapTextureArray::image(const Int level, BufferImage3D&& image, const BufferUsage usage) {
+    this->image(level, image, usage);
+    return std::move(image);
 }
 
 }

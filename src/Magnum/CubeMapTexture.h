@@ -386,6 +386,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          */
         void image(Coordinate coordinate, Int level, Image2D& image);
 
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image2D image(Coordinate coordinate, Int level, Image2D&& image);
+
         /**
          * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
          *
@@ -394,6 +403,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gl Texture image queries are not available in OpenGL ES.
          */
         void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage);
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage2D image(Coordinate coordinate, Int level, BufferImage2D&& image, BufferUsage usage);
         #endif
 
         /**

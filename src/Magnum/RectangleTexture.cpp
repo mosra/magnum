@@ -26,8 +26,10 @@
 #include "RectangleTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
 
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
@@ -44,6 +46,16 @@ Vector2i RectangleTexture::maxSize() {
         glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &value);
 
     return Vector2i{value};
+}
+
+Image2D RectangleTexture::image(Image2D&& image) {
+    this->image(image);
+    return std::move(image);
+}
+
+BufferImage2D RectangleTexture::image(BufferImage2D&& image, const BufferUsage usage) {
+    this->image(image, usage);
+    return std::move(image);
 }
 
 }

@@ -357,6 +357,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             AbstractTexture::image<dimensions+1>(level, image);
         }
 
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image<dimensions+1> image(Int level, Image<dimensions+1>&& image);
+
         /**
          * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
          * @return Reference to self (for method chaining)
@@ -368,6 +377,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         void image(Int level, BufferImage<dimensions+1>& image, BufferUsage usage) {
             AbstractTexture::image<dimensions+1>(level, image, usage);
         }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage<dimensions+1> image(Int level, BufferImage<dimensions+1>&& image, BufferUsage usage);
         #endif
 
         /**
