@@ -35,6 +35,9 @@
 #include "Magnum/BufferTexture.h"
 #endif
 #include "Magnum/Context.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/CubeMapTextureArray.h"
+#endif
 #include "Magnum/DebugOutput.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
@@ -343,6 +346,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef MAGNUM_TARGET_GLES2
     _lvec(Texture3D::maxSize()) /* Checked ES2 version below */
     #endif
+    _lvec(CubeMapTexture::maxSize())
 
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
@@ -487,6 +491,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(ARB::texture_buffer_range)
 
         _l(BufferTexture::offsetAlignment())
+    }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>()) {
+        _h(ARB::texture_cube_map_array)
+
+        _l(CubeMapTextureArray::maxSize())
     }
     #endif
 
