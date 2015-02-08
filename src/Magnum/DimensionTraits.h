@@ -52,6 +52,14 @@ template<UnsignedInt dimensions, class T> struct DimensionTraits {
     typedef U VectorType;
 
     /**
+     * @brief Range type
+     *
+     * @ref Math::Range1D, @ref Math::Range2D or @ref Math::Range3D based on
+     * dimension count.
+     */
+    typedef U RangeType;
+
+    /**
      * @brief Matrix type
      *
      * Floating-point @ref Math::Matrix3 or @ref Math::Matrix4 for 2D or 3D. No
@@ -70,6 +78,14 @@ See @ref DimensionTraits::VectorType for more information.
 template<UnsignedInt dimensions, class T> using VectorTypeFor = typename DimensionTraits<dimensions, T>::VectorType;
 
 /**
+@brief Range type for given dimension count and type
+
+Convenience alternative to `typename DimensionTraits<dimensions, T>::RangeType`.
+See @ref DimensionTraits::RangeType for more information.
+*/
+template<UnsignedInt dimensions, class T> using RangeTypeFor = typename DimensionTraits<dimensions, T>::RangeType;
+
+/**
 @brief Matrix type for given dimension count and type
 
 Convenience alternative to `typename DimensionTraits<dimensions, T>::MatrixType`.
@@ -83,6 +99,7 @@ template<class T> struct DimensionTraits<1, T> {
     DimensionTraits() = delete;
 
     typedef Math::Vector<1, T> VectorType;
+    typedef Math::Range1D<T> RangeType;
 };
 
 /* Two dimensions - integral */
@@ -90,6 +107,7 @@ template<class T> struct DimensionTraits<2, T> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<T> VectorType;
+    typedef Math::Range2D<T> RangeType;
 };
 
 /* Two dimensions - floating-point */
@@ -97,6 +115,7 @@ template<> struct DimensionTraits<2, Float> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<Float> VectorType;
+    typedef Math::Range2D<Float> RangeType;
     typedef Math::Matrix3<Float> MatrixType;
 };
 #ifndef MAGNUM_TARGET_GLES
@@ -104,6 +123,7 @@ template<> struct DimensionTraits<2, Double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<Double> VectorType;
+    typedef Math::Range2D<Double> RangeType;
     typedef Math::Matrix3<Double> MatrixType;
 };
 #endif
@@ -113,6 +133,7 @@ template<class T> struct DimensionTraits<3, T> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<T> VectorType;
+    typedef Math::Range3D<T> RangeType;
 };
 
 /* Three dimensions - floating-point */
@@ -120,6 +141,7 @@ template<> struct DimensionTraits<3, Float> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<Float> VectorType;
+    typedef Math::Range3D<Float> RangeType;
     typedef Math::Matrix4<Float> MatrixType;
 };
 #ifndef MAGNUM_TARGET_GLES
@@ -127,6 +149,7 @@ template<> struct DimensionTraits<3, Double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<Double> VectorType;
+    typedef Math::Range3D<Double> RangeType;
     typedef Math::Matrix4<Double> MatrixType;
 };
 #endif
