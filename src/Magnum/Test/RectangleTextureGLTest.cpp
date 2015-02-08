@@ -32,6 +32,7 @@
 #include "Magnum/Image.h"
 #include "Magnum/RectangleTexture.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -54,6 +55,8 @@ struct RectangleTextureGLTest: AbstractOpenGLTester {
     void imageBuffer();
     void subImage();
     void subImageBuffer();
+    void subImageQuery();
+    void subImageQueryBuffer();
 
     void invalidateImage();
     void invalidateSubImage();
@@ -76,6 +79,8 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
 
               &RectangleTextureGLTest::subImage,
               &RectangleTextureGLTest::subImageBuffer,
+              &RectangleTextureGLTest::subImageQuery,
+              &RectangleTextureGLTest::subImageQueryBuffer,
 
               &RectangleTextureGLTest::invalidateImage,
               &RectangleTextureGLTest::invalidateSubImage});
@@ -297,6 +302,49 @@ void RectangleTextureGLTest::subImageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+}
+
+void RectangleTextureGLTest::subImageQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage({}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+}
+
+void RectangleTextureGLTest::subImageQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage({}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::invalidateImage() {

@@ -114,6 +114,16 @@ BufferImage2D CubeMapTexture::image(const Coordinate coordinate, const Int level
     return std::move(image);
 }
 
+Image3D CubeMapTexture::subImage(const Int level, const Range3Di& range, Image3D&& image) {
+    this->subImage(level, range, image);
+    return std::move(image);
+}
+
+BufferImage3D CubeMapTexture::subImage(const Int level, const Range3Di& range, BufferImage3D&& image, const BufferUsage usage) {
+    this->subImage(level, range, image, usage);
+    return std::move(image);
+}
+
 CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, const ImageReference3D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), image.data());

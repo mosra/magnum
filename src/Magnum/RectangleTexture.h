@@ -289,6 +289,46 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         BufferImage2D image(BufferImage2D&& image, BufferUsage usage);
 
         /**
+         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         *
+         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void subImage(const Range2Di& range, Image2D& image) {
+            AbstractTexture::subImage<2>(0, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = texture.subImage(range, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image2D subImage(const Range2Di& range, Image2D&& image);
+
+        /**
+         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         *
+         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void subImage(const Range2Di& range, BufferImage2D& image, BufferUsage usage) {
+            AbstractTexture::subImage<2>(0, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = texture.subImage(range, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage2D subImage(const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
+
+        /**
          * @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *

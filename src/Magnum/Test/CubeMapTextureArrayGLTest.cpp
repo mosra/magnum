@@ -31,6 +31,7 @@
 #include "Magnum/CubeMapTextureArray.h"
 #include "Magnum/Image.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -53,6 +54,8 @@ struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
     void imageBuffer();
     void subImage();
     void subImageBuffer();
+    void subImageQuery();
+    void subImageQueryBuffer();
 
     void generateMipmap();
 
@@ -76,6 +79,8 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
               &CubeMapTextureArrayGLTest::imageBuffer,
               &CubeMapTextureArrayGLTest::subImage,
               &CubeMapTextureArrayGLTest::subImageBuffer,
+              &CubeMapTextureArrayGLTest::subImageQuery,
+              &CubeMapTextureArrayGLTest::subImageQueryBuffer,
 
               &CubeMapTextureArrayGLTest::generateMipmap,
 
@@ -363,6 +368,49 @@ void CubeMapTextureArrayGLTest::subImageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector3i(4, 4, 6));
     CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+}
+
+void CubeMapTextureArrayGLTest::subImageQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, {2, 2, 4}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i(2, 2, 4));
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{SubData}, TestSuite::Compare::Container);
+}
+
+void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, {2, 2, 4}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i(2, 2, 4));
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubData}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureArrayGLTest::generateMipmap() {

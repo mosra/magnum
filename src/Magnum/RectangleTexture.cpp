@@ -58,5 +58,15 @@ BufferImage2D RectangleTexture::image(BufferImage2D&& image, const BufferUsage u
     return std::move(image);
 }
 
+Image2D RectangleTexture::subImage(const Range2Di& range, Image2D&& image) {
+    this->subImage(range, image);
+    return std::move(image);
+}
+
+BufferImage2D RectangleTexture::subImage(const Range2Di& range, BufferImage2D&& image, const BufferUsage usage) {
+    this->subImage(range, image, usage);
+    return std::move(image);
+}
+
 }
 #endif

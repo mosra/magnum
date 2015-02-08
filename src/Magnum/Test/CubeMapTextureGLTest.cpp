@@ -34,6 +34,7 @@
 #include "Magnum/CubeMapTexture.h"
 #include "Magnum/Image.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -74,6 +75,10 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void subImageBuffer();
     #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void subImageQuery();
+    void subImageQueryBuffer();
+    #endif
 
     void generateMipmap();
 
@@ -109,6 +114,10 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::image,
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::imageBuffer,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &CubeMapTextureGLTest::subImageQuery,
+              &CubeMapTextureGLTest::subImageQueryBuffer,
               #endif
 
               &CubeMapTextureGLTest::subImage,
@@ -457,6 +466,53 @@ void CubeMapTextureGLTest::subImageBuffer() {
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
     #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void CubeMapTextureGLTest::subImageQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    /* I'm too lazy to call setSubImage() six times */
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 1}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image3D image = texture.subImage(0, Range3Di::fromSize({1, 1, 0}, {2, 2, 1}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+}
+
+void CubeMapTextureGLTest::subImageQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    /* I'm too lazy to call setSubImage() six times */
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 1}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage3D image = texture.subImage(0, Range3Di::fromSize({1, 1, 0}, {2, 2, 1}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 #endif
 

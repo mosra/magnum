@@ -386,6 +386,48 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @endcode
          */
         BufferImage<dimensions+1> image(Int level, BufferImage<dimensions+1>&& image, BufferUsage usage);
+
+        /**
+         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         *
+         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         */
+        void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>& image) {
+            AbstractTexture::subImage<dimensions+1>(level, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image3D image = texture.subImage(0, range, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>&& image);
+
+        /**
+         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         *
+         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         */
+        void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>& image, BufferUsage usage) {
+            AbstractTexture::subImage<dimensions+1>(level, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage3D image = texture.subImage(0, range, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>&& image, BufferUsage usage);
         #endif
 
         /**

@@ -35,6 +35,7 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/Shader.h"
@@ -1255,6 +1256,42 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Buffer
 template void MAGNUM_EXPORT AbstractTexture::image<1>(GLint, BufferImage<1>&, BufferUsage);
 template void MAGNUM_EXPORT AbstractTexture::image<2>(GLint, BufferImage<2>&, BufferUsage);
 template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, BufferImage<3>&, BufferUsage);
+
+template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
+    createIfNotAlready();
+
+    const Math::Vector<dimensions, Int> size = range.size();
+    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedSize = Vector3i::pad(size, 1);
+    const std::size_t dataSize = image.dataSize(size);
+    char* data = new char[dataSize];
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), dataSize, data);
+    image.setData(image.format(), image.type(), size, data);
+}
+
+template void MAGNUM_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, Image<1>&);
+template void MAGNUM_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, Image<2>&);
+template void MAGNUM_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, Image<3>&);
+
+template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, const BufferUsage usage) {
+    createIfNotAlready();
+
+    const Math::Vector<dimensions, Int> size = range.size();
+    const std::size_t dataSize = image.dataSize(size);
+    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedSize = Vector3i::pad(size, 1);
+    if(image.size() != size)
+        image.setData(image.format(), image.type(), size, nullptr, usage);
+
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);
+}
+
+template void MAGNUM_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, BufferImage<1>&, BufferUsage);
+template void MAGNUM_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, BufferImage<2>&, BufferUsage);
+template void MAGNUM_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, BufferImage<3>&, BufferUsage);
 #endif
 #endif
 

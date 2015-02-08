@@ -34,6 +34,7 @@
 #include "Magnum/Image.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -115,14 +116,24 @@ struct TextureGLTest: AbstractOpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void subImage1D();
     void subImage1DBuffer();
+    void subImage1DQuery();
+    void subImage1DQueryBuffer();
     #endif
     void subImage2D();
     #ifndef MAGNUM_TARGET_GLES2
     void subImage2DBuffer();
     #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void subImage2DQuery();
+    void subImage2DQueryBuffer();
+    #endif
     void subImage3D();
     #ifndef MAGNUM_TARGET_GLES2
     void subImage3DBuffer();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void subImage3DQuery();
+    void subImage3DQueryBuffer();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -218,14 +229,24 @@ TextureGLTest::TextureGLTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::subImage1D,
         &TextureGLTest::subImage1DBuffer,
+        &TextureGLTest::subImage1DQuery,
+        &TextureGLTest::subImage1DQueryBuffer,
         #endif
         &TextureGLTest::subImage2D,
         #ifndef MAGNUM_TARGET_GLES2
         &TextureGLTest::subImage2DBuffer,
         #endif
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::subImage2DQuery,
+        &TextureGLTest::subImage2DQueryBuffer,
+        #endif
         &TextureGLTest::subImage3D,
         #ifndef MAGNUM_TARGET_GLES2
         &TextureGLTest::subImage3DBuffer,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::subImage3DQuery,
+        &TextureGLTest::subImage3DQueryBuffer,
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -903,6 +924,44 @@ void TextureGLTest::subImage1DBuffer() {
     CORRADE_COMPARE(image.size(), 4);
     CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
 }
+
+void TextureGLTest::subImage1DQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, 4)
+           .setSubImage(0, {}, ImageReference1D{ColorFormat::RGBA, ColorType::UnsignedByte, 4, SubData1DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image1D image = texture.subImage(0, Range1Di::fromSize(1, 2), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), 2);
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayReference<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+}
+
+void TextureGLTest::subImage1DQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, 4)
+           .setSubImage(0, {}, ImageReference1D{ColorFormat::RGBA, ColorType::UnsignedByte, 4, SubData1DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage1D image = texture.subImage(0, Range1Di::fromSize(1, 2), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), 2);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+}
 #endif
 
 namespace {
@@ -957,6 +1016,46 @@ void TextureGLTest::subImage2DBuffer() {
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubData2DComplete}, TestSuite::Compare::Container);
     #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::subImage2DQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage(0, {}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData2DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayReference<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+}
+
+void TextureGLTest::subImage2DQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture2D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage(0, {}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData2DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
 }
 #endif
 
@@ -1036,6 +1135,44 @@ void TextureGLTest::subImage3DBuffer() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::subImage3DQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture3D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData3DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i{2});
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayReference<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+}
+
+void TextureGLTest::subImage3DQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture3D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData3DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i{2});
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+}
+
 void TextureGLTest::generateMipmap1D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
