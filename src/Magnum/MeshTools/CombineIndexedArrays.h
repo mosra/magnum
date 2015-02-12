@@ -131,7 +131,8 @@ template<class T> void writeCombinedArray(const UnsignedInt stride, const Unsign
         CORRADE_ASSERT(index < array.size(), "MeshTools::combineIndexedArrays(): index out of range", );
         output.push_back(array[index]);
     }
-    std::swap(output, array);
+    using std::swap;
+    swap(output, array);
 }
 
 /* Terminator for recursive calls */

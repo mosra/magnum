@@ -62,8 +62,9 @@ template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTra
                 rowMax = row2;
 
         /* Swap the rows */
-        std::swap(a[row], a[rowMax]);
-        std::swap(t[row], t[rowMax]);
+        using std::swap;
+        swap(a[row], a[rowMax]);
+        swap(t[row], t[rowMax]);
 
         /* Singular */
         if(TypeTraits<T>::equals(a[row][row], T(0)))

@@ -594,7 +594,8 @@ inline Source::Source(Source&& other): _id(other._id) {
 }
 
 inline Source& Source::operator=(Source&& other) {
-    std::swap(_id, other._id);
+    using std::swap;
+    swap(_id, other._id);
     return *this;
 }
 

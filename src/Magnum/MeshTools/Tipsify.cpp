@@ -125,7 +125,8 @@ void Tipsify::operator()(std::size_t cacheSize) {
     }
 
     /* Swap original index buffer with optimized */
-    std::swap(indices, outputIndices);
+    using std::swap;
+    swap(indices, outputIndices);
 }
 
 void Tipsify::buildAdjacency(std::vector<UnsignedInt>& liveTriangleCount, std::vector<UnsignedInt>& neighborOffset, std::vector<UnsignedInt>& neighbors) const {

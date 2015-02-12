@@ -165,8 +165,9 @@ template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimension
 
 template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::operator=(Image<dimensions>&& other) noexcept {
     AbstractImage::operator=(std::move(other));
-    std::swap(_size, other._size);
-    std::swap(_data, other._data);
+    using std::swap;
+    swap(_size, other._size);
+    swap(_data, other._data);
     return *this;
 }
 

@@ -638,9 +638,10 @@ inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _targ
 }
 
 inline AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) noexcept {
-    std::swap(_target, other._target);
-    std::swap(_id, other._id);
-    std::swap(_created, other._created);
+    using std::swap;
+    swap(_target, other._target);
+    swap(_id, other._id);
+    swap(_created, other._created);
     return *this;
 }
 

@@ -1307,12 +1307,13 @@ inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{othe
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
-    std::swap(_id, other._id);
-    std::swap(_targetHint, other._targetHint);
+    using std::swap;
+    swap(_id, other._id);
+    swap(_targetHint, other._targetHint);
     #ifdef CORRADE_TARGET_NACL
-    std::swap(_mappedBuffer, other._mappedBuffer);
+    swap(_mappedBuffer, other._mappedBuffer);
     #endif
-    std::swap(_created, other._created);
+    swap(_created, other._created);
     return *this;
 }
 

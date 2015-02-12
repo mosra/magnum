@@ -145,8 +145,9 @@ template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(Buf
 
 template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
     AbstractImage::operator=(std::move(other));
-    std::swap(_size, other._size);
-    std::swap(_buffer, other._buffer);
+    using std::swap;
+    swap(_size, other._size);
+    swap(_buffer, other._buffer);
     return *this;
 }
 #else

@@ -91,8 +91,9 @@ template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions
 }
 
 template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions>::operator=(Composition<dimensions>&& other) {
-    std::swap(other._shapes, _shapes);
-    std::swap(other._nodes, _nodes);
+    using std::swap;
+    swap(other._shapes, _shapes);
+    swap(other._nodes, _nodes);
     return *this;
 }
 

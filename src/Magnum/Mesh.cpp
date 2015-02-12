@@ -132,27 +132,28 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _created{other._created}, _pr
 }
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
-    std::swap(_id, other._id);
-    std::swap(_created, other._created);
-    std::swap(_primitive, other._primitive);
-    std::swap(_count, other._count);
-    std::swap(_baseVertex, other._baseVertex);
-    std::swap(_instanceCount, other._instanceCount);
+    using std::swap;
+    swap(_id, other._id);
+    swap(_created, other._created);
+    swap(_primitive, other._primitive);
+    swap(_count, other._count);
+    swap(_baseVertex, other._baseVertex);
+    swap(_instanceCount, other._instanceCount);
     #ifndef MAGNUM_TARGET_GLES
-    std::swap(_baseInstance, other._baseInstance);
+    swap(_baseInstance, other._baseInstance);
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    std::swap(_indexStart, other._indexStart);
-    std::swap(_indexEnd, other._indexEnd);
+    swap(_indexStart, other._indexStart);
+    swap(_indexEnd, other._indexEnd);
     #endif
-    std::swap(_indexOffset, other._indexOffset);
-    std::swap(_indexType, other._indexType);
-    std::swap(_indexBuffer, other._indexBuffer);
-    std::swap(_attributes, other._attributes);
+    swap(_indexOffset, other._indexOffset);
+    swap(_indexType, other._indexType);
+    swap(_indexBuffer, other._indexBuffer);
+    swap(_attributes, other._attributes);
     #ifndef MAGNUM_TARGET_GLES2
-    std::swap(_integerAttributes, other._integerAttributes);
+    swap(_integerAttributes, other._integerAttributes);
     #ifndef MAGNUM_TARGET_GLES
-    std::swap(_longAttributes, other._longAttributes);
+    swap(_longAttributes, other._longAttributes);
     #endif
     #endif
 

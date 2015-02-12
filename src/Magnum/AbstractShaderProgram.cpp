@@ -245,7 +245,8 @@ AbstractShaderProgram::~AbstractShaderProgram() {
 }
 
 AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& other) noexcept {
-    std::swap(_id, other._id);
+    using std::swap;
+    swap(_id, other._id);
     return *this;
 }
 

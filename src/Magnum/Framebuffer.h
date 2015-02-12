@@ -701,9 +701,10 @@ inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
 }
 
 inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
-    std::swap(_id, other._id);
-    std::swap(_viewport, other._viewport);
-    std::swap(_created, other._created);
+    using std::swap;
+    swap(_id, other._id);
+    swap(_viewport, other._viewport);
+    swap(_created, other._created);
     return *this;
 }
 

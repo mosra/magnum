@@ -222,8 +222,9 @@ inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id{other._id}
 }
 
 inline Renderbuffer& Renderbuffer::operator=(Renderbuffer&& other) noexcept {
-    std::swap(_id, other._id);
-    std::swap(_created, other._created);
+    using std::swap;
+    swap(_id, other._id);
+    swap(_created, other._created);
     return *this;
 }
 

@@ -186,8 +186,9 @@ inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._
 }
 
 inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
-    std::swap(_id, other._id);
-    std::swap(_target, other._target);
+    using std::swap;
+    swap(_id, other._id);
+    swap(_target, other._target);
     return *this;
 }
 

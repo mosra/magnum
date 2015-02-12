@@ -112,7 +112,8 @@ inline Buffer::Buffer(Buffer&& other): _id(other._id) {
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) {
-    std::swap(_id, other._id);
+    using std::swap;
+    swap(_id, other._id);
     return *this;
 }
 

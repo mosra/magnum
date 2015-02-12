@@ -190,9 +190,10 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, s
     return a < b ? std::make_pair(a, b) : std::make_pair(b, a);
 }
 template<std::size_t size, class T> std::pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
+    using std::swap;
     std::pair<Vector<size, T>, Vector<size, T>> out{a, b};
     for(std::size_t i = 0; i != size; ++i)
-        if(out.first[i] > out.second[i]) std::swap(out.first[i], out.second[i]);
+        if(out.first[i] > out.second[i]) swap(out.first[i], out.second[i]);
     return out;
 }
 #endif

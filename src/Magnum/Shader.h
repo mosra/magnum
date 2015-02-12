@@ -576,9 +576,10 @@ inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._i
 }
 
 inline Shader& Shader::operator=(Shader&& other) noexcept {
-    std::swap(_type, other._type);
-    std::swap(_id, other._id);
-    std::swap(_sources, other._sources);
+    using std::swap;
+    swap(_type, other._type);
+    swap(_id, other._id);
+    swap(_sources, other._sources);
     return *this;
 }
 
