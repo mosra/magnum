@@ -352,6 +352,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, Image<dimensions+1>& image) {
             AbstractTexture::image<dimensions+1>(level, image);
@@ -373,6 +374,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, BufferImage<dimensions+1>& image, BufferUsage usage) {
             AbstractTexture::image<dimensions+1>(level, image, usage);
@@ -394,6 +396,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>& image) {
             AbstractTexture::subImage<dimensions+1>(level, range, image);
@@ -415,6 +418,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>& image, BufferUsage usage) {
             AbstractTexture::subImage<dimensions+1>(level, range, image, usage);

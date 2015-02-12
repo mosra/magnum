@@ -649,6 +649,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, Image<dimensions>& image) {
             AbstractTexture::image<dimensions>(level, image);
@@ -671,6 +672,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * See @ref image(Int, Image&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
@@ -698,6 +700,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @fn_gl{GetTextureSubImage}
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
             AbstractTexture::subImage<dimensions>(level, range, image);
@@ -723,6 +726,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, BufferUsage usage) {
             AbstractTexture::subImage<dimensions>(level, range, image, usage);

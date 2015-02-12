@@ -389,6 +389,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      @fn_gl{GetTextureImage}
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, Image3D& image);
 
@@ -407,6 +408,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref image(Int, Image3D&) for more information.
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, BufferImage3D& image, BufferUsage usage);
 
@@ -444,6 +446,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void image(Coordinate coordinate, Int level, Image2D& image);
 
@@ -461,6 +464,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref image(Coordinate, Int, Image2D&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage);
 
@@ -480,6 +484,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const Range3Di& range, Image3D& image) {
             AbstractTexture::subImage<3>(level, range, image);
@@ -501,6 +506,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const Range3Di& range, BufferImage3D& image, BufferUsage usage) {
             AbstractTexture::subImage<3>(level, range, image, usage);
