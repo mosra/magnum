@@ -288,6 +288,9 @@ int main(int argc, char** argv) {
 }
 @endcode
 
+@attention Currently Magnum is limited to single OpenGL context, which must be
+    always set as current.
+
 On majority of platforms the @ref Platform::Context class does GL function
 pointer loading using platform-specific APIs. In that case you also need to
 find particular `*Context` library, add its include dir and then link to it.
