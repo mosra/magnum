@@ -36,21 +36,6 @@ namespace Magnum { namespace SceneGraph {
 
 namespace Implementation {
 
-template<UnsignedInt dimensions, class T> class Camera {};
-
-template<class T> class Camera<2, T> {
-    public:
-        constexpr static Math::Matrix3<T> aspectRatioScale(const Math::Vector2<T>& scale) {
-            return Math::Matrix3<T>::scaling({scale.x(), scale.y()});
-        }
-};
-template<class T> class Camera<3, T> {
-    public:
-        constexpr static Math::Matrix4<T> aspectRatioScale(const Math::Vector2<T>& scale) {
-            return Math::Matrix4<T>::scaling({scale.x(), scale.y(), 1.0f});
-        }
-};
-
 template<UnsignedInt dimensions, class T> MatrixTypeFor<dimensions, T> aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport) {
     /* Don't divide by zero / don't preserve anything */
     if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
@@ -60,10 +45,10 @@ template<UnsignedInt dimensions, class T> MatrixTypeFor<dimensions, T> aspectRat
 
     /* Extend on larger side = scale larger side down
        Clip on smaller side = scale smaller side up */
-    return Camera<dimensions, T>::aspectRatioScale(
+    return MatrixTypeFor<dimensions, T>::scaling(Math::Vector<dimensions, T>::pad(
         (relativeAspectRatio.x() > relativeAspectRatio.y()) == (aspectRatioPolicy == AspectRatioPolicy::Extend) ?
-        Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1.0)) :
-        Vector2(T(1.0), relativeAspectRatio.x()/relativeAspectRatio.y()));
+        Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1)) :
+        Vector2(T(1), relativeAspectRatio.x()/relativeAspectRatio.y()), T(1)));
 }
 
 }
