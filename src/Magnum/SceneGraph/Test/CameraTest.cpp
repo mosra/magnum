@@ -41,6 +41,7 @@ struct CameraTest: TestSuite::Tester {
     void fixAspectRatio();
     void defaultProjection2D();
     void defaultProjection3D();
+    void projectionCorrectedInvertedY();
     void projectionSize2D();
     void projectionSizeOrthographic();
     void projectionSizePerspective();
@@ -56,6 +57,7 @@ CameraTest::CameraTest() {
     addTests({&CameraTest::fixAspectRatio,
               &CameraTest::defaultProjection2D,
               &CameraTest::defaultProjection3D,
+              &CameraTest::projectionCorrectedInvertedY,
               &CameraTest::projectionSize2D,
               &CameraTest::projectionSizeOrthographic,
               &CameraTest::projectionSizePerspective,
@@ -117,6 +119,20 @@ void CameraTest::defaultProjection3D() {
     Camera3D camera(o);
     CORRADE_COMPARE(camera.projectionMatrix(), Matrix4());
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
+}
+
+void CameraTest::projectionCorrectedInvertedY() {
+    Object2D o;
+    Camera2D camera(o);
+    camera.setProjection({4.0f, -2.0f})
+        .setAspectRatioPolicy(AspectRatioPolicy::Extend)
+        .setViewport({4, 4});
+
+    /* Resulting matrix should have Y coordinate inverted */
+    Matrix3 expected{{0.5f,  0.0f, 0.0f},
+                     {0.0f, -0.5f, 0.0f},
+                     {0.0f,  0.0f, 1.0f}};
+    CORRADE_COMPARE(camera.projectionMatrix(), expected);
 }
 
 void CameraTest::projectionSize2D() {
