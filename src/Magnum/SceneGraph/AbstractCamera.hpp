@@ -41,6 +41,7 @@ template<UnsignedInt dimensions, class T> MatrixTypeFor<dimensions, T> aspectRat
     if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
         return {};
 
+    CORRADE_INTERNAL_ASSERT((projectionScale > Math::Vector2<T>(0)).all() && (viewport > Vector2i(0)).all());
     Math::Vector2<T> relativeAspectRatio = Math::Vector2<T>(viewport)*projectionScale;
 
     /* Extend on larger side = scale larger side down
