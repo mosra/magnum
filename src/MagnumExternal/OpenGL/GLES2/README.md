@@ -1,7 +1,7 @@
 OpenGL header and extension loader is generated using flextGL, get it at
-[](https://github.com/ginkgo/flextGL).
+https://github.com/ginkgo/flextGL.
 
-See [](extensions.txt) for requested version and a list of non-core extensions.
+See [extensions.txt](extensions.txt) for requested version and a list of non-core extensions.
 Call `flextGLgen.py` in this directory with the following arguments to generate
 files for generic GLES2 implementations:
 
