@@ -471,6 +471,17 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /*@}*/
 
+    protected:
+        /**
+         * @brief Implementation for @ref openFile()
+         *
+         * If @ref Feature::OpenData is supported, default implementation opens
+         * the file and calls @ref doOpenData() with its contents. It is
+         * allowed to call this function from your @ref doOpenFile()
+         * implementation.
+         */
+        virtual void doOpenFile(const std::string& filename);
+
     #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
     #else
@@ -484,14 +495,6 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /** @brief Implementation for @ref openData() */
         virtual void doOpenData(Containers::ArrayReference<const char> data);
-
-        /**
-         * @brief Implementation for @ref openFile()
-         *
-         * If @ref Feature::OpenData is supported, default implementation opens
-         * the file and calls @ref doOpenData() with its contents.
-         */
-        virtual void doOpenFile(const std::string& filename);
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
