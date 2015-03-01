@@ -78,6 +78,9 @@ if(WITH_ANDROIDAPPLICATION)
         ${MagnumAndroidApplication_PRIVATE_HEADERS}
         ${ANDROID_NATIVE_APP_GLUE_SRC})
     set_target_properties(MagnumAndroidApplication PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumAndroidApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumAndroidApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -101,6 +104,9 @@ if(WITH_GLUTAPPLICATION)
         ${MagnumGlutApplication_SRCS}
         ${MagnumGlutApplication_HEADERS})
     set_target_properties(MagnumGlutApplication PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumGlutApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlutApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -126,6 +132,9 @@ if(WITH_SDL2APPLICATION)
         ${MagnumSdl2Application_SRCS}
         ${MagnumSdl2Application_HEADERS})
     set_target_properties(MagnumSdl2Application PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumSdl2Application
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -146,6 +155,9 @@ if(WITH_NACLAPPLICATION)
         ${MagnumNaClApplication_SRCS}
         ${MagnumNaClApplication_HEADERS})
     set_target_properties(MagnumNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumNaClApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumNaClApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -167,6 +179,9 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
         ${MagnumWindowlessNaClApplication_HEADERS})
     set_target_properties(MagnumWindowlessNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessNaClApplication Magnum ppapi_cpp ppapi)
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumWindowlessNaClApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessNaClApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -209,6 +224,9 @@ if(WITH_GLXAPPLICATION)
         ${MagnumGlxApplication_SRCS}
         ${MagnumGlxApplication_HEADERS})
     set_target_properties(MagnumGlxApplication PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -233,6 +251,9 @@ if(WITH_XEGLAPPLICATION)
         ${MagnumXEglApplication_SRCS}
         ${MagnumXEglApplication_HEADERS})
     set_target_properties(MagnumXEglApplication PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumXEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumXEglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -264,6 +285,9 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
         COMPILE_FLAGS "-Wno-old-style-cast"
         DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessGlxApplication Magnum ${X11_LIBRARIES})
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumWindowlessGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessGlxApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -287,6 +311,9 @@ if(WITH_WINDOWLESSWGLAPPLICATION)
         COMPILE_FLAGS "-DUNICODE"
         DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessWglApplication Magnum)
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumWindowlessWglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessWglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -308,6 +335,9 @@ if(WITH_WINDOWLESSCGLAPPLICATION)
         ${MagnumWindowlessCglApplication_HEADERS})
     set_target_properties(MagnumWindowlessCglApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWindowlessCglApplication Magnum)
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumWindowlessGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessCglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -325,6 +355,9 @@ if(NEED_ABSTRACTXAPPLICATION)
         ${MagnumAbstractXApplication_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumAbstractXApplication PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
     install(FILES ${MagnumAbstractXApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
 
@@ -341,6 +374,9 @@ if(NEED_GLXCONTEXTHANDLER)
         ${MagnumGlxContextHandler_PRIVATE_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumGlxContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    # Assuming that PIC is not needed because this is part of Application lib,
+    # which is always linked to the executable and not to any intermediate
+    # shared lib
 endif()
 
 # EGL context handler
@@ -363,6 +399,9 @@ if(NEED_EGLCONTEXTHANDLER)
         ${MagnumEglContextHandler_PRIVATE_HEADERS})
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumEglContextHandler PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
+    # Assuming that PIC is not needed because this is part of Application lib,
+    # which is always linked to the executable and not to any intermediate
+    # shared lib
 endif()
 
 # Platform-specific sources for context library
@@ -378,6 +417,9 @@ endif()
 # CGL context
 if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
     add_library(MagnumCglContextObjects OBJECT ${MagnumContext_SRCS})
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumCglContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 
     # Also create proper static library, if requested
     if(WITH_CGLCONTEXT)
@@ -386,6 +428,10 @@ if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
         # sources again in this case
         add_library(MagnumCglContext STATIC ${MagnumContext_SRCS})
         set_target_properties(MagnumCglContext PROPERTIES DEBUG_POSTFIX "-d")
+        if(BUILD_STATIC_PIC)
+            set_target_properties(MagnumCglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        endif()
+
         install(TARGETS MagnumCglContext
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -397,11 +443,18 @@ endif()
 if(NEED_EGLCONTEXT OR WITH_EGLCONTEXT)
     add_library(MagnumEglContextObjects OBJECT ${MagnumContext_SRCS})
     set_target_properties(MagnumEglContextObjects PROPERTIES COMPILE_DEFINITIONS "MAGNUM_PLATFORM_USE_EGL")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumEglContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 
     # Also create proper static library, if requested
     if(WITH_EGLCONTEXT)
         add_library(MagnumEglContext STATIC $<TARGET_OBJECTS:MagnumEglContextObjects>)
         set_target_properties(MagnumEglContext PROPERTIES DEBUG_POSTFIX "-d")
+        if(BUILD_STATIC_PIC)
+            set_target_properties(MagnumEglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        endif()
+
         install(TARGETS MagnumEglContext
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -413,11 +466,18 @@ endif()
 if(NEED_GLXCONTEXT OR WITH_GLXCONTEXT)
     add_library(MagnumGlxContextObjects OBJECT ${MagnumContext_SRCS})
     set_target_properties(MagnumGlxContextObjects PROPERTIES COMPILE_DEFINITIONS "MAGNUM_PLATFORM_USE_GLX")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumGlxContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 
     # Also create proper static library, if requested
     if(WITH_GLXCONTEXT)
         add_library(MagnumGlxContext STATIC $<TARGET_OBJECTS:MagnumGlxContextObjects>)
         set_target_properties(MagnumGlxContext PROPERTIES DEBUG_POSTFIX "-d")
+        if(BUILD_STATIC_PIC)
+            set_target_properties(MagnumGlxContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        endif()
+
         install(TARGETS MagnumGlxContext
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
@@ -428,11 +488,18 @@ endif()
 # WGL context
 if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
     add_library(MagnumWglContextObjects OBJECT ${MagnumContext_SRCS})
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWglContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 
     # Also create proper static library, if requested
     if(WITH_GLXCONTEXT)
         add_library(MagnumWglContext STATIC $<TARGET_OBJECTS:MagnumWglContextObjects>)
         set_target_properties(MagnumWglContext PROPERTIES DEBUG_POSTFIX "-d")
+        if(BUILD_STATIC_PIC)
+            set_target_properties(MagnumWglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        endif()
+
         install(TARGETS MagnumWglContext
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
