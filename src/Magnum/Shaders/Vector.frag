@@ -38,7 +38,7 @@ uniform lowp vec4 color;
 #endif
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 16) uniform sampler2D vectorTexture;
+layout(binding = 15) uniform sampler2D vectorTexture;
 #else
 uniform lowp sampler2D vectorTexture;
 #endif

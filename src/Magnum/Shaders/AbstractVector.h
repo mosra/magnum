@@ -62,7 +62,7 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
              * Vector texture binding unit
              * @deprecated Use @ref Magnum::Shaders::AbstractVector::setVectorTexture() "setVectorTexture()" instead.
              */
-            VectorTextureLayer = 16
+            VectorTextureLayer = 15
         };
         #endif
 
@@ -77,7 +77,7 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
         ~AbstractVector() = default;
 
         #ifndef MAGNUM_BUILD_DEPRECATED
-        enum: Int { VectorTextureLayer = 16 };
+        enum: Int { VectorTextureLayer = 15 };
         #endif
 };
 
