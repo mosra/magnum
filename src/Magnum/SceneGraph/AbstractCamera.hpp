@@ -29,6 +29,7 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractCamera.h
  */
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/SceneGraph/AbstractCamera.h"
 #include "Magnum/SceneGraph/Drawable.h"
 
@@ -59,6 +60,10 @@ template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::Abstrac
 }
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() = default;
+
+template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::fixAspectRatio() {
+    _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {Math::abs(rawProjectionMatrix[0].x()), Math::abs(rawProjectionMatrix[1].y())}, _viewport)*rawProjectionMatrix;
+}
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>& AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;

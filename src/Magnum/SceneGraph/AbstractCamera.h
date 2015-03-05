@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::SceneGraph::AbstractCamera, enum @ref Magnum::SceneGraph::AspectRatioPolicy, alias @ref Magnum::SceneGraph::AbstractBasicCamera2D, @ref Magnum::SceneGraph::AbstractBasicCamera3D, typedef @ref Magnum::SceneGraph::AbstractCamera2D, @ref Magnum::SceneGraph::AbstractCamera3D
  */
 
-#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/SceneGraph/AbstractFeature.h"
@@ -150,9 +149,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {Math::abs(rawProjectionMatrix[0].x()), Math::abs(rawProjectionMatrix[1].y())}, _viewport)*rawProjectionMatrix;
-        }
+        void fixAspectRatio();
 
         MatrixTypeFor<dimensions, T> rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
