@@ -92,9 +92,9 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Dot product
          *
-         * Returns `0` if two vectors are orthogonal, `1` if two *normalized*
-         * vectors are parallel and `-1` if two *normalized* vectors are
-         * antiparallel. @f[
+         * Returns `0` when two vectors are perpendicular, `1` when two
+         * *normalized* vectors are parallel and `-1` when two *normalized*
+         * vectors are antiparallel. @f[
          *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
          * @f]
          * @see @ref dot() const, @ref operator-(), @ref Vector2::perpendicular()

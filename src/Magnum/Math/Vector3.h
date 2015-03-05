@@ -104,7 +104,9 @@ template<class T> class Vector3: public Vector<3, T> {
         /**
          * @brief Cross product
          *
-         * Done using the following equation: @f[
+         * Result has length of `0` either when one of them is zero or they are
+         * parallel or antiparallel and length of `1` when two *normalized*
+         * vectors are perpendicular. Done using the following equation: @f[
          *      \boldsymbol a \times \boldsymbol b = \begin{pmatrix} c_y \\ c_z \\ c_x \end{pmatrix} ~~~~~
          *      \boldsymbol c = \boldsymbol a \begin{pmatrix} b_y \\ b_z \\ b_x \end{pmatrix} -
          *                      \boldsymbol b \begin{pmatrix} a_y \\ a_z \\ a_x \end{pmatrix}

@@ -88,7 +88,9 @@ template<class T> class Vector2: public Vector<2, T> {
          * 2D version of cross product, also called perp-dot product,
          * equivalent to calling @ref Vector3::cross() with Z coordinate set to
          * `0` and extracting only Z coordinate from the result (X and Y
-         * coordinates are always zero). @f[
+         * coordinates are always zero). Returns `0` either when one of the
+         * vectors is zero or they are parallel or antiparallel and `1` when
+         * two *normalized* vectors are perpendicular, @f[
          *      \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
          * @f]
          * @see @ref perpendicular(),
