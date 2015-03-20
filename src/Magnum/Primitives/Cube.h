@@ -49,6 +49,14 @@ class MAGNUM_PRIMITIVES_EXPORT Cube {
         static Trade::MeshData3D solid();
 
         /**
+         * @brief Solid cube as a single strip
+         *
+         * Non-indexed @ref MeshPrimitive::TriangleStrip. Just positions, no
+         * normals or anything else.
+         */
+        static Trade::MeshData3D solidStrip();
+
+        /**
          * @brief Wireframe cube
          *
          * Indexed @ref MeshPrimitive::Lines.
