@@ -54,14 +54,6 @@ void WindowlessCglApplication::createContext(const Configuration& configuration)
 bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
     CORRADE_ASSERT(!_context, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
 
-    /* Check version */
-    GLint major, minor;
-    CGLGetVersion(&major, &minor);
-    if(version(major, minor) < Version::GL210) {
-        Error() << "Platform::WindowlessCglApplication::tryCreateContext(): OpenGL version 2.1 or greater is required";
-        return false;
-    }
-
     int formatCount;
     CGLPixelFormatAttribute attributes32[] = {
         kCGLPFAAccelerated,
