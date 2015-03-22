@@ -33,6 +33,8 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
+    constexpr static const Range2Di DisengagedViewport{};
+
     explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
 
     void reset();

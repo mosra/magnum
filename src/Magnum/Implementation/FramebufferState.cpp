@@ -33,10 +33,13 @@
 
 namespace Magnum { namespace Implementation {
 
-FramebufferState::FramebufferState(Context& context, std::vector<std::string>& extensions): readBinding(0), drawBinding(0), renderbufferBinding(0), maxDrawBuffers(0), maxColorAttachments(0), maxRenderbufferSize(0), maxSamples(0)
+constexpr const Range2Di FramebufferState::DisengagedViewport;
+
+FramebufferState::FramebufferState(Context& context, std::vector<std::string>& extensions): readBinding{0}, drawBinding{0}, renderbufferBinding{0}, maxDrawBuffers{0}, maxColorAttachments{0}, maxRenderbufferSize{0}, maxSamples{0},
     #ifndef MAGNUM_TARGET_GLES
-    , maxDualSourceDrawBuffers(0)
+    maxDualSourceDrawBuffers{0},
     #endif
+    viewport{DisengagedViewport}
 {
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
@@ -236,7 +239,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
 void FramebufferState::reset() {
     readBinding = drawBinding = renderbufferBinding = State::DisengagedBinding;
-    viewport = {};
+    viewport = DisengagedViewport;
 }
 
 }}

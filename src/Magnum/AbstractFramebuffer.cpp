@@ -199,6 +199,7 @@ void AbstractFramebuffer::blitImplementationNV(AbstractFramebuffer& source, Abst
 #endif
 
 AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle) {
+    CORRADE_INTERNAL_ASSERT(rectangle != Implementation::FramebufferState::DisengagedViewport);
     _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
@@ -211,8 +212,7 @@ AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle)
 void AbstractFramebuffer::setViewportInternal() {
     Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
 
-    /* We are using empty viewport to indicate disengaged state */
-    CORRADE_INTERNAL_ASSERT(_viewport != Range2Di{});
+    CORRADE_INTERNAL_ASSERT(_viewport != Implementation::FramebufferState::DisengagedViewport);
     CORRADE_INTERNAL_ASSERT(state.drawBinding == _id);
 
     /* Already up-to-date, nothing to do */

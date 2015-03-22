@@ -101,6 +101,7 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
     defaultFramebuffer._viewport = state.viewport = Range2Di::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
+    CORRADE_INTERNAL_ASSERT(defaultFramebuffer._viewport != Implementation::FramebufferState::DisengagedViewport);
 
     /* Fake initial glViewport() call for ApiTrace */
     #ifndef MAGNUM_TARGET_GLES

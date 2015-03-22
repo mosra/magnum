@@ -80,6 +80,7 @@ Int Framebuffer::maxColorAttachments() {
 }
 
 Framebuffer::Framebuffer(const Range2Di& viewport) {
+    CORRADE_INTERNAL_ASSERT(viewport != Implementation::FramebufferState::DisengagedViewport);
     _viewport = viewport;
     (this->*Context::current()->state().framebuffer->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
