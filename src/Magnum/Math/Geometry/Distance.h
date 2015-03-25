@@ -46,7 +46,7 @@ class Distance {
          * @param point     Point
          *
          * The distance *d* is computed from point **p** and line defined by **a**
-         * and **b** using @ref Vector2::cross() "perp-dot product": @f[
+         * and **b** using @ref cross(const Vector2<T>&, const Vector2<T>&) "perp-dot product": @f[
          *      d = \frac{|(\boldsymbol b - \boldsymbol a)_\bot \cdot (\boldsymbol a - \boldsymbol p)|} {|\boldsymbol b - \boldsymbol a|}
          * @f]
          * Source: http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
@@ -54,7 +54,7 @@ class Distance {
          */
         template<class T> static T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
             const Vector2<T> bMinusA = b - a;
-            return std::abs(Vector2<T>::cross(bMinusA, a - point))/bMinusA.length();
+            return std::abs(cross(bMinusA, a - point))/bMinusA.length();
         }
 
         /**
@@ -70,7 +70,7 @@ class Distance {
          */
         template<class T> static T linePointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
             const Vector2<T> bMinusA = b - a;
-            return Math::pow<2>(Vector2<T>::cross(bMinusA, a - point))/bMinusA.dot();
+            return Math::pow<2>(cross(bMinusA, a - point))/bMinusA.dot();
         }
 
         /**
@@ -80,7 +80,7 @@ class Distance {
          * @param point     Point
          *
          * The distance *d* is computed from point **p** and line defined by **a**
-         * and **b** using @ref Vector3::cross() "cross product": @f[
+         * and **b** using @ref cross(const Vector3<T>&, const Vector3<T>&) "cross product": @f[
          *      d = \frac{|(\boldsymbol p - \boldsymbol a) \times (\boldsymbol p - \boldsymbol b)|}
          *      {|\boldsymbol b - \boldsymbol a|}
          * @f]
@@ -99,7 +99,7 @@ class Distance {
          * compute the square root.
          */
         template<class T> static T linePointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
-            return Vector3<T>::cross(point - a, point - b).dot()/(b - a).dot();
+            return cross(point - a, point - b).dot()/(b - a).dot();
         }
 
         /**
@@ -181,7 +181,7 @@ template<class T> T Distance::lineSegmentPoint(const Vector2<T>& a, const Vector
         return std::sqrt(pointDistanceB);
 
     /* Between A and B */
-    return std::abs(Vector2<T>::cross(bMinusA, -pointMinusA))/std::sqrt(bDistanceA);
+    return std::abs(cross(bMinusA, -pointMinusA))/std::sqrt(bDistanceA);
 }
 
 template<class T> T Distance::lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
@@ -201,7 +201,7 @@ template<class T> T Distance::lineSegmentPointSquared(const Vector2<T>& a, const
         return pointDistanceB;
 
     /* Between A and B */
-    return Math::pow<2>(Vector2<T>::cross(bMinusA, -pointMinusA))/bDistanceA;
+    return Math::pow<2>(cross(bMinusA, -pointMinusA))/bDistanceA;
 }
 
 template<class T> T Distance::lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
@@ -220,7 +220,7 @@ template<class T> T Distance::lineSegmentPointSquared(const Vector3<T>& a, const
         return pointDistanceB;
 
     /* Between A and B */
-    return Vector3<T>::cross(pointMinusA, pointMinusB).dot()/bDistanceA;
+    return cross(pointMinusA, pointMinusB).dot()/bDistanceA;
 }
 
 }}}

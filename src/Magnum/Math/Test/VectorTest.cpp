@@ -364,7 +364,7 @@ void VectorTest::bitwise() {
 }
 
 void VectorTest::dot() {
-    CORRADE_COMPARE(Vector4::dot({1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
+    CORRADE_COMPARE(Math::dot(Vector4{1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
 }
 
 void VectorTest::dotSelf() {
@@ -435,15 +435,15 @@ void VectorTest::projectedOntoNormalized() {
 void VectorTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
-    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
+    Math::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
+    CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
 
     o.str({});
-    Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
-    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
+    Math::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
+    CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
 
-    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
-                                   Vector3(1.0f, -2.0f, 3.0f).normalized()),
+    CORRADE_COMPARE(Math::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
+                                Vector3(1.0f, -2.0f, 3.0f).normalized()),
                     Rad(1.162514f));
 }
 

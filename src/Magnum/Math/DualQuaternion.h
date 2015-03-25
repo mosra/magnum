@@ -233,7 +233,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          */
         Dual<T> lengthSquared() const {
-            return {Dual<Quaternion<T>>::real().dot(), T(2)*Quaternion<T>::dot(Dual<Quaternion<T>>::real(), Dual<Quaternion<T>>::dual())};
+            return {Dual<Quaternion<T>>::real().dot(), T(2)*dot(Dual<Quaternion<T>>::real(), Dual<Quaternion<T>>::dual())};
         }
 
         /**

@@ -40,8 +40,8 @@ std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(c
     std::vector<Vector3> normals;
     normals.reserve(indices.size()/3);
     for(std::size_t i = 0; i != indices.size(); i += 3) {
-        Vector3 normal = Vector3::cross(positions[indices[i+2]]-positions[indices[i+1]],
-                                        positions[indices[i]]-positions[indices[i+1]]).normalized();
+        const Vector3 normal = Math::cross(positions[indices[i+2]]-positions[indices[i+1]],
+                                           positions[indices[i]]-positions[indices[i+1]]).normalized();
 
         /* Use the same normal for all three vertices of the face */
         normalIndices.push_back(normals.size());

@@ -39,6 +39,79 @@
 
 namespace Magnum { namespace Math {
 
+/** @relatesalso Quaternion
+@brief Dot product between two quaternions
+
+@f[
+     p \cdot q = \boldsymbol p_V \cdot \boldsymbol q_V + p_S q_S
+@f]
+@see @ref Quaternion::dot() const
+*/
+template<class T> inline T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
+    return dot(a.vector(), b.vector()) + a.scalar()*b.scalar();
+}
+
+namespace Implementation {
+    /* Used in angle() and slerp() (no assertions) */
+    template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+        return Rad<T>{std::acos(dot(normalizedA, normalizedB))};
+    }
+}
+
+/** @relatesalso Quaternion
+@brief Angle between normalized quaternions
+
+Expects that both quaternions are normalized. @f[
+     \theta = acos \left( \frac{p \cdot q}{|p| |q|} \right) = acos(p \cdot q)
+@f]
+@see @ref Quaternion::isNormalized(),
+    @ref angle(const Complex<T>&, const Complex<T>&),
+    @ref angle(const Vector<size, T>&, const Vector<size, T>&)
+ */
+template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::angle(): quaternions must be normalized", {});
+    return Implementation::angle(normalizedA, normalizedB);
+}
+
+/** @relatesalso Quaternion
+@brief Linear interpolation of two quaternions
+@param normalizedA  First quaternion
+@param normalizedB  Second quaternion
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Expects that both quaternions are normalized. @f[
+    q_{LERP} = \frac{(1 - t) q_A + t q_B}{|(1 - t) q_A + t q_B|}
+@f]
+@see @ref Quaternion::isNormalized(), @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref lerp(const T&, const T&, U)
+ */
+template<class T> inline Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::lerp(): quaternions must be normalized", {});
+    return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
+}
+
+/** @relatesalso Quaternion
+@brief Spherical linear interpolation of two quaternions
+@param normalizedA  First quaternion
+@param normalizedB  Second quaternion
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Expects that both quaternions are normalized. @f[
+    q_{SLERP} = \frac{sin((1 - t) \theta) q_A + sin(t \theta) q_B}{sin \theta}
+    ~ ~ ~ ~ ~ ~ ~
+    \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right) = acos(q_A \cdot q_B)
+@f]
+@see @ref Quaternion::isNormalized(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+ */
+template<class T> inline Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::slerp(): quaternions must be normalized", {});
+    const T a = Implementation::angle(normalizedA, normalizedB);
+    return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
+}
+
 /**
 @brief Quaternion
 @tparam T   Underlying data type
@@ -51,57 +124,43 @@ template<class T> class Quaternion {
     public:
         typedef T Type; /**< @brief Underlying data type */
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Dot product
-         *
-         * @f[
-         *      p \cdot q = \boldsymbol p_V \cdot \boldsymbol q_V + p_S q_S
-         * @f]
-         * @see @ref dot() const
+         * @copybrief Math::dot(const Quaternion<T>&, const Quaternion<T>&)
+         * @deprecated Use @ref Math::dot(const Quaternion<T>&, const Quaternion<T>&)
+         *      instead.
          */
-        static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
-            /** @todo Use four-component SIMD implementation when available */
-            return Vector3<T>::dot(a.vector(), b.vector()) + a.scalar()*b.scalar();
+        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
+            return Math::dot(a, b);
         }
 
         /**
-         * @brief Angle between normalized quaternions
-         *
-         * Expects that both quaternions are normalized. @f[
-         *      \theta = acos \left( \frac{p \cdot q}{|p| |q|} \right) = acos(p \cdot q)
-         * @f]
-         * @see @ref isNormalized(), @ref Complex::angle(),
-         *      @ref Vector::angle()
+         * @copybrief Math::angle(const Quaternion<T>&, const Quaternion<T>&)
+         * @deprecated Use @ref Math::angle(const Quaternion<T>&, const Quaternion<T>&)
+         *      instead.
          */
-        static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB);
+        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+            return Math::angle(normalizedA, normalizedB);
+        }
 
         /**
-         * @brief Linear interpolation of two quaternions
-         * @param normalizedA   First quaternion
-         * @param normalizedB   Second quaternion
-         * @param t             Interpolation phase (from range @f$ [0; 1] @f$)
-         *
-         * Expects that both quaternions are normalized. @f[
-         *      q_{LERP} = \frac{(1 - t) q_A + t q_B}{|(1 - t) q_A + t q_B|}
-         * @f]
-         * @see @ref isNormalized(), @ref slerp(), @ref Math::lerp()
+         * @copybrief Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+         * @deprecated Use @ref Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+         *      instead.
          */
-        static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t);
+        CORRADE_DEPRECATED("use Math::lerp() instead") static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+            return Math::lerp(normalizedA, normalizedB, t);
+        }
 
         /**
-         * @brief Spherical linear interpolation of two quaternions
-         * @param normalizedA   First quaternion
-         * @param normalizedB   Second quaternion
-         * @param t             Interpolation phase (from range @f$ [0; 1] @f$)
-         *
-         * Expects that both quaternions are normalized. @f[
-         *      q_{SLERP} = \frac{sin((1 - t) \theta) q_A + sin(t \theta) q_B}{sin \theta}
-         *      ~~~~~~~~~~
-         *      \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right) = acos(q_A \cdot q_B)
-         * @f]
-         * @see @ref isNormalized(), @ref lerp()
+         * @copybrief Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T)
+         * @deprecated Use @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T)
+         *      instead.
          */
-        static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t);
+        CORRADE_DEPRECATED("use Math::slerp() instead") static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+            return Math::slerp(normalizedA, normalizedB, t);
+        }
+        #endif
 
         /**
          * @brief Rotation quaternion
@@ -331,7 +390,7 @@ template<class T> class Quaternion {
          * @see @ref isNormalized(),
          *      @ref dot(const Quaternion<T>&, const Quaternion<T>&)
          */
-        T dot() const { return dot(*this, *this); }
+        T dot() const { return Math::dot(*this, *this); }
 
         /**
          * @brief Quaternion length
@@ -424,11 +483,6 @@ template<class T> class Quaternion {
             return value*value;
         }
 
-        /* Used in angle() and slerp() (no assertions) */
-        static T angleInternal(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
-            return std::acos(dot(normalizedA, normalizedB));
-        }
-
         Vector3<T> _vector;
         T _scalar;
 };
@@ -463,16 +517,12 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
     return debug;
 }
 
-/** @todoc Remove the workaround when Doxygen is really able to preprocessor */
-
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-/** @privatesection */
 extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Quaternion<Float>&);
 #ifndef MAGNUM_TARGET_GLES
 extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Quaternion<Double>&);
 #endif
-/** @endprivatesection */
 #endif
 
 namespace Implementation {
@@ -508,25 +558,6 @@ template<class T> Quaternion<T> quaternionFromMatrix(const Matrix3x3<T>& m) {
     return {vec, (m[j][k] - m[k][j])*t};
 }
 
-}
-
-template<class T> inline Rad<T> Quaternion<T>::angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Quaternion::angle(): quaternions must be normalized", {});
-    return Rad<T>(angleInternal(normalizedA, normalizedB));
-}
-
-template<class T> inline Quaternion<T> Quaternion<T>::lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, const T t) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Quaternion::lerp(): quaternions must be normalized", {});
-    return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
-}
-
-template<class T> inline Quaternion<T> Quaternion<T>::slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, const T t) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Quaternion::slerp(): quaternions must be normalized", {});
-    const T a = angleInternal(normalizedA, normalizedB);
-    return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {
@@ -565,8 +596,8 @@ template<class T> Matrix3x3<T> Quaternion<T>::toMatrix() const {
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& other) const {
-    return {_scalar*other._vector + other._scalar*_vector + Vector3<T>::cross(_vector, other._vector),
-            _scalar*other._scalar - Vector3<T>::dot(_vector, other._vector)};
+    return {_scalar*other._vector + other._scalar*_vector + Math::cross(_vector, other._vector),
+            _scalar*other._scalar - Math::dot(_vector, other._vector)};
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::invertedNormalized() const {
@@ -576,8 +607,8 @@ template<class T> inline Quaternion<T> Quaternion<T>::invertedNormalized() const
 
 template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(const Vector3<T>& vector) const {
     CORRADE_ASSERT(isNormalized(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized", {});
-    const Vector3<T> t = T(2)*Vector3<T>::cross(_vector, vector);
-    return vector + _scalar*t + Vector3<T>::cross(_vector, t);
+    const Vector3<T> t = T(2)*Math::cross(_vector, vector);
+    return vector + _scalar*t + Math::cross(_vector, t);
 }
 
 }}

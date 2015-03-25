@@ -31,8 +31,9 @@
 
 #include <cmath>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/ConfigurationValue.h>
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"
@@ -43,6 +44,35 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
     template<std::size_t, class, class> struct VectorConverter;
+}
+
+/** @relatesalso Vector
+@brief Dot product of two vectors
+
+Returns `0` when two vectors are perpendicular, `1` when two *normalized*
+vectors are parallel and `-1` when two *normalized* vectors are antiparallel. @f[
+    \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
+@f]
+@see @ref Vector::dot() const, @ref Vector::operator-(), @ref Vector2::perpendicular()
+*/
+template<std::size_t size, class T> inline T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+    return (a*b).sum();
+}
+
+/** @relatesalso Vector
+@brief Angle between normalized vectors
+
+Expects that both vectors are normalized. @f[
+    \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
+@f]
+@see @ref Vector::isNormalized(),
+    @ref angle(const Complex<T>&, const Complex<T>&),
+    @ref angle(const Quaternion<T>&, const Quaternion<T>&)
+*/
+template<std::size_t size, class T> inline Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::angle(): vectors must be normalized", {});
+    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
 }
 
 /**
@@ -89,30 +119,25 @@ template<std::size_t size, class T> class Vector {
             return padInternal<otherSize>(typename Implementation::GenerateSequence<size>::Type(), a, value);
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Dot product
-         *
-         * Returns `0` when two vectors are perpendicular, `1` when two
-         * *normalized* vectors are parallel and `-1` when two *normalized*
-         * vectors are antiparallel. @f[
-         *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
-         * @f]
-         * @see @ref dot() const, @ref operator-(), @ref Vector2::perpendicular()
+         * @copybrief Math::dot(const Vector<size, T>&, const Vector<size, T>&)
+         * @deprecated Use @ref Math::dot(const Vector<size, T>&, const Vector<size, T>&)
+         *      instead.
          */
-        static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
-            return (a*b).sum();
+        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+            return Math::dot(a, b);
         }
 
         /**
-         * @brief Angle between normalized vectors
-         *
-         * Expects that both vectors are normalized. @f[
-         *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
-         * @f]
-         * @see @ref isNormalized(), @ref Quaternion::angle(),
-         *      @ref Complex::angle()
+         * @copybrief Math::angle(const Vector<size, T>&, const Vector<size, T>&)
+         * @deprecated Use @ref Math::angle(const Vector<size, T>&, const Vector<size, T>&)
+         *      instead.
          */
-        static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB);
+        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+            return Math::angle(normalizedA, normalizedB);
+        }
+        #endif
 
         /**
          * @brief Default constructor
@@ -409,7 +434,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref dot(const Vector<size, T>&, const Vector<size, T>&),
          *      @ref isNormalized()
          */
-        T dot() const { return dot(*this, *this); }
+        T dot() const { return Math::dot(*this, *this); }
 
         /**
          * @brief Vector length
@@ -466,7 +491,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref dot(), @ref projectedOntoNormalized()
          */
         Vector<size, T> projected(const Vector<size, T>& line) const {
-            return line*dot(*this, line)/line.dot();
+            return line*Math::dot(*this, line)/line.dot();
         }
 
         /**
@@ -1214,12 +1239,6 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }
 #endif
 
-template<std::size_t size, class T> inline Rad<T> Vector<size, T>::angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Vector::angle(): vectors must be normalized", {});
-    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
-}
-
 template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<(const Vector<size, T>& other) const {
     BoolVector<size> out;
 
@@ -1267,7 +1286,7 @@ template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::oper
 
 template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
     CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", {});
-    return line*dot(*this, line);
+    return line*Math::dot(*this, line);
 }
 
 template<std::size_t size, class T> inline T Vector<size, T>::sum() const {

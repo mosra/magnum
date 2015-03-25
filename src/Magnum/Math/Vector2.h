@@ -34,6 +34,24 @@
 namespace Magnum { namespace Math {
 
 /**
+@brief 2D cross product
+
+2D version of cross product, also called perp-dot product, equivalent to
+calling @ref cross(const Vector3<T>&, const Vector3<T>&) with Z coordinate set
+to `0` and extracting only Z coordinate from the result (X and Y coordinates
+are always zero). Returns `0` either when one of the vectors is zero or they
+are parallel or antiparallel and `1` when two *normalized* vectors are
+perpendicular. @f[
+    \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
+@f]
+@see @ref Vector2::perpendicular(),
+    @ref dot(const Vector<size, T>&, const Vector<size, T>&)
+ */
+template<class T> inline T cross(const Vector2<T>& a, const Vector2<T>& b) {
+    return dot(a.perpendicular(), b);
+}
+
+/**
 @brief Two-component vector
 @tparam T   Data type
 
@@ -82,23 +100,16 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         constexpr static Vector2<T> yScale(T scale) { return {T(1), scale}; }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief 2D cross product
-         *
-         * 2D version of cross product, also called perp-dot product,
-         * equivalent to calling @ref Vector3::cross() with Z coordinate set to
-         * `0` and extracting only Z coordinate from the result (X and Y
-         * coordinates are always zero). Returns `0` either when one of the
-         * vectors is zero or they are parallel or antiparallel and `1` when
-         * two *normalized* vectors are perpendicular, @f[
-         *      \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
-         * @f]
-         * @see @ref perpendicular(),
-         *      @ref dot(const Vector<size, T>&, const Vector<size, T>&)
+         * @copybrief Math::cross(const Vector2<T>&, const Vector2<T>&)
+         * @deprecated Use @ref Math::cross(const Vector2<T>&, const Vector2<T>&)
+         *      instead.
          */
-        static T cross(const Vector2<T>& a, const Vector2<T>& b) {
-            return Vector<2, T>::dot(a.perpendicular(), b);
+        CORRADE_DEPRECATED("use Math::cross() instead") static T cross(const Vector2<T>& a, const Vector2<T>& b) {
+            return Math::cross(a, b);
         }
+        #endif
 
         /** @copydoc Vector::Vector() */
         constexpr /*implicit*/ Vector2() {}

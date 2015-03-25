@@ -47,17 +47,17 @@ template<> Matrix4 forceRendererTransformation<3>(const Vector3& forcePosition, 
     if(forceLength < Math::TypeTraits<Float>::epsilon())
         return translation*Matrix4::scaling(Vector3(0.0f));
 
-    const Float dot = Vector3::dot(force/forceLength, Vector3::xAxis());
+    const Float dot = Math::dot(force/forceLength, Vector3::xAxis());
 
     /* Force is parallel to X axis, just scaling */
     if(Math::abs(dot) > 1.0f - Math::TypeTraits<Float>::epsilon())
         return translation*Matrix4::scaling({Math::sign(dot)*forceLength, forceLength, forceLength});
 
     /* Normal of plane going through force vector and X axis vector */
-    const Vector3 normal = Vector3::cross(Vector3::xAxis(), force).normalized();
+    const Vector3 normal = Math::cross(Vector3::xAxis(), force).normalized();
 
     /* Third base vector, orthogonal to force and normal */
-    const Vector3 binormal = Vector3::cross(normal, force/forceLength);
+    const Vector3 binormal = Math::cross(normal, force/forceLength);
     CORRADE_INTERNAL_ASSERT(binormal.isNormalized());
 
     /* Transformation matrix from scaled base vectors and translation vector */

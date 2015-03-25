@@ -539,8 +539,8 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
 
 template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up) {
     const Vector3<T> backward = (eye - target).normalized();
-    const Vector3<T> right = Vector3<T>::cross(up, backward).normalized();
-    const Vector3<T> realUp = Vector3<T>::cross(backward, right);
+    const Vector3<T> right = cross(up, backward).normalized();
+    const Vector3<T> realUp = cross(backward, right);
 
     return {{   right, T(0)},
             {  realUp, T(0)},

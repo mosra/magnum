@@ -72,9 +72,8 @@ class Intersection {
          */
         template<class T> static std::pair<T, T> lineSegmentLineSegment(const Vector2<T>& p, const Vector2<T>& r, const Vector2<T>& q, const Vector2<T>& s) {
             const Vector2<T> qp = q - p;
-            const T rs = Vector2<T>::cross(r, s);
-            return {Vector2<T>::cross(qp, s)/rs,
-                    Vector2<T>::cross(qp, r)/rs};
+            const T rs = cross(r, s);
+            return {cross(qp, s)/rs, cross(qp, r)/rs};
         }
 
         /**
@@ -92,7 +91,7 @@ class Intersection {
          * Unlike @ref lineSegmentLineSegment() computes only **t**.
          */
         template<class T> static T lineSegmentLine(const Vector2<T>& p, const Vector2<T>& r, const Vector2<T>& q, const Vector2<T>& s) {
-            return Vector2<T>::cross(q - p, s)/Vector2<T>::cross(r, s);
+            return cross(q - p, s)/cross(r, s);
         }
 
         /**
@@ -121,8 +120,8 @@ class Intersection {
          * @f]
          */
         template<class T> static T planeLine(const Vector3<T>& planePosition, const Vector3<T>& planeNormal, const Vector3<T>& p, const Vector3<T>& r) {
-            const T f = Vector3<T>::dot(planePosition, planeNormal);
-            return (f-Vector3<T>::dot(planeNormal, p))/Vector3<T>::dot(planeNormal, r);
+            const T f = dot(planePosition, planeNormal);
+            return (f-dot(planeNormal, p))/dot(planeNormal, r);
         }
 };
 

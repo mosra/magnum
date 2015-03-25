@@ -45,6 +45,34 @@ namespace Implementation {
     }
 }
 
+/** @relatesalso Complex
+@brief Dot product of two complex numbers
+
+@f[
+    c_0 \cdot c_1 = a_0 a_1 + b_0 b_1
+@f]
+@see @ref Complex::dot() const
+*/
+template<class T> inline T dot(const Complex<T>& a, const Complex<T>& b) {
+    return a.real()*b.real() + a.imaginary()*b.imaginary();
+}
+
+/** @relatesalso Complex
+@brief Angle between normalized complex numbers
+
+Expects that both complex numbers are normalized. @f[
+    \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
+@f]
+@see @ref Complex::isNormalized(),
+    @ref angle(const Quaternion<T>&, const Quaternion<T>&),
+    @ref angle(const Vector<size, T>&, const Vector<size, T>&)
+*/
+template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+                   "Math::angle(): complex numbers must be normalized", {});
+    return Rad<T>(std::acos(normalizedA.real()*normalizedB.real() + normalizedA.imaginary()*normalizedB.imaginary()));
+}
+
 /**
 @brief Complex number
 @tparam T   Data type
@@ -56,32 +84,25 @@ template<class T> class Complex {
     public:
         typedef T Type; /**< @brief Underlying data type */
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Dot product
-         *
-         * @f[
-         *      c_0 \cdot c_1 = a_0 a_1 + b_0 b_1
-         * @f]
-         * @see @ref Complex::dot() const
+         * @copybrief Math::dot(const Complex<T>&, const Complex<T>&)
+         * @deprecated Use @ref Math::dot(const Complex<T>&, const Complex<T>&)
+         *      instead.
          */
-        static T dot(const Complex<T>& a, const Complex<T>& b) {
-            return a._real*b._real + a._imaginary*b._imaginary;
+        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Complex<T>& a, const Complex<T>& b) {
+            return Math::dot(a, b);
         }
 
         /**
-         * @brief Angle between normalized complex numbers
-         *
-         * Expects that both complex numbers are normalized. @f[
-         *      \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
-         * @f]
-         * @see @ref isNormalized(), @ref Quaternion::angle(),
-         *      @ref Vector::angle()
+         * @copybrief Math::angle(const Complex<T>&, const Complex<T>&)
+         * @deprecated Use @ref Math::angle(const Complex<T>&, const Complex<T>&)
+         *      instead.
          */
-        static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
-            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                           "Math::Complex::angle(): complex numbers must be normalized", {});
-            return Rad<T>(std::acos(normalizedA._real*normalizedB._real + normalizedA._imaginary*normalizedB._imaginary));
+        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
+            return Math::angle(normalizedA, normalizedB);
         }
+        #endif
 
         /**
          * @brief Rotation complex number
@@ -328,9 +349,7 @@ template<class T> class Complex {
          * @f]
          * @see @ref dot(const Complex&, const Complex&), @ref isNormalized()
          */
-        T dot() const {
-            return dot(*this, *this);
-        }
+        T dot() const { return Math::dot(*this, *this); }
 
         /**
          * @brief Complex number length

@@ -67,7 +67,7 @@ void CylinderRendererTest::common2D() {
     /* Rotation + scaling, test orthogonality */
     CORRADE_COMPARE(transformation.up(), Vector2(3.5f, -2.0f));
     CORRADE_COMPARE(transformation.right(), Vector2(4.0f, 7.0f).resized(3.5f));
-    CORRADE_COMPARE(Vector2::dot(transformation.up(), transformation.right()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation.up(), transformation.right()), 0.0f);
 
     CORRADE_COMPARE(transformation.translation(), 0.5f*(a + b));
 }
@@ -113,9 +113,9 @@ void CylinderRendererTest::common3D() {
     CORRADE_COMPARE(transformation.backward(), Vector3(9.625f, -5.5f, 16.25f).resized(3.5f));
 
     /* Orthogonality */
-    CORRADE_COMPARE(Vector3::dot(transformation.up(), transformation.right()), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(transformation.up(), transformation.backward()), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(transformation.right(), transformation.backward()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation.up(), transformation.right()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation.up(), transformation.backward()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation.right(), transformation.backward()), 0.0f);
 
     CORRADE_COMPARE(transformation.translation(), 0.5f*(a + b));
 }

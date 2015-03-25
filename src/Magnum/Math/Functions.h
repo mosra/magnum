@@ -358,9 +358,7 @@ template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<si
 The interpolation for vectors is done as in following, similarly for scalars: @f[
     \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
 @f]
-@see @ref lerpInverted(), @ref Quaternion::lerp()
-@todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
-    (when SIMD is in place)
+@see @ref lerpInverted(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U> inline T lerp(const T& a, const T& b, U t);

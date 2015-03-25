@@ -184,7 +184,7 @@ void QuaternionTest::dot() {
     Quaternion a({ 1.0f, 3.0f, -2.0f}, -4.0f);
     Quaternion b({-0.5f, 1.5f,  3.0f}, 12.0f);
 
-    CORRADE_COMPARE(Quaternion::dot(a, b), -50.0f);
+    CORRADE_COMPARE(Math::dot(a, b), -50.0f);
 }
 
 void QuaternionTest::dotSelf() {
@@ -260,18 +260,18 @@ void QuaternionTest::rotation() {
 void QuaternionTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
+    Math::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
+    CORRADE_COMPARE(o.str(), "Math::angle(): quaternions must be normalized\n");
 
     o.str({});
-    Quaternion::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::angle(): quaternions must be normalized\n");
+    Math::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
+    CORRADE_COMPARE(o.str(), "Math::angle(): quaternions must be normalized\n");
 
     /* Verify also that the angle is the same as angle between 4D vectors */
-    Rad angle = Quaternion::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(),
-                                  Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
-    CORRADE_COMPARE(angle, Vector4::angle(Vector4(1.0f, 2.0f, -3.0f, -4.0f).normalized(),
-                                          Vector4(4.0f, -3.0f, 2.0f, -1.0f).normalized()));
+    Rad angle = Math::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(),
+                            Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
+    CORRADE_COMPARE(angle, Math::angle(Vector4(1.0f, 2.0f, -3.0f, -4.0f).normalized(),
+                                 Vector4(4.0f, -3.0f, 2.0f, -1.0f).normalized()));
     CORRADE_COMPARE(angle, Rad(1.704528f));
 }
 
@@ -308,14 +308,14 @@ void QuaternionTest::lerp() {
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
 
-    Quaternion::lerp(a*3.0f, b, 0.35f);
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::lerp(): quaternions must be normalized\n");
+    Math::lerp(a*3.0f, b, 0.35f);
+    CORRADE_COMPARE(o.str(), "Math::lerp(): quaternions must be normalized\n");
 
     o.str({});
-    Quaternion::lerp(a, b*-3.0f, 0.35f);
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::lerp(): quaternions must be normalized\n");
+    Math::lerp(a, b*-3.0f, 0.35f);
+    CORRADE_COMPARE(o.str(), "Math::lerp(): quaternions must be normalized\n");
 
-    Quaternion lerp = Quaternion::lerp(a, b, 0.35f);
+    Quaternion lerp = Math::lerp(a, b, 0.35f);
     CORRADE_COMPARE(lerp, Quaternion({0.119127f, 0.049134f, 0.049134f}, 0.990445f));
 }
 
@@ -326,14 +326,14 @@ void QuaternionTest::slerp() {
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
 
-    Quaternion::slerp(a*3.0f, b, 0.35f);
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::slerp(): quaternions must be normalized\n");
+    Math::slerp(a*3.0f, b, 0.35f);
+    CORRADE_COMPARE(o.str(), "Math::slerp(): quaternions must be normalized\n");
 
     o.str({});
-    Quaternion::slerp(a, b*-3.0f, 0.35f);
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::slerp(): quaternions must be normalized\n");
+    Math::slerp(a, b*-3.0f, 0.35f);
+    CORRADE_COMPARE(o.str(), "Math::slerp(): quaternions must be normalized\n");
 
-    Quaternion slerp = Quaternion::slerp(a, b, 0.35f);
+    Quaternion slerp = Math::slerp(a, b, 0.35f);
     CORRADE_COMPARE(slerp, Quaternion({0.1191653f, 0.0491109f, 0.0491109f}, 0.9904423f));
 }
 
