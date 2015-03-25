@@ -53,8 +53,8 @@ template<class T> inline T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
 
 namespace Implementation {
     /* Used in angle() and slerp() (no assertions) */
-    template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
-        return Rad<T>{std::acos(dot(normalizedA, normalizedB))};
+    template<class T> inline T angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+        return std::acos(dot(normalizedA, normalizedB));
     }
 }
 
@@ -71,7 +71,7 @@ Expects that both quaternions are normalized. @f[
 template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::angle(): quaternions must be normalized", {});
-    return Implementation::angle(normalizedA, normalizedB);
+    return Rad<T>{Implementation::angle(normalizedA, normalizedB)};
 }
 
 /** @relatesalso Quaternion
