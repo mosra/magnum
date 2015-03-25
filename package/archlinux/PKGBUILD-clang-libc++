@@ -11,10 +11,12 @@ makedepends=('cmake' 'clang' 'ninja')
 options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    if [ ! -d "$startdir/build-clang-libc++" ] ; then
-        mkdir "$startdir/build-clang-libc++"
-        cd "$startdir/build-clang-libc++"
+    if [ ! -d "$_rootdir/build-clang-libc++" ] ; then
+        mkdir "$_rootdir/build-clang-libc++"
+        cd "$_rootdir/build-clang-libc++"
 
         cmake .. \
             -DCMAKE_CXX_COMPILER=clang++ \
@@ -23,7 +25,7 @@ build() {
             -G Ninja
     fi
 
-    cd "$startdir/build-clang-libc++"
+    cd "$_rootdir/build-clang-libc++"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -51,11 +53,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-clang-libc++"
+    cd "$_rootdir/build-clang-libc++"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-clang-libc++"
+    cd "$_rootdir/build-clang-libc++"
     DESTDIR="$pkgdir/" ninja install
 }
