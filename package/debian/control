@@ -1,7 +1,7 @@
 Source: magnum
 Priority: optional
 Maintainer: Vladimír Vondruš <mosra@centrum.cz>
-Build-Depends: debhelper (>= 9), cmake (>= 2.8.8)
+Build-Depends: debhelper (>= 9), cmake (>= 2.8.9)
 Standards-Version: 3.9.2
 Section: libs
 Homepage: http://mosra.cz/blog/magnum.php
