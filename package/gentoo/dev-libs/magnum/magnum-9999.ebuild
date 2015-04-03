@@ -8,7 +8,7 @@ EGIT_REPO_URI="git://github.com/mosra/magnum.git"
 
 inherit cmake-utils git-r3
 
-DESCRIPTION="C++11 and OpenGL 2D/3D graphics engine"
+DESCRIPTION="C++11/C++14 and OpenGL 2D/3D graphics engine"
 HOMEPAGE="http://mosra.cz/blog/magnum.php"
 
 LICENSE="MIT"
