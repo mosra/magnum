@@ -44,7 +44,8 @@ src_configure() {
 		-DWITH_DISTANCEFIELDCONVERTER=ON
 		-DWITH_FONTCONVERTER=ON
 		-DWITH_MAGNUMINFO=ON
-    )
+	)
 	cmake-utils_src_configure
 }
 
+# kate: replace-tabs off;
