@@ -223,6 +223,7 @@ experimenting on your own!
 -   @subpage building
 -   @subpage building-plugins
 -   @subpage building-integration
+-   @subpage building-examples
 -   @subpage cmake
 -   @subpage cmake-plugins
 -   @subpage cmake-integration
