@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <tuple>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Functions.h"
@@ -65,6 +66,7 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void pow();
     void log();
     void log2();
+    void div();
     void trigonometric();
     void trigonometricWithBase();
 };
@@ -111,6 +113,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::pow,
               &FunctionsTest::log,
               &FunctionsTest::log2,
+              &FunctionsTest::div,
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase});
 }
@@ -408,6 +411,13 @@ void FunctionsTest::log() {
 
 void FunctionsTest::log2() {
     CORRADE_COMPARE(Math::log2(2153), 11);
+}
+
+void FunctionsTest::div() {
+    Int quotient, remainder;
+    std::tie(quotient, remainder) = Math::div(57, 6);
+    CORRADE_COMPARE(quotient, 9);
+    CORRADE_COMPARE(remainder, 3);
 }
 
 void FunctionsTest::trigonometric() {

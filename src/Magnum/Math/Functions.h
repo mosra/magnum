@@ -79,6 +79,26 @@ UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
  */
 UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
 
+/**
+@brief Integer division with remainder
+
+Example usage:
+@code
+Int quotient, remainder;
+std::tie(quotient, remainder) = Math::div(57, 6); // {9, 3}
+@endcode
+Equivalent to the following, but possibly done in a single CPU instruction:
+@code
+Int quotient = 57/6;
+Int remainder = 57%6;
+@endcode
+*/
+template<class Integral> std::pair<Integral, Integral> div(Integral x, Integral y) {
+    static_assert(std::is_integral<Integral>{}, "Math::div(): not an integral type");
+    const auto result = std::div(x, y);
+    return {result.quot, result.rem};
+}
+
 /** @todo Can't trigonometric functions be done with only one overload? */
 
 /** @brief Sine */
