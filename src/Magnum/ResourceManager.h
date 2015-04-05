@@ -294,17 +294,10 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Set resource data
          * @return Reference to self (for method chaining)
          *
-         * If @p policy is set to @ref ResourcePolicy::ReferenceCounted, there
-         * must be already at least one reference to given resource, otherwise
-         * the data will be deleted immediately and no resource will be added.
-         * To avoid spending unnecessary loading time, add reference-counted
-         * resources only if they are already referenced:
-         * @code
-         * if(manager.referenceCount<T>("myresource")) {
-         *     // load data...
-         *     manager.set("myresource", data, state, ResourcePolicy::ReferenceCounted);
-         * }
-         * @endcode
+         * Resources with @ref ResourcePolicy::ReferenceCounted are added with
+         * zero reference count. It means that all reference counted resources
+         * which were only loaded but not used will stay loaded and you need to
+         * explicitly call @ref free() to delete them.
          * @attention Subsequent updates are not possible if resource state is
          *      already @ref ResourceState::Final.
          * @see @ref referenceCount(), @ref state()
@@ -514,24 +507,13 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
     CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
         "ResourceManager::set(): cannot change already final resource" << key, );
 
-    /* If nothing is referencing reference-counted resource, we're done */
-    if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
-        Warning() << "ResourceManager: Reference-counted resource with key" << key << "isn't referenced from anywhere, deleting it immediately";
-        safeDelete(data);
-
-        /* Delete also already present resource (it could be here
-            because previous policy could be other than
-            ReferenceCounted) */
-        if(it != _data.end()) _data.erase(it);
-
-        return;
-
-    /* Insert it, if not already here */
-    } else if(it == _data.end())
+    /* Insert the resource, if not already there */
+    if(it == _data.end())
         it = _data.emplace(key, Data()).first;
 
-    /* Replace previous data */
-    safeDelete(it->second.data);
+    /* Otherwise delete previous data */
+    else safeDelete(it->second.data);
+
     it->second.data = data;
     it->second.state = state;
     it->second.policy = policy;

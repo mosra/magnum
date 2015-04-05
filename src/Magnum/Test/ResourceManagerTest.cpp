@@ -185,24 +185,29 @@ void ResourceManagerTest::referenceCountedPolicy() {
 
     ResourceKey dataRefCountKey("dataRefCount");
 
-    /* Reference counted resources must be requested first */
+    /* Resource is deleted after all references are removed */
+    rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+    CORRADE_COMPARE(rm.count<Data>(), 1);
     {
-        rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
-        CORRADE_COMPARE(rm.count<Data>(), 0);
         Resource<Data> data = rm.get<Data>(dataRefCountKey);
-        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
-        CORRADE_COMPARE(Data::count, 0);
-    } {
-        Resource<Data> data = rm.get<Data>(dataRefCountKey);
-        CORRADE_COMPARE(rm.count<Data>(), 1);
-        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
-        rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
         CORRADE_COMPARE(data.state(), ResourceState::Final);
         CORRADE_COMPARE(Data::count, 1);
     }
 
     CORRADE_COMPARE(rm.count<Data>(), 0);
     CORRADE_COMPARE(Data::count, 0);
+
+    /* Reference counted resources which were not used once will stay loaded
+       until free() is called */
+    rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+    CORRADE_COMPARE(rm.count<Data>(), 1);
+    CORRADE_COMPARE(rm.state<Data>(dataRefCountKey), ResourceState::Final);
+    CORRADE_COMPARE(rm.referenceCount<Data>(dataRefCountKey), 0);
+
+    rm.free<Data>();
+    CORRADE_COMPARE(rm.count<Data>(), 0);
+    CORRADE_COMPARE(rm.state<Data>(dataRefCountKey), ResourceState::NotLoaded);
+    CORRADE_COMPARE(rm.referenceCount<Data>(dataRefCountKey), 0);
 }
 
 void ResourceManagerTest::manualPolicy() {
