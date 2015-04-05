@@ -155,6 +155,29 @@ template<class T> class ResourceManagerData {
         std::size_t _lastChange;
 };
 
+/* Helper class for defining which real types are in the type pack */
+template<class...> struct ResourceTypePack {};
+
+/* Common resource manager implementation with inline internal instance (for
+   use in user code), definition of internalInstance() is in this header */
+template<class... Types> struct ResourceManagerInlineInstanceImplementation {
+    static ResourceManager<Types...>*& internalInstance();
+};
+template<class ...Types> struct ResourceManagerImplementation: ResourceManagerInlineInstanceImplementation<Types...>, ResourceManagerData<Types>... {
+    typedef ResourceTypePack<Types...> TypePack;
+};
+
+/* Resource manager implementation with file-local internal instance (for use
+   in code where the manager is used across library boundaries), definition
+   of internalInstance() is in ResourceManager.hpp, see it for usage details */
+template<class... Types> struct ResourceManagerLocalInstanceImplementation {
+    static ResourceManager<Types...>*& internalInstance();
+};
+struct ResourceManagerLocalInstance;
+template<class ...Types> struct ResourceManagerImplementation<ResourceManagerLocalInstance, Types...>: ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, Types...>, ResourceManagerData<Types>... {
+    typedef ResourceTypePack<Types...> TypePack;
+};
+
 }
 
 /**
@@ -224,7 +247,7 @@ cube->draw(*shader);
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
    template implementation file. */
-template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
+template<class... Types> class ResourceManager: private Implementation::ResourceManagerImplementation<Types>... {
     public:
         /**
          * @brief Global instance
@@ -366,7 +389,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @return Reference to self (for method chaining)
          */
         ResourceManager<Types...>& free() {
-            freeInternal<Types...>();
+            freeInternal(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
             return *this;
         }
 
@@ -390,7 +413,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * referenced.
          */
         ResourceManager<Types...>& clear() {
-            clearInternal<Types...>();
+            clearInternal(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
             return *this;
         }
 
@@ -419,35 +442,31 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         }
 
     private:
-        template<class FirstType, class ...NextTypes> void freeInternal() {
+        template<class FirstType, class ...NextTypes> void freeInternal(Implementation::ResourceTypePack<FirstType, NextTypes...>) {
             free<FirstType>();
-            freeInternal<NextTypes...>();
+            freeInternal(Implementation::ResourceTypePack<NextTypes...>{});
         }
-        template<class...> void freeInternal() const {}
+        void freeInternal(Implementation::ResourceTypePack<>) const {}
 
-        template<class FirstType, class ...NextTypes> void clearInternal() {
+        template<class FirstType, class ...NextTypes> void clearInternal(Implementation::ResourceTypePack<FirstType, NextTypes...>) {
             clear<FirstType>();
-            clearInternal<NextTypes...>();
+            clearInternal(Implementation::ResourceTypePack<NextTypes...>{});
         }
-        template<class...> void clearInternal() const {}
+        void clearInternal(Implementation::ResourceTypePack<>) const {}
 
-        template<class FirstType, class ...NextTypes> void freeLoaders() {
+        template<class FirstType, class ...NextTypes> void freeLoaders(Implementation::ResourceTypePack<FirstType, NextTypes...>) {
             Implementation::ResourceManagerData<FirstType>::freeLoader();
-            freeLoaders<NextTypes...>();
+            freeLoaders(Implementation::ResourceTypePack<NextTypes...>{});
         }
-        template<class...> void freeLoaders() const {}
-
-        static ResourceManager<Types...>*& internalInstance();
+        void freeLoaders(Implementation::ResourceTypePack<>) const {}
 };
 
-#ifndef MAGNUM_RESOURCEMANAGER_DONT_DEFINE_INTERNALINSTANCE
-template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::internalInstance() {
+namespace Implementation {
+
+template<class ...Types> ResourceManager<Types...>*& ResourceManagerInlineInstanceImplementation<Types...>::internalInstance() {
     static ResourceManager<Types...>* _instance(nullptr);
     return _instance;
 }
-#endif
-
-namespace Implementation {
 
 template<class T> void safeDelete(T* data) {
     static_assert(sizeof(T) > 0, "Cannot delete pointer to incomplete type");
@@ -588,19 +607,22 @@ template<class T> inline ResourceManagerData<T>::Data::~Data() {
 }
 
 template<class ...Types> ResourceManager<Types...>& ResourceManager<Types...>::instance() {
-    CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", *internalInstance());
-    return *internalInstance();
+    CORRADE_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
+        "ResourceManager::instance(): no instance exists",
+        static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance()));
+    return static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance());
 }
 
 template<class ...Types> ResourceManager<Types...>::ResourceManager() {
-    CORRADE_ASSERT(!internalInstance(), "ResourceManager::ResourceManager(): another instance is already created", );
-    internalInstance() = this;
+    CORRADE_ASSERT(!Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
+        "ResourceManager::ResourceManager(): another instance is already created", );
+    Implementation::ResourceManagerImplementation<Types...>::internalInstance() = this;
 }
 
 template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
-    freeLoaders<Types...>();
-    CORRADE_INTERNAL_ASSERT(internalInstance() == this);
-    internalInstance() = nullptr;
+    freeLoaders(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
+    CORRADE_INTERNAL_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance() == this);
+    Implementation::ResourceManagerImplementation<Types...>::internalInstance() = nullptr;
 }
 
 }

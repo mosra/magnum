@@ -25,29 +25,22 @@
 
 #include "ResourceManager.h"
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Mesh.h"
-#include "Magnum/MeshView.h"
-#include "Magnum/ResourceManager.hpp"
-#include "Magnum/DebugTools/ForceRenderer.h"
-#include "Magnum/DebugTools/ObjectRenderer.h"
-#include "Magnum/DebugTools/ShapeRenderer.h"
+/*
+    File-local definition of ResourceManager instance holder for use in cases
+    where the class is used across library boundaries, in which case additional
+    care must be done to ensure a single static instance.
 
-namespace Magnum {
+    Usage: typedef the resource manager with Implementation::ResourceManagerLocalInstance
+    as a first type and then include this file in a _single_ *.cpp file.
 
-namespace Implementation {
-    template MAGNUM_DEBUGTOOLS_EXPORT ResourceManager<Implementation::ResourceManagerLocalInstance, AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>*& ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>::internalInstance();
+    This symbol is always exported.
+*/
+
+namespace Magnum { namespace Implementation {
+
+template<class ...Types> CORRADE_VISIBILITY_EXPORT ResourceManager<Types...>*& ResourceManagerLocalInstanceImplementation<Types...>::internalInstance() {
+    static ResourceManager<Types...>* _instance(nullptr);
+    return _instance;
 }
-
-namespace DebugTools {
-
-ResourceManager::ResourceManager() {
-    setFallback(new ForceRendererOptions);
-    setFallback(new ObjectRendererOptions);
-    setFallback(new ShapeRendererOptions);
-}
-
-ResourceManager::~ResourceManager() {}
 
 }}

@@ -112,6 +112,7 @@ set(Magnum_HEADERS
     Renderer.h
     Resource.h
     ResourceManager.h
+    ResourceManager.hpp
     SampleQuery.h
     Sampler.h
     Shader.h

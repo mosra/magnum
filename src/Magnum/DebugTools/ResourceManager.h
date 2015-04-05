@@ -29,9 +29,6 @@
  * @brief Class @ref Magnum::DebugTools::ResourceManager
  */
 
-#ifndef MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE
-#define MAGNUM_RESOURCEMANAGER_DONT_DEFINE_INTERNALINSTANCE
-#endif
 #include "Magnum/ResourceManager.h"
 
 #include "Magnum/Magnum.h"
@@ -42,14 +39,6 @@
 
 namespace Magnum {
 
-/** @todo Do the listing in one place, not five thousand! */
-
-#ifndef CORRADE_TARGET_WINDOWS
-extern template ResourceManager<AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> MAGNUM_DEBUGTOOLS_EXPORT *& ResourceManager<AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>::internalInstance();
-#else
-extern template class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager<AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
-#endif
-
 namespace DebugTools {
 
 /**
@@ -58,7 +47,7 @@ namespace DebugTools {
 Stores various data used by debug renderers. See @ref debug-tools for more
 information.
 */
-class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> {
+class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<Magnum::Implementation::ResourceManagerLocalInstance, AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> {
     public:
         explicit ResourceManager();
         ~ResourceManager();
