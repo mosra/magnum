@@ -40,6 +40,13 @@ corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES Magnum)
 corrade_add_test(ShaderTest ShaderTest.cpp LIBRARIES Magnum)
 corrade_add_test(VersionTest VersionTest.cpp LIBRARIES Magnum)
 
+add_library(ResourceManagerLocalInstanceTestLib ${SHARED_OR_STATIC} ResourceManagerLocalInstanceTestLib.cpp)
+target_link_libraries(ResourceManagerLocalInstanceTestLib Magnum)
+if(NOT BUILD_STATIC)
+    set_target_properties(ResourceManagerLocalInstanceTestLib PROPERTIES COMPILE_FLAGS "-DResourceManagerLocalInstanceTestLib_EXPORTS")
+endif()
+corrade_add_test(ResourceManagerLocalInstanceTest ResourceManagerLocalInstanceTest.cpp LIBRARIES Magnum ResourceManagerLocalInstanceTestLib)
+
 if(BUILD_GL_TESTS)
     corrade_add_test(AbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(AbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
