@@ -55,7 +55,7 @@ textures for actual on-screen rendering. First you need to create the
 framebuffer with the same viewport as default framebuffer and attach textures
 and renderbuffers to desired outputs:
 @code
-Framebuffer framebuffer(defaultFramebuffer.viewportPosition(), defaultFramebuffer.viewportSize());
+Framebuffer framebuffer({defaultFramebuffer.viewportPosition(), defaultFramebuffer.viewportSize()});
 Texture2D color, normal;
 Renderbuffer depthStencil;
 
