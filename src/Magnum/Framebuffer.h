@@ -84,7 +84,7 @@ void drawEvent() {
     framebuffer.bind(FramebufferTarget::Draw);
     // ...
 
-    defaultFramebuffer.bind(Framebuffer::Target::Draw);
+    defaultFramebuffer.bind(FramebufferTarget::Draw);
     // ...
 }
 @endcode
