@@ -53,7 +53,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 class RedCube: public Object3D, public SceneGraph::Drawable3D {
     public:
         explicit RedCube(Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D{parent}, SceneGraph::Drawable3D{*this, group} {
-            std::tie(_mesh, _vertices, _indices) = MeshTools::compile(Primitives::UVSphere::solid(16, 32));
+            std::tie(_mesh, _vertices, _indices) = MeshTools::compile(Primitives::UVSphere::solid(16, 32), BufferUsage::StaticDraw);
         }
 
     private:
