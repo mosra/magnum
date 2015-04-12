@@ -37,7 +37,7 @@
 namespace Magnum {
 
 namespace Implementation {
-    template MAGNUM_DEBUGTOOLS_EXPORT ResourceManager<Implementation::ResourceManagerLocalInstance, AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>*& ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>::internalInstance();
+    template struct MAGNUM_DEBUGTOOLS_EXPORT ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
 }
 
 namespace DebugTools {

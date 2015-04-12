@@ -30,7 +30,7 @@
 namespace Magnum {
 
 namespace Implementation {
-    template MAGNUM_RESOURCEMANAGERLOCALINSTANCETESTLIB_EXPORT ResourceManager<ResourceManagerLocalInstance, Int>*& ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, Int>::internalInstance();
+    template struct CORRADE_VISIBILITY_EXPORT ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, Int>;
 }
 
 namespace Test {
