@@ -27,5 +27,9 @@ Contributors to Magnum library
     Debian package
 *   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
+*   [@wivlaro](https://github.com/wivlaro) -- numerous bug reports, Mac OS X
+    fixes, feature improvements
+*   Squareys ([@Squareys](https://github.com/Squareys)) -- bug reports,
+    documentation improvements
 
 Big thanks to everyone involved!
