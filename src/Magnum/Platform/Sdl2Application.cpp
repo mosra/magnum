@@ -215,6 +215,24 @@ void Sdl2Application::swapBuffers() {
     #endif
 }
 
+Int Sdl2Application::swapInterval() const {
+    return SDL_GL_GetSwapInterval();
+}
+
+bool Sdl2Application::setSwapInterval(const Int interval) {
+    if(SDL_GL_SetSwapInterval(interval) == -1) {
+        Error() << "Platform::Sdl2Application::setSwapInterval(): cannot set swap interval:" << SDL_GetError();
+        return false;
+    }
+
+    if(SDL_GL_GetSwapInterval() != interval) {
+        Error() << "Platform::Sdl2Application::setSwapInterval(): swap interval setting ignored by the driver";
+        return false;
+    }
+
+    return true;
+}
+
 Sdl2Application::~Sdl2Application() {
     _context.reset();
 

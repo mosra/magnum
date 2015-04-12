@@ -276,8 +276,22 @@ class Sdl2Application {
          * @brief Swap buffers
          *
          * Paints currently rendered framebuffer on screen.
+         * @see @ref setSwapInterval()
          */
         void swapBuffers();
+
+        /** @brief Swap interval */
+        Int swapInterval() const;
+
+        /**
+         * @brief Set swap interval
+         *
+         * Set `0` for no VSync, `1` for enabled VSync. Some platforms support
+         * `-1` for late swap tearing. Prints error message and returns `false`
+         * if swap interval cannot be set, `true` otherwise. Default is
+         * driver-dependent, you can query the value with @ref swapInterval().
+         */
+        bool setSwapInterval(Int interval);
 
         /**
          * @brief Redraw immediately
