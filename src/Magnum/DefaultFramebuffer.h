@@ -48,8 +48,8 @@ must ensure that it is properly resized when application surface is resized,
 i.e. you must pass the new size in your @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
 implementation, for example:
 @code
-void viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({}, size);
+void viewportEvent(const Vector2i& size) override {
+    defaultFramebuffer.setViewport({{}, size});
 
     // ...
 }
@@ -59,15 +59,15 @@ Next thing you probably want is to clear all used buffers before performing
 any drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation, for example:
 @code
-void drawEvent() {
+void drawEvent() override {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     // ...
 }
 @endcode
 
-See Framebuffer documentation for more involved usage, usage of non-default or
-multiple framebuffers.
+See documentation of particular functions and @ref Framebuffer documentation for
+more involved usage, usage of non-default or multiple framebuffers.
 
 ## Performance optimizations
 

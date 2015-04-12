@@ -81,10 +81,10 @@ void drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color)
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    framebuffer.bind(FramebufferTarget::Draw);
+    framebuffer.bind();
     // ...
 
-    defaultFramebuffer.bind(FramebufferTarget::Draw);
+    defaultFramebuffer.bind();
     // ...
 }
 @endcode
