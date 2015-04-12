@@ -89,7 +89,8 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
          * @brief Camera matrix
          *
          * Camera matrix describes world position relative to the camera and is
-         * applied as first.
+         * applied after object transformation matrix and before projection
+         * matrix.
          */
         MatrixTypeFor<dimensions, T> cameraMatrix() {
             AbstractFeature<dimensions, T>::object().setClean();
@@ -100,7 +101,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
          * @brief Projection matrix
          *
          * Projection matrix handles e.g. perspective distortion and is applied
-         * as last.
+         * as last, after @ref cameraMatrix() and object transformation matrix.
          * @see @ref projectionSize()
          */
         MatrixTypeFor<dimensions, T> projectionMatrix() const { return _projectionMatrix; }

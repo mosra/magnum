@@ -59,7 +59,7 @@ class RedCube: public Object3D, public SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, AbstractCamera3D& camera) override {
             _shader.setDiffuseColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
-                .setLightPosition({5.0f, 5.0f, 7.0f})
+                .setLightPosition(camera.cameraMatrix().transformPoint({5.0f, 5.0f, 7.0f}))
                 .setTransformationMatrix(transformationMatrix)
                 .setNormalMatrix(transformationMatrix.rotation())
                 .setProjectionMatrix(camera.projectionMatrix());
@@ -136,13 +136,19 @@ SceneGraph::DrawableGroup3D phongObjects, transparentObjects;
 
 void MyApplication::drawEvent() {
     shader.setProjectionMatrix(camera->projectionMatrix())
-          .setLightPosition(lightPosition)
+          .setLightPosition(lightPositionRelativeToCamera)
           .setLightColor(lightColor)
           .setAmbientColor(ambientColor);
+
+    // Each drawable sets only unique properties such as transformation matrix
+    // and diffuse color
     camera.draw(phongObjects);
 
     Renderer::enable(Renderer::Feature::Blending);
+
+    // Also here
     camera.draw(transparentObjects);
+
     Renderer::disable(Renderer::Feature::Blending);
 
     // ...
