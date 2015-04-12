@@ -148,6 +148,16 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         #endif
 
         /**
+         * @brief Add a feature
+         *
+         * Calling `object.addFeature<MyFeature>(args...)` is equivalent to
+         * `new MyFeature{object, args...}`.
+         */
+        template<class U, class ...Args> U& addFeature(Args... args) {
+            return *(new U{*this, std::forward<Args>(args)...});
+        }
+
+        /**
          * @brief Scene
          * @return Scene or `nullptr`, if the object is not part of any scene.
          */

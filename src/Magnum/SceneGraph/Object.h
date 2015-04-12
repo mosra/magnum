@@ -229,6 +229,16 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         #endif
 
         /**
+         * @brief Add a child
+         *
+         * Calling `object.addChild<MyObject>(args...)` is equivalent to
+         * `new MyObject{args..., &object}`.
+         */
+        template<class T, class ...Args> T& addChild(Args... args) {
+            return *(new T{std::forward<Args>(args)..., this});
+        }
+
+        /**
          * @brief Set parent object
          * @return Reference to self (for method chaining)
          *

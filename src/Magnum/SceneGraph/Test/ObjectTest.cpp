@@ -34,7 +34,10 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 struct ObjectTest: TestSuite::Tester {
     explicit ObjectTest();
 
+    void addFeature();
+
     void parenting();
+    void addChild();
     void scene();
     void setParentKeepTransformation();
     void absoluteTransformation();
@@ -68,7 +71,10 @@ class CachingObject: public Object3D, AbstractFeature3D {
 };
 
 ObjectTest::ObjectTest() {
-    addTests({&ObjectTest::parenting,
+    addTests({&ObjectTest::addFeature,
+
+              &ObjectTest::parenting,
+              &ObjectTest::addChild,
               &ObjectTest::scene,
               &ObjectTest::setParentKeepTransformation,
               &ObjectTest::absoluteTransformation,
@@ -82,6 +88,19 @@ ObjectTest::ObjectTest() {
 
               &ObjectTest::rangeBasedForChildren,
               &ObjectTest::rangeBasedForFeatures});
+}
+
+void ObjectTest::addFeature() {
+    class MyFeature: public AbstractFeature3D {
+        public:
+            explicit MyFeature(AbstractObject3D& object, Int, std::string&&): AbstractFeature3D{object} {}
+    };
+
+    Object3D o;
+    CORRADE_VERIFY(o.features().isEmpty());
+    MyFeature& f = o.addFeature<MyFeature>(0, "hello");
+    CORRADE_VERIFY(!o.features().isEmpty());
+    CORRADE_COMPARE(&f.object(), &o);
 }
 
 void ObjectTest::parenting() {
@@ -112,6 +131,19 @@ void ObjectTest::parenting() {
     /* Delete child */
     delete childTwo;
     CORRADE_VERIFY(childOne->children().isEmpty());
+}
+
+void ObjectTest::addChild() {
+    class MyObject: public Object3D {
+        public:
+            explicit MyObject(Int, std::string&&, Object3D* parent = nullptr): Object3D{parent} {}
+    };
+
+    Object3D o;
+    CORRADE_VERIFY(o.children().isEmpty());
+    MyObject& p = o.addChild<MyObject>(0, "hello");
+    CORRADE_VERIFY(!o.children().isEmpty());
+    CORRADE_COMPARE(p.parent(), &o);
 }
 
 void ObjectTest::scene() {

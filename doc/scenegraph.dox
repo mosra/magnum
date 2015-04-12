@@ -136,14 +136,22 @@ observed through @ref SceneGraph::Object::parent() and
 @code
 Scene3D scene;
 
-auto first = new Object3D(&scene);
-auto second = new Object3D(first);
+Object3D* first = new Object3D{&scene};
+Object3D* second = new Object3D{first};
 @endcode
 
 The hierarchy takes care of memory management -- when an object is destroyed,
 all its children are destroyed too. See detailed explanation of
 @ref scenegraph-object-construction-order "construction and destruction order"
-below for information about possible issues.
+below for information about possible issues. To reflect the implicit memory
+management in the code better, you can use @ref SceneGraph::Object::addChild()
+instead of the naked `new` call in the code above:
+@code
+Scene3D scene;
+
+Object3D& first = scene.addChild<Object3D>();
+Object3D& second = first.addChild<Object3D>();
+@endcode
 
 @section scenegraph-features Object features
 
@@ -177,8 +185,8 @@ feature to an object might look just like the following, as in some cases you
 don't even need to keep the pointer to it. List of object features is
 accessible through @ref SceneGraph::Object::features().
 @code
-Object3D* o;
-new MyFeature{*o};
+Object3D& o;
+new MyFeature{o, ...};
 @endcode
 
 Some features are passive, some active. Passive features can be just added to
@@ -211,7 +219,13 @@ feature list.
 Similarly to object hierarchy, when destroying object, all its features (both
 member and inherited) are destroyed. See detailed explanation of
 @ref scenegraph-feature-construction-order "construction and destruction order"
-for information about possible issues.
+for information about possible issues. Also, there is a
+@ref SceneGraph::AbstractObject::addFeature() counterpart to
+@ref SceneGraph::Object::addChild():
+@code
+Object3D& o;
+o.addFeature<MyFeature>(...);
+@endcode
 
 @subsection scenegraph-features-caching Transformation caching in features
 
