@@ -313,7 +313,7 @@ void ObjectTest::setClean() {
 
     class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject3D& object): AbstractFeature3D(object) {
+            explicit CachingFeature(AbstractObject3D& object): AbstractFeature3D{object} {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -326,7 +326,7 @@ void ObjectTest::setClean() {
 
     class CachingInvertedFeature: public AbstractFeature3D {
         public:
-            CachingInvertedFeature(AbstractObject3D& object): AbstractFeature3D(object) {
+            explicit CachingInvertedFeature(AbstractObject3D& object): AbstractFeature3D{object} {
                 setCachedTransformations(CachedTransformation::InvertedAbsolute);
             }
 
@@ -411,7 +411,7 @@ void ObjectTest::setCleanListHierarchy() {
 
     class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject3D& object): AbstractFeature3D(object) {
+            explicit CachingFeature(AbstractObject3D& object): AbstractFeature3D{object} {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -505,7 +505,7 @@ void ObjectTest::rangeBasedForChildren() {
 
 void ObjectTest::rangeBasedForFeatures() {
     struct Feature: AbstractFeature3D {
-        Feature(AbstractObject3D& object): AbstractFeature3D{object} {}
+        explicit Feature(AbstractObject3D& object): AbstractFeature3D{object} {}
     };
 
     Object3D object;
