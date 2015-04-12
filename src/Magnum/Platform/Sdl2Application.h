@@ -246,8 +246,9 @@ class Sdl2Application {
          * @brief Create context with given configuration
          *
          * Must be called if and only if the context wasn't created by the
-         * constructor itself. The program exits if the context cannot be
-         * created, see @ref tryCreateContext() for an alternative.
+         * constructor itself. Error message is printed and the program exits
+         * if the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
          *
          * On desktop GL, if version is not specified in @p configuration, the
          * application first tries to create core context (OpenGL 3.2+ on OS X,
