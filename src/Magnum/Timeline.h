@@ -99,8 +99,12 @@ class MAGNUM_EXPORT Timeline {
          * @brief Set minimal frame time
          * @return Reference to self (for method chaining)
          *
-         * Default value is 0.
-         * @see @ref nextFrame()
+         * Default value is `0.0f`. Cannot be used on some platforms where
+         * blocking the main loop is not allowed (such as
+         * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"). Prefer to use VSync
+         * where possible.
+         * @see @ref nextFrame(),
+         *      @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()"
          */
         Timeline& setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;
