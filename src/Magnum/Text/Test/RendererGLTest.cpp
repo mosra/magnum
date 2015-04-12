@@ -341,7 +341,7 @@ void RendererGLTest::multiline() {
             bool doIsOpened() const override { return _opened; }
             void doClose() override { _opened = false; }
 
-            std::pair<Float, Float> doOpenFile(const std::string&, Float) {
+            std::pair<Float, Float> doOpenFile(const std::string&, Float) override {
                 _opened = true;
                 return {0.5f, 0.75f};
             }
