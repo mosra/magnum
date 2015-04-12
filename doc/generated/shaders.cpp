@@ -111,7 +111,7 @@ int ShaderVisualizer::exec() {
     multisampleFramebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, multisampleColor)
         .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, multisampleDepth)
         .bind();
-    CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(FramebufferTarget::ReadDraw) == Framebuffer::Status::Complete);
+    CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
 
     Renderbuffer color;
     color.setStorage(RenderbufferFormat::RGBA8, ImageSize);

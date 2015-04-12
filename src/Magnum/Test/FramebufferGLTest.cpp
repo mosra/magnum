@@ -270,7 +270,8 @@ void FramebufferGLTest::attachRenderbuffer() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachRenderbufferMultisample() {
@@ -307,7 +308,8 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
                #endif
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -326,7 +328,8 @@ void FramebufferGLTest::attachTexture1D() {
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -386,7 +389,8 @@ void FramebufferGLTest::attachTexture2D() {
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachTexture3D() {
@@ -409,7 +413,8 @@ void FramebufferGLTest::attachTexture3D() {
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -428,7 +433,8 @@ void FramebufferGLTest::attachTexture1DArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -452,7 +458,8 @@ void FramebufferGLTest::attachTexture2DArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -479,7 +486,8 @@ void FramebufferGLTest::attachTexture2DMultisample() {
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -501,7 +509,8 @@ void FramebufferGLTest::attachTexture2DMultisampleArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachRectangleTexture() {
@@ -521,7 +530,8 @@ void FramebufferGLTest::attachRectangleTexture() {
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -571,7 +581,8 @@ void FramebufferGLTest::attachCubeMapTexture() {
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -592,7 +603,8 @@ void FramebufferGLTest::attachCubeMapTextureArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -640,7 +652,8 @@ void FramebufferGLTest::multipleColorOutputs() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::clear() {
@@ -731,7 +744,8 @@ void FramebufferGLTest::invalidateSub() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depth);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.invalidate({Framebuffer::InvalidationAttachment::Depth, Framebuffer::ColorAttachment(0)},
                            {{32, 16}, {79, 64}});
@@ -781,7 +795,8 @@ void FramebufferGLTest::read() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
     Renderer::setClearDepth(Math::normalize<Float, UnsignedShort>(48352));
@@ -857,7 +872,8 @@ void FramebufferGLTest::readBuffer() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
     Renderer::setClearDepth(Math::normalize<Float, UnsignedShort>(48352));
@@ -901,8 +917,10 @@ void FramebufferGLTest::blit() {
     b.attachRenderbuffer(Framebuffer::ColorAttachment(0), colorB);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(a.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
-    CORRADE_COMPARE(b.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(a.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(a.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(b.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(b.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     /* Clear first with some color and second with another */
     Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
