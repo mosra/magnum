@@ -115,7 +115,11 @@ class AbstractXApplication {
 
         /** @{ @name Screen handling */
 
-        /** @copydoc Sdl2Application::swapBuffers() */
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */

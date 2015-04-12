@@ -266,7 +266,11 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         bool setFullscreen(bool enabled);
 
     protected:
-        /** @copydoc Sdl2Application::swapBuffers() */
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
