@@ -114,7 +114,7 @@ Framebuffer::~Framebuffer() {
          * @todo Less ugly solution (need to call setViewportInternal() to
          * reset the viewport to size of default framebuffer)
          */
-        defaultFramebuffer.bind(FramebufferTarget::Draw);
+        defaultFramebuffer.bind();
     }
 
     glDeleteFramebuffers(1, &_id);

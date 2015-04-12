@@ -438,7 +438,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
     renderbuffer.setStorage(format, Vector2i(1));
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
     mesh.setPrimitive(MeshPrimitive::Points)
         .setCount(2);
 
@@ -1726,7 +1726,7 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
         Vector2i(1));
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
     mesh.setPrimitive(MeshPrimitive::Points)
         .setCount(2);
 

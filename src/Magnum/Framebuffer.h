@@ -375,6 +375,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
          * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
          * the framebuffer is bound before the operation (if not already).
+         *
+         * On OpenGL ES 2.0, if none of @es_extension{APPLE,framebuffer_multisample},
+         * @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
+         * is available, the @p target parameter is ignored.
          * @see @fn_gl2{CheckNamedFramebufferStatus,CheckFramebufferStatus},
          *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{CheckFramebufferStatus}

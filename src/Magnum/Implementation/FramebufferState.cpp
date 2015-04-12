@@ -104,12 +104,13 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDefault;
     }
 
-    /* Framebuffer binding on ES2 */
     #ifdef MAGNUM_TARGET_GLES2
+    /* Framebuffer binding and checking on ES2 */
     /* Optimistically set separate binding targets and check if one of the
        extensions providing them is available */
-    readTarget = FramebufferTarget::Read;
-    drawTarget = FramebufferTarget::Draw;
+    bindImplementation = &Framebuffer::bindImplementationDefault;
+    bindInternalImplementation = &Framebuffer::bindImplementationDefault;
+    checkStatusImplementation = &Framebuffer::checkStatusImplementationDefault;
 
     if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>()) {
         extensions.push_back(Extensions::GL::ANGLE::framebuffer_blit::string());
@@ -127,8 +128,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     } else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>()) {
         extensions.push_back(Extensions::GL::NV::framebuffer_multisample::string());
 
-    /* If no such extension is available, reset back to unified target */
-    } else readTarget = drawTarget = FramebufferTarget::ReadDraw;
+    /* If no such extension is available, reset back to single target */
+    } else {
+        bindImplementation = &Framebuffer::bindImplementationSingle;
+        bindInternalImplementation = &Framebuffer::bindImplementationSingle;
+        checkStatusImplementation = &Framebuffer::checkStatusImplementationSingle;
+    }
     #endif
 
     /* Framebuffer reading implementation */

@@ -93,27 +93,45 @@ void AbstractFramebuffer::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
-void AbstractFramebuffer::bind(const FramebufferTarget target) {
-    bindInternal(target);
-
-    /* Ensure the viewport is set if the user is going to draw */
-    if(target == FramebufferTarget::Draw || target == FramebufferTarget::ReadDraw)
-        setViewportInternal();
+void AbstractFramebuffer::bind() {
+    bindInternal(FramebufferTarget::Draw);
+    setViewportInternal();
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
+    #ifndef MAGNUM_TARGET_GLES2
+    bindImplementationDefault(target);
+    #else
+    (this->*Context::current()->state().framebuffer->bindImplementation)(target);
+    #endif
+}
+
+#ifdef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
+    if(state.readBinding == _id) return;
+
+    state.readBinding = state.drawBinding = _id;
+
+    /* Binding the framebuffer finally creates it */
+    _created = true;
+    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+inline
+#endif
+void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
     Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
 
-    /* If already bound, done, otherwise update tracked state */
     if(target == FramebufferTarget::Read) {
         if(state.readBinding == _id) return;
         state.readBinding = _id;
     } else if(target == FramebufferTarget::Draw) {
         if(state.drawBinding == _id) return;
         state.drawBinding = _id;
-    } else if(target == FramebufferTarget::ReadDraw) {
-        if(state.readBinding == _id && state.drawBinding == _id) return;
-        state.readBinding = state.drawBinding = _id;
     } else CORRADE_ASSERT_UNREACHABLE();
 
     /* Binding the framebuffer finally creates it */
@@ -122,11 +140,38 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
+    #ifndef MAGNUM_TARGET_GLES2
+    return bindImplementationDefault();
+    #else
+    return (this->*Context::current()->state().framebuffer->bindInternalImplementation)();
+    #endif
+}
+
+#ifdef MAGNUM_TARGET_GLES2
+FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
+
+    /* Bind the framebuffer, if not already */
+    if(state.readBinding != _id) {
+        state.readBinding = state.drawBinding = _id;
+
+        /* Binding the framebuffer finally creates it */
+        _created = true;
+        glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    }
+
+    return FramebufferTarget{};
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+inline
+#endif
+FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
     Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
 
     /* Return target to which the framebuffer is already bound */
-    if(state.readBinding == _id && state.drawBinding == _id)
-        return FramebufferTarget::ReadDraw;
     if(state.readBinding == _id)
         return FramebufferTarget::Read;
     if(state.drawBinding == _id)
@@ -137,14 +182,8 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
 
     /* Binding the framebuffer finally creates it */
     _created = true;
-    #ifndef MAGNUM_TARGET_GLES2
     glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
     return FramebufferTarget::Read;
-    #else
-    if(state.readTarget == FramebufferTarget::ReadDraw) state.drawBinding = _id;
-    glBindFramebuffer(GLenum(state.readTarget), _id);
-    return state.readTarget;
-    #endif
 }
 
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
@@ -225,22 +264,14 @@ void AbstractFramebuffer::setViewportInternal() {
 }
 
 AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
-    #else
-    bindInternal(Context::current()->state().framebuffer->drawTarget);
-    #endif
     glClear(GLbitfield(mask));
 
     return *this;
 }
 
 void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
-    #else
-    bindInternal(Context::current()->state().framebuffer->readTarget);
-    #endif
     const std::size_t dataSize = image.dataSize(rectangle.size());
     char* const data = new char[dataSize];
     (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, data);
@@ -309,6 +340,13 @@ GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTa
     return glCheckFramebufferStatus(GLenum(target));
 }
 
+#ifdef MAGNUM_TARGET_GLES2
+GLenum AbstractFramebuffer::checkStatusImplementationSingle(FramebufferTarget) {
+    bindInternal(FramebufferTarget{});
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER);
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
     return glCheckNamedFramebufferStatus(_id, GLenum(target));
@@ -321,11 +359,7 @@ GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTar
 #endif
 
 void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
-    #else
-    bindInternal(Context::current()->state().framebuffer->drawTarget);
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     glDrawBuffers(count, buffers);
@@ -350,11 +384,7 @@ void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const G
 #endif
 
 void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
-    #else
-    bindInternal(Context::current()->state().framebuffer->drawTarget);
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     glDrawBuffer(buffer);
@@ -380,11 +410,7 @@ void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
 #endif
 
 void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
-    #else
-    bindInternal(Context::current()->state().framebuffer->readTarget);
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     glReadBuffer(buffer);

@@ -128,7 +128,7 @@ void SampleQueryGLTest::querySamplesPassed() {
     #endif
     q.begin();
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
     mesh.draw(shader);
 
     q.end();
@@ -167,7 +167,7 @@ void SampleQueryGLTest::conditionalRender() {
         .addVertexBuffer(buffer, 0, Attribute<0, Vector2>{});
 
     MyShader shader;
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
 
     MAGNUM_VERIFY_NO_ERROR();
 

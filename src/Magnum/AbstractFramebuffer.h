@@ -30,6 +30,7 @@
  */
 
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
@@ -120,37 +121,38 @@ enum class FramebufferBlitFilter: GLenum {
 };
 
 /**
-@brief Target for binding framebuffer
+@brief Framebuffer target
 
-@see @ref DefaultFramebuffer::bind(), @ref Framebuffer::bind()
+@see @ref DefaultFramebuffer::checkStatus(), @ref Framebuffer::checkStatus()
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 */
 enum class FramebufferTarget: GLenum {
-    /**
-     * For reading only.
-     * @requires_gles30 Extension @es_extension{APPLE,framebuffer_multisample},
-     *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
-     *      in OpenGL ES 2.0
-     */
+    /** Frambebuffer reading target */
     #ifndef MAGNUM_TARGET_GLES2
     Read = GL_READ_FRAMEBUFFER,
     #else
     Read = GL_READ_FRAMEBUFFER_APPLE,
     #endif
 
-    /**
-     * For drawing only.
-     * @requires_gles30 Extension @es_extension{APPLE,framebuffer_multisample},
-     *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
-     *      in OpenGL ES 2.0
-     */
+    /** Framebuffer drawing target */
     #ifndef MAGNUM_TARGET_GLES2
     Draw = GL_DRAW_FRAMEBUFFER,
     #else
     Draw = GL_DRAW_FRAMEBUFFER_APPLE,
     #endif
 
-    ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Framebuffer drawing target
+     * @deprecated Use @ref FramebufferTarget::Draw instead.
+     */
+    ReadDraw CORRADE_DEPRECATED_ENUM("use FramebufferTarget::Draw instead") =
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_DRAW_FRAMEBUFFER
+        #else
+        GL_DRAW_FRAMEBUFFER_APPLE
+        #endif
+    #endif
 };
 
 namespace Implementation { struct FramebufferState; }
@@ -255,17 +257,26 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         }
 
         /**
-         * @brief Bind framebuffer for rendering
+         * @brief Bind framebuffer for drawing
          *
-         * Binds the framebuffer and updates viewport to saved dimensions.
+         * Binds the framebuffer for drawing and updates viewport to saved
+         * dimensions.
          * @see @ref setViewport(), @ref DefaultFramebuffer::mapForRead(),
          *      @ref Framebuffer::mapForRead(), @ref DefaultFramebuffer::mapForDraw(),
          *      @ref Framebuffer::mapForDraw(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Viewport}
-         * @todo Bind internally to ReadDraw if separate binding points are not
-         *      supported
          */
-        void bind(FramebufferTarget target);
+        void bind();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief bind()
+         * @deprecated Use parameter-less @ref bind() instead.
+         */
+        CORRADE_DEPRECATED("use parameter-less bind() instead") void bind(FramebufferTarget) {
+            bind();
+        }
+        #endif
 
         /** @brief Viewport rectangle */
         Range2Di viewport() const { return _viewport; }
@@ -397,7 +408,17 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         static void MAGNUM_LOCAL blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
         #endif
 
+        void MAGNUM_LOCAL bindImplementationDefault(FramebufferTarget target);
+        FramebufferTarget MAGNUM_LOCAL bindImplementationDefault();
+        #ifdef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL bindImplementationSingle(FramebufferTarget);
+        FramebufferTarget MAGNUM_LOCAL bindImplementationSingle();
+        #endif
+
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
+        #ifdef MAGNUM_TARGET_GLES2
+        GLenum MAGNUM_LOCAL checkStatusImplementationSingle(FramebufferTarget);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
         GLenum MAGNUM_LOCAL checkStatusImplementationDSAEXT(FramebufferTarget target);

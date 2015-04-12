@@ -48,6 +48,10 @@ struct FramebufferState {
     #ifndef MAGNUM_TARGET_GLES2
     void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
     #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    void(AbstractFramebuffer::*bindImplementation)(FramebufferTarget);
+    FramebufferTarget(AbstractFramebuffer::*bindInternalImplementation)();
+    #endif
 
     void(Framebuffer::*createImplementation)();
     void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, Renderbuffer&);
@@ -62,8 +66,6 @@ struct FramebufferState {
     void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
 
     void(*readImplementation)(const Range2Di&, ColorFormat, ColorType, std::size_t, GLvoid*);
-
-    FramebufferTarget readTarget, drawTarget;
 
     GLuint readBinding, drawBinding, renderbufferBinding;
     GLint maxDrawBuffers, maxColorAttachments, maxRenderbufferSize, maxSamples;
