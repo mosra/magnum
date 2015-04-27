@@ -115,16 +115,6 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          */
         void setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief setData(ColorFormat, ColorType, const VectorTypeFor<dimensions, Int>&, const void*, BufferUsage)
-         * @deprecated Use @ref Magnum::BufferImage::setData(ColorFormat, ColorType, const VectorTypeFor<dimensions, Int>&, const void*, BufferUsage) "setData(ColorFormat, ColorType, const VectorTypeFor<dimensions, Int>&, const void*, BufferUsage)" instead.
-         */
-        CORRADE_DEPRECATED("use setData(ColorFormat, ColorType, VectorNi, const void*, BufferUsage) instead") void setData(const VectorTypeFor<dimensions, Int>& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage) {
-            setData(format, type, size, data, usage);
-        }
-        #endif
-
     private:
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
