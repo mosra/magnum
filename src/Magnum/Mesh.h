@@ -36,6 +36,10 @@
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Attribute.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 /**

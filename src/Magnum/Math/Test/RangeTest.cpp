@@ -29,10 +29,6 @@
 
 #include "Magnum/Math/Range.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Math/Geometry/Rectangle.h"
-#endif
-
 namespace Magnum { namespace Math { namespace Test {
 
 struct RangeTest: Corrade::TestSuite::Tester {
@@ -55,10 +51,6 @@ struct RangeTest: Corrade::TestSuite::Tester {
 
     void subclassTypes();
     void subclass();
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void deprecated();
-    #endif
 
     void debug();
     void configuration();
@@ -91,10 +83,6 @@ RangeTest::RangeTest() {
 
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
-
-              #ifdef MAGNUM_BUILD_DEPRECATED
-              &RangeTest::deprecated,
-              #endif
 
               &RangeTest::debug,
               &RangeTest::configuration});
@@ -337,32 +325,6 @@ void RangeTest::debug() {
 
     CORRADE_COMPARE(o.str(), "Range({34, 23}, {47, 30})\n");
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void RangeTest::deprecated() {
-    typedef Geometry::Rectangle<Float> Rectangle;
-    typedef Geometry::Rectangle<Int> Rectanglei;
-
-    Rectanglei a({45, 23}, {-17, 35});
-    CORRADE_COMPARE(Rectanglei(), Range2Di({0, 0}, {0, 0}));
-    CORRADE_COMPARE(a, Range2Di({45, 23}, {-17, 35}));
-    CORRADE_COMPARE(Rectanglei(a), Range2Di({45, 23}, {-17, 35}));
-    CORRADE_COMPARE(Rectangle(a), Range2D({45.0f, 23.0f}, {-17.0f, 35.0f}));
-
-    CORRADE_COMPARE(a.width(), -62);
-    CORRADE_COMPARE(a.height(), 12);
-
-    CORRADE_VERIFY(!(std::is_convertible<Rectangle, Rectanglei>::value));
-
-    Corrade::Utility::Configuration c;
-    Rectangle rect({3.0f, 3.125f}, {9.0f, 9.55f});
-    std::string value("3 3.125 9 9.55");
-
-    c.setValue("rectangle", rect);
-    CORRADE_COMPARE(c.value("rectangle"), value);
-    CORRADE_COMPARE(c.value<Rectangle>("rectangle"), rect);
-}
-#endif
 
 void RangeTest::configuration() {
     Corrade::Utility::Configuration c;

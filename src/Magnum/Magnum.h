@@ -34,10 +34,6 @@
 #include "Magnum/Types.h"
 #include "Magnum/Math/Math.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
@@ -303,20 +299,6 @@ typedef Math::Range2D<Int> Range2Di;
 /** @brief Signed integer 3D range */
 typedef Math::Range3D<Int> Range3Di;
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Range2D
-@deprecated Use @ref Magnum::Range2D "Range2D" instead.
-*/
-typedef CORRADE_DEPRECATED("use Range2D instead") Math::Geometry::Rectangle<Float> Rectangle;
-
-/**
-@copybrief Range2Di
-@deprecated Use @ref Magnum::Range2Di "Range2Di" instead.
-*/
-typedef CORRADE_DEPRECATED("use Range2Di instead") Math::Geometry::Rectangle<Int> Rectanglei;
-#endif
-
 /*@}*/
 
 #ifndef MAGNUM_TARGET_GLES
@@ -418,14 +400,6 @@ typedef Math::Range2D<Double> Range2Dd;
 
 /** @brief Double 3D range */
 typedef Math::Range3D<Double> Range3Dd;
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Range2Dd
-@deprecated Use @ref Magnum::Range2Dd instead.
-*/
-typedef CORRADE_DEPRECATED("use Range2Dd instead") Math::Geometry::Rectangle<Double> Rectangled;
-#endif
 
 /*@}*/
 #endif

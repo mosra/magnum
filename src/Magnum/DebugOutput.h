@@ -36,6 +36,10 @@
 #include "Magnum/OpenGL.h"
 #include "Magnum/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 namespace Implementation { struct DebugState; }

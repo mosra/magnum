@@ -27,12 +27,6 @@ set(MagnumMathGeometry_HEADERS
     Distance.h
     Intersection.h)
 
-# Deprecated headers
-if(BUILD_DEPRECATED)
-    set(MagnumMathGeometry_HEADERS ${MagnumMathGeometry_HEADERS}
-        Rectangle.h)
-endif()
-
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumMathGeometry SOURCES ${MagnumMathGeometry_HEADERS})
 

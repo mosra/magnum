@@ -33,6 +33,10 @@
 
 #include "Magnum/AbstractQuery.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 #ifndef MAGNUM_TARGET_GLES2
 namespace Magnum {
 
