@@ -340,14 +340,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
     friend Implementation::MeshState;
 
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief MeshPrimitive
-         * @deprecated Use @ref Magnum::MeshPrimitive "MeshPrimitive" instead.
-         */
-        typedef CORRADE_DEPRECATED("use MeshPrimitive instead") MeshPrimitive Primitive;
-        #endif
-
         /**
          * @brief Index type
          *
