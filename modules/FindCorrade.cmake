@@ -50,10 +50,6 @@
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
 #
-# If CORRADE_BUILD_DEPRECATED is defined, the CORRADE_INCLUDE_DIR variable also
-# contains path directly to Corrade directory (i.e. for includes without
-# Corrade/ prefix).
-#
 # Corrade provides these macros and functions:
 #
 #
@@ -169,7 +165,7 @@ endforeach()
 find_program(CORRADE_RC_EXECUTABLE corrade-rc)
 
 # Include dir
-find_path(_CORRADE_INCLUDE_DIR
+find_path(CORRADE_INCLUDE_DIR
     NAMES Corrade/PluginManager Corrade/Utility)
 
 # CMake module dir
@@ -183,7 +179,7 @@ find_package_handle_standard_args(Corrade DEFAULT_MSG
     CORRADE_INTERCONNECT_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY
     CORRADE_TESTSUITE_LIBRARY
-    _CORRADE_INCLUDE_DIR
+    CORRADE_INCLUDE_DIR
     CORRADE_RC_EXECUTABLE
     _CORRADE_MODULE_DIR)
 
@@ -192,7 +188,7 @@ if(NOT CORRADE_FOUND)
 endif()
 
 # Read flags from fonfiguration
-file(READ ${_CORRADE_INCLUDE_DIR}/Corrade/configure.h _corradeConfigure)
+file(READ ${CORRADE_INCLUDE_DIR}/Corrade/configure.h _corradeConfigure)
 set(_corradeFlags
     GCC47_COMPATIBILITY
     BUILD_DEPRECATED
@@ -229,15 +225,7 @@ if(CORRADE_TARGET_ANDROID)
     set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARIES} log)
 endif()
 
-mark_as_advanced(_CORRADE_INCLUDE_DIR
-    _CORRADE_MODULE_DIR)
-
-# Add Corrade dir to include path if this is deprecated build
-if(CORRADE_BUILD_DEPRECATED)
-    set(CORRADE_INCLUDE_DIR ${_CORRADE_INCLUDE_DIR} ${CORRADE_INCLUDE_DIR}/Corrade)
-else()
-    set(CORRADE_INCLUDE_DIR ${_CORRADE_INCLUDE_DIR})
-endif()
+mark_as_advanced(_CORRADE_MODULE_DIR)
 
 # Finalize the finding process
 include(${CORRADE_USE_MODULE})
