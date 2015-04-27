@@ -54,10 +54,6 @@ set(MagnumShaders_PRIVATE_HEADERS Implementation/CreateCompatibilityShader.h)
 
 if(BUILD_STATIC)
     set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} resourceImport.hpp)
-
-    if(BUILD_DEPRECATED)
-        set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} magnumShadersResourceImport.hpp)
-    endif()
 endif()
 
 # Shaders library
