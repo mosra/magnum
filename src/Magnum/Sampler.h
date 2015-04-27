@@ -233,15 +233,6 @@ class MAGNUM_EXPORT Sampler {
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          */
         static Float maxMaxAnisotropy();
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief maxMaxAnisotropy()
-         * @deprecated Use @ref Magnum::Sampler::maxMaxAnisotropy() "maxMaxAnisotropy()"
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use maxMaxAnisotropy() instead") Float maxAnisotropy() { return maxMaxAnisotropy(); }
-        #endif
 };
 
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Filter} */
