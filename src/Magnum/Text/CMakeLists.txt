@@ -40,11 +40,6 @@ set(MagnumText_HEADERS
 
     visibility.h)
 
-if(MAGNUM_BUILD_DEPRECATED)
-    set(MagnumText_HEADERS ${MagnumText_HEADERS}
-        TextRenderer.h)
-endif()
-
 # Text library
 add_library(MagnumText ${SHARED_OR_STATIC}
     ${MagnumText_SRCS}

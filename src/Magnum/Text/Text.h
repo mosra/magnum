@@ -47,11 +47,6 @@ class AbstractRenderer;
 template<UnsignedInt> class Renderer;
 typedef Renderer<2> Renderer2D;
 typedef Renderer<3> Renderer3D;
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-typedef Renderer<2> TextRenderer2D;
-typedef Renderer<3> TextRenderer3D;
-#endif
 #endif
 
 }}
