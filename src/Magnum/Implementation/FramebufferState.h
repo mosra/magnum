@@ -43,7 +43,11 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    constexpr static const Range2Di DisengagedViewport{{}, {-1, -1}};
+    /* Also, GCC 4.6 doesn't have non-static member initializers */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    constexpr
+    #endif
+    static const Range2Di DisengagedViewport;
 
     explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
 
