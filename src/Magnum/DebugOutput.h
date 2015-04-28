@@ -812,12 +812,14 @@ class MAGNUM_EXPORT DebugGroup {
          * Calls @ref push().
          * @see @link ~DebugGroup() @endlink, @ref pop()
          */
-        explicit DebugGroup(Source source, UnsignedInt id, const std::string& message): DebugGroup{} {
+        /* GCC 4.6 doesn't have delegating constructors */
+        explicit DebugGroup(Source source, UnsignedInt id, const std::string& message): _active{false} {
             push(source, id, message);
         }
 
         /** @overload */
-        template<std::size_t size> explicit DebugGroup(Source source, UnsignedInt id, const char(&message)[size]): DebugGroup{} {
+        /* GCC 4.6 doesn't have delegating constructors */
+        template<std::size_t size> explicit DebugGroup(Source source, UnsignedInt id, const char(&message)[size]): _active{false} {
             push(source, id, message);
         }
 
