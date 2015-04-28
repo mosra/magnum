@@ -712,7 +712,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl Texture image queries are not available in OpenGL ES.
          *      See @ref Framebuffer::read() for possible workaround.
          */
-        void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
+        void subImage(Int level, const typename DimensionTraits<dimensions, Int>::RangeType& range, Image<dimensions>& image) {
             AbstractTexture::subImage<dimensions>(level, range, image);
         }
 
@@ -723,7 +723,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Image2D image = texture.subImage(0, rect, {ColorFormat::RGBA, ColorType::UnsignedByte});
          * @endcode
          */
-        Image<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image);
+        Image<dimensions> subImage(Int level, const typename DimensionTraits<dimensions, Int>::RangeType& range, Image<dimensions>&& image);
 
         /**
          * @brief Read range of given texture mip level to buffer image
@@ -738,7 +738,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl Texture image queries are not available in OpenGL ES.
          *      See @ref Framebuffer::read() for possible workaround.
          */
-        void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, BufferUsage usage) {
+        void subImage(Int level, const typename DimensionTraits<dimensions, Int>::RangeType& range, BufferImage<dimensions>& image, BufferUsage usage) {
             AbstractTexture::subImage<dimensions>(level, range, image, usage);
         }
 
@@ -749,7 +749,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * BufferImage2D image = texture.subImage(0, rect, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
-        BufferImage<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, BufferUsage usage);
+        BufferImage<dimensions> subImage(Int level, const typename DimensionTraits<dimensions, Int>::RangeType& range, BufferImage<dimensions>&& image, BufferUsage usage);
         #endif
 
         /**

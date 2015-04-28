@@ -103,7 +103,11 @@ template<class T> struct DimensionTraits<1, T> {
     DimensionTraits() = delete;
 
     typedef Math::Vector<1, T> VectorType;
+    #ifndef CORRADE_GCC46_COMPATIBILITY
     typedef Math::Range1D<T> RangeType;
+    #else
+    typedef Math::Range<1, T> RangeType;
+    #endif
 };
 
 /* Two dimensions - integral */

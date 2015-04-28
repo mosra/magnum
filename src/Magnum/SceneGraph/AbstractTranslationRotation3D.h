@@ -213,16 +213,16 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
             return *this;
         }
         AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector3<T>& vector) {
-            AbstractBasicTranslation3D<T>::translate(vector);
+            AbstractTranslation<3, T>::translate(vector);
             return *this;
         }
         AbstractBasicTranslationRotation3D<T>& translateLocal(const Math::Vector3<T>& vector) {
-            AbstractBasicTranslation3D<T>::translateLocal(vector);
+            AbstractTranslation<3, T>::translateLocal(vector);
             return *this;
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
-            AbstractBasicTranslation3D<T>::translate(vector, type);
+            AbstractTranslation<3, T>::translate(vector, type);
             return *this;
         }
         #endif

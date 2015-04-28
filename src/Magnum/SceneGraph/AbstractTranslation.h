@@ -88,7 +88,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
          *      or @ref Magnum::SceneGraph::AbstractTranslation::translateLocal() "translateLocal()"
          *      instead.
          */
-        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) {
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractTranslation<dimensions, T, TranslationType>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type) {
             return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
         }
         #endif

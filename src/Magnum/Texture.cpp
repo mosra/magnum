@@ -83,7 +83,7 @@ template MAGNUM_EXPORT BufferImage<2> Texture<2>::image(Int, BufferImage<2>&&, B
 template MAGNUM_EXPORT BufferImage<3> Texture<3>::image(Int, BufferImage<3>&&, BufferUsage);
 #endif
 
-template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image) {
+template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::subImage(const Int level, const typename DimensionTraits<dimensions, Int>::RangeType& range, Image<dimensions>&& image) {
     this->subImage(level, range, image);
     return std::move(image);
 }
@@ -94,7 +94,7 @@ template MAGNUM_EXPORT Image<2> Texture<2>::subImage(Int, const Range2Di&, Image
 template MAGNUM_EXPORT Image<3> Texture<3>::subImage(Int, const Range3Di&, Image<3>&&);
 #endif
 
-template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, const BufferUsage usage) {
+template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::subImage(const Int level, const typename DimensionTraits<dimensions, Int>::RangeType& range, BufferImage<dimensions>&& image, const BufferUsage usage) {
     this->subImage(level, range, image, usage);
     return std::move(image);
 }

@@ -89,16 +89,16 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractTrans
             return *this;
         }
         AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector) {
-            AbstractBasicTranslation2D<T>::translate(vector);
+            AbstractTranslation<2, T>::translate(vector);
             return *this;
         }
         AbstractBasicTranslationRotation2D<T>& translateLocal(const Math::Vector2<T>& vector) {
-            AbstractBasicTranslation2D<T>::translateLocal(vector);
+            AbstractTranslation<2, T>::translateLocal(vector);
             return *this;
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
-            AbstractBasicTranslation2D<T>::translate(vector, type);
+            AbstractTranslation<2, T>::translate(vector, type);
             return *this;
         }
         #endif

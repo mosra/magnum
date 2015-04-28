@@ -47,7 +47,7 @@ template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T
 
     /* Extend on larger side = scale larger side down
        Clip on smaller side = scale smaller side up */
-    return MatrixTypeFor<dimensions, T>::scaling(Math::Vector<dimensions, T>::pad(
+    return DimensionTraits<dimensions, T>::MatrixType::scaling(Math::Vector<dimensions, T>::pad(
         (relativeAspectRatio.x() > relativeAspectRatio.y()) == (aspectRatioPolicy == AspectRatioPolicy::Extend) ?
         Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1)) :
         Vector2(T(1), relativeAspectRatio.x()/relativeAspectRatio.y()), T(1)));

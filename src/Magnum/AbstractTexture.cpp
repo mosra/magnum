@@ -1261,7 +1261,7 @@ template void MAGNUM_EXPORT AbstractTexture::image<1>(GLint, BufferImage<1>&, Bu
 template void MAGNUM_EXPORT AbstractTexture::image<2>(GLint, BufferImage<2>&, BufferUsage);
 template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, BufferImage<3>&, BufferUsage);
 
-template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const typename DimensionTraits<dimensions, Int>::RangeType& range, Image<dimensions>& image) {
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
@@ -1279,7 +1279,7 @@ template void MAGNUM_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&,
 template void MAGNUM_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, Image<2>&);
 template void MAGNUM_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, Image<3>&);
 
-template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, const BufferUsage usage) {
+template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const typename DimensionTraits<dimensions, Int>::RangeType& range, BufferImage<dimensions>& image, const BufferUsage usage) {
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
