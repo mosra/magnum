@@ -25,6 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <tuple>
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/AbstractObject.h"
