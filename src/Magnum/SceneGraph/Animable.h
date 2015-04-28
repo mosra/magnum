@@ -145,7 +145,8 @@ errors. See also @ref compilation-speedup-hpp for more information.
     @ref Animable2D, @ref Animable3D, @ref AnimableGroup
 */
 template<UnsignedInt dimensions, class T> class Animable: public AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T> {
-    friend AnimableGroup<dimensions, T>;
+    /* GCC 4.6 needs the class keyword */
+    friend class AnimableGroup<dimensions, T>;
 
     public:
         /**

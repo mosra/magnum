@@ -156,8 +156,9 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
     : private Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
     #endif
 {
-    friend Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    /* GCC 4.6 needs the class keyword */
+    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
+    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
     template<class> friend class Object;
 
     public:

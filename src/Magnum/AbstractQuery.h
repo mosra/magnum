@@ -47,7 +47,8 @@ more information.
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
-    friend Implementation::QueryState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::QueryState;
 
     public:
         /** @brief Copying is not allowed */

@@ -200,7 +200,8 @@ and respective function documentation for more information.
 @requires_gl Texture buffers are not available in OpenGL ES.
 */
 class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
-    friend Implementation::TextureState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::TextureState;
 
     public:
         /**

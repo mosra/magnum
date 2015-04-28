@@ -447,7 +447,8 @@ inline GlutApplication::InputEvent::~InputEvent() = default;
 @see @ref keyPressEvent()
 */
 class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
-    friend GlutApplication;
+    /* GCC 4.6 needs the class keyword */
+    friend class GlutApplication;
 
     public:
         /**
@@ -546,7 +547,8 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
-    friend GlutApplication;
+    /* GCC 4.6 needs the class keyword */
+    friend class GlutApplication;
 
     public:
         /**
@@ -581,7 +583,8 @@ class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
-    friend GlutApplication;
+    /* GCC 4.6 needs the class keyword */
+    friend class GlutApplication;
 
     public:
         /**

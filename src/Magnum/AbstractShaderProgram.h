@@ -392,10 +392,11 @@ comes in handy.
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
-    friend Mesh;
-    friend MeshView;
-    friend TransformFeedback;
-    friend Implementation::ShaderProgramState;
+    /* GCC 4.6 needs the class/struct keyword */
+    friend class Mesh;
+    friend class MeshView;
+    friend class TransformFeedback;
+    friend struct Implementation::ShaderProgramState;
 
     public:
         #ifndef MAGNUM_TARGET_GLES2

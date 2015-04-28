@@ -42,7 +42,8 @@ See @ref Animable for more information.
     @ref AnimableGroup2D, @ref AnimableGroup3D
 */
 template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGroup<dimensions, Animable<dimensions, T>, T> {
-    friend Animable<dimensions, T>;
+    /* GCC 4.6 needs the class keyword */
+    friend class Animable<dimensions, T>;
 
     public:
         /**

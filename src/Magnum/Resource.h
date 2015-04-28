@@ -122,7 +122,8 @@ template<class T, class U = T>
 template<class T, class U>
 #endif
 class Resource {
-    friend Implementation::ResourceManagerData<T>;
+    /* GCC 4.6 needs the class keyword */
+    friend class Implementation::ResourceManagerData<T>;
 
     public:
         /**

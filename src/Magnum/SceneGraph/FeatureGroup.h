@@ -62,7 +62,8 @@ See @ref AbstractGroupedFeature for more information.
     @ref FeatureGroup2D, @ref FeatureGroup3D
 */
 template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: public AbstractFeatureGroup<dimensions, T> {
-    friend AbstractGroupedFeature<dimensions, Feature, T>;
+    /* GCC 4.6 needs the class keyword */
+    friend class AbstractGroupedFeature<dimensions, Feature, T>;
 
     public:
         explicit FeatureGroup();

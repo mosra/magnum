@@ -60,7 +60,8 @@ See also @ref Extensions namespace, which contain compile-time information
 about OpenGL extensions.
 */
 class MAGNUM_EXPORT Extension {
-    friend Context;
+    /* GCC 4.6 needs the class keyword */
+    friend class Context;
 
     public:
         /** @brief All extensions for given OpenGL version */
@@ -98,7 +99,8 @@ using @ref Platform::Context subclass, see @ref platform documentation for more
 information.
 */
 class MAGNUM_EXPORT Context {
-    friend Platform::Context;
+    /* GCC 4.6 needs the class keyword */
+    friend class Platform::Context;
 
     public:
         /**

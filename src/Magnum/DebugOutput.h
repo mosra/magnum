@@ -120,7 +120,8 @@ objects with labels. See @ref AbstractQuery::setLabel(),
 @ref TransformFeedback::setLabel() for more information.
 */
 class MAGNUM_EXPORT DebugOutput {
-    friend Implementation::DebugState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::DebugState;
 
     public:
         /**
@@ -455,7 +456,8 @@ result in any allocations and thus won't have any negative performance effects.
 @see @ref DebugGroup
 */
 class MAGNUM_EXPORT DebugMessage {
-    friend Implementation::DebugState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::DebugState;
 
     public:
         /**
@@ -762,7 +764,8 @@ result in any allocations and thus won't have any negative performance effects.
 @see @ref DebugMessage
 */
 class MAGNUM_EXPORT DebugGroup {
-    friend Implementation::DebugState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::DebugState;
 
     public:
         /**

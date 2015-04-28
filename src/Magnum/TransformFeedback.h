@@ -61,7 +61,8 @@ documentation for more information.
 @todo @extension{AMD,transform_feedback3_lines_triangles}?
 */
 class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
-    friend Implementation::TransformFeedbackState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::TransformFeedbackState;
 
     public:
         /**

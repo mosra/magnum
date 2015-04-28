@@ -105,7 +105,8 @@ information.
 @todo `MAX_COLOR_ATTACHMENTS`
 */
 class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObject {
-    friend Implementation::FramebufferState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::FramebufferState;
 
     public:
         /**
@@ -116,7 +117,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @ref attachCubeMapTexture(), @ref attachTexture3D()
          */
         class ColorAttachment {
-            friend Framebuffer;
+            /* GCC 4.6 needs the class keyword */
+            friend class Framebuffer;
 
             public:
                 /**

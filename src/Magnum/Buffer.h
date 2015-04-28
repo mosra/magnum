@@ -214,7 +214,8 @@ by OpenGL in order to preserve the data. If running on OpenGL ES or extension
 functions do nothing.
  */
 class MAGNUM_EXPORT Buffer: public AbstractObject {
-    friend Implementation::BufferState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::BufferState;
 
     public:
         /**

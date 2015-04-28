@@ -96,7 +96,8 @@ namespace Implementation {
 
 template<class T> class ResourceManagerData {
     template<class, class> friend class Magnum::Resource;
-    friend AbstractResourceLoader<T>;
+    /* GCC 4.6 needs the class keyword */
+    friend class AbstractResourceLoader<T>;
 
     public:
         ResourceManagerData(const ResourceManagerData<T>&) = delete;

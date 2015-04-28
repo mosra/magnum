@@ -730,7 +730,8 @@ inline Sdl2Application::InputEvent::~InputEvent() = default;
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
-    friend Sdl2Application;
+    /* GCC 4.6 needs the class keyword */
+    friend class Sdl2Application;
 
     public:
         /**
@@ -830,7 +831,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
-    friend Sdl2Application;
+    /* GCC 4.6 needs the class keyword */
+    friend class Sdl2Application;
 
     public:
         /**
@@ -874,7 +876,8 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
-    friend Sdl2Application;
+    /* GCC 4.6 needs the class keyword */
+    friend class Sdl2Application;
 
     public:
         /**

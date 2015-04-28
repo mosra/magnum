@@ -80,7 +80,8 @@ use DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their
 respective documentation for more information.
 */
 class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
-    friend Context;
+    /* GCC 4.6 needs the class keyword */
+    friend class Context;
 
     public:
         /**

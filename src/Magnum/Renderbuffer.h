@@ -64,7 +64,8 @@ information.
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 */
 class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
-    friend Implementation::FramebufferState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::FramebufferState;
 
     public:
         /**

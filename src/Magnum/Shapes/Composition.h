@@ -73,7 +73,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
     template<UnsignedInt dimensions_> friend Implementation::AbstractShape<dimensions_>& Implementation::getAbstractShape(Composition<dimensions_>&, std::size_t);
     template<UnsignedInt dimensions_> friend const Implementation::AbstractShape<dimensions_>& Implementation::getAbstractShape(const Composition<dimensions_>&, std::size_t);
     #endif
-    friend Implementation::ShapeHelper<Composition<dimensions>>;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::ShapeHelper<Composition<dimensions>>;
 
     public:
         enum: UnsignedInt {

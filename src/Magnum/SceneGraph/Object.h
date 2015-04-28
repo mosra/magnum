@@ -111,8 +111,9 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
     , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif
 {
-    friend Containers::LinkedList<Object<Transformation>>;
-    friend Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
+    /* GCC 4.6 needs the class keyword */
+    friend class Containers::LinkedList<Object<Transformation>>;
+    friend class Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
 
     public:
         /** @brief Matrix type */

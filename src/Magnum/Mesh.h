@@ -340,8 +340,9 @@ drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @ref draw() for more information.
  */
 class MAGNUM_EXPORT Mesh: public AbstractObject {
-    friend MeshView;
-    friend Implementation::MeshState;
+    /* GCC 4.6 needs the class/struct keyword */
+    friend class MeshView;
+    friend struct Implementation::MeshState;
 
     public:
         /**

@@ -48,8 +48,9 @@ namespace Implementation { struct RendererState; }
 @todo `GL_MAX_CLIP_DISTANCES`...
 */
 class MAGNUM_EXPORT Renderer {
-    friend Context;
-    friend Implementation::RendererState;
+    /* GCC 4.6 needs the class/struct keyword */
+    friend class Context;
+    friend struct Implementation::RendererState;
 
     public:
         Renderer() = delete;

@@ -101,7 +101,8 @@ Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
     buffers), should that be allowed?
 */
 template<class T> class AbstractResourceLoader {
-    friend Implementation::ResourceManagerData<T>;
+    /* GCC 4.6 needs the class keyword */
+    friend class Implementation::ResourceManagerData<T>;
 
     public:
         explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}

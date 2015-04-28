@@ -44,7 +44,8 @@ namespace Implementation { struct DebugState; }
 @brief Base for all OpenGL objects
 */
 class MAGNUM_EXPORT AbstractObject {
-    friend Implementation::DebugState;
+    /* GCC 4.6 needs the struct keyword */
+    friend struct Implementation::DebugState;
 
     public:
         /**
