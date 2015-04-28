@@ -152,8 +152,9 @@ void TgaImporterTest::colorBits24() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE((std::string{image->data(), 2*3*3}),
-                    (std::string{pixels, 2*3*3}));
+    /* GCC 4.5 can't handle {} here */
+    CORRADE_COMPARE(std::string(image->data(), 2*3*3),
+                    std::string(pixels, 2*3*3));
 }
 
 void TgaImporterTest::colorBits32() {
@@ -184,8 +185,9 @@ void TgaImporterTest::colorBits32() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE((std::string{image->data(), 2*3*3}),
-                    (std::string{pixels, 2*3*3}));
+    /* GCC 4.5 can't handle {} here */
+    CORRADE_COMPARE(std::string(image->data(), 2*3*3),
+                    std::string(pixels, 2*3*3));
 }
 
 void TgaImporterTest::grayscaleBits8() {
@@ -207,8 +209,9 @@ void TgaImporterTest::grayscaleBits8() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE((std::string{image->data(), 2*3}),
-                    (std::string{data + 18, 2*3}));
+    /* GCC 4.5 can't handle {} here */
+    CORRADE_COMPARE(std::string(image->data(), 2*3),
+                    std::string(data + 18, 2*3));
 }
 
 void TgaImporterTest::grayscaleBits16() {
@@ -241,8 +244,9 @@ void TgaImporterTest::file() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE((std::string{image->data(), 2*3}),
-                    (std::string{data + 18, 2*3}));
+    /* GCC 4.5 can't handle {} here */
+    CORRADE_COMPARE(std::string(image->data(), 2*3),
+                    std::string(data + 18, 2*3));
 }
 
 }}}

@@ -70,7 +70,8 @@ auto TgaImporter::doFeatures() const -> Features { return Feature::OpenData; }
 bool TgaImporter::doIsOpened() const { return in; }
 
 void TgaImporter::doOpenData(const Containers::ArrayReference<const char> data) {
-    in = new std::istringstream{{data, data.size()}};
+    /* GCC 4.5 can't handle {} here */
+    in = new std::istringstream{std::string(data, data.size())};
 }
 
 void TgaImporter::doOpenFile(const std::string& filename) {

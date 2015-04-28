@@ -42,7 +42,8 @@ void
 APIENTRY
 #endif
 callbackWrapper(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-    Context::current()->state().debug->messageCallback(DebugOutput::Source(source), DebugOutput::Type(type), id, DebugOutput::Severity(severity), std::string{message, std::size_t(length)}, userParam);
+    /* GCC 4.5 doesn't like {} here */
+    Context::current()->state().debug->messageCallback(DebugOutput::Source(source), DebugOutput::Type(type), id, DebugOutput::Severity(severity), std::string(message, std::size_t(length)), userParam);
 }
 #endif
 
