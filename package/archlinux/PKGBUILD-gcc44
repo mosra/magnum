@@ -11,17 +11,23 @@ makedepends=('cmake' 'ninja' 'gcc44')
 options=('!strip' 'staticlibs')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    if [ ! -d "$startdir/build-gcc44" ] ; then
-        mkdir "$startdir/build-gcc44"
-        cd "$startdir/build-gcc44"
+    # Disable flags unknown to GCC 4.7
+    newcxxflags=$(echo $CXXFLAGS | sed s/-fstack-protector-strong.//g)
+    export CXXFLAGS="$newcxxflags"
+
+    if [ ! -d "$_rootdir/build-gcc44" ] ; then
+        mkdir "$_rootdir/build-gcc44"
+        cd "$_rootdir/build-gcc44"
 
         cmake .. \
             -DCMAKE_CXX_COMPILER=g++-4.4 \
             -G Ninja
     fi
 
-    cd "$startdir/build-gcc44"
+    cd "$_rootdir/build-gcc44"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -46,11 +52,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-gcc44"
+    cd "$_rootdir/build-gcc44"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-gcc44"
+    cd "$_rootdir/build-gcc44"
     DESTDIR="$pkgdir/" ninja install
 }
