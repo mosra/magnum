@@ -465,7 +465,11 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
 }
 
 template<class T> T Checker::get(ColorFormat format, ColorType type) {
-    return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
+    /* GCC 4.5 needs explicit type here and also cannot handle && ref, also
+       crashes when using {} */
+    Image2D image{format, type};
+    framebuffer.read(Range2Di({}, Vector2i{1}), image);
+    return image.data<T>()[0];
 }
 #endif
 
@@ -1758,7 +1762,11 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
 }
 
 template<class T> T MultiChecker::get(ColorFormat format, ColorType type) {
-    return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
+    /* GCC 4.5 needs explicit type here and also cannot handle &&, also crashes
+       when using {} */
+    Image2D image{format, type};
+    framebuffer.read(Range2Di({}, Vector2i{1}), image);
+    return image.data<T>()[0];
 }
 #endif
 
