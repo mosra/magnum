@@ -95,7 +95,7 @@ Int remainder = 57%6;
 @endcode
 */
 template<class Integral> std::pair<Integral, Integral> div(Integral x, Integral y) {
-    static_assert(std::is_integral<Integral>{}, "Math::div(): not an integral type");
+    static_assert(std::is_integral<Integral>::value, "Math::div(): not an integral type");
     const auto result = std::div(x, y);
     return {result.quot, result.rem};
 }
