@@ -78,7 +78,10 @@ void TransformFeedbackGLTest::construct() {
 
 void TransformFeedbackGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<TransformFeedback, const TransformFeedback&>::value));
-    CORRADE_VERIFY(!(std::is_assignable<TransformFeedback, const TransformFeedback&>::value));
+    /* GCC 4.6 doesn't have std::is_assignable */
+    #ifndef CORRADE_GCC46_COMPATIBILITY
+    CORRADE_VERIFY(!(std::is_assignable<TransformFeedback, const TransformFeedback&>{}));
+    #endif
 }
 
 void TransformFeedbackGLTest::constructMove() {
